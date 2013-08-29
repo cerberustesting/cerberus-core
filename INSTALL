@@ -1,0 +1,53 @@
+
+Required Packages
+-----------------
+
+Make sure you've installed the following packages before continuing. 
+MySQL
+  Option "lower_case_table_names=1" must be activated.
+Java 1.6
+Glassfish Server v3
+  if necessary, copy the mysql jdbc drivers jar file on the glassfish/lib folder of your Glassfish installation.
+  The drivers can be downloaded at http://dev.mysql.com/downloads/connector/j/
+  
+
+Installation
+------------
+
+0) Download Cerberus package 
+
+1) Setup MySQL Cerberus Database
+
+- create a user and associated schema inside mysql
+
+CREATE USER 'cerberus'@'%' IDENTIFIED BY 'toto';
+GRANT USAGE ON * . * TO 'cerberus'@'%' IDENTIFIED BY 'toto';
+GRANT USAGE ON * . * TO 'cerberus'@'localhost' IDENTIFIED BY 'toto';
+CREATE DATABASE IF NOT EXISTS `cerberus` ;
+GRANT ALL PRIVILEGES ON `cerberus` . * TO 'cerberus'@'%';
+
+- modify 00Config.sh file with your local parameters.
+
+2) Application Server Configuration. We made the choice to use glassfish 
+
+- run installation script --> 01AppServerConfig.sh[.bat]
+
+3) Deploy Cerberus Application
+
+- run deploy script --> 02DeployApp.sh[.bat]
+
+4) You can connect to cerberus and start using it.
+  http://localhost:8080/GuiCerberus-1.1.0-SNAPSHOT/
+ - Default Logins to the Cerberus Web Interface :
+  admin / admin for administrator access
+  cerberus / cerberus for standard user access
+ - The first connection to the application will initialise the database so it may be a bit slow (be patient during the update of the database).
+ 
+Before starting a test case, you need a selenium server running. 
+You can get the selenium jar file from http://docs.seleniumhq.org/download/
+You can use the start-selenium.sh script in tools/selenium/ folder. Update it in order to use the proper jvm and selenium jar.
+
+Script execution automation can be done using the scripts located in tools/batchexecution/.
+ 
+NB1 : don't forget to update the cerberus parameters according to your Environment --> parameter table needs to be changed according to your need (See CerberusPicturesConfig file inside docs folder).
+NB2 : The provided scripts install the application on default single instance server of Glassfish. You can of course change that to install it inside a cluster environment.

@@ -1,0 +1,99 @@
+Pending.
+- Move Cerberus V2 inside a new Linux VM. Coordinate with ITSQD the creation of the VM. Build scripts to automate the configuration of glassfish and update Jenkins config in order to deploy V2 on that new server. [TBE]
+
+
+To be planned.
+
+- Password securisation on other actions than type. (cleaning them). [WAITING CARLOS FEEDBACK]
+- Implementation of SQL Property NOTINUSE. [BCI]
+- 2 history graph on execution list page : error message : null java.util.NoSuchElementException [BCI]
+- rename all packages on org.cerberus.xxx [BDU]
+- clarification on external calls. (Ex : SelectInvariant) [BDU]
+- Delete button inside testcase page.
+- Add and Delete application button.
+- Add and Delete country/env .
+- identify invariant that can be modified (specific) from the static (standard) ones and create a GUI to maintain the specific invariant.
+- Add / Delete country-env-application and country-env-database and country-env-host details.
+- Integration of System inside the key of environment table. [BDU]
+- rename dev en QA inside env parameters of .35 server.
+- index page BAM : more lines to select the testcase.
+- Clean Initial data so that at least a test can be executed.
+- isCountryValid and isApplicationValid and isControlStatusValid Method inside servlet PerformanceMonitorGetNumberOfExecutions.
+- GUI should be IE friendly (menu are messed up for the time beeing)
+
+
+DONE :
+- Split the homepage report of build/rev status by group of environment. [TBE]
+- Use of Statement.RETURN_GENERATED_KEYS in order to get the runid when starting the execution. [TBE]
+- user detail screen for group management screen. [TBE]
+- cleaned cerberus_selenium_plugins_path and svn_application_url parameter. [BDU]
+- bug tracking URL at application level [BDU]
+- comboxbox in new user creation.
+- New actions on log. Modif / del / Create / Duplicate testcase, test, / create, del, add on user, update parameter [BDU]
+- Test page separation [BDU]
+- TestCase page Separation [BDU]
+- Standard naming of DAO and Service impl classes. [BDU]
+- LogEvent refactored and now working. [BDU]
+- Cleaning of Comparaison status table + jsp. [BDU]
+- merge images and pictures [BDU]
+- merge js and javascript [BDU]
+- Remove Common Folder. All jsp in root [BDU]
+- Bug on empty %VAR5% - 9201A/1201A. [TBE]
+- Bug on cannot save user. "Team" and "Default System" not updating. [TBE]
+- review and removed the har file saving. [BDU]
+- Activating %% in object field of action. [BDU]
+- support of & caracter in login manual runner option. [TBE]
+- bug on cannot save user. [TBE]
+- Password display removal on execution page Property + Message and everywhere we use it. [BDU]
+- Patern fix. [TBE]
+- Property non calculation when already exist. Only calculate it the 1st time. inside calculateProperty of RunTestCaseService just after the create. [TBE]
+- Elapsed time displayied in execution detail page. [BDU]
+- insert and update in action and control. [BDU]
+- saving tcexecution in various steps. [BDU]
+- rename verifyPropertyEqual verifyPropertyDifferent verifyPropertyGreater verifyPropertyMinor to String and Integer [BDU]
+- Property control not working [BDU].
+- browser option management. control on invariant table. [BDU]
+- network traffic reactivation. Cleaning PathS variable. Proper message when firebug files are not found. [BDU]
+- URL and Login option on Runner page available on any environment. Remove duplicate DEV entry. This is to pick any environment for the property calculation. User should select between 2 options : 1/ Local application --> Env, URL and Login page to be entered. 2/ Preset env where any env can be picked. Default should be on Preset env. [BDU]
+- Adding referencial integrity on execution tables. [BDU]
+- index page BAM : distinct date inside execution table to remove. [BDU]
+- ClickandWait action is taking longuer compared to V1. [BDU]
+- 500 error when executing a GUI test against an URL that does not respond. [BDU]
+- 500 on execution of Datamart 0008A PT PROD. Crash when calculating Sybase property SUM2. [BCI]
+- null pointer exeption : http://192.168.134.35/CerberusV2PreProd/ExecutionDetail.jsp?id_tc=4706547 [BDU]
+- transversal data calculation (test and pretest). [BDU]
+- new parameter manualURL in order to define the automatic or manual application configuration. [BDU]
+- Cerberus engine modification in order to integrate test and testcase information when running the testcase. [BDU]
+- New screenshots parameter at execution level. 0 : no screenshot / 1 Screenshot on KO / 2 Always screenshot. Store parameter in execution table. and store filename only when taken in action and control table. Clean verbose impact on screenshot behaviour. [BDU]
+- Store version at execution table : GuiCerberusV2 2.0.0-SNAPSHOT ${SVN_REVISION} [BDU]
+- store Message at execution and action / control table. [BDU]
+- 500 error on BAM executions. Happened when the verbose option is not set. Exception and clear message to be sent to the output. [TBE]
+- TO BE IMPLEMETED : User DAO - insertUser deleteUser and updateUser [TBE]
+- TO BE IMPLEMETED : Application DAO - findAllApplication [TBE]
+- 'jdbc ressource is not available' should report a CA. Message should appear inside the corresponding action.
+- 'jdbc ressource run out of connection' (connection leak) should report a CA. Message should appear inside the corresponding action. Today is NA
+- Exception on control URL “Cannot find application host (www.redoute.ru) inside current URL (www.laredoute.ru/Login.aspx). Maybe this is due to a redirection done from the web site. That can be corrected by modifying the Application URL.”. Message should be reported and status should be updated to FA. [TBE]
+- put execution ID in output of compact output. [BDU]
+- Redirect to customermaintenance page at first connection to the application if database is empty.
+- Cerberus version and status of the testcase displayed at the execution inside executiondetail page.
+- Display a Warning on Database Version not matching on homepage.
+- Clean parameter by removing all JAVA env parameters and moving to parameter table. Only 1 JAVA parameter : org.cerberus.env=???
+- URL saved inside the testcaseexecution table should should including the host and the context root that is used to test. This is so far on feeded with contect root and I suggest that we put the full URL used. Ex : “192.168.134.57:8080/vctmUatRU_54.0/” in stead of just “/vctmUatRU_54.0/” on VCCRM execution and “laredoute.ru” in stead of “”. [TBE]
+- Exception on Selenium action timeout : org.openqa.selenium.WebDriverException: unable to create new native thread  Command duration or timeout: 703 milliseconds. Message should be reported and status should be updated to CA. [TBE]
+- Removal of  [BCI]
+        <link rel="stylesheet" type="text/css" href="javascript/jqplot/examples/syntaxhighlighter/styles/shCoreDefault.min.css" >
+        <link rel="stylesheet" type="text/css" href="javascript/jqplot/examples/syntaxhighlighter/styles/shThemejqPlot.min.css" >
+- Duplicate function not working on V2. 500 Error in V1. Try duplicate TestCase.jsp?Test=Performance+Monitor&TestCase=5016A inside 5016B [BCI]
+- Cleaning and formating the index and Foreign keys. [BDU]
+- Drop Tag table. [BDU]
+- New columns at control and action level for storing the filename of the snapshot. [BDU]
+- New columns Cerberus Engine Version inside execution table. [BDU]
+- New columns Test and TestCase inside the execution tables. That will allow to have the full tracability on the pretestcase executed. [BDU]
+- Messages columns inside testcaseexecution testcaseactionexecution and testcasecontrolexecution table, [BDU]
+- Need of jdbc/Cerberusdev. [BCI]
+- Clarification on DatabaseSpring connectivity. If property env not found, Application should crash. should not default to dev.
+- doc page not working on Cerberus V2
+
+
+
+
