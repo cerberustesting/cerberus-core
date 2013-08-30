@@ -1,0 +1,22 @@
+#!/bin/bash
+###################################################################
+## Created August 26th, 2011 by B. DUMONT                        ##
+###################################################################
+
+source include
+
+#### URL Parameter ####
+export URL=$1
+
+
+# Test Timestamp #
+export mydate_ymdhms=$(date "+%y%m%d-%H%M%S")
+
+wget -o $LOGPATH/$mydate_ymdhms.wget.log -O $LOGPATH/$mydate_ymdhms.out.log --timeout=$TIMEOUT --tries=$TRIES  $URL
+
+# Also report Cerberus output to Term
+cat $LOGPATH/$mydate_ymdhms.out.log
+
+# Debug #
+#less $mydate_ymdhms.out.log
+

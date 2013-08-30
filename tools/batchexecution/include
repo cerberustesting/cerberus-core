@@ -1,0 +1,28 @@
+#!/bin/bash
+set +v
+
+###################################################################
+## Created August 26th, 2011 by B. DUMONT                        ##
+###################################################################
+
+#### This is where Cerberus has been installed. ####
+export CRBURL=http://localhost:8080/GuiCerberusV2-2.0.0-SNAPSHOT
+
+#### Env exportup #### --> RQA / RQA1 / RQA2 / UAT / PROD
+export ENV=DEV
+
+#### IP exportup #### --> Feed the Selenium IP
+export MYIP=localhost
+export MYPORT=5555
+
+#### Local Cerberus parameters #####
+export MYBROWSER=firefox
+export TAG=ExecutedFromScript
+
+#### Log Path - Don't Forget to put in place some purge... (it could be thousands of files) #####
+export LOGPATH=/home/vertigo/tmp
+
+##################### Nothing to change after this #####################
+
+export TIMEOUT=15000
+export TRIES=1

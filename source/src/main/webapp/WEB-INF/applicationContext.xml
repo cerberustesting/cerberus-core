@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans 
+                           http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+                           http://www.springframework.org/schema/context 
+                           http://www.springframework.org/schema/context/spring-context-3.0.xsd
+                           http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+    <bean id="properties" class="com.redcats.tst.config.PropertiesResolver">
+        <property name="ignoreUnresolvablePlaceholders" value="false"/>
+        <property name="order" value="1"/>
+    </bean>
+
+    <bean id="seleniumService" class="com.redcats.tst.serviceEngine.impl.SeleniumService" scope="request">
+        <aop:scoped-proxy proxy-target-class="true"/>
+    </bean>
+
+    <bean id="runTestCaseService" class="com.redcats.tst.serviceEngine.impl.RunTestCaseService" scope="prototype">
+        <aop:scoped-proxy proxy-target-class="true"/>
+    </bean>
+
+    <bean id="dataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
+        <property name="jndiName" value="jdbc/cerberus${org.cerberus.environment}"/>
+        <!--<property name="jndiName" value="jdbc/cerberusMySQL"/>-->
+        <property name="resourceRef" value="true"/>
+    </bean>
+
+    <context:annotation-config/>
+
+    <context:component-scan base-package="com.redcats.tst.*">
+        <context:exclude-filter type="regex" expression="com.redcats.tst.srv.cerberus.*"/>
+    </context:component-scan>
+
+</beans>
+

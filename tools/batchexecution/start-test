@@ -1,0 +1,22 @@
+#!/bin/bash
+set +v
+
+########################################################
+## Script to Execute Automated testing                ##
+##                                                    ##
+## Created August 26th, 2011 by B. DUMONT             ##
+########################################################
+
+source include
+
+
+#### Test Cases Execution ####
+source cmd_wget "$CRBURL/RunTestCase?ss_ip=$MYIP&ss_p=$MYPORT&browser=$MYBROWSER&Test=Cerberus&TestCase=1000A&Country=RX&Environment=$ENV&Tag=$TAG"
+source cmd_wget "$CRBURL/RunTestCase?ss_ip=$MYIP&ss_p=$MYPORT&browser=$MYBROWSER&Test=Cerberus&TestCase=1200A&Country=RX&Environment=$ENV&Tag=$TAG"
+source cmd_wget "$CRBURL/RunTestCase?ss_ip=$MYIP&ss_p=$MYPORT&browser=$MYBROWSER&Test=Cerberus&TestCase=1201A&Country=RX&Environment=$ENV&Tag=$TAG"
+source cmd_wget "$CRBURL/RunTestCase?ss_ip=$MYIP&ss_p=$MYPORT&browser=$MYBROWSER&Test=Cerberus&TestCase=1202A&Country=RX&Environment=$ENV&Tag=$TAG"
+source cmd_wget "$CRBURL/RunTestCase?ss_ip=$MYIP&ss_p=$MYPORT&browser=$MYBROWSER&Test=Cerberus&TestCase=1211A&Country=RX&Environment=$ENV&Tag=$TAG"
+source cmd_wget "$CRBURL/RunTestCase?ss_ip=$MYIP&ss_p=$MYPORT&browser=$MYBROWSER&Test=Cerberus&TestCase=1212A&Country=RX&Environment=$ENV&Tag=$TAG"
+source cmd_wget "$CRBURL/RunTestCase?ss_ip=$MYIP&ss_p=$MYPORT&browser=$MYBROWSER&Test=Cerberus&TestCase=1400A&Country=RX&Environment=$ENV&Tag=$TAG"
+source cmd_wget "$CRBURL/RunTestCase?ss_ip=$MYIP&ss_p=$MYPORT&browser=$MYBROWSER&Test=Cerberus&TestCase=1405A&Country=RX&Environment=$ENV&Tag=$TAG"
+

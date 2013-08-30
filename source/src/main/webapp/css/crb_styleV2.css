@@ -1,0 +1,232 @@
+body {
+    font-size: 70%;
+    font-family: Trebuchet MS;
+    background: white;
+}
+div{
+    /*
+    border-width: 1px;
+    border-style: solid;*/
+   
+}
+input{
+    font-size: 80%;
+    font-family: helvetica;
+}
+select{
+    font-size: 80%;
+    font-family: helvetica;
+}
+textarea{
+    font-size: 80%;
+    font-family: helvetica;
+}
+
+div#body {
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    background : white;
+}
+
+/* Header */
+div#menu {
+    width: 90%;
+    margin-left: auto;
+    margin-right: auto;
+    background : white;
+}
+
+ul#navlist { font-family: Trebuchet MS; }
+
+ul#navlist a
+{
+    font-weight: bold;
+    display:inline-block;
+    float:left;
+    width:100px;
+    background-color:#cad3f1;
+    text-decoration:none;
+    text-align:center;
+    color:black;
+    padding:3px;
+    border:ridge;
+    border-width:3px;
+    -moz-border-radius: 5px;
+    -moz-box-shadow: -1px -1px 5px #d0d0d0;
+    -webkit-box-shadow: -1px -1px 5px #d0d0d0;
+    -o-box-shadow: -1px -1px 5x #d0d0d0;
+    -box-shadow: -1px -1px 5px #d0d0d0;
+    /* for IE effect */
+    border-color:#DCDCDC #696969 #696969 #DCDCDC;
+}
+
+ul#navlist, ul#navlist ul, ul#navlist li
+{
+    margin: 0px;
+    padding: 0px;
+    list-style-type: none;
+}
+
+ul#navlist li { float: left; }
+
+ul#navlist li a
+{
+    color: #ffffff;
+    background-color: #003366;
+    padding: 3px;
+    border: 1px #ffffff outset;
+}
+
+ul#navlist li a:hover
+{
+    background-color:#cad3f1;
+    border-color:#ccffcc #00ff00 #00ff00 #ccffcc;
+}
+
+
+ul#subnavlist { display: none; }
+ul#subnavlist li { float: none; }
+
+ul#subnavlist li a
+{
+    padding: 0px;
+    margin: 0px;
+}
+
+ul#navlist li:hover ul#subnavlist
+{
+    display: block;
+    position: absolute;
+    padding-top: 27px;
+    z-index: 99;
+}
+
+ul#navlist li:hover ul#subnavlist li a
+{
+    font-weight: bold;
+    display:inline-block;
+    float:left;
+    width:100px;
+    background-color:#cad3f1;
+    text-decoration:none;
+    text-align:center;
+    color:black;
+    padding:3px;
+    border:ridge;
+    border-width:3px;
+    -moz-border-radius: 5px;
+    -moz-box-shadow: -1px -1px 5px #d0d0d0;
+    -webkit-box-shadow: -1px -1px 5px #d0d0d0;
+    -o-box-shadow: -1px -1px 5x #d0d0d0;
+    -box-shadow: -1px -1px 5px #d0d0d0;
+    /* for IE effect */
+    border-color:#DCDCDC #696969 #696969 #DCDCDC;
+}
+/*End of Header */
+
+/* common css*/
+.DivPart{
+    
+}
+
+.DivPrincipalPart{
+    border:1px inline;
+    border-radius:5px;
+    background:whitesmoke  ;   
+    font-weight:bold;
+    font-family: Trebuchet MS;
+    color:#555555;
+    width: 100%;
+    
+}
+
+.DivTable{
+    display:table;
+    vertical-align: middle;
+    width: 100%;
+}
+
+.DivCell{
+    display:table-cell;
+    vertical-align: middle;
+}
+
+.DivContent{
+    float:left;
+}
+
+.TDWithoutBorder { 
+ border-width:0px;
+ }
+
+/* End of common css*/
+.TableHeader{
+    background-image: -moz-linear-gradient(bottom, #f2f2f2, #c4c4c4);    
+    font-weight:bold;
+    font-family: Trebuchet MS;
+    color:#555555;
+    text-align: left; 
+    width:100%;
+    heigth : 30px;
+    
+}
+
+/**/
+div#SearchAreaTable {
+    height : 40px;
+    background-image: -moz-linear-gradient(bottom, #f2f2f2, #c4c4c4);    
+    font-weight:bold;
+    font-family: Trebuchet MS;
+    color:#555555;
+    text-align: center;   
+  
+}
+
+div#SearchAreaCell {
+    display:table-cell;
+    vertical-align: middle;
+}
+
+div#SearchAreaTestDiv {
+    width: 30%;
+}
+select#SearchAreaTest{
+    width: 80%
+}
+
+div#SearchAreaTestcaseDiv {
+    width: 60%;
+}
+select#SearchAreaTestcase{
+    width: 80%
+}
+TestInformationTestDiv{
+    
+}
+div#TestInformationDescriptionDiv{
+    width:60%;
+}
+input#TestcaseInformationDescription{
+    width:70%;
+}
+div#TestcaseInformationHowToDiv{
+    width:70%
+}
+textarea#TestcaseInformationHowTo{
+    width:100%
+}
+.right{
+    margin-right: 0px;
+    
+}
+.PartHeader{
+     height : 40px;
+    background-image: -moz-linear-gradient(bottom, #f2f2f2, #c4c4c4);    
+    font-weight:bold;
+    font-family: Trebuchet MS;
+    color:#555555;
+    text-align: center; 
+    border:1px inline;
+    border-radius:5px;
+}
