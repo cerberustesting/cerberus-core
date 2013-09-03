@@ -10,13 +10,7 @@
 
     <name>CerberusGit</name>
 
-    <parent>
-        <groupId>com.redcats</groupId>
-        <artifactId>ParentPom</artifactId>
-        <version>1.0.2</version>
-    </parent>
-
-    <properties>
+   <properties>
         <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <netbeans.hint.deploy.server>gfv3ee6</netbeans.hint.deploy.server>
