@@ -4,6 +4,18 @@ Pending.
 
 To be planned.
 
+- New function to compare String Minor [CRITICAL]
+- New function : verifyContainsText Message not clear. (Rework the 4 Verify properties) [CRITICAL]
+- New Function : Cerberus V2 tries to select a value that does not exist [CRITICAL]
+- Fix GetFromHtml (not working when element is invisible.)
+- When RowLimit <> 0 Cerberus sends NullPointer Exception.
+- implement getFromJavascript Property.
+- Properties : Length = 0 when type = test should not be not possible. FA status.
+- New feature : waitForElementPresent
+- Database HowTo field bigger. --> 10000. (TEXT)
+- Access right to secure  Proposal to be feeded from Guilherme (User / Visitor / Integrator / Admin)
+- HowTo + Value Expected allow HTML Formating (Bold, Italic, color).
+- Attached a file on a test case.  To be further discussed.
 - Password securisation on other actions than type. (cleaning them). [WAITING CARLOS FEEDBACK]
 - Implementation of SQL Property NOTINUSE. [BCI]
 - 2 history graph on execution list page : error message : null java.util.NoSuchElementException [BCI]
