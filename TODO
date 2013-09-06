@@ -6,6 +6,10 @@ To be planned.
 
 - New function to compare String Minor [CRITICAL]
 - New function : verifyContainsText Message not clear. (Rework the 4 Verify properties) [CRITICAL]
+           VerifyText --> VerifyTextInElement : Text inside the Element is stricktly the same as the one expected.
+           VerifyContainText --> VerifyRegexInElement : Text inside the Element matches the regex expected.
+           VerifyTextPresent --> VerifyTextInPage : Text exist somewhere inside the page source.
+           VerifyTextNotPresent --> VerifyTextNotInPage : Text does not exist anywhere inside the page source.
 - New Function : Cerberus V2 tries to select a value that does not exist [CRITICAL]
 - Fix GetFromHtml (not working when element is invisible.)
 - When RowLimit <> 0 Cerberus sends NullPointer Exception.
