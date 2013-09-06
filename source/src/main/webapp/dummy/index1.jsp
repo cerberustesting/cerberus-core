@@ -29,6 +29,10 @@ This is a fake page required to test Cerberus Engine by Cerberus itself....
 <form>
     <input type="password" name="input1" id="input1">
     <input name="input2" id="input2">
+    <select id="combo1">
+        <option value="1">1</option>
+        <option value="2">2</option>
+    </select>
 </form>
 </body>
 </html>
