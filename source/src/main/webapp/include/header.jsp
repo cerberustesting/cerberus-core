@@ -38,7 +38,7 @@ Document   : menu
             <td id="wob" valign="Bottom">
                 <div id="navcontainer">
                     <ul id="navlist">
-                        <% if (request.getUserPrincipal() != null && !(request.isUserInRole("Visitor"))) {%>
+                        <% if (request.getUserPrincipal() != null && (request.isUserInRole("User"))) {%>
                         <li id="active"><a id="current" name="menu" href="#" style="width:130px">Test</a>
                             <ul id="subnavlist">
                                 <li id="subactive"> <a name="menu" id="menuEditTest" href="Test.jsp" style="width:130px">Edit Test</a></li>
@@ -53,7 +53,7 @@ Document   : menu
                                 <li><a name="menu" id="menuSearchTestCase" href="TestCaseSearch.jsp" style="width:130px">Search TestCase</a></li>
                             </ul>
                         </li>
-                        <%  if (request.getUserPrincipal() != null && !(request.isUserInRole("Visitor"))) {%>
+                        <%  if (request.getUserPrincipal() != null && (request.isUserInRole("User"))) {%>
                         <li id="active"><a id="current" name="menu" href="#" style="width:130px">Run</a>
                             <ul id="subnavlist">
                                 <li id="subactive"><a name="menu" id="menuRunTestCase" href="RunTests.jsp" style="width:130px">Run Tests</a></li>
