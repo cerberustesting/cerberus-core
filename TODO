@@ -38,7 +38,7 @@ To be planned.
 
 
 DONE :
-- New function to compare String Minor [CRITICAL]
+- New function to compare String Minor [CRITICAL] testcase : 1407A / 9407A
 - Split the homepage report of build/rev status by group of environment. [TBE]
 - Use of Statement.RETURN_GENERATED_KEYS in order to get the runid when starting the execution. [TBE]
 - user detail screen for group management screen. [TBE]
