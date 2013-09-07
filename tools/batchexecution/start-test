@@ -19,4 +19,5 @@ source cmd_wget "$CRBURL/RunTestCase?ss_ip=$MYIP&ss_p=$MYPORT&browser=$MYBROWSER
 source cmd_wget "$CRBURL/RunTestCase?ss_ip=$MYIP&ss_p=$MYPORT&browser=$MYBROWSER&Test=Cerberus&TestCase=1212A&Country=RX&Environment=$ENV&Tag=$TAG"
 source cmd_wget "$CRBURL/RunTestCase?ss_ip=$MYIP&ss_p=$MYPORT&browser=$MYBROWSER&Test=Cerberus&TestCase=1400A&Country=RX&Environment=$ENV&Tag=$TAG"
 source cmd_wget "$CRBURL/RunTestCase?ss_ip=$MYIP&ss_p=$MYPORT&browser=$MYBROWSER&Test=Cerberus&TestCase=1405A&Country=RX&Environment=$ENV&Tag=$TAG"
+source cmd_wget "$CRBURL/RunTestCase?ss_ip=$MYIP&ss_p=$MYPORT&browser=$MYBROWSER&Test=Cerberus&TestCase=1407A&Country=RX&Environment=$ENV&Tag=$TAG"
 
