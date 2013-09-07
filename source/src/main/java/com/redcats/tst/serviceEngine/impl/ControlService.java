@@ -65,6 +65,12 @@ public class ControlService implements IControlService {
             } else if (testCaseStepActionControlExecution.getControlType().equals("verifyStringDifferent")) {
                 res = this.verifyStringDifferent(testCaseStepActionControlExecution.getControlValue(), testCaseStepActionControlExecution.getControlProperty());
 
+            } else if (testCaseStepActionControlExecution.getControlType().equals("verifyStringGreater")) {
+                res = this.verifyStringGreater(testCaseStepActionControlExecution.getControlValue(), testCaseStepActionControlExecution.getControlProperty());
+
+            } else if (testCaseStepActionControlExecution.getControlType().equals("verifyStringMinor")) {
+                res = this.verifyStringMinor(testCaseStepActionControlExecution.getControlValue(), testCaseStepActionControlExecution.getControlProperty());
+
             } else if (testCaseStepActionControlExecution.getControlType().equals("verifyIntegerGreater")) {
                 res = this.verifyIntegerGreater(testCaseStepActionControlExecution.getControlValue(), testCaseStepActionControlExecution.getControlProperty());
 
@@ -157,6 +163,36 @@ public class ControlService implements IControlService {
         mes.setDescription(mes.getDescription().replaceAll("%STRING2%", property));
         return mes;
 
+    }
+
+    private MessageEvent verifyStringGreater(String property, String value) {
+        MessageEvent mes;
+        if (property.compareToIgnoreCase(value) > 0) {
+            mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_GREATER);
+            mes.setDescription(mes.getDescription().replaceAll("%STRING1%", property));
+            mes.setDescription(mes.getDescription().replaceAll("%STRING2%", value));
+            return mes;
+        } else {
+            mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_GREATER);
+            mes.setDescription(mes.getDescription().replaceAll("%STRING1%", property));
+            mes.setDescription(mes.getDescription().replaceAll("%STRING2%", value));
+            return mes;
+        }
+    }
+
+    private MessageEvent verifyStringMinor(String property, String value) {
+        MessageEvent mes;
+        if (property.compareToIgnoreCase(value) < 0) {
+            mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_MINOR);
+            mes.setDescription(mes.getDescription().replaceAll("%STRING1%", property));
+            mes.setDescription(mes.getDescription().replaceAll("%STRING2%", value));
+            return mes;
+        } else {
+            mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_MINOR);
+            mes.setDescription(mes.getDescription().replaceAll("%STRING1%", property));
+            mes.setDescription(mes.getDescription().replaceAll("%STRING2%", value));
+            return mes;
+        }
     }
 
     private MessageEvent verifyIntegerGreater(String property, String value) {

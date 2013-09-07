@@ -2693,6 +2693,19 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("DELETE FROM `parameter` WHERE `param`='svn_application_url';");
         SQLInstruction.add(SQLS.toString());
 
+//-- New Controls for string comparaison.
+//-- ------------------------
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `invariant` SET `sort`=16 WHERE `id`='13' and`sort`='12';");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `invariant` SET `sort`=17 WHERE `id`='13' and`sort`='14';");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `id`, `description`) VALUES ");
+        SQLS.append("  ('CONTROL', 'verifyStringGreater', 12, 13, 'verifyStringGreater')");
+        SQLS.append(" ,('CONTROL', 'verifyStringMinor', 13, 13, 'verifyStringMinor');");
+        SQLInstruction.add(SQLS.toString());
 
 
         return SQLInstruction;
