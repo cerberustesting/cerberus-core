@@ -2707,6 +2707,22 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(" ,('CONTROL', 'verifyStringMinor', 13, 13, 'verifyStringMinor');");
         SQLInstruction.add(SQLS.toString());
 
+//-- Cleaning on TextInPage control.
+//-- ------------------------
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `invariant` SET `value`='verifyTextInPage', `description`='verifyTextInPage' WHERE `id`='13' and`sort`='50';");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `testcasestepactioncontrol` SET `type`='verifyTextInPage' WHERE `type`='verifyTextPresent';");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `invariant` SET `value`='verifyTextNotInPage', `description`='verifyTextNotInPage' WHERE `id`='13' and`sort`='51';");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `testcasestepactioncontrol` SET `type`='verifyTextNotInPage' WHERE `type`='verifyTextNotPresent';");
+        SQLInstruction.add(SQLS.toString());
+
+        
 
         return SQLInstruction;
     }

@@ -92,11 +92,11 @@ public class ControlService implements IControlService {
             } else if (testCaseStepActionControlExecution.getControlType().equals("verifyText")) {
                 res = this.verifyText(testCaseStepActionControlExecution.getControlValue(), testCaseStepActionControlExecution.getControlProperty());
 
-            } else if (testCaseStepActionControlExecution.getControlType().equals("verifyTextPresent")) {
-                res = this.verifyTextPresent(testCaseStepActionControlExecution.getControlProperty());
+            } else if (testCaseStepActionControlExecution.getControlType().equals("VerifyTextInPage")) {
+                res = this.VerifyTextInPage(testCaseStepActionControlExecution.getControlProperty());
 
-            } else if (testCaseStepActionControlExecution.getControlType().equals("verifyTextNotPresent")) {
-                res = this.verifyTextNotPresent(testCaseStepActionControlExecution.getControlProperty());
+            } else if (testCaseStepActionControlExecution.getControlType().equals("VerifyTextNotInPage")) {
+                res = this.VerifyTextNotInPage(testCaseStepActionControlExecution.getControlProperty());
 
             } else if (testCaseStepActionControlExecution.getControlType().equals("verifyTitle")) {
                 res = this.verifyTitle(testCaseStepActionControlExecution.getControlProperty());
@@ -340,8 +340,8 @@ public class ControlService implements IControlService {
         }
     }
 
-    private MessageEvent verifyTextPresent(String regex) {
-        MyLogger.log(ControlService.class.getName(), Level.DEBUG, "Control : verifyTextPresent on : " + regex);
+    private MessageEvent VerifyTextInPage(String regex) {
+        MyLogger.log(ControlService.class.getName(), Level.DEBUG, "Control : VerifyTextInPage on : " + regex);
         MessageEvent mes;
         String pageSource;
         try {
@@ -351,16 +351,16 @@ public class ControlService implements IControlService {
                 Pattern pattern = Pattern.compile(regex);
                 Matcher matcher = pattern.matcher(pageSource);
                 if (matcher.find()) {
-                    mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_TEXTPRESENT);
+                    mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_TEXTINPAGE);
                     mes.setDescription(mes.getDescription().replaceAll("%STRING1%", regex));
                     return mes;
                 } else {
-                    mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_TEXTPRESENT);
+                    mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_TEXTINPAGE);
                     mes.setDescription(mes.getDescription().replaceAll("%STRING1%", regex));
                     return mes;
                 }
             } catch (PatternSyntaxException e) {
-                mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_TEXTPRESENT_INVALIDPATERN);
+                mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_TEXTINPAGE_INVALIDPATERN);
                 mes.setDescription(mes.getDescription().replaceAll("%PATERN%", regex));
                 mes.setDescription(mes.getDescription().replaceAll("%ERROR%", e.getMessage()));
                 return mes;
@@ -371,8 +371,8 @@ public class ControlService implements IControlService {
         }
     }
 
-    private MessageEvent verifyTextNotPresent(String regex) {
-        MyLogger.log(ControlService.class.getName(), Level.DEBUG, "Control : verifyTextNotPresent on : " + regex);
+    private MessageEvent VerifyTextNotInPage(String regex) {
+        MyLogger.log(ControlService.class.getName(), Level.DEBUG, "Control : VerifyTextNotInPage on : " + regex);
         MessageEvent mes;
         String pageSource;
         try {
@@ -382,16 +382,16 @@ public class ControlService implements IControlService {
                 Pattern pattern = Pattern.compile(regex);
                 Matcher matcher = pattern.matcher(pageSource);
                 if (!(matcher.find())) {
-                    mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_TEXTNOTPRESENT);
+                    mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_TEXTNOTINPAGE);
                     mes.setDescription(mes.getDescription().replaceAll("%STRING1%", regex));
                     return mes;
                 } else {
-                    mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_TEXTNOTPRESENT);
+                    mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_TEXTNOTINPAGE);
                     mes.setDescription(mes.getDescription().replaceAll("%STRING1%", regex));
                     return mes;
                 }
             } catch (PatternSyntaxException e) {
-                mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_TEXTNOTPRESENT_INVALIDPATERN);
+                mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_TEXTNOTINPAGE_INVALIDPATERN);
                 mes.setDescription(mes.getDescription().replaceAll("%PATERN%", regex));
                 mes.setDescription(mes.getDescription().replaceAll("%ERROR%", e.getMessage()));
                 return mes;
