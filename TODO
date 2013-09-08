@@ -4,9 +4,6 @@ Pending.
 
 To be planned.
 
-- New function : verifyContainsText Message not clear. (Rework the 4 Verify properties) [CRITICAL]
-           VerifyText --> VerifyTextInElement : Text inside the Element is stricktly the same as the one expected.
-           VerifyContainText --> VerifyRegexInElement : Text inside the Element matches the regex expected.
 - New Function : Cerberus V2 tries to select a value that does not exist [CRITICAL]
 - Fix GetFromHtml (not working when element is invisible.)
 - When RowLimit <> 0 Cerberus sends NullPointer Exception.
@@ -36,6 +33,9 @@ To be planned.
 
 
 DONE :
+- New function : verifyContainsText Message not clear. (Rework the 4 Verify properties) [CRITICAL]
+           VerifyText --> VerifyTextInElement : Text inside the Element is stricktly the same as the one expected.
+           VerifyContainText --> VerifyRegexInElement : Text inside the Element matches the regex expected.
 - Renaming control to be more clear : verifyTextPresent to verifyTextInPage.
 	    VerifyTextPresent --> VerifyTextInPage : Text exist somewhere inside the page source.
             VerifyTextNotPresent --> VerifyTextNotInPage : Text does not exist anywhere inside the page source.
