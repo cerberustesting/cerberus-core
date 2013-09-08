@@ -89,13 +89,16 @@ public class ControlService implements IControlService {
                 //TODO validate properties
                 res = this.verifyElementVisible(testCaseStepActionControlExecution.getControlProperty());
 
-            } else if (testCaseStepActionControlExecution.getControlType().equals("verifyText")) {
-                res = this.verifyText(testCaseStepActionControlExecution.getControlValue(), testCaseStepActionControlExecution.getControlProperty());
+            } else if (testCaseStepActionControlExecution.getControlType().equals("verifyTextInElement")) {
+                res = this.VerifyTextInElement(testCaseStepActionControlExecution.getControlValue(), testCaseStepActionControlExecution.getControlProperty());
 
-            } else if (testCaseStepActionControlExecution.getControlType().equals("VerifyTextInPage")) {
+            } else if (testCaseStepActionControlExecution.getControlType().equals("verifyRegexInElement")) {
+                res = this.VerifyRegexInElement(testCaseStepActionControlExecution.getControlValue(), testCaseStepActionControlExecution.getControlProperty());
+
+            } else if (testCaseStepActionControlExecution.getControlType().equals("verifyTextInPage")) {
                 res = this.VerifyTextInPage(testCaseStepActionControlExecution.getControlProperty());
 
-            } else if (testCaseStepActionControlExecution.getControlType().equals("VerifyTextNotInPage")) {
+            } else if (testCaseStepActionControlExecution.getControlType().equals("verifyTextNotInPage")) {
                 res = this.VerifyTextNotInPage(testCaseStepActionControlExecution.getControlProperty());
 
             } else if (testCaseStepActionControlExecution.getControlType().equals("verifyTitle")) {
@@ -304,34 +307,79 @@ public class ControlService implements IControlService {
         }
     }
 
-    private MessageEvent verifyText(String html, String value) {
-        MyLogger.log(ControlService.class.getName(), Level.DEBUG, "Control : verifyText on : " + html + " element against value : " + value);
+    private MessageEvent VerifyTextInElement(String html, String value) {
+        MyLogger.log(ControlService.class.getName(), Level.DEBUG, "Control : VerifyTextInElement on : " + html + " element against value : " + value);
         MessageEvent mes;
         try {
             String str = this.seleniumService.getValueFromHTML(html);
-            MyLogger.log(ControlService.class.getName(), Level.DEBUG, "Control : verifyText element : " + html + " has value : " + str);
+            MyLogger.log(ControlService.class.getName(), Level.DEBUG, "Control : VerifyTextInElement element : " + html + " has value : " + str);
             if (str != null) {
                 if (str.equalsIgnoreCase(value)) {
-                    mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_TEXT);
+                    mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_TEXTINELEMENT);
                     mes.setDescription(mes.getDescription().replaceAll("%STRING1%", html));
                     mes.setDescription(mes.getDescription().replaceAll("%STRING2%", str));
                     mes.setDescription(mes.getDescription().replaceAll("%STRING3%", value));
                     return mes;
                 } else {
-                    mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_TEXT);
+                    mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_TEXTINELEMENT);
                     mes.setDescription(mes.getDescription().replaceAll("%STRING1%", html));
                     mes.setDescription(mes.getDescription().replaceAll("%STRING2%", str));
                     mes.setDescription(mes.getDescription().replaceAll("%STRING3%", value));
                     return mes;
                 }
             } else {
-                mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_TEXT_NULL);
+                mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_TEXTINELEMENT_NULL);
                 mes.setDescription(mes.getDescription().replaceAll("%STRING1%", html));
                 return mes;
             }
         } catch (NoSuchElementException exception) {
             MyLogger.log(ControlService.class.getName(), Level.ERROR, exception.toString());
-            mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_TEXT_NO_SUCH_ELEMENT);
+            mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_TEXTINELEMENT_NO_SUCH_ELEMENT);
+            mes.setDescription(mes.getDescription().replaceAll("%STRING1%", html));
+            return mes;
+        } catch (WebDriverException exception) {
+            MyLogger.log(SeleniumService.class.getName(), Level.FATAL, exception.toString());
+            return new MessageEvent(MessageEventEnum.CONTROL_FAILED_SELENIUM_CONNECTIVITY);
+        }
+    }
+
+    private MessageEvent VerifyRegexInElement(String html, String regex) {
+        MyLogger.log(ControlService.class.getName(), Level.DEBUG, "Control : verifyRegexInElement on : " + html + " element against value : " + regex);
+        MessageEvent mes;
+        try {
+            String str = this.seleniumService.getValueFromHTML(html);
+            MyLogger.log(ControlService.class.getName(), Level.DEBUG, "Control : verifyRegexInElement element : " + html + " has value : " + str);
+            if (str != null) {
+                try {
+                    Pattern pattern = Pattern.compile(regex);
+                    Matcher matcher = pattern.matcher(str);
+                    if (matcher.find()) {
+                        mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_REGEXINELEMENT);
+                        mes.setDescription(mes.getDescription().replaceAll("%STRING1%", html));
+                        mes.setDescription(mes.getDescription().replaceAll("%STRING2%", str));
+                        mes.setDescription(mes.getDescription().replaceAll("%STRING3%", regex));
+                        return mes;
+                    } else {
+                        mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_REGEXINELEMENT);
+                        mes.setDescription(mes.getDescription().replaceAll("%STRING1%", html));
+                        mes.setDescription(mes.getDescription().replaceAll("%STRING2%", str));
+                        mes.setDescription(mes.getDescription().replaceAll("%STRING3%", regex));
+                        return mes;
+                    }
+                } catch (PatternSyntaxException e) {
+                    mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_REGEXINELEMENT_INVALIDPATERN);
+                    mes.setDescription(mes.getDescription().replaceAll("%PATERN%", regex));
+                    mes.setDescription(mes.getDescription().replaceAll("%ERROR%", e.getMessage()));
+                    return mes;
+                }
+            } else {
+                mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_REGEXINELEMENT_NULL);
+                mes.setDescription(mes.getDescription().replaceAll("%STRING1%", html));
+                return mes;
+            }
+        } catch (NoSuchElementException exception) {
+            MyLogger.log(ControlService.class.getName(), Level.ERROR, exception.toString());
+            mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_REGEXINELEMENT_NO_SUCH_ELEMENT);
             mes.setDescription(mes.getDescription().replaceAll("%STRING1%", html));
             return mes;
         } catch (WebDriverException exception) {
@@ -341,7 +389,7 @@ public class ControlService implements IControlService {
     }
 
     private MessageEvent VerifyTextInPage(String regex) {
-        MyLogger.log(ControlService.class.getName(), Level.DEBUG, "Control : VerifyTextInPage on : " + regex);
+        MyLogger.log(ControlService.class.getName(), Level.DEBUG, "Control : verifyTextInPage on : " + regex);
         MessageEvent mes;
         String pageSource;
         try {
