@@ -6,6 +6,7 @@ To be planned.
 
 - New Function : Cerberus V2 tries to select a value that does not exist [CRITICAL]
 - Support ' carater in GUI in text field. when saving ' is becoming \' and then \\' etc...
+- in the GUI. Search a testcase by the testcase information.
 - Fix GetFromHtml (not working when element is invisible.)
 - When RowLimit <> 0 Cerberus sends NullPointer Exception.
 - implement getFromJavascript Property.
