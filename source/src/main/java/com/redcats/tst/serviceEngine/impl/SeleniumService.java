@@ -360,8 +360,8 @@ public class SeleniumService implements ISeleniumService {
      * Return the current URL from Selenium.
      *
      * @return current URL without HTTP://IP:PORT/CONTEXTROOT/
-     * @throws CerberusException Cannot find application host (from Database)
-     *                           inside current URL (from Selenium)
+     * @throws CerberusEventException Cannot find application host (from Database)
+     *                                inside current URL (from Selenium)
      */
     @Override
     public String getCurrentUrl() throws CerberusEventException {
@@ -926,6 +926,11 @@ public class SeleniumService implements ISeleniumService {
                     return message;
                 }
             }
+        } catch (NoSuchElementException exception) {
+            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_SELECT_NO_SUCH_VALUE);
+            message.setDescription(message.getDescription().replaceAll("%ELEMENT%", html));
+            message.setDescription(message.getDescription().replaceAll("%DATA%", property));
+            return message;
         } catch (WebDriverException exception) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_SELENIUM_CONNECTIVITY);
             MyLogger.log(SeleniumService.class.getName(), Level.FATAL, exception.toString());
