@@ -90,7 +90,7 @@ public class ControlService implements IControlService {
                 res = this.verifyElementVisible(testCaseStepActionControlExecution.getControlProperty());
 
             } else if (testCaseStepActionControlExecution.getControlType().equals("verifyTextInElement")) {
-                res = this.VerifyTextInElement(testCaseStepActionControlExecution.getControlValue(), testCaseStepActionControlExecution.getControlProperty());
+                res = this.VerifyTextInElement(testCaseStepActionControlExecution.getControlProperty(), testCaseStepActionControlExecution.getControlValue());
 
             } else if (testCaseStepActionControlExecution.getControlType().equals("verifyRegexInElement")) {
                 res = this.VerifyRegexInElement(testCaseStepActionControlExecution.getControlValue(), testCaseStepActionControlExecution.getControlProperty());
