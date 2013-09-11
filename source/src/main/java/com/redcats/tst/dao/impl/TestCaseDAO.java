@@ -46,7 +46,7 @@ public class TestCaseDAO implements ITestCaseDAO {
      *
      * @param test Name of test group.
      * @return List with a list of 3 strings (name of test case, type of
-     * application, description of test case).
+     *         application, description of test case).
      */
     @Override
     public List<TCase> findTestCaseByTest(String test) {
@@ -114,11 +114,8 @@ public class TestCaseDAO implements ITestCaseDAO {
 
     /**
      * Get test case information.
-     * <p/>
-     * Use {@link #loadTestCase(java.sql.ResultSet)} to convert data from
-     * database to object TestCase.
      *
-     * @param test Name of test group.
+     * @param test     Name of test group.
      * @param testCase Name of test case.
      * @return TestCase object or null.
      * @see com.redcats.tst.entity.TestCase
@@ -167,7 +164,7 @@ public class TestCaseDAO implements ITestCaseDAO {
                                 lastModifier, project, ticket, application, runQA, runUAT, runPROD, priority, group,
                                 status, description, behavior, howTo, active, fromSprint, fromRevision, toSprint,
                                 toRevision, status, bugID, targetSprint, targetRevision, comment, null, null, null, null);
-                    }else{
+                    } else {
                         throwExcep = true;
                     }
                 } catch (SQLException exception) {
@@ -218,7 +215,7 @@ public class TestCaseDAO implements ITestCaseDAO {
         al.add(testCase.getToSprint());
         al.add(testCase.getToRevision());
         al.add(testCase.getBugID());
-        al.add(testCase.getTargetRevision());
+        al.add(testCase.getTargetSprint());
         al.add(testCase.getImplementer());
         al.add(testCase.getLastModifier());
         al.add(testCase.getTargetRevision());
