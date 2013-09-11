@@ -64,7 +64,7 @@ public class DateUtil {
 
     public static String getFormatedDate(Long l) {
         String myDate;
-        myDate = String.valueOf(l).substring(10, 12) + ":" + String.valueOf(l).substring(12, 14) + "." + String.valueOf(l).substring(14, 15);
+        myDate = String.valueOf(l).substring(8, 10) + ":" + String.valueOf(l).substring(10, 12) + ":" + String.valueOf(l).substring(12, 14) + "." + String.valueOf(l).substring(14, 15);
         return myDate;
     }
 
