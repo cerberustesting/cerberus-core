@@ -57,7 +57,7 @@ public class TestCaseStepActionExecutionDAO implements ITestCaseStepActionExecut
             PreparedStatement preStat = this.databaseSpring.connect().prepareStatement(query);
             preStat.setString(1, testCaseStepActionExecution.getAction());
             preStat.setString(2, StringUtil.getLeftString(testCaseStepActionExecution.getObject(), 200));
-            preStat.setString(3, ParameterParserUtil.securePassword(testCaseStepActionExecution.getProperty(), testCaseStepActionExecution.getPropertyName()));
+            preStat.setString(3, StringUtil.getLeftString(ParameterParserUtil.securePassword(testCaseStepActionExecution.getProperty(), testCaseStepActionExecution.getPropertyName()), 200));
             if (testCaseStepActionExecution.getStart() != 0) {
                 preStat.setTimestamp(4, new Timestamp(testCaseStepActionExecution.getStart()));
             } else {

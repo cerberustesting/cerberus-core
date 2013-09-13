@@ -2743,6 +2743,12 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("ALTER TABLE `testcase` CHANGE COLUMN `BehaviorOrValueExpected` `BehaviorOrValueExpected` TEXT NOT NULL DEFAULT '' , CHANGE COLUMN `HowTo` `HowTo` TEXT NULL DEFAULT '' ;");
         SQLInstruction.add(SQLS.toString());
 
+//-- Change length of Property column of TestCaseStepActionExecution from 45 to 200
+//-- ------------------------
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE testcasestepactionexecution CHANGE Property Property varchar(200);");
+        SQLInstruction.add(SQLS.toString());
+
         return SQLInstruction;
     }
 }
