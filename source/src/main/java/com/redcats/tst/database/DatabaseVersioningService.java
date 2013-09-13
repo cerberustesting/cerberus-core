@@ -2737,6 +2737,11 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("UPDATE `testcasestepactioncontrol` SET `type`='verifyRegexInElement' WHERE `type`='verifyContainText';");
         SQLInstruction.add(SQLS.toString());
         
+//-- Enlarging BehaviorOrValueExpected and HowTo columns to TEXT (64K).
+//-- ------------------------
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcase` CHANGE COLUMN `BehaviorOrValueExpected` `BehaviorOrValueExpected` TEXT NOT NULL DEFAULT '' , CHANGE COLUMN `HowTo` `HowTo` TEXT NULL DEFAULT '' ;");
+        SQLInstruction.add(SQLS.toString());
 
         return SQLInstruction;
     }
