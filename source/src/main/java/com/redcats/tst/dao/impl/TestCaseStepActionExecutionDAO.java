@@ -37,15 +37,6 @@ public class TestCaseStepActionExecutionDAO implements ITestCaseStepActionExecut
     @Autowired
     private IFactoryTestCaseStepActionExecution factoryTestCaseStepActionExecution;
 
-    /**
-     * Short one line description.
-     * <p/>
-     * Longer description. If there were any, it would be here. <p> And even
-     * more explanations to follow in consecutive paragraphs separated by HTML
-     * paragraph breaks.
-     *
-     * @param variable Description text text text.
-     */
     @Override
     public void updateTestCaseStepActionExecution(TestCaseStepActionExecution testCaseStepActionExecution) {
 
@@ -108,7 +99,7 @@ public class TestCaseStepActionExecutionDAO implements ITestCaseStepActionExecut
             preStat.setInt(3, testCaseStepActionExecution.getSequence());
             preStat.setString(4, testCaseStepActionExecution.getAction());
             preStat.setString(5, StringUtil.getLeftString(testCaseStepActionExecution.getObject(), 200));
-            preStat.setString(6, ParameterParserUtil.securePassword(testCaseStepActionExecution.getProperty(), testCaseStepActionExecution.getPropertyName()));
+            preStat.setString(6, StringUtil.getLeftString(ParameterParserUtil.securePassword(testCaseStepActionExecution.getProperty(), testCaseStepActionExecution.getPropertyName()), 200));
             if (testCaseStepActionExecution.getStart() != 0) {
                 preStat.setTimestamp(7, new Timestamp(testCaseStepActionExecution.getStart()));
             } else {
