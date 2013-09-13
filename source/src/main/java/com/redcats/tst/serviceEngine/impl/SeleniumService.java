@@ -233,10 +233,10 @@ public class SeleniumService implements ISeleniumService {
         return true;
     }
 
-    private WebElement getSeleniumElement(String input) {
+    private By getIdentifier(String input) {
         String identifier;
         String locator;
-        MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Finding selenium Element : " + input);
+
         String[] strings = input.split("=", 2);
         if (strings.length == 1) {
             identifier = "id";
@@ -247,24 +247,30 @@ public class SeleniumService implements ISeleniumService {
         }
 
         MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Finding selenium Element : " + locator + " by : " + identifier);
+
         if (identifier.equalsIgnoreCase("id")) {
-            return this.selenium.getDriver().findElement(By.id(locator));
+            return By.id(locator);
 
         } else if (identifier.equalsIgnoreCase("name")) {
-            return this.selenium.getDriver().findElement(By.name(locator));
+            return By.name(locator);
 
         } else if (identifier.equalsIgnoreCase("class")) {
-            return this.selenium.getDriver().findElement(By.className(locator));
+            return By.className(locator);
 
         } else if (identifier.equalsIgnoreCase("css")) {
-            return this.selenium.getDriver().findElement(By.cssSelector(locator));
+            return By.cssSelector(locator);
 
         } else if (identifier.equalsIgnoreCase("xpath")) {
-            return this.selenium.getDriver().findElement(By.xpath(locator));
+            return By.xpath(locator);
 
         } else {
             throw new NoSuchElementException(identifier);
         }
+    }
+
+    private WebElement getSeleniumElement(String input) {
+        MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Finding selenium Element : " + input);
+        return this.selenium.getDriver().findElement(this.getIdentifier(input));
     }
 
     @Override
@@ -774,7 +780,7 @@ public class SeleniumService implements ISeleniumService {
                 } else {
                     try {
                         WebDriverWait wait = new WebDriverWait(this.selenium.getDriver(), TIMEOUT_WEBELEMENT);
-                        wait.until(ExpectedConditions.visibilityOf(this.getSeleniumElement(property)));
+                        wait.until(ExpectedConditions.presenceOfElementLocated(this.getIdentifier(property)));
                         message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_WAIT_ELEMENT);
                         message.setDescription(message.getDescription().replaceAll("%ELEMENT%", property));
                         return message;
@@ -801,7 +807,7 @@ public class SeleniumService implements ISeleniumService {
                 } else {
                     try {
                         WebDriverWait wait = new WebDriverWait(this.selenium.getDriver(), TIMEOUT_WEBELEMENT);
-                        wait.until(ExpectedConditions.visibilityOf(this.getSeleniumElement(object)));
+                        wait.until(ExpectedConditions.presenceOfElementLocated(this.getIdentifier(property)));
                         message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_WAIT_ELEMENT);
                         message.setDescription(message.getDescription().replaceAll("%ELEMENT%", object));
                         return message;
