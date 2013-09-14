@@ -2740,7 +2740,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
 //-- Enlarging BehaviorOrValueExpected and HowTo columns to TEXT (64K).
 //-- ------------------------
         SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `testcase` CHANGE COLUMN `BehaviorOrValueExpected` `BehaviorOrValueExpected` TEXT NOT NULL DEFAULT '' , CHANGE COLUMN `HowTo` `HowTo` TEXT NULL DEFAULT '' ;");
+        SQLS.append("ALTER TABLE `testcase` CHANGE COLUMN `BehaviorOrValueExpected` `BehaviorOrValueExpected` TEXT NULL , CHANGE COLUMN `HowTo` `HowTo` TEXT NULL ;");
         SQLInstruction.add(SQLS.toString());
 
 //-- Change length of Property column of TestCaseStepActionExecution from 45 to 200
