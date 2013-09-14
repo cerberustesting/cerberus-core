@@ -96,7 +96,7 @@ Document   : menu
                 <form action="" method="post" name="SysFilter" id="SysFilter">
                     <%
                         Connection conn = db.connect();
-                        String MySystem=ParameterParserUtil.parseStringParam(request.getParameter("MySystem"), "");
+                        String MySystem = ParameterParserUtil.parseStringParam(request.getParameter("MySystem"), "");
                     %>                
                     <%=ComboInvariantAjax(conn, "MySystem", "", "MySystem", "4", "41", MySystem, "document.SysFilter.submit()", false)%>
                 </form>
@@ -119,3 +119,12 @@ Document   : menu
         </tr>
     </table>
 </div>
+
+
+<script type="text/javascript">
+    menuColoring(null);
+</script>
+
+<script type="text/javascript">
+    EnvTuning("<%=System.getProperty("env")%>");
+</script>
