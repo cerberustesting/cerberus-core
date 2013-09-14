@@ -126,5 +126,5 @@ Document   : menu
 </script>
 
 <script type="text/javascript">
-    EnvTuning("<%=System.getProperty("env")%>");
+    EnvTuning("<%=System.getProperty("org.cerberus.environment")%>");
 </script>

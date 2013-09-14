@@ -239,7 +239,7 @@ Document   : menu
         String footer = "Page started generating on <b><span id=\"foot-loaddatetime\">" + DatePageStart.toString() + "</span></b>"
                 + " by <b><span id=\"foot-projectname\">" + Version.PROJECT_NAME + "</span></b>"
                 + " <b><span id=\"foot-version\">" + Version.VERSION + "</span></b>"
-                + " in <b><span id=\"foot-env\">" + System.getProperty("env") + "</span></b>"
+                + " in <b><span id=\"foot-env\">" + System.getProperty("org.cerberus.environment") + "</span></b>"
                 + " and took <b><span id=\"foot-duration\">" + Duration + "</span>ms</b>";
         return footer;
     }

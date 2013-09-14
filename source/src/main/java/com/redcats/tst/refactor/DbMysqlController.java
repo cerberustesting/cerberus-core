@@ -23,12 +23,12 @@ public class DbMysqlController implements Database {
         if (!this.isConnected()) {
             try {
                 InitialContext ic = new InitialContext();
-                if (System.getProperty("env") == null) {
+                if (System.getProperty("org.cerberus.environment") == null) {
                     MyLogger.log(DbMysqlController.class.getName(), Level.FATAL, "Property not defined. Cannot connect to database.");
                     connected = false;
                 } else {
-                    MyLogger.log(DbMysqlController.class.getName(), Level.INFO, "Connecting to jdbc/cerberus".concat(System.getProperty("env")));
-                    this.connection = ((DataSource) ic.lookup("jdbc/cerberus".concat(System.getProperty("env")))).getConnection();
+                    MyLogger.log(DbMysqlController.class.getName(), Level.INFO, "Connecting to jdbc/cerberus".concat(System.getProperty("org.cerberus.environment")));
+                    this.connection = ((DataSource) ic.lookup("jdbc/cerberus".concat(System.getProperty("org.cerberus.environment")))).getConnection();
                     connected = true;
                 }
                 connected = true;
