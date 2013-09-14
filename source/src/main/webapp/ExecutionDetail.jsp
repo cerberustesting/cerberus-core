@@ -361,7 +361,7 @@
                                         <td><b><%=myActionData.getAction()%></b></td>
                                         <td><%=myActionData.getObject()%></td>
                                         <td><%=myActionData.getProperty()%></td>
-                                        <td class="<%=myActionData.getReturnCode()%>"><span class="<%=myActionData.getReturnCode()%>F" id="ACTSTS-<%=myStep+"-"+myActionData.getSequence()%>"><%=myActionData.getReturnCode()%></span></td>
+                                        <td class="<%=myActionData.getReturnCode()%>"><span class="<%=myActionData.getReturnCode()%>F" id="ACTSTS-<%=myStep + "-" + myActionData.getSequence()%>"><%=myActionData.getReturnCode()%></span></td>
                                         <td><i><span id="ACTMES-<%=myStep + "-" + myActionData.getSequence()%>"><%=myActionData.getReturnMessage()%></span></i></td>
                                         <td><%if (myActionData.getScreenshotFilename() != null) {%>
                                             <a href="<%=PictureURL%><%=myActionData.getScreenshotFilename()%>" id="ACTIMG-<%=myStep + "-" + myActionData.getSequence()%>">img</a>
@@ -422,9 +422,16 @@
 
 //                            GeneratePerformanceString gps = new GeneratePerformanceString();
 //                            data = gps.gps(conn, test, testCase, country);
-                            data = "";
+                        data = "";
 
-                        }
+                    } else {
+                    %>
+                    <br><br><table id="arrond" style="text-align: left" border="1" >
+                        <tr id="header" style="font-style: italic">
+                            <td style="font-weight: bold; width: 140px"><b><i>Execution ID not found...</i></b></td>
+                        </tr>
+                    </table>
+                    <%                        }
                         rs_inf.close();
 
                         if (!data.equals("")) {
@@ -599,6 +606,8 @@
                 <%  }
                 %>
                 <br><br>
+                        <%  if (!(myApplication.equalsIgnoreCase(""))) {
+                        %>
                 <h4>Contextual Actions</h4>
                 <table id="arrond" style="text-align: left" border="1" >
                     <tr>
@@ -613,6 +622,8 @@
                         </td>
                     </tr>
                 </table>
+                        <%  }
+                        %>
 
 
                 <%
