@@ -47,6 +47,11 @@
     </head>
     <body>
 
+        <script type='text/javascript' src='js/Form.js'></script>
+        <script type="text/javascript">
+            EnvTuning("<%=System.getProperty("org.cerberus.environment")%>");
+        </script>
+
         <div style="padding-top: 7%; padding-left: 30%">
             <div id="login-box">
                 <H2>Login</H2>
