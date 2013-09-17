@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
@@ -38,8 +39,8 @@ public class UpdateTestCase extends HttpServlet {
      * Use {@link #updateTestCase(TestCase tc, int type)} to update the TestCase
      * information.
      *
-     * @param request information from the request page
-     * @param response
+     * @param request  information from the request page
+     * @param response information from the response page
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -73,7 +74,7 @@ public class UpdateTestCase extends HttpServlet {
      *
      * @param request information from the request page
      * @return TestCase object
-     * @see com.redcats.tst.srv.entity.TestCase
+     * @see com.redcats.tst.entity.TestCase
      */
     private TestCase getInfo(HttpServletRequest request) {
         TestCase tc = new TestCase();
@@ -95,9 +96,9 @@ public class UpdateTestCase extends HttpServlet {
             Collections.addAll(countries, request.getParameterValues("testcase_country_general"));
         }
         tc.setCountryList(countries);
-        tc.setShortDescription(request.getParameter("editDescription").replace("'", "\\'"));
-        tc.setDescription(request.getParameter("BehaviorOrValueExpected").replace("'", "\\'"));
-        tc.setHowTo(request.getParameter("HowTo").replace("'", "\\'"));
+        tc.setShortDescription(request.getParameter("editDescription"));
+        tc.setDescription(request.getParameter("BehaviorOrValueExpected"));
+        tc.setHowTo(request.getParameter("HowTo"));
         tc.setActive(request.getParameter("editTcActive"));
         tc.setFromSprint(request.getParameter("editFromBuild"));
         tc.setFromRevision(request.getParameter("editFromRev"));
@@ -106,7 +107,7 @@ public class UpdateTestCase extends HttpServlet {
         tc.setBugID(request.getParameter("editBugID"));
         tc.setTargetSprint(request.getParameter("editTargetBuild"));
         tc.setTargetRevision(request.getParameter("editTargetRev"));
-        tc.setComment(request.getParameter("editComment").replace("'", "\\'"));
+        tc.setComment(request.getParameter("editComment"));
         return tc;
     }
 }
