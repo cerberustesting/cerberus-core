@@ -282,7 +282,7 @@ public class PropertyService implements IPropertyService {
             return list.get(random.nextInt(list.size()));
         } else if (list.size() > rowLimit && rowLimit > 0) {
             return list.get(random.nextInt(rowLimit));
-        } else if (list.size() < rowLimit) {
+        } else if (list.size() <= rowLimit) {
             return list.get(random.nextInt(list.size()));
         }
         return null;
