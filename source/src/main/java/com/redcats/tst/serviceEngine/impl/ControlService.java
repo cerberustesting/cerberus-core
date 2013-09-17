@@ -66,16 +66,16 @@ public class ControlService implements IControlService {
                 res = this.verifyStringDifferent(testCaseStepActionControlExecution.getControlValue(), testCaseStepActionControlExecution.getControlProperty());
 
             } else if (testCaseStepActionControlExecution.getControlType().equals("verifyStringGreater")) {
-                res = this.verifyStringGreater(testCaseStepActionControlExecution.getControlValue(), testCaseStepActionControlExecution.getControlProperty());
+                res = this.verifyStringGreater(testCaseStepActionControlExecution.getControlProperty(), testCaseStepActionControlExecution.getControlValue());
 
             } else if (testCaseStepActionControlExecution.getControlType().equals("verifyStringMinor")) {
-                res = this.verifyStringMinor(testCaseStepActionControlExecution.getControlValue(), testCaseStepActionControlExecution.getControlProperty());
+                res = this.verifyStringMinor(testCaseStepActionControlExecution.getControlProperty(), testCaseStepActionControlExecution.getControlValue());
 
             } else if (testCaseStepActionControlExecution.getControlType().equals("verifyIntegerGreater")) {
-                res = this.verifyIntegerGreater(testCaseStepActionControlExecution.getControlValue(), testCaseStepActionControlExecution.getControlProperty());
+                res = this.verifyIntegerGreater(testCaseStepActionControlExecution.getControlProperty(), testCaseStepActionControlExecution.getControlValue());
 
             } else if (testCaseStepActionControlExecution.getControlType().equals("verifyIntegerMinor")) {
-                res = this.verifyIntegerMinor(testCaseStepActionControlExecution.getControlValue(), testCaseStepActionControlExecution.getControlProperty());
+                res = this.verifyIntegerMinor(testCaseStepActionControlExecution.getControlProperty(), testCaseStepActionControlExecution.getControlValue());
 
             } else if (testCaseStepActionControlExecution.getControlType().equals("verifyElementPresent")) {
                 //TODO validate properties
