@@ -65,10 +65,10 @@ public class DatabaseSpring {
         try {
             if (!this.connected) {
                 InitialContext ic = new InitialContext();
-                MyLogger.log(DatabaseSpring.class.getName(), Level.INFO, "connecting to jbdc/"+connection );
+                MyLogger.log(DatabaseSpring.class.getName(), Level.INFO, "connecting to jdbc/"+connection );
                 this.connection = ((DataSource) ic.lookup("jdbc/" + connection)).getConnection();
                 this.connected = true;
-                MyLogger.log(DatabaseSpring.class.getName(), Level.INFO, "connected to jbdc/"+connection );
+                MyLogger.log(DatabaseSpring.class.getName(), Level.INFO, "connected to jdbc/"+connection );
                 
             }
         } catch (SQLException ex) {

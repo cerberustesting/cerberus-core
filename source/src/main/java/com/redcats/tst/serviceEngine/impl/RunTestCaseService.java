@@ -5,7 +5,6 @@ import com.redcats.tst.exception.CerberusException;
 import com.redcats.tst.factory.*;
 import com.redcats.tst.log.MyLogger;
 import com.redcats.tst.service.*;
-import com.redcats.tst.service.impl.TestCaseCountryService;
 import com.redcats.tst.serviceEngine.*;
 import com.redcats.tst.util.StringUtil;
 import org.apache.log4j.Level;
@@ -353,7 +352,7 @@ public class RunTestCaseService implements IRunTestCaseService {
             } catch (CerberusException ex) {
                 Logger.getLogger(RunTestCaseService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
             }
-            tCExecution.setResultMessage(this.seleniumService.startSeleniumServer(runID, tCExecution.getSeleniumIP(), tCExecution.getSeleniumPort(), tCExecution.getBrowser(), url, login, tCExecution.getVerbose()));
+            tCExecution.setResultMessage(this.seleniumService.startSeleniumServer(runID, tCExecution.getSeleniumIP(), tCExecution.getSeleniumPort(), tCExecution.getBrowser(), url, login, tCExecution.getVerbose(), tCExecution.getCountry()));
             /**
              * We stop if the result is not OK
              */
@@ -606,7 +605,7 @@ public class RunTestCaseService implements IRunTestCaseService {
                                 + "Sq" + testCaseStepActionExecution.getSequence() + ".jpg";
                         screenshotFilename = screenshotFilename.replaceAll(" ", "");
                         this.seleniumService.doScreenShot(Long.toString(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getId()), screenshotFilename);
-                        testCaseStepActionExecution.setScreenshotFilename(Long.toString(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getId()) + myFile.separator + screenshotFilename);
+                        testCaseStepActionExecution.setScreenshotFilename(Long.toString(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getId()) + File.separator + screenshotFilename);
                         MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Screenshot done in : " + testCaseStepActionExecution.getScreenshotFilename());
                     }
 
@@ -673,7 +672,7 @@ public class RunTestCaseService implements IRunTestCaseService {
                     + "Sq" + testCaseStepActionExecution.getSequence() + ".jpg";
             screenshotFilename = screenshotFilename.replaceAll(" ", "");
             this.seleniumService.doScreenShot(Long.toString(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getId()), screenshotFilename);
-            testCaseStepActionExecution.setScreenshotFilename(Long.toString(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getId()) + myFile.separator + screenshotFilename);
+            testCaseStepActionExecution.setScreenshotFilename(Long.toString(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getId()) + File.separator + screenshotFilename);
             MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Screenshot done in : " + testCaseStepActionExecution.getScreenshotFilename());
         } else {
             MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Not Doing screenshot after action because of the screenshot parameter or flag on the last Action result.");
@@ -762,7 +761,7 @@ public class RunTestCaseService implements IRunTestCaseService {
                     + "Ct" + testCaseStepActionControlExecution.getControl() + ".jpg";
             screenshotFilename = screenshotFilename.replaceAll(" ", "");
             this.seleniumService.doScreenShot(Long.toString(myExecution.getId()), screenshotFilename);
-            testCaseStepActionControlExecution.setScreenshotFilename(Long.toString(myExecution.getId()) + myFile.separator + screenshotFilename);
+            testCaseStepActionControlExecution.setScreenshotFilename(Long.toString(myExecution.getId()) + File.separator + screenshotFilename);
             MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Screenshot done in : " + testCaseStepActionControlExecution.getScreenshotFilename());
         } else {
             MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Not Doing screenshot after control because of parameter of result of last control execution.");

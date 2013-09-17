@@ -14,13 +14,13 @@ import com.redcats.tst.exception.CerberusException;
  */
 public interface ISeleniumService {
 
-    MessageGeneral startSeleniumServer(long runId, String host, String port, String browser, String ip, String login, int verbose);
+    MessageGeneral startSeleniumServer(long runId, String host, String port, String browser, String ip, String login, int verbose, String country);
 
     boolean isSeleniumServerReachable(String host, String port);
 
     boolean stopSeleniumServer();
 
-    boolean startSeleniumFirefox(long runId, boolean record) throws CerberusException;
+    boolean startSeleniumFirefox(long runId, boolean record, String country) throws CerberusException;
 
     String getValueFromHTMLVisible(String locator);
     

@@ -5,6 +5,7 @@ import com.redcats.tst.exception.CerberusEventException;
 import com.redcats.tst.exception.CerberusException;
 import com.redcats.tst.factory.IFactorySelenium;
 import com.redcats.tst.log.MyLogger;
+import com.redcats.tst.service.IInvariantService;
 import com.redcats.tst.service.IParameterService;
 import com.redcats.tst.serviceEngine.IPropertyService;
 import com.redcats.tst.serviceEngine.ISeleniumService;
@@ -55,9 +56,11 @@ public class SeleniumService implements ISeleniumService {
     private IFactorySelenium factorySelenium;
     @Autowired
     private IPropertyService propertyService;
+    @Autowired
+    private IInvariantService invariantService;
 
     @Override
-    public MessageGeneral startSeleniumServer(long runId, String host, String port, String browser, String ip, String login, int verbose) {
+    public MessageGeneral startSeleniumServer(long runId, String host, String port, String browser, String ip, String login, int verbose, String country) {
 
         if (!this.started) {
             /**
@@ -67,7 +70,7 @@ public class SeleniumService implements ISeleniumService {
             this.selenium = factorySelenium.create(host, port, browser, login, ip, null);
             if (browser.equalsIgnoreCase("firefox")) {
                 try {
-                    startSeleniumFirefox(runId, record);
+                    startSeleniumFirefox(runId, record, country);
                     this.selenium.getDriver().manage().window().maximize();
                     this.started = true;
                     return new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_CHECKINGPARAMETERS);
@@ -117,13 +120,21 @@ public class SeleniumService implements ISeleniumService {
     }
 
     @Override
-    public boolean startSeleniumFirefox(long runId, boolean record) throws CerberusException {
+    public boolean startSeleniumFirefox(long runId, boolean record, String country) throws CerberusException {
 
         MyLogger.log(SeleniumService.class.getName(), Level.DEBUG, "Starting firefox");
 
         FirefoxProfile profile = new FirefoxProfile();
         WebDriver driver;
         profile.setEnableNativeEvents(true);
+        profile.setAcceptUntrustedCertificates(true);
+
+        try {
+            Invariant invariant = this.invariantService.findInvariantByIdValue("LANGUAGE", country);
+            profile.setPreference("intl.accept_languages", invariant.getGp1());
+        } catch (CerberusException ex) {
+            profile.setPreference("intl.accept_languages", "en");
+        }
 
         if (record) {
             String firebugPath = parameterService.findParameterByKey("cerberus_selenium_firefoxextension_firebug").getValue();

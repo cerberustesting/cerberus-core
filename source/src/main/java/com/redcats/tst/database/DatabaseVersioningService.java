@@ -2749,6 +2749,22 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("ALTER TABLE testcasestepactionexecution CHANGE Property Property varchar(200);");
         SQLInstruction.add(SQLS.toString());
 
+//-- Add invariant LANGUAGE
+//-- ------------------------
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `id`, `description`, `gp1`) VALUES ");
+        SQLS.append("  ('LANGUAGE', '', 1, 44, 'Default language', 'en')");
+        SQLS.append(" ,('LANGUAGE', 'BE', 5, 44, 'Belgium language', 'fr-be')");
+        SQLS.append(" ,('LANGUAGE', 'CH', 10, 44, 'Switzerland language', 'fr-ch')");
+        SQLS.append(" ,('LANGUAGE', 'ES', 15, 44, 'Spain language', 'es')");
+        SQLS.append(" ,('LANGUAGE', 'FR', 20, 44, 'France language', 'fr')");
+        SQLS.append(" ,('LANGUAGE', 'IT', 25, 44, 'Italy language', 'it')");
+        SQLS.append(" ,('LANGUAGE', 'PT', 30, 44, 'Portugal language', 'pt')");
+        SQLS.append(" ,('LANGUAGE', 'RU', 35, 44, 'Russia language', 'ru')");
+        SQLS.append(" ,('LANGUAGE', 'UK', 40, 44, 'Great Britain language', 'gb')");
+        SQLS.append(" ,('LANGUAGE', 'VI', 45, 44, 'Generic language', 'en');");
+        SQLInstruction.add(SQLS.toString());
+
         return SQLInstruction;
     }
 }
