@@ -4,7 +4,6 @@
     Author     : bcivel
 --%>
 <%@page import="java.util.Date"%>
-<%@page import="org.apache.commons.lang.StringUtils"%>
 <%@page import="java.util.List"%>
 <%@page import="java.util.ArrayList"%>
 <%@page import="org.w3c.dom.Element"%>
@@ -95,7 +94,7 @@
                     <td class="wob"><input id="Load" name="Load" style="display:none" value="Y"></td>
                 </tr>
                 <tr>
-                    <td><input type="submit" value="Import Selenium IDE"</td>       
+                    <td><input type="submit" value="Import Selenium IDE"></td>
                 </tr></table>
         </form>
         <%} else {
@@ -172,7 +171,7 @@
                 %>
 
                 <tr>
-                    <td class="wob"><input style="width:150px" id="importAction" name="importAction" value="<%=actionList[i]%>"</td>
+                    <td class="wob"><input style="width:150px" id="importAction" name="importAction" value="<%=actionList[i]%>"></td>
                     <td class="wob"><input style="width:300px" id="importObject" name="importObject" value="<%=objectList[i]%>"></td>
                         <% if (!propertyList[i].equals("")) {%>
                     <td class="wob"><input style="width:150px" id="importProperty" name="importProperty" value="<%=propertyList[i]%>"></td>
