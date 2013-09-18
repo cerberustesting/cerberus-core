@@ -54,6 +54,8 @@ public class RunTestCase extends HttpServlet {
         String myHost = ParameterParserUtil.parseStringParam(policy.sanitize(request.getParameter("myhost")), "");
         String myContextRoot = ParameterParserUtil.parseStringParam(policy.sanitize(request.getParameter("mycontextroot")), "");
         String myLoginRelativeURL = ParameterParserUtil.parseStringParam(policy.sanitize(request.getParameter("myloginrelativeurl")), "");
+        //TODO find another solution
+        myLoginRelativeURL = myLoginRelativeURL.replace("&#61;", "=");
         String myEnvData = ParameterParserUtil.parseStringParam(policy.sanitize(request.getParameter("myenvdata")), "");
 
         //Execution
