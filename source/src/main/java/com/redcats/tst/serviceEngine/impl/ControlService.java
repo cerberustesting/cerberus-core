@@ -10,12 +10,10 @@ import com.redcats.tst.serviceEngine.IControlService;
 import com.redcats.tst.serviceEngine.IPropertyService;
 import com.redcats.tst.serviceEngine.ISeleniumService;
 import com.redcats.tst.util.StringUtil;
-
 import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
-
 import org.apache.log4j.Level;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriverException;
@@ -349,24 +347,44 @@ public class ControlService implements IControlService {
         MyLogger.log(ControlService.class.getName(), Level.DEBUG, "Control : verifyRegexInElement on : " + html + " element against value : " + regex);
         MessageEvent mes;
         try {
-            Pattern pattern = Pattern.compile(regex);
-            Matcher matcher = pattern.matcher(html);
-            if (matcher.find()) {
-                mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_REGEXINELEMENT);
-                mes.setDescription(mes.getDescription().replaceAll("%STRING1%", regex));
-                mes.setDescription(mes.getDescription().replaceAll("%STRING2%", html));
-                return mes;
+            String str = this.seleniumService.getValueFromHTML(html);
+            MyLogger.log(ControlService.class.getName(), Level.DEBUG, "Control : verifyRegexInElement element : " + html + " has value : " + str);
+            if (html != null) {
+                try {
+                    Pattern pattern = Pattern.compile(regex);
+                    Matcher matcher = pattern.matcher(str);
+                    if (matcher.find()) {
+                        mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_REGEXINELEMENT);
+                        mes.setDescription(mes.getDescription().replaceAll("%STRING1%", html));
+                        mes.setDescription(mes.getDescription().replaceAll("%STRING2%", str));
+                        mes.setDescription(mes.getDescription().replaceAll("%STRING3%", regex));
+                        return mes;
+                    } else {
+                        mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_REGEXINELEMENT);
+                        mes.setDescription(mes.getDescription().replaceAll("%STRING1%", html));
+                        mes.setDescription(mes.getDescription().replaceAll("%STRING2%", str));
+                        mes.setDescription(mes.getDescription().replaceAll("%STRING3%", regex));
+                        return mes;
+                    }
+                } catch (PatternSyntaxException e) {
+                    mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_REGEXINELEMENT_INVALIDPATERN);
+                    mes.setDescription(mes.getDescription().replaceAll("%PATERN%", regex));
+                    mes.setDescription(mes.getDescription().replaceAll("%ERROR%", e.getMessage()));
+                    return mes;
+                }
             } else {
-                mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_REGEXINELEMENT);
-                mes.setDescription(mes.getDescription().replaceAll("%STRING1%", regex));
-                mes.setDescription(mes.getDescription().replaceAll("%STRING2%", html));
+                mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_REGEXINELEMENT_NULL);
+                mes.setDescription(mes.getDescription().replaceAll("%STRING1%", html));
                 return mes;
             }
-        } catch (PatternSyntaxException e) {
-            mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_REGEXINELEMENT_INVALIDPATERN);
-            mes.setDescription(mes.getDescription().replaceAll("%PATERN%", regex));
-            mes.setDescription(mes.getDescription().replaceAll("%ERROR%", e.getMessage()));
+        } catch (NoSuchElementException exception) {
+            MyLogger.log(ControlService.class.getName(), Level.ERROR, exception.toString());
+            mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_REGEXINELEMENT_NO_SUCH_ELEMENT);
+            mes.setDescription(mes.getDescription().replaceAll("%ELEMENT%", html));
             return mes;
+        } catch (WebDriverException exception) {
+            MyLogger.log(SeleniumService.class.getName(), Level.FATAL, exception.toString());
+            return new MessageEvent(MessageEventEnum.CONTROL_FAILED_SELENIUM_CONNECTIVITY);
         }
     }
 
