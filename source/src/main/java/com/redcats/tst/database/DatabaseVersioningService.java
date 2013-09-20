@@ -2765,6 +2765,14 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(" ,('LANGUAGE', 'VI', 45, 44, 'Generic language', 'en');");
         SQLInstruction.add(SQLS.toString());
 
+//-- Cerberus can't find elements inside iframe
+//-- ------------------------
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `id`, `description`) VALUES ");
+        SQLS.append("('ACTION','focusToIframe',52,12,'focusToIframe'),");
+        SQLS.append("('ACTION','focusDefaultIframe',53,12,'focusDefaultIframe');");
+        SQLInstruction.add(SQLS.toString());
+
         return SQLInstruction;
     }
 }

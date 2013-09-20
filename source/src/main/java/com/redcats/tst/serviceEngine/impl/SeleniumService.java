@@ -488,6 +488,12 @@ public class SeleniumService implements ISeleniumService {
             res = this.doActionSelect(object, property);
             this.doActionWait(StringUtil.NULL, StringUtil.NULL);
 
+        } else if (testCaseStepActionExecution.getAction().equals("focusToIframe")) {
+            res = this.doActionFocusToIframe(object, property);
+
+        } else if (testCaseStepActionExecution.getAction().equals("focusDefaultIframe")) {
+            res = this.doActionFocusDefaultIframe();
+
         } else if (testCaseStepActionExecution.getAction().equals("type")) {
             res = this.doActionType(object, property, propertyName);
 
@@ -969,5 +975,55 @@ public class SeleniumService implements ISeleniumService {
             message.setDescription(message.getDescription().replaceAll("%URL%", url) + " " + e.getMessage());
             return message;
         }
+    }
+
+    private MessageEvent doActionFocusToIframe(String object, String property) {
+        MessageEvent message;
+
+        try{
+            if(!StringUtil.isNullOrEmpty(property)){
+                try{
+                    this.selenium.getDriver().switchTo().frame(this.getSeleniumElement(property));
+                    message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_FOCUSTOIFRAME);
+                    message.setDescription(message.getDescription().replaceAll("%IFRAME%", property));
+                } catch (NoSuchElementException exception) {
+                    message = new MessageEvent(MessageEventEnum.ACTION_FAILED_FOCUS_NO_SUCH_ELEMENT);
+                    message.setDescription(message.getDescription().replaceAll("%IFRAME%", property));
+                    MyLogger.log(SeleniumService.class.getName(), Level.ERROR, exception.toString());
+                }
+            }else {
+                try{
+                    this.selenium.getDriver().switchTo().frame(this.getSeleniumElement(object));
+                    message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_FOCUSTOIFRAME);
+                    message.setDescription(message.getDescription().replaceAll("%IFRAME%", object));
+                } catch (NoSuchElementException exception) {
+                    message = new MessageEvent(MessageEventEnum.ACTION_FAILED_FOCUS_NO_SUCH_ELEMENT);
+                    message.setDescription(message.getDescription().replaceAll("%IFRAME%", object));
+                    MyLogger.log(SeleniumService.class.getName(), Level.ERROR, exception.toString());
+                    return message;
+                }
+            }
+        } catch (WebDriverException exception) {
+            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_SELENIUM_CONNECTIVITY);
+            MyLogger.log(SeleniumService.class.getName(), Level.FATAL, exception.toString());
+            return message;
+        }
+
+        return message;
+    }
+
+    private MessageEvent doActionFocusDefaultIframe(){
+        MessageEvent message;
+
+        try{
+            this.selenium.getDriver().switchTo().defaultContent();
+            message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_FOCUSDEFAULTIFRAME);
+        } catch (WebDriverException exception) {
+            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_SELENIUM_CONNECTIVITY);
+            MyLogger.log(SeleniumService.class.getName(), Level.FATAL, exception.toString());
+            return message;
+        }
+
+        return message;
     }
 }
