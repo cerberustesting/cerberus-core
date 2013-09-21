@@ -4,7 +4,6 @@ Document   : menu
     Created on : 10 déc. 2010, 11:43:27
     Author     : acraske
 --%>
-
 <%@page import="com.redcats.tst.refactor.Country"%>
 <%@page import="com.redcats.tst.refactor.DbMysqlController"%>
 <%@page import="java.util.Collection"%>
@@ -20,7 +19,6 @@ Document   : menu
 <%@page import="java.text.DateFormat"%>
 <%@page import="java.text.SimpleDateFormat"%>
 <%@page import="version.Version"%>
-
 <%!
     String dbDocS(Connection conn, String table, String field, String label) {
         try {
@@ -59,7 +57,7 @@ Document   : menu
                 String ret;
                 ret = q.getString("DocLabel");
                 if (q.getString("DocDesc").trim().length() > 0) {
-                    ret += " <a href=\'javascript:popup(\"Documentation.jsp?DocTable=" + table + "&DocField=" + field + "\")\'>?</a>";
+                    ret += " <a href=\'javascript:popup(\"Documentation.jsp?DocTable=" + table + "&amp;DocField=" + field + "\")\'>?</a>";
                 }
                 q.close();
                 stmtQuery.close();
@@ -75,9 +73,8 @@ Document   : menu
         }
         return "";
     }
-%>
 
-<%!    String ComboInvariant(Connection conn, String HTMLComboName, String HTMLComboStyle, String HTMLId, String HTMLClass, String combonumber, String value, String HTMLOnChange, String firstOption) {
+    String ComboInvariant(Connection conn, String HTMLComboName, String HTMLComboStyle, String HTMLId, String HTMLClass, String combonumber, String value, String HTMLOnChange, String firstOption) {
         try {
             Statement stmtQuery = conn.createStatement();
             String sq = "SELECT value from Invariant where id = '" + combonumber + "' order by sort";
@@ -87,7 +84,9 @@ Document   : menu
                 ret = ret + " onchange=\"" + HTMLOnChange + "\"";
             }
             ret = ret + ">";
-            if (firstOption != null) ret = ret + "<option value=\""+firstOption+"\">--"+firstOption+"--</option>";
+            if (firstOption != null) {
+                ret = ret + "<option value=\"" + firstOption + "\">--" + firstOption + "--</option>";
+            }
             while (q.next()) {
                 ret = ret + "<option value=\"" + q.getString("value") + "\"";
                 if ((value != null) && (value.compareTo(q.getString("value")) == 0)) {
@@ -104,9 +103,8 @@ Document   : menu
             return e.toString();
         }
     }
-%>
 
-<%!    String ComboInvariantAjax(Connection conn, String HTMLComboName, String HTMLComboStyle, String HTMLId, String HTMLrel, String combonumber, String value, String HTMLOnChange, boolean emptyfirstoption) {
+    String ComboInvariantAjax(Connection conn, String HTMLComboName, String HTMLComboStyle, String HTMLId, String HTMLrel, String combonumber, String value, String HTMLOnChange, boolean emptyfirstoption) {
         try {
             Statement stmtQuery = conn.createStatement();
             String sq = "SELECT value from Invariant where id = '" + combonumber + "' order by sort";
@@ -135,9 +133,8 @@ Document   : menu
             return e.toString();
         }
     }
-%>
 
-<%!    String ComboInvariantMultipleAjax(Connection conn, String HTMLComboName, String HTMLComboStyle, String HTMLId, String HTMLrel, String combonumber, String value, String HTMLOnChange, boolean emptyfirstoption) {
+    String ComboInvariantMultipleAjax(Connection conn, String HTMLComboName, String HTMLComboStyle, String HTMLId, String HTMLrel, String combonumber, String value, String HTMLOnChange, boolean emptyfirstoption) {
         try {
             Statement stmtQuery = conn.createStatement();
             String sq = "SELECT value from Invariant where id = '" + combonumber + "' order by sort";
@@ -166,10 +163,8 @@ Document   : menu
             return e.toString();
         }
     }
-%>
 
-
-<%!    String ComboProject(Connection conn, String HTMLComboName, String HTMLComboStyle, String HTMLId, String HTMLClass, String value, String HTMLOnChange, boolean emptyfirstoption, String FirstValue, String FirstDescription) {
+    String ComboProject(Connection conn, String HTMLComboName, String HTMLComboStyle, String HTMLId, String HTMLClass, String value, String HTMLOnChange, boolean emptyfirstoption, String FirstValue, String FirstDescription) {
         try {
             Statement stmtQuery = conn.createStatement();
             String sq = "SELECT idproject, VCCode, Description, active FROM project ORDER BY idproject";
@@ -203,9 +198,8 @@ Document   : menu
             return e.toString();
         }
     }
-%>
 
-<%!    Boolean checkSelected(Collection<Country> col, String selection) {
+    Boolean checkSelected(Collection<Country> col, String selection) {
         Iterator<Country> it = col.iterator();
         while (it.hasNext()) {
             if (it.next().getName().compareTo(selection) == 0) {
@@ -214,9 +208,8 @@ Document   : menu
         }
         return false;
     }
-%>
 
-<%!    String replaceTextEnter(String desc) {
+    String replaceTextEnter(String desc) {
         String s = desc;
         s = s.replaceAll("\r", "__enter__");
         s = s.replaceAll("\n", "__enter__");
@@ -230,10 +223,8 @@ Document   : menu
         s = s.replaceAll("/>", "__fechar__");
         return s;
     }
-%>
 
-
-<%!    String display_footer(Date DatePageStart) {
+    String display_footer(Date DatePageStart) {
         Date mydate = new Date();
         long Duration = mydate.getTime() - DatePageStart.getTime();
         String footer = "Page started generating on <b><span id=\"foot-loaddatetime\">" + DatePageStart.toString() + "</span></b>"
@@ -244,16 +235,10 @@ Document   : menu
         return footer;
     }
 %>
-
-
 <% if (session.getAttribute("flashMessage") != null) {
         out.println("alert(" + session.getAttribute("flashMessage") + ")");
         session.removeAttribute("flashMessage");
     }
-%>
-
-
-<%
 
     DbMysqlController db;
     db = (DbMysqlController) session.getAttribute("Database");

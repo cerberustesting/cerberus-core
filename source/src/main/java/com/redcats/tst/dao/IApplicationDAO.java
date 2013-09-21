@@ -33,6 +33,13 @@ public interface IApplicationDAO {
      * @return a list of all application.
      * @throws CerberusException when no application exist.
      */
+    public List<Application> findApplicationBySystem(String System) throws CerberusException;
+
+    /**
+     *
+     * @return a list of all application.
+     * @throws CerberusException when no application exist.
+     */
     public boolean updateApplication(Application application) throws CerberusException;
 
 }

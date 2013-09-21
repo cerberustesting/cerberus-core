@@ -36,16 +36,16 @@
                 Connection conn = db.connect();
                 try {
 
-                String testselected;
-                if (request.getParameter("createTest") != null
-                        && request.getParameter("createTest").compareTo("All") != 0) {
-                    testselected = request.getParameter("createTest");
-                } else {
-                    testselected = new String("%%");
-                }
+                    String testselected;
+                    if (request.getParameter("createTest") != null
+                            && request.getParameter("createTest").compareTo("All") != 0) {
+                        testselected = request.getParameter("createTest");
+                    } else {
+                        testselected = new String("%%");
+                    }
 
-                Statement stmt30 = conn.createStatement();
-                Statement stQueryTestCase = conn.createStatement();
+                    Statement stmt30 = conn.createStatement();
+                    Statement stQueryTestCase = conn.createStatement();
             %>
             <table id="createTcTable" class="arrond" style="display : table">
                 <tr>

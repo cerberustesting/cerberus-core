@@ -5,16 +5,13 @@
 package com.redcats.tst.servlet.application;
 
 import com.redcats.tst.entity.Application;
-import com.redcats.tst.entity.User;
 import com.redcats.tst.exception.CerberusException;
 import com.redcats.tst.log.MyLogger;
 import com.redcats.tst.service.IApplicationService;
-import com.redcats.tst.service.IUserService;
 import com.redcats.tst.service.impl.ApplicationService;
-import com.redcats.tst.service.impl.UserService;
 import com.redcats.tst.servlet.user.GetUsers;
+import com.redcats.tst.util.ParameterParserUtil;
 import java.io.IOException;
-import java.io.PrintWriter;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -48,12 +45,13 @@ public class GetApplication extends HttpServlet {
 
         JSONArray data = new JSONArray(); //data that will be shown in the table
 
+        String MySystem = ParameterParserUtil.parseStringParam(request.getParameter("System"), "%");
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         IApplicationService applicationService = appContext.getBean(ApplicationService.class);
         try {
             JSONObject jsonResponse = new JSONObject();
             try {
-                for (Application myApplication : applicationService.findAllApplication()) {
+                for (Application myApplication : applicationService.findApplicationBySystem(MySystem)) {
                     JSONArray row = new JSONArray();
                     row.put(myApplication.getApplication());
                     row.put(myApplication.getSystem());

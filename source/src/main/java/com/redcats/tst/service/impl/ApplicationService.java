@@ -33,6 +33,11 @@ public class ApplicationService implements IApplicationService {
     }
 
     @Override
+    public List<Application> findApplicationBySystem(String System) throws CerberusException {
+        return ApplicationDAO.findApplicationBySystem(System);
+    }
+
+    @Override
     public boolean updateApplication(Application application) throws CerberusException {
         return ApplicationDAO.updateApplication(application);
     }

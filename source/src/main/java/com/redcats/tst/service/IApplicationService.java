@@ -31,6 +31,13 @@ public interface IApplicationService {
 
     /**
      *
+     * @return the list of all Applications.
+     * @throws CerberusException when no application exist.
+     */
+    List<Application> findApplicationBySystem(String System) throws CerberusException;
+
+    /**
+     *
      * @return boolean.
      * @throws CerberusException when no application exist.
      */

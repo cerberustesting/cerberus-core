@@ -27,6 +27,10 @@
         <script type="text/javascript" src="js/jquery.validate.min.js"></script>
         <title>Applications</title>
 
+    </head>
+    <body>
+        <%@ include file="include/function.jsp" %>
+        <%@ include file="include/header.jsp" %>
         <script type="text/javascript">      
             $(document).ready(function(){
                 $('#applicationsTable').dataTable({
@@ -36,7 +40,7 @@
                     ], 
                     "iDisplayLength" : 20,
                     "bServerSide": false,
-                    "sAjaxSource": "GetApplication",
+                    "sAjaxSource": "GetApplication?System=<%=request.getAttribute("MySystem")%>",
                     "bJQueryUI": true,
                     "bProcessing": true,
                     "sPaginationType": "full_numbers",
@@ -120,10 +124,6 @@
                 });
             });
         </script>
-    </head>
-    <body>
-        <%@ include file="include/function.jsp" %>
-        <%@ include file="include/header.jsp" %>
         <div style="width: 80%; padding: 25px; font: 90% sans-serif">
             <table id="applicationsTable" class="display">
                 <thead>

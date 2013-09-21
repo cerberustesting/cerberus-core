@@ -4,7 +4,12 @@ Document   : menu
     Created on : 10 déc. 2010, 11:43:27
     Author     : acraske
 --%>
-
+<%@page import="com.redcats.tst.entity.Invariant"%>
+<%@page import="com.redcats.tst.service.IInvariantService"%>
+<%@page import="com.redcats.tst.service.IUserService"%>
+<%@page import="org.springframework.web.context.support.WebApplicationContextUtils"%>
+<%@page import="org.springframework.context.ApplicationContext"%>
+<%@page import="com.redcats.tst.entity.User"%>
 <%@page import="com.redcats.tst.util.ParameterParserUtil"%>
 <%@page import="com.redcats.tst.refactor.Country"%>
 <%@page import="com.redcats.tst.refactor.DbMysqlController"%>
@@ -21,8 +26,6 @@ Document   : menu
 <%@page import="java.text.DateFormat"%>
 <%@page import="java.text.SimpleDateFormat"%>
 <%@page import="version.Version"%>
-
-
 <script type='text/javascript' src='js/Form.js'></script>
 
 <div id="menu">
@@ -48,7 +51,7 @@ Document   : menu
                         <% }%>
                         <li id="active"><a id="current" name="menu" href="#" style="width:130px">TestCase</a>
                             <ul id="subnavlist">
-                                <li id="subactive"><a name="menu" id="menuEditTestCase" href="TestCase.jsp" href="#" style="width:130px">Edit TestCase</a></li>
+                                <li id="subactive"><a name="menu" id="menuEditTestCase" href="TestCase.jsp" style="width:130px">Edit TestCase</a></li>
                                 <li><a name="menu" id="menuCreateTestCase" href="TestCaseCreate.jsp" style="width:130px">Create TestCase</a></li>
                                 <li><a name="menu" id="menuSearchTestCase" href="TestCaseSearch.jsp" style="width:130px">Search TestCase</a></li>
                             </ul>
@@ -95,10 +98,38 @@ Document   : menu
                 <p style="text-align: right" ><%= request.getUserPrincipal().getName()%></p>
                 <form action="" method="post" name="SysFilter" id="SysFilter">
                     <%
-                        Connection conn = db.connect();
                         String MySystem = ParameterParserUtil.parseStringParam(request.getParameter("MySystem"), "");
+
+                        String MyUser = ParameterParserUtil.parseStringParam(request.getUserPrincipal().getName(), "");
+                        ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletConfig().getServletContext());
+                        IUserService myUserService = appContext.getBean(IUserService.class);
+                        if (!(MyUser.equals(""))) {
+                            User MyUserobj = myUserService.findUserByKey(MyUser);
+
+                            // Update MyDefaultSystem if different from user.
+                            if (MySystem.equals("")) {
+                                MySystem = MyUserobj.getDefaultSystem();
+                            } else {
+                                if (!(MyUserobj.getDefaultSystem().equals(MySystem))) {
+                                    MyUserobj.setDefaultSystem(MySystem);
+                                    myUserService.updateUser(MyUserobj);
+                                }
+                            }
+                        }
+                        request.setAttribute("MySystem", MySystem);
                     %>                
-                    <%=ComboInvariantAjax(conn, "MySystem", "", "MySystem", "4", "41", MySystem, "document.SysFilter.submit()", false)%>
+                    <select id="MySystem" style="" name="MySystem" onchange="document.SysFilter.submit()">
+                        <%
+                            IInvariantService myInvariantService = appContext.getBean(IInvariantService.class);
+                            List<Invariant> MyInvariantList = myInvariantService.findListOfInvariantById("SYSTEM");
+                            for (Invariant myInvariant : MyInvariantList) {
+                        %>
+                        <option value="<%=myInvariant.getValue()%>"<% if (MySystem.equalsIgnoreCase(myInvariant.getValue())) {
+                                out.print(" SELECTED");
+                            }%>><%=myInvariant.getValue()%></option><%
+                                }
+                        %>
+                    </select>
                 </form>
                 <br/>
                 <a href="Logout.jsp">

@@ -116,6 +116,46 @@ public class ApplicationDAO implements IApplicationDAO {
         return list;
     }
 
+    /**
+     * Find all existing applications
+     *
+     * @return list of applications
+     */
+    @Override
+    public List<Application> findApplicationBySystem(String System) throws CerberusException {
+        List<Application> list = null;
+        final String query = "SELECT * FROM application a WHERE `System` like ? ORDER BY a.sort";
+
+        try {
+            PreparedStatement preStat = this.databaseSpring.connect().prepareStatement(query);
+            preStat.setString(1, System);
+
+            try {
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+                    list = new ArrayList<Application>();
+                    while (resultSet.next()) {
+                        Application app = this.loadApplicationFromResultSet(resultSet);
+                        list.add(app);
+                    }
+                } catch (SQLException exception) {
+                    MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, exception.toString());
+                } finally {
+                    resultSet.close();
+                }
+            } catch (SQLException exception) {
+                MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, exception.toString());
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, exception.toString());
+        } finally {
+            this.databaseSpring.disconnect();
+        }
+        return list;
+    }
+
     private Application loadApplicationFromResultSet(ResultSet rs) throws SQLException {
         String application = ParameterParserUtil.parseStringParam(rs.getString("application"), "");
         String description = ParameterParserUtil.parseStringParam(rs.getString("description"), "");
