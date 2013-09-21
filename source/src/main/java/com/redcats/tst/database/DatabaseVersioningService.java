@@ -2736,7 +2736,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS = new StringBuilder();
         SQLS.append("UPDATE `testcasestepactioncontrol` SET `type`='verifyRegexInElement' WHERE `type`='verifyContainText';");
         SQLInstruction.add(SQLS.toString());
-        
+
 //-- Enlarging BehaviorOrValueExpected and HowTo columns to TEXT (64K).
 //-- ------------------------
         SQLS = new StringBuilder();
@@ -2771,6 +2771,12 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `id`, `description`) VALUES ");
         SQLS.append("('ACTION','focusToIframe',52,12,'focusToIframe'),");
         SQLS.append("('ACTION','focusDefaultIframe',53,12,'focusDefaultIframe');");
+        SQLInstruction.add(SQLS.toString());
+
+//-- Documentation on new Bug URL
+//-- ------------------------
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `documentation` SET `DocDesc`='URL to Bug system new bug creation page.<br> The following variables can be used :<br>%TEST%<br>%TESTCASE%<br>%TESTCASEDESC%<br>%EXEID%<br>%ENV%<br>%COUNTRY%<br>%BUILD%<br>%REV%' WHERE `DocTable`='application' and`DocField`='bugtrackernewurl' and`DocValue`='';");
         SQLInstruction.add(SQLS.toString());
 
         return SQLInstruction;

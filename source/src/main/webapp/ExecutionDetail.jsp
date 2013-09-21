@@ -3,6 +3,7 @@
     Created on : 20 mai 2011, 13:41:49
     Author     : acraske
 --%>
+<%@page import="com.redcats.tst.entity.Environment"%>
 <%@page import="com.redcats.tst.service.IApplicationService"%>
 <%@page import="com.redcats.tst.service.IParameterService"%>
 <%@page import="com.redcats.tst.util.DateUtil"%>
@@ -89,7 +90,10 @@
                     }
                     String test = "";
                     String testCase = "";
+                    String testCaseDesc = "";
                     String country = "";
+                    String build = "";
+                    String revision = "";
 
             %>
             <table id="arrond">
@@ -124,13 +128,19 @@
                 String max_id = "-1";
                 String data = "";
                 String myApplication = "";
+                String environment = "";
 
 
                 if (rs_inf.first()) {
 
                     max_id = rs_inf.getString("Id");
                     myApplication = rs_inf.getString("Application");
-
+                    testCase = rs_inf.getString("TestCase");
+                    testCaseDesc = rs_inf.getString("Description");
+                    country = rs_inf.getString("Country");
+                    environment = rs_inf.getString("Environment");
+                    build = rs_inf.getString("Build");
+                    revision = rs_inf.getString("Revision");
 
             %>
             <br>
@@ -159,9 +169,9 @@
 
                         <td><span id="exeid"><%= rs_inf.getString("Id")%></span></td>
                         <td id="testValue"><b><%= test = rs_inf.getString("Test")%></b></td>
-                        <td id="testcaseValue"><b><%= testCase = rs_inf.getString("TestCase")%></b><br><%= rs_inf.getString("Description")%></td>
-                        <td id="countryValue"><b><%= country = rs_inf.getString("Country")%></b></td>
-                        <td><b><%= rs_inf.getString("Environment")%></b></td>
+                        <td id="testcaseValue"><b><%= testCase%></b><br><%= testCaseDesc%></td>
+                        <td id="countryValue"><b><%= country%></b></td>
+                        <td><b><%= environment%></b></td>
                         <td><%= rs_inf.getString("Build")%></td>
                         <td><%= rs_inf.getString("Revision")%></td>
                         <td><%= rs_inf.getString("Application")%></td>
@@ -606,8 +616,8 @@
                 <%  }
                 %>
                 <br><br>
-                        <%  if (!(myApplication.equalsIgnoreCase(""))) {
-                        %>
+                <%  if (!(myApplication.equalsIgnoreCase(""))) {
+                %>
                 <h4>Contextual Actions</h4>
                 <table id="arrond" style="text-align: left" border="1" >
                     <tr>
@@ -618,12 +628,24 @@
                             <a href="TestCase.jsp?Test=<%=test%>&TestCase=<%=testCase%>&Load=Load">Modify the Test Case.</a>
                         </td>
                         <td>
-                            <a href="<%= myApplicationService.findApplicationByKey(myApplication).getBugTrackerNewUrl()%>" target='_blank'>Open a bug.</a> 
+                            <%
+                                String newBugURL = myApplicationService.findApplicationByKey(myApplication).getBugTrackerNewUrl();
+                                newBugURL = newBugURL.replaceAll("%EXEID%", id_filter);
+                                newBugURL = newBugURL.replaceAll("%TEST%", test);
+                                newBugURL = newBugURL.replaceAll("%TESTCASE%", testCase);
+                                newBugURL = newBugURL.replaceAll("%TESTCASEDESC%", testCaseDesc);
+                                newBugURL = newBugURL.replaceAll("%COUNTRY%", country);
+                                newBugURL = newBugURL.replaceAll("%ENV%", environment);
+                                newBugURL = newBugURL.replaceAll("%BUILD%", build);
+                                newBugURL = newBugURL.replaceAll("%REV%", revision);
+
+                            %>
+                            <a href="<%= newBugURL%>" target='_blank'>Open a bug.</a> 
                         </td>
                     </tr>
                 </table>
-                        <%  }
-                        %>
+                <%  }
+                %>
 
 
                 <%
