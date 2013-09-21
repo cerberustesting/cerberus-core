@@ -34,6 +34,7 @@
         <div id="body">
             <%
                 Connection conn = db.connect();
+                try {
 
                 String testselected;
                 if (request.getParameter("createTest") != null
@@ -278,6 +279,17 @@
                     </td>
                 </tr>
             </table>
+            <%
+                } catch (Exception e) {
+                    out.println("<br> error message : " + e.getMessage() + " "
+                            + e.toString() + "<br>");
+                } finally {
+                    try {
+                        conn.close();
+                    } catch (Exception ex) {
+                    }
+                }
+            %>
         </div>
         <br><% out.print(display_footer(DatePageStart));%>
     </body>
