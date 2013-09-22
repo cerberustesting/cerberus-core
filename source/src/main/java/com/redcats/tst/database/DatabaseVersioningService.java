@@ -2779,6 +2779,25 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("UPDATE `documentation` SET `DocDesc`='URL to Bug system new bug creation page.<br> The following variables can be used :<br>%TEST%<br>%TESTCASE%<br>%TESTCASEDESC%<br>%EXEID%<br>%ENV%<br>%COUNTRY%<br>%BUILD%<br>%REV%' WHERE `DocTable`='application' and`DocField`='bugtrackernewurl' and`DocValue`='';");
         SQLInstruction.add(SQLS.toString());
 
+//-- Harmonize the column order of Country/Environment.
+//-- ------------------------
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `countryenvironmentdatabase` ");
+        SQLS.append(" CHANGE COLUMN `Country` `Country` VARCHAR(2) NOT NULL  FIRST , ");
+        SQLS.append(" CHANGE COLUMN `Environment` `Environment` VARCHAR(45) NOT NULL  AFTER `Country` , ");
+        SQLS.append(" DROP PRIMARY KEY , ADD PRIMARY KEY (`Country`, `Environment`, `Database`) ;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `host` ");
+        SQLS.append(" CHANGE COLUMN `Environment` `Environment` VARCHAR(45) NOT NULL  AFTER `Country` , ");
+        SQLS.append(" DROP PRIMARY KEY , ADD PRIMARY KEY USING BTREE (`Country`, `Environment`, `Session`, `Server`) ;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `buildrevisionbatch` ");
+        SQLS.append(" CHANGE COLUMN `Environment` `Environment` VARCHAR(45) NULL DEFAULT NULL  AFTER `Country` ;");
+        SQLInstruction.add(SQLS.toString());
+
+
         return SQLInstruction;
     }
 }
