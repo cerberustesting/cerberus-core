@@ -1,5 +1,6 @@
 package com.redcats.tst.util;
 
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -76,7 +77,7 @@ public final class StringUtil {
      * @param str
      * @return true if the parameter is a "null" or empty string.
      */
-    public static boolean isNullOrEmptyOrNull (String str) {
+    public static boolean isNullOrEmptyOrNull(String str) {
         if ((str == null) || (str.trim().equalsIgnoreCase("")) || (str.trim().equalsIgnoreCase("null"))) {
             return true;
         }
@@ -89,7 +90,8 @@ public final class StringUtil {
      * @param str
      * @param formula
      * @param replacement
-     * @return if replacement not null, replace in str, all formula with replacement
+     * @return if replacement not null, replace in str, all formula with
+     * replacement
      */
     public static String replaceAllProperties(String str, String formula, String replacement) {
         if (replacement != null) {
@@ -101,7 +103,7 @@ public final class StringUtil {
     /**
      * Generate a random string using current time and charset
      *
-     * @param length  of the random string to generate
+     * @param length of the random string to generate
      * @param charset use to generate random value
      * @return random string, empty if charset is null or length <= 0
      */
@@ -124,7 +126,7 @@ public final class StringUtil {
     /**
      * Generate a random string using current time and charset
      *
-     * @param length  of the random string to generate
+     * @param length of the random string to generate
      * @param charset use to generate random value
      * @return random string, empty if charset is null or length <= 0
      */
@@ -138,5 +140,30 @@ public final class StringUtil {
                 return string1.substring(0, length);
             }
         }
+    }
+
+    /**
+     *
+     * @param obj List of generic object that have a toString Method
+     * implementation
+     * @return a String that has all obj.toString values separated by , and
+     * surounded by '
+     */
+    public static String getInSQLClause(List<?> obj) {
+        if (obj == null) {
+            return "";
+        }
+        if (obj.isEmpty()) {
+            return "";
+        }
+        StringBuilder result = new StringBuilder();
+        result.append("in (");
+        for (Object myObj : obj) {
+            result.append("'");
+            result.append(myObj.toString());
+            result.append("',");
+        }
+        String res = result.toString().substring(0, (result.length() - 1));
+        return res + ")";
     }
 }

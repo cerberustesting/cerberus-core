@@ -117,4 +117,9 @@ public class Application {
     public void setMavengroupid(String mavengroupid) {
         this.mavengroupid = mavengroupid;
     }
+
+    @Override
+    public String toString() {
+        return application;
+    }
 }

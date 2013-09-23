@@ -3,6 +3,10 @@
     Created on : 20 mai 2011, 13:41:49
     Author     : acraske
 --%>
+<%@page import="com.redcats.tst.service.impl.ApplicationService"%>
+<%@page import="com.redcats.tst.service.IApplicationService"%>
+<%@page import="com.redcats.tst.util.StringUtil"%>
+<%@page import="com.redcats.tst.entity.Application"%>
 <%@page import="com.redcats.tst.service.IParameterService"%>
 <%@page import="java.util.Calendar"%>
 <%@page import="com.redcats.tst.log.MyLogger"%>
@@ -55,6 +59,10 @@
                 try {
                     conn = db.connect();
 
+                    ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+                    IParameterService myParameterService = appContext.getBean(IParameterService.class);
+                    IApplicationService applicationService = appContext.getBean(ApplicationService.class);
+                    
                     /*
                      * Filter requests
                      */
@@ -110,6 +118,15 @@
                         controlStatus = request.getParameter("controlStatus");
                     }
 
+                    String systemFlt = "";
+                    if (request.getParameter("systemFlt") != null) {
+                        systemFlt = request.getParameter("systemFlt");
+                    } else {
+                        if (!(request.getAttribute("MySystem").toString().equalsIgnoreCase(""))) {
+                            systemFlt = request.getAttribute("MySystem").toString();
+                        }
+                    }
+
                     String Application = "";
                     if (request.getParameter("application") != null) {
                         Application = request.getParameter("application");
@@ -146,9 +163,7 @@
                         PerfExcluded = request.getParameter("PerfExcluded");
                     }
 
-                    ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-                    IParameterService myParameterService = appContext.getBean(IParameterService.class);
-                    
+
                     int execmax = 100;
                     execmax = Integer.valueOf(myParameterService.findParameterByKey("cerberus_testexecutiondetailpage_nbmaxexe").getValue());
                     int execmax_max = 100;
@@ -247,6 +262,8 @@
                                         <%=ComboInvariant(conn, "revision", "width: 50px", "Revision", "Revision", "9", revision, "document.ExecFilters.submit()", "")%>&nbsp;&nbsp;&nbsp;
                                         Status&nbsp;&nbsp;&nbsp;
                                         <%=ComboInvariant(conn, "controlStatus", "width: 50px", "ControlStatus", "ControlStatus", "35", controlStatus, "document.ExecFilters.submit()", "")%>&nbsp;&nbsp;&nbsp;
+                                        System&nbsp;&nbsp;&nbsp;
+                                        <%=ComboInvariant(conn, "systemFlt", "width: 80px", "SystemFlt", "SystemFlt", "41", systemFlt, "document.ExecFilters.submit()", "")%>&nbsp;&nbsp;&nbsp;
                                         Application&nbsp;&nbsp;&nbsp;
                                         <select name="application" id="application" style="width: 200px" OnChange ="document.ExecFilters.submit()">
                                             <option style="width: 500px" value="">-- Choose Application --</option>
@@ -317,6 +334,16 @@
                 }
                 if (controlStatus.equalsIgnoreCase("") == false) {
                     ExeclistWhereSQL += " and tce.ControlStatus='" + controlStatus + "'";
+                }
+                if (systemFlt.equalsIgnoreCase("") == false) {
+                    List<Application> appliList = applicationService.findApplicationBySystem(systemFlt);
+                    String inSQL = StringUtil.getInSQLClause(appliList);
+                    if (!(inSQL.equalsIgnoreCase(""))) {
+                        ExeclistWhereSQL += " and tce.Application ";
+                        ExeclistWhereSQL += inSQL;
+                    }else{
+                        ExeclistWhereSQL += " and 1=0 ";
+                    }
                 }
                 if (Application.equalsIgnoreCase("") == false) {
                     ExeclistWhereSQL += " and tce.Application='" + Application + "'";

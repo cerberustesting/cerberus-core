@@ -13,6 +13,7 @@ import com.redcats.tst.service.impl.ApplicationService;
 import com.redcats.tst.service.impl.ParameterService;
 import com.redcats.tst.service.impl.UserService;
 import com.redcats.tst.util.ParameterParserUtil;
+import com.redcats.tst.util.StringUtil;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -69,12 +70,7 @@ public class Homepage extends HttpServlet {
 
                 IApplicationService applicationService = appContext.getBean(ApplicationService.class);
                 List<Application> appliList = applicationService.findApplicationBySystem(MySystem);
-                StringBuilder inSQL = new StringBuilder();
-                for (Application myApplication : appliList) {
-                    inSQL.append("'");
-                    inSQL.append(myApplication.getApplication());
-                    inSQL.append("',");
-                }
+                String inSQL = StringUtil.getInSQLClause(appliList);
                 StringBuilder SQL = new StringBuilder();
                 SQL.append("SELECT t.Test, count(*) as TOTAL,STANDBY, TBI, INPROGRESS , TBV , WORKING, TBD "
                         + "FROM testcase t "
@@ -109,14 +105,15 @@ public class Homepage extends HttpServlet {
                         + "group by Test)y "
                         + "on y.test=t.test "
                         + "WHERE 1=1 and ");
-                if (!(inSQL.toString().equalsIgnoreCase(""))) {
-                    SQL.append("t.application in (");
-                    SQL.append(inSQL.toString());
-                    SQL.append("'') ");
+                if (!(inSQL.equalsIgnoreCase(""))) {
+                    SQL.append("t.application ");
+                    SQL.append(inSQL);
                 } else {
                     SQL.append("t.application in ('') ");
                 }
-                SQL.append("GROUP BY test;");
+                SQL.append(" GROUP BY test;");
+                
+                MyLogger.log(Homepage.class.getName(), Level.DEBUG, " SQL : " + SQL.toString());
 
                 PreparedStatement stmt_teststatus = conn.prepareStatement(SQL.toString());
 
