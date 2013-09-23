@@ -130,9 +130,15 @@ public class SeleniumService implements ISeleniumService {
         profile.setAcceptUntrustedCertificates(true);
 
         try {
-            Invariant invariant = this.invariantService.findInvariantByIdValue("LANGUAGE", country);
-            profile.setPreference("intl.accept_languages", invariant.getGp1());
+            Invariant invariant = this.invariantService.findInvariantByIdValue("COUNTRY", country);
+            if (invariant.getGp2() == null) {
+                MyLogger.log(Selenium.class.getName(), Level.WARN, "Country selected (" + country + ") has no value of GP2 in Invariant table, default language set to English(en)");
+                profile.setPreference("intl.accept_languages", "en");
+            } else {
+                profile.setPreference("intl.accept_languages", invariant.getGp2());
+            }
         } catch (CerberusException ex) {
+            MyLogger.log(Selenium.class.getName(), Level.WARN, "Country selected (" + country + ") not in Invariant table, default language set to English(en)");
             profile.setPreference("intl.accept_languages", "en");
         }
 
@@ -980,9 +986,9 @@ public class SeleniumService implements ISeleniumService {
     private MessageEvent doActionFocusToIframe(String object, String property) {
         MessageEvent message;
 
-        try{
-            if(!StringUtil.isNullOrEmpty(property)){
-                try{
+        try {
+            if (!StringUtil.isNullOrEmpty(property)) {
+                try {
                     this.selenium.getDriver().switchTo().frame(this.getSeleniumElement(property));
                     message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_FOCUSTOIFRAME);
                     message.setDescription(message.getDescription().replaceAll("%IFRAME%", property));
@@ -991,8 +997,8 @@ public class SeleniumService implements ISeleniumService {
                     message.setDescription(message.getDescription().replaceAll("%IFRAME%", property));
                     MyLogger.log(SeleniumService.class.getName(), Level.ERROR, exception.toString());
                 }
-            }else {
-                try{
+            } else {
+                try {
                     this.selenium.getDriver().switchTo().frame(this.getSeleniumElement(object));
                     message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_FOCUSTOIFRAME);
                     message.setDescription(message.getDescription().replaceAll("%IFRAME%", object));
@@ -1012,10 +1018,10 @@ public class SeleniumService implements ISeleniumService {
         return message;
     }
 
-    private MessageEvent doActionFocusDefaultIframe(){
+    private MessageEvent doActionFocusDefaultIframe() {
         MessageEvent message;
 
-        try{
+        try {
             this.selenium.getDriver().switchTo().defaultContent();
             message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_FOCUSDEFAULTIFRAME);
         } catch (WebDriverException exception) {
