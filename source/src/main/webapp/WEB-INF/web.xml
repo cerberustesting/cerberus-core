@@ -120,7 +120,7 @@
         <servlet-class>com.redcats.tst.servlet.test.CreateTest</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>DeleteTestcase</servlet-name>
+        <servlet-name>DeleteTestCase</servlet-name>
         <servlet-class>com.redcats.tst.servlet.testCase.DeleteTestCase</servlet-class>
     </servlet>
     <servlet>
@@ -257,8 +257,8 @@
         <url-pattern>/CreateTest</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>DeleteTestcase</servlet-name>
-        <url-pattern>/DeleteTestcase</url-pattern>
+        <servlet-name>DeleteTestCase</servlet-name>
+        <url-pattern>/DeleteTestCase</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>ImportSeleniumIDE</servlet-name>
@@ -371,7 +371,7 @@
             <url-pattern>/UpdateProperties</url-pattern>
             <url-pattern>/CreateTestCase</url-pattern>
             <url-pattern>/CreateTest</url-pattern>
-            <url-pattern>/DeleteTestcase</url-pattern>
+            <url-pattern>/DeleteTestCase</url-pattern>
             <url-pattern>/UpdateComparativeInformation</url-pattern>
             <url-pattern>/UpdateTestCaseScript</url-pattern>
             <url-pattern>/ImportSeleniumIDE</url-pattern>
