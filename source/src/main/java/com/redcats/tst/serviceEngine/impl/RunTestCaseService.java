@@ -813,7 +813,8 @@ public class RunTestCaseService implements IRunTestCaseService {
          * Create and initialize the TestCaseExecutionData object
          */
         MessageEvent msg = new MessageEvent(MessageEventEnum.PROPERTY_PENDING);
-        TestCaseExecutionData testCaseExecutionData = factoryTestCaseExecutionData.create(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getId(), propertyName, null, null, null, null, null, 0, 0, 0, 0, msg);
+        long now = new Date().getTime();
+        TestCaseExecutionData testCaseExecutionData = factoryTestCaseExecutionData.create(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getId(), propertyName, null, null, null, null, null, now, now, now, now, msg);
 
         /**
          * Find TestCaseCountryProperty from database.
