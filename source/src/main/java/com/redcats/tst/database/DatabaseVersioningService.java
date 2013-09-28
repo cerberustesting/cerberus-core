@@ -2803,50 +2803,46 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS = new StringBuilder();
         SQLS.append("UPDATE `invariant` SET gp2 = 'fr-be' WHERE idname = 'COUNTRY' and value = 'BE';");
         SQLInstruction.add(SQLS.toString());
-
         SQLS = new StringBuilder();
         SQLS.append("UPDATE `invariant` SET gp2 = 'fr-ch' WHERE idname = 'COUNTRY' and value = 'CH';");
         SQLInstruction.add(SQLS.toString());
-
         SQLS = new StringBuilder();
         SQLS.append("UPDATE `invariant` SET gp2 = 'es' WHERE idname = 'COUNTRY' and value = 'ES';");
         SQLInstruction.add(SQLS.toString());
-
         SQLS = new StringBuilder();
         SQLS.append("UPDATE `invariant` SET gp2 = 'it' WHERE idname = 'COUNTRY' and value = 'IT';");
         SQLInstruction.add(SQLS.toString());
-
         SQLS = new StringBuilder();
         SQLS.append("UPDATE `invariant` SET gp2 = 'pt-pt' WHERE idname = 'COUNTRY' and value = 'PT';");
         SQLInstruction.add(SQLS.toString());
-
         SQLS = new StringBuilder();
         SQLS.append("UPDATE `invariant` SET gp2 = 'ru' WHERE idname = 'COUNTRY' and value = 'RU';");
         SQLInstruction.add(SQLS.toString());
-
         SQLS = new StringBuilder();
         SQLS.append("UPDATE `invariant` SET gp2 = 'en-gb' WHERE idname = 'COUNTRY' and value = 'UK';");
         SQLInstruction.add(SQLS.toString());
-
         SQLS = new StringBuilder();
         SQLS.append("UPDATE `invariant` SET gp2 = 'en-gb' WHERE idname = 'COUNTRY' and value = 'VI';");
         SQLInstruction.add(SQLS.toString());
-
         SQLS = new StringBuilder();
         SQLS.append("UPDATE `invariant` SET gp2 = 'ru' WHERE idname = 'COUNTRY' and value = 'RU';");
         SQLInstruction.add(SQLS.toString());
-
         SQLS = new StringBuilder();
         SQLS.append("UPDATE `invariant` SET gp2 = 'fr' WHERE idname = 'COUNTRY' and value = 'FR';");
         SQLInstruction.add(SQLS.toString());
-
         SQLS = new StringBuilder();
         SQLS.append("UPDATE `invariant` SET gp2 = 'en-gb' WHERE idname = 'COUNTRY' and value = 'RX';");
         SQLInstruction.add(SQLS.toString());
-
         SQLS = new StringBuilder();
         SQLS.append("DELETE FROM `invariant` WHERE idname = 'LANGUAGE'");
         SQLInstruction.add(SQLS.toString());
+        
+//-- Cleaning countryenvironmentparameters table with useless columns
+//-- ------------------------
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `countryenvironmentparameters` DROP COLUMN `as400LIB` , DROP COLUMN `JdbcPort` , DROP COLUMN `JdbcIP` , DROP COLUMN `JdbcPass` , DROP COLUMN `JdbcUser` ;");
+        SQLInstruction.add(SQLS.toString());
+        
 
         return SQLInstruction;
     }
