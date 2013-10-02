@@ -128,6 +128,7 @@ public class SeleniumService implements ISeleniumService {
         WebDriver driver;
         profile.setEnableNativeEvents(true);
         profile.setAcceptUntrustedCertificates(true);
+        profile.setPreference("network.http.connection-timeout", "300");
 
         try {
             Invariant invariant = this.invariantService.findInvariantByIdValue("COUNTRY", country);
