@@ -9,6 +9,7 @@ import org.apache.log4j.Level;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -34,12 +35,14 @@ public class ProjectDAO implements IProjectDAO {
         String description;
         final String query = "SELECT * FROM project ORDER BY idproject";
 
+        Connection connection = this.databaseSpring.connect();
         try {
-            PreparedStatement preStat = this.databaseSpring.connect().prepareStatement(query);
+            PreparedStatement preStat = connection.prepareStatement(query);
             try {
                 ResultSet resultSet = preStat.executeQuery();
-                result = new ArrayList<Project>();
                 try {
+                    result = new ArrayList<Project>();
+
                     while (resultSet.next()) {
                         idProject = resultSet.getString("idproject") == null ? "" : resultSet.getString("idproject");
                         vcCode = resultSet.getString("VCCode") == null ? "" : resultSet.getString("VCCode");
@@ -61,7 +64,13 @@ public class ProjectDAO implements IProjectDAO {
         } catch (SQLException exception) {
             MyLogger.log(ProjectDAO.class.getName(), Level.ERROR, exception.toString());
         } finally {
-            this.databaseSpring.disconnect();
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(ProjectDAO.class.getName(), Level.WARN, e.toString());
+            }
         }
 
         return result;

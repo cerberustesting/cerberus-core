@@ -4,22 +4,26 @@
  */
 package com.redcats.tst.servlet.publi;
 
-import com.redcats.tst.refactor.DbMysqlController;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.Statement;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import com.redcats.tst.database.DatabaseSpring;
+import com.redcats.tst.log.MyLogger;
+import org.springframework.context.ApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
+import version.Version;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import version.Version;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
- *
  * @author vertigo
  */
 public class NewRelease extends HttpServlet {
@@ -29,10 +33,10 @@ public class NewRelease extends HttpServlet {
      * <code>GET</code> and
      * <code>POST</code> methods.
      *
-     * @param request servlet request
+     * @param request  servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * @throws IOException      if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -114,101 +118,125 @@ public class NewRelease extends HttpServlet {
         }
 
         //Create Connexion // Statement
-        DbMysqlController db;
-        db = new DbMysqlController();
-        Connection conn = db.connect();
+        ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+        DatabaseSpring database = appContext.getBean(DatabaseSpring.class);
 
+        Connection connection = database.connect();
         try {
 
             boolean error = false;
 
             // Application Verification. We verify here that the Application exist on the database.
-            Statement stmt1 = conn.createStatement();
-            String req_sel1 = "Select Application FROM  Application "
-                    + " WHERE Application = '" + application + "' "
-                    + "       and internal = 'Y'";
-            ResultSet rsBC1 = stmt1.executeQuery(req_sel1);
-            if (rsBC1.first() != true) {
-                out.println("Error - Application does not exist or not an internal application : " + application);
-                error = true;
+            Statement stmt1 = connection.createStatement();
+            try {
+                String req_sel1 = "Select Application FROM  Application "
+                        + " WHERE Application = '" + application + "' and internal = 'Y'";
+                ResultSet rsBC1 = stmt1.executeQuery(req_sel1);
+                try {
+                    if (rsBC1.first() != true) {
+                        out.println("Error - Application does not exist or not an internal application : " + application);
+                        error = true;
+                    }
+                } finally {
+                    rsBC1.close();
+                }
+            } finally {
+                stmt1.close();
             }
-            stmt1.close();
-            rsBC1.close();
 
             // User Verification. We verify here that the User exist on the database.
-            Statement stmt2 = conn.createStatement();
-            String req_sel2 = "Select Login FROM  User "
-                    + " WHERE Login = '" + owner + "'";
-            ResultSet rsBC2 = stmt2.executeQuery(req_sel2);
-            if (rsBC2.first() != true) {
-                out.println("Warning - User does not exist : " + owner);
+            Statement stmt2 = connection.createStatement();
+            try {
+                String req_sel2 = "Select Login FROM  User WHERE Login = '" + owner + "'";
+                ResultSet rsBC2 = stmt2.executeQuery(req_sel2);
+                try {
+                    if (rsBC2.first() != true) {
+                        out.println("Warning - User does not exist : " + owner);
+                    }
+                } finally {
+                    rsBC2.close();
+                }
+            } finally {
+                stmt2.close();
             }
-            stmt2.close();
-            rsBC2.close();
 
             // Project Verification. We verify here that the Project exist on the database.
-            Statement stmt3 = conn.createStatement();
-            String req_sel3 = "Select idproject FROM  project "
-                    + " WHERE idproject = '" + project + "'";
-            ResultSet rsBC3 = stmt3.executeQuery(req_sel3);
-            if (rsBC3.first() != true) {
-                out.println("Warning - Project does not exist : " + project);
+            Statement stmt3 = connection.createStatement();
+            try {
+                String req_sel3 = "Select idproject FROM  project WHERE idproject = '" + project + "'";
+                ResultSet rsBC3 = stmt3.executeQuery(req_sel3);
+                try {
+                    if (rsBC3.first() != true) {
+                        out.println("Warning - Project does not exist : " + project);
+                    }
+                } finally {
+                    rsBC3.close();
+                }
+            } finally {
+                stmt3.close();
             }
-            stmt3.close();
-            rsBC3.close();
 
             // Starting the database update only when no blocking error has been detected.
             if (error == false) {
-
                 // Transaction and database update.
-                Statement stmt = conn.createStatement();
-
-                // Duplicate entry Verification. On the build/relivion not yet assigned (NONE/NONE), 
+                // Duplicate entry Verification. On the build/relivion not yet assigned (NONE/NONE),
                 //  we verify that the application + release has not been submitted yet.
                 //  if it exist, we update it in stead of inserting a new row.
                 //  That coorespond in the cases where the Jenkins pipe is executed several times 
                 //  on a single svn commit.
-                Statement stmt4 = conn.createStatement();
-                String req_sel4 = "Select id FROM  buildrevisionparameters "
-                        + " WHERE build='NONE' and revision='NONE' and application = '" + application + "' "
-                        + "   and `release` = '" + release + "'";
-                ResultSet rsBC4 = stmt4.executeQuery(req_sel4);
-                if (rsBC4.first()) {
-                    out.println("Warning - Release entry already exist. Updating the existing entry : " + rsBC4.getString("id"));
+                Statement stmt4 = connection.createStatement();
+                try {
+                    String req_sel4 = "Select id FROM  buildrevisionparameters "
+                            + " WHERE build='NONE' and revision='NONE' and application = '" + application + "' "
+                            + "   and `release` = '" + release + "'";
+                    ResultSet rsBC4 = stmt4.executeQuery(req_sel4);
+                    try {
+                        if (rsBC4.first()) {
+                            out.println("Warning - Release entry already exist. Updating the existing entry : " + rsBC4.getString("id"));
 
-                    String req_update = "UPDATE buildrevisionparameters "
-                            + "SET Project = '" + project + "', "
-                            + " TicketIDFixed = '" + ticket + "', "
-                            + " BugIDFixed = '" + bug + "', "
-                            + " Link = '" + link + "', "
-                            + " ReleaseOwner = '" + owner + "', "
-                            + " Subject = '" + subject + "', "
-                            + " jenkinsbuildid = '" + jenkinsbuildid + "', "
-                            + " mavengroupid = '" + mavengroupid + "', "
-                            + " mavenartifactid = '" + mavenartifactid + "', "
-                            + " mavenversion = '" + mavenversion + "'"
-                            + "WHERE id = '" + rsBC4.getString("id") + "' ";
-                    stmt.execute(req_update);
-                } else {
-                    String req_insert = "INSERT INTO  buildrevisionparameters "
-                            + " ( `Build`, `Revision`, `Release`, `Application`"
-                            + ", `Project`, `TicketIDFixed`, `BugIDFixed`"
-                            + ", `Link`, `ReleaseOwner`, `Subject`, `jenkinsbuildid`"
-                            + ", `mavengroupid`, `mavenartifactid`, `mavenversion`) "
-                            + " VALUES ('NONE', 'NONE', '" + release + "', '" + application + "'"
-                            + ", '" + project + "', '" + ticket + "', '" + bug + "'"
-                            + ", '" + link + "', '" + owner + "', '" + subject + "', '" + jenkinsbuildid + "'"
-                            + ", '" + mavengroupid + "', '" + mavenartifactid + "', '" + mavenversion + "') ";
-                    stmt.execute(req_insert);
-
-                    out.println("Release Inserted : '" + release + "' on '" + application + "' for user '" + owner + "'");
+                            String req_update = "UPDATE buildrevisionparameters "
+                                    + "SET Project = '" + project + "', "
+                                    + " TicketIDFixed = '" + ticket + "', "
+                                    + " BugIDFixed = '" + bug + "', "
+                                    + " Link = '" + link + "', "
+                                    + " ReleaseOwner = '" + owner + "', "
+                                    + " Subject = '" + subject + "', "
+                                    + " jenkinsbuildid = '" + jenkinsbuildid + "', "
+                                    + " mavengroupid = '" + mavengroupid + "', "
+                                    + " mavenartifactid = '" + mavenartifactid + "', "
+                                    + " mavenversion = '" + mavenversion + "'"
+                                    + "WHERE id = '" + rsBC4.getString("id") + "' ";
+                            Statement stmt = connection.createStatement();
+                            try {
+                                stmt.execute(req_update);
+                            } finally {
+                                stmt.close();
+                            }
+                        } else {
+                            String req_insert = "INSERT INTO  buildrevisionparameters "
+                                    + " ( `Build`, `Revision`, `Release`, `Application`"
+                                    + ", `Project`, `TicketIDFixed`, `BugIDFixed`"
+                                    + ", `Link`, `ReleaseOwner`, `Subject`, `jenkinsbuildid`"
+                                    + ", `mavengroupid`, `mavenartifactid`, `mavenversion`) "
+                                    + " VALUES ('NONE', 'NONE', '" + release + "', '" + application + "'"
+                                    + ", '" + project + "', '" + ticket + "', '" + bug + "'"
+                                    + ", '" + link + "', '" + owner + "', '" + subject + "', '" + jenkinsbuildid + "'"
+                                    + ", '" + mavengroupid + "', '" + mavenartifactid + "', '" + mavenversion + "') ";
+                            Statement stmt = connection.createStatement();
+                            try {
+                                stmt.execute(req_insert);
+                            } finally {
+                                stmt.close();
+                            }
+                            out.println("Release Inserted : '" + release + "' on '" + application + "' for user '" + owner + "'");
+                        }
+                    } finally {
+                        rsBC4.close();
+                    }
+                } finally {
+                    stmt4.close();
                 }
-                stmt4.close();
-                rsBC4.close();
-
-                stmt.close();
             }
-            conn.close();
 
         } catch (Exception e) {
             Logger.getLogger(NewRelease.class.getName()).log(Level.SEVERE, Version.PROJECT_NAME_VERSION + " - Exception catched.", e);
@@ -216,18 +244,26 @@ public class NewRelease extends HttpServlet {
             out.println(e.getMessage());
         } finally {
             out.close();
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(NewRelease.class.getName(), org.apache.log4j.Level.WARN, e.toString());
+            }
         }
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
+
     /**
      * Handles the HTTP
      * <code>GET</code> method.
      *
-     * @param request servlet request
+     * @param request  servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * @throws IOException      if an I/O error occurs
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -239,10 +275,10 @@ public class NewRelease extends HttpServlet {
      * Handles the HTTP
      * <code>POST</code> method.
      *
-     * @param request servlet request
+     * @param request  servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * @throws IOException      if an I/O error occurs
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)

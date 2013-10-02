@@ -6,23 +6,26 @@ import com.redcats.tst.entity.TCExecution;
 import com.redcats.tst.entity.TCase;
 import com.redcats.tst.factory.IFactoryTCExecution;
 import com.redcats.tst.factory.IFactoryTCase;
+import com.redcats.tst.log.MyLogger;
 import com.redcats.tst.serviceEngine.IRunTestCaseService;
 import com.redcats.tst.serviceEngine.impl.RunTestCaseService;
 import com.redcats.tst.util.ParameterParserUtil;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import org.apache.log4j.Level;
 import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 import version.Version;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 
 /**
  * {Insert class description here}
@@ -50,7 +53,7 @@ public class RunTestCase extends HttpServlet {
         String environment = ParameterParserUtil.parseStringParam(policy.sanitize(request.getParameter("Environment")), "");
 
         //Test Dev Environment
-        boolean manualURL = ParameterParserUtil.parseBooleanParam(policy.sanitize(request.getParameter("manualURL")),false);
+        boolean manualURL = ParameterParserUtil.parseBooleanParam(policy.sanitize(request.getParameter("manualURL")), false);
         String myHost = ParameterParserUtil.parseStringParam(policy.sanitize(request.getParameter("myhost")), "");
         String myContextRoot = ParameterParserUtil.parseStringParam(policy.sanitize(request.getParameter("mycontextroot")), "");
         String myLoginRelativeURL = ParameterParserUtil.parseStringParam(policy.sanitize(request.getParameter("myloginrelativeurl")), "");
@@ -75,7 +78,11 @@ public class RunTestCase extends HttpServlet {
                 0, 0, "", "", null, seleniumIP, null, seleniumPort, tag, "N", verbose, screenshot, outputFormat, null,
                 Version.PROJECT_NAME_VERSION, tCase, null, null, manualURL, myHost, myContextRoot, myLoginRelativeURL, myEnvData, seleniumIP, seleniumPort, null, new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_TESTSTARTED));
 
-        tCExecution = runTestCaseService.runTestCase(tCExecution);
+        try {
+            tCExecution = runTestCaseService.runTestCase(tCExecution);
+        } catch (Throwable throwable) {
+            MyLogger.log(RunTestCase.class.getName(), Level.FATAL, "Exception on testcase: " + tCExecution.getId() + "\nDetail: " + throwable.getMessage() + "\n\n" + throwable.toString());
+        }
 
         long runID = tCExecution.getId();
         PrintWriter out = response.getWriter();
@@ -125,7 +132,7 @@ public class RunTestCase extends HttpServlet {
             out.println("Country" + separator + country);
             out.println("Environment" + separator + environment);
             out.println("Time Start" + separator + new Timestamp(tCExecution.getStart()));
-            out.println("Time End" + separator  + new Timestamp(tCExecution.getEnd()));
+            out.println("Time End" + separator + new Timestamp(tCExecution.getEnd()));
             out.println("OutputFormat" + separator + outputFormat);
             out.println("Verbose" + separator + verbose);
             out.println("Screenshot" + separator + screenshot);

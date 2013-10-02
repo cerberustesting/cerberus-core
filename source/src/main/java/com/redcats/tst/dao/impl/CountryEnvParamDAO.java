@@ -17,6 +17,7 @@ import org.apache.log4j.Level;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -40,12 +41,13 @@ public class CountryEnvParamDAO implements ICountryEnvParamDAO {
         query.append("SELECT country, environment, Build, Revision,chain, distriblist, eMailBodyRevision, type,eMailBodyChain, eMailBodyDisableEnvironment,  active, maintenanceact, ");
         query.append("maintenancestr, maintenanceend FROM countryenvparam WHERE country = ? AND environment = ?");
 
+        Connection connection = this.databaseSpring.connect();
         try {
-            PreparedStatement preStat = this.databaseSpring.connect().prepareStatement(query.toString());
-            preStat.setString(1, country);
-            preStat.setString(2, environment);
-
+            PreparedStatement preStat = connection.prepareStatement(query.toString());
             try {
+                preStat.setString(1, country);
+                preStat.setString(2, environment);
+
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     if (resultSet.next()) {
@@ -66,7 +68,13 @@ public class CountryEnvParamDAO implements ICountryEnvParamDAO {
         } catch (SQLException exception) {
             MyLogger.log(CountryEnvironmentParametersDAO.class.getName(), Level.ERROR, exception.toString());
         } finally {
-            this.databaseSpring.disconnect();
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(CountryEnvironmentParametersDAO.class.getName(), Level.WARN, e.toString());
+            }
         }
         if (throwex) {
             throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));

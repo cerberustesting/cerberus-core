@@ -5,11 +5,7 @@
 --%>
 
 <%@page import="org.apache.commons.lang3.StringUtils"%>
-<%@page import="java.net.URLEncoder"%>
-<%@page import="java.net.URL"%>
 <%@page import="java.util.Enumeration"%>
-<%@page import="java.net.InetAddress"%>
-<%@page import="java.sql.*"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
     "http://www.w3.org/TR/html4/loose.dtd">
@@ -393,7 +389,6 @@
                 } finally {
                     try {
                         conn.close();
-                        db.disconnect();
                     } catch (Exception ex) {
                         out.println(ex);
                     }

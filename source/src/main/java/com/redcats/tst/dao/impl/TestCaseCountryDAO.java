@@ -2,21 +2,22 @@ package com.redcats.tst.dao.impl;
 
 import com.redcats.tst.dao.ITestCaseCountryDAO;
 import com.redcats.tst.database.DatabaseSpring;
-import com.redcats.tst.entity.MessageEventEnum;
 import com.redcats.tst.entity.MessageGeneral;
 import com.redcats.tst.entity.MessageGeneralEnum;
 import com.redcats.tst.entity.TestCaseCountry;
 import com.redcats.tst.exception.CerberusException;
 import com.redcats.tst.factory.IFactoryTestCaseCountry;
 import com.redcats.tst.log.MyLogger;
+import org.apache.log4j.Level;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.log4j.Level;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
 
 /**
  * {Insert class description here}
@@ -51,12 +52,15 @@ public class TestCaseCountryDAO implements ITestCaseCountryDAO {
         final String query = "SELECT * FROM testcasecountry WHERE test = ? AND testcase = ? AND country = ? ";
         TestCaseCountry result = null;
         boolean throwException = false;
+
+        Connection connection = this.databaseSpring.connect();
         try {
-            PreparedStatement preStat = this.databaseSpring.connect().prepareStatement(query);
-            preStat.setString(1, test);
-            preStat.setString(2, testCase);
-            preStat.setString(3, country);
+            PreparedStatement preStat = connection.prepareStatement(query);
             try {
+                preStat.setString(1, test);
+                preStat.setString(2, testCase);
+                preStat.setString(3, country);
+
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     if (resultSet.first()) {
@@ -77,7 +81,13 @@ public class TestCaseCountryDAO implements ITestCaseCountryDAO {
         } catch (SQLException exception) {
             MyLogger.log(TestCaseCountryDAO.class.getName(), Level.ERROR, exception.toString());
         } finally {
-            this.databaseSpring.disconnect();
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(TestCaseCountryDAO.class.getName(), Level.WARN, e.toString());
+            }
         }
         if (throwException) {
             throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
@@ -100,14 +110,17 @@ public class TestCaseCountryDAO implements ITestCaseCountryDAO {
         List<TestCaseCountry> result = null;
         final String query = "SELECT * FROM testcasecountry WHERE test = ? AND testcase = ?";
 
+        Connection connection = this.databaseSpring.connect();
         try {
-            PreparedStatement preStat = this.databaseSpring.connect().prepareStatement(query);
-            preStat.setString(1, test);
-            preStat.setString(2, testCase);
+            PreparedStatement preStat = connection.prepareStatement(query);
             try {
+                preStat.setString(1, test);
+                preStat.setString(2, testCase);
+
                 ResultSet resultSet = preStat.executeQuery();
-                result = new ArrayList<TestCaseCountry>();
                 try {
+                    result = new ArrayList<TestCaseCountry>();
+
                     while (resultSet.next()) {
                         String country = resultSet.getString("Country");
                         result.add(factoryTestCaseCountry.create(test, testCase, country));
@@ -125,7 +138,13 @@ public class TestCaseCountryDAO implements ITestCaseCountryDAO {
         } catch (SQLException exception) {
             MyLogger.log(TestCaseCountryDAO.class.getName(), Level.ERROR, exception.toString());
         } finally {
-            this.databaseSpring.disconnect();
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(TestCaseCountryDAO.class.getName(), Level.WARN, e.toString());
+            }
         }
         return result;
     }

@@ -3,15 +3,13 @@
     Created on : Nov 19, 2011, 4:27:49 PM
     Author     : vertigo
 --%>
-<%@page import="com.redcats.tst.refactor.DbMysqlController"%>
-<%@page import="com.mysql.jdbc.ResultSetImpl"%>
-<%@page import="java.sql.SQLException"%>
-<%@page import="java.sql.Connection"%>
-<%@page import="java.util.ArrayList"%>
-<%@page import="java.util.List"%>
-<%@page import="java.sql.ResultSet"%>
-<%@page import="java.sql.Statement"%>
-<%@page import="java.net.URLEncoder"%>
+<%@ page import="java.sql.Connection"%>
+<%@ page import="java.sql.ResultSet"%>
+<%@ page import="java.sql.Statement"%>
+<%@ page import="org.springframework.context.ApplicationContext" %>
+<%@ page import="org.springframework.web.context.support.WebApplicationContextUtils" %>
+<%@ page import="com.redcats.tst.database.DatabaseSpring" %>
+<%@ page import="java.sql.SQLException" %>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
@@ -39,15 +37,11 @@
             DocValue_isdefined = false;
         }
 
-        DbMysqlController db;
-        Connection conn = null;
+        ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+        DatabaseSpring db = appContext.getBean(DatabaseSpring.class);
+
+        Connection conn = db.connect();
         try {
-            
-            db = (DbMysqlController) session.getAttribute("Database");
-            if (db == null) {
-                db = new DbMysqlController();
-            }
-            conn = db.connect();
 
             if (DocValue_isdefined == false) {
 
@@ -152,7 +146,13 @@
                 out.println("<br> error message : " + e.getMessage() + " "
                         + e.toString() + "<br>");
             } finally{
-                conn.close();
+                if(conn != null){
+                    try {
+                        conn.close();
+                    } catch (SQLException e) {
+                        //TODO logger
+                    }
+                }
             }
         %>
 

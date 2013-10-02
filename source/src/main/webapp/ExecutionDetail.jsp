@@ -3,7 +3,6 @@
     Created on : 20 mai 2011, 13:41:49
     Author     : acraske
 --%>
-<%@page import="com.redcats.tst.entity.Environment"%>
 <%@page import="com.redcats.tst.service.IApplicationService"%>
 <%@page import="com.redcats.tst.service.IParameterService"%>
 <%@page import="com.redcats.tst.util.DateUtil"%>
@@ -21,7 +20,6 @@
 <%@page import="com.redcats.tst.log.MyLogger"%>
 <%@page import="org.apache.log4j.Level"%>
 <%@page import="org.springframework.web.context.support.WebApplicationContextUtils"%>
-<%@page import="org.springframework.context.ApplicationContext"%>
 <%@page import="java.sql.Statement"%>
 <%@page import="java.sql.ResultSet"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
@@ -72,7 +70,6 @@
                      */
                     Statement stmt0 = conn.createStatement();
 
-                    ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletConfig().getServletContext());
                     IParameterService myParameterService = appContext.getBean(IParameterService.class);
                     IApplicationService myApplicationService = appContext.getBean(IApplicationService.class);
 

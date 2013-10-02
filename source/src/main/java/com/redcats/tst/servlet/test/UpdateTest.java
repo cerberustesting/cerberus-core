@@ -4,29 +4,29 @@
  */
 package com.redcats.tst.servlet.test;
 
+import com.redcats.tst.database.DatabaseSpring;
 import com.redcats.tst.exception.CerberusException;
 import com.redcats.tst.factory.IFactoryLogEvent;
 import com.redcats.tst.factory.impl.FactoryLogEvent;
 import com.redcats.tst.log.MyLogger;
-import com.redcats.tst.refactor.DbMysqlController;
 import com.redcats.tst.service.ILogEventService;
 import com.redcats.tst.service.impl.LogEventService;
 import com.redcats.tst.service.impl.UserService;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.springframework.context.ApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.springframework.context.ApplicationContext;
-import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
  * @author acraske
@@ -35,14 +35,14 @@ public class UpdateTest extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request,
-            HttpServletResponse response) throws ServletException, IOException {
+                         HttpServletResponse response) throws ServletException, IOException {
 
         this.processRequest(request, response);
     }
 
     @Override
     protected void doPost(HttpServletRequest request,
-            HttpServletResponse response) throws ServletException, IOException {
+                          HttpServletResponse response) throws ServletException, IOException {
 
         this.processRequest(request, response);
     }
@@ -57,7 +57,7 @@ public class UpdateTest extends HttpServlet {
      * the specified index
      */
     public boolean formIsFullFill(List<String[]> testcase_info, int index,
-            PrintWriter out) {
+                                  PrintWriter out) {
 
         for (String[] t : testcase_info) {
             if (t[index].isEmpty() || t[index].trim().equals("")
@@ -81,18 +81,14 @@ public class UpdateTest extends HttpServlet {
     }// </editor-fold>
 
     protected void processRequest(HttpServletRequest request,
-            HttpServletResponse response) throws ServletException, IOException {
+                                  HttpServletResponse response) throws ServletException, IOException {
 
         response.setContentType("text/html;charset=UTF-8");
         PrintWriter out = response.getWriter();
-        /*
-         * Database connexion
-         */
-        //Class.forName(Database.DBDriver);
-        DbMysqlController db = new DbMysqlController();
-        Connection conn = db.connect();
-        PreparedStatement stmt = null;
+        ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+        DatabaseSpring database = appContext.getBean(DatabaseSpring.class);
 
+        Connection connection = database.connect();
         try {
 
             //out.println("Database1.DBUrl :" + Database.DBUrl);
@@ -120,23 +116,24 @@ public class UpdateTest extends HttpServlet {
 
             String sql = "UPDATE test SET Description = ?, Active = ?, Automated = ? WHERE Test = ?";
 
-            stmt = conn.prepareStatement(sql);
-            stmt.setString(1, testDescription);
-            stmt.setString(2, active);
-            stmt.setString(3, automated);
-            stmt.setString(4, test);
-            stmt.executeUpdate();
+            PreparedStatement stmt = connection.prepareStatement(sql);
+            try {
+                stmt.setString(1, testDescription);
+                stmt.setString(2, active);
+                stmt.setString(3, automated);
+                stmt.setString(4, test);
+                stmt.executeUpdate();
+            } finally {
+                stmt.close();
+            }
 
-            stmt.close();
-            
             /**
              * Adding Log entry.
              */
-            ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
             ILogEventService logEventService = appContext.getBean(LogEventService.class);
             IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
             try {
-                logEventService.insertLogEvent(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/UpdateTest", "UPDATE", "Update test : " + test , "", ""));
+                logEventService.insertLogEvent(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/UpdateTest", "UPDATE", "Update test : " + test, "", ""));
             } catch (CerberusException ex) {
                 Logger.getLogger(UserService.class.getName()).log(Level.ERROR, null, ex);
             }
@@ -151,16 +148,11 @@ public class UpdateTest extends HttpServlet {
             out.println(UpdateTest.class.getName() + ex);
         } finally {
             try {
-                conn.close();
-            } catch (Exception ex) {
-                MyLogger.log(UpdateTest.class.getName(), Level.INFO, "Exception closing Connection: " + ex.toString());
-            }
-            try {
-                if (stmt != null) {
-                    stmt.close();
+                if (connection != null) {
+                    connection.close();
                 }
-            } catch (SQLException ex) {
-                MyLogger.log(UpdateTest.class.getName(), Level.INFO, "Exception closing PreparedStatement: " + ex.toString());
+            } catch (SQLException e) {
+                MyLogger.log(UpdateTest.class.getName(), Level.WARN, e.toString());
             }
         }
     }

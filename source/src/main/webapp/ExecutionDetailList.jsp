@@ -11,10 +11,7 @@
 <%@page import="java.util.Calendar"%>
 <%@page import="com.redcats.tst.log.MyLogger"%>
 <%@page import="com.redcats.tst.refactor.GeneratePerformanceString"%>
-<%@page import="java.sql.Timestamp"%>
 <%@page import="org.apache.log4j.Level"%>
-<%@page import="org.springframework.web.context.support.WebApplicationContextUtils"%>
-<%@page import="org.springframework.context.ApplicationContext"%>
 <%@page import="java.sql.Statement"%>
 <%@page import="java.sql.ResultSet"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
@@ -59,7 +56,6 @@
                 try {
                     conn = db.connect();
 
-                    ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
                     IParameterService myParameterService = appContext.getBean(IParameterService.class);
                     IApplicationService applicationService = appContext.getBean(ApplicationService.class);
                     

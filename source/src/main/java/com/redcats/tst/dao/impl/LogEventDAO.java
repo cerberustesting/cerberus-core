@@ -8,19 +8,15 @@ import com.redcats.tst.entity.MessageGeneralEnum;
 import com.redcats.tst.exception.CerberusException;
 import com.redcats.tst.factory.IFactoryLogEvent;
 import com.redcats.tst.log.MyLogger;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
 import org.apache.log4j.Level;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
- *
  * @author vertigo
  */
 @Repository
@@ -38,9 +34,11 @@ public class LogEventDAO implements ILogEventDAO {
     public List<LogEvent> findAllLogEvent() throws CerberusException {
         List<LogEvent> list = null;
         boolean throwExe = true;
-        final String query = "SELECT * FROM logevent order by logeventid ; ";
+        final String query = "SELECT * FROM logevent ORDER BY logeventid ; ";
+
+        Connection connection = this.databaseSpring.connect();
         try {
-            PreparedStatement preStat = this.databaseSpring.connect().prepareStatement(query);
+            PreparedStatement preStat = connection.prepareStatement(query);
             try {
                 ResultSet resultSet = preStat.executeQuery();
                 try {
@@ -72,7 +70,13 @@ public class LogEventDAO implements ILogEventDAO {
         } catch (SQLException exception) {
             MyLogger.log(UserDAO.class.getName(), Level.ERROR, exception.toString());
         } finally {
-            this.databaseSpring.disconnect();
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(UserDAO.class.getName(), Level.WARN, e.toString());
+            }
         }
         if (throwExe) {
             throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
@@ -86,8 +90,10 @@ public class LogEventDAO implements ILogEventDAO {
         boolean throwExe = true;
         String query = "SELECT * FROM logevent order by " + colName + " " + dir + " limit " + start + " , " + amount;
         MyLogger.log(LogEventDAO.class.getName(), Level.DEBUG, query);
+
+        Connection connection = this.databaseSpring.connect();
         try {
-            PreparedStatement preStat = this.databaseSpring.connect().prepareStatement(query);
+            PreparedStatement preStat = connection.prepareStatement(query);
             try {
                 ResultSet resultSet = preStat.executeQuery();
                 try {
@@ -119,7 +125,13 @@ public class LogEventDAO implements ILogEventDAO {
         } catch (SQLException exception) {
             MyLogger.log(UserDAO.class.getName(), Level.ERROR, exception.toString());
         } finally {
-            this.databaseSpring.disconnect();
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(UserDAO.class.getName(), Level.WARN, e.toString());
+            }
         }
         if (throwExe) {
             throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
@@ -131,8 +143,10 @@ public class LogEventDAO implements ILogEventDAO {
     public Integer getNumberOfLogEvent() throws CerberusException {
         boolean throwExe = true;
         final String query = "SELECT count(*) c FROM logevent ; ";
+
+        Connection connection = this.databaseSpring.connect();
         try {
-            PreparedStatement preStat = this.databaseSpring.connect().prepareStatement(query);
+            PreparedStatement preStat = connection.prepareStatement(query);
             try {
                 ResultSet resultSet = preStat.executeQuery();
                 try {
@@ -153,7 +167,13 @@ public class LogEventDAO implements ILogEventDAO {
         } catch (SQLException exception) {
             MyLogger.log(UserDAO.class.getName(), Level.ERROR, exception.toString());
         } finally {
-            this.databaseSpring.disconnect();
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(UserDAO.class.getName(), Level.WARN, e.toString());
+            }
         }
         if (throwExe) {
             throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
@@ -165,16 +185,19 @@ public class LogEventDAO implements ILogEventDAO {
     public boolean insertLogEvent(LogEvent logevent) throws CerberusException {
         boolean bool = false;
         final String query = "INSERT INTO logevent (userID, Login, Page, Action, Log, remoteIP, localIP) VALUES (?, ?, ?, ?, ?, ?, ?)";
+
+        Connection connection = this.databaseSpring.connect();
         try {
-            PreparedStatement preStat = this.databaseSpring.connect().prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-            preStat.setLong(1, logevent.getUserID());
-            preStat.setString(2, logevent.getLogin());
-            preStat.setString(3, logevent.getPage());
-            preStat.setString(4, logevent.getAction());
-            preStat.setString(5, logevent.getLog());
-            preStat.setString(6, logevent.getremoteIP());
-            preStat.setString(7, logevent.getLocalIP());
+            PreparedStatement preStat = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
             try {
+                preStat.setLong(1, logevent.getUserID());
+                preStat.setString(2, logevent.getLogin());
+                preStat.setString(3, logevent.getPage());
+                preStat.setString(4, logevent.getAction());
+                preStat.setString(5, logevent.getLog());
+                preStat.setString(6, logevent.getremoteIP());
+                preStat.setString(7, logevent.getLocalIP());
+
                 preStat.executeUpdate();
                 ResultSet resultSet = preStat.getGeneratedKeys();
                 try {
@@ -194,7 +217,13 @@ public class LogEventDAO implements ILogEventDAO {
         } catch (SQLException exception) {
             MyLogger.log(UserDAO.class.getName(), Level.ERROR, exception.toString());
         } finally {
-            this.databaseSpring.disconnect();
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(UserDAO.class.getName(), Level.WARN, e.toString());
+            }
         }
         return bool;
     }

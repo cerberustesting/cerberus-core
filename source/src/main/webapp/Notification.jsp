@@ -8,18 +8,10 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 
 <%@page import="com.redcats.tst.service.IParameterService"%>
-<%@page import="com.redcats.tst.serviceEmail.impl.EmailGeneration"%>
-<%@page import="org.springframework.web.context.support.WebApplicationContextUtils"%>
-<%@page import="org.springframework.context.ApplicationContext"%>
 <%@page import="com.mysql.jdbc.StringUtils"%>
 <%@page import="java.util.logging.Level"%>
 <%@page import="java.util.logging.Logger"%>
-<%@page import="java.util.Collection"%>
-<%@page import="java.util.Iterator"%>
-<%@page import="java.sql.SQLException"%>
 <%@page import="java.sql.Connection"%>
-<%@page import="java.util.ArrayList"%>
-<%@page import="java.util.List"%>
 <%@page import="java.sql.ResultSet"%>
 <%@page import="java.sql.Statement"%>
 
@@ -43,22 +35,20 @@
 
             Connection conn = db.connect();
 
-            ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-
             try {
 
                 /* Parameter Setup */
 
                 String country;
                 if (request.getParameter("country") != null && request.getParameter("country").compareTo("") != 0) {
-                    country = request.getParameter("country");;
+                    country = request.getParameter("country");
                 } else {
                     country = new String("ALL");
                 }
 
                 String env;
                 if (request.getParameter("env") != null && request.getParameter("env").compareTo("") != 0) {
-                    env = request.getParameter("env");;
+                    env = request.getParameter("env");
                 } else {
                     env = new String("ALL");
                 }
@@ -73,21 +63,21 @@
 
                 String build;
                 if (request.getParameter("build") != null && request.getParameter("build").compareTo("ALL") != 0) {
-                    build = request.getParameter("build");;
+                    build = request.getParameter("build");
                 } else {
                     build = new String("NONE");
                 }
 
                 String revision;
                 if (request.getParameter("revision") != null && request.getParameter("revision").compareTo("ALL") != 0) {
-                    revision = request.getParameter("revision");;
+                    revision = request.getParameter("revision");
                 } else {
                     revision = new String("NONE");
                 }
 
                 String chain;
                 if (request.getParameter("chain") != null && request.getParameter("chain").compareTo("") != 0) {
-                    chain = request.getParameter("chain");;
+                    chain = request.getParameter("chain");
                 } else {
                     chain = new String("NONE");
                 }

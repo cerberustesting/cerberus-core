@@ -4,12 +4,7 @@
     Author     : acraske
 --%>
 <%@page import="com.redcats.tst.service.IApplicationService"%>
-<%@page import="org.springframework.web.context.support.WebApplicationContextUtils"%>
-<%@page import="org.springframework.context.ApplicationContext"%>
-<%@page import="org.springframework.context.ApplicationContext"%>
 <%@page import="org.apache.commons.lang3.StringUtils"%>
-<%@page import="com.mysql.jdbc.ResultSetImpl"%>
-<%@page import="java.sql.SQLException"%>
 <%@page import="java.sql.Connection"%>
 <%@page import="java.util.ArrayList"%>
 <%@page import="java.util.List"%>
@@ -96,7 +91,6 @@
                     /*
                      * Filter requests
                      */
-                    ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
                     IApplicationService myApplicationService = appContext.getBean(IApplicationService.class);
                     String SitdmossBugtrackingURL ;
                     SitdmossBugtrackingURL = "";

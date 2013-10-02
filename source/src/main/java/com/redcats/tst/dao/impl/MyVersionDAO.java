@@ -10,6 +10,7 @@ import org.apache.log4j.Level;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -34,11 +35,12 @@ public class MyVersionDAO implements IMyVersionDAO {
         MyVersion result = new MyVersion();
         final String query = "SELECT mv.value FROM myversion mv WHERE mv.`key` = ? ";
 
+        Connection connection = this.databaseSpring.connect();
         try {
-            PreparedStatement preStat = this.databaseSpring.connect().prepareStatement(query);
-            preStat.setString(1, key);
-
+            PreparedStatement preStat = connection.prepareStatement(query);
             try {
+                preStat.setString(1, key);
+
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     if (resultSet.next()) {
@@ -60,7 +62,13 @@ public class MyVersionDAO implements IMyVersionDAO {
         } catch (SQLException exception) {
             MyLogger.log(MyVersionDAO.class.getName(), Level.ERROR, exception.toString());
         } finally {
-            this.databaseSpring.disconnect();
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(MyVersionDAO.class.getName(), Level.WARN, e.toString());
+            }
         }
         return result;
     }
@@ -70,11 +78,13 @@ public class MyVersionDAO implements IMyVersionDAO {
         boolean result = false;
         final String query = "UPDATE myversion SET value = ? WHERE `key` = ? ";
 
+        Connection connection = this.databaseSpring.connect();
         try {
-            PreparedStatement preStat = this.databaseSpring.connect().prepareStatement(query);
-            preStat.setInt(1, myVersion.getValue());
-            preStat.setString(2, myVersion.getKey());
+            PreparedStatement preStat = connection.prepareStatement(query);
             try {
+                preStat.setInt(1, myVersion.getValue());
+                preStat.setString(2, myVersion.getKey());
+
                 result = preStat.execute();
             } catch (SQLException exception) {
                 MyLogger.log(MyVersionDAO.class.getName(), Level.ERROR, exception.toString());
@@ -84,7 +94,13 @@ public class MyVersionDAO implements IMyVersionDAO {
         } catch (SQLException exception) {
             MyLogger.log(MyVersionDAO.class.getName(), Level.ERROR, exception.toString());
         } finally {
-            this.databaseSpring.disconnect();
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(MyVersionDAO.class.getName(), Level.WARN, e.toString());
+            }
         }
         return result;
     }

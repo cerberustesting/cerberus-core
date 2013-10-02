@@ -4,16 +4,6 @@
     Author     : acraske
 --%>
 
-<%@page import="org.apache.commons.lang3.StringUtils"%>
-<%@page import="com.redcats.tst.service.impl.TestService"%>
-<%@page import="com.redcats.tst.dao.impl.TestDAO"%>
-<%@page import="com.redcats.tst.entity.Test"%>
-<%@page import="com.redcats.tst.dao.ITestDAO"%>
-<%@page import="com.redcats.tst.service.ITestService"%>
-<%@page import="org.springframework.web.context.support.WebApplicationContextUtils"%>
-<%@page import="org.springframework.context.ApplicationContext"%>
-<%@page import="java.net.URLEncoder"%>
-<%@page import="java.sql.*"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
     "http://www.w3.org/TR/html4/loose.dtd">

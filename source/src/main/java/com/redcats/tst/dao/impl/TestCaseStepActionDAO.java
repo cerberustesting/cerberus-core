@@ -9,6 +9,7 @@ import org.apache.log4j.Level;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -48,15 +49,17 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
         List<TestCaseStepAction> list = null;
         final String query = "SELECT * FROM testcasestepaction WHERE test = ? AND testcase = ? AND step = ? ORDER BY step, sequence";
 
+        Connection connection = this.databaseSpring.connect();
         try {
-            PreparedStatement preStat = this.databaseSpring.connect().prepareStatement(query);
-            preStat.setString(1, test);
-            preStat.setString(2, testcase);
-            preStat.setInt(3, stepNumber);
+            PreparedStatement preStat = connection.prepareStatement(query);
             try {
+                preStat.setString(1, test);
+                preStat.setString(2, testcase);
+                preStat.setInt(3, stepNumber);
+
                 ResultSet resultSet = preStat.executeQuery();
-                list = new ArrayList<TestCaseStepAction>();
                 try {
+                    list = new ArrayList<TestCaseStepAction>();
                     while (resultSet.next()) {
                         int step = resultSet.getInt("Step");
                         int sequence = resultSet.getInt("Sequence");
@@ -78,7 +81,13 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
         } catch (SQLException exception) {
             MyLogger.log(TestCaseStepActionDAO.class.getName(), Level.ERROR, exception.toString());
         } finally {
-            this.databaseSpring.disconnect();
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(TestCaseStepActionControlDAO.class.getName(), Level.WARN, e.toString());
+            }
         }
         return list;
     }

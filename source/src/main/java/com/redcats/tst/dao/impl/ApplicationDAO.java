@@ -3,7 +3,6 @@ package com.redcats.tst.dao.impl;
 import com.redcats.tst.dao.IApplicationDAO;
 import com.redcats.tst.database.DatabaseSpring;
 import com.redcats.tst.entity.Application;
-import com.redcats.tst.entity.MessageEventEnum;
 import com.redcats.tst.entity.MessageGeneral;
 import com.redcats.tst.entity.MessageGeneralEnum;
 import com.redcats.tst.exception.CerberusException;
@@ -15,6 +14,7 @@ import org.apache.log4j.Level;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -44,11 +44,13 @@ public class ApplicationDAO implements IApplicationDAO {
         boolean throwEx = false;
         Application result = null;
         final String query = "SELECT * FROM application a WHERE a.application = ? ";
-        try {
-            PreparedStatement preStat = this.databaseSpring.connect().prepareStatement(query);
-            preStat.setString(1, application);
 
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
             try {
+                preStat.setString(1, application);
+
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     if (!(resultSet.first())) {
@@ -69,7 +71,13 @@ public class ApplicationDAO implements IApplicationDAO {
         } catch (SQLException exception) {
             MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, exception.toString());
         } finally {
-            this.databaseSpring.disconnect();
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, e.toString());
+            }
         }
         if (throwEx) {
             throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
@@ -87,8 +95,9 @@ public class ApplicationDAO implements IApplicationDAO {
         List<Application> list = null;
         final String query = "SELECT * FROM application a ORDER BY a.sort";
 
+        Connection connection = this.databaseSpring.connect();
         try {
-            PreparedStatement preStat = this.databaseSpring.connect().prepareStatement(query);
+            PreparedStatement preStat = connection.prepareStatement(query);
 
             try {
                 ResultSet resultSet = preStat.executeQuery();
@@ -111,7 +120,13 @@ public class ApplicationDAO implements IApplicationDAO {
         } catch (SQLException exception) {
             MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, exception.toString());
         } finally {
-            this.databaseSpring.disconnect();
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(ApplicationDAO.class.getName(), Level.WARN, e.toString());
+            }
         }
         return list;
     }
@@ -124,13 +139,14 @@ public class ApplicationDAO implements IApplicationDAO {
     @Override
     public List<Application> findApplicationBySystem(String System) throws CerberusException {
         List<Application> list = null;
-        final String query = "SELECT * FROM application a WHERE `System` like ? ORDER BY a.sort";
+        final String query = "SELECT * FROM application a WHERE `System` LIKE ? ORDER BY a.sort";
 
+        Connection connection = this.databaseSpring.connect();
         try {
-            PreparedStatement preStat = this.databaseSpring.connect().prepareStatement(query);
-            preStat.setString(1, System);
-
+            PreparedStatement preStat = connection.prepareStatement(query);
             try {
+                preStat.setString(1, System);
+
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     list = new ArrayList<Application>();
@@ -151,7 +167,13 @@ public class ApplicationDAO implements IApplicationDAO {
         } catch (SQLException exception) {
             MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, exception.toString());
         } finally {
-            this.databaseSpring.disconnect();
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(ApplicationDAO.class.getName(), Level.WARN, e.toString());
+            }
         }
         return list;
     }
@@ -180,21 +202,24 @@ public class ApplicationDAO implements IApplicationDAO {
     public boolean updateApplication(Application application) throws CerberusException {
         boolean bool = false;
         final String query = "UPDATE application SET description = ?, internal = ?, sort = ?, `type` = ?, `system` = ?, SubSystem = ?, svnurl = ?, BugTrackerUrl = ?, BugTrackerNewUrl = ?, deploytype = ?, mavengroupid = ?  WHERE Application = ?";
+
+        Connection connection = this.databaseSpring.connect();
         try {
-            PreparedStatement preStat = this.databaseSpring.connect().prepareStatement(query);
-            preStat.setString(1, application.getDescription());
-            preStat.setString(2, application.getInternal());
-            preStat.setInt(3, application.getSort());
-            preStat.setString(4, application.getType());
-            preStat.setString(5, application.getSystem());
-            preStat.setString(6, application.getSubsystem());
-            preStat.setString(7, application.getSvnurl());
-            preStat.setString(8, application.getBugTrackerUrl());
-            preStat.setString(9, application.getBugTrackerNewUrl());
-            preStat.setString(10, application.getDeploytype());
-            preStat.setString(11, application.getMavengroupid());
-            preStat.setString(12, application.getApplication());
+            PreparedStatement preStat = connection.prepareStatement(query);
             try {
+                preStat.setString(1, application.getDescription());
+                preStat.setString(2, application.getInternal());
+                preStat.setInt(3, application.getSort());
+                preStat.setString(4, application.getType());
+                preStat.setString(5, application.getSystem());
+                preStat.setString(6, application.getSubsystem());
+                preStat.setString(7, application.getSvnurl());
+                preStat.setString(8, application.getBugTrackerUrl());
+                preStat.setString(9, application.getBugTrackerNewUrl());
+                preStat.setString(10, application.getDeploytype());
+                preStat.setString(11, application.getMavengroupid());
+                preStat.setString(12, application.getApplication());
+
                 int res = preStat.executeUpdate();
                 bool = res > 0;
             } catch (SQLException exception) {
@@ -205,7 +230,13 @@ public class ApplicationDAO implements IApplicationDAO {
         } catch (SQLException exception) {
             MyLogger.log(UserDAO.class.getName(), Level.ERROR, exception.toString());
         } finally {
-            this.databaseSpring.disconnect();
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(ApplicationDAO.class.getName(), Level.WARN, e.toString());
+            }
         }
         return bool;
     }

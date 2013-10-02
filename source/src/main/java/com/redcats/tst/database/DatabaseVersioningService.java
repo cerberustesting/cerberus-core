@@ -4,8 +4,13 @@ import com.redcats.tst.entity.MyVersion;
 import com.redcats.tst.log.MyLogger;
 import com.redcats.tst.service.IDatabaseVersioningService;
 import com.redcats.tst.service.IMyVersionService;
+
+import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.ArrayList;
+
+import com.redcats.tst.servlet.testCase.DeleteTestCase;
 import org.apache.log4j.Level;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,8 +30,9 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
     @Override
     public String exeSQL(String SQLString) {
         PreparedStatement preStat;
+        Connection connection = this.databaseSpring.connect();
         try {
-            preStat = this.databaseSpring.connect().prepareStatement(SQLString);
+            preStat = connection.prepareStatement(SQLString);
             try {
                 preStat.execute();
                 MyLogger.log(DatabaseVersioningService.class.getName(), Level.INFO, SQLString + " Executed successfully.");
@@ -40,7 +46,13 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
             MyLogger.log(DatabaseVersioningService.class.getName(), Level.ERROR, exception1.toString());
             return exception1.toString();
         } finally {
-            this.databaseSpring.disconnect();
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(DatabaseVersioningService.class.getName(), Level.WARN, e.toString());
+            }
         }
         return "OK";
     }

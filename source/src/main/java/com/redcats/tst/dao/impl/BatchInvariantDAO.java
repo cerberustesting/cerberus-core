@@ -10,12 +10,14 @@ import com.redcats.tst.factory.IFactoryBatchInvariant;
 import com.redcats.tst.factory.impl.FactoryBatchInvariant;
 import com.redcats.tst.log.MyLogger;
 import com.redcats.tst.util.ParameterParserUtil;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import org.apache.log4j.Level;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 @Repository
 public class BatchInvariantDAO implements IBatchInvariantDAO {
@@ -30,11 +32,13 @@ public class BatchInvariantDAO implements IBatchInvariantDAO {
         boolean throwEx = false;
         BatchInvariant result = null;
         final String query = "SELECT * FROM batchinvariant a WHERE a.batch = ? ";
-        try {
-            PreparedStatement preStat = this.databaseSpring.connect().prepareStatement(query);
-            preStat.setString(1, batch);
 
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
             try {
+                preStat.setString(1, batch);
+
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     if (!(resultSet.first())) {
@@ -55,7 +59,13 @@ public class BatchInvariantDAO implements IBatchInvariantDAO {
         } catch (SQLException exception) {
             MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, exception.toString());
         } finally {
-            this.databaseSpring.disconnect();
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(ApplicationDAO.class.getName(), Level.WARN, e.toString());
+            }
         }
         if (throwEx) {
             throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));

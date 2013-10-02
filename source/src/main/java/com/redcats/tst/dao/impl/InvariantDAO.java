@@ -8,14 +8,16 @@ import com.redcats.tst.entity.MessageGeneralEnum;
 import com.redcats.tst.exception.CerberusException;
 import com.redcats.tst.factory.IFactoryInvariant;
 import com.redcats.tst.log.MyLogger;
+import org.apache.log4j.Level;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.log4j.Level;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
 
 /**
  * {Insert class description here}
@@ -46,16 +48,17 @@ public class InvariantDAO implements IInvariantDAO {
      * @return Description text text text.
      */
     @Override
-    public Invariant findInvariantByIdValue(String idName, String value) throws CerberusException{
+    public Invariant findInvariantByIdValue(String idName, String value) throws CerberusException {
         boolean throwException = true;
         Invariant result = null;
         final String query = "SELECT * FROM invariant i  WHERE i.idname = ? AND i.value = ?";
 
+        Connection connection = this.databaseSpring.connect();
         try {
-            PreparedStatement preStat = this.databaseSpring.connect().prepareStatement(query);
-            preStat.setString(1, idName);
-            preStat.setString(2, value);
+            PreparedStatement preStat = connection.prepareStatement(query);
             try {
+                preStat.setString(1, idName);
+                preStat.setString(2, value);
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     while (resultSet.next()) {
@@ -70,18 +73,30 @@ public class InvariantDAO implements IInvariantDAO {
                     }
                 } catch (SQLException exception) {
                     MyLogger.log(InvariantDAO.class.getName(), Level.ERROR, exception.toString());
+                } catch (NullPointerException ex) {
+                    MyLogger.log(InvariantDAO.class.getName(), Level.FATAL, "InvariantDAO - NullPointerException Resultset");
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
                 MyLogger.log(InvariantDAO.class.getName(), Level.ERROR, exception.toString());
+            } catch (NullPointerException ex) {
+                MyLogger.log(InvariantDAO.class.getName(), Level.FATAL, "InvariantDAO - NullPointerException Statement");
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
             MyLogger.log(InvariantDAO.class.getName(), Level.ERROR, exception.toString());
+        } catch (NullPointerException ex) {
+            MyLogger.log(InvariantDAO.class.getName(), Level.FATAL, "InvariantDAO - NullPointerException Connection");
         } finally {
-            this.databaseSpring.disconnect();
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(InvariantDAO.class.getName(), Level.WARN, "Connection already closed!");
+            }
         }
         if (throwException) {
             throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
@@ -95,13 +110,16 @@ public class InvariantDAO implements IInvariantDAO {
         List<Invariant> result = null;
         final String query = "SELECT * FROM invariant i  WHERE i.idname = ? ORDER BY sort";
 
+        Connection connection = this.databaseSpring.connect();
         try {
-            PreparedStatement preStat = this.databaseSpring.connect().prepareStatement(query);
-            preStat.setString(1, idName);
+            PreparedStatement preStat = connection.prepareStatement(query);
             try {
+                preStat.setString(1, idName);
+
                 ResultSet resultSet = preStat.executeQuery();
-                result = new ArrayList<Invariant>();
                 try {
+                    result = new ArrayList<Invariant>();
+
                     while (resultSet.next()) {
                         throwException = false;
                         int sort = resultSet.getInt("sort");
@@ -126,7 +144,13 @@ public class InvariantDAO implements IInvariantDAO {
         } catch (SQLException exception) {
             MyLogger.log(InvariantDAO.class.getName(), Level.ERROR, exception.toString());
         } finally {
-            this.databaseSpring.disconnect();
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(InvariantDAO.class.getName(), Level.WARN, e.toString());
+            }
         }
         if (throwException) {
             throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
@@ -140,14 +164,17 @@ public class InvariantDAO implements IInvariantDAO {
         List<Invariant> result = null;
         final String query = "SELECT * FROM invariant i  WHERE i.idname = ? AND i.gp1 = ? ORDER BY sort";
 
+        Connection connection = this.databaseSpring.connect();
         try {
-            PreparedStatement preStat = this.databaseSpring.connect().prepareStatement(query);
-            preStat.setString(1, idName);
-            preStat.setString(2, gp);
+            PreparedStatement preStat = connection.prepareStatement(query);
             try {
+                preStat.setString(1, idName);
+                preStat.setString(2, gp);
+
                 ResultSet resultSet = preStat.executeQuery();
-                result = new ArrayList<Invariant>();
                 try {
+                    result = new ArrayList<Invariant>();
+
                     while (resultSet.next()) {
                         throwException = false;
                         int sort = resultSet.getInt("sort");
@@ -172,7 +199,13 @@ public class InvariantDAO implements IInvariantDAO {
         } catch (SQLException exception) {
             MyLogger.log(InvariantDAO.class.getName(), Level.ERROR, exception.toString());
         } finally {
-            this.databaseSpring.disconnect();
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(InvariantDAO.class.getName(), Level.WARN, e.toString());
+            }
         }
         if (throwException) {
             throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));

@@ -9,6 +9,7 @@ import org.apache.log4j.Level;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -48,11 +49,13 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
         List<TestCaseStep> list = null;
         final String query = "SELECT * FROM testcasestep WHERE test = ? AND testcase = ?";
 
+        Connection connection = this.databaseSpring.connect();
         try {
-            PreparedStatement preStat = this.databaseSpring.connect().prepareStatement(query);
-            preStat.setString(1, test);
-            preStat.setString(2, testcase);
+            PreparedStatement preStat = connection.prepareStatement(query);
             try {
+                preStat.setString(1, test);
+                preStat.setString(2, testcase);
+
                 ResultSet resultSet = preStat.executeQuery();
                 list = new ArrayList<TestCaseStep>();
                 try {
@@ -74,7 +77,13 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
         } catch (SQLException exception) {
             MyLogger.log(TestCaseStepDAO.class.getName(), Level.ERROR, exception.toString());
         } finally {
-            this.databaseSpring.disconnect();
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(TestCaseStepActionControlDAO.class.getName(), Level.WARN, e.toString());
+            }
         }
         return list;
     }
@@ -85,11 +94,13 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
         final String query = "SELECT tc.testcase FROM TestCaseCountry t, TestCase tc WHERE t.country = ? AND t.test = 'Pre Testing' "
                 + "AND tc.application = ? AND tc.tcActive = 'Y' AND t.test = tc.test AND t.testcase = tc.testcase ORDER BY testcase ASC";
 
+        Connection connection = this.databaseSpring.connect();
         try {
-            PreparedStatement preStat = this.databaseSpring.connect().prepareStatement(query);
-            preStat.setString(1, countryCode);
-            preStat.setString(2, application);
+            PreparedStatement preStat = connection.prepareStatement(query);
             try {
+                preStat.setString(1, countryCode);
+                preStat.setString(2, application);
+
                 ResultSet resultSet = preStat.executeQuery();
                 list = new ArrayList<String>();
                 try {
@@ -110,7 +121,13 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
         } catch (SQLException exception) {
             MyLogger.log(TestCaseStepDAO.class.getName(), Level.ERROR, exception.toString());
         } finally {
-            this.databaseSpring.disconnect();
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(TestCaseStepActionControlDAO.class.getName(), Level.WARN, e.toString());
+            }
         }
         return list;
     }

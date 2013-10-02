@@ -8,20 +8,21 @@ import com.redcats.tst.database.DatabaseSpring;
 import com.redcats.tst.log.MyLogger;
 import com.redcats.tst.service.IParameterService;
 import com.redcats.tst.service.impl.ParameterService;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.context.ApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Level;
-import org.springframework.context.ApplicationContext;
-import org.springframework.web.context.support.WebApplicationContextUtils;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 /**
  * @author bcivel
@@ -30,20 +31,19 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 public class ResultCI extends HttpServlet {
 
     protected void processRequest(HttpServletRequest request,
-            HttpServletResponse response) throws ServletException, IOException {
+                                  HttpServletResponse response) throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         PrintWriter out = response.getWriter();
-        DatabaseSpring db = new DatabaseSpring();
-        Connection conn = db.connect();
+        ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+        DatabaseSpring database = appContext.getBean(DatabaseSpring.class);
 
-        PreparedStatement prepStmt4 = null;
-
+        Connection connection = database.connect();
         try {
 
             String tag = request.getParameter("tag");
             if (StringUtils.isNotBlank(tag)) {
 
-                PreparedStatement prepStmt = conn.prepareStatement("SELECT count(*) AS NBKOP1 "
+                PreparedStatement prepStmt = connection.prepareStatement("SELECT count(*) AS NBKOP1 "
                         + "FROM testcaseexecution t "
                         + "JOIN "
                         + "(SELECT Test,TestCase, Priority FROM testcase)b "
@@ -67,7 +67,7 @@ public class ResultCI extends HttpServlet {
                 }
 
 
-                PreparedStatement prepStmt2 = conn.prepareStatement("SELECT count(*) AS NBKOP2 "
+                PreparedStatement prepStmt2 = connection.prepareStatement("SELECT count(*) AS NBKOP2 "
                         + "FROM testcaseexecution t "
                         + "JOIN "
                         + "(SELECT Test,TestCase, Priority FROM testcase)b "
@@ -89,7 +89,7 @@ public class ResultCI extends HttpServlet {
                     prepStmt2.close();
                 }
 
-                PreparedStatement prepStmt3 = conn.prepareStatement("SELECT count(*) AS NBKOP3 "
+                PreparedStatement prepStmt3 = connection.prepareStatement("SELECT count(*) AS NBKOP3 "
                         + "FROM testcaseexecution t "
                         + "JOIN "
                         + "(SELECT Test,TestCase, Priority FROM testcase)b "
@@ -111,7 +111,7 @@ public class ResultCI extends HttpServlet {
                     prepStmt3.close();
                 }
 
-                prepStmt4 = conn.prepareStatement("SELECT count(*) AS NBKOP4 "
+                PreparedStatement prepStmt4 = connection.prepareStatement("SELECT count(*) AS NBKOP4 "
                         + "FROM testcaseexecution t "
                         + "JOIN "
                         + "(SELECT Test,TestCase, Priority FROM testcase)b "
@@ -133,7 +133,6 @@ public class ResultCI extends HttpServlet {
                     prepStmt4.close();
                 }
 
-                ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
                 IParameterService parameterService = appContext.getBean(ParameterService.class);
 
                 float pond1 = Float.valueOf(parameterService.findParameterByKey("CI_OK_prio1").getValue());
@@ -156,10 +155,11 @@ public class ResultCI extends HttpServlet {
         } finally {
             out.close();
             try {
-                conn.close();
-                db.disconnect();
-            } catch (Exception ex) {
-                MyLogger.log(ResultCI.class.getName(), Level.INFO, "Exception on close Statement" + ex);
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(ResultCI.class.getName(), org.apache.log4j.Level.WARN, e.toString());
             }
         }
 
@@ -167,18 +167,19 @@ public class ResultCI extends HttpServlet {
 
     // <editor-fold defaultstate="collapsed"
     // desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
+
     /**
      * Handles the HTTP
      * <code>GET</code> method.
      *
-     * @param request servlet request
+     * @param request  servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * @throws IOException      if an I/O error occurs
      */
     @Override
     protected void doGet(HttpServletRequest request,
-            HttpServletResponse response) throws ServletException, IOException {
+                         HttpServletResponse response) throws ServletException, IOException {
         processRequest(request, response);
     }
 
@@ -186,14 +187,14 @@ public class ResultCI extends HttpServlet {
      * Handles the HTTP
      * <code>POST</code> method.
      *
-     * @param request servlet request
+     * @param request  servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * @throws IOException      if an I/O error occurs
      */
     @Override
     protected void doPost(HttpServletRequest request,
-            HttpServletResponse response) throws ServletException, IOException {
+                          HttpServletResponse response) throws ServletException, IOException {
         processRequest(request, response);
     }
 

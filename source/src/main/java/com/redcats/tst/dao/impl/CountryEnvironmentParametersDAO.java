@@ -12,6 +12,7 @@ import org.apache.log4j.Level;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -52,12 +53,14 @@ public class CountryEnvironmentParametersDAO implements ICountryEnvironmentParam
         CountryEnvironmentApplication result = null;
         final String query = "SELECT * FROM countryenvironmentparameters WHERE country = ? AND environment = ? AND application = ?";
 
+        Connection connection = this.databaseSpring.connect();
         try {
-            PreparedStatement preStat = this.databaseSpring.connect().prepareStatement(query);
-            preStat.setString(1, country);
-            preStat.setString(2, environment);
-            preStat.setString(3, application);
+            PreparedStatement preStat = connection.prepareStatement(query);
             try {
+                preStat.setString(1, country);
+                preStat.setString(2, environment);
+                preStat.setString(3, application);
+
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     String ip = "";
@@ -68,7 +71,7 @@ public class CountryEnvironmentParametersDAO implements ICountryEnvironmentParam
                         url = resultSet.getString("URL");
                         urlLogin = resultSet.getString("URLLOGIN");
                         result = factoryCountryEnvironmentApplication.create(country, environment, application, ip, url, urlLogin);
-                    }else{
+                    } else {
                         throwException = true;
                     }
                 } catch (SQLException exception) {
@@ -84,7 +87,13 @@ public class CountryEnvironmentParametersDAO implements ICountryEnvironmentParam
         } catch (SQLException exception) {
             MyLogger.log(CountryEnvironmentParametersDAO.class.getName(), Level.ERROR, exception.toString());
         } finally {
-            this.databaseSpring.disconnect();
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(CountryEnvironmentParametersDAO.class.getName(), Level.WARN, e.toString());
+            }
         }
         if (throwException) {
             throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
@@ -100,15 +109,17 @@ public class CountryEnvironmentParametersDAO implements ICountryEnvironmentParam
                 + "WHERE ce.country = cea.country AND ce.environment = cea.environment AND cea.Application = ? "
                 + "AND cea.country= ? AND ce.active='Y' AND i.id = 5 AND i.Value = ce.Environment ORDER BY i.sort";
 
+        Connection connection = this.databaseSpring.connect();
         try {
-            PreparedStatement preStat = this.databaseSpring.connect().prepareStatement(query);
-            preStat.setString(1, application);
-            preStat.setString(2, country);
-
+            PreparedStatement preStat = connection.prepareStatement(query);
             try {
+                preStat.setString(1, application);
+                preStat.setString(2, country);
+
                 ResultSet resultSet = preStat.executeQuery();
-                list = new ArrayList<String[]>();
                 try {
+                    list = new ArrayList<String[]>();
+
                     while (resultSet.next()) {
                         String[] array = new String[3];
                         array[0] = resultSet.getString("Environment");
@@ -131,7 +142,13 @@ public class CountryEnvironmentParametersDAO implements ICountryEnvironmentParam
         } catch (SQLException exception) {
             MyLogger.log(CountryEnvironmentParametersDAO.class.getName(), Level.ERROR, exception.toString());
         } finally {
-            this.databaseSpring.disconnect();
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(CountryEnvironmentParametersDAO.class.getName(), Level.WARN, e.toString());
+            }
         }
         return list;
     }

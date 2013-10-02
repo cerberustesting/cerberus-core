@@ -12,7 +12,6 @@ Document   : menu
 <%@page import="com.redcats.tst.entity.User"%>
 <%@page import="com.redcats.tst.util.ParameterParserUtil"%>
 <%@page import="com.redcats.tst.refactor.Country"%>
-<%@page import="com.redcats.tst.refactor.DbMysqlController"%>
 <%@page import="java.util.Collection"%>
 <%@page import="java.util.Iterator"%>
 <%@page import="com.mysql.jdbc.ResultSetImpl"%>
@@ -101,8 +100,8 @@ Document   : menu
                         String MySystem = ParameterParserUtil.parseStringParam(request.getParameter("MySystem"), "");
 
                         String MyUser = ParameterParserUtil.parseStringParam(request.getUserPrincipal().getName(), "");
-                        ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletConfig().getServletContext());
-                        IUserService myUserService = appContext.getBean(IUserService.class);
+                        ApplicationContext context = WebApplicationContextUtils.getWebApplicationContext(this.getServletConfig().getServletContext());
+                        IUserService myUserService = context.getBean(IUserService.class);
                         if (!(MyUser.equals(""))) {
                             User MyUserobj = myUserService.findUserByKey(MyUser);
 
@@ -120,7 +119,7 @@ Document   : menu
                     %>                
                     <select id="MySystem" style="" name="MySystem" onchange="document.SysFilter.submit()">
                         <%
-                            IInvariantService myInvariantService = appContext.getBean(IInvariantService.class);
+                            IInvariantService myInvariantService = context.getBean(IInvariantService.class);
                             List<Invariant> MyInvariantList = myInvariantService.findListOfInvariantById("SYSTEM");
                             for (Invariant myInvariant : MyInvariantList) {
                         %>

@@ -6,14 +6,16 @@ import com.redcats.tst.entity.MessageEventEnum;
 import com.redcats.tst.exception.CerberusEventException;
 import com.redcats.tst.log.MyLogger;
 import com.redcats.tst.serviceEngine.IConnectionPoolDAO;
+import org.apache.log4j.Level;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.log4j.Level;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
 
 /**
  * {Insert class description here}
@@ -46,12 +48,13 @@ public class ConnectionPoolDAO implements IConnectionPoolDAO {
         List<String> list = null;
         boolean throwEx = false;
         int maxSecurityFetch = 100;
-        int nbFetch=0;
+        int nbFetch = 0;
         MessageEvent msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_SQL_GENERIC);
         msg.setDescription(msg.getDescription().replaceAll("%JDBC%", "jdbc/" + connectionName));
 
+        Connection connection = this.databaseSpring.connect(connectionName);
         try {
-            PreparedStatement preStat = this.databaseSpring.connect(connectionName).prepareStatement(sql);
+            PreparedStatement preStat = connection.prepareStatement(sql);
             //TODO add limit of select
             /*
              ORACLE      => * WHERE ROWNUM <= limit *
@@ -67,7 +70,7 @@ public class ConnectionPoolDAO implements IConnectionPoolDAO {
                 ResultSet resultSet = preStat.executeQuery();
                 list = new ArrayList<String>();
                 try {
-                    while ((resultSet.next()) && (nbFetch<maxSecurityFetch)) {
+                    while ((resultSet.next()) && (nbFetch < maxSecurityFetch)) {
                         list.add(resultSet.getString(1));
                         nbFetch++;
                     }
@@ -100,7 +103,13 @@ public class ConnectionPoolDAO implements IConnectionPoolDAO {
             msg.setDescription(msg.getDescription().replaceAll("%EX%", exception.toString()));
             throwEx = true;
         } finally {
-            this.databaseSpring.disconnect();
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(ConnectionPoolDAO.class.getName(), Level.WARN, e.toString());
+            }
         }
         if (throwEx) {
             throw new CerberusEventException(msg);

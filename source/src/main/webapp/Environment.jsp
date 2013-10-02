@@ -8,12 +8,7 @@
 <%@page import="java.util.logging.Level"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 
-<%@page import="java.util.Collection"%>
-<%@page import="java.util.Iterator"%>
-<%@page import="java.sql.SQLException"%>
 <%@page import="java.sql.Connection"%>
-<%@page import="java.util.ArrayList"%>
-<%@page import="java.util.List"%>
 <%@page import="java.sql.ResultSet"%>
 <%@page import="java.sql.Statement"%>
 
@@ -46,7 +41,7 @@
                 String country;
                 Boolean country_def;
                 if (request.getParameter("country") != null && request.getParameter("country").compareTo("") != 0) {
-                    country = request.getParameter("country");;
+                    country = request.getParameter("country");
                     country_def = false;
                 } else {
                     country = new String("ALL");
@@ -57,7 +52,7 @@
                 String env;
                 Boolean env_def;
                 if (request.getParameter("env") != null && request.getParameter("env").compareTo("") != 0) {
-                    env = request.getParameter("env");;
+                    env = request.getParameter("env");
                     env_def = false;
                 } else {
                     env = new String("ALL");

@@ -1,6 +1,4 @@
 <%@page import="com.redcats.tst.service.IDatabaseVersioningService"%>
-<%@page import="org.springframework.web.context.support.WebApplicationContextUtils"%>
-<%@page import="org.springframework.context.ApplicationContext"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE HTML>
 <% Date DatePageStart = new Date();%>
@@ -38,7 +36,6 @@
         <%@ include file="include/header.jsp"%>
         <div class="divBorder">
             <%
-                ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
                 IDatabaseVersioningService DatabaseVersioningService = appContext.getBean(IDatabaseVersioningService.class);
                 if (!(DatabaseVersioningService.isDatabaseUptodate())) {
                     out.print("<b>WARNING : Database Not Uptodate</b>");
@@ -51,6 +48,7 @@
                         <table id="tableau">
                             <%
                                 Connection conn = db.connect();
+                                try{
                                 String test = (dbDocS(conn, "test", "Test", "Test"));
                                 String nbtest = (dbDocS(conn, "homepage", "NbTest", "NbTest")).split(" ")[0];
                                 String standby = (dbDocS(conn, "homepage", "Standby", "Standy")).split(" ")[0];
@@ -243,7 +241,15 @@
                     </tr>
                     <%
                         }
-                        db.disconnect();
+                        } finally {
+                            if(conn != null){
+                                try {
+                                    conn.close();
+                                } catch (SQLException e) {
+                                    //TODO logger
+                                }
+                            }
+                        }
                     %>
                 </tbody>
             </table>

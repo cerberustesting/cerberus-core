@@ -8,12 +8,7 @@
 <%@page import="java.util.logging.Level"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 
-<%@page import="java.util.Collection"%>
-<%@page import="java.util.Iterator"%>
-<%@page import="java.sql.SQLException"%>
 <%@page import="java.sql.Connection"%>
-<%@page import="java.util.ArrayList"%>
-<%@page import="java.util.List"%>
 <%@page import="java.sql.ResultSet"%>
 <%@page import="java.sql.Statement"%>
 
@@ -46,7 +41,7 @@
                 String country;
                 Boolean country_def;
                 if (request.getParameter("country") != null && request.getParameter("country").compareTo("") != 0) {
-                    country = request.getParameter("country");;
+                    country = request.getParameter("country");
                     country_def = false;
                 } else {
                     country = new String("ALL");
@@ -57,7 +52,7 @@
                 String env;
                 Boolean env_def;
                 if (request.getParameter("env") != null && request.getParameter("env").compareTo("") != 0) {
-                    env = request.getParameter("env");;
+                    env = request.getParameter("env");
                     env_def = false;
                 } else {
                     env = new String("ALL");
@@ -67,7 +62,7 @@
                 String envgp;
                 Boolean envgp_def;
                 if (request.getParameter("envgp") != null && request.getParameter("envgp").compareTo("") != 0) {
-                    envgp = request.getParameter("envgp");;
+                    envgp = request.getParameter("envgp");
                     envgp_def = false;
                 } else {
                     envgp = new String("ALL");
@@ -76,35 +71,35 @@
 
                 String build;
                 if (request.getParameter("build") != null && request.getParameter("build").compareTo("") != 0) {
-                    build = request.getParameter("build");;
+                    build = request.getParameter("build");
                 } else {
                     build = new String("ALL");
                 }
 
                 String revision;
                 if (request.getParameter("revision") != null && request.getParameter("revision").compareTo("") != 0) {
-                    revision = request.getParameter("revision");;
+                    revision = request.getParameter("revision");
                 } else {
                     revision = new String("ALL");
                 }
 
                 String chain;
                 if (request.getParameter("chain") != null && request.getParameter("chain").compareTo("") != 0) {
-                    chain = request.getParameter("chain");;
+                    chain = request.getParameter("chain");
                 } else {
                     chain = new String("ALL");
                 }
 
                 String active;
                 if (request.getParameter("active") != null && request.getParameter("active").compareTo("") != 0) {
-                    active = request.getParameter("active");;
+                    active = request.getParameter("active");
                 } else {
                     active = new String("ALL");
                 }
                                               
                 String type;
                 if (request.getParameter("type") != null && request.getParameter("type").compareTo("") != 0) {
-                    type = request.getParameter("type");;
+                    type = request.getParameter("type");
                 } else {
                     type = new String("ALL");
                 }

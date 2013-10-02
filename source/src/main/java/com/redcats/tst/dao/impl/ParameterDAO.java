@@ -2,7 +2,6 @@ package com.redcats.tst.dao.impl;
 
 import com.redcats.tst.dao.IParameterDAO;
 import com.redcats.tst.database.DatabaseSpring;
-import com.redcats.tst.entity.Application;
 import com.redcats.tst.entity.MessageGeneral;
 import com.redcats.tst.entity.MessageGeneralEnum;
 import com.redcats.tst.entity.Parameter;
@@ -13,6 +12,7 @@ import org.apache.log4j.Level;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -35,23 +35,24 @@ public class ParameterDAO implements IParameterDAO {
     private IFactoryParameter factoryParameter;
 
     @Override
-    public Parameter findParameterByKey(String key) throws CerberusException{
+    public Parameter findParameterByKey(String key) throws CerberusException {
         boolean throwExep = false;
         Parameter result = null;
         final String query = "SELECT * FROM parameter p WHERE p.param = ? ";
 
+        Connection connection = this.databaseSpring.connect();
         try {
-            PreparedStatement preStat = this.databaseSpring.connect().prepareStatement(query);
-            preStat.setString(1, key);
-
+            PreparedStatement preStat = connection.prepareStatement(query);
             try {
+                preStat.setString(1, key);
+
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     if (resultSet.first()) {
                         String value = resultSet.getString("value");
                         String desc = resultSet.getString("description");
                         result = factoryParameter.create(key, value, desc);
-                    }else{
+                    } else {
                         throwExep = true;
                     }
                 } catch (SQLException exception) {
@@ -67,25 +68,32 @@ public class ParameterDAO implements IParameterDAO {
         } catch (SQLException exception) {
             MyLogger.log(ParameterDAO.class.getName(), Level.ERROR, exception.toString());
         } finally {
-            this.databaseSpring.disconnect();
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(ParameterDAO.class.getName(), Level.WARN, e.toString());
+            }
         }
         if (throwExep) {
             MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND);
-            mes.setDescription(mes.getDescription()+" Parameter not defined : " + key);
+            mes.setDescription(mes.getDescription() + " Parameter not defined : " + key);
             throw new CerberusException(mes);
         }
         return result;
     }
-    
+
     @Override
-    public List<Parameter> findAllParameter() throws CerberusException{
+    public List<Parameter> findAllParameter() throws CerberusException {
         boolean throwExep = true;
         List<Parameter> result = null;
         Parameter paramet = null;
         final String query = "SELECT * FROM parameter p ";
 
+        Connection connection = this.databaseSpring.connect();
         try {
-            PreparedStatement preStat = this.databaseSpring.connect().prepareStatement(query);
+            PreparedStatement preStat = connection.prepareStatement(query);
 
             try {
                 ResultSet resultSet = preStat.executeQuery();
@@ -112,11 +120,17 @@ public class ParameterDAO implements IParameterDAO {
         } catch (SQLException exception) {
             MyLogger.log(ParameterDAO.class.getName(), Level.ERROR, exception.toString());
         } finally {
-            this.databaseSpring.disconnect();
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(ParameterDAO.class.getName(), Level.WARN, e.toString());
+            }
         }
         if (throwExep) {
             MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND);
-            mes.setDescription(mes.getDescription()+" Parameter table empty.");
+            mes.setDescription(mes.getDescription() + " Parameter table empty.");
             throw new CerberusException(mes);
         }
         return result;
@@ -127,12 +141,13 @@ public class ParameterDAO implements IParameterDAO {
 
         final String query = "UPDATE parameter SET Value = ? WHERE param = ? ;";
 
+        Connection connection = this.databaseSpring.connect();
         try {
-            PreparedStatement preStat = this.databaseSpring.connect().prepareStatement(query);
-            preStat.setString(1, parameter.getValue());
-            preStat.setString(2, parameter.getParam());
-
+            PreparedStatement preStat = connection.prepareStatement(query);
             try {
+                preStat.setString(1, parameter.getValue());
+                preStat.setString(2, parameter.getParam());
+
                 preStat.executeUpdate();
 
             } catch (SQLException exception) {
@@ -143,9 +158,15 @@ public class ParameterDAO implements IParameterDAO {
         } catch (SQLException exception) {
             MyLogger.log(ParameterDAO.class.getName(), Level.ERROR, exception.toString());
         } finally {
-            this.databaseSpring.disconnect();
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(ParameterDAO.class.getName(), Level.WARN, e.toString());
+            }
         }
     }
-    
-    
+
+
 }

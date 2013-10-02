@@ -6,34 +6,13 @@
 <%@page import="com.redcats.tst.service.IParameterService"%>
 <%@page import="org.springframework.web.context.support.WebApplicationContextUtils"%>
 <%@page import="org.springframework.context.ApplicationContext"%>
-<%@page import="com.redcats.tst.entity.Parameter"%>
-<%@page import="com.redcats.tst.refactor.DbMysqlController"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 
 
-<%@page import="java.util.Collection"%>
-<%@page import="java.util.Iterator"%>
-<%@page import="java.sql.SQLException"%>
-<%@page import="java.sql.Connection"%>
-<%@page import="java.util.ArrayList"%>
-<%@page import="java.util.List"%>
-<%@page import="java.sql.ResultSet"%>
-<%@page import="java.sql.Statement"%>
-
 <%
-    DbMysqlController db;
-    db = (DbMysqlController) session.getAttribute("Database");
-    if (db == null) {
-        db = new DbMysqlController();
-    }
-
-    try {
-        Connection conn = db.connect();
-
-        String CerberusSupportEmail;
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         IParameterService myParameterService = appContext.getBean(IParameterService.class);
-        CerberusSupportEmail = myParameterService.findParameterByKey("cerberus_support_email").getValue();
+        String CerberusSupportEmail = myParameterService.findParameterByKey("cerberus_support_email").getValue();
 %>
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
@@ -80,12 +59,3 @@
         </div>
     </body>
 </html>
-
-<%
-    } catch (Exception e) {
-        out.println("<br> error message : " + e.getMessage() + " " + e.toString() + "<br>");
-    } finally {
-        db.disconnect();
-    }
-
-%>

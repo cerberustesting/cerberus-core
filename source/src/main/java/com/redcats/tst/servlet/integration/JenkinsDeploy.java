@@ -4,22 +4,22 @@ package com.redcats.tst.servlet.integration;
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-import com.redcats.tst.refactor.DbMysqlController;
+
 import com.redcats.tst.service.IParameterService;
 import com.redcats.tst.service.impl.ParameterService;
 import com.redcats.tst.util.HTTPSession;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.sql.Connection;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.springframework.context.ApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
+import version.Version;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.springframework.context.ApplicationContext;
-import org.springframework.web.context.support.WebApplicationContextUtils;
-import version.Version;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Servlet called from JQuery Datatable to request Jenkins to run deploy
@@ -36,24 +36,25 @@ public class JenkinsDeploy extends HttpServlet {
      * <code>GET</code> and
      * <code>POST</code> methods.
      *
-     * @param request servlet request
+     * @param request  servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * @throws IOException      if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
+
     /**
      * Handles the HTTP
      * <code>GET</code> method.
      *
-     * @param request servlet request
+     * @param request  servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * @throws IOException      if an I/O error occurs
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -62,10 +63,6 @@ public class JenkinsDeploy extends HttpServlet {
         PrintWriter out = response.getWriter();
 
         try {
-
-            DbMysqlController db;
-            db = new DbMysqlController();
-            Connection conn = db.connect();
 
             ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
             IParameterService parameterService = appContext.getBean(ParameterService.class);
@@ -94,8 +91,6 @@ public class JenkinsDeploy extends HttpServlet {
                 out.print("Sent request : " + url);
             }
 
-            conn.close();
-
         } catch (Exception ex) {
             Logger.getLogger(JenkinsDeploy.class.getName()).log(Level.SEVERE,
                     Version.PROJECT_NAME_VERSION + " - Exception catched.", ex);
@@ -107,10 +102,10 @@ public class JenkinsDeploy extends HttpServlet {
      * Handles the HTTP
      * <code>POST</code> method.
      *
-     * @param request servlet request
+     * @param request  servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * @throws IOException      if an I/O error occurs
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)

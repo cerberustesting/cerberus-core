@@ -7,7 +7,6 @@ import com.redcats.tst.entity.MessageGeneralEnum;
 import com.redcats.tst.entity.TCExecution;
 import com.redcats.tst.exception.CerberusException;
 import com.redcats.tst.factory.IFactoryTCExecution;
-import com.redcats.tst.factory.IFactoryTestCaseExecution;
 import com.redcats.tst.log.MyLogger;
 import com.redcats.tst.util.StringUtil;
 import org.apache.log4j.Level;
@@ -42,37 +41,38 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         final String query = "INSERT INTO testcaseexecution(test, testcase, build, revision, environment, country, browser, application, ip, "
                 + "url, port, tag, verbose, status, start, end, controlstatus, controlMessage, crbversion) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
+        Connection connection = this.databaseSpring.connect();
         try {
-            PreparedStatement preStat = this.databaseSpring.connect().prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-            preStat.setString(1, tCExecution.getTest());
-            preStat.setString(2, tCExecution.getTestCase());
-            preStat.setString(3, tCExecution.getBuild());
-            preStat.setString(4, tCExecution.getRevision());
-            preStat.setString(5, tCExecution.getEnvironment());
-            preStat.setString(6, tCExecution.getCountry());
-            preStat.setString(7, tCExecution.getBrowser());
-            preStat.setString(8, tCExecution.getApplication().getApplication());
-            preStat.setString(9, tCExecution.getIp());
-            preStat.setString(10, tCExecution.getUrl());
-            preStat.setString(11, tCExecution.getPort());
-            preStat.setString(12, tCExecution.getTag());
-            preStat.setInt(13, tCExecution.getVerbose());
-            preStat.setString(14, tCExecution.getStatus());
-            if (tCExecution.getStart() != 0) {
-                preStat.setTimestamp(15, new Timestamp(tCExecution.getStart()));
-            } else {
-                preStat.setString(15, "0000-00-00 00:00:00");
-            }
-            if (tCExecution.getEnd() != 0) {
-                preStat.setTimestamp(16, new Timestamp(tCExecution.getEnd()));
-            } else {
-                preStat.setString(16, "0000-00-00 00:00:00");
-            }
-            preStat.setString(17, tCExecution.getControlStatus());
-            preStat.setString(18, StringUtil.getLeftString(tCExecution.getControlMessage(), 500));
-            preStat.setString(19, tCExecution.getCrbVersion());
-
+            PreparedStatement preStat = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
             try {
+                preStat.setString(1, tCExecution.getTest());
+                preStat.setString(2, tCExecution.getTestCase());
+                preStat.setString(3, tCExecution.getBuild());
+                preStat.setString(4, tCExecution.getRevision());
+                preStat.setString(5, tCExecution.getEnvironment());
+                preStat.setString(6, tCExecution.getCountry());
+                preStat.setString(7, tCExecution.getBrowser());
+                preStat.setString(8, tCExecution.getApplication().getApplication());
+                preStat.setString(9, tCExecution.getIp());
+                preStat.setString(10, tCExecution.getUrl());
+                preStat.setString(11, tCExecution.getPort());
+                preStat.setString(12, tCExecution.getTag());
+                preStat.setInt(13, tCExecution.getVerbose());
+                preStat.setString(14, tCExecution.getStatus());
+                if (tCExecution.getStart() != 0) {
+                    preStat.setTimestamp(15, new Timestamp(tCExecution.getStart()));
+                } else {
+                    preStat.setString(15, "0000-00-00 00:00:00");
+                }
+                if (tCExecution.getEnd() != 0) {
+                    preStat.setTimestamp(16, new Timestamp(tCExecution.getEnd()));
+                } else {
+                    preStat.setString(16, "0000-00-00 00:00:00");
+                }
+                preStat.setString(17, tCExecution.getControlStatus());
+                preStat.setString(18, StringUtil.getLeftString(tCExecution.getControlMessage(), 500));
+                preStat.setString(19, tCExecution.getCrbVersion());
+
                 preStat.executeUpdate();
                 ResultSet resultSet = preStat.getGeneratedKeys();
                 try {
@@ -94,7 +94,13 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         } catch (SQLException exception) {
             MyLogger.log(TestCaseExecutionDAO.class.getName(), Level.ERROR, exception.toString());
         } finally {
-            this.databaseSpring.disconnect();
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(TestCaseExecutionDAO.class.getName(), Level.WARN, e.toString());
+            }
         }
         if (throwEx) {
             tCExecution.setId(-1);
@@ -109,39 +115,40 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                 + ", browser = ?, application = ?, ip = ?, url = ?, port = ?, tag = ?, verbose = ?, status = ?"
                 + ", start = ?, end = ? , controlstatus = ?, controlMessage = ?, crbversion = ?, finished = ? WHERE id = ?";
 
+        Connection connection = this.databaseSpring.connect();
         try {
-            PreparedStatement preStat = this.databaseSpring.connect().prepareStatement(query);
-            preStat.setString(1, tCExecution.getTest());
-            preStat.setString(2, tCExecution.getTestCase());
-            preStat.setString(3, tCExecution.getBuild());
-            preStat.setString(4, tCExecution.getRevision());
-            preStat.setString(5, tCExecution.getEnvironment());
-            preStat.setString(6, tCExecution.getCountry());
-            preStat.setString(7, tCExecution.getBrowser());
-            preStat.setString(8, tCExecution.getApplication().getApplication());
-            preStat.setString(9, tCExecution.getIp());
-            preStat.setString(10, tCExecution.getUrl());
-            preStat.setString(11, tCExecution.getPort());
-            preStat.setString(12, tCExecution.getTag());
-            preStat.setInt(13, tCExecution.getVerbose());
-            preStat.setString(14, tCExecution.getStatus());
-            if (tCExecution.getStart() != 0) {
-                preStat.setTimestamp(15, new Timestamp(tCExecution.getStart()));
-            } else {
-                preStat.setString(15, "0000-00-00 00:00:00");
-            }
-            if (tCExecution.getEnd() != 0) {
-                preStat.setTimestamp(16, new Timestamp(tCExecution.getEnd()));
-            } else {
-                preStat.setString(16, "0000-00-00 00:00:00");
-            }
-            preStat.setString(17, tCExecution.getControlStatus());
-            preStat.setString(18, StringUtil.getLeftString(tCExecution.getControlMessage(), 500));
-            preStat.setString(19, tCExecution.getCrbVersion());
-            preStat.setString(20, tCExecution.getFinished());
-            preStat.setLong(21, tCExecution.getId());
-
+            PreparedStatement preStat = connection.prepareStatement(query);
             try {
+                preStat.setString(1, tCExecution.getTest());
+                preStat.setString(2, tCExecution.getTestCase());
+                preStat.setString(3, tCExecution.getBuild());
+                preStat.setString(4, tCExecution.getRevision());
+                preStat.setString(5, tCExecution.getEnvironment());
+                preStat.setString(6, tCExecution.getCountry());
+                preStat.setString(7, tCExecution.getBrowser());
+                preStat.setString(8, tCExecution.getApplication().getApplication());
+                preStat.setString(9, tCExecution.getIp());
+                preStat.setString(10, tCExecution.getUrl());
+                preStat.setString(11, tCExecution.getPort());
+                preStat.setString(12, tCExecution.getTag());
+                preStat.setInt(13, tCExecution.getVerbose());
+                preStat.setString(14, tCExecution.getStatus());
+                if (tCExecution.getStart() != 0) {
+                    preStat.setTimestamp(15, new Timestamp(tCExecution.getStart()));
+                } else {
+                    preStat.setString(15, "0000-00-00 00:00:00");
+                }
+                if (tCExecution.getEnd() != 0) {
+                    preStat.setTimestamp(16, new Timestamp(tCExecution.getEnd()));
+                } else {
+                    preStat.setString(16, "0000-00-00 00:00:00");
+                }
+                preStat.setString(17, tCExecution.getControlStatus());
+                preStat.setString(18, StringUtil.getLeftString(tCExecution.getControlMessage(), 500));
+                preStat.setString(19, tCExecution.getCrbVersion());
+                preStat.setString(20, tCExecution.getFinished());
+                preStat.setLong(21, tCExecution.getId());
+
                 preStat.executeUpdate();
             } catch (SQLException exception) {
                 MyLogger.log(TestCaseExecutionDAO.class.getName(), Level.ERROR, exception.toString());
@@ -152,7 +159,13 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         } catch (SQLException exception) {
             MyLogger.log(TestCaseExecutionDAO.class.getName(), Level.ERROR, exception.toString());
         } finally {
-            this.databaseSpring.disconnect();
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(TestCaseExecutionDAO.class.getName(), Level.WARN, e.toString());
+            }
         }
         if (throwEx) {
             throw new CerberusException(new MessageGeneral(MessageGeneralEnum.EXECUTION_FA));
@@ -164,15 +177,18 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         List<String> list = null;
         final String query = "SELECT ID FROM testcaseexecution WHERE test = ? AND testcase = ? AND country = ? AND controlStatus='OK' ORDER BY id DESC LIMIT 200";
 
+        Connection connection = this.databaseSpring.connect();
         try {
-            PreparedStatement preStat = this.databaseSpring.connect().prepareStatement(query);
-            preStat.setString(1, test);
-            preStat.setString(2, testcase);
-            preStat.setString(3, country);
+            PreparedStatement preStat = connection.prepareStatement(query);
             try {
+                preStat.setString(1, test);
+                preStat.setString(2, testcase);
+                preStat.setString(3, country);
+
                 ResultSet resultSet = preStat.executeQuery();
-                list = new ArrayList<String>();
                 try {
+                    list = new ArrayList<String>();
+
                     while (resultSet.next()) {
                         list.add(resultSet.getString("ID"));
                     }
@@ -192,7 +208,13 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
             //TODO logger ERROR
             //conn.prepareStatement(query);
         } finally {
-            this.databaseSpring.disconnect();
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(TestCaseExecutionDAO.class.getName(), Level.WARN, e.toString());
+            }
         }
 
         return list;
@@ -268,17 +290,19 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         final String query = "SELECT * FROM testcaseexecution WHERE start > ? AND test LIKE ? AND testcase LIKE ? AND environment LIKE ? AND country LIKE ? "
                 + " AND application LIKE ? AND controlstatus LIKE ? AND status LIKE ? ";
 
+        Connection connection = this.databaseSpring.connect();
         try {
-            PreparedStatement preStat = this.databaseSpring.connect().prepareStatement(query);
-            preStat.setString(1, dateLimit);
-            preStat.setString(2, test);
-            preStat.setString(3, testCase);
-            preStat.setString(4, environment);
-            preStat.setString(5, country);
-            preStat.setString(6, application);
-            preStat.setString(7, controlStatus);
-            preStat.setString(8, status);
+            PreparedStatement preStat = connection.prepareStatement(query);
             try {
+                preStat.setString(1, dateLimit);
+                preStat.setString(2, test);
+                preStat.setString(3, testCase);
+                preStat.setString(4, environment);
+                preStat.setString(5, country);
+                preStat.setString(6, application);
+                preStat.setString(7, controlStatus);
+                preStat.setString(8, status);
+
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     if (!(resultSet.first())) {
@@ -327,7 +351,13 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         } catch (Exception exception) {
             MyLogger.log(TestCaseExecutionDAO.class.getName(), Level.ERROR, exception.toString());
         } finally {
-            this.databaseSpring.disconnect();
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(TestCaseExecutionDAO.class.getName(), Level.WARN, e.toString());
+            }
         }
         if (throwException) {
             throw new CerberusException(new MessageGeneral(MessageGeneralEnum.EXECUTION_FA));

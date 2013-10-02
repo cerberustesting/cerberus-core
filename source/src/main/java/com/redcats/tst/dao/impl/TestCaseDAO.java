@@ -13,6 +13,7 @@ import org.apache.log4j.Level;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -53,13 +54,16 @@ public class TestCaseDAO implements ITestCaseDAO {
         List<TCase> list = null;
         final String query = "SELECT TestCase, Application, Description FROM testcase WHERE test = ?";
 
+        Connection connection = this.databaseSpring.connect();
         try {
-            PreparedStatement preStat = this.databaseSpring.connect().prepareStatement(query);
-            preStat.setString(1, test);
+            PreparedStatement preStat = connection.prepareStatement(query);
             try {
+                preStat.setString(1, test);
+
                 ResultSet resultSet = preStat.executeQuery();
-                list = new ArrayList<TCase>();
                 try {
+                    list = new ArrayList<TCase>();
+
                     while (resultSet.next()) {
                         String testCase = resultSet.getString("TestCase");
                         String application = resultSet.getString("Application");
@@ -106,7 +110,13 @@ public class TestCaseDAO implements ITestCaseDAO {
         } catch (SQLException exception) {
             MyLogger.log(TestCaseDAO.class.getName(), Level.ERROR, exception.toString());
         } finally {
-            this.databaseSpring.disconnect();
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(TestCaseDAO.class.getName(), Level.WARN, e.toString());
+            }
         }
 
         return list;
@@ -126,11 +136,13 @@ public class TestCaseDAO implements ITestCaseDAO {
         TCase result = null;
         final String query = "SELECT * FROM testcase WHERE test = ? AND testcase = ?";
 
+        Connection connection = this.databaseSpring.connect();
         try {
-            PreparedStatement preStat = this.databaseSpring.connect().prepareStatement(query);
-            preStat.setString(1, test);
-            preStat.setString(2, testCase);
+            PreparedStatement preStat = connection.prepareStatement(query);
             try {
+                preStat.setString(1, test);
+                preStat.setString(2, testCase);
+
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     if (resultSet.first()) {
@@ -180,7 +192,13 @@ public class TestCaseDAO implements ITestCaseDAO {
         } catch (SQLException exception) {
             MyLogger.log(TestCaseDAO.class.getName(), Level.ERROR, exception.toString());
         } finally {
-            this.databaseSpring.disconnect();
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(TestCaseDAO.class.getName(), Level.WARN, e.toString());
+            }
         }
         if (throwExcep) {
             throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
@@ -190,86 +208,136 @@ public class TestCaseDAO implements ITestCaseDAO {
 
     @Override
     public boolean updateTestCaseInformation(TestCase testCase) {
+        boolean res = false;
         final String sql = "UPDATE Testcase tc SET tc.Application = ?, tc.Project = ?, tc.BehaviorOrValueExpected = ?, tc.activeQA = ?, tc.activeUAT = ?, tc.activePROD = ?, "
                 + "tc.Priority = ?, tc.Status = ?, tc.TcActive = ?, tc.Description = ?, tc.Group = ?, tc.HowTo = ?, tc.Comment = ?, tc.Ticket = ?, tc.FromBuild = ?, "
                 + "tc.FromRev = ?, tc.ToBuild = ?, tc.ToRev = ?, tc.BugID = ?, tc.TargetBuild = ?, tc.Implementer = ?, tc.LastModifier = ?, tc.TargetRev = ? "
                 + "WHERE tc.Test = ? AND tc.Testcase = ?";
 
-        ArrayList<String> al = new ArrayList<String>();
-        al.add(testCase.getApplication());
-        al.add(testCase.getProject());
-        al.add(testCase.getDescription());
-        al.add(testCase.isRunQA() ? "Y" : "N");
-        al.add(testCase.isRunUAT() ? "Y" : "N");
-        al.add(testCase.isRunPROD() ? "Y" : "N");
-        al.add(Integer.toString(testCase.getPriority()));
-        al.add(testCase.getStatus());
-        al.add(testCase.isActive() ? "Y" : "N");
-        al.add(testCase.getShortDescription());
-        al.add(testCase.getGroup());
-        al.add(testCase.getHowTo());
-        al.add(testCase.getComment());
-        al.add(testCase.getTicket());
-        al.add(testCase.getFromSprint());
-        al.add(testCase.getFromRevision());
-        al.add(testCase.getToSprint());
-        al.add(testCase.getToRevision());
-        al.add(testCase.getBugID());
-        al.add(testCase.getTargetSprint());
-        al.add(testCase.getImplementer());
-        al.add(testCase.getLastModifier());
-        al.add(testCase.getTargetRevision());
-        al.add(testCase.getTest());
-        al.add(testCase.getTestCase());
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(sql);
+            try {
+                preStat.setString(1, testCase.getApplication());
+                preStat.setString(2, testCase.getProject());
+                preStat.setString(3, testCase.getDescription());
+                preStat.setString(4, testCase.isRunQA() ? "Y" : "N");
+                preStat.setString(5, testCase.isRunUAT() ? "Y" : "N");
+                preStat.setString(6, testCase.isRunPROD() ? "Y" : "N");
+                preStat.setString(7, Integer.toString(testCase.getPriority()));
+                preStat.setString(8, testCase.getStatus());
+                preStat.setString(9, testCase.isActive() ? "Y" : "N");
+                preStat.setString(10, testCase.getShortDescription());
+                preStat.setString(11, testCase.getGroup());
+                preStat.setString(12, testCase.getComment());
+                preStat.setString(13, testCase.getTicket());
+                preStat.setString(14, testCase.getFromSprint());
+                preStat.setString(15, testCase.getFromRevision());
+                preStat.setString(16, testCase.getToSprint());
+                preStat.setString(17, testCase.getToRevision());
+                preStat.setString(18, testCase.getBugID());
+                preStat.setString(19, testCase.getTargetSprint());
+                preStat.setString(20, testCase.getImplementer());
+                preStat.setString(21, testCase.getLastModifier());
+                preStat.setString(22, testCase.getTargetRevision());
+                preStat.setString(23, testCase.getTest());
+                preStat.setString(24, testCase.getTestCase());
 
-        databaseSpring.connect();
-        boolean res = databaseSpring.update(sql, al) > 0;
-        databaseSpring.disconnect();
+                res = preStat.executeUpdate() > 0;
+            } catch (SQLException exception) {
+                MyLogger.log(TestCaseDAO.class.getName(), Level.ERROR, exception.toString());
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(TestCaseDAO.class.getName(), Level.ERROR, exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(TestCaseDAO.class.getName(), Level.WARN, e.toString());
+            }
+        }
 
         return res;
     }
 
     @Override
     public boolean updateTestCaseInformationCountries(TestCase tc) {
-        databaseSpring.connect();
+        boolean res = false;
+        final String sql_count = "SELECT Country FROM TestCaseCountry WHERE Test = ? AND TestCase = ?";
         ArrayList<String> countriesDB = new ArrayList<String>();
 
-        final String sql_count = "SELECT Country FROM TestCaseCountry WHERE Test = ? AND TestCase = ?";
-        ArrayList<String> al_count = new ArrayList<String>();
-        al_count.add(tc.getTest());
-        al_count.add(tc.getTestCase());
-
-        //split into delete and insert method
-        ResultSet rsCount = databaseSpring.query(sql_count, al_count);
+        Connection connection = this.databaseSpring.connect();
         try {
-            while (rsCount.next()) {
-                countriesDB.add(rsCount.getString("Country"));
-                if (!tc.getCountryList().contains(rsCount.getString("Country"))) {
-                    final String sql_delete = "DELETE FROM TestCaseCountry WHERE Test = ? AND TestCase = ? AND Country = ?";
-                    ArrayList<String> al_delete = new ArrayList<String>();
-                    al_delete.add(tc.getTest());
-                    al_delete.add(tc.getTestCase());
-                    al_delete.add(rsCount.getString("Country"));
-                    databaseSpring.update(sql_delete, al_delete);
+            PreparedStatement preStat = connection.prepareStatement(sql_count);
+            try {
+                preStat.setString(1, tc.getTest());
+                preStat.setString(2, tc.getTestCase());
+                ResultSet rsCount = preStat.executeQuery();
+                try {
+                    while (rsCount.next()) {
+                        countriesDB.add(rsCount.getString("Country"));
+                        if (!tc.getCountryList().contains(rsCount.getString("Country"))) {
+                            final String sql_delete = "DELETE FROM TestCaseCountry WHERE Test = ? AND TestCase = ? AND Country = ?";
+
+                            PreparedStatement preStat2 = connection.prepareStatement(sql_delete);
+                            try {
+                                preStat2.setString(1, tc.getTest());
+                                preStat2.setString(2, tc.getTestCase());
+                                preStat2.setString(3, rsCount.getString("Country"));
+
+                                preStat2.executeUpdate();
+                            } catch (SQLException exception) {
+                                MyLogger.log(TestCaseDAO.class.getName(), Level.ERROR, exception.toString());
+                            } finally {
+                                preStat2.close();
+                            }
+                        }
+                    }
+                } catch (SQLException exception) {
+                    MyLogger.log(TestCaseDAO.class.getName(), Level.ERROR, exception.toString());
+                } finally {
+                    rsCount.close();
+                }
+            } catch (SQLException exception) {
+                MyLogger.log(TestCaseDAO.class.getName(), Level.ERROR, exception.toString());
+            } finally {
+                preStat.close();
+            }
+
+            res = true;
+            for (int i = 0; i < tc.getCountryList().size() && res; i++) {
+                if (!countriesDB.contains(tc.getCountryList().get(i))) {
+                    final String sql_insert = "INSERT INTO Testcasecountry (test, testcase, country) VALUES (?, ?, ?)";
+
+                    PreparedStatement preStat2 = connection.prepareStatement(sql_insert);
+                    try {
+                        preStat2.setString(1, tc.getTest());
+                        preStat2.setString(2, tc.getTestCase());
+                        preStat2.setString(3, tc.getCountryList().get(i));
+
+                        res = preStat2.executeUpdate() > 0;
+                    } catch (SQLException exception) {
+                        MyLogger.log(TestCaseDAO.class.getName(), Level.ERROR, exception.toString());
+                    } finally {
+                        preStat2.close();
+                    }
                 }
             }
-        } catch (SQLException ex) {
-            MyLogger.log(TestCaseDAO.class.getName(), Level.FATAL, ex.toString());
-        }
-
-        boolean res = true;
-        for (int i = 0; i < tc.getCountryList().size() && res; i++) {
-            if (!countriesDB.contains(tc.getCountryList().get(i))) {
-                final String sql_insert = "INSERT INTO Testcasecountry (test, testcase, country) Values (?, ?, ?)";
-                ArrayList<String> al_insert = new ArrayList<String>();
-                al_insert.add(tc.getTest());
-                al_insert.add(tc.getTestCase());
-                al_insert.add(tc.getCountryList().get(i));
-                res = databaseSpring.update(sql_insert, al_insert) > 0;
+        } catch (SQLException exception) {
+            MyLogger.log(TestCaseDAO.class.getName(), Level.ERROR, exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(TestCaseDAO.class.getName(), Level.WARN, e.toString());
             }
         }
-
-        databaseSpring.disconnect();
 
         return res;
     }
@@ -283,15 +351,18 @@ public class TestCaseDAO implements ITestCaseDAO {
     public List<TCase> findTestCaseByCriteria(String test, String application, String country, String active) {
         List<TCase> list = null;
         final String query = "SELECT tc.* FROM testcase tc JOIN testcasecountry tcc "
-                + "WHERE tc.test=tcc.test and tc.testcase=tcc.testcase "
-                + "and tc.test = ? and tc.application = ? and tcc.country = ? and tc.tcactive = ? ";
+                + "WHERE tc.test=tcc.test AND tc.testcase=tcc.testcase "
+                + "AND tc.test = ? AND tc.application = ? AND tcc.country = ? AND tc.tcactive = ? ";
+
+        Connection connection = this.databaseSpring.connect();
         try {
-            PreparedStatement preStat = this.databaseSpring.connect().prepareStatement(query);
-            preStat.setString(1, test);
-            preStat.setString(2, application);
-            preStat.setString(3, country);
-            preStat.setString(4, active);
+            PreparedStatement preStat = connection.prepareStatement(query);
             try {
+                preStat.setString(1, test);
+                preStat.setString(2, application);
+                preStat.setString(3, country);
+                preStat.setString(4, active);
+
                 ResultSet resultSet = preStat.executeQuery();
                 list = new ArrayList<TCase>();
                 try {
@@ -341,7 +412,13 @@ public class TestCaseDAO implements ITestCaseDAO {
         } catch (SQLException exception) {
             MyLogger.log(TestCaseDAO.class.getName(), Level.ERROR, exception.toString());
         } finally {
-            this.databaseSpring.disconnect();
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(TestCaseDAO.class.getName(), Level.WARN, e.toString());
+            }
         }
 
         return list;

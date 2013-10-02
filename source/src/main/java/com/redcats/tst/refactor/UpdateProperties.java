@@ -5,7 +5,16 @@
 package com.redcats.tst.refactor;
 
 
+import com.redcats.tst.database.DatabaseSpring;
 import com.redcats.tst.log.MyLogger;
+import org.apache.log4j.Level;
+import org.springframework.context.ApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
@@ -16,28 +25,22 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import org.apache.log4j.Level;
 
 /**
- *
  * @author bcivel
  */
 public class UpdateProperties extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request,
-            HttpServletResponse response) throws ServletException, IOException {
+                         HttpServletResponse response) throws ServletException, IOException {
         // response.setContentType("text/html;charset=UTF-8");
         this.processRequest(request, response);
     }
 
     @Override
     protected void doPost(HttpServletRequest request,
-            HttpServletResponse response) throws ServletException, IOException {
+                          HttpServletResponse response) throws ServletException, IOException {
         // response.setContentType("text/html;charset=UTF-8");
         this.processRequest(request, response);
     }
@@ -71,7 +74,7 @@ public class UpdateProperties extends HttpServlet {
     }
 
     public String getStringParameter(String parameter,
-            HttpServletRequest request) {
+                                     HttpServletRequest request) {
 
         if (request.getParameter(parameter) != null) {
             return request.getParameter(parameter);
@@ -94,21 +97,17 @@ public class UpdateProperties extends HttpServlet {
     }
 
     protected void processRequest(HttpServletRequest request,
-            HttpServletResponse response) throws ServletException, IOException {
+                                  HttpServletResponse response) throws ServletException, IOException {
 
         PrintWriter out = response.getWriter();
         /*
          * Database connexion
          */
-        DbMysqlController db = new DbMysqlController();
-        Connection conn = db.connect();
+        ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+        DatabaseSpring database = appContext.getBean(DatabaseSpring.class);
 
+        Connection connection = database.connect();
         try {
-
-
-
-            Statement stmt = conn.createStatement();
-            Statement stmt2 = conn.createStatement();
 
             /*
              * Get Test, TestCase and Country to update
@@ -190,179 +189,212 @@ public class UpdateProperties extends HttpServlet {
             List<String> differentlist = new ArrayList<String>(different);
             //
 
-            ResultSet rs_Properties = stmt2.executeQuery("SELECT * "
-                    + " FROM TestCaseCountryProperties " + " WHERE Test = '"
-                    + test_testcase_format[0] + "'" + " AND TestCase = '"
-                    + test_testcase_format[1] + "'");
+            Statement stmt = connection.createStatement();
+            try {
+                ResultSet rs_Properties = stmt.executeQuery("SELECT * "
+                        + " FROM TestCaseCountryProperties " + " WHERE Test = '"
+                        + test_testcase_format[0] + "'" + " AND TestCase = '"
+                        + test_testcase_format[1] + "'");
 
-            // the country property already exists????
-            if (rs_Properties.first()) {
+                try {
+                    // the country property already exists????
+                    if (rs_Properties.first()) {
 
-                for (int i = 0; i < testcase_properties_property.length; i++) {
-                    for (int j = 0; j < differentlist.size(); j++) {
-                        String[] tc_country = new String[]{"", ""};
-                        tc_country = differentlist.get(j).split(" - ");
+                        for (int i = 0; i < testcase_properties_property.length; i++) {
+                            for (int j = 0; j < differentlist.size(); j++) {
+                                String[] tc_country = new String[]{"", ""};
+                                tc_country = differentlist.get(j).split(" - ");
 
-                        if (testcase_properties_propertyrow[i].equals(tc_country[0])) {
-                            // if the number of the line is the same for the
-                            // country and the property:
-                            stmt.execute("DELETE FROM TestCaseCountryProperties "
-                                    + " WHERE Test = '"
-                                    + test_testcase_format[0]
-                                    + "' "
-                                    + " AND TestCase = '"
-                                    + test_testcase_format[1]
-                                    + "' "
-                                    + " AND Country = '"
-                                    + tc_country[1]
-                                    + "' "
-                                    + " AND Property = '"
-                                    + testcase_properties_property[i] + "'");
-                            // Is the country exist in the database??
-                        }// end of the if loop
-                    } // end of the loop for differnet list
-                } // end of the property loop >>>>>The country unselected have
-                // been removed
+                                if (testcase_properties_propertyrow[i].equals(tc_country[0])) {
+                                    // if the number of the line is the same for the
+                                    // country and the property:
+                                    Statement stmt2 = connection.createStatement();
+                                    try {
+                                        stmt2.execute("DELETE FROM TestCaseCountryProperties "
+                                                + " WHERE Test = '"
+                                                + test_testcase_format[0]
+                                                + "' "
+                                                + " AND TestCase = '"
+                                                + test_testcase_format[1]
+                                                + "' "
+                                                + " AND Country = '"
+                                                + tc_country[1]
+                                                + "' "
+                                                + " AND Property = '"
+                                                + testcase_properties_property[i] + "'");
+                                    } finally {
+                                        stmt2.close();
+                                    }
+                                    // Is the country exist in the database??
+                                }// end of the if loop
+                            } // end of the loop for differnet list
+                        } // end of the property loop >>>>>The country unselected have
+                        // been removed
 
-                //Delete the property which have been renamed    
-                for (int i = 0; i < testcase_properties_property.length; i++) {
-                    for (int p = 0; p < testcase_properties_countr_list.length; p++) {
-                        String[] tc_prop = new String[]{"", "", ""};
-                        tc_prop = testcase_properties_countr_list[p].split(" - ");
-                        if (testcase_properties_propertyrow[i].equals(tc_prop[0])
-                                && !testcase_properties_property[i].equals(tc_prop[2])) {
-                            stmt.execute("DELETE FROM TestCaseCountryProperties "
-                                    + " WHERE Test = '"
-                                    + test_testcase_format[0]
-                                    + "' "
-                                    + " AND TestCase = '"
-                                    + test_testcase_format[1]
-                                    + "' "
-                                    + " AND Country = '"
-                                    + tc_prop[1]
-                                    + "' "
-                                    + " AND Property = '"
-                                    + tc_prop[2] + "'");
-
+                        //Delete the property which have been renamed
+                        for (int i = 0; i < testcase_properties_property.length; i++) {
+                            for (int p = 0; p < testcase_properties_countr_list.length; p++) {
+                                String[] tc_prop = new String[]{"", "", ""};
+                                tc_prop = testcase_properties_countr_list[p].split(" - ");
+                                if (testcase_properties_propertyrow[i].equals(tc_prop[0])
+                                        && !testcase_properties_property[i].equals(tc_prop[2])) {
+                                    Statement stmt2 = connection.createStatement();
+                                    try {
+                                        stmt2.execute("DELETE FROM TestCaseCountryProperties "
+                                                + " WHERE Test = '"
+                                                + test_testcase_format[0]
+                                                + "' "
+                                                + " AND TestCase = '"
+                                                + test_testcase_format[1]
+                                                + "' "
+                                                + " AND Country = '"
+                                                + tc_prop[1]
+                                                + "' "
+                                                + " AND Property = '"
+                                                + tc_prop[2] + "'");
+                                    } finally {
+                                        stmt2.close();
+                                    }
+                                }
+                            }
                         }
-                    }
-                }
-                // for each line, insert the property when not exist and update
-                // when exist.
-                for (int i = 0; i < testcase_properties_property.length; i++) {
-                    // for each country flagged in the page
-                    for (int j = 0; j < testcase_properties_country.length; j++) {
-                        // separate the number of the line to the country:
-                        // example: 1 - AT
-                        String[] testcase_country = new String[]{"", ""};
-                        testcase_country = testcase_properties_country[j].split(" - ");
-                        // if the number of the line is the same for the country
-                        // and the property:
-                        if (testcase_properties_propertyrow[i].equals(testcase_country[0])) {
-                            ResultSet rs_numberOfTestCasesCountryProperties = stmt.executeQuery("SELECT Test, TestCase, Country, Property "
-                                    + " FROM TestCaseCountryProperties "
-                                    + " WHERE Test = '"
-                                    + test_testcase_format[0]
-                                    + "'"
-                                    + " AND TestCase = '"
-                                    + test_testcase_format[1]
-                                    + "'"
-                                    + " AND Country = '"
-                                    + testcase_country[1]
-                                    + "'"
-                                    + " AND Property = '"
-                                    + testcase_properties_property[i]
-                                    + "'");
-                            // Is the country exist in the database??
-                            // the country property already exists, make an
-                            // update
-                            if (rs_numberOfTestCasesCountryProperties.first()) {
+                        // for each line, insert the property when not exist and update
+                        // when exist.
+                        for (int i = 0; i < testcase_properties_property.length; i++) {
+                            // for each country flagged in the page
+                            for (int j = 0; j < testcase_properties_country.length; j++) {
+                                // separate the number of the line to the country:
+                                // example: 1 - AT
+                                String[] testcase_country = new String[]{"", ""};
+                                testcase_country = testcase_properties_country[j].split(" - ");
+                                // if the number of the line is the same for the country
+                                // and the property:
+                                if (testcase_properties_propertyrow[i].equals(testcase_country[0])) {
+                                    Statement stmt2 = connection.createStatement();
+                                    try {
+                                        ResultSet rs_numberOfTestCasesCountryProperties = stmt2.executeQuery("SELECT Test, TestCase, Country, Property "
+                                                + " FROM TestCaseCountryProperties "
+                                                + " WHERE Test = '"
+                                                + test_testcase_format[0]
+                                                + "'"
+                                                + " AND TestCase = '"
+                                                + test_testcase_format[1]
+                                                + "'"
+                                                + " AND Country = '"
+                                                + testcase_country[1]
+                                                + "'"
+                                                + " AND Property = '"
+                                                + testcase_properties_property[i]
+                                                + "'");
 
-                                TestCaseCountryProperties properties = new TestCaseCountryProperties();
-                                properties.setTest(test_testcase_format[0]);
-                                properties.setTestcase(test_testcase_format[1]);
-                                properties.setCountry(testcase_country[1]);
-                                properties.setProperty(testcase_properties_property[i]);
+                                        try {
+                                            // Is the country exist in the database??
+                                            // the country property already exists, make an
+                                            // update
+                                            if (rs_numberOfTestCasesCountryProperties.first()) {
 
-                                properties.setNature(testcase_properties_nature[i]);
-                                properties.setRowlimit(Integer.parseInt(testcase_properties_rowlimit[i]));
-                                properties.setLength(Integer.parseInt(testcase_properties_length[i]));
-                                properties.setValue(testcase_properties_value[i]);
-                                properties.setType(testcase_properties_type[i]);
+                                                TestCaseCountryProperties properties = new TestCaseCountryProperties();
+                                                properties.setTest(test_testcase_format[0]);
+                                                properties.setTestcase(test_testcase_format[1]);
+                                                properties.setCountry(testcase_country[1]);
+                                                properties.setProperty(testcase_properties_property[i]);
 
-                                properties.update();
+                                                properties.setNature(testcase_properties_nature[i]);
+                                                properties.setRowlimit(Integer.parseInt(testcase_properties_rowlimit[i]));
+                                                properties.setLength(Integer.parseInt(testcase_properties_length[i]));
+                                                properties.setValue(testcase_properties_value[i]);
+                                                properties.setType(testcase_properties_type[i]);
 
-                            } else // the country property does'nt extist, make an
-                            // insert :
-                            { /*
+                                                properties.update();
+
+                                            } else // the country property does'nt extist, make an
+                                            // insert :
+                                            { /*
                                  * Insert new rows
                                  */
 
-                                TestCaseCountryProperties properties = new TestCaseCountryProperties();
-                                properties.setTest(test_testcase_format[0]);
-                                properties.setTestcase(test_testcase_format[1]);
-                                properties.setCountry(testcase_country[1]);
-                                properties.setProperty(testcase_properties_property[i]);
-                                properties.setNature(testcase_properties_nature[i]);
-                                properties.setRowlimit(Integer.parseInt(testcase_properties_rowlimit[i]));
-                                properties.setLength(Integer.parseInt(testcase_properties_length[i]));
-                                properties.setValue(testcase_properties_value[i]);
-                                properties.setType(testcase_properties_type[i]);
-                                properties.insert();
+                                                TestCaseCountryProperties properties = new TestCaseCountryProperties();
+                                                properties.setTest(test_testcase_format[0]);
+                                                properties.setTestcase(test_testcase_format[1]);
+                                                properties.setCountry(testcase_country[1]);
+                                                properties.setProperty(testcase_properties_property[i]);
+                                                properties.setNature(testcase_properties_nature[i]);
+                                                properties.setRowlimit(Integer.parseInt(testcase_properties_rowlimit[i]));
+                                                properties.setLength(Integer.parseInt(testcase_properties_length[i]));
+                                                properties.setValue(testcase_properties_value[i]);
+                                                properties.setType(testcase_properties_type[i]);
+                                                properties.insert();
 
-                            }// end of the else loop
-                            rs_numberOfTestCasesCountryProperties.close();
-                        }// end of the if loop
+                                            }// end of the else loop
+                                        } finally {
+                                            rs_numberOfTestCasesCountryProperties.close();
+                                        }
+                                    } finally {
+                                        stmt2.close();
+                                    }
+                                }// end of the if loop
 
-                    }// Close the loop for country
-                }// Close the loop for (property)
-            } // end of the if loop (property already exists??
-            else // The property is a first one
-            {
-                for (int i = 0; i < testcase_properties_property.length; i++) {
-                    // for each country flagged in the page
-                    for (int j = 0; j < testcase_properties_country.length; j++) {
-                        // separate the number of the line to the country:
-                        // example: 1 - AT
-                        String[] testcase_country = new String[]{"", ""};
-                        testcase_country = testcase_properties_country[j].split(" - ");
-                        // if the number of the line is the same for the country
-                        // and the property:
-                        if (testcase_properties_propertyrow[i].equals(testcase_country[0])) {
-                            TestCaseCountryProperties properties = new TestCaseCountryProperties();
-                            properties.setTest(test_testcase_format[0]);
-                            properties.setTestcase(test_testcase_format[1]);
-                            properties.setCountry(testcase_country[1]);
-                            properties.setProperty(testcase_properties_property[i]);
-                            properties.setNature(testcase_properties_nature[i]);
-                            properties.setRowlimit(Integer.parseInt(testcase_properties_rowlimit[i]));
-                            properties.setLength(Integer.parseInt(testcase_properties_length[i]));
-                            properties.setValue(testcase_properties_value[i]);
-                            properties.setType(testcase_properties_type[i]);
-                            properties.insert();
-                        } // Close the condition on the row number
-                    } // Close the loop for (country)
-                } // Close the else condition
+                            }// Close the loop for country
+                        }// Close the loop for (property)
+                    } // end of the if loop (property already exists??
+                    else // The property is a first one
+                    {
+                        for (int i = 0; i < testcase_properties_property.length; i++) {
+                            // for each country flagged in the page
+                            for (int j = 0; j < testcase_properties_country.length; j++) {
+                                // separate the number of the line to the country:
+                                // example: 1 - AT
+                                String[] testcase_country = new String[]{"", ""};
+                                testcase_country = testcase_properties_country[j].split(" - ");
+                                // if the number of the line is the same for the country
+                                // and the property:
+                                if (testcase_properties_propertyrow[i].equals(testcase_country[0])) {
+                                    TestCaseCountryProperties properties = new TestCaseCountryProperties();
+                                    properties.setTest(test_testcase_format[0]);
+                                    properties.setTestcase(test_testcase_format[1]);
+                                    properties.setCountry(testcase_country[1]);
+                                    properties.setProperty(testcase_properties_property[i]);
+                                    properties.setNature(testcase_properties_nature[i]);
+                                    properties.setRowlimit(Integer.parseInt(testcase_properties_rowlimit[i]));
+                                    properties.setLength(Integer.parseInt(testcase_properties_length[i]));
+                                    properties.setValue(testcase_properties_value[i]);
+                                    properties.setType(testcase_properties_type[i]);
+
+                                    //TODO remove insert in entity
+                                    properties.insert();
+                                } // Close the condition on the row number
+                            } // Close the loop for (country)
+                        } // Close the else condition
+                    }
+                } finally {
+                    rs_Properties.close();
+                }
+            } finally {
+                stmt.close();
             }
-            rs_Properties.close();
 
             /*
              * Delete Properties
              */
 
             if (testcase_properties_delete != null) { // If some properties
-                // check for delete
-                for (String element : testcase_properties_delete) {
-                    String property_and_country[] = element.split(" - ");
-                    for (int i = 1; i < property_and_country.length; i++) {
-                        stmt.execute("DELETE FROM TestCaseCountryProperties "
-                                + " WHERE Test = '" + test_testcase_format[0]
-                                + "' " + " AND TestCase = '"
-                                + test_testcase_format[1] + "' "
-                                + " AND Country = '" + property_and_country[i]
-                                + "' " + " AND Property = '"
-                                + property_and_country[0] + "'");
+                Statement stmt2 = connection.createStatement();
+                try {
+                    // check for delete
+                    for (String element : testcase_properties_delete) {
+                        String property_and_country[] = element.split(" - ");
+                        for (int i = 1; i < property_and_country.length; i++) {
+                            stmt2.execute("DELETE FROM TestCaseCountryProperties "
+                                    + " WHERE Test = '" + test_testcase_format[0]
+                                    + "' " + " AND TestCase = '"
+                                    + test_testcase_format[1] + "' "
+                                    + " AND Country = '" + property_and_country[i]
+                                    + "' " + " AND Property = '"
+                                    + property_and_country[0] + "'");
+                        }
                     }
+                } finally {
+                    stmt2.close();
                 }
             }
 
@@ -370,10 +402,12 @@ public class UpdateProperties extends HttpServlet {
                     + "SET LastModifier = '" + request.getUserPrincipal().getName()
                     + "' WHERE Test = '" + test_testcase_format[0]
                     + "' AND TestCase = '" + test_testcase_format[1] + "' ";
-            stmt.execute(sql);
-
-            stmt.close();
-            stmt2.close();
+            stmt = connection.createStatement();
+            try {
+                stmt.execute(sql);
+            } finally {
+                stmt.close();
+            }
 
             /*
              * Redirect
@@ -384,22 +418,21 @@ public class UpdateProperties extends HttpServlet {
             return;
 
         } catch (SQLException ex) {
-            MyLogger.log(UpdateTestCase1.class.getName(), Level.FATAL,
-                    "" + ex);
+            MyLogger.log(UpdateProperties.class.getName(), Level.FATAL, "" + ex);
             // out.println ( UpdateTestCase.class.getName ( ) + ex ) ;
 
         } catch (NullPointerException ex) {
-            MyLogger.log(UpdateTestCase1.class.getName(), Level.FATAL,
-                    "" + ex);
+            MyLogger.log(UpdateProperties.class.getName(), Level.FATAL, "" + ex);
 
         } catch (ArrayIndexOutOfBoundsException ex) {
-            MyLogger.log(UpdateTestCase1.class.getName(), Level.FATAL,
-                    "" + ex);
+            MyLogger.log(UpdateProperties.class.getName(), Level.FATAL, "" + ex);
         } finally {
             try {
-                conn.close();
-            } catch (Exception ex) {
-                MyLogger.log(UpdateProperties.class.getName(), Level.INFO, "Exception closing Connection: " + ex.toString());
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(UpdateProperties.class.getName(), Level.WARN, e.toString());
             }
         }
         response.sendRedirect("TestCase.jsp?Load=Load&Test="

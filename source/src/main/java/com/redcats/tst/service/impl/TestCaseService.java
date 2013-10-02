@@ -9,24 +9,21 @@ import com.redcats.tst.entity.TCase;
 import com.redcats.tst.entity.TestCase;
 import com.redcats.tst.entity.TestCaseCountry;
 import com.redcats.tst.exception.CerberusException;
-import com.redcats.tst.service.IInvariantService;
 import com.redcats.tst.service.ITestCaseCountryService;
 import com.redcats.tst.service.ITestCaseService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * @author bcivel
  */
 @Service
 public class TestCaseService implements ITestCaseService {
-    
+
     @Autowired
     private ITestCaseDAO testCaseDao;
-    @Autowired
-    private IInvariantService invariantService;
     @Autowired
     private ITestCaseCountryService testCaseCountryService;
 
@@ -43,15 +40,12 @@ public class TestCaseService implements ITestCaseService {
         newTcase.setTestCaseCountry(testCaseCountry);
         return newTcase;
     }
-    
-    
+
     @Override
     public List<TCase> findTestCaseByTest(String test) {
         return testCaseDao.findTestCaseByTest(test);
     }
 
-    
-    
     @Override
     public boolean updateTestCaseInformation(TestCase testCase) {
         return testCaseDao.updateTestCaseInformation(testCase);
@@ -69,7 +63,7 @@ public class TestCaseService implements ITestCaseService {
 
     @Override
     public List<TCase> findTestCaseActiveByCriteria(String test, String application, String country) {
-        return testCaseDao.findTestCaseByCriteria ( test,  application,  country, "Y");
+        return testCaseDao.findTestCaseByCriteria(test, application, country, "Y");
     }
-    
+
 }

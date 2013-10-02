@@ -8,10 +8,7 @@ import org.apache.log4j.Level;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Timestamp;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,22 +42,24 @@ public class TestCaseExecutionWWWDetDAO implements ITestCaseExecutionWWWDetDAO {
 
         final String query = "INSERT INTO testcaseexecutionwwwdet(ExecID, start, url, end, ext, statusCode, method, bytes, " +
                 "timeInMillis, ReqHeader_Host, ResHeader_ContentType, ReqPage) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        try {
-            PreparedStatement preStat = this.databaseSpring.connect().prepareStatement(query);
-            preStat.setLong(1, runId);
-            preStat.setTimestamp(2, new Timestamp(detail.getStart()));
-            preStat.setString(3, detail.getUrl());
-            preStat.setTimestamp(4, new Timestamp(detail.getEnd()));
-            preStat.setString(5, detail.getExt());
-            preStat.setInt(6, detail.getStatus());
-            preStat.setString(7, detail.getMethod());
-            preStat.setLong(8, detail.getBytes());
-            preStat.setLong(9, detail.getTime());
-            preStat.setString(10, detail.getHostReq());
-            preStat.setString(11, detail.getContentType());
-            preStat.setString(12, detail.getPageRes());
 
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
             try {
+                preStat.setLong(1, runId);
+                preStat.setTimestamp(2, new Timestamp(detail.getStart()));
+                preStat.setString(3, detail.getUrl());
+                preStat.setTimestamp(4, new Timestamp(detail.getEnd()));
+                preStat.setString(5, detail.getExt());
+                preStat.setInt(6, detail.getStatus());
+                preStat.setString(7, detail.getMethod());
+                preStat.setLong(8, detail.getBytes());
+                preStat.setLong(9, detail.getTime());
+                preStat.setString(10, detail.getHostReq());
+                preStat.setString(11, detail.getContentType());
+                preStat.setString(12, detail.getPageRes());
+
                 preStat.executeUpdate();
                 MyLogger.log(TestCaseExecutionWWWDetDAO.class.getName(), Level.DEBUG, "Inserting detail. " + detail.getUrl());
 
@@ -72,7 +71,13 @@ public class TestCaseExecutionWWWDetDAO implements ITestCaseExecutionWWWDetDAO {
         } catch (SQLException exception) {
             MyLogger.log(TestCaseExecutionWWWDetDAO.class.getName(), Level.ERROR, exception.toString());
         } finally {
-            this.databaseSpring.disconnect();
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(TestCaseExecutionWWWDetDAO.class.getName(), Level.WARN, e.toString());
+            }
         }
     }
 
@@ -81,13 +86,15 @@ public class TestCaseExecutionWWWDetDAO implements ITestCaseExecutionWWWDetDAO {
         List<StatisticDetail> list = null;
         final String query = "SELECT * FROM testcaseexecutionwwwdet WHERE execid = ?";
 
+        Connection connection = this.databaseSpring.connect();
         try {
-            PreparedStatement preStat = this.databaseSpring.connect().prepareStatement(query);
-            preStat.setLong(1, runId);
+            PreparedStatement preStat = connection.prepareStatement(query);
             try {
+                preStat.setLong(1, runId);
+
                 ResultSet resultSet = preStat.executeQuery();
-                list = new ArrayList<StatisticDetail>();
                 try {
+                    list = new ArrayList<StatisticDetail>();
                     while (resultSet.next()) {
                         list.add(loadStatistic(resultSet));
                     }
@@ -104,7 +111,13 @@ public class TestCaseExecutionWWWDetDAO implements ITestCaseExecutionWWWDetDAO {
         } catch (SQLException exception) {
             MyLogger.log(TestCaseStepDAO.class.getName(), Level.ERROR, exception.toString());
         } finally {
-            this.databaseSpring.disconnect();
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(TestCaseExecutionWWWDetDAO.class.getName(), Level.WARN, e.toString());
+            }
         }
         return list;
     }

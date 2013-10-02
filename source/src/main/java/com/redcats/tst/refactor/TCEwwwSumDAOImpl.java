@@ -7,16 +7,18 @@ package com.redcats.tst.refactor;
 
 import com.redcats.tst.database.DatabaseSpring;
 import com.redcats.tst.log.MyLogger;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 import org.apache.log4j.Level;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
- *
  * @author bcivel
  */
 @Repository
@@ -35,50 +37,59 @@ public class TCEwwwSumDAOImpl implements ITCEwwwSumDAO {
 
         TestcaseExecutionwwwSum tcewwwsumToAdd;
 
-        databaseSpring.connect();
-        ResultSet rs = null;
+        Connection connection = this.databaseSpring.connect();
         try {
-            rs = databaseSpring.query(query);
-
-            if (rs.first()) {
-                //TODO factory
-                tcewwwsumToAdd = new TestcaseExecutionwwwSum();
-                tcewwwsumToAdd.setTot_nbhits(rs.getInt(1));
-                tcewwwsumToAdd.setTot_tps(rs.getInt(2));
-                tcewwwsumToAdd.setTot_size(rs.getInt(3));
-                tcewwwsumToAdd.setNb_rc2xx(rs.getInt(4));
-                tcewwwsumToAdd.setNb_rc3xx(rs.getInt(5));
-                tcewwwsumToAdd.setNb_rc4xx(rs.getInt(6));
-                tcewwwsumToAdd.setNb_rc5xx(rs.getInt(7));
-                tcewwwsumToAdd.setImg_nb(rs.getInt(8));
-                tcewwwsumToAdd.setImg_tps(rs.getInt(9));
-                tcewwwsumToAdd.setImg_size_tot(rs.getInt(10));
-                tcewwwsumToAdd.setImg_size_max(rs.getInt(11));
-                tcewwwsumToAdd.setJs_nb(rs.getInt(12));
-                tcewwwsumToAdd.setJs_tps(rs.getInt(13));
-                tcewwwsumToAdd.setJs_size_tot(rs.getInt(14));
-                tcewwwsumToAdd.setJs_size_max(rs.getInt(15));
-                tcewwwsumToAdd.setCss_nb(rs.getInt(16));
-                tcewwwsumToAdd.setCss_tps(rs.getInt(17));
-                tcewwwsumToAdd.setCss_size_tot(rs.getInt(18));
-                tcewwwsumToAdd.setCss_size_max(rs.getInt(19));
-
-
-                executionwwwSums.add(tcewwwsumToAdd);
-            }
-
-        } catch (SQLException ex) {
-            MyLogger.log(TCEwwwSumDAOImpl.class.getName(), Level.FATAL, ex.toString());
-        } finally {
+            PreparedStatement preStat = connection.prepareStatement(query);
             try {
-                if (rs != null) {
+                preStat.setString(1, String.valueOf(id));
+                ResultSet rs = preStat.executeQuery();
+                try {
+                    if (rs.first()) {
+                        //TODO factory
+                        tcewwwsumToAdd = new TestcaseExecutionwwwSum();
+                        tcewwwsumToAdd.setTot_nbhits(rs.getInt(1));
+                        tcewwwsumToAdd.setTot_tps(rs.getInt(2));
+                        tcewwwsumToAdd.setTot_size(rs.getInt(3));
+                        tcewwwsumToAdd.setNb_rc2xx(rs.getInt(4));
+                        tcewwwsumToAdd.setNb_rc3xx(rs.getInt(5));
+                        tcewwwsumToAdd.setNb_rc4xx(rs.getInt(6));
+                        tcewwwsumToAdd.setNb_rc5xx(rs.getInt(7));
+                        tcewwwsumToAdd.setImg_nb(rs.getInt(8));
+                        tcewwwsumToAdd.setImg_tps(rs.getInt(9));
+                        tcewwwsumToAdd.setImg_size_tot(rs.getInt(10));
+                        tcewwwsumToAdd.setImg_size_max(rs.getInt(11));
+                        tcewwwsumToAdd.setJs_nb(rs.getInt(12));
+                        tcewwwsumToAdd.setJs_tps(rs.getInt(13));
+                        tcewwwsumToAdd.setJs_size_tot(rs.getInt(14));
+                        tcewwwsumToAdd.setJs_size_max(rs.getInt(15));
+                        tcewwwsumToAdd.setCss_nb(rs.getInt(16));
+                        tcewwwsumToAdd.setCss_tps(rs.getInt(17));
+                        tcewwwsumToAdd.setCss_size_tot(rs.getInt(18));
+                        tcewwwsumToAdd.setCss_size_max(rs.getInt(19));
+
+                        executionwwwSums.add(tcewwwsumToAdd);
+                    }
+                } catch (SQLException ex) {
+                    MyLogger.log(TCEwwwSumDAOImpl.class.getName(), Level.FATAL, ex.toString());
+                } finally {
                     rs.close();
                 }
-            } catch (SQLException ex) {
-                MyLogger.log(TCEwwwSumDAOImpl.class.getName(), Level.INFO, "Exception closing ResultSet: " + ex.toString());
+            } catch (SQLException exception) {
+                MyLogger.log(TCEwwwSumDAOImpl.class.getName(), Level.ERROR, exception.toString());
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(TCEwwwSumDAOImpl.class.getName(), Level.ERROR, exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(TCEwwwSumDAOImpl.class.getName(), Level.WARN, e.toString());
             }
         }
-        databaseSpring.disconnect();
 
         return executionwwwSums;
     }

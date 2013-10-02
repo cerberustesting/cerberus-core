@@ -2,7 +2,6 @@ package com.redcats.tst.dao.impl;
 
 import com.redcats.tst.dao.ITestCaseExecutionDataDAO;
 import com.redcats.tst.database.DatabaseSpring;
-import com.redcats.tst.entity.MessageEventEnum;
 import com.redcats.tst.entity.MessageGeneral;
 import com.redcats.tst.entity.MessageGeneralEnum;
 import com.redcats.tst.entity.TestCaseExecutionData;
@@ -11,15 +10,11 @@ import com.redcats.tst.factory.IFactoryTestCaseExecutionData;
 import com.redcats.tst.log.MyLogger;
 import com.redcats.tst.util.ParameterParserUtil;
 import com.redcats.tst.util.StringUtil;
-import java.sql.Array;
 import org.apache.log4j.Level;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Timestamp;
+import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -47,12 +42,13 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
         TestCaseExecutionData result = null;
         final String query = "SELECT * FROM TestCaseExecutionData WHERE id = ? AND property = ?";
 
+        Connection connection = this.databaseSpring.connect();
         try {
-            PreparedStatement preStat = this.databaseSpring.connect().prepareStatement(query);
-            preStat.setString(1, String.valueOf(id));
-            preStat.setString(2, property);
-
+            PreparedStatement preStat = connection.prepareStatement(query);
             try {
+                preStat.setString(1, String.valueOf(id));
+                preStat.setString(2, property);
+
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     if (resultSet.first()) {
@@ -81,7 +77,13 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
         } catch (SQLException exception) {
             MyLogger.log(TestCaseExecutionDataDAO.class.getName(), Level.ERROR, exception.toString());
         } finally {
-            this.databaseSpring.disconnect();
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(TestCaseExecutionDataDAO.class.getName(), Level.WARN, e.toString());
+            }
         }
         return result;
     }
@@ -92,21 +94,22 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
         final String query = "INSERT INTO testcaseexecutiondata(id, property, VALUE, TYPE, object, rc, rmessage, start, END, startlong, endlong) "
                 + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
+        Connection connection = this.databaseSpring.connect();
         try {
-            PreparedStatement preStat = this.databaseSpring.connect().prepareStatement(query);
-            preStat.setLong(1, testCaseExecutionData.getId());
-            preStat.setString(2, testCaseExecutionData.getProperty());
-            preStat.setString(3, ParameterParserUtil.securePassword(StringUtil.getLeftString(testCaseExecutionData.getValue(), 150), testCaseExecutionData.getProperty()));
-            preStat.setString(4, testCaseExecutionData.getType());
-            preStat.setString(5, ParameterParserUtil.securePassword(StringUtil.getLeftString(testCaseExecutionData.getObject(), 200), testCaseExecutionData.getProperty()));
-            preStat.setString(6, testCaseExecutionData.getRC());
-            preStat.setString(7, StringUtil.getLeftString(testCaseExecutionData.getrMessage(), 500));
-            preStat.setTimestamp(8, new Timestamp(testCaseExecutionData.getStart()));
-            preStat.setTimestamp(9, new Timestamp(testCaseExecutionData.getEnd()));
-            preStat.setString(10, new SimpleDateFormat("yyyyMMddHHmmssSSS").format(testCaseExecutionData.getStart()));
-            preStat.setString(11, new SimpleDateFormat("yyyyMMddHHmmssSSS").format(testCaseExecutionData.getEnd()));
-
+            PreparedStatement preStat = connection.prepareStatement(query);
             try {
+                preStat.setLong(1, testCaseExecutionData.getId());
+                preStat.setString(2, testCaseExecutionData.getProperty());
+                preStat.setString(3, ParameterParserUtil.securePassword(StringUtil.getLeftString(testCaseExecutionData.getValue(), 150), testCaseExecutionData.getProperty()));
+                preStat.setString(4, testCaseExecutionData.getType());
+                preStat.setString(5, ParameterParserUtil.securePassword(StringUtil.getLeftString(testCaseExecutionData.getObject(), 200), testCaseExecutionData.getProperty()));
+                preStat.setString(6, testCaseExecutionData.getRC());
+                preStat.setString(7, StringUtil.getLeftString(testCaseExecutionData.getrMessage(), 500));
+                preStat.setTimestamp(8, new Timestamp(testCaseExecutionData.getStart()));
+                preStat.setTimestamp(9, new Timestamp(testCaseExecutionData.getEnd()));
+                preStat.setString(10, new SimpleDateFormat("yyyyMMddHHmmssSSS").format(testCaseExecutionData.getStart()));
+                preStat.setString(11, new SimpleDateFormat("yyyyMMddHHmmssSSS").format(testCaseExecutionData.getEnd()));
+
                 preStat.executeUpdate();
                 throwException = false;
             } catch (SQLException exception) {
@@ -117,7 +120,13 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
         } catch (SQLException exception) {
             MyLogger.log(TestCaseExecutionDataDAO.class.getName(), Level.ERROR, exception.toString());
         } finally {
-            this.databaseSpring.disconnect();
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(TestCaseExecutionDataDAO.class.getName(), Level.WARN, e.toString());
+            }
         }
         if (throwException) {
             throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
@@ -128,23 +137,24 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
     public void updateTestCaseExecutionData(TestCaseExecutionData testCaseExecutionData) throws CerberusException {
         boolean throwException = true;
         final String query = "UPDATE testcaseexecutiondata SET VALUE = ?, TYPE = ?, object = ?, rc = ?, rmessage = ?, start = ?, END = ?, startlong = ?, endlong = ? "
-                + "WHERE id = ? and property = ?";
+                + "WHERE id = ? AND property = ?";
 
+        Connection connection = this.databaseSpring.connect();
         try {
-            PreparedStatement preStat = this.databaseSpring.connect().prepareStatement(query);
-            preStat.setString(1, ParameterParserUtil.securePassword(StringUtil.getLeftString(testCaseExecutionData.getValue(), 150), testCaseExecutionData.getProperty()));
-            preStat.setString(2, testCaseExecutionData.getType());
-            preStat.setString(3, StringUtil.getLeftString(testCaseExecutionData.getObject(), 200));
-            preStat.setString(4, testCaseExecutionData.getRC());
-            preStat.setString(5, StringUtil.getLeftString(testCaseExecutionData.getrMessage(), 500));
-            preStat.setTimestamp(6, new Timestamp(testCaseExecutionData.getStart()));
-            preStat.setTimestamp(7, new Timestamp(testCaseExecutionData.getEnd()));
-            preStat.setString(8, new SimpleDateFormat("yyyyMMddHHmmssSSS").format(testCaseExecutionData.getStart()));
-            preStat.setString(9, new SimpleDateFormat("yyyyMMddHHmmssSSS").format(testCaseExecutionData.getEnd()));
-            preStat.setLong(10, testCaseExecutionData.getId());
-            preStat.setString(11, testCaseExecutionData.getProperty());
-
+            PreparedStatement preStat = connection.prepareStatement(query);
             try {
+                preStat.setString(1, ParameterParserUtil.securePassword(StringUtil.getLeftString(testCaseExecutionData.getValue(), 150), testCaseExecutionData.getProperty()));
+                preStat.setString(2, testCaseExecutionData.getType());
+                preStat.setString(3, StringUtil.getLeftString(testCaseExecutionData.getObject(), 200));
+                preStat.setString(4, testCaseExecutionData.getRC());
+                preStat.setString(5, StringUtil.getLeftString(testCaseExecutionData.getrMessage(), 500));
+                preStat.setTimestamp(6, new Timestamp(testCaseExecutionData.getStart()));
+                preStat.setTimestamp(7, new Timestamp(testCaseExecutionData.getEnd()));
+                preStat.setString(8, new SimpleDateFormat("yyyyMMddHHmmssSSS").format(testCaseExecutionData.getStart()));
+                preStat.setString(9, new SimpleDateFormat("yyyyMMddHHmmssSSS").format(testCaseExecutionData.getEnd()));
+                preStat.setLong(10, testCaseExecutionData.getId());
+                preStat.setString(11, testCaseExecutionData.getProperty());
+
                 preStat.executeUpdate();
                 throwException = false;
             } catch (SQLException exception) {
@@ -155,7 +165,13 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
         } catch (SQLException exception) {
             MyLogger.log(TestCaseExecutionDataDAO.class.getName(), Level.ERROR, exception.toString());
         } finally {
-            this.databaseSpring.disconnect();
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(TestCaseExecutionDataDAO.class.getName(), Level.WARN, e.toString());
+            }
         }
         if (throwException) {
             throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
@@ -178,19 +194,21 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
                 + "(SELECT id FROM TestCaseExecution WHERE test = ? AND testcase = ? AND build = ? AND environment = ? AND country = ?) "
                 + "ORDER BY ID DESC";
 
+        Connection connection = this.databaseSpring.connect();
         try {
-            PreparedStatement preStat = this.databaseSpring.connect().prepareStatement(query);
-            preStat.setString(1, propName);
-            preStat.setString(2, test);
-            preStat.setString(3, testCase);
-            preStat.setString(4, build);
-            preStat.setString(5, environment);
-            preStat.setString(6, country);
-
+            PreparedStatement preStat = connection.prepareStatement(query);
             try {
+                preStat.setString(1, propName);
+                preStat.setString(2, test);
+                preStat.setString(3, testCase);
+                preStat.setString(4, build);
+                preStat.setString(5, environment);
+                preStat.setString(6, country);
+
                 ResultSet resultSet = preStat.executeQuery();
-                list = new ArrayList<String>();
                 try {
+                    list = new ArrayList<String>();
+
                     while (resultSet.next()) {
                         list.add(resultSet.getString("value"));
                     }
@@ -207,7 +225,13 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
         } catch (SQLException exception) {
             MyLogger.log(TestCaseExecutionDataDAO.class.getName(), Level.ERROR, exception.toString());
         } finally {
-            this.databaseSpring.disconnect();
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(TestCaseExecutionDataDAO.class.getName(), Level.WARN, e.toString());
+            }
         }
         return list;
     }
@@ -217,16 +241,18 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
         List<TestCaseExecutionData> result = null;
         TestCaseExecutionData resultData;
         boolean throwEx = false;
-        final String query = "SELECT * FROM TestCaseExecutionData WHERE id = ? order by startlong";
+        final String query = "SELECT * FROM TestCaseExecutionData WHERE id = ? ORDER BY startlong";
 
+        Connection connection = this.databaseSpring.connect();
         try {
-            PreparedStatement preStat = this.databaseSpring.connect().prepareStatement(query);
-            preStat.setString(1, String.valueOf(id));
-
+            PreparedStatement preStat = connection.prepareStatement(query);
             try {
+                preStat.setString(1, String.valueOf(id));
+
                 ResultSet resultSet = preStat.executeQuery();
-                result = new ArrayList<TestCaseExecutionData>();
                 try {
+                    result = new ArrayList<TestCaseExecutionData>();
+
                     while (resultSet.next()) {
                         String value = resultSet.getString("value");
                         String property = resultSet.getString("property");
@@ -255,7 +281,13 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
         } catch (SQLException exception) {
             MyLogger.log(TestCaseExecutionDataDAO.class.getName(), Level.ERROR, exception.toString());
         } finally {
-            this.databaseSpring.disconnect();
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(TestCaseExecutionDataDAO.class.getName(), Level.WARN, e.toString());
+            }
         }
         return result;
     }

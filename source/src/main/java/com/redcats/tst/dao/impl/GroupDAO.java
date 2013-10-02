@@ -7,8 +7,9 @@ package com.redcats.tst.dao.impl;
 import com.redcats.tst.dao.IGroupDAO;
 import com.redcats.tst.entity.Group;
 import com.redcats.tst.entity.User;
-import java.util.List;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 @Repository
 public class GroupDAO implements IGroupDAO {

@@ -14,14 +14,16 @@ import com.redcats.tst.factory.IFactoryDeployType;
 import com.redcats.tst.factory.impl.FactoryDeployType;
 import com.redcats.tst.log.MyLogger;
 import com.redcats.tst.util.ParameterParserUtil;
+import org.apache.log4j.Level;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.log4j.Level;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
 
 @Repository
 public class DeployTypeDAO implements IDeployTypeDAO {
@@ -35,11 +37,13 @@ public class DeployTypeDAO implements IDeployTypeDAO {
         boolean throwEx = false;
         DeployType result = null;
         final String query = "SELECT * FROM DeployType a WHERE a.deploytype = ? ";
-        try {
-            PreparedStatement preStat = this.databaseSpring.connect().prepareStatement(query);
-            preStat.setString(1, deploytype);
 
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
             try {
+                preStat.setString(1, deploytype);
+
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     if (!(resultSet.first())) {
@@ -60,7 +64,13 @@ public class DeployTypeDAO implements IDeployTypeDAO {
         } catch (SQLException exception) {
             MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, exception.toString());
         } finally {
-            this.databaseSpring.disconnect();
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(ApplicationDAO.class.getName(), Level.WARN, e.toString());
+            }
         }
         if (throwEx) {
             throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
@@ -73,8 +83,9 @@ public class DeployTypeDAO implements IDeployTypeDAO {
         List<DeployType> list = null;
         final String query = "SELECT * FROM application a ORDER BY a.sort";
 
+        Connection connection = this.databaseSpring.connect();
         try {
-            PreparedStatement preStat = this.databaseSpring.connect().prepareStatement(query);
+            PreparedStatement preStat = connection.prepareStatement(query);
 
             try {
                 ResultSet resultSet = preStat.executeQuery();
@@ -97,7 +108,13 @@ public class DeployTypeDAO implements IDeployTypeDAO {
         } catch (SQLException exception) {
             MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, exception.toString());
         } finally {
-            this.databaseSpring.disconnect();
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(ApplicationDAO.class.getName(), Level.WARN, e.toString());
+            }
         }
         return list;
     }

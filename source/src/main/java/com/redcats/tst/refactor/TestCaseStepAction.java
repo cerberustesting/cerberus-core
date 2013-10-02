@@ -1,14 +1,20 @@
 package com.redcats.tst.refactor;
 
+import com.redcats.tst.database.DatabaseSpring;
+import com.redcats.tst.log.MyLogger;
+import org.apache.log4j.Level;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.util.ArrayList;
+import java.sql.SQLException;
 
 public class TestCaseStepAction implements DatabaseCRUD {
 
     private static final String COLUMNS = "`Test`, `TestCase`, `Step`, `Sequence`, `Action`, `Object`, `Property`";
     private static final String TABLE = "testcasestepaction";
     private String action;
-    private final DbMysqlController db;
     private String object;
     private String property;
     private Integer sequence;
@@ -16,9 +22,11 @@ public class TestCaseStepAction implements DatabaseCRUD {
     private String test;
     private String testcase;
 
+    @Autowired
+    private DatabaseSpring databaseSpring;
+
     public TestCaseStepAction() {
 
-        this.db = new DbMysqlController();
         this.property = new String();
         this.test = new String();
         this.testcase = new String();
@@ -65,7 +73,7 @@ public class TestCaseStepAction implements DatabaseCRUD {
         return this.testcase;
     }
 
-    @ Override
+    @Override
     public void importResultSet(ResultSet rs) {
 
         try {
@@ -81,32 +89,42 @@ public class TestCaseStepAction implements DatabaseCRUD {
         }
     }
 
-    @ Override
+    @Override
     public void insert() {
 
         StringBuilder sql = new StringBuilder();
         sql.append("INSERT INTO " + TestCaseStepAction.TABLE + " ( " + TestCaseStepAction.COLUMNS + ") ");
+        sql.append(" VALUES ( ?,?,?,?,?,?,?) ");
+
+        Connection connection = this.databaseSpring.connect();
         try {
-            sql.append(" VALUES ( ?,?,?,?,?,?,?) ");
+            PreparedStatement preStat = connection.prepareStatement(sql.toString());
+            try {
+                preStat.setString(1, this.test);
+                preStat.setString(2, this.testcase);
+                preStat.setString(3, this.step.toString());
+                preStat.setString(4, this.sequence.toString());
+                preStat.setString(5, this.action);
+                preStat.setString(6, this.object);
+                preStat.setString(7, this.property);
 
-            ArrayList<String> al = new ArrayList<String>();
-            al.add(this.test);
-            al.add(this.testcase);
-            al.add(this.step.toString());
-            al.add(this.sequence.toString());
-            al.add(this.action);
-            al.add(this.object);
-            al.add(this.property);
-
-            this.db.connect();
-            this.db.update(sql.toString(), al);
-        } catch (NullPointerException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+                preStat.executeUpdate();
+            } catch (SQLException exception) {
+                MyLogger.log(TestCaseStepAction.class.getName(), Level.ERROR, exception.toString());
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(TestCaseStepAction.class.getName(), Level.ERROR, exception.toString());
         } finally {
-            this.db.disconnect();
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(TestCaseStepAction.class.getName(), Level.WARN, e.toString());
+            }
         }
-
     }
 
     public void setAction(String action) {
@@ -144,7 +162,7 @@ public class TestCaseStepAction implements DatabaseCRUD {
         this.testcase = testcase;
     }
 
-    @ Override
+    @Override
     public void update() {
 
         StringBuilder sql = new StringBuilder();
@@ -156,24 +174,34 @@ public class TestCaseStepAction implements DatabaseCRUD {
 
         sql.append(" WHERE Test = ? AND TestCase = ? AND Step = ? AND Sequence = ? ");
 
+        Connection connection = this.databaseSpring.connect();
         try {
-            ArrayList<String> al = new ArrayList<String>();
-            al.add(this.action);
-            al.add(this.object);
-            al.add(this.property);
-            al.add(this.test);
-            al.add(this.testcase);
-            al.add(this.step.toString());
-            al.add(this.sequence.toString());
+            PreparedStatement preStat = connection.prepareStatement(sql.toString());
+            try {
+                preStat.setString(1, this.action);
+                preStat.setString(2, this.object);
+                preStat.setString(3, this.property);
+                preStat.setString(4, this.test);
+                preStat.setString(5, this.testcase);
+                preStat.setString(6, this.step.toString());
+                preStat.setString(7, this.sequence.toString());
 
-            this.db.connect();
-            this.db.update(sql.toString(), al);
-        } catch (NullPointerException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+                preStat.executeUpdate();
+            } catch (SQLException exception) {
+                MyLogger.log(TestCaseStepAction.class.getName(), Level.ERROR, exception.toString());
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(TestCaseStepAction.class.getName(), Level.ERROR, exception.toString());
         } finally {
-            this.db.disconnect();
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(TestCaseStepAction.class.getName(), Level.WARN, e.toString());
+            }
         }
-
     }
 }

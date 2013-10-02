@@ -3,19 +3,10 @@
     Created on : 20 mai 2011, 13:41:49
     Author     : acraske
 --%>
-<%@page import="com.redcats.tst.service.IParameterService"%>
-<%@page import="org.springframework.web.context.support.WebApplicationContextUtils"%>
-<%@page import="org.springframework.context.ApplicationContext"%>
-<%@page import="org.springframework.context.ApplicationContext"%>
 <%@page import="org.apache.commons.lang3.StringUtils"%>
-<%@page import="com.mysql.jdbc.ResultSetImpl"%>
-<%@page import="java.sql.SQLException"%>
 <%@page import="java.sql.Connection"%>
-<%@page import="java.util.ArrayList"%>
-<%@page import="java.util.List"%>
 <%@page import="java.sql.ResultSet"%>
 <%@page import="java.sql.Statement"%>
-<%@page import="java.net.URLEncoder"%>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"

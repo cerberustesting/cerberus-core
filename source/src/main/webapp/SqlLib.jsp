@@ -3,15 +3,9 @@
     Created on : Dec 9, 2011, 9:57:49 PM
     Author     : bcivel
 --%>
-<%@page import="com.redcats.tst.refactor.DbMysqlController"%>
-<%@page import="com.mysql.jdbc.ResultSetImpl"%>
-<%@page import="java.sql.SQLException"%>
 <%@page import="java.sql.Connection"%>
-<%@page import="java.util.ArrayList"%>
-<%@page import="java.util.List"%>
 <%@page import="java.sql.ResultSet"%>
 <%@page import="java.sql.Statement"%>
-<%@page import="java.net.URLEncoder"%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
@@ -31,35 +25,6 @@
 }
 
 </script>
-    <%
-     //Database Connection
-                    DbMysqlController db;
-                    db = (DbMysqlController) session.getAttribute("Database");
-                    if (db == null) {
-                        db = new DbMysqlController();
-                     }
-                    Connection conn = db.connect();
-    
-    try {
-            String Lign;
-            Lign = request.getParameter("Lign");
-            String propertyType;
-            propertyType = "type"+Lign;
-            
-        String Type;
-            Type = request.getParameter("Type");
-            //Enter when type is selected
-        if (request.getParameter("Type") != null) {
-            
-        
-            //List of SQL script when type is selected
-            Statement stmtQueryVal = conn.createStatement();
-            String sqVal = "SELECT Name, Script, Description FROM SqlLibrary where Type = '"+ Type +"'"; 
-            ResultSet qVal = stmtQueryVal.executeQuery(sqVal);
-              
-              
-              
-                    %>
 
     <head>
         <title>SQL Library List</title>
@@ -67,6 +32,34 @@
         <link rel="stylesheet" type="text/css" href="css/crb_style.css">
     </head>
     <body>
+    <%@ include file="include/function.jsp"%>
+
+        <%
+     //Database Connection
+
+                    Connection conn = db.connect();
+
+    try {
+            String Lign;
+            Lign = request.getParameter("Lign");
+            String propertyType;
+            propertyType = "type"+Lign;
+
+        String Type;
+            Type = request.getParameter("Type");
+            //Enter when type is selected
+        if (request.getParameter("Type") != null) {
+
+
+            //List of SQL script when type is selected
+            Statement stmtQueryVal = conn.createStatement();
+            String sqVal = "SELECT Name, Script, Description FROM SqlLibrary where Type = '"+ Type +"'";
+            ResultSet qVal = stmtQueryVal.executeQuery(sqVal);
+
+
+
+                    %>
+
     <h3><a href="SqlLib.jsp?Lign=<%=Lign%>">Root</a> / <%=Type %></h3>
     <table>
             <% 
@@ -128,7 +121,11 @@
                 out.println("<br> error message : " + e.getMessage() + " "
                         + e.toString() + "<br>");
             } finally{
-                conn.close();
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+
+                }
             }
         %>
 

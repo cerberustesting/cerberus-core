@@ -6,13 +6,6 @@
 
 
 <%@page import="org.apache.commons.lang3.StringUtils"%>
-<%@page import="java.util.Iterator"%>
-<%@page import="java.util.Arrays"%>
-<%@page import="java.util.LinkedList"%>
-<%@page import="java.util.Collection"%>
-<%@page import="java.util.ArrayList"%>
-<%@page import="java.util.List"%>
-<%@page import="java.sql.*" %>
 <%@page import="java.lang.*" %>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
@@ -783,7 +776,6 @@
                                 } finally {
                                     try {
                                         conn.close();
-                                        db.disconnect();
                                     } catch (Exception ex) {
                                     }
                                 }

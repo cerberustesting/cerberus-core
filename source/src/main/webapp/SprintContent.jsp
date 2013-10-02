@@ -10,12 +10,7 @@
 <%@page import="com.mysql.jdbc.StringUtils"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 
-<%@page import="java.util.Collection"%>
-<%@page import="java.util.Iterator"%>
-<%@page import="java.sql.SQLException"%>
 <%@page import="java.sql.Connection"%>
-<%@page import="java.util.ArrayList"%>
-<%@page import="java.util.List"%>
 <%@page import="java.sql.ResultSet"%>
 <%@page import="java.sql.Statement"%>
 
@@ -46,7 +41,7 @@
 
                 String build = "NONE";
                 if (request.getParameter("build") != null && request.getParameter("build").compareTo("") != 0) {
-                    build = request.getParameter("build");;
+                    build = request.getParameter("build");
                 } else {
                     ResultSet rsBR = stmtBuild.executeQuery("SELECT max(Build) mb FROM buildrevisionparameters where build!='NONE'");
                     if (rsBR.first()) {
@@ -55,7 +50,7 @@
                 }
                 String revision = "NONE";
                 if (request.getParameter("revision") != null && request.getParameter("revision").compareTo("") != 0) {
-                    revision = request.getParameter("revision");;
+                    revision = request.getParameter("revision");
                 } else {
                     ResultSet rsREV = stmtBuild.executeQuery("SELECT max(Revision) mr FROM buildrevisionparameters "
                             + " where build = '" + build + "'");

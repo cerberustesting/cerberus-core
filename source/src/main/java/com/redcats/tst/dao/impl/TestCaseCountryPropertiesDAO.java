@@ -2,7 +2,6 @@ package com.redcats.tst.dao.impl;
 
 import com.redcats.tst.dao.ITestCaseCountryPropertiesDAO;
 import com.redcats.tst.database.DatabaseSpring;
-import com.redcats.tst.entity.MessageEventEnum;
 import com.redcats.tst.entity.MessageGeneral;
 import com.redcats.tst.entity.MessageGeneralEnum;
 import com.redcats.tst.entity.TestCaseCountryProperties;
@@ -13,6 +12,7 @@ import org.apache.log4j.Level;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -52,12 +52,14 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
         List<TestCaseCountryProperties> list = null;
         final String query = "SELECT * FROM testcasecountryproperties WHERE test = ? AND testcase = ?";
 
+        Connection connection = this.databaseSpring.connect();
         try {
-            PreparedStatement preStat = this.databaseSpring.connect().prepareStatement(query);
+            PreparedStatement preStat = connection.prepareStatement(query);
             try {
                 ResultSet resultSet = preStat.executeQuery();
-                list = new ArrayList<TestCaseCountryProperties>();
                 try {
+                    list = new ArrayList<TestCaseCountryProperties>();
+
                     while (resultSet.next()) {
                         String country = resultSet.getString("country");
                         String property = resultSet.getString("property");
@@ -83,7 +85,13 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
         } catch (SQLException exception) {
             MyLogger.log(TestCaseCountryPropertiesDAO.class.getName(), Level.ERROR, exception.toString());
         } finally {
-            this.databaseSpring.disconnect();
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(TestCaseCountryPropertiesDAO.class.getName(), Level.WARN, e.toString());
+            }
         }
         return list;
     }
@@ -95,14 +103,17 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
         query.append("SELECT * FROM testcasecountryproperties WHERE test = ? AND testcase = ?");
         query.append(" group by `property`, `type`, `database`, `value`, `length`, `rowlimit`, `nature`");
 
+        Connection connection = this.databaseSpring.connect();
         try {
-            PreparedStatement preStat = this.databaseSpring.connect().prepareStatement(query.toString());
-            preStat.setString(1, test);
-            preStat.setString(2, testcase);
+            PreparedStatement preStat = connection.prepareStatement(query.toString());
             try {
+                preStat.setString(1, test);
+                preStat.setString(2, testcase);
+
                 ResultSet resultSet = preStat.executeQuery();
-                listProperties = new ArrayList<TestCaseCountryProperties>();
                 try {
+                    listProperties = new ArrayList<TestCaseCountryProperties>();
+
                     while (resultSet.next()) {
                         String country = resultSet.getString("country");
                         String property = resultSet.getString("property");
@@ -128,7 +139,13 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
         } catch (SQLException exception) {
             MyLogger.log(TestCaseCountryPropertiesDAO.class.getName(), Level.ERROR, exception.toString());
         } finally {
-            this.databaseSpring.disconnect();
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(TestCaseCountryPropertiesDAO.class.getName(), Level.WARN, e.toString());
+            }
         }
         return listProperties;
     }
@@ -141,22 +158,25 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
         query.append(" AND `property` = ? AND `type` = ? AND `database` = ? AND `value` = ? AND `length` = ?");
         query.append(" AND `rowlimit` = ? AND `nature` = ?");
 
+        Connection connection = this.databaseSpring.connect();
         try {
-            PreparedStatement preStat = this.databaseSpring.connect().prepareStatement(query.toString());
-            preStat.setString(1, testCaseCountryProperties.getTest());
-            preStat.setString(2, testCaseCountryProperties.getTestCase());
-            preStat.setString(3, testCaseCountryProperties.getProperty());
-            preStat.setString(4, testCaseCountryProperties.getType());
-            preStat.setString(5, testCaseCountryProperties.getDatabase());
-            preStat.setString(6, testCaseCountryProperties.getValue());
-            preStat.setString(7, String.valueOf(testCaseCountryProperties.getLength()));
-            preStat.setString(8, String.valueOf(testCaseCountryProperties.getRowLimit()));
-            preStat.setString(9, testCaseCountryProperties.getNature());
+            PreparedStatement preStat = connection.prepareStatement(query.toString());
             try {
+                preStat.setString(1, testCaseCountryProperties.getTest());
+                preStat.setString(2, testCaseCountryProperties.getTestCase());
+                preStat.setString(3, testCaseCountryProperties.getProperty());
+                preStat.setString(4, testCaseCountryProperties.getType());
+                preStat.setString(5, testCaseCountryProperties.getDatabase());
+                preStat.setString(6, testCaseCountryProperties.getValue());
+                preStat.setString(7, String.valueOf(testCaseCountryProperties.getLength()));
+                preStat.setString(8, String.valueOf(testCaseCountryProperties.getRowLimit()));
+                preStat.setString(9, testCaseCountryProperties.getNature());
+
                 ResultSet resultSet = preStat.executeQuery();
-                list = new ArrayList<String>();
-                String valueToAdd;
                 try {
+                    list = new ArrayList<String>();
+                    String valueToAdd;
+
                     while (resultSet.next()) {
                         valueToAdd = resultSet.getString("Country") == null ? "" : resultSet.getString("Country");
                         list.add(valueToAdd);
@@ -174,7 +194,13 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
         } catch (SQLException exception) {
             MyLogger.log(TestCaseCountryPropertiesDAO.class.getName(), Level.ERROR, exception.toString());
         } finally {
-            this.databaseSpring.disconnect();
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(TestCaseCountryPropertiesDAO.class.getName(), Level.WARN, e.toString());
+            }
         }
         return list;
     }
@@ -184,15 +210,18 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
         List<TestCaseCountryProperties> list = null;
         final String query = "SELECT * FROM testcasecountryproperties WHERE test = ? AND testcase = ? AND country = ?";
 
+        Connection connection = this.databaseSpring.connect();
         try {
-            PreparedStatement preStat = this.databaseSpring.connect().prepareStatement(query);
-            preStat.setString(1, test);
-            preStat.setString(2, testcase);
-            preStat.setString(3, country);
+            PreparedStatement preStat = connection.prepareStatement(query);
             try {
+                preStat.setString(1, test);
+                preStat.setString(2, testcase);
+                preStat.setString(3, country);
+
                 ResultSet resultSet = preStat.executeQuery();
-                list = new ArrayList<TestCaseCountryProperties>();
                 try {
+                    list = new ArrayList<TestCaseCountryProperties>();
+
                     while (resultSet.next()) {
                         String property = resultSet.getString("property");
                         String type = resultSet.getString("type");
@@ -217,7 +246,13 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
         } catch (SQLException exception) {
             MyLogger.log(TestCaseCountryPropertiesDAO.class.getName(), Level.ERROR, exception.toString());
         } finally {
-            this.databaseSpring.disconnect();
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(TestCaseCountryPropertiesDAO.class.getName(), Level.WARN, e.toString());
+            }
         }
         return list;
     }
@@ -228,13 +263,15 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
         boolean throwException = false;
         final String query = "SELECT * FROM testcasecountryproperties WHERE test = ? AND testcase = ? AND country = ? AND property = ?";
 
+        Connection connection = this.databaseSpring.connect();
         try {
-            PreparedStatement preStat = this.databaseSpring.connect().prepareStatement(query);
-            preStat.setString(1, test);
-            preStat.setString(2, testcase);
-            preStat.setString(3, country);
-            preStat.setString(4, property);
+            PreparedStatement preStat = connection.prepareStatement(query);
             try {
+                preStat.setString(1, test);
+                preStat.setString(2, testcase);
+                preStat.setString(3, country);
+                preStat.setString(4, property);
+
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     if (resultSet.first()) {
@@ -261,7 +298,13 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
         } catch (SQLException exception) {
             MyLogger.log(TestCaseCountryPropertiesDAO.class.getName(), Level.ERROR, exception.toString());
         } finally {
-            this.databaseSpring.disconnect();
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(TestCaseCountryPropertiesDAO.class.getName(), Level.WARN, e.toString());
+            }
         }
         if (throwException) {
             throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));

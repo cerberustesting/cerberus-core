@@ -2,8 +2,6 @@ package com.redcats.tst.dao.impl;
 
 import com.redcats.tst.dao.ISqlLibraryDAO;
 import com.redcats.tst.database.DatabaseSpring;
-import com.redcats.tst.entity.MessageEvent;
-import com.redcats.tst.entity.MessageEventEnum;
 import com.redcats.tst.entity.MessageGeneral;
 import com.redcats.tst.entity.MessageGeneralEnum;
 import com.redcats.tst.entity.SqlLibrary;
@@ -14,6 +12,7 @@ import org.apache.log4j.Level;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -52,10 +51,12 @@ public class SqlLibraryDAO implements ISqlLibraryDAO {
         SqlLibrary result = null;
         final String query = "SELECT * FROM sqllibrary  WHERE NAME = ?";
 
+        Connection connection = this.databaseSpring.connect();
         try {
-            PreparedStatement preStat = this.databaseSpring.connect().prepareStatement(query);
-            preStat.setString(1, name);
+            PreparedStatement preStat = connection.prepareStatement(query);
             try {
+                preStat.setString(1, name);
+
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     if (resultSet.first()) {
@@ -79,7 +80,13 @@ public class SqlLibraryDAO implements ISqlLibraryDAO {
         } catch (SQLException exception) {
             MyLogger.log(SqlLibraryDAO.class.getName(), Level.ERROR, exception.toString());
         } finally {
-            this.databaseSpring.disconnect();
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(SqlLibraryDAO.class.getName(), Level.WARN, e.toString());
+            }
         }
         if (throwEx) {
             throw new CerberusException(new MessageGeneral(MessageGeneralEnum.SQLLIB_NOT_FOUND));

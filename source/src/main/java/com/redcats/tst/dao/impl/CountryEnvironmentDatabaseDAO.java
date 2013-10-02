@@ -12,6 +12,7 @@ import org.apache.log4j.Level;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -48,22 +49,23 @@ public class CountryEnvironmentDatabaseDAO implements ICountryEnvironmentDatabas
     public CountryEnvironmentDatabase findCountryEnvironmentDatabaseByKey(String database, String environment, String country) throws CerberusException {
         CountryEnvironmentDatabase result = null;
         final String query = "SELECT * FROM countryenvironmentdatabase ced WHERE ced.database = ? AND ced.environment = ? AND ced.country = ?";
-        boolean throwEx=false;
-        
-        try {
-            PreparedStatement preStat = this.databaseSpring.connect().prepareStatement(query);
-            preStat.setString(1, database);
-            preStat.setString(2, environment);
-            preStat.setString(3, country);
+        boolean throwEx = false;
 
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
             try {
+                preStat.setString(1, database);
+                preStat.setString(2, environment);
+                preStat.setString(3, country);
+
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     if (resultSet.next()) {
                         String connectionPoolName = resultSet.getString("ConnectionPoolName");
                         result = factoryCountryEnvironmentDatabase.create(database, environment, country, connectionPoolName);
-                    }else{
-                        throwEx=true;
+                    } else {
+                        throwEx = true;
                     }
                 } catch (SQLException exception) {
                     MyLogger.log(CountryEnvironmentDatabaseDAO.class.getName(), Level.ERROR, exception.toString());
@@ -78,7 +80,13 @@ public class CountryEnvironmentDatabaseDAO implements ICountryEnvironmentDatabas
         } catch (SQLException exception) {
             MyLogger.log(CountryEnvironmentDatabaseDAO.class.getName(), Level.ERROR, exception.toString());
         } finally {
-            this.databaseSpring.disconnect();
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(CountryEnvironmentDatabaseDAO.class.getName(), Level.WARN, e.toString());
+            }
         }
         if (throwEx) {
             throw new CerberusException(new MessageGeneral(MessageGeneralEnum.EXECUTION_FA));

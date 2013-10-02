@@ -6,19 +6,12 @@
 
 
 <%@page import="com.redcats.tst.service.IApplicationService"%>
-<%@page import="com.redcats.tst.service.IParameterService"%>
-<%@page import="org.springframework.web.context.support.WebApplicationContextUtils"%>
-<%@page import="org.springframework.context.ApplicationContext"%>
 <%@page import="org.apache.commons.lang3.StringUtils"%>
-<%@page import="java.util.Iterator"%>
-<%@page import="java.util.Arrays"%>
-<%@page import="java.util.LinkedList"%>
 <%@page import="java.util.Collections"%>
 <%@page import="java.util.HashSet"%>
 <%@page import="java.util.ArrayList"%>
 <%@page import="java.util.List"%>
 <%@page import="java.util.Set"%>
-<%@page import="java.sql.*" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
     "http://www.w3.org/TR/html4/loose.dtd">
@@ -298,7 +291,6 @@
                     Statement stmt = conn.createStatement();
                     Statement stmt33 = conn.createStatement();
 
-                    ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
                     IApplicationService myApplicationService = appContext.getBean(IApplicationService.class);
                     String SitdmossBugtrackingURL;
                     String SitdmossBugtrackingURL_tc;

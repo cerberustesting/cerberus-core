@@ -8,18 +8,19 @@ import com.redcats.tst.database.DatabaseSpring;
 import com.redcats.tst.entity.Invariant;
 import com.redcats.tst.exception.CerberusException;
 import com.redcats.tst.log.MyLogger;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-
 import com.redcats.tst.service.IInvariantService;
 import org.apache.log4j.Level;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
- *
  * @author bcivel
  */
 @Repository
@@ -37,14 +38,14 @@ public class TestCaseExecutionStatisticsDAOImpl implements ITestCaseExecutionSta
         String env = "";
         try {
             List<Invariant> inv = new ArrayList<Invariant>();
-            for(String e : environment){
+            for (String e : environment) {
                 inv.addAll(invariantService.findInvariantByIdGp1("ENVIRONMENT", e));
             }
 
-            for(Invariant i : inv){
+            for (Invariant i : inv) {
                 env += "'" + i.getValue() + "', ";
             }
-            env = env.substring(0, env.length()-2);
+            env = env.substring(0, env.length() - 2);
         } catch (CerberusException e) {
             //TODO ---
             return null;
@@ -104,39 +105,46 @@ public class TestCaseExecutionStatisticsDAOImpl implements ITestCaseExecutionSta
         sbquery.append("' limit 1");
 
 
-        databaseSpring.connect();
-        ResultSet rs = null;
+        Connection connection = this.databaseSpring.connect();
         try {
-            rs = databaseSpring.query(sbquery.toString());
-
-            if (rs.first()) {
-
-                statsOfExecutions.setBuild(rs.getString(1));
-                statsOfExecutions.setRevision(rs.getString(2));
-                statsOfExecutions.setDays(rs.getInt(3));
-                statsOfExecutions.setNumberOfTestcaseExecuted(rs.getInt(4));
-                statsOfExecutions.setTotal(rs.getInt(5));
-                statsOfExecutions.setNumberOfOK(rs.getInt(6));
-                statsOfExecutions.setNumberOfKO(rs.getInt(7));
-                statsOfExecutions.setNumberOfExecPerTc(rs.getInt(8));
-                statsOfExecutions.setNumberOfExecPerTcPerDay(rs.getInt(9));
-                statsOfExecutions.setPercentageOfOK(rs.getInt(10));
-                statsOfExecutions.setNumberOfApplicationExecuted(rs.getInt(11));
-
-            }
-
-        } catch (SQLException ex) {
-            MyLogger.log(TestCaseExecutionStatisticsDAOImpl.class.getName(), Level.FATAL, ex.toString());
-        } finally {
+            Statement stat = connection.createStatement();
             try {
-                if (rs != null) {
+                ResultSet rs = stat.executeQuery(sbquery.toString());
+                try {
+                    if (rs.first()) {
+                        statsOfExecutions.setBuild(rs.getString(1));
+                        statsOfExecutions.setRevision(rs.getString(2));
+                        statsOfExecutions.setDays(rs.getInt(3));
+                        statsOfExecutions.setNumberOfTestcaseExecuted(rs.getInt(4));
+                        statsOfExecutions.setTotal(rs.getInt(5));
+                        statsOfExecutions.setNumberOfOK(rs.getInt(6));
+                        statsOfExecutions.setNumberOfKO(rs.getInt(7));
+                        statsOfExecutions.setNumberOfExecPerTc(rs.getInt(8));
+                        statsOfExecutions.setNumberOfExecPerTcPerDay(rs.getInt(9));
+                        statsOfExecutions.setPercentageOfOK(rs.getInt(10));
+                        statsOfExecutions.setNumberOfApplicationExecuted(rs.getInt(11));
+                    }
+                } catch (SQLException ex) {
+                    MyLogger.log(TestCaseExecutionStatisticsDAOImpl.class.getName(), Level.FATAL, ex.toString());
+                } finally {
                     rs.close();
                 }
-            } catch (SQLException ex) {
-                MyLogger.log(TestCaseExecutionStatisticsDAOImpl.class.getName(), Level.FATAL, ex.toString());
+            } catch (SQLException exception) {
+                MyLogger.log(TestCaseExecutionStatisticsDAOImpl.class.getName(), Level.ERROR, exception.toString());
+            } finally {
+                stat.close();
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(TestCaseExecutionStatisticsDAOImpl.class.getName(), Level.ERROR, exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(TestCaseExecutionStatisticsDAOImpl.class.getName(), Level.WARN, e.toString());
             }
         }
-        databaseSpring.disconnect();
 
         return statsOfExecutions;
     }
@@ -152,32 +160,43 @@ public class TestCaseExecutionStatisticsDAOImpl implements ITestCaseExecutionSta
 
         TestCaseExecutionStatistics tceToAdd;
 
-        databaseSpring.connect();
-        ResultSet rs = null;
+        Connection connection = this.databaseSpring.connect();
         try {
-            rs = databaseSpring.query(query.toString());
-
-            while (rs.next()) {
-                //TODO factory
-                tceToAdd = new TestCaseExecutionStatistics();
-                tceToAdd.setBuild(rs.getString(1));
-                tceToAdd.setRevision(rs.getString(2));
-
-                tenLastBuildAndRevExecuted.add(tceToAdd);
-            }
-
-        } catch (SQLException ex) {
-            MyLogger.log(TestCaseExecutionStatisticsDAOImpl.class.getName(), Level.FATAL, ex.toString());
-        } finally {
+            Statement stat = connection.createStatement();
             try {
-                if (rs != null) {
+                ResultSet rs = stat.executeQuery(query.toString());
+                try {
+
+                    while (rs.next()) {
+                        //TODO factory
+                        tceToAdd = new TestCaseExecutionStatistics();
+                        tceToAdd.setBuild(rs.getString(1));
+                        tceToAdd.setRevision(rs.getString(2));
+
+                        tenLastBuildAndRevExecuted.add(tceToAdd);
+                    }
+
+                } catch (SQLException ex) {
+                    MyLogger.log(TestCaseExecutionStatisticsDAOImpl.class.getName(), Level.FATAL, ex.toString());
+                } finally {
                     rs.close();
                 }
-            } catch (SQLException ex) {
-                MyLogger.log(TestCaseExecutionStatisticsDAOImpl.class.getName(), Level.FATAL, ex.toString());
+            } catch (SQLException exception) {
+                MyLogger.log(TestCaseExecutionStatisticsDAOImpl.class.getName(), Level.ERROR, exception.toString());
+            } finally {
+                stat.close();
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(TestCaseExecutionStatisticsDAOImpl.class.getName(), Level.ERROR, exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(TestCaseExecutionStatisticsDAOImpl.class.getName(), Level.WARN, e.toString());
             }
         }
-        databaseSpring.disconnect();
 
         return tenLastBuildAndRevExecuted;
     }

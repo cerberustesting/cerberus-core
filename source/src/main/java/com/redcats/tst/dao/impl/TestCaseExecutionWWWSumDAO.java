@@ -8,6 +8,7 @@ import org.apache.log4j.Level;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
@@ -44,33 +45,34 @@ public class TestCaseExecutionWWWSumDAO implements ITestCaseExecutionWWWSumDAO {
                 "css_size_tot, css_size_max, img_size_max_url, js_size_max_url, css_size_max_url) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
+        Connection connection = this.databaseSpring.connect();
         try {
-            PreparedStatement preStat = this.databaseSpring.connect().prepareStatement(query);
-            preStat.setLong(1, runID);
-            preStat.setInt(2, summary.getTotNbHits());
-            preStat.setInt(3, summary.getTotTps());
-            preStat.setInt(4, summary.getTotSize());
-            preStat.setInt(5, summary.getNbRc2xx());
-            preStat.setInt(6, summary.getNbRc3xx());
-            preStat.setInt(7, summary.getNbRc4xx());
-            preStat.setInt(8, summary.getNbRc5xx());
-            preStat.setInt(9, summary.getImgNb());
-            preStat.setInt(10, summary.getImgTps());
-            preStat.setInt(11, summary.getImgSizeTot());
-            preStat.setInt(12, summary.getImgSizeMax());
-            preStat.setInt(13, summary.getJsNb());
-            preStat.setInt(14, summary.getJsTps());
-            preStat.setInt(15, summary.getJsSizeTot());
-            preStat.setInt(16, summary.getJsSizeMax());
-            preStat.setInt(17, summary.getCssNb());
-            preStat.setInt(18, summary.getCssTps());
-            preStat.setInt(19, summary.getCssSizeTot());
-            preStat.setInt(20, summary.getCssSizeMax());
-            preStat.setString(21, summary.getImgSizeMaxUrl());
-            preStat.setString(22, summary.getJsSizeMaxUrl());
-            preStat.setString(23, summary.getCssSizeMaxUrl());
-
+            PreparedStatement preStat = connection.prepareStatement(query);
             try {
+                preStat.setLong(1, runID);
+                preStat.setInt(2, summary.getTotNbHits());
+                preStat.setInt(3, summary.getTotTps());
+                preStat.setInt(4, summary.getTotSize());
+                preStat.setInt(5, summary.getNbRc2xx());
+                preStat.setInt(6, summary.getNbRc3xx());
+                preStat.setInt(7, summary.getNbRc4xx());
+                preStat.setInt(8, summary.getNbRc5xx());
+                preStat.setInt(9, summary.getImgNb());
+                preStat.setInt(10, summary.getImgTps());
+                preStat.setInt(11, summary.getImgSizeTot());
+                preStat.setInt(12, summary.getImgSizeMax());
+                preStat.setInt(13, summary.getJsNb());
+                preStat.setInt(14, summary.getJsTps());
+                preStat.setInt(15, summary.getJsSizeTot());
+                preStat.setInt(16, summary.getJsSizeMax());
+                preStat.setInt(17, summary.getCssNb());
+                preStat.setInt(18, summary.getCssTps());
+                preStat.setInt(19, summary.getCssSizeTot());
+                preStat.setInt(20, summary.getCssSizeMax());
+                preStat.setString(21, summary.getImgSizeMaxUrl());
+                preStat.setString(22, summary.getJsSizeMaxUrl());
+                preStat.setString(23, summary.getCssSizeMaxUrl());
+
                 preStat.executeUpdate();
 
             } catch (SQLException exception) {
@@ -81,7 +83,13 @@ public class TestCaseExecutionWWWSumDAO implements ITestCaseExecutionWWWSumDAO {
         } catch (SQLException exception) {
             MyLogger.log(TestCaseExecutionWWWSumDAO.class.getName(), Level.ERROR, exception.toString());
         } finally {
-            this.databaseSpring.disconnect();
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(TestCaseExecutionWWWSumDAO.class.getName(), Level.WARN, e.toString());
+            }
         }
     }
 }

@@ -11,10 +11,7 @@ import org.apache.log4j.Level;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Timestamp;
+import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -42,36 +39,37 @@ public class TestCaseStepActionExecutionDAO implements ITestCaseStepActionExecut
 
         final String query = "UPDATE testcasestepactionexecution SET ACTION = ?, object = ?, property = ?, start = ?, END = ?"
                 + ", startlong = ?, endlong = ?, returnCode = ?, returnMessage = ?, screenshotfilename = ? "
-                + " WHERE id = ? and test = ? and testcase = ? and step = ? and sequence = ? ;";
+                + " WHERE id = ? AND test = ? AND testcase = ? AND step = ? AND sequence = ? ;";
 
+        Connection connection = this.databaseSpring.connect();
         try {
-            PreparedStatement preStat = this.databaseSpring.connect().prepareStatement(query);
-            preStat.setString(1, testCaseStepActionExecution.getAction());
-            preStat.setString(2, StringUtil.getLeftString(testCaseStepActionExecution.getObject(), 200));
-            preStat.setString(3, StringUtil.getLeftString(ParameterParserUtil.securePassword(testCaseStepActionExecution.getProperty(), testCaseStepActionExecution.getPropertyName()), 200));
-            if (testCaseStepActionExecution.getStart() != 0) {
-                preStat.setTimestamp(4, new Timestamp(testCaseStepActionExecution.getStart()));
-            } else {
-                preStat.setString(4, "0000-00-00 00:00:00");
-            }
-            if (testCaseStepActionExecution.getEnd() != 0) {
-                preStat.setTimestamp(5, new Timestamp(testCaseStepActionExecution.getEnd()));
-            } else {
-                preStat.setString(5, "0000-00-00 00:00:00");
-            }
-            preStat.setString(6, new SimpleDateFormat("yyyyMMddHHmmssSSS").format(testCaseStepActionExecution.getStart()));
-            preStat.setString(7, new SimpleDateFormat("yyyyMMddHHmmssSSS").format(testCaseStepActionExecution.getEnd()));
-            preStat.setString(8, testCaseStepActionExecution.getReturnCode());
-            preStat.setString(9, StringUtil.getLeftString(testCaseStepActionExecution.getReturnMessage(), 500));
-            preStat.setString(10, testCaseStepActionExecution.getScreenshotFilename());
-
-            preStat.setLong(11, testCaseStepActionExecution.getId());
-            preStat.setString(12, testCaseStepActionExecution.getTest());
-            preStat.setString(13, testCaseStepActionExecution.getTestCase());
-            preStat.setInt(14, testCaseStepActionExecution.getStep());
-            preStat.setInt(15, testCaseStepActionExecution.getSequence());
-
+            PreparedStatement preStat = connection.prepareStatement(query);
             try {
+                preStat.setString(1, testCaseStepActionExecution.getAction());
+                preStat.setString(2, StringUtil.getLeftString(testCaseStepActionExecution.getObject(), 200));
+                preStat.setString(3, StringUtil.getLeftString(ParameterParserUtil.securePassword(testCaseStepActionExecution.getProperty(), testCaseStepActionExecution.getPropertyName()), 200));
+                if (testCaseStepActionExecution.getStart() != 0) {
+                    preStat.setTimestamp(4, new Timestamp(testCaseStepActionExecution.getStart()));
+                } else {
+                    preStat.setString(4, "0000-00-00 00:00:00");
+                }
+                if (testCaseStepActionExecution.getEnd() != 0) {
+                    preStat.setTimestamp(5, new Timestamp(testCaseStepActionExecution.getEnd()));
+                } else {
+                    preStat.setString(5, "0000-00-00 00:00:00");
+                }
+                preStat.setString(6, new SimpleDateFormat("yyyyMMddHHmmssSSS").format(testCaseStepActionExecution.getStart()));
+                preStat.setString(7, new SimpleDateFormat("yyyyMMddHHmmssSSS").format(testCaseStepActionExecution.getEnd()));
+                preStat.setString(8, testCaseStepActionExecution.getReturnCode());
+                preStat.setString(9, StringUtil.getLeftString(testCaseStepActionExecution.getReturnMessage(), 500));
+                preStat.setString(10, testCaseStepActionExecution.getScreenshotFilename());
+
+                preStat.setLong(11, testCaseStepActionExecution.getId());
+                preStat.setString(12, testCaseStepActionExecution.getTest());
+                preStat.setString(13, testCaseStepActionExecution.getTestCase());
+                preStat.setInt(14, testCaseStepActionExecution.getStep());
+                preStat.setInt(15, testCaseStepActionExecution.getSequence());
+
                 preStat.executeUpdate();
 
             } catch (SQLException exception) {
@@ -82,7 +80,13 @@ public class TestCaseStepActionExecutionDAO implements ITestCaseStepActionExecut
         } catch (SQLException exception) {
             MyLogger.log(TestCaseStepActionExecutionDAO.class.getName(), Level.ERROR, exception.toString());
         } finally {
-            this.databaseSpring.disconnect();
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(TestCaseStepActionControlDAO.class.getName(), Level.WARN, e.toString());
+            }
         }
     }
 
@@ -92,33 +96,34 @@ public class TestCaseStepActionExecutionDAO implements ITestCaseStepActionExecut
         final String query = "INSERT INTO testcasestepactionexecution(id, step, sequence, ACTION, object, property, start, END, startlong, endlong, returnCode, returnMessage, test, testcase, screenshotfilename) "
                 + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
+        Connection connection = this.databaseSpring.connect();
         try {
-            PreparedStatement preStat = this.databaseSpring.connect().prepareStatement(query);
-            preStat.setLong(1, testCaseStepActionExecution.getId());
-            preStat.setInt(2, testCaseStepActionExecution.getStep());
-            preStat.setInt(3, testCaseStepActionExecution.getSequence());
-            preStat.setString(4, testCaseStepActionExecution.getAction());
-            preStat.setString(5, StringUtil.getLeftString(testCaseStepActionExecution.getObject(), 200));
-            preStat.setString(6, StringUtil.getLeftString(ParameterParserUtil.securePassword(testCaseStepActionExecution.getProperty(), testCaseStepActionExecution.getPropertyName()), 200));
-            if (testCaseStepActionExecution.getStart() != 0) {
-                preStat.setTimestamp(7, new Timestamp(testCaseStepActionExecution.getStart()));
-            } else {
-                preStat.setString(7, "0000-00-00 00:00:00");
-            }
-            if (testCaseStepActionExecution.getEnd() != 0) {
-                preStat.setTimestamp(8, new Timestamp(testCaseStepActionExecution.getEnd()));
-            } else {
-                preStat.setString(8, "0000-00-00 00:00:00");
-            }
-            preStat.setString(9, new SimpleDateFormat("yyyyMMddHHmmssSSS").format(testCaseStepActionExecution.getStart()));
-            preStat.setString(10, new SimpleDateFormat("yyyyMMddHHmmssSSS").format(testCaseStepActionExecution.getEnd()));
-            preStat.setString(11, testCaseStepActionExecution.getReturnCode());
-            preStat.setString(12, StringUtil.getLeftString(testCaseStepActionExecution.getReturnMessage(), 500));
-            preStat.setString(13, testCaseStepActionExecution.getTest());
-            preStat.setString(14, testCaseStepActionExecution.getTestCase());
-            preStat.setString(15, testCaseStepActionExecution.getScreenshotFilename());
-
+            PreparedStatement preStat = connection.prepareStatement(query);
             try {
+                preStat.setLong(1, testCaseStepActionExecution.getId());
+                preStat.setInt(2, testCaseStepActionExecution.getStep());
+                preStat.setInt(3, testCaseStepActionExecution.getSequence());
+                preStat.setString(4, testCaseStepActionExecution.getAction());
+                preStat.setString(5, StringUtil.getLeftString(testCaseStepActionExecution.getObject(), 200));
+                preStat.setString(6, StringUtil.getLeftString(ParameterParserUtil.securePassword(testCaseStepActionExecution.getProperty(), testCaseStepActionExecution.getPropertyName()), 200));
+                if (testCaseStepActionExecution.getStart() != 0) {
+                    preStat.setTimestamp(7, new Timestamp(testCaseStepActionExecution.getStart()));
+                } else {
+                    preStat.setString(7, "0000-00-00 00:00:00");
+                }
+                if (testCaseStepActionExecution.getEnd() != 0) {
+                    preStat.setTimestamp(8, new Timestamp(testCaseStepActionExecution.getEnd()));
+                } else {
+                    preStat.setString(8, "0000-00-00 00:00:00");
+                }
+                preStat.setString(9, new SimpleDateFormat("yyyyMMddHHmmssSSS").format(testCaseStepActionExecution.getStart()));
+                preStat.setString(10, new SimpleDateFormat("yyyyMMddHHmmssSSS").format(testCaseStepActionExecution.getEnd()));
+                preStat.setString(11, testCaseStepActionExecution.getReturnCode());
+                preStat.setString(12, StringUtil.getLeftString(testCaseStepActionExecution.getReturnMessage(), 500));
+                preStat.setString(13, testCaseStepActionExecution.getTest());
+                preStat.setString(14, testCaseStepActionExecution.getTestCase());
+                preStat.setString(15, testCaseStepActionExecution.getScreenshotFilename());
+
                 preStat.executeUpdate();
 
             } catch (SQLException exception) {
@@ -129,7 +134,13 @@ public class TestCaseStepActionExecutionDAO implements ITestCaseStepActionExecut
         } catch (SQLException exception) {
             MyLogger.log(TestCaseStepActionExecutionDAO.class.getName(), Level.ERROR, exception.toString());
         } finally {
-            this.databaseSpring.disconnect();
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(TestCaseStepActionControlDAO.class.getName(), Level.WARN, e.toString());
+            }
         }
     }
 
@@ -159,8 +170,9 @@ public class TestCaseStepActionExecutionDAO implements ITestCaseStepActionExecut
         query.append(idList);
         query.append(") order by step, sequence, type, ID");
 
+        Connection connection = this.databaseSpring.connect();
         try {
-            PreparedStatement preStat = this.databaseSpring.connect().prepareStatement(query.toString());
+            PreparedStatement preStat = connection.prepareStatement(query.toString());
             try {
                 ResultSet resultSet = preStat.executeQuery();
                 list = new ArrayList<List<String>>();
@@ -192,29 +204,37 @@ public class TestCaseStepActionExecutionDAO implements ITestCaseStepActionExecut
             //TODO logger ERROR
             //conn.prepareStatement(query);
         } finally {
-            databaseSpring.disconnect();
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(TestCaseStepActionControlDAO.class.getName(), Level.WARN, e.toString());
+            }
         }
         return list;
     }
-    
+
     @Override
-    public List<TestCaseStepActionExecution> findTestCaseStepActionExecutionByCriteria(long id, String test, String testCase, int step){
+    public List<TestCaseStepActionExecution> findTestCaseStepActionExecutionByCriteria(long id, String test, String testCase, int step) {
         List<TestCaseStepActionExecution> result = null;
         TestCaseStepActionExecution resultData;
         boolean throwEx = false;
-        final String query = "SELECT * FROM TestCaseStepActionExecution WHERE id = ? and test = ? and testcase = ? and step = ? ORDER BY sequence";
+        final String query = "SELECT * FROM TestCaseStepActionExecution WHERE id = ? AND test = ? AND testcase = ? AND step = ? ORDER BY sequence";
 
+        Connection connection = this.databaseSpring.connect();
         try {
-            PreparedStatement preStat = this.databaseSpring.connect().prepareStatement(query);
-            preStat.setString(1, String.valueOf(id));
-            preStat.setString(2, test);
-            preStat.setString(3, testCase);
-            preStat.setInt(4, step);
-
+            PreparedStatement preStat = connection.prepareStatement(query);
             try {
+                preStat.setString(1, String.valueOf(id));
+                preStat.setString(2, test);
+                preStat.setString(3, testCase);
+                preStat.setInt(4, step);
+
                 ResultSet resultSet = preStat.executeQuery();
-                result = new ArrayList<TestCaseStepActionExecution>();
                 try {
+                    result = new ArrayList<TestCaseStepActionExecution>();
+
                     while (resultSet.next()) {
                         int seq = resultSet.getInt("sequence");
                         String returnCode = resultSet.getString("returncode");
@@ -243,10 +263,16 @@ public class TestCaseStepActionExecutionDAO implements ITestCaseStepActionExecut
         } catch (SQLException exception) {
             MyLogger.log(TestCaseExecutionDataDAO.class.getName(), Level.ERROR, exception.toString());
         } finally {
-            this.databaseSpring.disconnect();
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(TestCaseStepActionControlDAO.class.getName(), Level.WARN, e.toString());
+            }
         }
         return result;
     }
-    
-    
+
+
 }

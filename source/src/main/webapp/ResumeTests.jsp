@@ -6,12 +6,7 @@
 
 <%@page import="com.redcats.tst.refactor.BatchInfo"%>
 <%@page import="org.apache.commons.lang3.StringUtils"%>
-<%@page import="net.sourceforge.htmlunit.corejs.javascript.ast.TryStatement"%>
-<%@page import="java.net.URLEncoder"%>
-<%@page import="java.net.URL"%>
 <%@page import="java.util.Enumeration"%>
-<%@page import="java.net.InetAddress"%>
-<%@page import="java.sql.*"%>
 <%@page import="java.util.LinkedList"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"

@@ -1,14 +1,20 @@
 package com.redcats.tst.refactor;
 
+import com.redcats.tst.database.DatabaseSpring;
+import com.redcats.tst.log.MyLogger;
+import org.apache.log4j.Level;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.util.ArrayList;
+import java.sql.SQLException;
 
 public class TestCaseCountryProperties implements DatabaseCRUD {
 
     private static final String COLUMNS = "`Test`, `TestCase`, `Country`, `Property`, `Type`, `Database`, `Value`, `Length`, `RowLimit`, `Nature`";
     private static final String TABLE = "testcasecountryproperties";
     private String country;
-    private final DbMysqlController db;
     private Integer length;
     private String nature;
     private String property;
@@ -19,10 +25,12 @@ public class TestCaseCountryProperties implements DatabaseCRUD {
     private String database;
     private String value;
 
+    @Autowired
+    private DatabaseSpring databaseSpring;
+
     public TestCaseCountryProperties() {
 
         this.country = new String();
-        this.db = new DbMysqlController();
         this.length = 0;
         this.nature = new String();
         this.property = new String();
@@ -85,7 +93,7 @@ public class TestCaseCountryProperties implements DatabaseCRUD {
         return this.value;
     }
 
-    @ Override
+    @Override
     public void importResultSet(ResultSet rs) {
 
         try {
@@ -104,35 +112,45 @@ public class TestCaseCountryProperties implements DatabaseCRUD {
         }
     }
 
-    @ Override
+    @Override
     public void insert() {
 
         StringBuilder sql = new StringBuilder();
         sql.append("INSERT INTO " + TestCaseCountryProperties.TABLE + " ( " + TestCaseCountryProperties.COLUMNS + ") ");
+        sql.append(" VALUES ( ?,?,?,?,?,?,?,?,?,?) ");
+
+        Connection connection = this.databaseSpring.connect();
         try {
-            sql.append(" VALUES ( ?,?,?,?,?,?,?,?,?,?) ");
+            PreparedStatement preStat = connection.prepareStatement(sql.toString());
+            try {
+                preStat.setString(1, this.test);
+                preStat.setString(2, this.testcase);
+                preStat.setString(3, this.country);
+                preStat.setString(4, this.property);
+                preStat.setString(5, this.type);
+                preStat.setString(6, this.database);
+                preStat.setString(7, this.value);
+                preStat.setString(8, this.length.toString());
+                preStat.setString(9, this.rowlimit.toString());
+                preStat.setString(10, this.nature);
 
-            ArrayList<String> al = new ArrayList<String>();
-            al.add(this.test);
-            al.add(this.testcase);
-            al.add(this.country);
-            al.add(this.property);
-            al.add(this.type);
-            al.add(this.database);
-            al.add(this.value);
-            al.add(this.length.toString());
-            al.add(this.rowlimit.toString());
-            al.add(this.nature);
-
-            this.db.connect();
-            this.db.update(sql.toString(), al);
-        } catch (NullPointerException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+                preStat.executeUpdate();
+            } catch (SQLException exception) {
+                MyLogger.log(TestCaseCountryProperties.class.getName(), Level.ERROR, exception.toString());
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(TestCaseCountryProperties.class.getName(), Level.ERROR, exception.toString());
         } finally {
-            this.db.disconnect();
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(TestCaseCountryProperties.class.getName(), Level.WARN, e.toString());
+            }
         }
-
     }
 
     public void setCountry(String country) {
@@ -185,7 +203,7 @@ public class TestCaseCountryProperties implements DatabaseCRUD {
         this.value = value;
     }
 
-    @ Override
+    @Override
     public void update() {
 
         StringBuilder sql = new StringBuilder();
@@ -200,27 +218,37 @@ public class TestCaseCountryProperties implements DatabaseCRUD {
 
         sql.append(" WHERE Test = ? AND TestCase = ? AND Country = ? AND Property = ? ");
 
+        Connection connection = this.databaseSpring.connect();
         try {
-            ArrayList<String> al = new ArrayList<String>();
-            al.add(this.type);
-            al.add(this.database);
-            al.add(this.value);
-            al.add(this.length.toString());
-            al.add(this.rowlimit.toString());
-            al.add(this.nature);
-            al.add(this.test);
-            al.add(this.testcase);
-            al.add(this.country);
-            al.add(this.property);
+            PreparedStatement preStat = connection.prepareStatement(sql.toString());
+            try {
+                preStat.setString(1, this.type);
+                preStat.setString(2, this.database);
+                preStat.setString(3, this.value);
+                preStat.setString(4, this.length.toString());
+                preStat.setString(5, this.rowlimit.toString());
+                preStat.setString(6, this.nature);
+                preStat.setString(7, this.test);
+                preStat.setString(8, this.testcase);
+                preStat.setString(9, this.country);
+                preStat.setString(10, this.property);
 
-            this.db.connect();
-            this.db.update(sql.toString(), al);
-        } catch (NullPointerException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+                preStat.executeUpdate();
+            } catch (SQLException exception) {
+                MyLogger.log(TestCaseCountryProperties.class.getName(), Level.ERROR, exception.toString());
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(TestCaseCountryProperties.class.getName(), Level.ERROR, exception.toString());
         } finally {
-            this.db.disconnect();
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(TestCaseCountryProperties.class.getName(), Level.WARN, e.toString());
+            }
         }
-// System.out.println ( "SQL : " + sql.toString ( ) ) ;
     }
 }

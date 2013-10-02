@@ -1,7 +1,14 @@
 package com.redcats.tst.refactor;
 
+import com.redcats.tst.database.DatabaseSpring;
+import com.redcats.tst.log.MyLogger;
+import org.apache.log4j.Level;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.util.ArrayList;
+import java.sql.SQLException;
 
 public class TestCaseStepActionControl implements DatabaseCRUD {
 
@@ -10,13 +17,15 @@ public class TestCaseStepActionControl implements DatabaseCRUD {
     private Integer control;
     private String controlProperty;
     private String controlValue;
-    private final DbMysqlController db;
     private Integer sequence;
     private Integer step;
     private String test;
     private String testcase;
     private String type;
     private Boolean fatal;
+
+    @Autowired
+    private DatabaseSpring databaseSpring;
 
     public Boolean isFatal() {
         return fatal;
@@ -28,7 +37,6 @@ public class TestCaseStepActionControl implements DatabaseCRUD {
 
     public TestCaseStepActionControl() {
 
-        this.db = new DbMysqlController();
         this.test = new String();
         this.testcase = new String();
         this.step = 0;
@@ -110,25 +118,37 @@ public class TestCaseStepActionControl implements DatabaseCRUD {
         StringBuilder sql = new StringBuilder();
         sql.append("INSERT INTO " + TestCaseStepActionControl.TABLE + " ( "
                 + TestCaseStepActionControl.COLUMNS + ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
-        try {
-            ArrayList<String> al = new ArrayList<String>();
-            al.add(this.test);
-            al.add(this.testcase);
-            al.add(this.step.toString());
-            al.add(this.sequence.toString());
-            al.add(this.control.toString());
-            al.add(this.type);
-            al.add(this.controlValue);
-            al.add(this.controlProperty);
-            al.add(lfatal);
 
-            this.db.connect();
-            this.db.update(sql.toString(), al);
-        } catch (NullPointerException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(sql.toString());
+            try {
+                preStat.setString(1, this.test);
+                preStat.setString(2, this.testcase);
+                preStat.setString(3, this.step.toString());
+                preStat.setString(4, this.sequence.toString());
+                preStat.setString(5, this.control.toString());
+                preStat.setString(6, this.type);
+                preStat.setString(7, this.controlValue);
+                preStat.setString(8, this.controlProperty);
+                preStat.setString(9, lfatal);
+
+                preStat.executeUpdate();
+            } catch (SQLException exception) {
+                MyLogger.log(TestCaseStepActionControl.class.getName(), Level.ERROR, exception.toString());
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(TestCaseStepActionControl.class.getName(), Level.ERROR, exception.toString());
         } finally {
-            this.db.disconnect();
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(TestCaseStepActionControl.class.getName(), Level.WARN, e.toString());
+            }
         }
 
     }
@@ -191,26 +211,36 @@ public class TestCaseStepActionControl implements DatabaseCRUD {
 
         sql.append(" WHERE Test = ? AND TestCase = ? AND Step = ? AND Sequence = ? AND Control = ? ");
 
+        Connection connection = this.databaseSpring.connect();
         try {
-            ArrayList<String> al = new ArrayList<String>();
-            al.add(this.type);
-            al.add(this.controlValue);
-            al.add(this.controlProperty);
-            al.add(lfatal);
-            al.add(this.test);
-            al.add(this.testcase);
-            al.add(this.step.toString());
-            al.add(this.sequence.toString());
-            al.add(this.control.toString());
+            PreparedStatement preStat = connection.prepareStatement(sql.toString());
+            try {
+                preStat.setString(1, this.type);
+                preStat.setString(2, this.controlValue);
+                preStat.setString(3, this.controlProperty);
+                preStat.setString(4, lfatal);
+                preStat.setString(5, this.test);
+                preStat.setString(6, this.testcase);
+                preStat.setString(7, this.step.toString());
+                preStat.setString(8, this.sequence.toString());
+                preStat.setString(9, this.control.toString());
 
-            this.db.connect();
-            this.db.update(sql.toString(), al);
-        } catch (NullPointerException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+                preStat.executeUpdate();
+            } catch (SQLException exception) {
+                MyLogger.log(TestCaseStepActionControl.class.getName(), Level.ERROR, exception.toString());
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(TestCaseStepActionControl.class.getName(), Level.ERROR, exception.toString());
         } finally {
-            this.db.disconnect();
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(TestCaseStepActionControl.class.getName(), Level.WARN, e.toString());
+            }
         }
-
     }
 }

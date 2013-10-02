@@ -22,7 +22,7 @@
         <aop:scoped-proxy proxy-target-class="true"/>
     </bean>
 
-    <bean id="dataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
+    <bean id="dataSource" class="org.springframework.jndi.JndiObjectFactoryBean" scope="singleton">
         <property name="jndiName" value="jdbc/cerberus${org.cerberus.environment}"/>
         <!--<property name="jndiName" value="jdbc/cerberusMySQL"/>-->
         <property name="resourceRef" value="true"/>

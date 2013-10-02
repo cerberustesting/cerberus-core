@@ -5,7 +5,6 @@ Document   : menu
     Author     : acraske
 --%>
 <%@page import="com.redcats.tst.refactor.Country"%>
-<%@page import="com.redcats.tst.refactor.DbMysqlController"%>
 <%@page import="java.util.Collection"%>
 <%@page import="java.util.Iterator"%>
 <%@page import="com.mysql.jdbc.ResultSetImpl"%>
@@ -19,25 +18,30 @@ Document   : menu
 <%@page import="java.text.DateFormat"%>
 <%@page import="java.text.SimpleDateFormat"%>
 <%@page import="version.Version"%>
+<%@ page import="com.redcats.tst.database.DatabaseSpring" %>
 <%!
     String dbDocS(Connection conn, String table, String field, String label) {
         try {
             Statement stmtQuery = conn.createStatement();
-            String sq = "SELECT * FROM Documentation where DocTable = '" + table + "' and docfield = '" + field + "' and doclabel IS NOT NULL AND trim(doclabel) <> ''";
-            ResultSet q = stmtQuery.executeQuery(sq);
-            if (q.first()) {
-                String ret;
-                ret = q.getString("DocLabel");
-                if (q.getString("DocDesc").trim().length() > 0) {
-                    ret += " <a href=\'javascript:popup(\"Documentation.jsp?DocTable=" + table + "&DocField=" + field + "\")\'>?</a>";
+            try{
+                String sq = "SELECT * FROM Documentation where DocTable = '" + table + "' and docfield = '" + field + "' and doclabel IS NOT NULL AND trim(doclabel) <> ''";
+                ResultSet q = stmtQuery.executeQuery(sq);
+                try{
+                    if (q.first()) {
+                        String ret;
+                        ret = q.getString("DocLabel");
+                        if (q.getString("DocDesc").trim().length() > 0) {
+                            ret += " <a href=\'javascript:popup(\"Documentation.jsp?DocTable=" + table + "&DocField=" + field + "\")\'>?</a>";
+                        }
+                        return ret;
+                    } else {
+                        return "-- Missing Doc -- " + table + "|" + field;
+                    }
+                } finally {
+                    q.close();
                 }
-                q.close();
+            } finally {
                 stmtQuery.close();
-                return ret;
-            } else {
-                q.close();
-                stmtQuery.close();
-                return "-- Missing Doc -- " + table + "|" + field;
             }
         } catch (SQLException e) {
         }
@@ -45,7 +49,9 @@ Document   : menu
     }
 
     String dbDocS(String table, String field, String label) {
-        DbMysqlController db = new DbMysqlController();
+        ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+        DatabaseSpring db = appContext.getBean(DatabaseSpring.class);
+
         Connection conn = db.connect();
         try {
             //TBDBSQL TODO
@@ -69,7 +75,13 @@ Document   : menu
             }
         } catch (SQLException e) {
         } finally {
-            db.disconnect();
+            try {
+                if(conn != null){
+                    conn.close();
+                }
+            } catch (SQLException e) {
+                return e.toString();
+            }
         }
         return "";
     }
@@ -77,28 +89,35 @@ Document   : menu
     String ComboInvariant(Connection conn, String HTMLComboName, String HTMLComboStyle, String HTMLId, String HTMLClass, String combonumber, String value, String HTMLOnChange, String firstOption) {
         try {
             Statement stmtQuery = conn.createStatement();
+            try{
             String sq = "SELECT value from Invariant where id = '" + combonumber + "' order by sort";
             ResultSet q = stmtQuery.executeQuery(sq);
-            String ret = "<select id=\"" + HTMLId + "\" class=\"" + HTMLClass + "\" style=\"" + HTMLComboStyle + "\" name=\"" + HTMLComboName + "\"";
-            if (HTMLOnChange.compareToIgnoreCase("") != 0) {
-                ret = ret + " onchange=\"" + HTMLOnChange + "\"";
-            }
-            ret = ret + ">";
-            if (firstOption != null) {
-                ret = ret + "<option value=\"" + firstOption + "\">--" + firstOption + "--</option>";
-            }
-            while (q.next()) {
-                ret = ret + "<option value=\"" + q.getString("value") + "\"";
-                if ((value != null) && (value.compareTo(q.getString("value")) == 0)) {
-                    ret = ret + " SELECTED ";
+                try{
+                    String ret = "<select id=\"" + HTMLId + "\" class=\"" + HTMLClass + "\" style=\"" + HTMLComboStyle + "\" name=\"" + HTMLComboName + "\"";
+                    if (HTMLOnChange.compareToIgnoreCase("") != 0) {
+                        ret = ret + " onchange=\"" + HTMLOnChange + "\"";
+                    }
+                    ret = ret + ">";
+                    if (firstOption != null) {
+                        ret = ret + "<option value=\"" + firstOption + "\">--" + firstOption + "--</option>";
+                    }
+                    while (q.next()) {
+                        ret = ret + "<option value=\"" + q.getString("value") + "\"";
+                        if ((value != null) && (value.compareTo(q.getString("value")) == 0)) {
+                            ret = ret + " SELECTED ";
+                        }
+                        ret = ret + ">" + q.getString("value");
+                        ret = ret + "</option>";
+                    }
+                    ret = ret + "</select>";
+
+                    return ret;
+                }finally {
+                    q.close();
                 }
-                ret = ret + ">" + q.getString("value");
-                ret = ret + "</option>";
+            } finally {
+                stmtQuery.close();
             }
-            ret = ret + "</select>";
-            q.close();
-            stmtQuery.close();
-            return ret;
         } catch (SQLException e) {
             return e.toString();
         }
@@ -107,28 +126,34 @@ Document   : menu
     String ComboInvariantAjax(Connection conn, String HTMLComboName, String HTMLComboStyle, String HTMLId, String HTMLrel, String combonumber, String value, String HTMLOnChange, boolean emptyfirstoption) {
         try {
             Statement stmtQuery = conn.createStatement();
-            String sq = "SELECT value from Invariant where id = '" + combonumber + "' order by sort";
-            ResultSet q = stmtQuery.executeQuery(sq);
-            String ret = "<select id=\"" + HTMLId + "\" rel=\"" + HTMLrel + "\" style=\"" + HTMLComboStyle + "\" name=\"" + HTMLComboName + "\"";
-            if (HTMLOnChange.compareToIgnoreCase("") != 0) {
-                ret = ret + " onchange=\"" + HTMLOnChange + "\"";
-            }
-            ret = ret + ">";
-            if (emptyfirstoption) {
-                ret = ret + "<option value=\"\"></option>";
-            }
-            while (q.next()) {
-                ret = ret + "<option value=\"" + q.getString("value") + "\"";
-                if ((value != null) && (value.compareTo(q.getString("value")) == 0)) {
-                    ret = ret + " SELECTED ";
+            try{
+                String sq = "SELECT value from Invariant where id = '" + combonumber + "' order by sort";
+                ResultSet q = stmtQuery.executeQuery(sq);
+                try{
+                    String ret = "<select id=\"" + HTMLId + "\" rel=\"" + HTMLrel + "\" style=\"" + HTMLComboStyle + "\" name=\"" + HTMLComboName + "\"";
+                    if (HTMLOnChange.compareToIgnoreCase("") != 0) {
+                        ret = ret + " onchange=\"" + HTMLOnChange + "\"";
+                    }
+                    ret = ret + ">";
+                    if (emptyfirstoption) {
+                        ret = ret + "<option value=\"\"></option>";
+                    }
+                    while (q.next()) {
+                        ret = ret + "<option value=\"" + q.getString("value") + "\"";
+                        if ((value != null) && (value.compareTo(q.getString("value")) == 0)) {
+                            ret = ret + " SELECTED ";
+                        }
+                        ret = ret + ">" + q.getString("value");
+                        ret = ret + "</option>";
+                    }
+                    ret = ret + "</select>";
+                    return ret;
+                } finally {
+                    q.close();
                 }
-                ret = ret + ">" + q.getString("value");
-                ret = ret + "</option>";
+            } finally {
+                stmtQuery.close();
             }
-            ret = ret + "</select>";
-            q.close();
-            stmtQuery.close();
-            return ret;
         } catch (Exception e) {
             return e.toString();
         }
@@ -137,28 +162,34 @@ Document   : menu
     String ComboInvariantMultipleAjax(Connection conn, String HTMLComboName, String HTMLComboStyle, String HTMLId, String HTMLrel, String combonumber, String value, String HTMLOnChange, boolean emptyfirstoption) {
         try {
             Statement stmtQuery = conn.createStatement();
-            String sq = "SELECT value from Invariant where id = '" + combonumber + "' order by sort";
-            ResultSet q = stmtQuery.executeQuery(sq);
-            String ret = "<select id=\"" + HTMLId + "\" rel=\"" + HTMLrel + "\" style=\"" + HTMLComboStyle + "\" name=\"" + HTMLComboName + "\"";
-            if (HTMLOnChange.compareToIgnoreCase("") != 0) {
-                ret = ret + " onchange=\"" + HTMLOnChange + "\"";
-            }
-            ret = ret + " multiple >";
-            if (emptyfirstoption) {
-                ret = ret + "<option value=\"\"></option>";
-            }
-            while (q.next()) {
-                ret = ret + "<option value=\"" + q.getString("value") + "\"";
-                if ((value != null) && (value.compareTo(q.getString("value")) == 0)) {
-                    ret = ret + " SELECTED ";
+            try{
+                String sq = "SELECT value from Invariant where id = '" + combonumber + "' order by sort";
+                ResultSet q = stmtQuery.executeQuery(sq);
+                try{
+                    String ret = "<select id=\"" + HTMLId + "\" rel=\"" + HTMLrel + "\" style=\"" + HTMLComboStyle + "\" name=\"" + HTMLComboName + "\"";
+                    if (HTMLOnChange.compareToIgnoreCase("") != 0) {
+                        ret = ret + " onchange=\"" + HTMLOnChange + "\"";
+                    }
+                    ret = ret + " multiple >";
+                    if (emptyfirstoption) {
+                        ret = ret + "<option value=\"\"></option>";
+                    }
+                    while (q.next()) {
+                        ret = ret + "<option value=\"" + q.getString("value") + "\"";
+                        if ((value != null) && (value.compareTo(q.getString("value")) == 0)) {
+                            ret = ret + " SELECTED ";
+                        }
+                        ret = ret + ">" + q.getString("value");
+                        ret = ret + "</option>";
+                    }
+                    ret = ret + "</select>";
+                    return ret;
+                } finally {
+                    q.close();
                 }
-                ret = ret + ">" + q.getString("value");
-                ret = ret + "</option>";
+            } finally {
+                stmtQuery.close();
             }
-            ret = ret + "</select>";
-            q.close();
-            stmtQuery.close();
-            return ret;
         } catch (Exception e) {
             return e.toString();
         }
@@ -167,33 +198,39 @@ Document   : menu
     String ComboProject(Connection conn, String HTMLComboName, String HTMLComboStyle, String HTMLId, String HTMLClass, String value, String HTMLOnChange, boolean emptyfirstoption, String FirstValue, String FirstDescription) {
         try {
             Statement stmtQuery = conn.createStatement();
-            String sq = "SELECT idproject, VCCode, Description, active FROM project ORDER BY idproject";
-            ResultSet q = stmtQuery.executeQuery(sq);
-            String ret = "<select id=\"" + HTMLId + "\" class=\"" + HTMLClass + "\" style=\"" + HTMLComboStyle + "\" name=\"" + HTMLComboName + "\"";
-            if (HTMLOnChange.compareToIgnoreCase("") != 0) {
-                ret = ret + " onchange=\"" + HTMLOnChange + "\"";
-            }
-            ret = ret + ">";
-            if (emptyfirstoption) {
-                ret = ret + " <option value=\"" + FirstValue + "\">" + FirstDescription + "</option>";
-            }
-            while (q.next()) {
-                ret = ret + " <option value=\"" + q.getString("idproject") + "\"";
-                ret = ret + " style=\"width: 200px;";
-                if (q.getString("active").equalsIgnoreCase("Y")) {
-                    ret = ret + "font-weight:bold;";
+            try{
+                String sq = "SELECT idproject, VCCode, Description, active FROM project ORDER BY idproject";
+                ResultSet q = stmtQuery.executeQuery(sq);
+                try{
+                    String ret = "<select id=\"" + HTMLId + "\" class=\"" + HTMLClass + "\" style=\"" + HTMLComboStyle + "\" name=\"" + HTMLComboName + "\"";
+                    if (HTMLOnChange.compareToIgnoreCase("") != 0) {
+                        ret = ret + " onchange=\"" + HTMLOnChange + "\"";
+                    }
+                    ret = ret + ">";
+                    if (emptyfirstoption) {
+                        ret = ret + " <option value=\"" + FirstValue + "\">" + FirstDescription + "</option>";
+                    }
+                    while (q.next()) {
+                        ret = ret + " <option value=\"" + q.getString("idproject") + "\"";
+                        ret = ret + " style=\"width: 200px;";
+                        if (q.getString("active").equalsIgnoreCase("Y")) {
+                            ret = ret + "font-weight:bold;";
+                        }
+                        ret = ret + "\"";
+                        if ((value != null) && (value.compareTo(q.getString("idproject")) == 0)) {
+                            ret = ret + " SELECTED ";
+                        }
+                        ret = ret + ">" + q.getString("idproject") + " " + q.getString("Description");
+                        ret = ret + "</option>";
+                    }
+                    ret = ret + " </select>";
+                    return ret;
+                } finally {
+                    q.close();
                 }
-                ret = ret + "\"";
-                if ((value != null) && (value.compareTo(q.getString("idproject")) == 0)) {
-                    ret = ret + " SELECTED ";
-                }
-                ret = ret + ">" + q.getString("idproject") + " " + q.getString("Description");
-                ret = ret + "</option>";
+            } finally {
+                stmtQuery.close();
             }
-            ret = ret + " </select>";
-            q.close();
-            stmtQuery.close();
-            return ret;
         } catch (SQLException e) {
             return e.toString();
         }
@@ -240,10 +277,7 @@ Document   : menu
         session.removeAttribute("flashMessage");
     }
 
-    DbMysqlController db;
-    db = (DbMysqlController) session.getAttribute("Database");
-    if (db == null) {
-        db = new DbMysqlController();
-    }
+    ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+    DatabaseSpring db = appContext.getBean(DatabaseSpring.class);
 
 %>

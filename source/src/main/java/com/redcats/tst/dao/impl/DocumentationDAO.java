@@ -13,6 +13,7 @@ import org.apache.log4j.Level;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -33,11 +34,13 @@ public class DocumentationDAO implements IDocumentationDAO {
         Documentation result = null;
         final String query = "SELECT * FROM documentation d WHERE d.doctable = ? AND d.docfield = ?";
 
+        Connection connection = this.databaseSpring.connect();
         try {
-            PreparedStatement preStat = this.databaseSpring.connect().prepareStatement(query);
-            preStat.setString(1, docTable);
-            preStat.setString(2, docField);
+            PreparedStatement preStat = connection.prepareStatement(query);
             try {
+                preStat.setString(1, docTable);
+                preStat.setString(2, docField);
+
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     while (resultSet.next()) {
@@ -59,7 +62,13 @@ public class DocumentationDAO implements IDocumentationDAO {
         } catch (SQLException exception) {
             MyLogger.log(DocumentationDAO.class.getName(), Level.ERROR, exception.toString());
         } finally {
-            this.databaseSpring.disconnect();
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(DocumentationDAO.class.getName(), Level.WARN, e.toString());
+            }
         }
         return result;
     }

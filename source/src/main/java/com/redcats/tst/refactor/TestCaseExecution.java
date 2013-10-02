@@ -1,8 +1,5 @@
 package com.redcats.tst.refactor;
 
-import com.redcats.tst.database.DatabaseSpring;
-import java.util.ArrayList;
-
 public class TestCaseExecution {
 
     private String application;
@@ -10,7 +7,6 @@ public class TestCaseExecution {
     private String build;
     private String controlstatus;
     private String country;
-    private final DatabaseSpring db;
     private String end;
     private String environment;
     private String ip;
@@ -23,123 +19,9 @@ public class TestCaseExecution {
     private String url;
     private String status;
 
-    public TestCaseExecution() {
-
-        this.db = new DatabaseSpring();
-    }
-
     public String getApplication() {
 
         return this.application;
-    }
-
-    public String getBrowser() {
-
-        return this.browser;
-    }
-
-    public String getBuild() {
-
-        return this.build;
-    }
-
-    public String getControlstatus() {
-
-        return this.controlstatus;
-    }
-
-    public String getCountry() {
-
-        return this.country;
-    }
-
-    public String getEnd() {
-
-        return this.end;
-    }
-
-    public String getEnvironment() {
-
-        return this.environment;
-    }
-
-    public String getIp() {
-
-        return this.ip;
-    }
-
-    public String getPort() {
-
-        return this.port;
-    }
-
-    public String getRevision() {
-
-        return this.revision;
-    }
-
-    public String getStart() {
-
-        return this.start;
-    }
-
-    public String getTest() {
-
-        return this.test;
-    }
-
-    public String getTestcase() {
-
-        return this.testcase;
-    }
-
-    public String getVerbose() {
-
-        return this.verbose;
-    }
-
-    public String getUrl() {
-
-        return this.url;
-    }
-
-    public String getStatus() {
-        return this.status;
-    }
-
-    public void insert() {
-
-        StringBuilder sql = new StringBuilder();
-        sql.append("INSERT INTO `testcaseexecution` (`ID`,`Test`,`TestCase`,`Build`,`Revision`,`Environment`,`Country`,`Browser`,`Start`,`End`,`ControlStatus`,`Application`,`IP`,`URL`,`Port`,`Verbose`, `Status`) VALUES ( ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
-        try {
-            ArrayList<String> al = new ArrayList<String>();
-            al.add("0");
-            al.add(this.test);
-            al.add(this.testcase);
-            al.add(this.build);
-            al.add(this.revision);
-            al.add(this.environment);
-            al.add(this.country);
-            al.add(this.browser);
-            al.add(this.start);
-            al.add(this.end);
-            al.add(this.controlstatus);
-            al.add(this.application);
-            al.add(this.ip);
-            al.add(this.url);
-            al.add(this.port);
-            al.add(this.verbose);
-            al.add(this.status);
-
-            this.db.connect();
-            this.db.update(sql.toString(), al);
-        } catch (NullPointerException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } finally {
-            this.db.disconnect();
-        }
-
     }
 
     public void setApplication(String application) {
@@ -147,9 +29,19 @@ public class TestCaseExecution {
         this.application = application;
     }
 
+    public String getBrowser() {
+
+        return this.browser;
+    }
+
     public void setBrowser(String browser) {
 
         this.browser = browser;
+    }
+
+    public String getBuild() {
+
+        return this.build;
     }
 
     public void setBuild(String build) {
@@ -157,9 +49,19 @@ public class TestCaseExecution {
         this.build = build;
     }
 
+    public String getControlstatus() {
+
+        return this.controlstatus;
+    }
+
     public void setControlstatus(String controlstatus) {
 
         this.controlstatus = controlstatus;
+    }
+
+    public String getCountry() {
+
+        return this.country;
     }
 
     public void setCountry(String country) {
@@ -167,9 +69,19 @@ public class TestCaseExecution {
         this.country = country;
     }
 
+    public String getEnd() {
+
+        return this.end;
+    }
+
     public void setEnd(String end) {
 
         this.end = end;
+    }
+
+    public String getEnvironment() {
+
+        return this.environment;
     }
 
     public void setEnvironment(String environment) {
@@ -177,9 +89,19 @@ public class TestCaseExecution {
         this.environment = environment;
     }
 
+    public String getIp() {
+
+        return this.ip;
+    }
+
     public void setIp(String ip) {
 
         this.ip = ip;
+    }
+
+    public String getPort() {
+
+        return this.port;
     }
 
     public void setPort(String port) {
@@ -187,9 +109,19 @@ public class TestCaseExecution {
         this.port = port;
     }
 
+    public String getRevision() {
+
+        return this.revision;
+    }
+
     public void setRevision(String revision) {
 
         this.revision = revision;
+    }
+
+    public String getStart() {
+
+        return this.start;
     }
 
     public void setStart(String start) {
@@ -197,9 +129,19 @@ public class TestCaseExecution {
         this.start = start;
     }
 
+    public String getTest() {
+
+        return this.test;
+    }
+
     public void setTest(String test) {
 
         this.test = test;
+    }
+
+    public String getTestcase() {
+
+        return this.testcase;
     }
 
     public void setTestcase(String testcase) {
@@ -207,14 +149,28 @@ public class TestCaseExecution {
         this.testcase = testcase;
     }
 
+    public String getVerbose() {
+
+        return this.verbose;
+    }
+
     public void setVerbose(String verbose) {
 
         this.test = verbose;
     }
 
+    public String getUrl() {
+
+        return this.url;
+    }
+
     public void setUrl(String url) {
 
         this.url = url;
+    }
+
+    public String getStatus() {
+        return this.status;
     }
 
     public void setStatus(String tempStatus) {

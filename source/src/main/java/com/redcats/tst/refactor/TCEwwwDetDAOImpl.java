@@ -8,124 +8,129 @@ package com.redcats.tst.refactor;
 import com.redcats.tst.database.DatabaseSpring;
 import com.redcats.tst.entity.TestCase;
 import com.redcats.tst.log.MyLogger;
+import org.apache.log4j.Level;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.log4j.Level;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
 
 /**
- *
  * @author bcivel
  */
 @Repository
 public class TCEwwwDetDAOImpl implements ITCEwwwDetDAO {
-   
+
     @Autowired
     DatabaseSpring databaseSpring;
 
     @Override
     public List<TestcaseExecutionwwwDet> getListOfDetail(int execId) {
-       List<TestcaseExecutionwwwDet> list = null;
-        
-       final String query = "SELECT * FROM testcaseexecutionwwwdet WHERE execID = ?";
+        List<TestcaseExecutionwwwDet> list = null;
+        final String query = "SELECT * FROM testcaseexecutionwwwdet WHERE execID = ?";
 
+        Connection connection = this.databaseSpring.connect();
         try {
-            PreparedStatement preStat = this.databaseSpring.connect().prepareStatement(query);
-            preStat.setString(1, String.valueOf(execId));
+            PreparedStatement preStat = connection.prepareStatement(query);
             try {
+                preStat.setString(1, String.valueOf(execId));
                 ResultSet resultSet = preStat.executeQuery();
-                list = new ArrayList();
                 try {
+                    list = new ArrayList<TestcaseExecutionwwwDet>();
                     while (resultSet.next()) {
                         TestcaseExecutionwwwDet detail = new TestcaseExecutionwwwDet();
-                         detail.setId(resultSet.getString("ID")==null?0:resultSet.getInt("ID"));       
-                         detail.setExecID(resultSet.getString("EXECID")==null?0:resultSet.getInt("EXECID"));
-                         detail.setStart(resultSet.getString("START")==null?"":resultSet.getString("START"));
-                         detail.setUrl(resultSet.getString("URL")==null?"":resultSet.getString("URL"));
-                         detail.setEnd(resultSet.getString("END")==null?"":resultSet.getString("END"));
-                         detail.setExt(resultSet.getString("EXT")==null?"":resultSet.getString("EXT"));
-                         detail.setStatusCode(resultSet.getInt("StatusCode")==0?0:resultSet.getInt("StatusCode"));
-                         detail.setMethod(resultSet.getString("Method")==null?"":resultSet.getString("Method"));
-                         detail.setBytes(resultSet.getString("Bytes")==null?0:resultSet.getInt("Bytes"));
-                         detail.setTimeInMillis(resultSet.getString("TimeInMillis")==null?0:resultSet.getInt("TimeInMillis"));
-                         detail.setReqHeader_Host(resultSet.getString("ReqHeader_Host")==null?"":resultSet.getString("ReqHeader_Host"));
-                         detail.setResHeader_ContentType(resultSet.getString("ResHeader_ContentType")==null?"":resultSet.getString("ResHeader_ContentType"));
+                        detail.setId(resultSet.getString("ID") == null ? 0 : resultSet.getInt("ID"));
+                        detail.setExecID(resultSet.getString("EXECID") == null ? 0 : resultSet.getInt("EXECID"));
+                        detail.setStart(resultSet.getString("START") == null ? "" : resultSet.getString("START"));
+                        detail.setUrl(resultSet.getString("URL") == null ? "" : resultSet.getString("URL"));
+                        detail.setEnd(resultSet.getString("END") == null ? "" : resultSet.getString("END"));
+                        detail.setExt(resultSet.getString("EXT") == null ? "" : resultSet.getString("EXT"));
+                        detail.setStatusCode(resultSet.getInt("StatusCode") == 0 ? 0 : resultSet.getInt("StatusCode"));
+                        detail.setMethod(resultSet.getString("Method") == null ? "" : resultSet.getString("Method"));
+                        detail.setBytes(resultSet.getString("Bytes") == null ? 0 : resultSet.getInt("Bytes"));
+                        detail.setTimeInMillis(resultSet.getString("TimeInMillis") == null ? 0 : resultSet.getInt("TimeInMillis"));
+                        detail.setReqHeader_Host(resultSet.getString("ReqHeader_Host") == null ? "" : resultSet.getString("ReqHeader_Host"));
+                        detail.setResHeader_ContentType(resultSet.getString("ResHeader_ContentType") == null ? "" : resultSet.getString("ResHeader_ContentType"));
 
                         list.add(detail);
                     }
                 } catch (SQLException exception) {
-                    //TODO logger ERROR
-                    //error on resultSet.getString
+                    MyLogger.log(TCEwwwDetDAOImpl.class.getName(), Level.FATAL, exception.toString());
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                //TODO logger ERROR
-                //preStat.executeQuery();
+                MyLogger.log(TCEwwwDetDAOImpl.class.getName(), Level.ERROR, exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            //TODO logger ERROR
-            //conn.prepareStatement(query);
+            MyLogger.log(TCEwwwDetDAOImpl.class.getName(), Level.ERROR, exception.toString());
         } finally {
-            databaseSpring.disconnect();
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(TCEwwwDetDAOImpl.class.getName(), Level.WARN, e.toString());
+            }
         }
 
         return list;
     }
-   
-    
-    
+
     @Override
     public List<TestCaseExecutionwwwSumHistoric> getHistoricForParameter(TestCase testcase, String parameter) {
-       List<TestCaseExecutionwwwSumHistoric> historic = new ArrayList();
-       String test = testcase.getTest();
-       String tc = testcase.getTestCase();
-       String country = testcase.getCountryList().get(0);
-        StringBuilder query = new StringBuilder();
-        query.append(" select start, ");
-        query.append(parameter);
-        query.append(" from testcaseexecutionwwwsum a join testcaseexecution b on a.id=b.id where test = '");
-        query.append(test);
-        query.append("' and testcase = '");
-        query.append(tc);
-        query.append("' and country = '");
-        query.append(country);
-        query.append("' limit 100");
-        
+        final String sql = "SELECT start, ? FROM testcaseexecutionwwwsum a JOIN testcaseexecution b ON a.id=b.id WHERE test = ? AND testcase = ? AND country = ? LIMIT 100";
+        List<TestCaseExecutionwwwSumHistoric> historic = null;
 
-        databaseSpring.connect();
-        ResultSet rs = null;
+        Connection connection = this.databaseSpring.connect();
         try {
-            rs = databaseSpring.query(query.toString());
-
-            while (rs.next()) {
-                TestCaseExecutionwwwSumHistoric histoToAdd = new TestCaseExecutionwwwSumHistoric();
-                histoToAdd.setStart(rs.getString(1));
-                histoToAdd.setParameter(rs.getString(2));
-                
-                historic.add(histoToAdd);
-            }
-
-        } catch (SQLException ex) {
-            MyLogger.log(TCEwwwDetDAOImpl.class.getName(), Level.FATAL, ex.toString());
-        } finally {
+            PreparedStatement preStat = connection.prepareStatement(sql);
             try {
-                if (rs != null) {
+                preStat.setString(1, parameter);
+                preStat.setString(2, testcase.getTest());
+                preStat.setString(3, testcase.getTestCase());
+                preStat.setString(4, testcase.getCountryList().get(0));
+
+                ResultSet rs = preStat.executeQuery();
+                try {
+                    historic = new ArrayList<TestCaseExecutionwwwSumHistoric>();
+                    while (rs.next()) {
+                        TestCaseExecutionwwwSumHistoric histoToAdd = new TestCaseExecutionwwwSumHistoric();
+                        histoToAdd.setStart(rs.getString(1));
+                        histoToAdd.setParameter(rs.getString(2));
+
+                        historic.add(histoToAdd);
+                    }
+
+                } catch (SQLException ex) {
+                    MyLogger.log(TCEwwwDetDAOImpl.class.getName(), Level.FATAL, ex.toString());
+                } finally {
                     rs.close();
                 }
-            } catch (SQLException ex) {
-                MyLogger.log(TCEwwwDetDAOImpl.class.getName(), Level.INFO, "Exception closing ResultSet: " + ex.toString());
+            } catch (SQLException exception) {
+                MyLogger.log(TCEwwwDetDAOImpl.class.getName(), Level.ERROR, exception.toString());
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(TCEwwwDetDAOImpl.class.getName(), Level.ERROR, exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(TCEwwwDetDAOImpl.class.getName(), Level.WARN, e.toString());
             }
         }
-        databaseSpring.disconnect();
 
         return historic;
     }
-    
+
 }

@@ -4,30 +4,31 @@
  */
 package com.redcats.tst.servlet.testCase;
 
+import com.redcats.tst.database.DatabaseSpring;
 import com.redcats.tst.exception.CerberusException;
 import com.redcats.tst.factory.IFactoryLogEvent;
 import com.redcats.tst.factory.impl.FactoryLogEvent;
 import com.redcats.tst.log.MyLogger;
-import com.redcats.tst.refactor.DbMysqlController;
 import com.redcats.tst.service.ILogEventService;
 import com.redcats.tst.service.impl.LogEventService;
 import com.redcats.tst.service.impl.UserService;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 /**
- *
  * @author bcivel
  */
 public class CreateTestCase extends HttpServlet {
@@ -35,15 +36,11 @@ public class CreateTestCase extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         PrintWriter out = response.getWriter();
-        java.sql.Connection conn = null;
-        ResultSet rs_control = null;
-        PreparedStatement stmt = null;
-        try {           /*
-             * Database connexion
-             */
-            DbMysqlController db = new DbMysqlController();
-            conn = db.connect();
+        ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+        DatabaseSpring database = appContext.getBean(DatabaseSpring.class);
 
+        Connection connection = database.connect();
+        try {
             /*
              * Testcase Insert
              */
@@ -119,101 +116,103 @@ public class CreateTestCase extends HttpServlet {
 
             String country[] = request.getParameterValues("createTestcase_country_general");
 
-            stmt = conn.prepareStatement("SELECT * from testcase where test = ? and testcase = ?");
-            stmt.setString(1, test);
-            stmt.setString(2, testcase);
-            rs_control = stmt.executeQuery();
-
-            if (rs_control.first()) {
-                out.print("The testcase number already exists. Please, go back to the previous page and choose another testcase number");
-            } else {
-                stmt.close();
-                stmt = conn.prepareStatement("INSERT INTO Testcase (`Test`,`TestCase`,`Application`,`Project` ,`Ticket`,`Description`,"
-                        + " `BehaviorOrValueExpected` ,`activeQA`,`activeUAT`,`activePROD`,`Priority`,`Status`,`TcActive`,`Origine`,"
-                        + " `HowTo`,`BugID`, `RefOrigine`, `group`, `Creator`) "
-                        + " VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            PreparedStatement stmt = connection.prepareStatement("SELECT * FROM testcase WHERE test = ? AND testcase = ?");
+            try {
                 stmt.setString(1, test);
                 stmt.setString(2, testcase);
-                stmt.setString(3, app);
-                stmt.setString(4, project);
-                stmt.setString(5, ticket);
-                stmt.setString(6, description);
-                stmt.setString(7, valueExpected);
-                stmt.setString(8, runQA);
-                stmt.setString(9, runUAT);
-                stmt.setString(10, runPROD);
-                stmt.setString(11, priority);
-                stmt.setString(12, status);
-                stmt.setString(13, "N");
-                stmt.setString(14, origine);
-                stmt.setString(15, howTo);
-                stmt.setString(16, bugID);
-                stmt.setString(17, refOrigine);
-                stmt.setString(18, group);
-                stmt.setString(19, request.getUserPrincipal().getName());
-
-                stmt.executeUpdate();
-                stmt.close();
-
-
-                if (request.getParameterValues("createTestcase_country_general") != null) {
-                    for (int i = 0; i < country.length; i++) {
-                        stmt = conn.prepareStatement("INSERT INTO Testcasecountry (`Test`, `TestCase`, `Country`) VALUES (?, ?, ?)");
-                        stmt.setString(1, test);
-                        stmt.setString(2, testcase);
-                        stmt.setString(3, country[i]);
-                        stmt.executeUpdate();
-                        stmt.close();
-                    }
-                }
-
-                /**
-                 * Adding Log entry.
-                 */
-                ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-                ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
+                ResultSet rs_control = stmt.executeQuery();
                 try {
-                    logEventService.insertLogEvent(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/CreateTestcase", "CREATE", "Create testcase : ['" + test + "'|'" + testcase  + "'|'" + description + "']", "", ""));
-                } catch (CerberusException ex) {
-                    Logger.getLogger(UserService.class.getName()).log(Level.ERROR, null, ex);
+                    if (rs_control.first()) {
+                        out.print("The testcase number already exists. Please, go back to the previous page and choose another testcase number");
+                    } else {
+                        PreparedStatement stmt2 = connection.prepareStatement("INSERT INTO Testcase (`Test`,`TestCase`,`Application`,`Project` ,`Ticket`,`Description`,"
+                                + " `BehaviorOrValueExpected` ,`activeQA`,`activeUAT`,`activePROD`,`Priority`,`Status`,`TcActive`,`Origine`,"
+                                + " `HowTo`,`BugID`, `RefOrigine`, `group`, `Creator`) " + " VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                        try {
+                            stmt2.setString(1, test);
+                            stmt2.setString(2, testcase);
+                            stmt2.setString(3, app);
+                            stmt2.setString(4, project);
+                            stmt2.setString(5, ticket);
+                            stmt2.setString(6, description);
+                            stmt2.setString(7, valueExpected);
+                            stmt2.setString(8, runQA);
+                            stmt2.setString(9, runUAT);
+                            stmt2.setString(10, runPROD);
+                            stmt2.setString(11, priority);
+                            stmt2.setString(12, status);
+                            stmt2.setString(13, "N");
+                            stmt2.setString(14, origine);
+                            stmt2.setString(15, howTo);
+                            stmt2.setString(16, bugID);
+                            stmt2.setString(17, refOrigine);
+                            stmt2.setString(18, group);
+                            stmt2.setString(19, request.getUserPrincipal().getName());
+
+                            stmt2.executeUpdate();
+                        } finally {
+                            stmt2.close();
+                        }
+
+                        if (request.getParameterValues("createTestcase_country_general") != null) {
+                            for (int i = 0; i < country.length; i++) {
+                                stmt2 = connection.prepareStatement("INSERT INTO Testcasecountry (`Test`, `TestCase`, `Country`) VALUES (?, ?, ?)");
+                                try {
+                                    stmt2.setString(1, test);
+                                    stmt2.setString(2, testcase);
+                                    stmt2.setString(3, country[i]);
+                                    stmt2.executeUpdate();
+                                } finally {
+                                    stmt2.close();
+                                }
+                            }
+                        }
+
+                        /**
+                         * Adding Log entry.
+                         */
+                        ILogEventService logEventService = appContext.getBean(LogEventService.class);
+                        IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
+                        try {
+                            logEventService.insertLogEvent(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/CreateTestcase", "CREATE", "Create testcase : ['" + test + "'|'" + testcase + "'|'" + description + "']", "", ""));
+                        } catch (CerberusException ex) {
+                            Logger.getLogger(UserService.class.getName()).log(Level.ERROR, null, ex);
+                        }
+
+                        response.sendRedirect("TestCase.jsp?Test=" + test + "&TestCase="
+                                + testcase + "&Load=Load");
+
+                    }
+                } finally {
+                    rs_control.close();
                 }
-
-                response.sendRedirect("TestCase.jsp?Test=" + test + "&TestCase="
-                        + testcase + "&Load=Load");
-
+            } finally {
+                stmt.close();
             }
         } catch (SQLException ex) {
             MyLogger.log(CreateTestCase.class.getName(), Level.FATAL, "" + ex);
         } finally {
             out.close();
             try {
-                if (rs_control != null) {
-                    rs_control.close();
+                if (connection != null) {
+                    connection.close();
                 }
-                conn.close();
-            } catch (Exception ex) {
-                MyLogger.log(CreateTestCase.class.getName(), Level.INFO, "Exception closing Connection or ResultSet: " + ex.toString());
-            }
-            try {
-                if (stmt != null) {
-                    stmt.close();
-                }
-            } catch (SQLException ex) {
-                MyLogger.log(CreateTestCase.class.getName(), Level.INFO, "Exception closing PreparedStatement: " + ex.toString());
+            } catch (SQLException e) {
+                MyLogger.log(DeleteTestCase.class.getName(), Level.WARN, e.toString());
             }
         }
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
+
     /**
      * Handles the HTTP
      * <code>GET</code> method.
      *
-     * @param request servlet request
+     * @param request  servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * @throws IOException      if an I/O error occurs
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -225,10 +224,10 @@ public class CreateTestCase extends HttpServlet {
      * Handles the HTTP
      * <code>POST</code> method.
      *
-     * @param request servlet request
+     * @param request  servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * @throws IOException      if an I/O error occurs
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)

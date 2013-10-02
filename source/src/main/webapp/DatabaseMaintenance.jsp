@@ -9,11 +9,8 @@
 <%@page import="com.redcats.tst.service.IDatabaseVersioningService"%>
 <%@page import="com.redcats.tst.log.MyLogger"%>
 <%@page import="org.apache.log4j.Level"%>
-<%@page import="com.redcats.tst.database.DatabaseSpring"%>
-<%@page import="java.sql.PreparedStatement"%>
 <%@page import="com.redcats.tst.entity.MyVersion"%>
 <%@page import="com.redcats.tst.service.IMyVersionService"%>
-<%@page import="org.springframework.context.ApplicationContext" %>
 <%@page import="org.springframework.web.context.support.WebApplicationContextUtils" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <% Date DatePageStart = new Date();%>
@@ -48,7 +45,6 @@
                 try {
                     // I get here the current version of the database. (null if no database found)
                     MyVersion DtbVersion = null;
-                    ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
                     IMyVersionService myVersionService = appContext.getBean(IMyVersionService.class);
                     if (myVersionService.findMyVersionByKey("database") != null) {
                         DtbVersion = myVersionService.findMyVersionByKey("database");

@@ -1,9 +1,9 @@
 package com.redcats.tst.servlet.guiPages;
 
+import com.redcats.tst.database.DatabaseSpring;
 import com.redcats.tst.entity.Application;
 import com.redcats.tst.entity.User;
 import com.redcats.tst.log.MyLogger;
-import com.redcats.tst.refactor.DbMysqlController;
 import com.redcats.tst.refactor.TestCaseExecutionStatistics;
 import com.redcats.tst.refactor.TestCaseExecutionStatisticsServiceImpl;
 import com.redcats.tst.service.IApplicationService;
@@ -14,22 +14,23 @@ import com.redcats.tst.service.impl.ParameterService;
 import com.redcats.tst.service.impl.UserService;
 import com.redcats.tst.util.ParameterParserUtil;
 import com.redcats.tst.util.StringUtil;
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.util.ArrayList;
-import java.util.List;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Level;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
- *
  * @author ip100003
  */
 public class Homepage extends HttpServlet {
@@ -43,10 +44,10 @@ public class Homepage extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         //TODO split this into Servlet + Service + DAO + Database
 
-        DbMysqlController db = new DbMysqlController();
-        Connection conn = db.connect();
-
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+        DatabaseSpring database = appContext.getBean(DatabaseSpring.class);
+        Connection connection = database.connect();
+
         String MySystem = ParameterParserUtil.parseStringParam(request.getParameter("MySystem"), "");
 
         try {
@@ -112,10 +113,10 @@ public class Homepage extends HttpServlet {
                     SQL.append("t.application in ('') ");
                 }
                 SQL.append(" GROUP BY test;");
-                
+
                 MyLogger.log(Homepage.class.getName(), Level.DEBUG, " SQL : " + SQL.toString());
 
-                PreparedStatement stmt_teststatus = conn.prepareStatement(SQL.toString());
+                PreparedStatement stmt_teststatus = connection.prepareStatement(SQL.toString());
 
                 ArrayList<ArrayList<String>> arrayTest = new ArrayList<ArrayList<String>>();
                 ArrayList<String> al;
@@ -214,7 +215,7 @@ public class Homepage extends HttpServlet {
                     }
                     arrayExecutionEnv.add(arrayEnv);
 
-                    PreparedStatement stmtContent = conn.prepareStatement("SELECT t.Build, t.Revision, "
+                    PreparedStatement stmtContent = connection.prepareStatement("SELECT t.Build, t.Revision, "
                             + " t.application, t.release, t.link "
                             + "FROM buildrevisionparameters t "
                             + "Where build = ? and revision = ?");
@@ -254,7 +255,13 @@ public class Homepage extends HttpServlet {
             request.getRequestDispatcher("/DatabaseMaintenance.jsp?GO=Y").forward(request, response);
             MyLogger.log(Homepage.class.getName(), Level.FATAL, " Exception catched : " + ex);
         } finally {
-            db.disconnect();
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(Homepage.class.getName(), org.apache.log4j.Level.WARN, e.toString());
+            }
         }
     }
 }

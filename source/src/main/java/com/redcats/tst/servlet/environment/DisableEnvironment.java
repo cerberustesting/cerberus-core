@@ -4,29 +4,31 @@
  */
 package com.redcats.tst.servlet.environment;
 
-import com.redcats.tst.refactor.DbMysqlController;
+import com.redcats.tst.database.DatabaseSpring;
+import com.redcats.tst.log.MyLogger;
 import com.redcats.tst.service.IParameterService;
 import com.redcats.tst.service.impl.ParameterService;
 import com.redcats.tst.serviceEmail.IEmailGeneration;
 import com.redcats.tst.serviceEmail.impl.EmailGeneration;
 import com.redcats.tst.serviceEmail.impl.sendMail;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.sql.Connection;
-import java.sql.Statement;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.springframework.context.ApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
+import version.Version;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.springframework.context.ApplicationContext;
-import org.springframework.web.context.support.WebApplicationContextUtils;
-import version.Version;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
- *
  * @author vertigo
  */
 @WebServlet(name = "DisableEnvironment", urlPatterns = {"/DisableEnvironment"})
@@ -37,22 +39,21 @@ public class DisableEnvironment extends HttpServlet {
      * <code>GET</code> and
      * <code>POST</code> methods.
      *
-     * @param request servlet request
+     * @param request  servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * @throws IOException      if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         PrintWriter out = response.getWriter();
+
+        ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+        DatabaseSpring database = appContext.getBean(DatabaseSpring.class);
+
+        Connection connection = database.connect();
         try {
-
-            //Create Connexion // Statement
-            DbMysqlController db;
-            db = new DbMysqlController();
-            Connection conn = db.connect();
-
             String country = null;
             if (request.getParameter("country") != null && request.getParameter("country").compareTo("") != 0) {
                 country = request.getParameter("country");
@@ -64,7 +65,6 @@ public class DisableEnvironment extends HttpServlet {
 
 
             // Generate the content of the email
-            ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
             IEmailGeneration emailGenerationService = appContext.getBean(EmailGeneration.class);
 
             String eMailContent = emailGenerationService.EmailGenerationDisableEnv(country, env);
@@ -78,23 +78,23 @@ public class DisableEnvironment extends HttpServlet {
             String body = eMailContentTable[3];
 
 
-
             // Transaction and database update.
-            Statement stmt = conn.createStatement();
+            Statement stmt = connection.createStatement();
 
-            String req_update_active = "UPDATE countryenvparam "
-                    + " SET Active='N'"
-                    + "WHERE Country='" + country + "' and Environment='" + env + "'";
-            stmt.executeUpdate(req_update_active);
+            try {
+                String req_update_active = "UPDATE countryenvparam "
+                        + " SET Active='N'"
+                        + "WHERE Country='" + country + "' and Environment='" + env + "'";
+                stmt.executeUpdate(req_update_active);
 
 
-
-            String req_insert_log = "INSERT INTO  countryenvparam_log "
-                    + " ( `Country`, `Environment`, `Description`) "
-                    + " VALUES ('" + country + "', '" + env + "', 'Disabled.') ";
-            stmt.execute(req_insert_log);
-
-            stmt.close();
+                String req_insert_log = "INSERT INTO  countryenvparam_log "
+                        + " ( `Country`, `Environment`, `Description`) "
+                        + " VALUES ('" + country + "', '" + env + "', 'Disabled.') ";
+                stmt.execute(req_insert_log);
+            } finally {
+                stmt.close();
+            }
 
 
             // Email sending.
@@ -112,8 +112,6 @@ public class DisableEnvironment extends HttpServlet {
             //sendMail Mail = new sendMail();
             sendMail.sendHtmlMail(host, port, body, subject, from, to, cc);
 
-            conn.close();
-
             response.sendRedirect("Environment.jsp?country=" + country + "&env=" + env);
 
         } catch (Exception e) {
@@ -121,19 +119,27 @@ public class DisableEnvironment extends HttpServlet {
             out.println(e.getMessage());
         } finally {
             out.close();
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(DisableEnvironment.class.getName(), org.apache.log4j.Level.WARN, e.toString());
+            }
         }
 
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
+
     /**
      * Handles the HTTP
      * <code>GET</code> method.
      *
-     * @param request servlet request
+     * @param request  servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * @throws IOException      if an I/O error occurs
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -145,10 +151,10 @@ public class DisableEnvironment extends HttpServlet {
      * Handles the HTTP
      * <code>POST</code> method.
      *
-     * @param request servlet request
+     * @param request  servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * @throws IOException      if an I/O error occurs
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
