@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
+<web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
     <welcome-file-list>
         <welcome-file>Homepage</welcome-file>
     </welcome-file-list>
@@ -180,6 +181,10 @@
         <servlet-name>UpdateBuildRevisionParameter</servlet-name>
         <servlet-class>com.redcats.tst.servlet.environment.UpdateBuildRevisionParameter</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>UpdateApplicationAjax</servlet-name>
+        <servlet-class>com.redcats.tst.servlet.application.UpdateApplication</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>RunTestCase</servlet-name>
         <url-pattern>/RunTestCase</url-pattern>
@@ -343,6 +348,10 @@
     <servlet-mapping>
         <servlet-name>UpdateBuildRevisionParameter</servlet-name>
         <url-pattern>/UpdateBuildRevisionParameter</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>UpdateApplicationAjax</servlet-name>
+        <url-pattern>/UpdateApplicationAjax</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>
