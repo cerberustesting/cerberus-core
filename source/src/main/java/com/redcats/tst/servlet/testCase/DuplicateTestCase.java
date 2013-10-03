@@ -35,6 +35,8 @@ import java.sql.SQLException;
 public class DuplicateTestCase extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
+    private ApplicationContext appContext;
+
     @Autowired
     private DatabaseSpring database;
 
@@ -42,7 +44,7 @@ public class DuplicateTestCase extends HttpServlet {
         response.setContentType("text/html;charset=UTF-8");
         PrintWriter out = response.getWriter();
 
-        ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+        appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         ITestCaseService testCaseService = appContext.getBean(ITestCaseService.class);
         this.database = appContext.getBean(DatabaseSpring.class);
 
@@ -93,7 +95,7 @@ public class DuplicateTestCase extends HttpServlet {
 
                 ResultSet rs = preStat.executeQuery();
                 try {
-                    TestCaseStepAction insert = new TestCaseStepAction();
+                    TestCaseStepAction insert = appContext.getBean(TestCaseStepAction.class);
                     while (rs.next()) {
                         insert.importResultSet(rs);
 
@@ -150,7 +152,7 @@ public class DuplicateTestCase extends HttpServlet {
 
                 ResultSet rs = preStat.executeQuery();
                 try {
-                    TestCaseStepActionControl insert = new TestCaseStepActionControl();
+                    TestCaseStepActionControl insert = appContext.getBean(TestCaseStepActionControl.class);
 
                     while (rs.next()) {
                         insert.importResultSet(rs);
@@ -250,7 +252,7 @@ public class DuplicateTestCase extends HttpServlet {
 
                 ResultSet rs = preStat.executeQuery();
                 try {
-                    TestCaseCountryProperties insert = new TestCaseCountryProperties();
+                    TestCaseCountryProperties insert = appContext.getBean(TestCaseCountryProperties.class);
                     while (rs.next()) {
                         insert.importResultSet(rs);
 

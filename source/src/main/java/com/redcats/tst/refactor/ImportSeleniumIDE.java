@@ -5,22 +5,24 @@
 package com.redcats.tst.refactor;
 
 
-import com.redcats.tst.servlet.testCase.CreateTestCase;
 import com.redcats.tst.database.DatabaseSpring;
 import com.redcats.tst.log.MyLogger;
+import com.redcats.tst.servlet.testCase.CreateTestCase;
+import org.apache.log4j.Level;
+import org.springframework.context.ApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import org.apache.log4j.Level;
 
 /**
- *
  * @author bcivel
  */
 public class ImportSeleniumIDE extends HttpServlet {
@@ -30,16 +32,17 @@ public class ImportSeleniumIDE extends HttpServlet {
      * <code>GET</code> and
      * <code>POST</code> methods.
      *
-     * @param request servlet request
+     * @param request  servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * @throws IOException      if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         PrintWriter out = response.getWriter();
-        DatabaseSpring db = new DatabaseSpring();
+        ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+        DatabaseSpring db = appContext.getBean(DatabaseSpring.class);
         Connection conn = db.connect();
         Statement stmt = null;
         ResultSet rs_control = null;
@@ -86,7 +89,7 @@ public class ImportSeleniumIDE extends HttpServlet {
 
             // SELECT THE LIST OF CONTROL
 
-            String selectControl = "SELECT value from Invariant where id ='13'";
+            String selectControl = "SELECT value FROM Invariant WHERE id ='13'";
             rs_control = stmt.executeQuery(selectControl);
 
             if (rs_control.first()) {
@@ -98,7 +101,7 @@ public class ImportSeleniumIDE extends HttpServlet {
 
             // SELECT THE NUMBER OF COUNTRY EXISTING FOR THE TESTCASE
 
-            String selectCountries = "SELECT Country from Testcasecountry where test =? and testcase = ?";
+            String selectCountries = "SELECT Country FROM Testcasecountry WHERE test =? AND testcase = ?";
             prepStmt = conn.prepareStatement(selectCountries);
             prepStmt.setString(1, test);
             prepStmt.setString(2, testcase);
@@ -133,7 +136,7 @@ public class ImportSeleniumIDE extends HttpServlet {
                     // INSERT A PROPERTY
                     if (!propertyName[j].equals("null")) //or  if (StringUtils.isNotBlank(property[i]))
                     {
-                        TestCaseCountryProperties properties = new TestCaseCountryProperties();
+                        TestCaseCountryProperties properties = appContext.getBean(TestCaseCountryProperties.class);
                         properties.setTest(test);
                         properties.setTestcase(testcase);
                         properties.setCountry(countryList.get(k));
@@ -152,7 +155,7 @@ public class ImportSeleniumIDE extends HttpServlet {
             // FOR ALL THE ACTION, INSERT AN ACTION
             int seq = 0;
 
-            String selectSequence = "SELECT Sequence from Testcasestepaction where test =? and testcase = ? and step = ?";
+            String selectSequence = "SELECT Sequence FROM Testcasestepaction WHERE test =? AND testcase = ? AND step = ?";
 
             prepStmt = conn.prepareStatement(selectSequence);
             prepStmt.setString(1, test);
@@ -170,7 +173,7 @@ public class ImportSeleniumIDE extends HttpServlet {
             prepStmt.close();
 
             int control = 0;
-            String selectControlNumber = "SELECT Control from Testcasestepactioncontrol where test =? and testcase = ? and step = ?";
+            String selectControlNumber = "SELECT Control FROM Testcasestepactioncontrol WHERE test =? AND testcase = ? AND step = ?";
             prepStmt = conn.prepareStatement(selectControlNumber);
             prepStmt.setString(1, test);
             prepStmt.setString(2, testcase);
@@ -237,14 +240,14 @@ public class ImportSeleniumIDE extends HttpServlet {
             response.sendRedirect("ImportHTML.jsp?submited=true");
 
         } catch (SQLException ex) {
-            MyLogger.log(UpdateTestCase1.class.getName(), Level.FATAL,
+            MyLogger.log(ImportSeleniumIDE.class.getName(), Level.FATAL,
                     "" + ex);
             // out.println ( UpdateTestCase.class.getName ( ) + ex ) ;
         } catch (NullPointerException ex) {
-            MyLogger.log(UpdateTestCase1.class.getName(), Level.FATAL,
+            MyLogger.log(ImportSeleniumIDE.class.getName(), Level.FATAL,
                     "" + ex);
         } catch (ArrayIndexOutOfBoundsException ex) {
-            MyLogger.log(UpdateTestCase1.class.getName(), Level.FATAL,
+            MyLogger.log(ImportSeleniumIDE.class.getName(), Level.FATAL,
                     "" + ex);
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -283,14 +286,15 @@ public class ImportSeleniumIDE extends HttpServlet {
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
+
     /**
      * Handles the HTTP
      * <code>GET</code> method.
      *
-     * @param request servlet request
+     * @param request  servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * @throws IOException      if an I/O error occurs
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -302,10 +306,10 @@ public class ImportSeleniumIDE extends HttpServlet {
      * Handles the HTTP
      * <code>POST</code> method.
      *
-     * @param request servlet request
+     * @param request  servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * @throws IOException      if an I/O error occurs
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)

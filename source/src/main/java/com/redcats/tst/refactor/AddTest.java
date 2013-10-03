@@ -6,20 +6,22 @@ package com.redcats.tst.refactor;
 
 import com.redcats.tst.database.DatabaseSpring;
 import com.redcats.tst.log.MyLogger;
+import org.apache.log4j.Level;
+import org.springframework.context.ApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import org.apache.log4j.Level;
 
 /**
  * @author acraske
@@ -27,16 +29,17 @@ import org.apache.log4j.Level;
 public class AddTest extends HttpServlet {
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
+
     /**
      * Handles the HTTP
      * <code>GET</code> method.
      *
-     * @param request servlet request
+     * @param request  servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * @throws IOException      if an I/O error occurs
      */
-    @ Override
+    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
         this.processRequest(request, response);
@@ -46,12 +49,12 @@ public class AddTest extends HttpServlet {
      * Handles the HTTP
      * <code>POST</code> method.
      *
-     * @param request servlet request
+     * @param request  servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * @throws IOException      if an I/O error occurs
      */
-    @ Override
+    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
         this.processRequest(request, response);
@@ -66,10 +69,10 @@ public class AddTest extends HttpServlet {
      * Return true if all fields contains in the testcase_info are not null at
      * the specified index
      */
-    public boolean formIsFullFill(List< String[]> testcase_info, int index) {
+    public boolean formIsFullFill(List<String[]> testcase_info, int index) {
 
         for (String[] t : testcase_info) {
-            if (t[ index].isEmpty() || t[ index].trim().equals("") || t[ index].equals(" ")) {
+            if (t[index].isEmpty() || t[index].trim().equals("") || t[index].equals(" ")) {
                 return false;
             }
         }
@@ -82,7 +85,7 @@ public class AddTest extends HttpServlet {
      *
      * @return a String containing servlet description
      */
-    @ Override
+    @Override
     public String getServletInfo() {
 
         return "Short description";
@@ -93,16 +96,17 @@ public class AddTest extends HttpServlet {
      * <code>GET</code> and
      * <code>POST</code> methods.
      *
-     * @param request servlet request
+     * @param request  servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * @throws IOException      if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        
+
         response.setContentType("text/html;charset=UTF-8");
         PrintWriter out = response.getWriter();
-        DatabaseSpring db = new DatabaseSpring();
+        ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+        DatabaseSpring db = appContext.getBean(DatabaseSpring.class);
         java.sql.Connection conn = db.connect();
         ResultSet rs_test_exists = null;
         PreparedStatement stmt = null;
@@ -141,7 +145,7 @@ public class AddTest extends HttpServlet {
              * Put all testcase post info in the arraylist without countries
              * because not used for testcase table
              */
-            List< String[]> testcase_info = new ArrayList< String[]>();
+            List<String[]> testcase_info = new ArrayList<String[]>();
             testcase_info.add(testcase);
             testcase_info.add(testcase_desc);
             testcase_info.add(testcase_valueexpec);
@@ -153,7 +157,7 @@ public class AddTest extends HttpServlet {
              * Check that a real modification has been done and the test not
              * already exists
              */
-            stmt = conn.prepareStatement("SELECT Test FROM Test where Test = ?");
+            stmt = conn.prepareStatement("SELECT Test FROM Test WHERE Test = ?");
             stmt.setString(1, test);
             rs_test_exists = stmt.executeQuery();
 
@@ -172,7 +176,7 @@ public class AddTest extends HttpServlet {
                     stmt.setString(4, automated);
                     stmt.executeUpdate();
                     Date date = new Date();
-                      }
+                }
 
             }
             stmt.close();

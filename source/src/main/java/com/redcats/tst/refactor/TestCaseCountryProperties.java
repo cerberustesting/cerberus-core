@@ -4,12 +4,14 @@ import com.redcats.tst.database.DatabaseSpring;
 import com.redcats.tst.log.MyLogger;
 import org.apache.log4j.Level;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+@Service
 public class TestCaseCountryProperties implements DatabaseCRUD {
 
     private static final String COLUMNS = "`Test`, `TestCase`, `Country`, `Property`, `Type`, `Database`, `Value`, `Length`, `RowLimit`, `Nature`";
@@ -24,7 +26,6 @@ public class TestCaseCountryProperties implements DatabaseCRUD {
     private String type;
     private String database;
     private String value;
-
     @Autowired
     private DatabaseSpring databaseSpring;
 
@@ -48,9 +49,19 @@ public class TestCaseCountryProperties implements DatabaseCRUD {
         return this.country;
     }
 
+    public void setCountry(String country) {
+
+        this.country = country;
+    }
+
     public Integer getLength() {
 
         return this.length;
+    }
+
+    public void setLength(Integer length) {
+
+        this.length = length;
     }
 
     public String getNature() {
@@ -58,9 +69,19 @@ public class TestCaseCountryProperties implements DatabaseCRUD {
         return this.nature;
     }
 
+    public void setNature(String nature) {
+
+        this.nature = nature;
+    }
+
     public String getProperty() {
 
         return this.property;
+    }
+
+    public void setProperty(String property) {
+
+        this.property = property;
     }
 
     public Integer getRowlimit() {
@@ -68,9 +89,19 @@ public class TestCaseCountryProperties implements DatabaseCRUD {
         return this.rowlimit;
     }
 
+    public void setRowlimit(Integer rowlimit) {
+
+        this.rowlimit = rowlimit;
+    }
+
     public String getTest() {
 
         return this.test;
+    }
+
+    public void setTest(String test) {
+
+        this.test = test;
     }
 
     public String getTestcase() {
@@ -78,9 +109,19 @@ public class TestCaseCountryProperties implements DatabaseCRUD {
         return this.testcase;
     }
 
+    public void setTestcase(String testcase) {
+
+        this.testcase = testcase;
+    }
+
     public String getType() {
 
         return this.type;
+    }
+
+    public void setType(String type) {
+
+        this.type = type;
     }
 
     public String getDatabase() {
@@ -88,9 +129,19 @@ public class TestCaseCountryProperties implements DatabaseCRUD {
         return this.database;
     }
 
+    public void setDatabase(String database) {
+
+        this.database = database;
+    }
+
     public String getValue() {
 
         return this.value;
+    }
+
+    public void setValue(String value) {
+
+        this.value = value;
     }
 
     @Override
@@ -151,56 +202,6 @@ public class TestCaseCountryProperties implements DatabaseCRUD {
                 MyLogger.log(TestCaseCountryProperties.class.getName(), Level.WARN, e.toString());
             }
         }
-    }
-
-    public void setCountry(String country) {
-
-        this.country = country;
-    }
-
-    public void setLength(Integer length) {
-
-        this.length = length;
-    }
-
-    public void setNature(String nature) {
-
-        this.nature = nature;
-    }
-
-    public void setDatabase(String database) {
-
-        this.database = database;
-    }
-
-    public void setProperty(String property) {
-
-        this.property = property;
-    }
-
-    public void setRowlimit(Integer rowlimit) {
-
-        this.rowlimit = rowlimit;
-    }
-
-    public void setTest(String test) {
-
-        this.test = test;
-    }
-
-    public void setTestcase(String testcase) {
-
-        this.testcase = testcase;
-    }
-
-    public void setType(String type) {
-
-        this.type = type;
-    }
-
-    public void setValue(String value) {
-
-        this.value = value;
     }
 
     @Override

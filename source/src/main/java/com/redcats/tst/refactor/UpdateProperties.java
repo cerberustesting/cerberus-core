@@ -293,7 +293,7 @@ public class UpdateProperties extends HttpServlet {
                                             // update
                                             if (rs_numberOfTestCasesCountryProperties.first()) {
 
-                                                TestCaseCountryProperties properties = new TestCaseCountryProperties();
+                                                TestCaseCountryProperties properties = appContext.getBean(TestCaseCountryProperties.class);
                                                 properties.setTest(test_testcase_format[0]);
                                                 properties.setTestcase(test_testcase_format[1]);
                                                 properties.setCountry(testcase_country[1]);
@@ -313,7 +313,7 @@ public class UpdateProperties extends HttpServlet {
                                  * Insert new rows
                                  */
 
-                                                TestCaseCountryProperties properties = new TestCaseCountryProperties();
+                                                TestCaseCountryProperties properties = appContext.getBean(TestCaseCountryProperties.class);
                                                 properties.setTest(test_testcase_format[0]);
                                                 properties.setTestcase(test_testcase_format[1]);
                                                 properties.setCountry(testcase_country[1]);
@@ -349,7 +349,7 @@ public class UpdateProperties extends HttpServlet {
                                 // if the number of the line is the same for the country
                                 // and the property:
                                 if (testcase_properties_propertyrow[i].equals(testcase_country[0])) {
-                                    TestCaseCountryProperties properties = new TestCaseCountryProperties();
+                                    TestCaseCountryProperties properties = appContext.getBean(TestCaseCountryProperties.class);
                                     properties.setTest(test_testcase_format[0]);
                                     properties.setTestcase(test_testcase_format[1]);
                                     properties.setCountry(testcase_country[1]);

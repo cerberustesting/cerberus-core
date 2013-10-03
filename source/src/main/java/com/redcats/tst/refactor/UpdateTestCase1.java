@@ -410,7 +410,7 @@ public class UpdateTestCase1 extends HttpServlet {
                         // System.out.println ( "Step Key : " + sql ) ;
                         ResultSet rs_stepaction = stmt.executeQuery(sql);
                         try {
-                            TestCaseStepAction action = new TestCaseStepAction();
+                            TestCaseStepAction action = appContext.getBean(TestCaseStepAction.class);
                             action.setTest(test_testcase_format[0]);
                             action.setTestcase(test_testcase_format[1]);
                             action.setStep(Integer.parseInt(step_number_hide[i]));
@@ -465,7 +465,7 @@ public class UpdateTestCase1 extends HttpServlet {
                     if (this.formIsFill(controls_step[i].toString())
                             && this.formIsFill(controls_sequence[i].toString())
                             && this.formIsFill(controls_control[i].toString())) {
-                        TestCaseStepActionControl control = new TestCaseStepActionControl();
+                        TestCaseStepActionControl control = appContext.getBean(TestCaseStepActionControl.class);
                         control.setTest(test_testcase_format[0]);
                         control.setTestcase(test_testcase_format[1]);
                         control.setStep(Integer.parseInt(controls_step[i]));

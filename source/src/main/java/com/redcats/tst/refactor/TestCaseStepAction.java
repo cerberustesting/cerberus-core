@@ -4,12 +4,14 @@ import com.redcats.tst.database.DatabaseSpring;
 import com.redcats.tst.log.MyLogger;
 import org.apache.log4j.Level;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+@Service
 public class TestCaseStepAction implements DatabaseCRUD {
 
     private static final String COLUMNS = "`Test`, `TestCase`, `Step`, `Sequence`, `Action`, `Object`, `Property`";
@@ -21,7 +23,6 @@ public class TestCaseStepAction implements DatabaseCRUD {
     private Integer step;
     private String test;
     private String testcase;
-
     @Autowired
     private DatabaseSpring databaseSpring;
 
@@ -43,9 +44,19 @@ public class TestCaseStepAction implements DatabaseCRUD {
         return this.action;
     }
 
+    public void setAction(String action) {
+
+        this.action = action;
+    }
+
     public String getObject() {
 
         return this.object;
+    }
+
+    public void setObject(String object) {
+
+        this.object = object;
     }
 
     public String getProperty() {
@@ -53,9 +64,19 @@ public class TestCaseStepAction implements DatabaseCRUD {
         return this.property;
     }
 
+    public void setProperty(String property) {
+
+        this.property = property;
+    }
+
     public Integer getSequence() {
 
         return this.sequence;
+    }
+
+    public void setSequence(Integer sequence) {
+
+        this.sequence = sequence;
     }
 
     public Integer getStep() {
@@ -63,14 +84,29 @@ public class TestCaseStepAction implements DatabaseCRUD {
         return this.step;
     }
 
+    public void setStep(Integer step) {
+
+        this.step = step;
+    }
+
     public String getTest() {
 
         return this.test;
     }
 
+    public void setTest(String test) {
+
+        this.test = test;
+    }
+
     public String getTestcase() {
 
         return this.testcase;
+    }
+
+    public void setTestcase(String testcase) {
+
+        this.testcase = testcase;
     }
 
     @Override
@@ -125,41 +161,6 @@ public class TestCaseStepAction implements DatabaseCRUD {
                 MyLogger.log(TestCaseStepAction.class.getName(), Level.WARN, e.toString());
             }
         }
-    }
-
-    public void setAction(String action) {
-
-        this.action = action;
-    }
-
-    public void setObject(String object) {
-
-        this.object = object;
-    }
-
-    public void setProperty(String property) {
-
-        this.property = property;
-    }
-
-    public void setSequence(Integer sequence) {
-
-        this.sequence = sequence;
-    }
-
-    public void setStep(Integer step) {
-
-        this.step = step;
-    }
-
-    public void setTest(String test) {
-
-        this.test = test;
-    }
-
-    public void setTestcase(String testcase) {
-
-        this.testcase = testcase;
     }
 
     @Override

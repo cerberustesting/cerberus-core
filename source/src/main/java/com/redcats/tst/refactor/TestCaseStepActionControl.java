@@ -4,12 +4,14 @@ import com.redcats.tst.database.DatabaseSpring;
 import com.redcats.tst.log.MyLogger;
 import org.apache.log4j.Level;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+@Service
 public class TestCaseStepActionControl implements DatabaseCRUD {
 
     private static final String COLUMNS = "`Test`, `TestCase`, `Step`, `Sequence`, `Control`, `Type`, `ControlValue`, `ControlProperty`, `Fatal`";
@@ -23,17 +25,8 @@ public class TestCaseStepActionControl implements DatabaseCRUD {
     private String testcase;
     private String type;
     private Boolean fatal;
-
     @Autowired
     private DatabaseSpring databaseSpring;
-
-    public Boolean isFatal() {
-        return fatal;
-    }
-
-    public void setFatal(Boolean fatal) {
-        this.fatal = fatal;
-    }
 
     public TestCaseStepActionControl() {
 
@@ -48,9 +41,22 @@ public class TestCaseStepActionControl implements DatabaseCRUD {
         this.fatal = true;
     }
 
+    public Boolean isFatal() {
+        return fatal;
+    }
+
+    public void setFatal(Boolean fatal) {
+        this.fatal = fatal;
+    }
+
     public Integer getControl() {
 
         return this.control;
+    }
+
+    public void setControl(Integer control) {
+
+        this.control = control;
     }
 
     public String getControlProperty() {
@@ -58,9 +64,19 @@ public class TestCaseStepActionControl implements DatabaseCRUD {
         return this.controlProperty;
     }
 
+    public void setControlProperty(String controlProperty) {
+
+        this.controlProperty = controlProperty;
+    }
+
     public String getControlValue() {
 
         return this.controlValue;
+    }
+
+    public void setControlValue(String controlValue) {
+
+        this.controlValue = controlValue;
     }
 
     public Integer getSequence() {
@@ -68,9 +84,19 @@ public class TestCaseStepActionControl implements DatabaseCRUD {
         return this.sequence;
     }
 
+    public void setSequence(Integer sequence) {
+
+        this.sequence = sequence;
+    }
+
     public Integer getStep() {
 
         return this.step;
+    }
+
+    public void setStep(Integer step) {
+
+        this.step = step;
     }
 
     public String getTest() {
@@ -78,14 +104,29 @@ public class TestCaseStepActionControl implements DatabaseCRUD {
         return this.test;
     }
 
+    public void setTest(String test) {
+
+        this.test = test;
+    }
+
     public String getTestcase() {
 
         return this.testcase;
     }
 
+    public void setTestcase(String testcase) {
+
+        this.testcase = testcase;
+    }
+
     public String getType() {
 
         return this.type;
+    }
+
+    public void setType(String type) {
+
+        this.type = type;
     }
 
     @Override
@@ -151,46 +192,6 @@ public class TestCaseStepActionControl implements DatabaseCRUD {
             }
         }
 
-    }
-
-    public void setControl(Integer control) {
-
-        this.control = control;
-    }
-
-    public void setControlProperty(String controlProperty) {
-
-        this.controlProperty = controlProperty;
-    }
-
-    public void setControlValue(String controlValue) {
-
-        this.controlValue = controlValue;
-    }
-
-    public void setSequence(Integer sequence) {
-
-        this.sequence = sequence;
-    }
-
-    public void setStep(Integer step) {
-
-        this.step = step;
-    }
-
-    public void setTest(String test) {
-
-        this.test = test;
-    }
-
-    public void setTestcase(String testcase) {
-
-        this.testcase = testcase;
-    }
-
-    public void setType(String type) {
-
-        this.type = type;
     }
 
     @Override

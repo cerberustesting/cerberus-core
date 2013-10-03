@@ -7,20 +7,22 @@ package com.redcats.tst.refactor;
 
 import com.redcats.tst.database.DatabaseSpring;
 import com.redcats.tst.log.MyLogger;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
+import org.apache.log4j.Level;
+import org.springframework.context.ApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.log4j.Level;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 
 /**
- *
  * @author bcivel
  */
 @WebServlet(name = "TestcaseList", urlPatterns = {"/TestcaseList"})
@@ -31,16 +33,17 @@ public class TestcaseListGrid extends HttpServlet {
      * <code>GET</code> and
      * <code>POST</code> methods.
      *
-     * @param request servlet request
+     * @param request  servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * @throws IOException      if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         PrintWriter out = response.getWriter();
-        DatabaseSpring db = new DatabaseSpring();
+        ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+        DatabaseSpring db = appContext.getBean(DatabaseSpring.class);
         Connection conn = db.connect();
         try {
 
@@ -93,8 +96,8 @@ public class TestcaseListGrid extends HttpServlet {
                 totalnumber = Integer.valueOf(request.getParameter("totalnumber"));
             }
 
-            PreparedStatement stmt_count = conn.prepareStatement("SELECT count(*) FROM testcase a join testcasecountry b on a.test=b.test "
-                    + " and a.testcase=b.testcase where a.TcActive = 'Y'  and a.`Group` = 'Interactive' ? order by a.test,a.testcase");
+            PreparedStatement stmt_count = conn.prepareStatement("SELECT count(*) FROM testcase a JOIN testcasecountry b ON a.test=b.test "
+                    + " AND a.testcase=b.testcase WHERE a.TcActive = 'Y'  AND a.`Group` = 'Interactive' ? ORDER BY a.test,a.testcase");
             int count;
             try {
                 stmt_count.setString(1, whereclauses);
@@ -119,13 +122,13 @@ public class TestcaseListGrid extends HttpServlet {
 
                 PreparedStatement stmt_testlist = conn.prepareStatement("SELECT replace(concat( "
                         + "?"
-                        + "), \"%COUNTRY%\", country) as list "
-                        + " FROM testcase a join testcasecountry b on a.test=b.test "
-                        + " and a.testcase=b.testcase "
-                        + " where a.TcActive = 'Y'  and a.`Group` = 'Interactive' "
+                        + "), \"%COUNTRY%\", country) AS list "
+                        + " FROM testcase a JOIN testcasecountry b ON a.test=b.test "
+                        + " AND a.testcase=b.testcase "
+                        + " WHERE a.TcActive = 'Y'  AND a.`Group` = 'Interactive' "
                         + " ? "
-                        + " order by a.test,a.testcase "
-                        + " limit ?, ?");
+                        + " ORDER BY a.test,a.testcase "
+                        + " LIMIT ?, ?");
                 try {
                     stmt_testlist.setString(1, url);
                     stmt_testlist.setString(2, whereclauses);
@@ -167,18 +170,19 @@ public class TestcaseListGrid extends HttpServlet {
 
     // <editor-fold defaultstate="collapsed"
     // desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
+
     /**
      * Handles the HTTP
      * <code>GET</code> method.
      *
-     * @param request servlet request
+     * @param request  servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * @throws IOException      if an I/O error occurs
      */
     @Override
     protected void doGet(HttpServletRequest request,
-            HttpServletResponse response) throws ServletException, IOException {
+                         HttpServletResponse response) throws ServletException, IOException {
         processRequest(request, response);
     }
 
@@ -186,14 +190,14 @@ public class TestcaseListGrid extends HttpServlet {
      * Handles the HTTP
      * <code>POST</code> method.
      *
-     * @param request servlet request
+     * @param request  servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * @throws IOException      if an I/O error occurs
      */
     @Override
     protected void doPost(HttpServletRequest request,
-            HttpServletResponse response) throws ServletException, IOException {
+                          HttpServletResponse response) throws ServletException, IOException {
         processRequest(request, response);
     }
 

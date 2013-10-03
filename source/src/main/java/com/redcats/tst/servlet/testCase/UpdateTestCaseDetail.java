@@ -12,7 +12,6 @@ import com.redcats.tst.log.MyLogger;
 import com.redcats.tst.refactor.TestCaseCountryProperties;
 import com.redcats.tst.refactor.TestCaseStepAction;
 import com.redcats.tst.refactor.TestCaseStepActionControl;
-import com.redcats.tst.refactor.UpdateTestCase1;
 import com.redcats.tst.service.ILogEventService;
 import com.redcats.tst.service.impl.LogEventService;
 import com.redcats.tst.service.impl.UserService;
@@ -336,7 +335,7 @@ public class UpdateTestCaseDetail extends HttpServlet {
                                             // update
                                             if (rs_numberOfTestCasesCountryProperties.first()) {
 
-                                                TestCaseCountryProperties properties = new TestCaseCountryProperties();
+                                                TestCaseCountryProperties properties = appContext.getBean(TestCaseCountryProperties.class);
                                                 properties.setTest(test_testcase_format_prop[0]);
                                                 properties.setTestcase(test_testcase_format_prop[1]);
                                                 properties.setCountry(testcase_country[1]);
@@ -356,7 +355,7 @@ public class UpdateTestCaseDetail extends HttpServlet {
                                                 * Insert new rows
                                                 */
 
-                                                TestCaseCountryProperties properties = new TestCaseCountryProperties();
+                                                TestCaseCountryProperties properties = appContext.getBean(TestCaseCountryProperties.class);
                                                 properties.setTest(test_testcase_format_prop[0]);
                                                 properties.setTestcase(test_testcase_format_prop[1]);
                                                 properties.setCountry(testcase_country[1]);
@@ -393,7 +392,7 @@ public class UpdateTestCaseDetail extends HttpServlet {
                                 // if the number of the line is the same for the country
                                 // and the property:
                                 if (testcase_properties_propertyrow[i].equals(testcase_country[0])) {
-                                    TestCaseCountryProperties properties = new TestCaseCountryProperties();
+                                    TestCaseCountryProperties properties = appContext.getBean(TestCaseCountryProperties.class);
                                     properties.setTest(test_testcase_format_prop[0]);
                                     properties.setTestcase(test_testcase_format_prop[1]);
                                     properties.setCountry(testcase_country[1]);
@@ -680,7 +679,7 @@ public class UpdateTestCaseDetail extends HttpServlet {
                         // System.out.println ( "Step Key : " + sql ) ;
                         ResultSet rs_stepaction = stmt4.executeQuery(sql);
                         try {
-                            TestCaseStepAction action = new TestCaseStepAction();
+                            TestCaseStepAction action = appContext.getBean(TestCaseStepAction.class);
                             action.setTest(test_testcase_format[0]);
                             action.setTestcase(test_testcase_format[1]);
                             action.setStep(Integer.parseInt(step_number_hide[i]));
@@ -735,7 +734,7 @@ public class UpdateTestCaseDetail extends HttpServlet {
                     if (this.formIsFill(controls_step[i].toString())
                             && this.formIsFill(controls_sequence[i].toString())
                             && this.formIsFill(controls_control[i].toString())) {
-                        TestCaseStepActionControl control = new TestCaseStepActionControl();
+                        TestCaseStepActionControl control = appContext.getBean(TestCaseStepActionControl.class);
                         control.setTest(test_testcase_format[0]);
                         control.setTestcase(test_testcase_format[1]);
                         control.setStep(Integer.parseInt(controls_step[i]));
@@ -853,14 +852,14 @@ public class UpdateTestCaseDetail extends HttpServlet {
                 stmt4.close();
             }
         } catch (SQLException ex) {
-            MyLogger.log(UpdateTestCase1.class.getName(), Level.FATAL,
+            MyLogger.log(UpdateTestCaseDetail.class.getName(), Level.FATAL,
                     "" + ex);
             // out.println ( UpdateTestCase.class.getName ( ) + ex ) ;
         } catch (NullPointerException ex) {
-            MyLogger.log(UpdateTestCase1.class.getName(), Level.FATAL,
+            MyLogger.log(UpdateTestCaseDetail.class.getName(), Level.FATAL,
                     "" + ex);
         } catch (ArrayIndexOutOfBoundsException ex) {
-            MyLogger.log(UpdateTestCase1.class.getName(), Level.FATAL,
+            MyLogger.log(UpdateTestCaseDetail.class.getName(), Level.FATAL,
                     "" + ex);
         } finally {
             try {

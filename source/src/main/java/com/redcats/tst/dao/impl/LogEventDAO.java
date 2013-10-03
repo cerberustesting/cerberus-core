@@ -88,7 +88,8 @@ public class LogEventDAO implements ILogEventDAO {
     public List<LogEvent> findAllLogEvent(int start, int amount, String colName, String dir) throws CerberusException {
         List<LogEvent> list = null;
         boolean throwExe = true;
-        String query = "SELECT * FROM logevent order by " + colName + " " + dir + " limit " + start + " , " + amount;
+        String query = "SELECT * FROM logevent order by " + colName + "" +
+                " " + dir + " limit " + start + " , " + amount;
         MyLogger.log(LogEventDAO.class.getName(), Level.DEBUG, query);
 
         Connection connection = this.databaseSpring.connect();
