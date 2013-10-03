@@ -483,7 +483,7 @@
                                 </tr>
                             </table>
                             <%
-                                String howTo = rs_testcase_general_info.getString("HowTo");
+                                String howTo = rs_testcase_general_info.getString("HowTo").replace(">", "&gt;");
                                 if (howTo == null || howTo.compareTo("null") == 0) {
                                     howTo = new String(" ");
                                 }
