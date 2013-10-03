@@ -120,7 +120,6 @@ public class ImportSeleniumIDE extends HttpServlet {
             prepStmt.close();
 
             // FOR ALL THE PROPERTY AND ALL THE COUNTRY, INSERT A TEXT PROPERTY
-            int i = 0;
 
             // FOR ALL THE PROPERTY NOT NULL
             for (int j = 0; j < action.length; j++) {
@@ -145,7 +144,7 @@ public class ImportSeleniumIDE extends HttpServlet {
                         properties.setRowlimit(0);
                         properties.setLength(0);
                         properties.setValue(propertyValue[j]);
-                        properties.setType("TEXT");
+                        properties.setType("text");
                         properties.setDatabase("");
                         properties.insert();
                     }
@@ -190,8 +189,6 @@ public class ImportSeleniumIDE extends HttpServlet {
             }
             prepStmt.close();
 
-            i = 0;
-
             for (int j = 0; j < action.length; j++) {
                 if (!controlList.contains(action[j])) {
 
@@ -206,7 +203,7 @@ public class ImportSeleniumIDE extends HttpServlet {
                     prepStmt.setString(3, step);
                     prepStmt.setInt(4, seq);
                     prepStmt.setString(5, action[j].replace("open", "openUrlWithBase"));
-                    prepStmt.setString(6, object[j].replace("'", "\\'"));
+                    prepStmt.setString(6, object[j]);
                     prepStmt.setString(7, propertyName[j]);
                     prepStmt.executeUpdate();
                     prepStmt.close();
@@ -225,7 +222,7 @@ public class ImportSeleniumIDE extends HttpServlet {
                     prepStmt.setInt(5, control);
                     prepStmt.setString(6, action[j].replace("open", "openUrlWithBase"));
                     prepStmt.setString(7, propertyName[j]);
-                    prepStmt.setString(8, object[j].replace("'", "\\'"));
+                    prepStmt.setString(8, object[j]);
                     prepStmt.executeUpdate();
                     prepStmt.close();
                 }
