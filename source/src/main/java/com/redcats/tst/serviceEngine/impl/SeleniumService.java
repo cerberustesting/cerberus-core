@@ -47,7 +47,7 @@ import java.util.logging.Logger;
 public class SeleniumService implements ISeleniumService {
 
     private static final int TIMEOUT_MILLIS = 30000;
-    private static final int TIMEOUT_WEBELEMENT = 90;
+    private static final int TIMEOUT_WEBELEMENT = 300;
     private Selenium selenium;
     private boolean started;
     @Autowired
