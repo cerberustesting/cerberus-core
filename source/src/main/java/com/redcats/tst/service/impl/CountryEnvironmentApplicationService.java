@@ -23,8 +23,8 @@ public class CountryEnvironmentApplicationService implements ICountryEnvironment
     ICountryEnvironmentParametersDAO countryEnvironmentParametersDao;
 
     @Override
-    public CountryEnvironmentApplication findCountryEnvironmentParameterByKey(String country, String environment, String application) throws CerberusException {
-        CountryEnvironmentApplication cea = this.countryEnvironmentParametersDao.findCountryEnvironmentParameterByKey(country, environment, application);
+    public CountryEnvironmentApplication findCountryEnvironmentParameterByKey(String system, String country, String environment, String application) throws CerberusException {
+        CountryEnvironmentApplication cea = this.countryEnvironmentParametersDao.findCountryEnvironmentParameterByKey(system, country, environment, application);
         return cea;
     }
 

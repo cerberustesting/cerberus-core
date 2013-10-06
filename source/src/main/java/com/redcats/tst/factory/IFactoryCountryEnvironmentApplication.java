@@ -11,7 +11,7 @@ import com.redcats.tst.entity.CountryEnvironmentApplication;
  * @author bcivel
  */
 public interface IFactoryCountryEnvironmentApplication {
-    
-    CountryEnvironmentApplication create(String country,String environment,String application,String ip,
-            String url,String urlLogin);
+
+    CountryEnvironmentApplication create(String system, String country, String environment, String application, String ip,
+            String url, String urlLogin);
 }

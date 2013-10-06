@@ -55,6 +55,10 @@ public class NewChain extends HttpServlet {
         Connection connection = database.connect();
         try {
 
+            String system = null;
+            if (request.getParameter("system") != null && request.getParameter("system").compareTo("") != 0) {
+                system = request.getParameter("system");
+            }
             String country = null;
             if (request.getParameter("country") != null && request.getParameter("country").compareTo("") != 0) {
                 country = request.getParameter("country");
@@ -80,7 +84,7 @@ public class NewChain extends HttpServlet {
             // Generate the content of the email
             IEmailGeneration emailGenerationService = appContext.getBean(EmailGeneration.class);
 
-            String eMailContent = emailGenerationService.EmailGenerationNewChain(country, env, build, rev, chain);
+            String eMailContent = emailGenerationService.EmailGenerationNewChain(system, country, env, build, rev, chain);
 
             // Split the result to extract all the data
             String[] eMailContentTable = eMailContent.split("///");
@@ -96,8 +100,8 @@ public class NewChain extends HttpServlet {
 
             try {
                 String req_update_active = "INSERT INTO buildrevisionbatch "
-                        + " ( `Batch`, `Country`, `Build`, `Revision`, `Environment` ) "
-                        + " VALUES ('" + chain + "', '" + country + "', '"
+                        + " ( `System`, `Batch`, `Country`, `Build`, `Revision`, `Environment` ) "
+                        + " VALUES ('" + system + "', '" + chain + "', '" + country + "', '"
                         + build + "', '" + rev + "', '" + env + "') ";
 
                 stmt.executeUpdate(req_update_active);
@@ -121,7 +125,7 @@ public class NewChain extends HttpServlet {
             //sendMail Mail = new sendMail();
             sendMail.sendHtmlMail(host, port, body, subject, from, to, cc);
 
-            response.sendRedirect("Environment.jsp?country=" + country + "&env=" + env);
+            response.sendRedirect("Environment.jsp?system=" + system + "&country=" + country + "&env=" + env);
 
 
         } catch (Exception e) {

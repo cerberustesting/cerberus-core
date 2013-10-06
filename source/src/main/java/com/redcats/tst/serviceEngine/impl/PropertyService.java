@@ -87,14 +87,14 @@ public class PropertyService implements IPropertyService {
                 String value = StringUtil.getRandomString(testCaseCountryProperty.getLength(), charset);
                 testCaseExecutionData.setValue(value);
                 res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_RANDOM);
-                res.setDescription(res.getDescription().replaceAll("%VALUE%", ParameterParserUtil.securePassword(value,testCaseCountryProperty.getProperty())));
+                res.setDescription(res.getDescription().replaceAll("%VALUE%", ParameterParserUtil.securePassword(value, testCaseCountryProperty.getProperty())));
                 testCaseExecutionData.setPropertyResultMessage(res);
             } else if (testCaseCountryProperty.getNature().equals("RANDOM_NEW")) {
                 String charset = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
                 String value = StringUtil.getRandomString(testCaseCountryProperty.getLength(), charset);
                 testCaseExecutionData.setValue(value);
                 res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_RANDOM_NEW);
-                res.setDescription(res.getDescription().replaceAll("%VALUE%", ParameterParserUtil.securePassword(value,testCaseCountryProperty.getProperty())));
+                res.setDescription(res.getDescription().replaceAll("%VALUE%", ParameterParserUtil.securePassword(value, testCaseCountryProperty.getProperty())));
                 testCaseExecutionData.setPropertyResultMessage(res);
                 //TODO check if value exist on DB ( used in another test case of the revision )
             } else {
@@ -102,7 +102,7 @@ public class PropertyService implements IPropertyService {
                 String value = testCaseCountryProperty.getValue();
                 testCaseExecutionData.setValue(value);
                 res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_TEXT);
-                res.setDescription(res.getDescription().replaceAll("%VALUE%", ParameterParserUtil.securePassword(value,testCaseCountryProperty.getProperty())));
+                res.setDescription(res.getDescription().replaceAll("%VALUE%", ParameterParserUtil.securePassword(value, testCaseCountryProperty.getProperty())));
                 testCaseExecutionData.setPropertyResultMessage(res);
             }
 
@@ -198,7 +198,7 @@ public class PropertyService implements IPropertyService {
         CountryEnvironmentDatabase countryEnvironmentDatabase;
 
         try {
-            countryEnvironmentDatabase = this.countryEnvironmentDatabaseService.findCountryEnvironmentDatabaseByKey(testCaseProperties.getCountry(), tCExecution.getEnvironmentData(), db);
+            countryEnvironmentDatabase = this.countryEnvironmentDatabaseService.findCountryEnvironmentDatabaseByKey(tCExecution.getApplication().getSystem(), testCaseProperties.getCountry(), tCExecution.getEnvironmentData(), db);
             connectionName = countryEnvironmentDatabase.getConnectionPoolName();
 
             if (!(StringUtil.isNullOrEmpty(connectionName))) {
@@ -255,6 +255,7 @@ public class PropertyService implements IPropertyService {
 
             } else {
                 MessageEvent mes = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_SQL_EMPTYJDBCPOOL);
+                mes.setDescription(mes.getDescription().replaceAll("%SYSTEM%", tCExecution.getApplication().getSystem()));
                 mes.setDescription(mes.getDescription().replaceAll("%COUNTRY%", testCaseProperties.getCountry()));
                 mes.setDescription(mes.getDescription().replaceAll("%ENV%", tCExecution.getEnvironmentData()));
                 mes.setDescription(mes.getDescription().replaceAll("%DB%", db));
@@ -262,6 +263,7 @@ public class PropertyService implements IPropertyService {
             }
         } catch (CerberusException ex) {
             MessageEvent mes = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_SQL_JDBCPOOLNOTCONFIGURED);
+            mes.setDescription(mes.getDescription().replaceAll("%SYSTEM%", tCExecution.getApplication().getSystem()));
             mes.setDescription(mes.getDescription().replaceAll("%COUNTRY%", testCaseProperties.getCountry()));
             mes.setDescription(mes.getDescription().replaceAll("%ENV%", tCExecution.getEnvironmentData()));
             mes.setDescription(mes.getDescription().replaceAll("%DB%", db));

@@ -10,9 +10,10 @@ package com.redcats.tst.entity;
  */
 public class CountryEnvironmentDatabase {
 
-    private String database;
-    private String environment;
+    private String system;
     private String country;
+    private String environment;
+    private String database;
     private String connectionPoolName;
 
     public String getConnectionPoolName() {
@@ -45,5 +46,13 @@ public class CountryEnvironmentDatabase {
 
     public void setEnvironment(String environment) {
         this.environment = environment;
+    }
+
+    public String getSystem() {
+        return system;
+    }
+
+    public void setSystem(String system) {
+        this.system = system;
     }
 }

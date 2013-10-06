@@ -54,6 +54,10 @@ public class DisableEnvironment extends HttpServlet {
 
         Connection connection = database.connect();
         try {
+            String system = null;
+            if (request.getParameter("system") != null && request.getParameter("system").compareTo("") != 0) {
+                system = request.getParameter("system");
+            }
             String country = null;
             if (request.getParameter("country") != null && request.getParameter("country").compareTo("") != 0) {
                 country = request.getParameter("country");
@@ -67,7 +71,7 @@ public class DisableEnvironment extends HttpServlet {
             // Generate the content of the email
             IEmailGeneration emailGenerationService = appContext.getBean(EmailGeneration.class);
 
-            String eMailContent = emailGenerationService.EmailGenerationDisableEnv(country, env);
+            String eMailContent = emailGenerationService.EmailGenerationDisableEnv(system, country, env);
 
             // Split the result to extract all the data
             String[] eMailContentTable = eMailContent.split("///");
@@ -84,13 +88,13 @@ public class DisableEnvironment extends HttpServlet {
             try {
                 String req_update_active = "UPDATE countryenvparam "
                         + " SET Active='N'"
-                        + "WHERE Country='" + country + "' and Environment='" + env + "'";
+                        + "WHERE `System`='" + system + "' and Country='" + country + "' and Environment='" + env + "'";
                 stmt.executeUpdate(req_update_active);
 
 
                 String req_insert_log = "INSERT INTO  countryenvparam_log "
-                        + " ( `Country`, `Environment`, `Description`) "
-                        + " VALUES ('" + country + "', '" + env + "', 'Disabled.') ";
+                        + " ( `System`, `Country`, `Environment`, `Description`) "
+                        + " VALUES ('" + system + "', '" + country + "', '" + env + "', 'Disabled.') ";
                 stmt.execute(req_insert_log);
             } finally {
                 stmt.close();
@@ -112,7 +116,7 @@ public class DisableEnvironment extends HttpServlet {
             //sendMail Mail = new sendMail();
             sendMail.sendHtmlMail(host, port, body, subject, from, to, cc);
 
-            response.sendRedirect("Environment.jsp?country=" + country + "&env=" + env);
+            response.sendRedirect("Environment.jsp?system=" + system + "&country=" + country + "&env=" + env);
 
         } catch (Exception e) {
             Logger.getLogger(DisableEnvironment.class.getName()).log(Level.SEVERE, Version.PROJECT_NAME_VERSION + " - Exception catched.", e);

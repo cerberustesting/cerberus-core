@@ -47,6 +47,10 @@ public class UpdateCountryEnv extends HttpServlet {
 
         Connection connection = database.connect();
         try {
+            String system = "";
+            if (request.getParameter("system") != null && request.getParameter("system").compareTo("") != 0) {
+                system = request.getParameter("system");
+            }
             String country = "";
             if (request.getParameter("country") != null && request.getParameter("country").compareTo("") != 0) {
                 country = request.getParameter("country");
@@ -84,13 +88,13 @@ public class UpdateCountryEnv extends HttpServlet {
                         + " SET DistribList='" + distriblist + "' , EMailBodyRevision='" + bodyrev + "'"
                         + ", EMailBodyChain='" + bodychain + "', EMailBodyDisableEnvironment='" + bodydisenv + "' "
                         + ", type='" + type + "'"
-                        + "WHERE Country='" + country + "' and Environment='" + env + "'";
+                        + "WHERE `System`='" + system + "' and Country='" + country + "' and Environment='" + env + "'";
                 stmt.executeUpdate(req_update_active);
             } finally {
                 stmt.close();
             }
 
-            response.sendRedirect("Environment.jsp?country=" + country + "&env=" + env);
+            response.sendRedirect("Environment.jsp?system=" + system + "&country=" + country + "&env=" + env);
 
         } catch (Exception e) {
             Logger.getLogger(UpdateCountryEnv.class.getName()).log(Level.SEVERE, Version.PROJECT_NAME_VERSION + " - Exception catched.", e);

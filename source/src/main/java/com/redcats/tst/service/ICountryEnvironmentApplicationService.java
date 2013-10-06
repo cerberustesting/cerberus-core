@@ -14,7 +14,7 @@ import java.util.List;
  */
 public interface ICountryEnvironmentApplicationService {
     
-    CountryEnvironmentApplication findCountryEnvironmentParameterByKey(String country, String environment, String application) throws CerberusException;
+    CountryEnvironmentApplication findCountryEnvironmentParameterByKey(String system, String country, String environment, String application) throws CerberusException;
 
     public List<String[]> getEnvironmentAvailable(String country, String application);
 }

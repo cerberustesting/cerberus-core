@@ -22,7 +22,7 @@ public class CountryEnvParamService implements ICountryEnvParamService {
     ICountryEnvParamDAO countryEnvParamDao;
 
     @Override
-    public CountryEnvParam findCountryEnvParamByKey(String country, String environment) throws CerberusException {
-        return countryEnvParamDao.findCountryEnvParamByKey(country, environment);
+    public CountryEnvParam findCountryEnvParamByKey(String system, String country, String environment) throws CerberusException {
+        return countryEnvParamDao.findCountryEnvParamByKey(system, country, environment);
     }
 }

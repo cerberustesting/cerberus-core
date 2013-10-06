@@ -13,9 +13,5 @@ import java.util.List;
  */
 public interface ICountryEnvironmentService {
 
-    Environment loadParameters(String country, String environment, String application,
-                               String browserPath, String seleniumIP, String seleniumPort, String path,
-                               String devURL, String devLogin);
-
     public List<String[]> getEnvironmentAvailable(String test, String testCase, String country);
 }

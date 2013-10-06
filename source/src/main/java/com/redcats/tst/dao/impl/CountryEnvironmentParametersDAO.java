@@ -48,18 +48,19 @@ public class CountryEnvironmentParametersDAO implements ICountryEnvironmentParam
      * @return Description text text text.
      */
     @Override
-    public CountryEnvironmentApplication findCountryEnvironmentParameterByKey(String country, String environment, String application) throws CerberusException {
+    public CountryEnvironmentApplication findCountryEnvironmentParameterByKey(String system, String country, String environment, String application) throws CerberusException {
         boolean throwException = false;
         CountryEnvironmentApplication result = null;
-        final String query = "SELECT * FROM countryenvironmentparameters WHERE country = ? AND environment = ? AND application = ?";
+        final String query = "SELECT * FROM countryenvironmentparameters WHERE `system` = ? AND country = ? AND environment = ? AND application = ?";
 
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
             try {
-                preStat.setString(1, country);
-                preStat.setString(2, environment);
-                preStat.setString(3, application);
+                preStat.setString(1, system);
+                preStat.setString(2, country);
+                preStat.setString(3, environment);
+                preStat.setString(4, application);
 
                 ResultSet resultSet = preStat.executeQuery();
                 try {
@@ -70,7 +71,7 @@ public class CountryEnvironmentParametersDAO implements ICountryEnvironmentParam
                         ip = resultSet.getString("IP");
                         url = resultSet.getString("URL");
                         urlLogin = resultSet.getString("URLLOGIN");
-                        result = factoryCountryEnvironmentApplication.create(country, environment, application, ip, url, urlLogin);
+                        result = factoryCountryEnvironmentApplication.create(system, country, environment, application, ip, url, urlLogin);
                     } else {
                         throwException = true;
                     }
@@ -106,8 +107,10 @@ public class CountryEnvironmentParametersDAO implements ICountryEnvironmentParam
         List<String[]> list = null;
         final String query = "SELECT ce.Environment Environment, ce.Build Build, ce.Revision Revision "
                 + "FROM countryenvironmentparameters cea, countryenvparam ce, invariant i "
-                + "WHERE ce.country = cea.country AND ce.environment = cea.environment AND cea.Application = ? "
-                + "AND cea.country= ? AND ce.active='Y' AND i.id = 5 AND i.Value = ce.Environment ORDER BY i.sort";
+                + "WHERE ce.system = cea.system AND ce.country = cea.country AND ce.environment = cea.environment "
+                + "AND cea.Application = ? AND cea.country= ? "
+                + "AND ce.active='Y' AND i.id = 5 AND i.Value = ce.Environment "
+                + "ORDER BY i.sort";
 
         Connection connection = this.databaseSpring.connect();
         try {

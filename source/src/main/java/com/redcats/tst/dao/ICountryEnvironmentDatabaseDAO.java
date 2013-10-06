@@ -12,5 +12,5 @@ import com.redcats.tst.exception.CerberusException;
  */
 public interface ICountryEnvironmentDatabaseDAO {
 
-    CountryEnvironmentDatabase findCountryEnvironmentDatabaseByKey(String database, String environment, String countryCode) throws CerberusException;
+    CountryEnvironmentDatabase findCountryEnvironmentDatabaseByKey(String system, String country, String environment, String database) throws CerberusException;
 }

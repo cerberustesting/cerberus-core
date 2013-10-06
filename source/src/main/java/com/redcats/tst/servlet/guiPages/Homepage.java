@@ -169,7 +169,7 @@ public class Homepage extends HttpServlet {
 
                 TestCaseExecutionStatisticsServiceImpl tceStatsService = appContext.getBean(TestCaseExecutionStatisticsServiceImpl.class);
 
-                List<TestCaseExecutionStatistics> buildRev = tceStatsService.getListOfXLastBuildAndRevExecuted(numberOfLastBR);
+                List<TestCaseExecutionStatistics> buildRev = tceStatsService.getListOfXLastBuildAndRevExecuted(MySystem, numberOfLastBR);
 
                 ArrayList<ArrayList<String>> arrayExecution = new ArrayList<ArrayList<String>>();
                 ArrayList<ArrayList<ArrayList<String>>> arrayContent = new ArrayList<ArrayList<ArrayList<String>>>();
@@ -182,7 +182,7 @@ public class Homepage extends HttpServlet {
                     List<String> env = new ArrayList<String>();
                     env.add("UAT");
                     env.add("QA");
-                    TestCaseExecutionStatistics globalStats = tceStatsService.getStatisticsOfExecution(build, revision, env);
+                    TestCaseExecutionStatistics globalStats = tceStatsService.getStatisticsOfExecution(MySystem, build, revision, env);
 
                     al = new ArrayList<String>();
                     al.add(build);
@@ -200,7 +200,7 @@ public class Homepage extends HttpServlet {
 
                     List<List<String>> arrayEnv = new ArrayList<List<String>>();
                     for (String e : env) {
-                        TestCaseExecutionStatistics globalStatsEnv = tceStatsService.getStatisticsOfExecution(build, revision, e);
+                        TestCaseExecutionStatistics globalStatsEnv = tceStatsService.getStatisticsOfExecution(MySystem, build, revision, e);
                         al = new ArrayList<String>();
                         al.add(e);
                         al.add(String.valueOf(globalStatsEnv.getTotal()));
@@ -218,7 +218,9 @@ public class Homepage extends HttpServlet {
                     PreparedStatement stmtContent = connection.prepareStatement("SELECT t.Build, t.Revision, "
                             + " t.application, t.release, t.link "
                             + "FROM buildrevisionparameters t "
-                            + "Where build = ? and revision = ?");
+                            + "Where t.build = ? and t.revision = ? and t.application "
+                            + inSQL);
+
                     try {
                         stmtContent.setString(1, build);
                         stmtContent.setString(2, revision);

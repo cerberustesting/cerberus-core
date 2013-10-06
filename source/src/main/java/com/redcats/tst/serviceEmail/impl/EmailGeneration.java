@@ -33,11 +33,11 @@ public class EmailGeneration implements IEmailGeneration {
     private IBatchInvariantService batchInvariantService;
 
     @Override
-    public String EmailGenerationRevisionChange(String country, String env, String build, String revision, Connection conn) {
+    public String EmailGenerationRevisionChange(String system, String country, String env, String build, String revision, Connection conn) {
         String result = "";
         try {
             CountryEnvParam myCountryEnvParam;
-            myCountryEnvParam = countryEnvParamService.findCountryEnvParamByKey(country, env);
+            myCountryEnvParam = countryEnvParamService.findCountryEnvParamByKey(system, country, env);
 
             /* Pick the datas from the database */
             String to = parameterService.findParameterByKey("integration_notification_newbuildrevision_to").getValue();
@@ -53,11 +53,13 @@ public class EmailGeneration implements IEmailGeneration {
             }
 
             /* Replace the Keywords from the fed text  */
+            subject = subject.replaceAll("%SYSTEM%", system);
             subject = subject.replaceAll("%COUNTRY%", country);
             subject = subject.replaceAll("%ENV%", env);
             subject = subject.replaceAll("%BUILD%", build);
             subject = subject.replaceAll("%REVISION%", revision);
 
+            body = body.replaceAll("%SYSTEM%", system);
             body = body.replaceAll("%COUNTRY%", country);
             body = body.replaceAll("%ENV%", env);
             body = body.replaceAll("%BUILD%", build);
@@ -69,13 +71,13 @@ public class EmailGeneration implements IEmailGeneration {
             String lastBuild = myCountryEnvParam.getBuild();
             String lastRev = myCountryEnvParam.getRevision();
 
-            content = emailBodyGeneration.GenerateBuildContentTable(build, revision, lastBuild, lastRev, conn);
+            content = emailBodyGeneration.GenerateBuildContentTable(system, build, revision, lastBuild, lastRev, conn);
             body = body.replaceAll("%BUILDCONTENT%", content);
 
-            content = emailBodyGeneration.GenerateTestRecapTable(build, revision, country, conn);
+            content = emailBodyGeneration.GenerateTestRecapTable(system, build, revision, country, conn);
             body = body.replaceAll("%TESTRECAP%", content);
 
-            content = emailBodyGeneration.GenerateTestRecapTable(build, revision, "ALL", conn);
+            content = emailBodyGeneration.GenerateTestRecapTable(system, build, revision, "ALL", conn);
             body = body.replaceAll("%TESTRECAPALL%", content);
             //End
 
@@ -90,11 +92,11 @@ public class EmailGeneration implements IEmailGeneration {
     }
 
     @Override
-    public String EmailGenerationDisableEnv(String country, String env) {
+    public String EmailGenerationDisableEnv(String system, String country, String env) {
         String result = "";
         try {
             CountryEnvParam myCountryEnvParam;
-            myCountryEnvParam = countryEnvParamService.findCountryEnvParamByKey(country, env);
+            myCountryEnvParam = countryEnvParamService.findCountryEnvParamByKey(system, country, env);
 
             String to = parameterService.findParameterByKey("integration_notification_disableenvironment_to").getValue();
             String cc = parameterService.findParameterByKey("integration_notification_disableenvironment_cc").getValue();
@@ -109,11 +111,13 @@ public class EmailGeneration implements IEmailGeneration {
                 to = myCountryEnvParam.getDistribList();
             }
 
+            subject = subject.replaceAll("%SYSTEM%", system);
             subject = subject.replaceAll("%COUNTRY%", country);
             subject = subject.replaceAll("%ENV%", env);
             subject = subject.replaceAll("%BUILD%", myCountryEnvParam.getBuild());
             subject = subject.replaceAll("%REVISION%", myCountryEnvParam.getRevision());
 
+            body = body.replaceAll("%SYSTEM%", system);
             body = body.replaceAll("%COUNTRY%", country);
             body = body.replaceAll("%ENV%", env);
             body = body.replaceAll("%BUILD%", myCountryEnvParam.getBuild());
@@ -128,7 +132,7 @@ public class EmailGeneration implements IEmailGeneration {
     }
 
     @Override
-    public String EmailGenerationNewChain(String country, String env, String build, String revision, String chain) {
+    public String EmailGenerationNewChain(String system, String country, String env, String build, String revision, String chain) {
 
         String result = "";
 
@@ -136,7 +140,7 @@ public class EmailGeneration implements IEmailGeneration {
             /* Page Display - START */
 
             CountryEnvParam myCountryEnvParam;
-            myCountryEnvParam = countryEnvParamService.findCountryEnvParamByKey(country, env);
+            myCountryEnvParam = countryEnvParamService.findCountryEnvParamByKey(system, country, env);
 
             BatchInvariant myBatchInvariant;
             myBatchInvariant = batchInvariantService.findBatchInvariantByKey(chain);
@@ -154,12 +158,14 @@ public class EmailGeneration implements IEmailGeneration {
                 to = myCountryEnvParam.getDistribList();
             }
 
+            subject = subject.replaceAll("%SYSTEM%", system);
             subject = subject.replaceAll("%COUNTRY%", country);
             subject = subject.replaceAll("%ENV%", env);
             subject = subject.replaceAll("%BUILD%", myCountryEnvParam.getBuild());
             subject = subject.replaceAll("%REVISION%", myCountryEnvParam.getRevision());
             subject = subject.replaceAll("%CHAIN%", lastchain);
 
+            body = body.replaceAll("%SYSTEM%", system);
             body = body.replaceAll("%COUNTRY%", country);
             body = body.replaceAll("%ENV%", env);
             body = body.replaceAll("%BUILD%", myCountryEnvParam.getBuild());

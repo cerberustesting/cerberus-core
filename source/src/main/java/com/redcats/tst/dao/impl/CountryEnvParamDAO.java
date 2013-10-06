@@ -34,19 +34,20 @@ public class CountryEnvParamDAO implements ICountryEnvParamDAO {
     private IFactoryCountryEnvParam factoryCountryEnvParam;
 
     @Override
-    public CountryEnvParam findCountryEnvParamByKey(String country, String environment) throws CerberusException {
+    public CountryEnvParam findCountryEnvParamByKey(String system, String country, String environment) throws CerberusException {
         CountryEnvParam result = null;
         boolean throwex = false;
         StringBuilder query = new StringBuilder();
-        query.append("SELECT country, environment, Build, Revision,chain, distriblist, eMailBodyRevision, type,eMailBodyChain, eMailBodyDisableEnvironment,  active, maintenanceact, ");
-        query.append("maintenancestr, maintenanceend FROM countryenvparam WHERE country = ? AND environment = ?");
+        query.append("SELECT `system`, country, environment, Build, Revision,chain, distriblist, eMailBodyRevision, type,eMailBodyChain, eMailBodyDisableEnvironment,  active, maintenanceact, ");
+        query.append("maintenancestr, maintenanceend FROM countryenvparam WHERE `system` = ? AND country = ? AND environment = ?");
 
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
             try {
-                preStat.setString(1, country);
-                preStat.setString(2, environment);
+                preStat.setString(1, system);
+                preStat.setString(2, country);
+                preStat.setString(3, environment);
 
                 ResultSet resultSet = preStat.executeQuery();
                 try {
@@ -83,6 +84,7 @@ public class CountryEnvParamDAO implements ICountryEnvParamDAO {
     }
 
     private CountryEnvParam loadCountryEnvParamFromResultSet(ResultSet resultSet) throws SQLException {
+        String system = resultSet.getString("System");
         String count = resultSet.getString("Country");
         String env = resultSet.getString("Environment");
         String build = resultSet.getString("Build");
@@ -97,7 +99,7 @@ public class CountryEnvParamDAO implements ICountryEnvParamDAO {
         boolean maintenanceAct = StringUtil.parseBoolean(resultSet.getString("maintenanceact"));
         String maintenanceStr = resultSet.getString("maintenancestr");
         String maintenanceEnd = resultSet.getString("maintenanceend");
-        return factoryCountryEnvParam.create(count, env, build, revision, chain, distribList, eMailBodyRevision,
+        return factoryCountryEnvParam.create(system, count, env, build, revision, chain, distribList, eMailBodyRevision,
                 type, eMailBodyChain, eMailBodyDisableEnvironment, active, maintenanceAct, maintenanceStr, maintenanceEnd);
     }
 }

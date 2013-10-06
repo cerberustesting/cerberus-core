@@ -12,8 +12,8 @@ import java.util.List;
  */
 public interface ITestCaseExecutionStatisticsDAO {
     
-    TestCaseExecutionStatistics getStatisticsOfExecution(String build, String revision, List<String> environment);
+    TestCaseExecutionStatistics getStatisticsOfExecution(String MySystem, String build, String revision, List<String> environment);
     
-    List<TestCaseExecutionStatistics> getListOfXLastBuildAndRevExecuted(int listSize);
+    List<TestCaseExecutionStatistics> getListOfXLastBuildAndRevExecuted(String system, int listSize);
     
 }
