@@ -13,14 +13,14 @@
     <script>
     function reporter(script, valueField, propertyType) {
 	window.opener.document.getElementById(valueField).value = script;
-        window.opener.document.getElementById(propertyType).value = "LIB_SQL";
+        window.opener.document.getElementById(propertyType).value = "executeSqlFromLib";
         
         window.close();
 }
 
     function reporterScript(script, valueField, propertyType) {
 	window.opener.document.getElementById(valueField).value = script;
-        window.opener.document.getElementById(propertyType).value = "SQL";
+        window.opener.document.getElementById(propertyType).value = "executeSql";
         window.close();
 }
 

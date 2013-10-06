@@ -4,13 +4,17 @@
  */
 package com.redcats.tst.serviceEmail.impl;
 
+import com.redcats.tst.entity.Application;
+import com.redcats.tst.service.IApplicationService;
 import com.redcats.tst.service.IParameterService;
 import com.redcats.tst.serviceEmail.IEmailBodyGeneration;
+import com.redcats.tst.util.StringUtil;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.List;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import version.Version;
@@ -21,12 +25,14 @@ import version.Version;
  */
 @Service
 public class EmailBodyGeneration implements IEmailBodyGeneration {
-    
+
     @Autowired
     private IParameterService parameterService;
+    @Autowired
+    private IApplicationService applicationService;
 
     @Override
-    public String GenerateBuildContentTable(String build, String revision, String lastBuild, String lastRevision, Connection conn) {
+    public String GenerateBuildContentTable(String system, String build, String revision, String lastBuild, String lastRevision, Connection conn) {
 
         String buildContentTemplate = "";
         String buildContentTable = "";
@@ -35,11 +41,9 @@ public class EmailBodyGeneration implements IEmailBodyGeneration {
             Statement stmtBuildContent = conn.createStatement();
 
             String bugURL = "";
-            String ticketURL = "";
-            /* Pick the datas from the database */
-            bugURL = parameterService.findParameterByKey("sitdmoss_bugtracking_url").getValue();
-            ticketURL = parameterService.findParameterByKey("sitdmoss_ticketservice_url").getValue();
 
+            List<Application> appliList = applicationService.findApplicationBySystem(system);
+            String inSQL = StringUtil.getInSQLClause(appliList);
 
             buildContentTable = "Here are the last modifications since last change (" + lastBuild + "/" + lastRevision + ") :";
             buildContentTable = buildContentTable + "<table>";
@@ -49,17 +53,21 @@ public class EmailBodyGeneration implements IEmailBodyGeneration {
 
             String contentSQL = "SELECT b.`Build`, b.`Revision`, b.`Release` , b.`Link` , "
                     + " b.`Application`, b.`ReleaseOwner`, b.`BugIDFixed`, b.`TicketIDFixed`, b.`subject`, b.`Project`"
-                    + ", p.`VCCode`, u.Name "
+                    + ", p.`VCCode`, u.Name, a.BugTrackerUrl "
                     + " from buildrevisionparameters b "
                     + " left outer join project p on p.idproject=b.project "
                     + " left outer join user u on u.Login=b.ReleaseOwner "
-                    + " where build = '" + build + "'";
+                    + " left outer join application a on a.application=b.application "
+                    + " where build = '" + build + "' "
+                    + " and a.application " + inSQL;
             if (lastBuild.equalsIgnoreCase(build)) {
                 contentSQL += " and revision > '" + lastRevision + "'";
             }
             contentSQL += " and revision <= '" + revision + "'"
                     + " order by b.Build, b.Revision, b.Application, b.Project, b.TicketIDFixed, b.BugIDFixed, b.Release";
 
+            Logger.getLogger(EmailBodyGeneration.class.getName()).log(Level.DEBUG, Version.PROJECT_NAME_VERSION + " - SQL : " + contentSQL);
+            
             ResultSet rsBC = stmtBuildContent.executeQuery(contentSQL);
 
             rsBC.first();
@@ -76,6 +84,7 @@ public class EmailBodyGeneration implements IEmailBodyGeneration {
                 }
 
 
+                String contentBugURL = "";
                 String contentBuild = "";
                 String contentAppli = "";
                 String contentRev = "";
@@ -88,6 +97,9 @@ public class EmailBodyGeneration implements IEmailBodyGeneration {
                 String ProjectVC = " ";
 
 
+                if (rsBC.getString("a.BugTrackerUrl") != null) {
+                    contentBugURL = rsBC.getString("a.BugTrackerUrl");
+                }
                 if (rsBC.getString("b.build") != null) {
                     contentBuild = rsBC.getString("b.build");
                 }
@@ -129,8 +141,8 @@ public class EmailBodyGeneration implements IEmailBodyGeneration {
                         + contentAppli + "</td><td>"
                         + subject + "</td><td>"
                         + ProjectVC + "</td><td>"
-                        + "<a href=\"" + bugURL.replace("%bugid%", BugIDFixed) + "\">" + BugIDFixed + "</a></td><td>"
-                        + "<a href=\"" + ticketURL.replace("%ticketid%", TicketIDFixed) + "\">" + TicketIDFixed + "</a></td><td>"
+                        + "<a href=\"" + contentBugURL.replace("%bugid%", BugIDFixed) + "\">" + BugIDFixed + "</a></td><td>"
+                        + TicketIDFixed + "</td><td>"
                         + releaseOwner + "</td><td>"
                         + release + "</td></tr>";
             } while (rsBC.next());
@@ -142,7 +154,7 @@ public class EmailBodyGeneration implements IEmailBodyGeneration {
             buildContentTemplate = buildContentTable;
 
         } catch (Exception e) {
-            Logger.getLogger(EmailBodyGeneration.class.getName()).log(Level.SEVERE, Version.PROJECT_NAME_VERSION + " - Exception catched.", e);
+            Logger.getLogger(EmailBodyGeneration.class.getName()).log(Level.FATAL, Version.PROJECT_NAME_VERSION + " - Exception catched.", e);
         }
 
         return buildContentTemplate;
@@ -150,13 +162,16 @@ public class EmailBodyGeneration implements IEmailBodyGeneration {
     }
 
     @Override
-    public String GenerateTestRecapTable(String build, String revision, String country, Connection conn) {
+    public String GenerateTestRecapTable(String system, String build, String revision, String country, Connection conn) {
 
-        String TestRecapTable ;
+        String TestRecapTable;
 
         try {
             Statement stmtBuildContent = conn.createStatement();
             Statement stmtCountryList = conn.createStatement();
+
+            List<Application> appliList = applicationService.findApplicationBySystem(system);
+            String inSQL = StringUtil.getInSQLClause(appliList);
 
             String contentSQL = "SELECT i.gp1, count(*) nb_exe, OK.c nb_exe_OK, format(OK.c/count(*)*100,0)  per_OK"
                     + "     , DTC.c nb_dtc, DAPP.c nb_dapp"
@@ -172,6 +187,7 @@ public class EmailBodyGeneration implements IEmailBodyGeneration {
             }
             contentSQL = contentSQL + " and test not in ('Business Activity Monitor','Performance Monitor') and Environment not in ('PROD','DEV') "
                     + " and (status='WORKING' or status is null) "
+                    + " and application " + inSQL
                     + " GROUP BY gp1 "
                     + " order by gp1) as OK"
                     + " ON OK.gp1=i.gp1"
@@ -186,6 +202,7 @@ public class EmailBodyGeneration implements IEmailBodyGeneration {
             }
             contentSQL = contentSQL + " and test not in ('Business Activity Monitor','Performance Monitor') and Environment not in ('PROD','DEV') "
                     + " and (status='WORKING' or status is null) "
+                    + " and application " + inSQL
                     + " GROUP BY gp1 , t1.test, t1.testcase"
                     + " order by gp1 , t1.test, t1.testcase ) AS toto"
                     + " group by gp1) as DTC"
@@ -201,11 +218,13 @@ public class EmailBodyGeneration implements IEmailBodyGeneration {
             }
             contentSQL = contentSQL + " and test not in ('Business Activity Monitor','Performance Monitor') and Environment not in ('PROD','DEV') "
                     + " and (status='WORKING' or status is null) "
+                    + " and application " + inSQL
                     + " GROUP BY gp1 , t1.application"
                     + " order by gp1 , t1.application ) AS toto"
                     + " group by gp1) as DAPP"
                     + " ON DAPP.gp1=i.gp1"
                     + " where 1=1"
+                    + " and application " + inSQL
                     + " and t.ControlStatus in ('OK','KO') and t.Build='" + build + "' and t.Revision='" + revision + "' ";
             if (country.equalsIgnoreCase("ALL") == false) {
                 contentSQL = contentSQL + " and t.country='" + country + "'";
@@ -214,10 +233,13 @@ public class EmailBodyGeneration implements IEmailBodyGeneration {
                     + " and (status='WORKING' or status is null) "
                     + " group by i.gp1 order by i.sort;";
 
+            Logger.getLogger(EmailBodyGeneration.class.getName()).log(Level.DEBUG, Version.PROJECT_NAME_VERSION + " - SQL : " + contentSQL);
+            
             ResultSet rsBC = stmtBuildContent.executeQuery(contentSQL);
             String Cerberus_URL = parameterService.findParameterByKey("cerberus_reporting_url").getValue();;
             Cerberus_URL = Cerberus_URL.replaceAll("%env%", "");
             Cerberus_URL = Cerberus_URL.replaceAll("%appli%", "");
+            Cerberus_URL = Cerberus_URL.replaceAll("%system%", system);
             Cerberus_URL = Cerberus_URL.replaceAll("%build%", build);
             Cerberus_URL = Cerberus_URL.replaceAll("%rev%", revision);
 
@@ -306,7 +328,7 @@ public class EmailBodyGeneration implements IEmailBodyGeneration {
             stmtCountryList.close();
 
         } catch (Exception e) {
-            Logger.getLogger(EmailBodyGeneration.class.getName()).log(Level.SEVERE, Version.PROJECT_NAME_VERSION + " - Exception catched.", e);
+            Logger.getLogger(EmailBodyGeneration.class.getName()).log(Level.FATAL, Version.PROJECT_NAME_VERSION + " - Exception catched.", e);
             TestRecapTable = e.getMessage();
         }
 

@@ -9,21 +9,22 @@ package com.redcats.tst.entity;
  * @author bcivel
  */
 public class CountryEnvParam {
-    
-  private String country;
-  private String environment;
-  private String build;
-  private String revision;
-  private String chain;
-  private String distribList;
-  private String eMailBodyRevision;
-  private String type;
-  private String eMailBodyChain;
-  private String eMailBodyDisableEnvironment;
-  private boolean active;
-  private boolean maintenanceAct;
-  private String maintenanceStr;
-  private String maintenanceEnd;
+
+    private String system;
+    private String country;
+    private String environment;
+    private String build;
+    private String revision;
+    private String chain;
+    private String distribList;
+    private String eMailBodyRevision;
+    private String type;
+    private String eMailBodyChain;
+    private String eMailBodyDisableEnvironment;
+    private boolean active;
+    private boolean maintenanceAct;
+    private String maintenanceStr;
+    private String maintenanceEnd;
 
     public boolean isActive() {
         return active;
@@ -136,6 +137,12 @@ public class CountryEnvParam {
     public void setType(String type) {
         this.type = type;
     }
-  
-  
+
+    public String getSystem() {
+        return system;
+    }
+
+    public void setSystem(String system) {
+        this.system = system;
+    }
 }

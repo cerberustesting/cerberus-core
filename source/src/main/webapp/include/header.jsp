@@ -73,6 +73,7 @@ Document   : menu
                         <% if (request.getUserPrincipal() != null && request.isUserInRole("Integrator")) {%>
                         <li id="active"><a id="current" name="menuIntegration" href="#" style="width:130px">Integration</a>
                             <ul id="subnavlist">
+                                <li id="subactive"><a name="menu" id="menuIntegrationStatus" href="IntegrationStatus.jsp" style="width:130px">Integration Status</a></li>
                                 <li id="subactive"><a name="menu" id="menuApplications" href="Application.jsp" style="width:130px">Applications</a></li>
                                 <li id="subactive"><a name="menu" id="menuEnvironments" href="EnvironmentList.jsp" style="width:130px">Environments</a></li>
                                 <li id="subactive"><a name="menu" id="menuSprintContent" href="SprintContent.jsp" style="width:130px">Sprint Content</a></li>

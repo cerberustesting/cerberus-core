@@ -37,6 +37,10 @@
             try {
 
                 /* Parameter Setup */
+                String MySystem = "";
+                if (request.getParameter("system") != null && request.getParameter("system").compareTo("") != 0) {
+                    MySystem = request.getParameter("system");
+                }
 
                 String country;
                 Boolean country_def;
@@ -91,10 +95,11 @@
                 
                 // Enrironment country Detail Page
 
-            PCE = "SELECT DISTINCT c.Country, c.Environment, c.Build, c.Revision, c.Chain, c.Active, c.Type, "
+            PCE = "SELECT DISTINCT c.system, c.Country, c.Environment, c.Build, c.Revision, c.Chain, c.Active, c.Type, "
                     + "c.DistribList, c.EMailBodyRevision, c.EmailBodyChain, c.EmailBodyDisableEnvironment "
                     + "FROM `countryenvparam` c "
                     + "WHERE 1=1 "
+                    + " and System='" + MySystem + "' "
                     + " and Country='" + country + "' "
                     + " and Environment='" + env + "' ";
             ResultSet rsPCE = stmtCE.executeQuery(PCE);
@@ -103,11 +108,12 @@
                 Revision = rsPCE.getString("c.Revision");
                 Type = rsPCE.getString("c.Type");
 
-                String CerberusReportingURL="ReportingExecution.jsp?Application=%appli%&amp;TcActive=Y&amp;Priority=All&amp;Environment=%env%&amp;Build=%build%&amp;Revision=%rev%&amp;Country=%country%&amp;Status=WORKING&amp;Apply=Apply";
+                String CerberusReportingURL="ReportingExecution.jsp?System=%system%&amp;TcActive=Y&amp;Priority=All&amp;Environment=%env%&amp;Build=%build%&amp;Revision=%rev%&amp;Country=%country%&amp;Status=WORKING&amp;Apply=Apply";
                 String final_CerberusReportingURL;
                 final_CerberusReportingURL = CerberusReportingURL.replaceAll("%country%", country);
                 final_CerberusReportingURL = final_CerberusReportingURL.replaceAll("%env%", env);
                 final_CerberusReportingURL = final_CerberusReportingURL.replaceAll("%appli%", "");
+                final_CerberusReportingURL = final_CerberusReportingURL.replaceAll("%system%", MySystem);
 
                 if (Build != null && !Build.trim().equalsIgnoreCase("")
                                   && !Build.trim().equalsIgnoreCase("null")) {
@@ -121,6 +127,7 @@
                   %>
          <br><table border>
             <tr id="header">
+                <td><%=dbDocS(conn,"application","system","")%></td>
                 <td><%=dbDocS(conn,"testcase","country","")%></td>
                 <td><%=dbDocS(conn,"invariant","environment","")%></td>
                 <td><%=dbDocS(conn,"invariant","build","")%></td>
@@ -131,6 +138,7 @@
                 <td> </td>
             </tr>
             <tr>
+                <td><%=rsPCE.getString("c.System")%></td>
                 <td><%=rsPCE.getString("c.Country")%></td>
                 <td><%=rsPCE.getString("c.Environment")%></td>
                 <td><%=Build%></td>
@@ -167,6 +175,7 @@
                         + "FROM `countryenvironmentparameters` c "
                         + "JOIN Application a ON a.application = c.application "
                         + "WHERE 1=1 "
+                        + " and c.System='" + MySystem + "' "
                         + " and c.Country='" + country + "' "
                         + " and c.Environment='" + env + "' "
                         + " ORDER by a.sort ";
@@ -209,6 +218,7 @@
                         + "FROM `host` c "
                         + "JOIN invariant i ON i.value = c.server and i.id=6 "
                         + "WHERE 1=1 "
+                        + " and c.System='" + MySystem + "' "
                         + " and c.Country='" + country + "' "
                         + " and c.Environment='" + env + "' "
                         + " ORDER by i.sort, c.Session ";
@@ -239,6 +249,7 @@
                 String D = "SELECT DISTINCT `Database`, ConnectionPoolName "
                         + "FROM `countryenvironmentdatabase` c "
                         + "WHERE 1=1 "
+                        + " and c.System='" + MySystem + "' "
                         + " and c.Country='" + country + "' "
                         + " and c.Environment='" + env + "' "
                         + " ORDER by `Database` ";
@@ -272,6 +283,7 @@
             <td>
                 <form method="get" action="Notification.jsp">
                     <input type="hidden" name="event" value="disableenvironment"/>
+                    <input type="hidden" name="system" value="<%= MySystem%>"/>
                     <input type="hidden" name="country" value="<%= country%>"/>
                     <input type="hidden" name="env" value="<%= env%>"/>
                     <input type="hidden" name="build" value="<%= Build%>"/>
@@ -288,6 +300,7 @@
             <td>
                 <form method="get" action="Notification.jsp">
                     <input type="hidden" name="event" value="newbuildrevision"/>
+                    <input type="hidden" name="system" value="<%= MySystem%>"/>
                     <input type="hidden" name="country" value="<%= country%>"/>
                     <input type="hidden" name="env" value="<%= env%>"/>
 
@@ -339,6 +352,7 @@
             <td>
                 <form method="get" action="Notification.jsp">
                     <input type="hidden" name="event" value="newchain"/>
+                    <input type="hidden" name="system" value="<%= MySystem%>"/>
                     <input type="hidden" name="country" value="<%= country%>"/>
                     <input type="hidden" name="env" value="<%= env%>"/>
                     <input id="buildAct" name="build" type="hidden" value="<%= Build%>"/>
@@ -386,6 +400,7 @@
                 String CEL = "SELECT DISTINCT DATE_FORMAT(l.datecre,'%Y-%m-%d %H:%i') datecre, l.id, l.Country, l.Environment, l.Build, l.Revision, l.Chain, l.Description "
                         + "FROM `countryenvparam_log` l "
                         + "WHERE 1=1 "
+                        + " and `System`='" + MySystem + "' "
                         + " and Country='" + country + "' "
                         + " and Environment='" + env + "' "
                         + " ORDER by l.id desc"
@@ -411,6 +426,7 @@
                 String BAT = "SELECT DISTINCT DATE_FORMAT(DateBatch,'%Y-%m-%d %H:%i') DateBatch, Batch "
                         + "FROM `buildrevisionbatch` l "
                         + "WHERE 1=1 "
+                        + " and `System`='" + MySystem + "' "
                         + " and Country='" + country + "' "
                         + " and Environment='" + env + "' "
                         + " ORDER by DateBatch desc"
@@ -433,6 +449,7 @@
 <br>
 
                 <form method="post" action="UpdateCountryEnv">
+                    <input type="hidden" name="system" value="<%= MySystem%>"/>
                     <input type="hidden" name="country" value="<%= country%>"/>
                     <input type="hidden" name="env" value="<%= env%>"/>
     <table border>

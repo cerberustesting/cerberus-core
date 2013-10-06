@@ -9,13 +9,14 @@ package com.redcats.tst.entity;
  * @author bcivel
  */
 public class CountryEnvironmentApplication {
-    
-  private String country;
-  private String environment;
-  private String application;
-  private String ip;
-  private String url;
-  private String urlLogin;
+
+    private String system;
+    private String country;
+    private String environment;
+    private String application;
+    private String ip;
+    private String url;
+    private String urlLogin;
 
     public String getApplication() {
         return application;
@@ -64,6 +65,12 @@ public class CountryEnvironmentApplication {
     public void setUrlLogin(String urlLogin) {
         this.urlLogin = urlLogin;
     }
-  
-  
+
+    public String getSystem() {
+        return system;
+    }
+
+    public void setSystem(String system) {
+        this.system = system;
+    }
 }

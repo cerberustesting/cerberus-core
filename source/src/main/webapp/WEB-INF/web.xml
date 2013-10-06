@@ -154,6 +154,11 @@
         <servlet-class>com.redcats.tst.servlet.publi.PerformanceMonitorGetNumberOfExecutions</servlet-class>
     </servlet>
     <servlet>
+        <description>This Servlet is used to monitor from Nagios the number of execution performed for Performance monitoring.</description>
+        <servlet-name>GetNumberOfExecutions</servlet-name>
+        <servlet-class>com.redcats.tst.servlet.publi.GetNumberOfExecutions</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>GetParameter</servlet-name>
         <servlet-class>com.redcats.tst.servlet.parameter.GetParameter</servlet-class>
     </servlet>
@@ -288,6 +293,10 @@
     <servlet-mapping>
         <servlet-name>PerformanceMonitorGetNumberOfExecutions</servlet-name>
         <url-pattern>/PerformanceMonitorGetNumberOfExecutions</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>GetNumberOfExecutions</servlet-name>
+        <url-pattern>/GetNumberOfExecutions</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>UpdateParameter</servlet-name>

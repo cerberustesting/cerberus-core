@@ -5,10 +5,13 @@
 package com.redcats.tst.refactor;
 
 import com.redcats.tst.database.DatabaseSpring;
+import com.redcats.tst.entity.Application;
 import com.redcats.tst.entity.Invariant;
 import com.redcats.tst.exception.CerberusException;
 import com.redcats.tst.log.MyLogger;
+import com.redcats.tst.service.IApplicationService;
 import com.redcats.tst.service.IInvariantService;
+import com.redcats.tst.util.StringUtil;
 import org.apache.log4j.Level;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -19,6 +22,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * @author bcivel
@@ -30,11 +34,20 @@ public class TestCaseExecutionStatisticsDAOImpl implements ITestCaseExecutionSta
     private DatabaseSpring databaseSpring;
     @Autowired
     private IInvariantService invariantService;
+    @Autowired
+    private IApplicationService applicationService;
 
     @Override
-    public TestCaseExecutionStatistics getStatisticsOfExecution(String build, String revision, List<String> environment) {
+    public TestCaseExecutionStatistics getStatisticsOfExecution(String MySystem, String build, String revision, List<String> environment) {
         TestCaseExecutionStatistics statsOfExecutions = new TestCaseExecutionStatistics();
-
+        String appliSQL = "";
+        try {
+            List<Application> appliList = applicationService.findApplicationBySystem(MySystem);
+            appliSQL = StringUtil.getInSQLClause(appliList);
+        } catch (CerberusException ex) {
+            Logger.getLogger(TestCaseExecutionStatisticsDAOImpl.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        
         String env = "";
         try {
             List<Invariant> inv = new ArrayList<Invariant>();
@@ -59,6 +72,8 @@ public class TestCaseExecutionStatisticsDAOImpl implements ITestCaseExecutionSta
         sbquery.append(" FROM testcaseexecution t ");
         sbquery.append(" JOIN ( SELECT Build, Revision, count(*) c FROM testcaseexecution t1 ");
         sbquery.append(" WHERE t1.ControlStatus= 'OK' and test !='Business Activity Monitor' and (status='WORKING' or status is null) ");
+        sbquery.append(" and application ");
+        sbquery.append(appliSQL);
         sbquery.append(" and test!= 'Performance Monitor' and Environment in (");
         sbquery.append(env);
         sbquery.append(") and build='");
@@ -68,6 +83,8 @@ public class TestCaseExecutionStatisticsDAOImpl implements ITestCaseExecutionSta
         sbquery.append("') as OK ");
         sbquery.append(" JOIN ( SELECT Build, Revision, count(*) c FROM testcaseexecution t1 ");
         sbquery.append(" WHERE t1.ControlStatus= 'KO' and test !='Business Activity Monitor'  and (status='WORKING' or status is null) ");
+        sbquery.append(" and application ");
+        sbquery.append(appliSQL);
         sbquery.append(" and test!= 'Performance Monitor' and Environment in (");
         sbquery.append(env);
         sbquery.append(") and build='");
@@ -80,6 +97,8 @@ public class TestCaseExecutionStatisticsDAOImpl implements ITestCaseExecutionSta
         sbquery.append(" where test !='Business Activity Monitor' and test!= 'Performance Monitor' and Environment in (");
         sbquery.append(env);
         sbquery.append(")  and (status='WORKING' or status is null) ");
+        sbquery.append(" and application ");
+        sbquery.append(appliSQL);
         sbquery.append(" and ControlStatus in ('OK','KO') and t.build='");
         sbquery.append(build);
         sbquery.append("' and revision='");
@@ -90,6 +109,8 @@ public class TestCaseExecutionStatisticsDAOImpl implements ITestCaseExecutionSta
         sbquery.append(" where test !='Business Activity Monitor' and test!= 'Performance Monitor' and Environment in (");
         sbquery.append(env);
         sbquery.append(")  and (status='WORKING' or status is null) ");
+        sbquery.append(" and application ");
+        sbquery.append(appliSQL);
         sbquery.append(" and ControlStatus in ('OK','KO') and t.build='");
         sbquery.append(build);
         sbquery.append("' and revision='");
@@ -102,7 +123,10 @@ public class TestCaseExecutionStatisticsDAOImpl implements ITestCaseExecutionSta
         sbquery.append(build);
         sbquery.append("' and t.revision='");
         sbquery.append(revision);
-        sbquery.append("' limit 1");
+        sbquery.append("' ");
+        sbquery.append("and application ");
+        sbquery.append(appliSQL);
+        sbquery.append("limit 1");
 
 
         Connection connection = this.databaseSpring.connect();
@@ -150,11 +174,20 @@ public class TestCaseExecutionStatisticsDAOImpl implements ITestCaseExecutionSta
     }
 
     @Override
-    public List<TestCaseExecutionStatistics> getListOfXLastBuildAndRevExecuted(int listSize) {
+    public List<TestCaseExecutionStatistics> getListOfXLastBuildAndRevExecuted(String MySystem, int listSize) {
         List<TestCaseExecutionStatistics> tenLastBuildAndRevExecuted = new ArrayList<TestCaseExecutionStatistics>();
         StringBuilder query = new StringBuilder();
+        String appliSQL = "";
+        try {
+            List<Application> appliList = applicationService.findApplicationBySystem(MySystem);
+            appliSQL = StringUtil.getInSQLClause(appliList);
+        } catch (CerberusException ex) {
+            Logger.getLogger(TestCaseExecutionStatisticsDAOImpl.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
         query.append("SELECT build, revision FROM testcaseexecution");
         query.append(" WHERE build != 'NA' and build != 'null' and build != ' ' and build is not null ");
+        query.append(" and application ");
+        query.append(appliSQL);
         query.append(" GROUP BY Build, Revision ORDER BY Build  desc, Revision desc LIMIT ");
         query.append(listSize);
 

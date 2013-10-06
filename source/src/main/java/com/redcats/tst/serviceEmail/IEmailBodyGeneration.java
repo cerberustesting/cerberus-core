@@ -12,8 +12,8 @@ import java.sql.Connection;
  */
 public interface IEmailBodyGeneration {
 
-    public String GenerateBuildContentTable(String build, String revision, String lastBuild, String lastRevision, Connection conn) ;
+    public String GenerateBuildContentTable(String system, String build, String revision, String lastBuild, String lastRevision, Connection conn) ;
 
-    public String GenerateTestRecapTable(String build, String revision, String country, Connection conn) ;
+    public String GenerateTestRecapTable(String system, String build, String revision, String country, Connection conn) ;
     
 }

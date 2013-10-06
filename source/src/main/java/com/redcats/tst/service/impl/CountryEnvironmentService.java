@@ -40,41 +40,6 @@ public class CountryEnvironmentService implements ICountryEnvironmentService {
     private IFactoryEnvironment factoryEnvironment;
 
     @Override
-    public Environment loadParameters(String country, String environment, String application, String browserPath,
-                                      String seleniumIP, String seleniumPort, String path, String devURL, String devLogin) {
-        try {
-            Environment env = null;
-
-            CountryEnvParam countEnvParam = this.countryEnvParamDAO.findCountryEnvParamByKey(country, environment);
-
-            CountryEnvironmentApplication cea = this.countryEnvironmentParametersDAO.findCountryEnvironmentParameterByKey(country, environment, application);
-            try {
-                String ip = environment.equalsIgnoreCase("DEV") ? "" : cea.getIp();
-                String url = environment.equalsIgnoreCase("DEV") ? devURL : cea.getUrl();
-                String urlLogin = environment.equalsIgnoreCase("DEV") ? devLogin : cea.getUrlLogin();
-                String build = countEnvParam.getBuild();
-                String revision = countEnvParam.getRevision();
-                boolean active = countEnvParam.isActive();
-                String typeApplication;
-                typeApplication = this.applicationDAO.findApplicationByKey(application).getType();
-                boolean maintenance = countEnvParam.isMaintenanceAct();
-                String maintenanceStr = countEnvParam.getMaintenanceStr();
-                String maintenanceEnd = countEnvParam.getMaintenanceEnd();
-
-                env = factoryEnvironment.create(environment, ip, url, urlLogin, build, revision, active, typeApplication, seleniumIP,
-                        seleniumPort, browserPath, path, maintenance, maintenanceStr, maintenanceEnd);
-            } catch (CerberusException ex) {
-                Logger.getLogger(CountryEnvironmentService.class.getName()).log(Level.SEVERE, null, ex);
-            }
-
-            return env;
-        } catch (CerberusException ex) {
-            Logger.getLogger(CountryEnvironmentService.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return null;
-    }
-
-    @Override
     public List<String[]> getEnvironmentAvailable(String test, String testCase, String country) {
         try {
             List<String[]> list = null;

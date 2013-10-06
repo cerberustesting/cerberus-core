@@ -46,9 +46,9 @@ public class CountryEnvironmentDatabaseDAO implements ICountryEnvironmentDatabas
      * @return Description text text text.
      */
     @Override
-    public CountryEnvironmentDatabase findCountryEnvironmentDatabaseByKey(String database, String environment, String country) throws CerberusException {
+    public CountryEnvironmentDatabase findCountryEnvironmentDatabaseByKey(String system, String country, String environment, String database) throws CerberusException {
         CountryEnvironmentDatabase result = null;
-        final String query = "SELECT * FROM countryenvironmentdatabase ced WHERE ced.database = ? AND ced.environment = ? AND ced.country = ?";
+        final String query = "SELECT * FROM countryenvironmentdatabase ced WHERE ced.database = ? AND ced.environment = ? AND ced.country = ? AND ced.system = ?";
         boolean throwEx = false;
 
         Connection connection = this.databaseSpring.connect();
@@ -58,6 +58,7 @@ public class CountryEnvironmentDatabaseDAO implements ICountryEnvironmentDatabas
                 preStat.setString(1, database);
                 preStat.setString(2, environment);
                 preStat.setString(3, country);
+                preStat.setString(4, system);
 
                 ResultSet resultSet = preStat.executeQuery();
                 try {

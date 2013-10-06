@@ -12,9 +12,9 @@ import java.util.List;
  */
 public interface ITestCaseExecutionStatisticsService {
 
-    TestCaseExecutionStatistics getStatisticsOfExecution(String build, String revision, List<String> environment);
+    TestCaseExecutionStatistics getStatisticsOfExecution(String MySystem, String build, String revision, List<String> environment);
 
-    TestCaseExecutionStatistics getStatisticsOfExecution(String build, String revision, String environment);
+    TestCaseExecutionStatistics getStatisticsOfExecution(String MySystem, String build, String revision, String environment);
 
-    List<TestCaseExecutionStatistics> getListOfXLastBuildAndRevExecuted(int listSize);
+    List<TestCaseExecutionStatistics> getListOfXLastBuildAndRevExecuted(String system, int listSize);
 }

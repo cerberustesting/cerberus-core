@@ -12,5 +12,5 @@ import com.redcats.tst.exception.CerberusException;
  */
 public interface ICountryEnvParamDAO {
 
-    CountryEnvParam findCountryEnvParamByKey(String country, String environment) throws CerberusException;
+    CountryEnvParam findCountryEnvParamByKey(String system, String country, String environment) throws CerberusException;
 }

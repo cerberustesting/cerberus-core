@@ -195,7 +195,7 @@ public class RunTestCaseService implements IRunTestCaseService {
                 return tCExecution;
             } else {
                 CountryEnvironmentApplication cea;
-                cea = this.factorycountryEnvironmentApplication.create(tCExecution.getCountry(), tCExecution.getEnvironment(), tCExecution.getApplication().getApplication(), tCExecution.getMyHost(), tCExecution.getMyContextRoot(), tCExecution.getMyLoginRelativeURL());
+                cea = this.factorycountryEnvironmentApplication.create(tCExecution.getApplication().getSystem(), tCExecution.getCountry(), tCExecution.getEnvironment(), tCExecution.getApplication().getApplication(), tCExecution.getMyHost(), tCExecution.getMyContextRoot(), tCExecution.getMyLoginRelativeURL());
                 cea.setIp(tCExecution.getMyHost());
                 cea.setUrl(tCExecution.getMyContextRoot());
                 tCExecution.setUrl(cea.getIp() + cea.getUrl());
@@ -220,7 +220,7 @@ public class RunTestCaseService implements IRunTestCaseService {
             CountryEnvironmentApplication cea;
             try {
                 cea = this.countryEnvironmentApplicationService.findCountryEnvironmentParameterByKey(
-                        tCExecution.getCountry(), tCExecution.getEnvironment(), tCExecution.getApplication().getApplication());
+                        tCExecution.getApplication().getSystem(), tCExecution.getCountry(), tCExecution.getEnvironment(), tCExecution.getApplication().getApplication());
                 tCExecution.setCountryEnvironmentApplication(cea);
                 tCExecution.setUrl(cea.getIp() + cea.getUrl());
                 /**
@@ -269,7 +269,7 @@ public class RunTestCaseService implements IRunTestCaseService {
         MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Loading Country/Environment Information. " + tCExecution.getCountry() + "-" + tCExecution.getEnvironmentData());
         CountryEnvParam countEnvParam;
         try {
-            countEnvParam = this.countryEnvParamService.findCountryEnvParamByKey(tCExecution.getCountry(), tCExecution.getEnvironmentData());
+            countEnvParam = this.countryEnvParamService.findCountryEnvParamByKey(tCExecution.getApplication().getSystem(), tCExecution.getCountry(), tCExecution.getEnvironmentData());
             tCExecution.setCountryEnvParam(countEnvParam);
             /**
              * Copy the Build/Revision of the environment to the Execution. This
@@ -280,6 +280,7 @@ public class RunTestCaseService implements IRunTestCaseService {
             tCExecution.setRevision(countEnvParam.getRevision());
         } catch (CerberusException ex) {
             MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_COUNTRYENV_NOT_FOUND);
+            mes.setDescription(mes.getDescription().replaceAll("%SYSTEM%", tCExecution.getApplication().getSystem()));
             mes.setDescription(mes.getDescription().replaceAll("%COUNTRY%", tCExecution.getCountry()));
             mes.setDescription(mes.getDescription().replaceAll("%ENV%", tCExecution.getEnvironmentData()));
             tCExecution.setResultMessage(mes);

@@ -12,9 +12,9 @@ import java.sql.Connection;
  */
 public interface IEmailGeneration {
 
-    public String EmailGenerationRevisionChange(String country, String env, String build, String revision, Connection conn);
+    public String EmailGenerationRevisionChange(String system, String country, String env, String build, String revision, Connection conn);
 
-    public String EmailGenerationDisableEnv(String country, String env);
+    public String EmailGenerationDisableEnv(String system, String country, String env);
 
-    public String EmailGenerationNewChain(String country, String env, String build, String revision, String chain);
+    public String EmailGenerationNewChain(String system, String country, String env, String build, String revision, String chain);
 }

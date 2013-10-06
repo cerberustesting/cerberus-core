@@ -39,6 +39,11 @@
 
                 /* Parameter Setup */
 
+                String system = "";
+                if (request.getParameter("system") != null && request.getParameter("system").compareTo("") != 0) {
+                    system = request.getParameter("system");
+                }
+
                 String country;
                 if (request.getParameter("country") != null && request.getParameter("country").compareTo("") != 0) {
                     country = request.getParameter("country");
@@ -91,15 +96,15 @@
                 if (!StringUtils.isNullOrEmpty(event)) {
 
                     if (event.equals("newbuildrevision")) {
-                        eMailContent = myEmailGeneration.EmailGenerationRevisionChange(country, env, build, revision, conn);
+                        eMailContent = myEmailGeneration.EmailGenerationRevisionChange(system, country, env, build, revision, conn);
                         formAction = "NewBuildRev";
                     }
                     if (event.equals("disableenvironment")) {
-                        eMailContent = myEmailGeneration.EmailGenerationDisableEnv(country, env);
+                        eMailContent = myEmailGeneration.EmailGenerationDisableEnv(system, country, env);
                         formAction = "DisableEnvironment";
                     }
                     if (event.equals("newchain")) {
-                        eMailContent = myEmailGeneration.EmailGenerationNewChain(country, env, build, revision, chain);
+                        eMailContent = myEmailGeneration.EmailGenerationNewChain(system, country, env, build, revision, chain);
                         formAction = "NewChain";
                     }
                 }
@@ -148,6 +153,7 @@
                 SQLBC = "SELECT Build, Revision "
                         + "FROM `countryenvparam` c "
                         + "WHERE 1=1 and "
+                        + " `system`='" + system + "' and "
                         + " country='" + country + "' and "
                         + " environment ='" + env + "' ";
 
@@ -180,7 +186,8 @@
                         + "JOIN buildrevisionparameters brp "
                         + " ON brp.application=al.application and brp.release=al.rel and brp.build = '" + build + "'"
                         + "JOIN application ap "
-                        + " ON ap.application=al.application ";
+                        + " ON ap.application=al.application "
+                        + " and ap.system = '" + system + "'";
 
                 Statement stmtA = conn.createStatement();
                 ResultSet rsA = stmtA.executeQuery(AppliSQL);
@@ -208,6 +215,7 @@
                     String JenkinsAgentSQL = "SELECT jenkinsagent "
                             + " FROM countryenvdeploytype "
                             + " WHERE country = '" + country + "'"
+                            + " and `system` = '" + system + "'"
                             + " and environment = '" + env + "'"
                             + " and deploytype = '" + rsA.getString("ap.deploytype") + "'";
                     rsB = stmtB.executeQuery(JenkinsAgentSQL);
@@ -233,13 +241,14 @@
         <form method="get" name="doEvent" action="<%=formAction%>">
             <table>
                 <tr>
-                    <td><input id="cancel" type="button" value="Cancel" onclick="window.location.href='Environment.jsp?country=<%=country%>&env=<%=env%>'"</td>
+                    <td><input id="cancel" type="button" value="Cancel" onclick="window.location.href='Environment.jsp?system=<%=system%>&country=<%=country%>&env=<%=env%>'"</td>
                     <td><input id="validate" type="submit" value="Validate and Send Notification"</td>
                         <% if (!event.equals("disableenvironment")) {%>
                     <td><input type="hidden" name="build" value="<%=build%>"></td>
                     <td><input type="hidden" name="revision" value="<%=revision%>"></td>
                     <td><input type="hidden" name="chain" value="<%=chain%>"></td>
                         <%}%>
+                    <td><input type="hidden" name="system" value="<%=system%>"></td>
                     <td><input type="hidden" name="country" value="<%=country%>"></td>
                     <td><input type="hidden" name="env" value="<%=env%>"></td>
                 </tr>
@@ -247,7 +256,7 @@
         </form>
 
         <br>
-        <a href="Environment.jsp?country=<%=country%>&env=<%=env%>">Continue to Current Environment</a>
+        <a href="Environment.jsp?system=<%=system%>&country=<%=country%>&env=<%=env%>">Continue to Current Environment</a>
 
         <%
                 stmtA.close();

@@ -13,7 +13,7 @@ import java.util.List;
  */
 public interface ICountryEnvironmentParametersDAO {
 
-    CountryEnvironmentApplication findCountryEnvironmentParameterByKey(String country, String environment, String application) throws CerberusException;
+    CountryEnvironmentApplication findCountryEnvironmentParameterByKey(String system, String country, String environment, String application) throws CerberusException;
 
     public List<String[]> getEnvironmentAvailable(String country, String application);
 }

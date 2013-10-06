@@ -41,8 +41,9 @@ public class GetConnectionPoolName extends HttpServlet {
         response.setContentType("text/html;charset=UTF-8");
         PrintWriter out = response.getWriter();
         try {
-            String environment = ParameterParserUtil.parseStringParam(request.getParameter("environment"), "");
+            String system = ParameterParserUtil.parseStringParam(request.getParameter("system"), "");
             String country = ParameterParserUtil.parseStringParam(request.getParameter("country"), "");
+            String environment = ParameterParserUtil.parseStringParam(request.getParameter("environment"), "");
             String database = ParameterParserUtil.parseStringParam(request.getParameter("database"), "");
 
             ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
@@ -50,7 +51,7 @@ public class GetConnectionPoolName extends HttpServlet {
 
             String result = "";
             try {
-                result = cedService.findCountryEnvironmentDatabaseByKey(country, environment, database).getConnectionPoolName();
+                result = cedService.findCountryEnvironmentDatabaseByKey(system, country, environment, database).getConnectionPoolName();
             } catch (CerberusException ex) {
                 Logger.getLogger(GetConnectionPoolName.class.getName()).log(Level.SEVERE, null, ex);
             }

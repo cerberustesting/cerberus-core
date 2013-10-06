@@ -4,6 +4,10 @@
     Author     : acraske
 --%>
 
+<%@page import="com.redcats.tst.service.impl.ApplicationService"%>
+<%@page import="com.redcats.tst.util.StringUtil"%>
+<%@page import="com.redcats.tst.entity.Application"%>
+<%@page import="com.redcats.tst.service.IApplicationService"%>
 <%@page import="org.apache.commons.lang3.StringUtils"%>
 <%@page import="java.util.Enumeration"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
@@ -169,6 +173,16 @@
 
                         String enable = "";
 
+                        String MySystem = request.getAttribute("MySystem").toString();
+                        if (request.getParameter("system") != null && request.getParameter("system").compareTo("") != 0) {
+                            MySystem = request.getParameter("system");
+                        }
+                        IApplicationService applicationService = appContext.getBean(ApplicationService.class);
+                        List<Application> appliList = applicationService.findApplicationBySystem(MySystem);
+                        String appliInSQL = StringUtil.getInSQLClause(appliList);
+
+
+
                 %>
 
 
@@ -216,7 +230,7 @@
                                     <td id="wob"><select size="16" id="test" name="Test"
                                                          style="width: 200px" onchange="document.RunTest.submit()">
                                             <%
-                                                ResultSet rsTest = stmt.executeQuery("SELECT DISTINCT t.Test FROM Test t, TestCase tc WHERE tc.test=t.test AND tc.tcactive='Y' AND t.active='Y'");
+                                                ResultSet rsTest = stmt.executeQuery("SELECT DISTINCT t.Test FROM Test t, TestCase tc WHERE tc.test=t.test AND tc.tcactive='Y' AND t.active='Y' AND tc.application " + appliInSQL + " AND tc.group is not NULL AND tc.group not in ('PRIVATE') AND length(tc.group) > 1 " );
                                                 while (rsTest.next()) {%>
                                             <option style="width: 300px" value="<%= rsTest.getString(1)%>"
                                                     <%=test.compareTo(rsTest.getString(1)) == 0 ? " SELECTED " : ""%>><%= rsTest.getString(1)%></option>
@@ -226,7 +240,7 @@
                                     <td id="wob"><select size="16" id="testcase"
                                                          name="TestCase" style="width: 600px"
                                                          onchange="document.RunTest.submit()">
-                                            <% ResultSet rsTestCase = stmt.executeQuery("SELECT DISTINCT tc.TestCase, tc.Description, tc.application FROM TestCase tc WHERE tc.test = '" + test + "' AND tc.group is not NULL AND tc.group not in ('PRIVATE') AND length(tc.group) > 1 AND TcActive = 'Y'");
+                                            <% ResultSet rsTestCase = stmt.executeQuery("SELECT DISTINCT tc.TestCase, tc.Description, tc.application FROM TestCase tc WHERE tc.test = '" + test + "' AND tc.application " + appliInSQL + " AND tc.group is not NULL AND tc.group not in ('PRIVATE') AND length(tc.group) > 1 AND TcActive = 'Y'");
                                                 while (rsTestCase.next()) {
                                             %>
                                             <option style="width: 600px"
@@ -278,13 +292,14 @@
                                                                         sql.append("SELECT DISTINCT ce.Environment Environment, ce.Build Build, ");
                                                                         sql.append("    ce.Revision Revisionv ");
                                                                         sql.append("FROM countryenvironmentparameters cea, countryenvparam ce, invariant i ");
-                                                                        sql.append("WHERE ce.country = cea.country AND ce.environment = cea.environment ");
+                                                                        sql.append("WHERE ce.system = cea.system AND ce.country = cea.country AND ce.environment = cea.environment ");
                                                                         sql.append("    AND cea.Application = '");
                                                                         sql.append(testcaseApplication);
                                                                         sql.append("' AND cea.country='");
                                                                         sql.append(country);
                                                                         sql.append("'");
                                                                         sql.append("    AND ce.active='Y' ");
+                                                                        sql.append("    AND ce.system='" + MySystem + "' ");
                                                                         sql.append("    AND i.id = 5 AND i.Value = ce.Environment ");
                                                                         sql.append("ORDER BY i.sort ");
 
@@ -399,14 +414,14 @@
 
         <br><% out.print(display_footer(DatePageStart));%>
 
-    <script type="text/javascript">
-        function validateForm(){
-            if($("#myloginrelativeurl").val()){
-                var val = $("#myloginrelativeurl").val().replace("&", "%26");
-                $("#myloginrelativeurl").val(val);
+        <script type="text/javascript">
+            function validateForm(){
+                if($("#myloginrelativeurl").val()){
+                    var val = $("#myloginrelativeurl").val().replace("&", "%26");
+                    $("#myloginrelativeurl").val(val);
+                }
+                return true;
             }
-            return true;
-        }
-    </script>
+        </script>
     </body>
 </html>

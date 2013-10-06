@@ -22,7 +22,7 @@ public class CountryEnvironmentDatabaseService implements ICountryEnvironmentDat
     private ICountryEnvironmentDatabaseDAO countryEnvironmentDatabaseDao;
 
     @Override
-    public CountryEnvironmentDatabase findCountryEnvironmentDatabaseByKey(String country, String environment, String database) throws CerberusException {
-        return countryEnvironmentDatabaseDao.findCountryEnvironmentDatabaseByKey(database, environment, country);
+    public CountryEnvironmentDatabase findCountryEnvironmentDatabaseByKey(String system, String country, String environment, String database) throws CerberusException {
+        return countryEnvironmentDatabaseDao.findCountryEnvironmentDatabaseByKey(system, country, environment, database);
     }
 }

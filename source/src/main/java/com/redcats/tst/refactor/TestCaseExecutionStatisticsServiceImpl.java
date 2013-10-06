@@ -21,19 +21,19 @@ public class TestCaseExecutionStatisticsServiceImpl implements ITestCaseExecutio
     ITestCaseExecutionStatisticsDAO testCaseExecutionStatisticsDAO;
 
     @Override
-    public TestCaseExecutionStatistics getStatisticsOfExecution(String build, String revision, List<String> environment) {
-        return testCaseExecutionStatisticsDAO.getStatisticsOfExecution(build, revision, environment);
+    public TestCaseExecutionStatistics getStatisticsOfExecution(String MySystem, String build, String revision, List<String> environment) {
+        return testCaseExecutionStatisticsDAO.getStatisticsOfExecution(MySystem, build, revision, environment);
     }
 
     @Override
-    public TestCaseExecutionStatistics getStatisticsOfExecution(String build, String revision, String environment) {
+    public TestCaseExecutionStatistics getStatisticsOfExecution(String MySystem, String build, String revision, String environment) {
         List<String> env = new ArrayList<String>();
         env.add(environment);
-        return this.getStatisticsOfExecution(build, revision, env);
+        return this.getStatisticsOfExecution(MySystem, build, revision, env);
     }
 
     @Override
-    public List<TestCaseExecutionStatistics> getListOfXLastBuildAndRevExecuted(int listSize) {
-        return testCaseExecutionStatisticsDAO.getListOfXLastBuildAndRevExecuted(listSize);
+    public List<TestCaseExecutionStatistics> getListOfXLastBuildAndRevExecuted(String system, int listSize) {
+        return testCaseExecutionStatisticsDAO.getListOfXLastBuildAndRevExecuted(system, listSize);
     }
 }
