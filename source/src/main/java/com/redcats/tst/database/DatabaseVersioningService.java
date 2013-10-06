@@ -2995,6 +2995,11 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(", ADD INDEX `FK_countryenvparam_log_01` (`system` ASC, `Country` ASC, `Environment` ASC) ;");
         SQLInstruction.add(SQLS.toString());
         
+//-- Enlarge data execution column in order to keep track of full SQL executed.
+//-- ------------------------
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcaseexecutiondata` CHANGE COLUMN `Value` `Value` VARCHAR(3000) NOT NULL  , CHANGE COLUMN `RMessage` `RMessage` VARCHAR(3000) NULL DEFAULT ''  ;");
+        SQLInstruction.add(SQLS.toString());
         
         return SQLInstruction;
     }
