@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
+<web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
     <welcome-file-list>
         <welcome-file>Homepage</welcome-file>
     </welcome-file-list>
@@ -154,6 +153,11 @@
         <servlet-class>com.redcats.tst.servlet.publi.PerformanceMonitorGetNumberOfExecutions</servlet-class>
     </servlet>
     <servlet>
+        <description>This Servlet is used to Record a new Release inside the pending sprint.</description>
+        <servlet-name>NewRelease</servlet-name>
+        <servlet-class>com.redcats.tst.servlet.publi.NewRelease</servlet-class>
+    </servlet>
+    <servlet>
         <description>This Servlet is used to monitor from Nagios the number of execution performed for Performance monitoring.</description>
         <servlet-name>GetNumberOfExecutions</servlet-name>
         <servlet-class>com.redcats.tst.servlet.publi.GetNumberOfExecutions</servlet-class>
@@ -189,6 +193,10 @@
     <servlet>
         <servlet-name>UpdateApplicationAjax</servlet-name>
         <servlet-class>com.redcats.tst.servlet.application.UpdateApplication</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>NewBuildRev</servlet-name>
+        <servlet-class>com.redcats.tst.servlet.environment.NewBuildRev</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>RunTestCase</servlet-name>
@@ -299,6 +307,10 @@
         <url-pattern>/GetNumberOfExecutions</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
+        <servlet-name>NewRelease</servlet-name>
+        <url-pattern>/NewRelease</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
         <servlet-name>UpdateParameter</servlet-name>
         <url-pattern>/UpdateParameter</url-pattern>
     </servlet-mapping>
@@ -361,6 +373,10 @@
     <servlet-mapping>
         <servlet-name>UpdateApplicationAjax</servlet-name>
         <url-pattern>/UpdateApplicationAjax</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>NewBuildRev</servlet-name>
+        <url-pattern>/NewBuildRev</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>
