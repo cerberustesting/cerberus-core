@@ -950,7 +950,19 @@ public class SeleniumService implements ISeleniumService {
                     message.setDescription(message.getDescription().replaceAll("%ELEMENT%", html));
                     message.setDescription(message.getDescription().replaceAll("%DATA%", property));
                     return message;
-                } else {
+                } else if (identifier.equalsIgnoreCase("regex")) {
+                    java.util.List<WebElement> list = select.getOptions();
+                            for (WebElement option : list) {
+                                String fullText = option.getText();
+                                if (fullText.contains(value)) {
+                                    select.selectByVisibleText(fullText);
+                                    message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_SELECT);
+                                    message.setDescription(message.getDescription().replaceAll("%ELEMENT%", html));
+                                    message.setDescription(message.getDescription().replaceAll("%DATA%", property));
+                                    return message;
+                                }
+                            }
+                  } else {
                     message = new MessageEvent(MessageEventEnum.ACTION_FAILED_SELECT_NO_IDENTIFIER);
                     message.setDescription(message.getDescription().replaceAll("%IDENTIFIER%", html));
                     return message;
