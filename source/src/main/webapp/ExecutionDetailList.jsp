@@ -26,8 +26,8 @@
         <link rel="stylesheet" type="text/css" href="css/crb_style.css">
         <link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico" />
         <link rel="stylesheet" type="text/css" href="js/jqplot/jquery.jqplot.min.css" >
-        <link rel="stylesheet" type="text/css" href="js/jqplot/examples/syntaxhighlighter/styles/shCoreDefault.min.css" >
-        <link rel="stylesheet" type="text/css" href="js/jqplot/examples/syntaxhighlighter/styles/shThemejqPlot.min.css" >
+        <link rel="stylesheet" type="text/css" href="js/jqplot/syntaxhighlighter/styles/shCoreDefault.min.css" >
+        <link rel="stylesheet" type="text/css" href="js/jqplot/syntaxhighlighter/styles/shThemejqPlot.min.css" >
 
         <title>Execution Detail List</title>
 
@@ -527,6 +527,9 @@
         </div>
 
         <input id="data" value="<%=data%>" style="display:none">
+        <input id="testValue" value="<%=test%>" style="display:none">
+        <input id="testCaseValue" value="<%=testCase%>" style="display:none">
+        <input id="countryValue" value="<%=country%>" style="display:none">
         <table>
             <tr>
                 <td style="width:1200px"><%=testCase%> 
@@ -615,9 +618,9 @@
 
             $(document).ready(function(){
        
-                var test = document.getElementById("test").innerHTML;
-                var testcase = document.getElementById("testcase").innerHTML;
-                var country = document.getElementById("Country").innerHTML;
+                var test = document.getElementById("testValue").getAttribute("value");
+                var testcase = document.getElementById("testCaseValue").getAttribute("value");
+                var country = document.getElementById("countryValue").getAttribute("value");
        
                 var ajaxDataRenderer = function(url, plot, options) {
                     var ret = null;
@@ -633,7 +636,7 @@
  
                 // The url for our json data
                 var jsonurl = "./TestCaseActionExecutionDetail?test="+test+"&testcase="+testcase+"&country="+country;
-                var legend = "./TestCaseActionExecutionDetail?test="+test+"&testcase="+testcase+"&country="+country;
+                //var legend = "./TestCaseActionExecutionDetail?test="+test+"&testcase="+testcase+"&country="+country;
   
                 var plot2 = $.jqplot (  'testchart' , jsonurl ,  {
         

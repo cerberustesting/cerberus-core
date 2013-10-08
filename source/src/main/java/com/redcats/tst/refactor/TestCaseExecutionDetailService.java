@@ -55,7 +55,7 @@ public class TestCaseExecutionDetailService implements ITestCaseExecutionDetailS
 
             for (List<String> listInformation : listOfDuration) {
 
-                String newserie = listInformation.get(1).concat("-").concat(listInformation.get(2)).concat("-").concat(listInformation.get(3));
+                String newserie = listInformation.get(1).concat("-").concat(listInformation.get(2)).concat("-").concat(listInformation.get(3)).concat("-").concat(listInformation.get(7));
 
                 if (!serie.equals(newserie)) {
                     if (!serie.equals("")) {
@@ -67,7 +67,7 @@ public class TestCaseExecutionDetailService implements ITestCaseExecutionDetailS
                 data = new JSONArray();
                 DateFormat df2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 Date dat = df2.parse(listInformation.get(4));
-                MyLogger.log(TestCaseExecutionDetailService.class.getName(), Level.INFO, dat.toString());
+//                MyLogger.log(TestCaseExecutionDetailService.class.getName(), Level.INFO, dat.toString());
                 String datea = df2.format(dat);
                 data.put(datea);
 
