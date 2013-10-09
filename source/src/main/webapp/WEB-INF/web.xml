@@ -198,6 +198,14 @@
         <servlet-name>NewBuildRev</servlet-name>
         <servlet-class>com.redcats.tst.servlet.environment.NewBuildRev</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>DisableEnvironment</servlet-name>
+        <servlet-class>com.redcats.tst.servlet.environment.DisableEnvironment</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>NewChain</servlet-name>
+        <servlet-class>com.redcats.tst.servlet.environment.NewChain</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>RunTestCase</servlet-name>
         <url-pattern>/RunTestCase</url-pattern>
@@ -377,6 +385,14 @@
     <servlet-mapping>
         <servlet-name>NewBuildRev</servlet-name>
         <url-pattern>/NewBuildRev</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DisableEnvironment</servlet-name>
+        <url-pattern>/DisableEnvironment</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>NewChain</servlet-name>
+        <url-pattern>/NewChain</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>
