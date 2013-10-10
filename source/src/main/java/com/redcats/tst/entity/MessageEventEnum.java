@@ -95,6 +95,7 @@ public enum MessageEventEnum {
     ACTION_FAILED_PROPERTYFAILED(278, "FA", "Action failed because there were an error on the property definition.", true, false, MessageGeneralEnum.EXECUTION_FA),
     ACTION_FAILED_SELECT_NO_SUCH_VALUE(279, "FA", "Found the element '%ELEMENT%', but failed to select because could not find '%DATA%'!", true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_FOCUS_NO_SUCH_ELEMENT(280, "FA", "Failed to focus to iframe because could not find element '%IFRAME%'!", true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
+    ACTION_FAILED_SELECT_REGEX_INVALIDPATERN(281, "FA", "Pattern '%PATERN%' is not valid. Detailed error : %ERROR%", true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_NOTEXECUTED_NO_PROPERTY_DEFINITION(290, "NA", "Not executed because Property '%PROP%' is not defined for the country '%COUNTRY%'.", false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     ACTION_PENDING(299, "PE", "Doing Action...", false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     CONTROL_SUCCESS(300, "OK", "", false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),

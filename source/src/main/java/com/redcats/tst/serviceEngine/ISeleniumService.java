@@ -25,6 +25,8 @@ public interface ISeleniumService {
     String getValueFromHTMLVisible(String locator);
     
     String getValueFromHTML(String locator);
+    
+    String getValueFromJS (String script);
 
     boolean isElementPresent(String locator);
 

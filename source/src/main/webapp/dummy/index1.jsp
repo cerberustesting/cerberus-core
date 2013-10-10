@@ -43,10 +43,10 @@
         <form name="selectFormulary">
             <input name="selectedValue" id="selectedValue">
             <select id="comboSelectRegex" onChange="printValue(this)">
-                <option value="1">TestRegex1</option>
-                <option value="2">TestRegex2</option>
-                <option value="3">Cerberus</option>
-                <option value="4">TestRegex3</option>
+                <option value="val1">TestRegex1</option>
+                <option value="val2">TestRegex2</option>
+                <option value="val3">Cerberus</option>
+                <option value="val4">TestRegex3</option>
             </select>
         </form>
     </body>

@@ -24,6 +24,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Random;
 import java.util.logging.Logger;
+import org.openqa.selenium.JavascriptExecutor;
 
 /**
  * {Insert class description here}
@@ -139,7 +140,23 @@ public class PropertyService implements IPropertyService {
                 res.setDescription(res.getDescription().replaceAll("%ELEMENT%", testCaseCountryProperty.getValue()));
                 testCaseExecutionData.setPropertyResultMessage(res);
             }
-        } else {
+        } else if (testCaseCountryProperty.getType().equals("getFromJS")) {
+            try {
+                String script = testCaseCountryProperty.getValue();
+                String valueFromJS = this.seleniumService.getValueFromJS(script);
+                if (script != null) {
+                    res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_HTML);
+                    res.setDescription(res.getDescription().replaceAll("%ELEMENT%", testCaseCountryProperty.getValue()));
+                    res.setDescription(res.getDescription().replaceAll("%VALUE%", script));
+                    testCaseExecutionData.setPropertyResultMessage(res);
+                }
+            } catch (NoSuchElementException exception) {
+                MyLogger.log(PropertyService.class.getName(), Level.ERROR, exception.toString());
+                res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_HTML_ELEMENTDONOTEXIST);
+                res.setDescription(res.getDescription().replaceAll("%ELEMENT%", testCaseCountryProperty.getValue()));
+                testCaseExecutionData.setPropertyResultMessage(res);
+            }
+        }else {
             res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_UNKNOWNPROPERTY);
             res.setDescription(res.getDescription().replaceAll("%PROPERTY%", testCaseCountryProperty.getType()));
         }

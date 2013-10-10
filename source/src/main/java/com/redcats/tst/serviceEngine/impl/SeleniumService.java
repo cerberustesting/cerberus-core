@@ -36,6 +36,9 @@ import java.net.ProtocolException;
 import java.net.URL;
 import java.util.Date;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 /**
  * {Insert class description here}
@@ -350,6 +353,15 @@ public class SeleniumService implements ISeleniumService {
         return result;
     }
 
+    @Override
+    public String getValueFromJS (String script){
+    String result;
+    JavascriptExecutor js = (JavascriptExecutor)this.selenium.getDriver();
+    result = (String) (js.executeScript(script));            
+    return result;
+    }
+    
+    
     @Override
     public boolean isElementPresent(String locator) {
         try {
@@ -909,11 +921,12 @@ public class SeleniumService implements ISeleniumService {
 
     private MessageEvent doActionSelect(String html, String property) {
         MessageEvent message;
+        String identifier = "";
+        String value = "";
+        
         try {
             if (!StringUtil.isNull(html) && !StringUtil.isNull(property)) {
-                String identifier;
-                String value;
-
+                
                 String[] strings = property.split("=");
                 if (strings.length == 1) {
                     identifier = "value";
@@ -950,19 +963,55 @@ public class SeleniumService implements ISeleniumService {
                     message.setDescription(message.getDescription().replaceAll("%ELEMENT%", html));
                     message.setDescription(message.getDescription().replaceAll("%DATA%", property));
                     return message;
-                } else if (identifier.equalsIgnoreCase("regex")) {
+                } else if (identifier.equalsIgnoreCase("regexValue") || identifier.equalsIgnoreCase("regexIndex") || 
+                        identifier.equalsIgnoreCase("regexLabel")) {
                     java.util.List<WebElement> list = select.getOptions();
+                            
+                    if (identifier.equalsIgnoreCase("regexValue")) {
+                        for (WebElement option : list) {
+                            String optionValue = option.getAttribute("value");
+                            Pattern pattern = Pattern.compile(value);
+                            Matcher matcher = pattern.matcher(optionValue);
+                                
+                            if (matcher.find()) {
+                                select.selectByValue(optionValue);
+                                message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_SELECT);
+                                message.setDescription(message.getDescription().replaceAll("%ELEMENT%", html));
+                                message.setDescription(message.getDescription().replaceAll("%DATA%", property));
+                                return message;
+                            }
+                        }
+                      } else if (identifier.equalsIgnoreCase("regexLabel")) {
+                          for (WebElement option : list) {
+                            String optionLabel = option.getText();
+                            Pattern pattern = Pattern.compile(value);
+                            Matcher matcher = pattern.matcher(optionLabel);
+                                
+                            if (matcher.find()) {
+                                  select.selectByVisibleText(optionLabel);
+                                  message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_SELECT);
+                                  message.setDescription(message.getDescription().replaceAll("%ELEMENT%", html));
+                                  message.setDescription(message.getDescription().replaceAll("%DATA%", property));
+                                  return message;
+                            }
+                          }
+                        } else if (identifier.equalsIgnoreCase("regexIndex") && StringUtil.isNumeric(value)) {
                             for (WebElement option : list) {
-                                String fullText = option.getText();
-                                if (fullText.contains(value)) {
-                                    select.selectByVisibleText(fullText);
+                                Integer id = 0;
+                                Pattern pattern = Pattern.compile(value);
+                                Matcher matcher = pattern.matcher(id.toString());
+                                
+                                if (matcher.find()) {
+                                    select.selectByIndex(Integer.parseInt(value));
                                     message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_SELECT);
                                     message.setDescription(message.getDescription().replaceAll("%ELEMENT%", html));
                                     message.setDescription(message.getDescription().replaceAll("%DATA%", property));
                                     return message;
                                 }
+                                id++;
                             }
-                  } else {
+                        }
+               } else {
                     message = new MessageEvent(MessageEventEnum.ACTION_FAILED_SELECT_NO_IDENTIFIER);
                     message.setDescription(message.getDescription().replaceAll("%IDENTIFIER%", html));
                     return message;
@@ -977,7 +1026,12 @@ public class SeleniumService implements ISeleniumService {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_SELENIUM_CONNECTIVITY);
             MyLogger.log(SeleniumService.class.getName(), Level.FATAL, exception.toString());
             return message;
-        }
+        } catch (PatternSyntaxException e) {
+            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_SELECT_REGEX_INVALIDPATERN);
+            message.setDescription(message.getDescription().replaceAll("%PATERN%", value));
+            message.setDescription(message.getDescription().replaceAll("%ERROR%", e.getMessage()));
+            return message;
+                }
         return new MessageEvent(MessageEventEnum.ACTION_FAILED_SELECT);
     }
 
