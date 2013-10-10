@@ -25,10 +25,10 @@ Document   : menu
     String dbDocS(Connection conn, String table, String field, String label) {
         try {
             Statement stmtQuery = conn.createStatement();
-            try{
+            try {
                 String sq = "SELECT * FROM Documentation where DocTable = '" + table + "' and docfield = '" + field + "' and doclabel IS NOT NULL AND trim(doclabel) <> ''";
                 ResultSet q = stmtQuery.executeQuery(sq);
-                try{
+                try {
                     if (q.first()) {
                         String ret;
                         ret = q.getString("DocLabel");
@@ -78,7 +78,7 @@ Document   : menu
         } catch (SQLException e) {
         } finally {
             try {
-                if(conn != null){
+                if (conn != null) {
                     conn.close();
                 }
             } catch (SQLException e) {
@@ -91,10 +91,10 @@ Document   : menu
     String ComboInvariant(Connection conn, String HTMLComboName, String HTMLComboStyle, String HTMLId, String HTMLClass, String combonumber, String value, String HTMLOnChange, String firstOption) {
         try {
             Statement stmtQuery = conn.createStatement();
-            try{
-            String sq = "SELECT value from Invariant where id = '" + combonumber + "' order by sort";
-            ResultSet q = stmtQuery.executeQuery(sq);
-                try{
+            try {
+                String sq = "SELECT value from Invariant where id = '" + combonumber + "' order by sort";
+                ResultSet q = stmtQuery.executeQuery(sq);
+                try {
                     String ret = "<select id=\"" + HTMLId + "\" class=\"" + HTMLClass + "\" style=\"" + HTMLComboStyle + "\" name=\"" + HTMLComboName + "\"";
                     if (HTMLOnChange.compareToIgnoreCase("") != 0) {
                         ret = ret + " onchange=\"" + HTMLOnChange + "\"";
@@ -114,7 +114,7 @@ Document   : menu
                     ret = ret + "</select>";
 
                     return ret;
-                }finally {
+                } finally {
                     q.close();
                 }
             } finally {
@@ -128,10 +128,10 @@ Document   : menu
     String ComboInvariantAjax(Connection conn, String HTMLComboName, String HTMLComboStyle, String HTMLId, String HTMLrel, String combonumber, String value, String HTMLOnChange, boolean emptyfirstoption) {
         try {
             Statement stmtQuery = conn.createStatement();
-            try{
+            try {
                 String sq = "SELECT value from Invariant where id = '" + combonumber + "' order by sort";
                 ResultSet q = stmtQuery.executeQuery(sq);
-                try{
+                try {
                     String ret = "<select id=\"" + HTMLId + "\" rel=\"" + HTMLrel + "\" style=\"" + HTMLComboStyle + "\" name=\"" + HTMLComboName + "\"";
                     if (HTMLOnChange.compareToIgnoreCase("") != 0) {
                         ret = ret + " onchange=\"" + HTMLOnChange + "\"";
@@ -164,10 +164,10 @@ Document   : menu
     String ComboInvariantMultipleAjax(Connection conn, String HTMLComboName, String HTMLComboStyle, String HTMLId, String HTMLrel, String combonumber, String value, String HTMLOnChange, boolean emptyfirstoption) {
         try {
             Statement stmtQuery = conn.createStatement();
-            try{
+            try {
                 String sq = "SELECT value from Invariant where id = '" + combonumber + "' order by sort";
                 ResultSet q = stmtQuery.executeQuery(sq);
-                try{
+                try {
                     String ret = "<select id=\"" + HTMLId + "\" rel=\"" + HTMLrel + "\" style=\"" + HTMLComboStyle + "\" name=\"" + HTMLComboName + "\"";
                     if (HTMLOnChange.compareToIgnoreCase("") != 0) {
                         ret = ret + " onchange=\"" + HTMLOnChange + "\"";
@@ -200,10 +200,10 @@ Document   : menu
     String ComboProject(Connection conn, String HTMLComboName, String HTMLComboStyle, String HTMLId, String HTMLClass, String value, String HTMLOnChange, boolean emptyfirstoption, String FirstValue, String FirstDescription) {
         try {
             Statement stmtQuery = conn.createStatement();
-            try{
+            try {
                 String sq = "SELECT idproject, VCCode, Description, active FROM project ORDER BY idproject";
                 ResultSet q = stmtQuery.executeQuery(sq);
-                try{
+                try {
                     String ret = "<select id=\"" + HTMLId + "\" class=\"" + HTMLClass + "\" style=\"" + HTMLComboStyle + "\" name=\"" + HTMLComboName + "\"";
                     if (HTMLOnChange.compareToIgnoreCase("") != 0) {
                         ret = ret + " onchange=\"" + HTMLOnChange + "\"";
@@ -270,7 +270,8 @@ Document   : menu
                 + " by <b><span id=\"foot-projectname\">" + Version.PROJECT_NAME + "</span></b>"
                 + " <b><span id=\"foot-version\">" + Version.VERSION + "</span></b>"
                 + " in <b><span id=\"foot-env\">" + System.getProperty("org.cerberus.environment") + "</span></b>"
-                + " and took <b><span id=\"foot-duration\">" + Duration + "</span>ms</b>";
+                + " and took <b><span id=\"foot-duration\">" + Duration + "</span>ms</b>"
+                + " - Open a bug or ask for any new feature <a target=\"_blank\"  href=\"https://github.com/vertigo17/Cerberus/issues/new?body=Cerberus%20Version%20:%20" + Version.VERSION + "\">here</a>.";
         return footer;
     }
 %>
