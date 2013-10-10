@@ -72,46 +72,54 @@ public class Homepage extends HttpServlet {
                 IApplicationService applicationService = appContext.getBean(ApplicationService.class);
                 List<Application> appliList = applicationService.findApplicationBySystem(MySystem);
                 String inSQL = StringUtil.getInSQLClause(appliList);
+
+                if (!(inSQL.equalsIgnoreCase(""))) {
+                    inSQL = " and application " + inSQL + " ";
+                } else {
+                    inSQL = " and application in ('') ";
+                }
+
                 StringBuilder SQL = new StringBuilder();
                 SQL.append("SELECT t.Test, count(*) as TOTAL,STANDBY, TBI, INPROGRESS , TBV , WORKING, TBD "
                         + "FROM testcase t "
                         + "left join "
                         + "(SELECT g.test, count(*) as TBI from testcase g "
-                        + "where Status = 'TO BE IMPLEMENTED' "
-                        + "group by Test)s "
+                        + "where Status = 'TO BE IMPLEMENTED' ");
+                SQL.append(inSQL);
+                SQL.append("group by Test)s "
                         + "on s.test=t.test "
                         + "left join "
                         + "(SELECT h.test, count(*) as WORKING from testcase h "
-                        + "where Status = 'WORKING' "
-                        + "group by Test)u "
+                        + "where Status = 'WORKING' ");
+                SQL.append(inSQL);
+                SQL.append("group by Test)u "
                         + "on u.test=t.test "
                         + "left join "
                         + "(SELECT a.test, count(*) as STANDBY from testcase a "
-                        + "where Status = 'Standby' "
-                        + "group by Test)v "
+                        + "where Status = 'Standby' ");
+                SQL.append(inSQL);
+                SQL.append("group by Test)v "
                         + "on v.test=t.test "
                         + "left join "
                         + "(SELECT b.test, count(*) as INPROGRESS from testcase b "
-                        + "where Status = 'IN PROGRESS' "
-                        + "group by Test)w "
+                        + "where Status = 'IN PROGRESS' ");
+                SQL.append(inSQL);
+                SQL.append("group by Test)w "
                         + "on w.test=t.test "
                         + "left join "
                         + "(SELECT i.test, count(*) as TBV from testcase i "
-                        + "where Status = 'TO BE VALIDATED' "
-                        + "group by Test)x "
+                        + "where Status = 'TO BE VALIDATED' ");
+                SQL.append(inSQL);
+                SQL.append("group by Test)x "
                         + "on x.test=t.test "
                         + "left join "
                         + "(SELECT j.test, count(*) as TBD from testcase j "
-                        + "where Status = 'TO BE DELETED' "
-                        + "group by Test)y "
+                        + "where Status = 'TO BE DELETED' ");
+                SQL.append(inSQL);
+                SQL.append("group by Test)y "
                         + "on y.test=t.test "
-                        + "WHERE 1=1 and ");
-                if (!(inSQL.equalsIgnoreCase(""))) {
-                    SQL.append("t.application ");
-                    SQL.append(inSQL);
-                } else {
-                    SQL.append("t.application in ('') ");
-                }
+                        + "WHERE 1=1  ");
+                SQL.append(inSQL);
                 SQL.append(" GROUP BY test;");
 
                 MyLogger.log(Homepage.class.getName(), Level.DEBUG, " SQL : " + SQL.toString());
