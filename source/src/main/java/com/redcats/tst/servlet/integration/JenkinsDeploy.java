@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.servlet.annotation.WebServlet;
 
 /**
  * Servlet called from JQuery Datatable to request Jenkins to run deploy
@@ -27,9 +28,8 @@ import java.util.logging.Logger;
  *
  * @author Pete
  */
+@WebServlet(name = "JenkinsDeploy", urlPatterns = {"/JenkinsDeploy"})
 public class JenkinsDeploy extends HttpServlet {
-
-    public static final String JENKINS_URL = "http://192.168.134.35:8210";
 
     /**
      * Processes requests for both HTTP
