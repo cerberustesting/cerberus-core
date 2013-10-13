@@ -3,6 +3,8 @@
     Created on : 7/Fev/2012, 16:06:22
     Author     : ip100003
 --%>
+<%@page import="com.redcats.tst.log.MyLogger"%>
+<%@page import="org.apache.log4j.Level"%>
 <%@page import="com.redcats.tst.service.IParameterService"%>
 <%@page import="org.springframework.web.context.support.WebApplicationContextUtils"%>
 <%@page import="org.springframework.context.ApplicationContext"%>
@@ -10,11 +12,11 @@
 
 
 <%
-        ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-        IParameterService myParameterService = appContext.getBean(IParameterService.class);
+    ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+    IParameterService myParameterService = appContext.getBean(IParameterService.class);
+    try {
         String CerberusSupportEmail = myParameterService.findParameterByKey("cerberus_support_email").getValue();
 %>
-
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
     "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -59,3 +61,9 @@
         </div>
     </body>
 </html>
+<%
+    } catch (Exception ex) {
+        request.getRequestDispatcher("/DatabaseMaintenance.jsp?GO=Y").forward(request, response);
+        MyLogger.log("Login.jsp", Level.FATAL, " Exception catched : " + ex);
+    }
+%>

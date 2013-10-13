@@ -4,6 +4,8 @@
     Author     : acraske
 --%>
 
+<%@page import="com.redcats.tst.log.MyLogger"%>
+<%@page import="org.apache.log4j.Level"%>
 <%@page import="com.redcats.tst.service.impl.ApplicationService"%>
 <%@page import="com.redcats.tst.util.StringUtil"%>
 <%@page import="com.redcats.tst.entity.Application"%>
@@ -181,6 +183,7 @@
                         List<Application> appliList = applicationService.findApplicationBySystem(MySystem);
                         String appliInSQL = StringUtil.getInSQLClause(appliList);
 
+                        MyLogger.log("RunTests.jsp", Level.DEBUG, "System : '" + MySystem + "' - Application in clause : '" + appliInSQL + "'");
 
 
                 %>
@@ -230,7 +233,7 @@
                                     <td id="wob"><select size="16" id="test" name="Test"
                                                          style="width: 200px" onchange="document.RunTest.submit()">
                                             <%
-                                                ResultSet rsTest = stmt.executeQuery("SELECT DISTINCT t.Test FROM Test t, TestCase tc WHERE tc.test=t.test AND tc.tcactive='Y' AND t.active='Y' AND tc.application " + appliInSQL + " AND tc.group is not NULL AND tc.group not in ('PRIVATE') AND length(tc.group) > 1 " );
+                                                ResultSet rsTest = stmt.executeQuery("SELECT DISTINCT t.Test FROM Test t, TestCase tc WHERE tc.test=t.test AND tc.tcactive='Y' AND t.active='Y' AND tc.application " + appliInSQL + " AND tc.group is not NULL AND tc.group not in ('PRIVATE') AND length(tc.group) > 1 ");
                                                 while (rsTest.next()) {%>
                                             <option style="width: 300px" value="<%= rsTest.getString(1)%>"
                                                     <%=test.compareTo(rsTest.getString(1)) == 0 ? " SELECTED " : ""%>><%= rsTest.getString(1)%></option>

@@ -176,7 +176,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `parameter` VALUES ('cerberus_homepage_nbbuildhistorydetail','5','Define the number of build/revision that are displayed in the homepage.')");
         SQLS.append(",('cerberus_picture_path','/home/vertigo/dev/CerberusPictures/','Path to store the Cerberus Selenium Screenshot')");
-        SQLS.append(",('cerberus_picture_url','http://localhost/CerberusPictures/%ID%/St%STEP%Sq%SEQ%A%ACTION%.png','Link to the Cerberus Selenium Screenshot. The following variable can be used : %ID% and %SCREENSHOT%')");
+        SQLS.append(",('cerberus_picture_url','http://localhost/CerberusPictures/','Link to the Cerberus Selenium Screenshot. The following variable can be used : %ID% and %SCREENSHOT%')");
         SQLS.append(",('cerberus_reporting_url','http://IP/Cerberus/ReportingExecution.jsp?Application=%appli%&TcActive=Y&Priority=All&Environment=%env%&Build=%build%&Revision=%rev%&Country=%country%&Status=WORKING&Apply=Apply','URL to Cerberus reporting screen. the following variables can be used : %country%, %env%,  %appli%, %build% and %rev%.')");
         SQLS.append(",('cerberus_selenium_plugins_path','/tmp/','Path to load firefox plugins (Firebug + netExport) to do network traffic')");
         SQLS.append(",('cerberus_support_email','<a href=\"mailto:support@domain.com?Subject=Cerberus%20Account\" style=\"color: yellow\">Support</a>','Contact Email in order to ask for new user in Cerberus tool.')");
@@ -2184,7 +2184,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("('APPLITYPE', 'NONE', 20, 43, 'Any Other Type of application', null, null, null)");
         SQLInstruction.add(SQLS.toString());
         SQLS = new StringBuilder();
-        SQLS.append("UPDATE application SET deploytype='NONE' where deploytype is null;");
+        SQLS.append("UPDATE application SET deploytype=null where deploytype is null;");
         SQLInstruction.add(SQLS.toString());
         SQLS = new StringBuilder();
         SQLS.append("DELETE FROM `parameter` WHERE `param`='sitdmoss_bugtracking_url';");
@@ -2504,6 +2504,13 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("INSERT INTO `countryenvironmentparameters` (`system`, `Country`, `Environment`, `Application`, `IP`, `URL`, `URLLOGIN`) VALUES ('DEFAULT', 'RX', 'PROD', 'Google', 'www.google.com', '/', '');");
         SQLInstruction.add(SQLS.toString());
 
+//-- Force default system to DEFAULT.
+//-- ------------------------
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `user` SET DefaultSystem='DEFAULT' where DefaultSystem is null;");
+        SQLInstruction.add(SQLS.toString());
+        
+        
         return SQLInstruction;
     }
 }
