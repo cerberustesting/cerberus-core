@@ -119,6 +119,10 @@
                         }
                         out.print("</table>");
                         DtbVersion = myVersionService.findMyVersionByKey("database");
+                        if(DtbVersion == null){
+                            factoryMyversion = new FactoryMyversion();
+                            DtbVersion = factoryMyversion.create("database", 0);
+                        }
                         out.print("<b>Database Moved to Version : ");
                         out.print(DtbVersion.getValue());
                         out.print("</b><br><br>");
