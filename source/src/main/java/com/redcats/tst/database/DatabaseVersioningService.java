@@ -1129,17 +1129,17 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLInstruction.add(SQLS.toString());
 
         SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `testcasecountryproperties` VALUES ('Examples','0001A','RX','MYTEXT','text','VC','cerberus automated testing',0,0,'STATIC')");
+        SQLS.append("INSERT INTO `testcasecountryproperties` VALUES ('Examples','0001A','RX','MYTEXT','text','VC','cerberus automated testing',0,0,'STATIC'), ('Examples','0001A','RX','WAIT','text','VC','5000',0,0,'STATIC')");
         SQLInstruction.add(SQLS.toString());
 
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `testcasestepaction` VALUES ('Examples','0001A',1,10,'openUrlLogin','','')");
         SQLS.append(",('Examples','0001A',1,20,'type','id=gbqfq','MYTEXT')");
-        SQLS.append(",('Examples','0001A',1,30,'clickAndWait','id=gbqfb','')");
+        SQLS.append(",('Examples','0001A',1,30,'clickAndWait','id=gbqfb','WAIT')");
         SQLInstruction.add(SQLS.toString());
 
         SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `testcasestepactioncontrol` VALUES ('Examples','0001A',1,30,1,'verifyTextInPage','','Welcome to Cerberus Website','Y')");
+        SQLS.append("INSERT INTO `testcasestepactioncontrol` VALUES ('Examples','0001A',1,30,1,'verifyRegexInElement','Welcome to Cerberus Website','xpath=//div[@id=\\'search\\']/div/ol/li/div/div/div/span','Y')");
         SQLInstruction.add(SQLS.toString());
 
         SQLS = new StringBuilder();
