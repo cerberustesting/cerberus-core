@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE glassfish-web-app PUBLIC "-//GlassFish.org//DTD GlassFish Application Server 3.1 Servlet 3.0//EN" "http://glassfish.org/dtds/glassfish-web-app_3_0-1.dtd">
 <glassfish-web-app error-url="">
-  <context-root>/GuiCerberusV2-2.0.0-SNAPSHOT</context-root>
+  <context-root>/Cerberus-0.9.0</context-root>
   <security-role-mapping>
     <role-name>Admin</role-name>
     <group-name>Admin</group-name>

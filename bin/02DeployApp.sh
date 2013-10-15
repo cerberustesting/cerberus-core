@@ -9,6 +9,6 @@
 ###### Script start here ######
 
 cd $MYPATH
-$GLASSFISHPATH/asadmin undeploy --target server --cascade=true GuiCerberus-1.1.0-SNAPSHOT.war
-$GLASSFISHPATH/asadmin deploy --target server --availabilityenabled=true $MYPATH/../GuiCerberus-1.1.0-SNAPSHOT.war
+$GLASSFISHPATH/asadmin undeploy --target server --cascade=true Cerberus-0.9.0.war
+$GLASSFISHPATH/asadmin deploy --target server --contextroot Cerberus --availabilityenabled=true $MYPATH/../Cerberus-0.9.0.war
 
