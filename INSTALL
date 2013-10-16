@@ -37,7 +37,7 @@ GRANT ALL PRIVILEGES ON `cerberus` . * TO 'cerberus'@'%';
 - run deploy script --> 02DeployApp.sh[.bat]
 
 4) You can connect to cerberus and start using it.
-  http://localhost:8080/GuiCerberus-1.1.0-SNAPSHOT/
+  http://localhost:8080/Cerberus/
  - Default Logins to the Cerberus Web Interface :
   admin / admin for administrator access
   cerberus / cerberus for standard user access
