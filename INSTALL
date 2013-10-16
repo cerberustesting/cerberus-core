@@ -7,8 +7,13 @@ MySQL
   Option "lower_case_table_names=1" must be activated.
 Java 1.6
 Glassfish Server v3
-  if necessary, copy the mysql jdbc drivers jar file on the glassfish/lib folder of your Glassfish installation.
-  The drivers can be downloaded at http://dev.mysql.com/downloads/connector/j/
+  - if necessary, copy the mysql jdbc drivers jar file on the glassfish/lib folder of your Glassfish installation.
+    The drivers can be downloaded at http://dev.mysql.com/downloads/connector/j/
+  - In case your default distribution does not use Oracle jdk, you can get it from the web and modify glassfish config :
+      file : glassfish/config/asenv.conf
+      can be modified in order to add the following line :
+       AS_JAVA=/home/user/local/jdk1.6.0_38
+      pointing to the location of the choosen jdk folder.
   
 
 Installation
