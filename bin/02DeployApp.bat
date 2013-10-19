@@ -4,7 +4,7 @@ rem #########################################################
 rem #          Cerberus Application Deploy Script           #
 rem #########################################################
 
-CALL %CD%00Config.bat
+CALL %CD%\00Config.bat
 
 rem ###### Script start here ######
 
