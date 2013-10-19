@@ -2544,8 +2544,14 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("    REFERENCES `countryenvparam` (`system` , `Country` , `Environment` )");
         SQLS.append("    ON DELETE CASCADE ON UPDATE CASCADE)  ENGINE=InnoDB DEFAULT CHARSET=utf8 ;");
         SQLInstruction.add(SQLS.toString());
-        
-        
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `countryenvlink` ");
+        SQLS.append("DROP PRIMARY KEY ");
+        SQLS.append(", ADD PRIMARY KEY (`system`, `Country`, `Environment`, `systemLink`) ;");
+        SQLInstruction.add(SQLS.toString());
+
+
+
         return SQLInstruction;
     }
 }

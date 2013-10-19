@@ -47,6 +47,10 @@ public class RunTestCaseService implements IRunTestCaseService {
     @Autowired
     private ITestCaseExecutionService testCaseExecutionService;
     @Autowired
+    private ITestCaseExecutionSysVerService testCaseExecutionSysVerService;
+    @Autowired
+    private ICountryEnvLinkService countryEnvLinkService;
+    @Autowired
     private ITestCaseExecutionWWWService testCaseExecutionWWWService;
     @Autowired
     private ITestCaseCountryPropertiesService testCaseCountryPropertiesService;
@@ -69,6 +73,10 @@ public class RunTestCaseService implements IRunTestCaseService {
     @Autowired
     private IFactoryTestCaseExecutionData factoryTestCaseExecutionData;
     @Autowired
+    private IFactoryTestCaseExecutionSysVer factoryTestCaseExecutionSysVer;
+    @Autowired
+    private IFactoryCountryEnvLink factoryCountryEnvLink;
+    @Autowired
     private IFactoryCountryEnvironmentApplication factorycountryEnvironmentApplication;
     @Autowired
     private IInvariantService invariantService;
@@ -77,7 +85,7 @@ public class RunTestCaseService implements IRunTestCaseService {
     public TCExecution runTestCase(TCExecution tCExecution) {
 
         /**
-         * Start timestamp
+         * Start timestamp.
          */
         long executionStart = new Date().getTime();
         MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Initializing Start Timestamp : " + executionStart);
@@ -118,7 +126,7 @@ public class RunTestCaseService implements IRunTestCaseService {
         }
 
         /**
-         * Load TestCase information and set TCase to the TCExecution object
+         * Load TestCase information and set TCase to the TCExecution object.
          */
         tCExecution.setResultMessage(new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_LOADINGDATA));
         MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Loading Test Case Information. " + tCExecution.getTest() + "-" + tCExecution.getTestCase());
@@ -145,7 +153,7 @@ public class RunTestCaseService implements IRunTestCaseService {
 
         /**
          * Load Application information and Set Application to the TCExecution
-         * object
+         * object.
          */
         MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Loading Application Information");
         try {
@@ -161,7 +169,7 @@ public class RunTestCaseService implements IRunTestCaseService {
 
 
         /**
-         * Load Country information and Set it to the TCExecution object
+         * Load Country information and Set it to the TCExecution object.
          */
         MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Loading Country Information");
         try {
@@ -305,7 +313,7 @@ public class RunTestCaseService implements IRunTestCaseService {
         }
 
         /**
-         * Check if Browser is supported and if selenium server is reachable
+         * Check if Browser is supported and if selenium server is reachable.
          */
         if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")) {
 
@@ -339,6 +347,46 @@ public class RunTestCaseService implements IRunTestCaseService {
             tCExecution.setResultMessage(new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_COULDNOTCREATE_RUNID));
             return tCExecution;
         }
+
+        /**
+         * Feeding Build Rev of main Application system to
+         * testcaseexecutionsysver table. Only if execution is not manual.
+         */
+        if (!(tCExecution.isManualURL())) {
+            TestCaseExecutionSysVer myExeSysVer = factoryTestCaseExecutionSysVer.create(runID, tCExecution.getApplication().getSystem(), tCExecution.getBuild(), tCExecution.getRevision());
+            testCaseExecutionSysVerService.insertTestCaseExecutionSysVer(myExeSysVer);
+
+            /**
+             * For all Linked environment, we also keep track on the build/rev
+             * information inside testcaseexecutionsysver table.
+             */
+            List<CountryEnvLink> ceLink = null;
+            try {
+                ceLink = countryEnvLinkService.findCountryEnvLinkByCriteria(tCExecution.getApplication().getSystem(), tCExecution.getCountry(), tCExecution.getEnvironment());
+                MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, tCExecution.getId() + " - Linked environment found.");
+                for (CountryEnvLink myCeLink : ceLink) {
+                    MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, tCExecution.getId() + " - Linked environment found : " + myCeLink.getSystemLink() + myCeLink.getCountryLink() + myCeLink.getEnvironmentLink());
+
+                    CountryEnvParam mycountEnvParam;
+                    try {
+                        mycountEnvParam = this.countryEnvParamService.findCountryEnvParamByKey(myCeLink.getSystemLink(), myCeLink.getCountryLink(), myCeLink.getEnvironmentLink());
+                        myExeSysVer = factoryTestCaseExecutionSysVer.create(runID, myCeLink.getSystemLink(), mycountEnvParam.getBuild(), mycountEnvParam.getRevision());
+                        testCaseExecutionSysVerService.insertTestCaseExecutionSysVer(myExeSysVer);
+                    } catch (CerberusException ex) {
+                        // Referencial Integrity link between countryEnvLink and CountryEnvParam table should secure that exception to never happen.
+                        Logger.getLogger(RunTestCaseService.class.getName()).log(java.util.logging.Level.SEVERE, ex.getMessage());
+                        return tCExecution;
+                    }
+
+
+
+                }
+            } catch (CerberusException ex) {
+                MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, tCExecution.getId() + " - No Linked environment found.");
+            }
+        }
+
+
 
         /**
          * Start Selenium server
@@ -709,9 +757,9 @@ public class RunTestCaseService implements IRunTestCaseService {
             MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Creating TestCaseStepActionControlExecution");
             TestCaseStepActionControlExecution testCaseStepActionControlExecution =
                     factoryTestCaseStepActionControlExecution.create(testCaseStepActionExecution.getId(), testCaseStepActionControl.getTest(),
-                            testCaseStepActionControl.getTestCase(), testCaseStepActionControl.getStep(), testCaseStepActionControl.getSequence(), testCaseStepActionControl.getControl(),
-                            null, null, testCaseStepActionControl.getType(), testCaseStepActionControl.getControlProperty(), testCaseStepActionControl.getControlValue(),
-                            testCaseStepActionControl.getFatal(), startControl, 0, 0, 0, null, testCaseStepActionExecution, new MessageEvent(MessageEventEnum.CONTROL_PENDING));
+                    testCaseStepActionControl.getTestCase(), testCaseStepActionControl.getStep(), testCaseStepActionControl.getSequence(), testCaseStepActionControl.getControl(),
+                    null, null, testCaseStepActionControl.getType(), testCaseStepActionControl.getControlProperty(), testCaseStepActionControl.getControlValue(),
+                    testCaseStepActionControl.getFatal(), startControl, 0, 0, 0, null, testCaseStepActionExecution, new MessageEvent(MessageEventEnum.CONTROL_PENDING));
             this.testCaseStepActionControlExecutionService.insertTestCaseStepActionControlExecution(testCaseStepActionControlExecution);
 
             MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Executing control : " + testCaseStepActionControlExecution.getControl() + " type : " + testCaseStepActionControlExecution.getControlType());
