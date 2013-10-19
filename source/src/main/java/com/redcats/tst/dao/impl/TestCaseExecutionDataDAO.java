@@ -100,11 +100,11 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
             try {
                 preStat.setLong(1, testCaseExecutionData.getId());
                 preStat.setString(2, testCaseExecutionData.getProperty());
-                preStat.setString(3, ParameterParserUtil.securePassword(StringUtil.getLeftString(testCaseExecutionData.getValue(), 150), testCaseExecutionData.getProperty()));
+                preStat.setString(3, ParameterParserUtil.securePassword(StringUtil.getLeftString(testCaseExecutionData.getValue(), 3000), testCaseExecutionData.getProperty()));
                 preStat.setString(4, testCaseExecutionData.getType());
-                preStat.setString(5, ParameterParserUtil.securePassword(StringUtil.getLeftString(testCaseExecutionData.getObject(), 200), testCaseExecutionData.getProperty()));
+                preStat.setString(5, ParameterParserUtil.securePassword(StringUtil.getLeftString(testCaseExecutionData.getObject(), 2500), testCaseExecutionData.getProperty()));
                 preStat.setString(6, testCaseExecutionData.getRC());
-                preStat.setString(7, StringUtil.getLeftString(testCaseExecutionData.getrMessage(), 500));
+                preStat.setString(7, StringUtil.getLeftString(testCaseExecutionData.getrMessage(), 3000));
                 preStat.setTimestamp(8, new Timestamp(testCaseExecutionData.getStart()));
                 preStat.setTimestamp(9, new Timestamp(testCaseExecutionData.getEnd()));
                 preStat.setString(10, new SimpleDateFormat("yyyyMMddHHmmssSSS").format(testCaseExecutionData.getStart()));
@@ -143,11 +143,11 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
             try {
-                preStat.setString(1, ParameterParserUtil.securePassword(StringUtil.getLeftString(testCaseExecutionData.getValue(), 150), testCaseExecutionData.getProperty()));
+                preStat.setString(1, ParameterParserUtil.securePassword(StringUtil.getLeftString(testCaseExecutionData.getValue(), 3000), testCaseExecutionData.getProperty()));
                 preStat.setString(2, testCaseExecutionData.getType());
-                preStat.setString(3, StringUtil.getLeftString(testCaseExecutionData.getObject(), 200));
+                preStat.setString(3, StringUtil.getLeftString(testCaseExecutionData.getObject(), 2500));
                 preStat.setString(4, testCaseExecutionData.getRC());
-                preStat.setString(5, StringUtil.getLeftString(testCaseExecutionData.getrMessage(), 500));
+                preStat.setString(5, StringUtil.getLeftString(testCaseExecutionData.getrMessage(), 3000));
                 preStat.setTimestamp(6, new Timestamp(testCaseExecutionData.getStart()));
                 preStat.setTimestamp(7, new Timestamp(testCaseExecutionData.getEnd()));
                 preStat.setString(8, new SimpleDateFormat("yyyyMMddHHmmssSSS").format(testCaseExecutionData.getStart()));
