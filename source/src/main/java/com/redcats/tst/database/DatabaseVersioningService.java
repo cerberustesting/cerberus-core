@@ -2509,6 +2509,42 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("UPDATE `user` SET DefaultSystem='DEFAULT' where DefaultSystem is null;");
         SQLInstruction.add(SQLS.toString());
         
+//-- Database structure to handle link between environment and history of Build rev per system for each execution.
+//-- ------------------------
+        SQLS = new StringBuilder();
+        SQLS.append("CREATE  TABLE `testcaseexecutionsysver` (");
+        SQLS.append("  `ID` BIGINT UNSIGNED NOT NULL ,");
+        SQLS.append("  `system` VARCHAR(45) NOT NULL ,");
+        SQLS.append("  `Build` VARCHAR(10) NULL ,");
+        SQLS.append("  `Revision` VARCHAR(20) NULL ,");
+        SQLS.append("  PRIMARY KEY (`ID`, `system`) ,");
+        SQLS.append("  INDEX `FK_testcaseexecutionsysver_01` (`ID` ASC) ,");
+        SQLS.append("  CONSTRAINT `FK_testcaseexecutionsysver_01`");
+        SQLS.append("    FOREIGN KEY (`ID` )");
+        SQLS.append("    REFERENCES `testcaseexecution` (`ID` )");
+        SQLS.append("    ON DELETE CASCADE ON UPDATE CASCADE);");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("CREATE  TABLE `countryenvlink` (");
+        SQLS.append("  `system` VARCHAR(45) NOT NULL DEFAULT '' ,");
+        SQLS.append("  `Country` VARCHAR(2) NOT NULL ,");
+        SQLS.append("  `Environment` VARCHAR(45) NOT NULL ,");
+        SQLS.append("  `systemLink` VARCHAR(45) NOT NULL DEFAULT '' ,");
+        SQLS.append("  `CountryLink` VARCHAR(2) NOT NULL ,");
+        SQLS.append("  `EnvironmentLink` VARCHAR(45) NOT NULL ,");
+        SQLS.append("  PRIMARY KEY (`system`, `Country`, `Environment`,`systemLink`, `CountryLink`, `EnvironmentLink`) ,");
+        SQLS.append("  INDEX `FK_countryenvlink_01` (`system` ASC, `Country` ASC, `Environment` ASC) ,");
+        SQLS.append("  INDEX `FK_countryenvlink_02` (`systemLink` ASC, `CountryLink` ASC, `EnvironmentLink` ASC) ,");
+        SQLS.append("  CONSTRAINT `FK_countryenvlink_01`");
+        SQLS.append("    FOREIGN KEY (`system` , `Country` , `Environment` )");
+        SQLS.append("    REFERENCES `countryenvparam` (`system` , `Country` , `Environment` )");
+        SQLS.append("    ON DELETE CASCADE ON UPDATE CASCADE,");
+        SQLS.append("  CONSTRAINT `FK_countryenvlink_02`");
+        SQLS.append("    FOREIGN KEY (`systemLink` , `CountryLink` , `EnvironmentLink` )");
+        SQLS.append("    REFERENCES `countryenvparam` (`system` , `Country` , `Environment` )");
+        SQLS.append("    ON DELETE CASCADE ON UPDATE CASCADE)  ENGINE=InnoDB DEFAULT CHARSET=utf8 ;");
+        SQLInstruction.add(SQLS.toString());
+        
         
         return SQLInstruction;
     }
