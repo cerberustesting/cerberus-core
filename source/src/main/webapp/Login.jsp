@@ -3,6 +3,7 @@
     Created on : 7/Fev/2012, 16:06:22
     Author     : ip100003
 --%>
+<%@page import="version.Version"%>
 <%@page import="com.redcats.tst.log.MyLogger"%>
 <%@page import="org.apache.log4j.Level"%>
 <%@page import="com.redcats.tst.service.IParameterService"%>
@@ -35,7 +36,7 @@
 
         <div style="padding-top: 7%; padding-left: 30%">
             <div id="login-box">
-                <H2>Login</H2>
+                <H2>Cerberus Login</H2><br>V<%=Version.VERSION%><br><br>
                 Please login in order to change TestCases and run Tests.<br>
                 If you don't have login, please contact <%= CerberusSupportEmail%>
                 <br>
