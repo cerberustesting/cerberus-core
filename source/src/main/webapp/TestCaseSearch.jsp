@@ -480,10 +480,9 @@
                                                     </table>
                                                 </td>
                                                 <td id="wob">
-                                                    <input id="submit" class="submit" type="submit" value="Search Testcase" onclick="document.getElementsByName('selectTest')[0].action = 'TestCaseSearch.jsp'"></td>
-                                                <td id="wob"><input name="Search" value="Y" style="visibility:hidden"></td>
-                                                <td id="wob">
-                                                    <input id="exportCSV" class="submit" type="submit" value="Export CSV" onclick="document.getElementsByName('selectTest')[0].action = 'ExportListTestCase'">
+                                                    <input id="submit" class="submit" type="submit" value="Search Testcase" onclick="document.getElementsByName('selectTest')[0].action = 'TestCaseSearch.jsp'"><br>
+                                                    <input name="Search" value="Y" style="visibility:hidden">
+                                                    <input id="exportCSV" class="submit" type="submit" value="Export CSV" onclick="document.getElementsByName('selectTest')[0].action = 'ExportListTestCase'"><br>
                                                     <input name="SearchTc" value="Y" style="visibility:hidden">
                                                 </td>
                                             </tr>

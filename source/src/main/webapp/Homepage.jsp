@@ -107,6 +107,7 @@
         </div>
 
         <%
+            String title1 = dbDocS(conn, "homepage", "RegressionExecutionStatus", "");
             String build = dbDocS(conn, "testcaseexecution", "Build", "Build");
             String revision = dbDocS(conn, "testcaseexecution", "Revision", "Revision");
             String nbExecution = dbDocS(conn, "homepage", "NbExecution", "NbExecution");
@@ -120,7 +121,7 @@
         %>
 
         <div class="divBorder">
-            <h3 style="color: blue">Execution Status</h3>
+            <h3 style="color: blue"><%=title1%></h3>
             <table id="tableau">
                 <thead>
                     <tr id="header">

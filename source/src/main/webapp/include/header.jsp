@@ -59,7 +59,7 @@ Document   : menu
                         <li id="active"><a id="current" name="menu" href="#" style="width:130px">Run</a>
                             <ul id="subnavlist">
                                 <li id="subactive"><a name="menu" id="menuRunTestCase" href="RunTests.jsp" style="width:130px">Run Tests</a></li>
-                                <li><a name="menu" id="menuResumeTestCase" href="ResumeTests.jsp" style="width:130px">Resume Tests</a></li>
+                                <%--                              <li><a name="menu" id="menuResumeTestCase" href="ResumeTests.jsp" style="width:130px">Resume Tests</a></li> --%>
                             </ul>
                         </li>
                         <% }%>

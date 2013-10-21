@@ -2550,6 +2550,14 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(", ADD PRIMARY KEY (`system`, `Country`, `Environment`, `systemLink`) ;");
         SQLInstruction.add(SQLS.toString());
 
+//-- New Documentation on homepage.
+//-- ------------------------
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `DocLabel`, `DocDesc`) VALUES ('homepage', 'RegressionExecutionStatus', '', 'Regression Execution Status', 'This section report the execution statistics of regression testcases by the last sprint / Revision.<br>Criterias :<br>- Only the execution on non-production environment are reported.<br>- Test cases has to be in WORKING status.<br>- On the applications that belong to current system.<br>- Monitoring test cases are excluded<br>  (ie not <i>\\'Performance Monitor\\'</i> and not <i>\\'Business Activity Monitor\\'</i> and not <i>\\'Data Integrity Monitor\\'</i>)');");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `test` VALUES ('Data Integrity Monitor','Data Integrity Monitor Tests','Y','Y','2012-06-19 09:56:06');");
+        SQLInstruction.add(SQLS.toString());
 
 
         return SQLInstruction;
