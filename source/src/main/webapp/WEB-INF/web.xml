@@ -214,6 +214,10 @@
         <servlet-name>UpdateCountryEnv</servlet-name>
         <servlet-class>com.redcats.tst.servlet.environment.UpdateCountryEnv</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>ExportListTestCase</servlet-name>
+        <servlet-class>com.redcats.tst.servlet.testCase.ExportListTestCase</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>RunTestCase</servlet-name>
         <url-pattern>/RunTestCase</url-pattern>
@@ -409,6 +413,10 @@
     <servlet-mapping>
         <servlet-name>UpdateCountryEnv</servlet-name>
         <url-pattern>/UpdateCountryEnv</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ExportListTestCase</servlet-name>
+        <url-pattern>/ExportListTestCase</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>

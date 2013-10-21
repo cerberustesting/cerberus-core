@@ -276,7 +276,7 @@
                     }
 
             %>
-            <form action="TestCaseSearch.jsp" method="get" name="selectTest">
+            <form action="TestCaseSearch.jsp" method="post" name="selectTest">
                 <table id="arrond">
                     <tr><td id="arrond"  >
                             <table><tr><td class="wob"><table><tr>
@@ -480,9 +480,12 @@
                                                     </table>
                                                 </td>
                                                 <td id="wob">
-                                                    <input id="submit" class="submit" type="submit" value="Search Testcase"></td>
+                                                    <input id="submit" class="submit" type="submit" value="Search Testcase" onclick="document.getElementsByName('selectTest')[0].action = 'TestCaseSearch.jsp'"></td>
                                                 <td id="wob"><input name="Search" value="Y" style="visibility:hidden"></td>
-                                                <td id="wob"><input name="SearchTc" value="Y" style="visibility:hidden"></td>
+                                                <td id="wob">
+                                                    <input id="exportCSV" class="submit" type="submit" value="Export CSV" onclick="document.getElementsByName('selectTest')[0].action = 'ExportListTestCase'">
+                                                    <input name="SearchTc" value="Y" style="visibility:hidden">
+                                                </td>
                                             </tr>
                                         </table>
                                     </td>
