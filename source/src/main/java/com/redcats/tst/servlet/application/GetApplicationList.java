@@ -27,7 +27,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  *
  * @author Benoit CIVEL
  */
-@WebServlet(value = "/GetApplicationList")
+@WebServlet(name = "GetApplicationList", urlPatterns = {"/GetApplicationList"})
 public class GetApplicationList extends HttpServlet {
 
     @Override

@@ -25,7 +25,7 @@ import java.sql.ResultSet;
 /**
  * @author bcivel
  */
-@WebServlet(name = "TestcaseList", urlPatterns = {"/TestcaseList"})
+@WebServlet(name = "TestcaseListGrid", urlPatterns = {"/TestcaseListGrid"})
 public class TestcaseListGrid extends HttpServlet {
 
     /**

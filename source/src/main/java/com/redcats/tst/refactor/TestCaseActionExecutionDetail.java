@@ -11,6 +11,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -19,7 +20,7 @@ import java.io.IOException;
 /**
  * @author bcivel
  */
-//@WebServlet(value = "/TestCaseActionExecutionDetail")
+@WebServlet(name = "TestCaseActionExecutionDetail", urlPatterns = {"/TestCaseActionExecutionDetail"})
 public class TestCaseActionExecutionDetail extends HttpServlet {
 
     @Override

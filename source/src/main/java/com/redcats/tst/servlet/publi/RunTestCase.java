@@ -34,7 +34,7 @@ import java.text.SimpleDateFormat;
  * @version 1.0, 25/01/2013
  * @since 2.0.0
  */
-@WebServlet(value = "/RunTestCase")
+@WebServlet(name = "RunTestCase", urlPatterns = {"/RunTestCase"})
 public class RunTestCase extends HttpServlet {
 
     @Override

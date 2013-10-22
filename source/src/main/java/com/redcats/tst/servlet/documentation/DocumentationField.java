@@ -22,7 +22,7 @@ import java.io.IOException;
  * @version 1.0, 07/02/2013
  * @since 2.0.0
  */
-@WebServlet(value = "/DocumentationField")
+@WebServlet(name = "DocumentationField", urlPatterns = {"/DocumentationField"})
 public class DocumentationField extends HttpServlet {
 
     @Override

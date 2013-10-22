@@ -11,6 +11,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 import version.Version;
 
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -28,6 +29,7 @@ import java.util.logging.Logger;
 /**
  * @author bcivel
  */
+@WebServlet(name = "UpdateBuildRevisionParameter", urlPatterns = {"/UpdateBuildRevisionParameter"})
 public class UpdateBuildRevisionParameter extends HttpServlet {
 
     /**
