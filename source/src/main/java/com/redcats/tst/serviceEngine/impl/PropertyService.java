@@ -171,29 +171,29 @@ public class PropertyService implements IPropertyService {
         /**
          * Trying to replace by system environment variables .
          */
-        myString = StringUtil.replaceAllProperties(myString, "%ENV%", tCExecution.getEnvironmentData());
-        myString = StringUtil.replaceAllProperties(myString, "%ENVGP%", tCExecution.getEnvironmentDataObj().getGp1());
-        myString = StringUtil.replaceAllProperties(myString, "%COUNTRY%", tCExecution.getCountry());
-        myString = StringUtil.replaceAllProperties(myString, "%COUNTRYGP1%", tCExecution.getCountryObj().getGp1());
-        myString = StringUtil.replaceAllProperties(myString, "%SSIP%", tCExecution.getSeleniumIP());
-        myString = StringUtil.replaceAllProperties(myString, "%SSPORT%", tCExecution.getSeleniumPort());
-        myString = StringUtil.replaceAllProperties(myString, "%TAG%", tCExecution.getTag());
+        myString = StringUtil.replaceAllProperties(myString, "%SYS_ENV%", tCExecution.getEnvironmentData());
+        myString = StringUtil.replaceAllProperties(myString, "%SYS_ENVGP%", tCExecution.getEnvironmentDataObj().getGp1());
+        myString = StringUtil.replaceAllProperties(myString, "%SYS_COUNTRY%", tCExecution.getCountry());
+        myString = StringUtil.replaceAllProperties(myString, "%SYS_COUNTRYGP1%", tCExecution.getCountryObj().getGp1());
+        myString = StringUtil.replaceAllProperties(myString, "%SYS_SSIP%", tCExecution.getSeleniumIP());
+        myString = StringUtil.replaceAllProperties(myString, "%SYS_SSPORT%", tCExecution.getSeleniumPort());
+        myString = StringUtil.replaceAllProperties(myString, "%SYS_TAG%", tCExecution.getTag());
 
         /**
          * Trying to replace date variables .
          */
-        myString = StringUtil.replaceAllProperties(myString, "%TODAY-yyyy%", DateUtil.getTodayFormat("yyyy"));
-        myString = StringUtil.replaceAllProperties(myString, "%TODAY-MM%", DateUtil.getTodayFormat("MM"));
-        myString = StringUtil.replaceAllProperties(myString, "%TODAY-dd%", DateUtil.getTodayFormat("dd"));
-        myString = StringUtil.replaceAllProperties(myString, "%TODAY-HH%", DateUtil.getTodayFormat("HH"));
-        myString = StringUtil.replaceAllProperties(myString, "%TODAY-mm%", DateUtil.getTodayFormat("mm"));
-        myString = StringUtil.replaceAllProperties(myString, "%TODAY-ss%", DateUtil.getTodayFormat("ss"));
-        myString = StringUtil.replaceAllProperties(myString, "%YESTERDAY-yyyy%", DateUtil.getYesterdayFormat("yyyy"));
-        myString = StringUtil.replaceAllProperties(myString, "%YESTERDAY-MM%", DateUtil.getYesterdayFormat("MM"));
-        myString = StringUtil.replaceAllProperties(myString, "%YESTERDAY-dd%", DateUtil.getYesterdayFormat("dd"));
-        myString = StringUtil.replaceAllProperties(myString, "%YESTERDAY-HH%", DateUtil.getYesterdayFormat("HH"));
-        myString = StringUtil.replaceAllProperties(myString, "%YESTERDAY-mm%", DateUtil.getYesterdayFormat("mm"));
-        myString = StringUtil.replaceAllProperties(myString, "%YESTERDAY-ss%", DateUtil.getYesterdayFormat("ss"));
+        myString = StringUtil.replaceAllProperties(myString, "%SYS_TODAY-yyyy%", DateUtil.getTodayFormat("yyyy"));
+        myString = StringUtil.replaceAllProperties(myString, "%SYS_TODAY-MM%", DateUtil.getTodayFormat("MM"));
+        myString = StringUtil.replaceAllProperties(myString, "%SYS_TODAY-dd%", DateUtil.getTodayFormat("dd"));
+        myString = StringUtil.replaceAllProperties(myString, "%SYS_TODAY-HH%", DateUtil.getTodayFormat("HH"));
+        myString = StringUtil.replaceAllProperties(myString, "%SYS_TODAY-mm%", DateUtil.getTodayFormat("mm"));
+        myString = StringUtil.replaceAllProperties(myString, "%SYS_TODAY-ss%", DateUtil.getTodayFormat("ss"));
+        myString = StringUtil.replaceAllProperties(myString, "%SYS_YESTERDAY-yyyy%", DateUtil.getYesterdayFormat("yyyy"));
+        myString = StringUtil.replaceAllProperties(myString, "%SYS_YESTERDAY-MM%", DateUtil.getYesterdayFormat("MM"));
+        myString = StringUtil.replaceAllProperties(myString, "%SYS_YESTERDAY-dd%", DateUtil.getYesterdayFormat("dd"));
+        myString = StringUtil.replaceAllProperties(myString, "%SYS_YESTERDAY-HH%", DateUtil.getYesterdayFormat("HH"));
+        myString = StringUtil.replaceAllProperties(myString, "%SYS_YESTERDAY-mm%", DateUtil.getYesterdayFormat("mm"));
+        myString = StringUtil.replaceAllProperties(myString, "%SYS_YESTERDAY-ss%", DateUtil.getYesterdayFormat("ss"));
 
         /**
          * Trying to replace by property value already defined if not null.
