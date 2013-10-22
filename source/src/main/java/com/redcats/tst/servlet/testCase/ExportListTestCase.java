@@ -43,7 +43,7 @@ import java.util.List;
  * @version 1.0, 17/10/2013
  * @since 0.9.1
  */
-@WebServlet(value = "/ExportListTestCase")
+@WebServlet(name = "ExportListTestCase", urlPatterns = {"/ExportListTestCase"})
 public class ExportListTestCase extends HttpServlet {
 
     @Override

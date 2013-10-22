@@ -22,7 +22,7 @@ import org.apache.log4j.Level;
  * @version 1.0, 01/03/2013
  * @since 2.0.0
  */
-@WebServlet(value = "/SaveStatistic")
+@WebServlet(name = "SaveStatistic", urlPatterns = {"/SaveStatistic"})
 public class SaveStatistic extends HttpServlet {
 
     @Override

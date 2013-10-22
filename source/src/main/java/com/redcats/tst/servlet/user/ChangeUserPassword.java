@@ -10,6 +10,7 @@ import com.redcats.tst.service.IUserService;
 import com.redcats.tst.service.impl.UserService;
 import java.io.IOException;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -19,6 +20,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 /**
  * @author ip100003
  */
+@WebServlet(name = "ChangeUserPassword", urlPatterns = {"/ChangeUserPassword"})
 public class ChangeUserPassword extends HttpServlet {
 
     @Override

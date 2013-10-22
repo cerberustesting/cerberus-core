@@ -25,6 +25,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  *
  * @author vertigo
  */
+@WebServlet(name = "GetDeployTypeList", urlPatterns = {"/GetDeployTypeList"})
 public class GetDeployTypeList extends HttpServlet {
 
     /**

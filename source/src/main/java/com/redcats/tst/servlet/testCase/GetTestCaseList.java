@@ -26,6 +26,7 @@ import java.io.IOException;
  * @version 1.0, 07/02/2013
  * @since 2.0.0
  */
+@WebServlet(name = "GetTestCaseList", urlPatterns = {"/GetTestCaseList"})
 public class GetTestCaseList extends HttpServlet {
 
     @Override

@@ -12,6 +12,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 import javax.imageio.ImageIO;
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -24,7 +25,7 @@ import java.util.List;
 /**
  * @author bcivel
  */
-//@WebServlet(value = "/GenerateGraph")
+@WebServlet(name = "GenerateGraph", urlPatterns = {"/GenerateGraph"})
 public class GenerateGraph extends HttpServlet {
 
     /**

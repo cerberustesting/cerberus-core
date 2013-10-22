@@ -30,6 +30,7 @@ import java.util.logging.Logger;
  * @version 1.0, 07/02/2013
  * @since 2.0.0
  */
+@WebServlet(name = "GetTestCase", urlPatterns = {"/GetTestCase"})
 public class GetTestCase extends HttpServlet {
 
     @Override
