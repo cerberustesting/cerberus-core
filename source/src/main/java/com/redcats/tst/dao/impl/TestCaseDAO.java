@@ -367,7 +367,7 @@ public class TestCaseDAO implements ITestCaseDAO {
                 "AND t2.group LIKE ? AND t2.activePROD LIKE ? AND t2.activeUAT LIKE ? AND t2.activeQA LIKE ? AND " +
                 "( t2.description LIKE ? OR t2.howto LIKE ? OR t2.behaviororvalueexpected LIKE ? OR t2.comment LIKE ?) " +
                 "AND t2.TcActive LIKE ? AND t2.frombuild LIKE ? AND t2.fromrev LIKE ? AND t2.tobuild LIKE ? " +
-                "AND t2.torev LIKE ? AND t2.targetbuild LIKE ? AND t2.targetrev LIKE ?";
+                "AND t2.torev LIKE ? AND t2.targetbuild LIKE ? AND t2.targetrev LIKE ? AND t2.testcase LIKE ?";
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -409,6 +409,7 @@ public class TestCaseDAO implements ITestCaseDAO {
                 preStat.setString(23, ParameterParserUtil.wildcardIfEmpty(testCase.getToRevision()));
                 preStat.setString(24, ParameterParserUtil.wildcardIfEmpty(testCase.getTargetSprint()));
                 preStat.setString(25, ParameterParserUtil.wildcardIfEmpty(testCase.getTargetRevision()));
+                preStat.setString(26, ParameterParserUtil.wildcardIfEmpty(testCase.getTestCase()));
 
                 ResultSet resultSet = preStat.executeQuery();
                 list = new ArrayList<TCase>();

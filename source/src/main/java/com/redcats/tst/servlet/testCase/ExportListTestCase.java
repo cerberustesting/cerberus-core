@@ -49,7 +49,7 @@ public class ExportListTestCase extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
-        String text = this.getValue(req, "ScText");
+        String text = "%" + this.getValue(req, "ScText") + "%";
         String system = this.getValue(req, "ScSystem");
         TCase tCase = this.getTestCaseFromRequest(req);
 
@@ -74,6 +74,7 @@ public class ExportListTestCase extends HttpServlet {
 
     private TCase getTestCaseFromRequest(HttpServletRequest req) {
         String test = this.getValue(req, "ScTest");
+        String testCase = "%" + this.getValue(req, "ScTestCase") + "%";
         String project = this.getValue(req, "ScProject");
         String ticket = this.getValue(req, "ScTicket");
         String bug = this.getValue(req, "ScBugID");
@@ -98,7 +99,7 @@ public class ExportListTestCase extends HttpServlet {
         String targetRev = this.getValue(req, "ScTargetRev");
 
         IFactoryTCase factoryTCase = new FactoryTCase();
-        return factoryTCase.create(test, null, origine, null, creator, null, null, project, ticket, application, qa, uat, prod, priority, group,
+        return factoryTCase.create(test, testCase, origine, null, creator, null, null, project, ticket, application, qa, uat, prod, priority, group,
                 status, null, null, null, active, fBuild, fRev, tBuild, tRev, null, bug, targetBuild, targetRev, null, null, null, null, null);
     }
 

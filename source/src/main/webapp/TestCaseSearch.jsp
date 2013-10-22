@@ -227,6 +227,14 @@
                         scText = new String("");
                     }
 
+                    String ScTestCase;
+                    if (request.getParameter("ScTestCase") != null && request.getParameter("ScTestCase").compareTo("All") != 0) {
+                        ScTestCase = request.getParameter("ScTestCase");
+                        whereclause = whereclause + " AND t2.testcase like '%" + ScTestCase + "%' ";
+                    } else {
+                        ScTestCase = new String("");
+                    }
+
                     String scActive;
                     if (request.getParameter("ScActive") != null && request.getParameter("ScActive").compareTo("All") != 0) {
                         scActive = request.getParameter("ScActive");
@@ -284,6 +292,7 @@
                                                     <table>
                                                         <tr id="header">
                                                             <td class="wob" style="width: 100px"><%out.print(dbDocS(conn, "test", "test", "Test"));%></td>
+                                                            <td class="wob" style="width: 60px"><%out.print(dbDocS(conn, "testcase", "testcase", "Testcase"));%></td>
                                                             <td class="wob" style="width: 100px"><%out.print(dbDocS(conn, "testcase", "project", "Project"));%></td>
                                                             <td class="wob" style="width: 100px"><%out.print(dbDocS(conn, "testcase", "ticket", "Ticket"));%></td>
                                                             <td class="wob" style="width: 70px"><%out.print(dbDocS(conn, "testcase", "BugID", ""));%></td>
@@ -309,6 +318,9 @@
                                                                     %><option style="width: 500px;<%=optstyle%>" value="<%=rsTest.getString("test")%>"<%= scTest.compareTo(rsTest.getString("test")) == 0 ? " SELECTED " : ""%>><%=rsTest.getString("Test")%></option><%
                                                                         }
                                                                     %></select>
+                                                            </td>
+                                                            <td class="wob">
+                                                                <input id="ScTestCase" name="ScTestCase" value="<%=ScTestCase%>" style="width: 60px">
                                                             </td>
                                                             <td class="wob">
                                                                 <% out.print(ComboProject(conn, "ScProject", "width: 90px", "ScProject", "", scProject, "", true, "All", "-- ALL --"));%>
@@ -413,8 +425,8 @@
                                                                         }
                                                                     %></select></td>
                                                             <td class="wob">
-                                                                <input id="ScText" name="ScText" value="<%=scText%>" size="80"><%
-                                                                %></select></td>
+                                                                <input id="ScText" name="ScText" value="<%=scText%>" style="width: 500px">
+                                                            </td>
                                                         </tr>
                                                     </table>
                                                     <table><tr id="header">
