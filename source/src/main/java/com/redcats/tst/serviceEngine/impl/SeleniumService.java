@@ -522,6 +522,8 @@ public class SeleniumService implements ISeleniumService {
         } else if (testCaseStepActionExecution.getAction().equals("calculateProperty")) {
             res = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_PROPERTYCALCULATED);
             res.setDescription(res.getDescription().replaceAll("%PROP%", testCaseStepActionExecution.getPropertyName()));
+        } else if (testCaseStepActionExecution.getAction().equals("takeScreenshot")) {
+            res = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_TAKESCREENSHOT);
         } else {
             res = new MessageEvent(MessageEventEnum.ACTION_FAILED_UNKNOWNACTION);
             res.setDescription(res.getDescription().replaceAll("%ACTION%", testCaseStepActionExecution.getAction()));

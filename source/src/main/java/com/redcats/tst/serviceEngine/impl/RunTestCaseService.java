@@ -709,11 +709,12 @@ public class RunTestCaseService implements IRunTestCaseService {
         /**
          * Screenshot only done when : screenshot parameter is eq to 2 or
          * screenshot parameter is eq to 1 with the correct doScreenshot flag on
-         * the last action MessageEvent.
+         * the last action MessageEvent or Action perform is to take screenshot.
          */
         if ((testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getScreenshot() == 2)
                 || ((testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getScreenshot() == 1)
-                && (testCaseStepActionExecution.getActionResultMessage().isDoScreenshot()))) {
+                && (testCaseStepActionExecution.getActionResultMessage().isDoScreenshot()))
+                || (testCaseStepActionExecution.getAction().equalsIgnoreCase("takeScreenshot"))) {
             MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Doing screenshot.");
             File myFile = null;
             String screenshotFilename = testCaseStepActionExecution.getTest() + "-" + testCaseStepActionExecution.getTestCase()
