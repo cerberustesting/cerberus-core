@@ -44,6 +44,8 @@ public enum MessageGeneralEnum {
     VALIDATION_FAILED_MANUALURL_INVALID(81, "", "ManualURL parameter activated but myhost parameter empty. Either desactivate the manual URL mode or define at least the myhost parameter."),
     VALIDATION_FAILED_ENVIRONMENT_DOESNOTEXIST(82, "", "Environment '%ENV%' does not exit."),
     VALIDATION_FAILED_ENVIRONMENT_DOESNOTEXIST_MAN(82, "", "The environment you defined in myenvdata parameter '%ENV%' does not exit."),
+    VALIDATION_FAILED_SELENIUM_EMPTYORBADIP(83, "", "Selenium IP parameter (ss_ip) : '%IP%' is empty or badly formated."),
+    VALIDATION_FAILED_SELENIUM_EMPTYORBADPORT(84, "", "Selenium Port parameter (ss_p) : '%PORT%' is empty or badly formated."),
 
     EXECUTION_PE_TESTSTARTED(5, "PE", "Test started..."),
     EXECUTION_PE_CHECKINGPARAMETERS(5, "PE", "Checking parameters..."),

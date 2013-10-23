@@ -327,6 +327,17 @@ public class RunTestCaseService implements IRunTestCaseService {
                 return tCExecution;
             }
 
+            if (tCExecution.getIp().equalsIgnoreCase("")) {
+                tCExecution.setResultMessage(new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_SELENIUM_EMPTYORBADIP));
+                tCExecution.getResultMessage().setDescription(tCExecution.getResultMessage().getDescription().replaceAll("%IP%", tCExecution.getIp()));
+                return tCExecution;
+            }
+            if (tCExecution.getPort().equalsIgnoreCase("")) {
+                tCExecution.setResultMessage(new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_SELENIUM_EMPTYORBADPORT));
+                tCExecution.getResultMessage().setDescription(tCExecution.getResultMessage().getDescription().replaceAll("%PORT%", tCExecution.getPort()));
+                return tCExecution;
+            }
+            
             MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Application is GUI. Trying to reach selenium server.");
             if (!this.seleniumService.isSeleniumServerReachable(tCExecution.getIp(), tCExecution.getPort())) {
                 tCExecution.setResultMessage(new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_SELENIUM_COULDNOTCONNECT));
