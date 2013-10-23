@@ -46,6 +46,7 @@ public enum MessageEventEnum {
     PROPERTY_FAILED_HTML_ELEMENTDONOTEXIST(180, "KO", "Failed to calculate property because could not find element '%ELEMENT%'!", true, true, MessageGeneralEnum.EXECUTION_FA),
     PROPERTY_FAILED_HTMLVISIBLE_ELEMENTDONOTEXIST(181, "KO", "Failed to calculate visible html property because could not find element '%ELEMENT%'!", true, true, MessageGeneralEnum.EXECUTION_FA),
     PROPERTY_FAILED_UNKNOWNPROPERTY(182, "KO", "Property function '%PROPERTY%' does not exist or is not supported by the engine.", true, false, MessageGeneralEnum.EXECUTION_FA),
+    PROPERTY_FAILED_TEXTRANDOMLENGHT0(183, "KO", "RANDOM or RANDOMNEW text Property function cannot have a lenght at 0. Pick STATIC nature (if you want an empty string) or increase the lenght.", true, false, MessageGeneralEnum.EXECUTION_FA),
     PROPERTY_PENDING(199, "PE", "Calculating property...", false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     ACTION_SUCCESS(200, "OK", "", false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     ACTION_SUCCESS_CLICK(200, "OK", "Element '%ELEMENT%' clicked.", false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),

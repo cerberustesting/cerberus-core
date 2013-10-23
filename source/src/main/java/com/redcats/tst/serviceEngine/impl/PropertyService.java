@@ -83,21 +83,22 @@ public class PropertyService implements IPropertyService {
             testCaseExecutionData = this.calculateOnDatabase(testCaseExecutionData, testCaseCountryProperty, tCExecution);
 
         } else if (testCaseCountryProperty.getType().equals("text")) {
-            if (testCaseCountryProperty.getNature().equals("RANDOM")) {
-                String charset = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-                String value = StringUtil.getRandomString(testCaseCountryProperty.getLength(), charset);
-                testCaseExecutionData.setValue(value);
-                res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_RANDOM);
-                res.setDescription(res.getDescription().replaceAll("%VALUE%", ParameterParserUtil.securePassword(value, testCaseCountryProperty.getProperty())));
-                testCaseExecutionData.setPropertyResultMessage(res);
-            } else if (testCaseCountryProperty.getNature().equals("RANDOM_NEW")) {
-                String charset = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-                String value = StringUtil.getRandomString(testCaseCountryProperty.getLength(), charset);
-                testCaseExecutionData.setValue(value);
-                res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_RANDOM_NEW);
-                res.setDescription(res.getDescription().replaceAll("%VALUE%", ParameterParserUtil.securePassword(value, testCaseCountryProperty.getProperty())));
-                testCaseExecutionData.setPropertyResultMessage(res);
-                //TODO check if value exist on DB ( used in another test case of the revision )
+            if ((testCaseCountryProperty.getNature().equals("RANDOM"))
+                    || (testCaseCountryProperty.getNature().equals("RANDOM_NEW"))) {
+                if (testCaseCountryProperty.getLength() == 0) {
+                    res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_TEXTRANDOMLENGHT0);
+                    testCaseExecutionData.setPropertyResultMessage(res);
+                } else {
+                    String charset = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+                    String value = StringUtil.getRandomString(testCaseCountryProperty.getLength(), charset);
+                    testCaseExecutionData.setValue(value);
+                    res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_RANDOM);
+                    res.setDescription(res.getDescription().replaceAll("%VALUE%", ParameterParserUtil.securePassword(value, testCaseCountryProperty.getProperty())));
+                    testCaseExecutionData.setPropertyResultMessage(res);
+                    if (testCaseCountryProperty.getNature().equals("RANDOM_NEW")) {
+                        //TODO check if value exist on DB ( used in another test case of the revision )
+                    }
+                }
             } else {
                 MyLogger.log(PropertyService.class.getName(), Level.DEBUG, "Setting value : " + testCaseCountryProperty.getValue());
                 String value = testCaseCountryProperty.getValue();
@@ -156,7 +157,7 @@ public class PropertyService implements IPropertyService {
                 res.setDescription(res.getDescription().replaceAll("%ELEMENT%", testCaseCountryProperty.getValue()));
                 testCaseExecutionData.setPropertyResultMessage(res);
             }
-        }else {
+        } else {
             res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_UNKNOWNPROPERTY);
             res.setDescription(res.getDescription().replaceAll("%PROPERTY%", testCaseCountryProperty.getType()));
         }
