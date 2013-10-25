@@ -4,6 +4,7 @@
     Author     : acraske
 --%>
 
+<%@page import="com.redcats.tst.service.IParameterService"%>
 <%@page import="com.redcats.tst.log.MyLogger"%>
 <%@page import="org.apache.log4j.Level"%>
 <%@page import="com.redcats.tst.service.impl.ApplicationService"%>
@@ -185,6 +186,13 @@
 
                         MyLogger.log("RunTests.jsp", Level.DEBUG, "System : '" + MySystem + "' - Application in clause : '" + appliInSQL + "'");
 
+                        String seleniumUrl="";
+                        IParameterService myParameterService = appContext.getBean(IParameterService.class);
+                        try {
+                            seleniumUrl = myParameterService.findParameterByKey("selenium_download_url").getValue();
+                        } catch (Exception ex) {
+                            MyLogger.log("RunTests.jsp", Level.FATAL, " Exception catched : " + ex);
+                        }
 
                 %>
 
@@ -195,20 +203,35 @@
                             <table border="0px">
                                 <tr>                                         
                                     <td id="wob" style="font-weight: bold; width: 150px"><% out.print(dbDocS(conn, "runnerpage", "SeleniumServerIP", "Selenium Server IP "));%></td>
-                                    <td id="wob"><input type="text" name="ss_ip" value="<%= ssIP%>" />
+                                    <td id="wob">
+                                        <input type="text" name="ss_ip" value="<%= ssIP%>" />
                                         <input id="button" type="submit" <%=enable%> name="DefaultIP" value="Set As My Default IP" >
+                                    </td>
+                                    <td id="wob" style="width: 20px">
+                                    </td>
+                                    <td>
+                                        Download the compatible version of Selenium <a href="<%=seleniumUrl %>">here</a>.
                                     </td>
 
                                 </tr>
                                 <tr>
                                     <td id="wob" style="font-weight: bold; width: 150px"><% out.print(dbDocS(conn, "runnerpage", "SeleniumServerPort", "Selenium Server Port "));%></td>
-                                    <td id="wob"><input type="text" name="ss_p" value="<%= ssPort%>" />
+                                    <td id="wob">
+                                        <input type="text" name="ss_p" value="<%= ssPort%>" />
+                                    </td>
+                                    <td id="wob" style="width: 20px">
+                                    </td>
+                                    <td>
+                                        Example scripts to start your local selenium server : <a href="ressources/start-selenium.sh">Linux</a> / <a href="ressources/start-selenium.bat">Windows</a>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td id="wob" style="font-weight: bold; width: 150px"><% out.print(dbDocS(conn, "runnerpage", "BrowserPath", "Browser Path"));%></td>
                                     <td id="wob">
                                         <%=ComboInvariant(conn, "browser", "width: 90px", "browser", "browser", "37", browser, "", null)%>
+                                    </td>
+                                    <td id="wob">
+
                                     </td>
                                 </tr>
                             </table>
