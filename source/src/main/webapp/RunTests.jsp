@@ -186,7 +186,7 @@
 
                         MyLogger.log("RunTests.jsp", Level.DEBUG, "System : '" + MySystem + "' - Application in clause : '" + appliInSQL + "'");
 
-                        String seleniumUrl="";
+                        String seleniumUrl = "";
                         IParameterService myParameterService = appContext.getBean(IParameterService.class);
                         try {
                             seleniumUrl = myParameterService.findParameterByKey("selenium_download_url").getValue();
@@ -210,7 +210,7 @@
                                     <td id="wob" style="width: 20px">
                                     </td>
                                     <td>
-                                        Download the compatible version of Selenium <a href="<%=seleniumUrl %>">here</a>.
+                                        INSTRUCTIONS ON HOW TO RUN YOUR LOCAL SELENIUM SERVER :
                                     </td>
 
                                 </tr>
@@ -222,7 +222,7 @@
                                     <td id="wob" style="width: 20px">
                                     </td>
                                     <td>
-                                        Example scripts to start your local selenium server : <a href="ressources/start-selenium.sh">Linux</a> / <a href="ressources/start-selenium.bat">Windows</a>
+                                        Download the compatible version of Selenium <a href="<%=seleniumUrl%>">here</a>.
                                     </td>
                                 </tr>
                                 <tr>
@@ -230,8 +230,9 @@
                                     <td id="wob">
                                         <%=ComboInvariant(conn, "browser", "width: 90px", "browser", "browser", "37", browser, "", null)%>
                                     </td>
-                                    <td id="wob">
-
+                                    <td id="wob"></td>
+                                    <td>
+                                        Example scripts to start your local selenium server : <a href="ressources/start-selenium.sh">Linux</a> / <a href="ressources/start-selenium.bat">Windows</a>
                                     </td>
                                 </tr>
                             </table>
