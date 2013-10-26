@@ -6,6 +6,7 @@ import com.redcats.tst.factory.*;
 import com.redcats.tst.log.MyLogger;
 import com.redcats.tst.service.*;
 import com.redcats.tst.serviceEngine.*;
+import com.redcats.tst.util.ParameterParserUtil;
 import com.redcats.tst.util.StringUtil;
 import org.apache.log4j.Level;
 import org.openqa.selenium.remote.UnreachableBrowserException;
@@ -388,9 +389,6 @@ public class RunTestCaseService implements IRunTestCaseService {
                         Logger.getLogger(RunTestCaseService.class.getName()).log(java.util.logging.Level.SEVERE, ex.getMessage());
                         return tCExecution;
                     }
-
-
-
                 }
             } catch (CerberusException ex) {
                 MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, tCExecution.getId() + " - No Linked environment found.");
@@ -403,8 +401,8 @@ public class RunTestCaseService implements IRunTestCaseService {
          * Start Selenium server
          */
         if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")) {
-            String url = tCExecution.getCountryEnvironmentApplication().getIp() + tCExecution.getCountryEnvironmentApplication().getUrl();
-            String login = tCExecution.getCountryEnvironmentApplication().getUrlLogin();
+            String url = ParameterParserUtil.parseStringParam(tCExecution.getCountryEnvironmentApplication().getIp() + tCExecution.getCountryEnvironmentApplication().getUrl(), "");
+            String login = ParameterParserUtil.parseStringParam(tCExecution.getCountryEnvironmentApplication().getUrlLogin(),"");
             MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, runID + " - Starting Selenium Server.");
             tCExecution.setResultMessage(new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_SELENIUMSTARTING));
             try {
