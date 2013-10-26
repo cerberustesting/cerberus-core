@@ -2588,6 +2588,14 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("INSERT INTO `parameter` (`param`, `value`, `description`) VALUES ('selenium_download_url', 'http://selenium.googlecode.com/files/selenium-server-standalone-2.35.0.jar', 'URL to download the selenium package from the web.');");
         SQLInstruction.add(SQLS.toString());
 
+//-- New Documentation on detail execution page.
+//-- ------------------------
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `DocLabel`, `DocDesc`) VALUES ('page_executiondetail', 'buildrevision', '', 'BuildRev', 'Build and Revision of the environment of the system of the application.');");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `DocLabel`, `DocDesc`) VALUES ('page_executiondetail', 'buildrevisionlink', '', 'BuildRev Linked', 'Build and Revision of the environment of the linked system');");
+        SQLInstruction.add(SQLS.toString());
 
         
         return SQLInstruction;
