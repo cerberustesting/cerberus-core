@@ -58,7 +58,7 @@
 
                     IParameterService myParameterService = appContext.getBean(IParameterService.class);
                     IApplicationService applicationService = appContext.getBean(ApplicationService.class);
-                    
+
                     /*
                      * Filter requests
                      */
@@ -337,7 +337,7 @@
                     if (!(inSQL.equalsIgnoreCase(""))) {
                         ExeclistWhereSQL += " and tce.Application ";
                         ExeclistWhereSQL += inSQL;
-                    }else{
+                    } else {
                         ExeclistWhereSQL += " and 1=0 ";
                     }
                 }
@@ -414,8 +414,9 @@
             <table  id="arrond">
                 <tr>
                     <td><b>Agregated Statistics<br><br><%= j%> Executions in <%= (cal_exeend.getTimeInMillis() - cal_exestart.getTimeInMillis()) / 60000%> minutes</b><br><%
-                        if (!(cal_exeend.getTimeInMillis() == cal_exestart.getTimeInMillis())) {
-                            out.print(j / ((cal_exeend.getTimeInMillis() - cal_exestart.getTimeInMillis()) / 60000) + " Exec/m");
+                        long myDuration = (cal_exeend.getTimeInMillis() - cal_exestart.getTimeInMillis())/ 60000;
+                        if (!(myDuration == 0)) {
+                            out.print(j / (myDuration) + " Exec/m");
                         }
                             %></td>
                     <td>Detail per ROBOT IP</td>
