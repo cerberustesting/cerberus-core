@@ -3,6 +3,8 @@
     Created on : 20 mai 2011, 13:41:49
     Author     : acraske
 --%>
+<%@page import="com.redcats.tst.entity.TestCaseExecutionSysVer"%>
+<%@page import="com.redcats.tst.service.ITestCaseExecutionSysVerService"%>
 <%@page import="com.redcats.tst.service.IApplicationService"%>
 <%@page import="com.redcats.tst.service.IParameterService"%>
 <%@page import="com.redcats.tst.util.DateUtil"%>
@@ -138,7 +140,8 @@
                     environment = rs_inf.getString("Environment");
                     build = rs_inf.getString("Build");
                     revision = rs_inf.getString("Revision");
-
+                    IApplicationService applicationService = appContext.getBean(IApplicationService.class);
+                    String appSystem = applicationService.findApplicationByKey(myApplication).getSystem();
             %>
             <br>
             <div id="table">
@@ -150,8 +153,8 @@
                         <td style="font-weight: bold; width: 140px"><%out.print(dbDocS(conn, "testcase", "testcase", "TestCase"));%></td>
                         <td style="font-weight: bold; width: 140px"><%out.print(dbDocS(conn, "testcase", "country", "Country"));%></td>
                         <td style="font-weight: bold; width: 140px"><%out.print(dbDocS(conn, "runnerpage", "environment", "Environment"));%></td>
-                        <td style="font-weight: bold; width: 140px"><%out.print(dbDocS(conn, "testcaseexecution", "build", "Build"));%></td>
-                        <td style="font-weight: bold; width: 140px"><%out.print(dbDocS(conn, "testcaseexecution", "revision", "Revision"));%></td>
+                        <td style="font-weight: bold; width: 140px"><%out.print(dbDocS(conn, "page_executiondetail", "buildrevision", ""));%></td>
+                        <td style="font-weight: bold; width: 140px"><%out.print(dbDocS(conn, "page_executiondetail", "buildrevisionlink", ""));%></td>
                         <td style="font-weight: bold; width: 140px"><%out.print(dbDocS(conn, "application", "Application", "Application"));%></td>
                         <td style="font-weight: bold; width: 140px"><%out.print(dbDocS(conn, "testcaseexecution", "URL", "URL"));%></td>
                         <td style="font-weight: bold; width: 140px"><%out.print(dbDocS(conn, "testcaseexecution", "IP", "Ip"));
@@ -169,8 +172,26 @@
                         <td id="testcaseValue"><b><%= testCase%></b><br><%= testCaseDesc%></td>
                         <td id="countryValue"><b><%= country%></b></td>
                         <td><b><%= environment%></b></td>
-                        <td><%= rs_inf.getString("Build")%></td>
-                        <td><%= rs_inf.getString("Revision")%></td>
+                        <td>[<%=appSystem%>]<br><%= rs_inf.getString("Build")%> / <%= rs_inf.getString("Revision")%></td>
+                        <td>
+                            <table>
+                                <%
+                                    ITestCaseExecutionSysVerService testCaseExecutionSysVerService = appContext.getBean(ITestCaseExecutionSysVerService.class);
+                                    List<TestCaseExecutionSysVer> listSysVer = testCaseExecutionSysVerService.findTestCaseExecutionSysVerById(Long.valueOf(rs_inf.getString("Id")));
+                                    for (TestCaseExecutionSysVer mySysVer : listSysVer) {
+                                        if (!(appSystem.equals(mySysVer.getSystem()))) {
+                                %>
+                                <tr>
+                                    <td>
+                                        [<%= mySysVer.getSystem()%>]<br><%= mySysVer.getBuild()%> / <%= mySysVer.getRevision()%>
+                                    </td>
+                                </tr>
+                                <%
+                                        }
+                                    }
+                                %>
+                            </table>
+                        </td>
                         <td><%= rs_inf.getString("Application")%></td>
                         <td><%= rs_inf.getString("URL")%></td>
                         <td><span id="exeip"><%= rs_inf.getString("Ip")%></span> / <span id="exeport"><%= rs_inf.getString("port")%></span></td>
