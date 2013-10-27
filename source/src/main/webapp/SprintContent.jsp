@@ -38,6 +38,15 @@
 
             try {
 
+                IApplicationService applicationService = appContext.getBean(ApplicationService.class);
+                
+                String MySystem = request.getAttribute("MySystem").toString();
+                if (request.getParameter("system") != null && request.getParameter("system").compareTo("") != 0) {
+                    MySystem = request.getParameter("system");
+                }
+                List<Application> appliList = applicationService.findApplicationBySystem(MySystem);
+                String appliInSQL = StringUtil.getInSQLClause(appliList);
+
                 Statement stmtBuild = conn.createStatement();
                 Statement stmtApp = conn.createStatement();
 
@@ -47,8 +56,8 @@
                 if (request.getParameter("build") != null && request.getParameter("build").compareTo("") != 0) {
                     build = request.getParameter("build");
                 } else {
-                    ResultSet rsBR = stmtBuild.executeQuery("SELECT max(Build) mb FROM buildrevisionparameters where build!='NONE'");
-                    if (rsBR.first()) {
+                    ResultSet rsBR = stmtBuild.executeQuery("SELECT max(Build) mb FROM buildrevisionparameters where build!='NONE' and build is not null and application " + appliInSQL);
+                    if (rsBR.first() && rsBR.getString("mb") != null) {
                         build = rsBR.getString("mb");
                     }
                 }
@@ -57,19 +66,11 @@
                     revision = request.getParameter("revision");
                 } else {
                     ResultSet rsREV = stmtBuild.executeQuery("SELECT max(Revision) mr FROM buildrevisionparameters "
-                            + " where build = '" + build + "'");
-                    if (rsREV.first()) {
+                            + " where build = '" + build + "' and application " + appliInSQL);
+                    if (rsREV.first() && rsREV.getString("mr") != null) {
                         revision = rsREV.getString("mr");
                     }
                 }
-                String MySystem = request.getAttribute("MySystem").toString();
-                if (request.getParameter("system") != null && request.getParameter("system").compareTo("") != 0) {
-                    MySystem = request.getParameter("system");
-                }
-
-                IApplicationService applicationService = appContext.getBean(ApplicationService.class);
-                List<Application> appliList = applicationService.findApplicationBySystem(MySystem);
-                String appliInSQL = StringUtil.getInSQLClause(appliList);
 
 
                 Statement stmtRev = conn.createStatement();
