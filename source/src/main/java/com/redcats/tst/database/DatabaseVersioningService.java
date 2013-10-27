@@ -2241,7 +2241,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS = new StringBuilder();
         SQLS.append("UPDATE `testcasestepactioncontrol` SET `type`='verifyRegexInElement' WHERE `type`='verifyContainText';");
         SQLInstruction.add(SQLS.toString());
-        
+
 //-- Enlarging BehaviorOrValueExpected and HowTo columns to TEXT (64K).
 //-- ------------------------
         SQLS = new StringBuilder();
@@ -2341,13 +2341,13 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS = new StringBuilder();
         SQLS.append("DELETE FROM `invariant` WHERE idname = 'LANGUAGE'");
         SQLInstruction.add(SQLS.toString());
-        
+
 //-- Cleaning countryenvironmentparameters table with useless columns
 //-- ------------------------
         SQLS = new StringBuilder();
         SQLS.append("ALTER TABLE `countryenvironmentparameters` DROP COLUMN `as400LIB` , DROP COLUMN `JdbcPort` , DROP COLUMN `JdbcIP` , DROP COLUMN `JdbcPass` , DROP COLUMN `JdbcUser` ;");
         SQLInstruction.add(SQLS.toString());
-        
+
 //-- Adding System level in database model.
 //-- ------------------------
         SQLS = new StringBuilder();
@@ -2487,7 +2487,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("  ON DELETE CASCADE ON UPDATE CASCADE");
         SQLS.append(", ADD INDEX `FK_countryenvparam_log_01` (`system` ASC, `Country` ASC, `Environment` ASC) ;");
         SQLInstruction.add(SQLS.toString());
-        
+
 //-- Enlarge data execution column in order to keep track of full SQL executed.
 //-- ------------------------
         SQLS = new StringBuilder();
@@ -2508,7 +2508,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS = new StringBuilder();
         SQLS.append("UPDATE `user` SET DefaultSystem='DEFAULT' where DefaultSystem is null;");
         SQLInstruction.add(SQLS.toString());
-        
+
 //-- Database structure to handle link between environment and history of Build rev per system for each execution.
 //-- ------------------------
         SQLS = new StringBuilder();
@@ -2581,7 +2581,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `id`, `description`) VALUES ('ACTION', 'takeScreenshot', 105, 12, 'takeScreenshot');");
         SQLInstruction.add(SQLS.toString());
-        
+
 //-- New Parameter for Selenium download link.
 //-- ------------------------
         SQLS = new StringBuilder();
@@ -2597,7 +2597,13 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `DocLabel`, `DocDesc`) VALUES ('page_executiondetail', 'buildrevisionlink', '', 'BuildRev Linked', 'Build and Revision of the environment of the linked system');");
         SQLInstruction.add(SQLS.toString());
 
-        
+//-- Revision Field resized to 20 to fit standard size in testcase execution table.
+//-- ------------------------
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcaseexecution` CHANGE COLUMN `Revision` `Revision` VARCHAR(20) NULL DEFAULT NULL ;");
+        SQLInstruction.add(SQLS.toString());
+
+
         return SQLInstruction;
     }
 }
