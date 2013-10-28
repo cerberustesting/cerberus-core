@@ -2603,6 +2603,10 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("ALTER TABLE `testcaseexecution` CHANGE COLUMN `Revision` `Revision` VARCHAR(20) NULL DEFAULT NULL ;");
         SQLInstruction.add(SQLS.toString());
 
+//-- Replace \n by <br/> in HowTo textarea of TestCase
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE testcase SET HowTo=REPLACE(HowTo, '\\n', '<br/>');");
+        SQLInstruction.add(SQLS.toString());
 
         return SQLInstruction;
     }

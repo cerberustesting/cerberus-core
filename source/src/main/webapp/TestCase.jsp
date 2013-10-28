@@ -75,11 +75,17 @@
                     toolbar      : 'complete',
                     allowSource  : false
                 };
+                var bool = $('#generalparameter').is(':visible');
+
                 //plugin must be added with input visible - error NS_ERROR_FAILURE: Failure
-                $('#generalparameter').show();
+                if(!bool){
+                    $('#generalparameter').show();
+                }
                 $('#howto').elrte(opts);
                 //plugin must be added with input visible - error NS_ERROR_FAILURE: Failure
-                $('#generalparameter').hide();
+                if(!bool){
+                    $('#generalparameter').hide();
+                }
             });
 
 
@@ -508,9 +514,11 @@
                                 </tr>
                             </table>
                             <%
-                                String howTo = rs_testcase_general_info.getString("HowTo").replace(">", "&gt;");
+                                String howTo = rs_testcase_general_info.getString("HowTo");
                                 if (howTo == null || howTo.compareTo("null") == 0) {
                                     howTo = new String(" ");
+                                } else {
+                                    howTo = howTo.replace(">", "&gt;");
                                 }
                                 String behavior = rs_testcase_general_info.getString("BehaviorOrValueExpected");
                                 if (behavior == null || behavior.compareTo("null") == 0) {
@@ -546,6 +554,7 @@
                                                 <td class="wob">
                                                     <textarea id="howto" rows="9" style="width: 790px;" name="HowTo" value="<%=howTo.trim()%>"
                                                               onchange="trackChanges(this.value,'<%=URLEncoder.encode(howTo, "UTF-8")%>', 'submitButtonChanges')" ><%=howTo%></textarea>
+                                                    <input id="howtoDetail" name="howtoDetail" type="hidden" value="" />
                                                 </td>
                                             </tr>
                                         </table><br>
@@ -638,7 +647,7 @@
                                                                                                  value="<%=testcase%>">
                             <table>
                                 <tr>
-                                    <td class="wob"><input type="submit" name="submitInformation" value="Save TestCase Info" id="submitButtonInformation"></td>
+                                    <td class="wob"><input type="submit" name="submitInformation" value="Save TestCase Info" id="submitButtonInformation" onclick="$('#howtoDetail').val($('#howto').elrte('val'));"></td>
                                 </tr>
                             </table>
                 </form>
@@ -1217,7 +1226,7 @@
                                                             <%  if (request.getUserPrincipal() != null && (request.isUserInRole("User"))) {%>
                                                             <table><tr><td id="wob"><input type="button" value="Add Action"
                                                                                            onclick="addTestCaseAction('<%=step_loop_number%>', <%=testcase_stepaction_maxlength_sequence%>, <%=testcase_stepaction_maxlength_action%>, <%=testcase_stepaction_maxlength_object%>, <%=testcase_stepaction_maxlength_property%>) ; enableField('submitButtonAction');">
-                                                                    <td id="wob"><input type="button" value="import HTML Scenario" onclick="importer('ImportHTML.jsp?Test=<%=test%>&Testcase=<%=testcase%>&Step=<%=rs_step.getString("step")%>')"</td>
+                                                                    <td id="wob"><input type="button" value="import HTML Scenario" onclick="importer('ImportHTML.jsp?Test=<%=test%>&Testcase=<%=testcase%>&Step=<%=rs_step.getString("step")%>')"></td>
                                                                 </td><td id="wob"><input value="Save Changes" id="submitButtonAction" name="submitChanges"
                                                                                          type="submit" >
                                                                 <%=ComboInvariant(conn, "actions_action_", "width: 150px;visibility:hidden", "actions_action_", "actions_action_", "12", "", "", null)%></td></tr></table></td></tr></table> <br>

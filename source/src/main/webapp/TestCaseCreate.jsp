@@ -18,6 +18,33 @@
         <title>TestCase Creation</title>
         <link rel="stylesheet" type="text/css" href="css/crb_style.css">
         <link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico" />
+        <script type="text/javascript" src="js/jquery-1.10.2.min.js"></script>
+        <!--must import to use elRTE plugin-->
+        <script type="text/javascript" src="js/jquery-migrate-1.2.1.min.js"></script>
+        <script type="text/javascript" src="js/jquery-ui-1.10.2.custom.min.js"></script>
+        <script type="text/javascript" src="js/elrte.min.js"></script>
+        <script type="text/javascript" src="js/i18n/elrte.en.js"></script>
+        <style media="screen" type="text/css">
+            @import "css/smoothness/jquery-ui-1.10.2.custom.min.css";
+            @import "css/elrte.min.css";
+        </style>
+        <link rel="stylesheet" type="text/css" href="css/crb_style.css">
+        <link rel="stylesheet" type="text/css" href="css/elrte.min.css">
+
+        <script type="text/javascript">
+            $().ready(function() {
+                var opts = {
+                    lang         : 'en',
+                    styleWithCSS : false,
+                    width        : 940,
+                    height       : 200,
+                    toolbar      : 'complete',
+                    allowSource  : false
+                };
+
+                $('#createHowTo').elrte(opts);
+            });
+        </script>
     </head>
     <body>
         <%@ include file="include/function.jsp" %>
@@ -212,7 +239,7 @@
                                                             <td class="wob" style="width: 300px"><%out.print(dbDocS(conn, "testcase", "ValueExpected", "Value Expected"));%></td>
                                                         </tr><tr>
                                                             <td class="wob" style="text-align: left; border-collapse: collapse">
-                                                                <textarea id="createBehaviorOrValueExpected" rows="7" style="width: 290px;" name="createBehaviorOrValueExpected"></textarea>
+                                                                <textarea id="createBehaviorOrValueExpected" rows="18" style="width: 290px;" name="createBehaviorOrValueExpected"></textarea>
                                                         </tr></table></td>
                                                 <td class="wob" style="text-align: left; vertical-align : top ; border-collapse: collapse">
                                                     <table>   
@@ -222,6 +249,7 @@
                                                         <tr>
                                                             <td class="wob">
                                                                 <textarea id="createHowTo" rows="9" style="width: 790px;" name="createHowTo"></textarea>
+                                                                <input type="hidden" id="howtoDetail" name="howtoDetail" value="">
                                                             </td>
                                                         </tr>
                                                     </table><br>
@@ -260,7 +288,7 @@
                                         <input type="hidden" id="createTestSelect" name="createTestSelect" value="<%=testselected%>"> 
                                         <table>
                                             <tr>
-                                                <td class="wob"><input type="submit" name="submitCreation" value="Create Test Case">
+                                                <td class="wob"><input type="submit" name="submitCreation" value="Create Test Case" onclick="$('#howtoDetail').val($('#createHowTo').elrte('val'));">
                                                 </td>
                                             </tr>
                                         </table>
