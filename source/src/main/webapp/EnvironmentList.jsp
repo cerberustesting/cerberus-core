@@ -4,6 +4,9 @@
     Author     : vertigo
 --%>
 
+<%@page import="com.redcats.tst.service.impl.BuildRevisionInvariantService"%>
+<%@page import="com.redcats.tst.entity.BuildRevisionInvariant"%>
+<%@page import="com.redcats.tst.service.IBuildRevisionInvariantService"%>
 <%@page import="java.util.logging.Logger"%>
 <%@page import="java.util.logging.Level"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
@@ -35,6 +38,9 @@
             Connection conn = db.connect();
 
             try {
+
+                appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+                IBuildRevisionInvariantService buildRevisionInvariantService = appContext.getBean(BuildRevisionInvariantService.class);
 
                 /* Parameter Setup */
 
@@ -141,7 +147,7 @@
                                         + "WHERE id = 5 "
                                         + "ORDER BY sort ASC");
                                 while (rsEnv.next()) {
-                            %><option style="width: 5   00px" value="<%= rsEnv.getString(1)%>" <%=env.compareTo(rsEnv.getString(1)) == 0 ? " SELECTED " : ""%>><%= rsEnv.getString(1)%> - <%= rsEnv.getString(2)%></option>
+                            %><option style="width: 500px" value="<%= rsEnv.getString(1)%>" <%=env.compareTo(rsEnv.getString(1)) == 0 ? " SELECTED " : ""%>><%= rsEnv.getString(1)%> - <%= rsEnv.getString(2)%></option>
                             <% }
                             %></select>
                         <ftxt><%=dbDocS(conn, "invariant", "environmentgp", "")%></ftxt> <select id="envgp" name="envgp" style="width: 80px" OnChange ="document.environment.submit()">
@@ -156,22 +162,18 @@
                             %></select>
                         <ftxt><%=dbDocS(conn, "invariant", "build", "")%></ftxt> <select id="build" name="build" style="width: 80px" OnChange ="document.environment.submit()">
                             <option style="width: 200px" value="ALL">-- ALL --</option>
-                            <%ResultSet rsBuild = stmtBuild.executeQuery("SELECT value, description "
-                                        + "FROM invariant "
-                                        + "WHERE id = 8 "
-                                        + "ORDER BY sort ASC");
-                                while (rsBuild.next()) {
-                            %><option style="width: 200px" value="<%= rsBuild.getString(1)%>" <%=build.compareTo(rsBuild.getString(1)) == 0 ? " SELECTED " : ""%>><%= rsBuild.getString(1)%></option>
+                            <%
+                                List<BuildRevisionInvariant> listBuildRev = buildRevisionInvariantService.findAllBuildRevisionInvariantBySystemLevel(MySystem, 1);
+                                for (BuildRevisionInvariant myBR : listBuildRev) {
+                            %><option style="width: 200px" value="<%= myBR.getVersionName()%>" <%=build.compareTo(myBR.getVersionName()) == 0 ? " SELECTED " : ""%>><%= myBR.getVersionName()%></option>
                             <% }
                             %></select>
                         <ftxt><%=dbDocS(conn, "invariant", "revision", "")%></ftxt> <select id="revision" name="revision" style="width: 80px" OnChange ="document.environment.submit()">
                             <option style="width: 200px" value="ALL">-- ALL --</option>
-                            <%ResultSet rsRev = stmtRev.executeQuery("SELECT value, description "
-                                        + "FROM invariant "
-                                        + "WHERE id = 9 "
-                                        + "ORDER BY sort ASC");
-                                while (rsRev.next()) {
-                            %><option style="width: 200px" value="<%= rsRev.getString(1)%>" <%=revision.compareTo(rsRev.getString(1)) == 0 ? " SELECTED " : ""%>><%= rsRev.getString(1)%></option>
+                            <%
+                                listBuildRev = buildRevisionInvariantService.findAllBuildRevisionInvariantBySystemLevel(MySystem, 2);
+                                for (BuildRevisionInvariant myBR : listBuildRev) {
+                            %><option style="width: 200px" value="<%= myBR.getVersionName()%>" <%=revision.compareTo(myBR.getVersionName()) == 0 ? " SELECTED " : ""%>><%= myBR.getVersionName()%></option>
                             <% }
                             %></select>
                         <ftxt><%=dbDocS(conn, "countryenvparam", "chain", "")%></ftxt> <input id="chain" name="chain" style="width: 50px" value="<%=chain%>"/>
@@ -333,12 +335,15 @@
                 </td>
                 <td>
                     <%                    }
-                        }%>
-
-        </table>  
+                        }
+                        if (j == 0) {
+                    %>                            No Environment Found...<br><br>
+                    <%} else {
+                    %>                            </table>
+            <%    }%>
     </td>
 </tr>
-</table>
+</table>  
 
 <%
         /* Page Display - END */
@@ -356,11 +361,9 @@
         stmtType.close();
 
         rsActive.close();
-        rsBuild.close();
         rsCountry.close();
         rsEnv.close();
         rsEnvgp.close();
-        rsRev.close();
         rsType.close();
 
 

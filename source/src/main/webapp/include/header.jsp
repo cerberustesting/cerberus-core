@@ -76,7 +76,8 @@ Document   : menu
                                 <li id="subactive"><a name="menu" id="menuIntegrationStatus" href="IntegrationStatus.jsp" style="width:130px">Integration Status</a></li>
                                 <li id="subactive"><a name="menu" id="menuApplications" href="Application.jsp" style="width:130px">Applications</a></li>
                                 <li id="subactive"><a name="menu" id="menuEnvironments" href="EnvironmentList.jsp" style="width:130px">Environments</a></li>
-                                <li id="subactive"><a name="menu" id="menuSprintContent" href="SprintContent.jsp" style="width:130px">Sprint Content</a></li>
+                                <li id="subactive"><a name="menu" id="menuBuildRevision" href="BuildRevDefinition.jsp" style="width:130px">Build/Rev Definition</a></li>
+                                <li id="subactive"><a name="menu" id="menuBuildContent" href="BuildContent.jsp" style="width:130px">Build Content</a></li>
                             </ul>
                         </li>
                         <% }%>

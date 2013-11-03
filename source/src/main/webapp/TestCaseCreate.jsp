@@ -231,30 +231,6 @@
                                     </td>
                                 </tr>
 
-                                <!--                             <tr><td class="separation">
-                                                                    <table class="wob" style="text-align: left; border-collapse: collapse" border="0px" cellpadding="0px" cellspacing="0px">
-                                                                        <tr><td colspan="9" class="wob"><h4 style="color : blue">Activation Criterias</h4>
-                                                                    <tr id="header">
-                                                                    <td class="wob" style="width: 50px"><%out.print(dbDocS(conn, "testcase", "tcactive", "Active"));%></td>
-                                                                    <td class="wob" style="width: 90px"><%out.print(dbDocS(conn, "testcase", "FromBuild", ""));%></td>
-                                                                    <td class="wob" style="width: 100px"><%out.print(dbDocS(conn, "testcase", "FromRev", ""));%></td>
-                                                                    <td class="wob" style="width: 90px"><%out.print(dbDocS(conn, "testcase", "ToBuild", ""));%></td>
-                                                                    <td class="wob" style="width: 100px"><%out.print(dbDocS(conn, "testcase", "ToRev", ""));%></td>
-                                                                    <td class="wob" style="width: 80px"><%out.print(dbDocS(conn, "testcase", "TargetBuild", ""));%></td>
-                                                                    <td class="wob" style="width: 80px"><%out.print(dbDocS(conn, "testcase", "TargetRev", ""));%></td>
-                                                                    </tr>
-                                                                <tr>
-                                                                        <td class="wob"><%=ComboInvariant(conn, "createTcActive", "width: 50px", "createTcActive", "active", "16", "", "", null)%></td>
-                                                                        <td class="wob"><%=ComboInvariant(conn, "createFromBuild", "width: 70px", "createFromBuild", "active", "8", "", "", "")%></td>
-                                                                        <td class="wob"><%=ComboInvariant(conn, "createFromRev", "width: 50px", "createFromRev", "active", "9", "", "", "")%></td>
-                                                                        <td class="wob"><%=ComboInvariant(conn, "createToBuild", "width: 70px", "createToBuild", "active", "8", "", "", "")%></td>
-                                                                        <td class="wob"><%=ComboInvariant(conn, "createToRev", "width: 50px", "createToRev", "active", "9", "", "", "")%></td>
-                                                                        <td class="wob"><%=ComboInvariant(conn, "createTargetBuild", "width: 80px", "createTargetBuild", "active", "8", "", "", "")%></td>
-                                                                        <td class="wob"><%=ComboInvariant(conn, "createTargetRev", "width: 80px", "createTargetRev", "active", "9", "", "", "")%></td>
-                                                                </tr>
-                                                                </table>
-                                                                
-                                                        </td></tr>-->
                                 <tr>
                                     <td class="wob">
                                         <input type="hidden" id="createTestSelect" name="createTestSelect" value="<%=testselected%>"> 

@@ -303,7 +303,7 @@ public class UpdateBuildRevisionParameter extends HttpServlet {
             }
 
             //REDIRECT
-            response.sendRedirect("SprintContent.jsp?build=" + buildFilter + "&revision=" + revisionFilter + "&FilterApply=Apply");
+            response.sendRedirect("BuildContent.jsp?build=" + buildFilter + "&revision=" + revisionFilter + "&FilterApply=Apply");
 
 
         } catch (SQLException ex) {

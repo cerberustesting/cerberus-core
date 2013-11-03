@@ -358,13 +358,13 @@
 
                                     <ftxt>New Sprint</ftxt> <select id="build" name="build" style="width: 150px"><%
                                         String BuildAct = "";
-                                        String buildSQL = "SELECT value, description "
-                                                + "FROM invariant "
-                                                + "WHERE id = 8 ";
+                                        String buildSQL = "SELECT versionname "
+                                                + "FROM buildrevisioninvariant "
+                                                + "WHERE level = 1 and system ='" + MySystem + "' ";
                                         if (Build != null && !Build.trim().equalsIgnoreCase("") && !Build.trim().equalsIgnoreCase("null")) {
-                                            buildSQL += " and sort >= (SELECT sort from invariant where id = 8 and value='" + Build + "') ";
+                                            buildSQL += " and seq >= (SELECT seq from buildrevisioninvariant where level = 1 and system ='" + MySystem + "' and versionname='" + Build + "') ";
                                         }
-                                        buildSQL += " ORDER BY sort ASC";
+                                        buildSQL += " ORDER BY seq ASC";
                                         ResultSet rsBuild = stmtBuild.executeQuery(buildSQL);
                                         while (rsBuild.next()) {
                                         %><option style="width: 150px" value="<%= rsBuild.getString(1)%>"><%= rsBuild.getString(1)%></option>
@@ -373,23 +373,20 @@
                                         %></select>
                                     <br><ftxt>New Revision</ftxt> <select id="revision" name="revision" style="width: 150px"><%
                                         String RevAct = "";
-                                        String RevSQL = "SELECT value, description "
-                                                + "FROM invariant "
-                                                + "WHERE id = 9 ";
-                                        //                        if (Revision != null && !Revision.trim().equalsIgnoreCase("") && !Revision.equalsIgnoreCase("null")) {
-                                        //                            RevSQL += "and sort > (SELECT sort from invariant where id = 9 and value='" + Revision + "')";
-                                        //                        }
-                                        RevSQL += "ORDER BY sort ASC";
+                                        String RevSQL = "SELECT versionname "
+                                                + "FROM buildrevisioninvariant "
+                                                + "WHERE level = 2 and system ='" + MySystem + "' ";
+                                        RevSQL += "ORDER BY seq ASC";
                                         ResultSet rsRev = stmtRev.executeQuery(RevSQL);
-                                        String NextRevSQL = "SELECT value, sort from invariant where id = 9 ";
+                                        String NextRevSQL = "SELECT versionname, seq from buildrevisioninvariant where level = 2 and system ='" + MySystem + "' ";
                                         if (Revision != null && !Revision.trim().equalsIgnoreCase("") && !Revision.trim().equalsIgnoreCase("null")) {
-                                            NextRevSQL += " and sort > (SELECT sort from invariant where id = 9 and value='" + Revision + "') ";
+                                            NextRevSQL += " and seq > (SELECT seq from buildrevisioninvariant where level = 2 and system ='" + MySystem + "' and versionname='" + Revision + "') ";
                                         }
-                                        NextRevSQL += " ORDER BY sort ASC";
+                                        NextRevSQL += " ORDER BY seq ASC";
                                         String NextRev = Revision;
                                         ResultSet rsNextRev = stmtNextRev.executeQuery(NextRevSQL);
                                         if (rsNextRev.first()) {
-                                            NextRev = rsNextRev.getString("value");
+                                            NextRev = rsNextRev.getString("versionname");
                                         }
                                         while (rsRev.next()) {
                                         %><option style="width: 150px" value="<%= rsRev.getString(1)%>" <%=NextRev.compareTo(rsRev.getString(1)) == 0 ? " SELECTED " : ""%>><%= rsRev.getString(1)%></option>
