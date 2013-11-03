@@ -190,6 +190,8 @@ public class Homepage extends HttpServlet {
                     String build = buildRevList.getBuild();
                     String revision = buildRevList.getRevision();
                     List<String> env = new ArrayList<String>();
+
+                    env.add("PROD");
                     env.add("UAT");
                     env.add("QA");
                     TestCaseExecutionStatistics globalStats = tceStatsService.getStatisticsOfExecution(MySystem, build, revision, env);

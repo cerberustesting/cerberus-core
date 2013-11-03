@@ -100,7 +100,7 @@ public class UpdateTestCase extends HttpServlet {
         tc.setCountryList(countries);
         tc.setShortDescription(request.getParameter("editDescription"));
         tc.setDescription(request.getParameter("BehaviorOrValueExpected"));
-        tc.setHowTo(request.getParameter("HowTo"));
+        tc.setHowTo(request.getParameter("howtoDetail"));
         tc.setActive(request.getParameter("editTcActive"));
         tc.setFromSprint(request.getParameter("editFromBuild"));
         tc.setFromRevision(request.getParameter("editFromRev"));

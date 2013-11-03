@@ -355,9 +355,10 @@ public class SeleniumService implements ISeleniumService {
 
     @Override
     public String getValueFromJS (String script){
-    String result;
-    JavascriptExecutor js = (JavascriptExecutor)this.selenium.getDriver();
-    result = (String) (js.executeScript(script));            
+    String result = "";
+    JavascriptExecutor js = (JavascriptExecutor)selenium.getDriver();
+    Object response = js.executeScript(script);
+    result = (String) response;
     return result;
     }
     

@@ -145,7 +145,8 @@ public class PropertyService implements IPropertyService {
             try {
                 String script = testCaseCountryProperty.getValue();
                 String valueFromJS = this.seleniumService.getValueFromJS(script);
-                if (script != null) {
+                if (valueFromJS != null) {
+                    testCaseExecutionData.setValue(valueFromJS);
                     res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_HTML);
                     res.setDescription(res.getDescription().replaceAll("%ELEMENT%", testCaseCountryProperty.getValue()));
                     res.setDescription(res.getDescription().replaceAll("%VALUE%", script));

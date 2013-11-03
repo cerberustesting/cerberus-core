@@ -78,8 +78,8 @@ public class CreateTestCase extends HttpServlet {
             if (request.getParameter("createBehaviorOrValueExpected") == null) {
                 valueExpected = "";
             }
-            String howTo = request.getParameter("createHowTo").replace("'", "\\'");
-            if (request.getParameter("createHowTo") == null) {
+            String howTo = request.getParameter("howtoDetail");
+            if (request.getParameter("howtoDetail") == null) {
                 howTo = "";
             }
             String testcase = request.getParameter("createTestcase");

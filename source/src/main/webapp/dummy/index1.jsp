@@ -40,6 +40,9 @@
             document.selectFormulary.selectedValue.value = value.value;    
             }    
         </script>
+        <script language="text/javascript" type="text/javascript">
+            var product = "12345";    
+        </script>
         <form name="selectFormulary">
             <input name="selectedValue" id="selectedValue">
             <select id="comboSelectRegex" onChange="printValue(this)">
