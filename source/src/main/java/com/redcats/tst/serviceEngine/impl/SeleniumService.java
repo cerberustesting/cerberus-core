@@ -846,7 +846,7 @@ public class SeleniumService implements ISeleniumService {
                 } else {
                     try {
                         WebDriverWait wait = new WebDriverWait(this.selenium.getDriver(), TIMEOUT_WEBELEMENT);
-                        wait.until(ExpectedConditions.presenceOfElementLocated(this.getIdentifier(property)));
+                        wait.until(ExpectedConditions.presenceOfElementLocated(this.getIdentifier(object)));
                         message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_WAIT_ELEMENT);
                         message.setDescription(message.getDescription().replaceAll("%ELEMENT%", object));
                         return message;
