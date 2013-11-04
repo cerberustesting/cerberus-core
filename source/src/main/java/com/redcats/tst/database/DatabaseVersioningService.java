@@ -2608,6 +2608,24 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("UPDATE testcase SET HowTo=REPLACE(HowTo, '\\n', '<br/>');");
         SQLInstruction.add(SQLS.toString());
 
+//-- Adding table that will host specific build revision lists per system.
+//-- ------------------------
+        SQLS = new StringBuilder();
+        SQLS.append(" CREATE  TABLE `buildrevisioninvariant` (");
+        SQLS.append("  `system` VARCHAR(45) NOT NULL DEFAULT '' ,");
+        SQLS.append("  `level` INT NOT NULL ,");
+        SQLS.append("  `seq` INT NOT NULL ,");
+        SQLS.append("  `versionname` VARCHAR(20) NULL ,");
+        SQLS.append("  PRIMARY KEY (`system`, `level`, `seq`),");
+        SQLS.append("  UNIQUE INDEX `IX_buildrevisioninvariant_01` (`system`,`level`,`versionname`) );");
+        SQLInstruction.add(SQLS.toString());
+       
+//-- Adding table that will host specific build revision lists per system.
+//-- ------------------------
+        SQLS = new StringBuilder();
+        SQLS.append("DELETE FROM `invariant` where id in (8,9);");
+        SQLInstruction.add(SQLS.toString());
+
         return SQLInstruction;
     }
 }

@@ -5,6 +5,12 @@
 --%>
 
 
+<%@page import="com.redcats.tst.log.MyLogger"%>
+<%@page import="org.apache.log4j.Level"%>
+<%@page import="com.redcats.tst.service.impl.BuildRevisionInvariantService"%>
+<%@page import="com.redcats.tst.service.IBuildRevisionInvariantService"%>
+<%@page import="com.redcats.tst.entity.BuildRevisionInvariant"%>
+<%@page import="com.redcats.tst.service.impl.InvariantService"%>
 <%@page import="com.redcats.tst.service.IApplicationService"%>
 <%@page import="org.apache.commons.lang3.StringUtils"%>
 <%@page import="java.util.Collections"%>
@@ -35,14 +41,33 @@
                 String insertURL = "";
                 String enable = "disabled";
 
+                IInvariantService invariantService = appContext.getBean(InvariantService.class);
+                IBuildRevisionInvariantService buildRevisionInvariantService = appContext.getBean(BuildRevisionInvariantService.class);
+
+                String MySystem = request.getAttribute("MySystem").toString();
+                if (request.getParameter("system") != null && request.getParameter("system").compareTo("") != 0) {
+                    MySystem = request.getParameter("system");
+                }
 
                 String tag;
                 if (request.getParameter("Tag") != null && request.getParameter("Tag").compareTo("") != 0) {
                     tag = request.getParameter("Tag");
                     URL = URL + "&Tag=" + tag;
-                    execclauses = execclauses + " AND Tag = '" + tag + "'";
+                    execclauses = execclauses + " AND tce.Tag = '" + tag + "'";
                 } else {
                     tag = new String("");
+                }
+
+                String systemExe;
+                String systemBR; // Used for filtering Build and Revision.
+                if (request.getParameter("SystemExe") != null && request.getParameter("SystemExe").compareTo("All") != 0) {
+                    systemExe = request.getParameter("SystemExe");
+                    systemBR = systemExe;
+                    URL = URL + "&SystemExe=" + systemExe;
+                    execclauses = execclauses + " AND tcev.`System` = '" + systemExe + "'";
+                } else {
+                    systemExe = new String("");
+                    systemBR = MySystem;
                 }
 
                 String group;
@@ -57,7 +82,7 @@
                 String port;
                 if (request.getParameter("Port") != null && request.getParameter("Port").compareTo("") != 0) {
                     port = request.getParameter("Port");
-                    execclauses = execclauses + " AND Port = '" + request.getParameter("Port") + "'";
+                    execclauses = execclauses + " AND tce.Port = '" + request.getParameter("Port") + "'";
                     URL = URL + "&Port=" + port;
                 } else {
                     port = new String("");
@@ -65,7 +90,7 @@
                 String ip;
                 if (request.getParameter("Ip") != null && request.getParameter("Ip").compareTo("") != 0) {
                     ip = request.getParameter("Ip");
-                    execclauses = execclauses + " AND Ip = '" + request.getParameter("Ip") + "'";
+                    execclauses = execclauses + " AND tce.Ip = '" + request.getParameter("Ip") + "'";
                     URL = URL + "&Ip=" + ip;
                 } else {
                     ip = new String("");
@@ -73,7 +98,7 @@
                 String browser;
                 if (request.getParameter("browser") != null && request.getParameter("browser").compareTo("") != 0) {
                     browser = request.getParameter("browser");
-                    execclauses = execclauses + " AND browser = '" + request.getParameter("browser") + "'";
+                    execclauses = execclauses + " AND tce.browser = '" + request.getParameter("browser") + "'";
                     URL = URL + "&Browser=" + browser;
                 } else {
                     browser = new String("*firefox");
@@ -82,7 +107,7 @@
                 String logpath;
                 if (request.getParameter("logpath") != null && request.getParameter("logpath").compareTo("") != 0) {
                     logpath = request.getParameter("logpath");
-                    execclauses = execclauses + " AND logpath = '" + request.getParameter("logpath") + "'";
+                    execclauses = execclauses + " AND tce.logpath = '" + request.getParameter("logpath") + "'";
                 } else {
                     logpath = new String("logpath");
                 }
@@ -126,7 +151,7 @@
                 String environment;
                 if (request.getParameter("Environment") != null && request.getParameter("Environment").compareTo("All") != 0) {
                     environment = request.getParameter("Environment");
-                    execclauses = execclauses + " AND Environment = '" + request.getParameter("Environment") + "'";
+                    execclauses = execclauses + " AND tce.Environment = '" + request.getParameter("Environment") + "'";
                     URL = URL + "&Environment=" + environment;
                 } else {
                     environment = new String("%%");
@@ -134,7 +159,7 @@
                 String revision;
                 if (request.getParameter("Revision") != null && request.getParameter("Revision").compareTo("All") != 0) {
                     revision = request.getParameter("Revision");
-                    execclauses = execclauses + " AND Revision = '" + request.getParameter("Revision") + "'";
+                    execclauses = execclauses + " AND tcev.Revision = '" + request.getParameter("Revision") + "'";
                     URL = URL + "&Revision=" + revision;
                 } else {
                     revision = new String("%%");
@@ -158,7 +183,7 @@
                 String build;
                 if (request.getParameter("Build") != null && request.getParameter("Build").compareTo("All") != 0) {
                     build = request.getParameter("Build");
-                    execclauses = execclauses + " AND Build = '" + request.getParameter("Build") + "'";
+                    execclauses = execclauses + " AND tce.Build = '" + request.getParameter("Build") + "'";
                     URL = URL + "&Build=" + build;
                 } else {
                     build = new String("%%");
@@ -461,6 +486,7 @@
                                 <tr><td colspan="7" class="wob"></td></tr>
                                 <tr>
                                     <td id="wob" style="width: 130px"><%out.print(dbDocS(conn, "runnerpage", "Environment", "Environment"));%></td>
+                                    <td id="wob" style="width: 70px"><%out.print(dbDocS(conn, "application", "system", "System"));%></td>
                                     <td id="wob" style="width: 130px"><%out.print(dbDocS(conn, "runnerpage", "Build", "Build"));%></td>
                                     <td id="wob" style="width: 130px"><%out.print(dbDocS(conn, "runnerpage", "Revision", "Revision"));%></td>
                                     <td id="wob" style="width: 130px"><%out.print(dbDocS(conn, "testcaseexecution", "IP", "Ip"));%></td>
@@ -479,22 +505,34 @@
                                         </select>
                                     </td>
                                     <td id="wob">
-                                        <select id="build" name="Build" style="width: 130px">
-                                            <option style="width: 130px" value="All">-- ALL --</option>
-                                            <% ResultSet rsBuild = stmt.executeQuery("SELECT value from Invariant where id = 8 order by sort");
-                                                while (rsBuild.next()) {%>
-                                            <option style="width: 130px" value="<%= rsBuild.getString(1)%>" <%=build.compareTo(rsBuild.getString(1)) == 0 ? " SELECTED " : ""%>><%= rsBuild.getString(1)%></option><%
-                                                }%>
-                                        </select>
+                                        <select id="systemExe" name="SystemExe" style="width: 70px" >
+                                            <option style="width: 100px" value="All">-- ALL --</option>
+                                            <%
+                                                List<Invariant> systemList = invariantService.findListOfInvariantById("SYSTEM");
+                                                for (Invariant myInv : systemList) {
+                                            %><option style="width: 100px" value="<%= myInv.getValue()%>" <%=systemExe.compareTo(myInv.getValue()) == 0 ? " SELECTED " : ""%>><%= myInv.getValue()%></option>
+                                            <% }
+                                            %></select>
                                     </td>
                                     <td id="wob">
-                                        <select id="revision" name="Revision" style="width: 130px">
+                                        <select id="build" name="Build" style="width: 130px" >
                                             <option style="width: 130px" value="All">-- ALL --</option>
-                                            <% ResultSet rsRev = stmt.executeQuery("SELECT value from Invariant where id = 9 order by sort");
-                                                while (rsRev.next()) {%>
-                                            <option style="width: 130px" value="<%= rsRev.getString(1)%>" <%=revision.compareTo(rsRev.getString(1)) == 0 ? " SELECTED " : ""%>><%= rsRev.getString(1)%></option><%
-                                                }%>
-                                        </select>
+                                            <%
+                                                List<BuildRevisionInvariant> listBuildRev = buildRevisionInvariantService.findAllBuildRevisionInvariantBySystemLevel(systemBR, 1);
+                                                for (BuildRevisionInvariant myBR : listBuildRev) {
+                                            %><option style="width: 100px" value="<%= myBR.getVersionName()%>" <%=build.compareTo(myBR.getVersionName()) == 0 ? " SELECTED " : ""%>><%= myBR.getVersionName()%></option>
+                                            <% }
+                                            %></select>
+                                    </td>
+                                    <td id="wob">
+                                        <select id="revision" name="Revision" style="width: 130px" >
+                                            <option style="width: 130px" value="All">-- ALL --</option>
+                                            <%
+                                                listBuildRev = buildRevisionInvariantService.findAllBuildRevisionInvariantBySystemLevel(systemBR, 2);
+                                                for (BuildRevisionInvariant myBR : listBuildRev) {
+                                            %><option style="width: 100px" value="<%= myBR.getVersionName()%>" <%=revision.compareTo(myBR.getVersionName()) == 0 ? " SELECTED " : ""%>><%= myBR.getVersionName()%></option>
+                                            <% }
+                                            %></select>
                                     </td>
                                     <td id="wob"><input style="font-weight: bold; width: 130px" name="Ip" id="Ip" value="<%=ip%>"></td>
                                     <td id="wob"><input style="font-weight: bold; width: 60px" name="Port" id="Port" value="<%=port%>"></td>
@@ -523,9 +561,9 @@
                                                                    %>
                                                                    <td class="wob"><input value="<%=rs_testcasecountrygeneral.getString("value")%>" type="checkbox" <%
                                                                        for (int i = 0; i < country_list.length; i++) {
-                                                            if (country_list[i].equals(rs_testcasecountrygeneral.getString("value"))) {%> CHECKED <%}
-                                                                                 }%> name="Country" ></td><%
-                                                                             } while (rs_testcasecountrygeneral.next());
+                                                                           if (country_list[i].equals(rs_testcasecountrygeneral.getString("value"))) {%> CHECKED <%}
+                                                                                                                              }%> name="Country" ></td><%
+                                                                                                                                                     } while (rs_testcasecountrygeneral.next());
                                                     %>
                                                 <td id="wob"><input id="button" type="button" value="All" onclick="selectAll('country',true)"><input id="button" type="button" value="None" onclick="selectAll('country',false)"></td>
                                             </tr>
@@ -741,17 +779,23 @@
                                                 if (country_list[i].equals(rs_count.getString("country"))) {
                                                     //out.println(execclauses);
                                                     Statement stmt3 = conn.createStatement();
-                                                    ResultSet rs_exec = stmt3.executeQuery("select ID, test, testcase, application, "
-                                                            + "ControlStatus, DATE_FORMAT(Start,'%Y-%m-%d %H:%i') as Start, DATE_FORMAT(End,'%Y-%m-%d %H:%i') as End "
-                                                            + " from testcaseexecution where "
+                                                    String stmt3SQL = "SELECT DISTINCT tce.ID, tce.test, tce.testcase, tce.application, "
+                                                            + "tce.ControlStatus, DATE_FORMAT(tce.Start,'%Y-%m-%d %H:%i') as Start, DATE_FORMAT(tce.End,'%Y-%m-%d %H:%i') as End "
+                                                            + " from testcaseexecution tce "
+                                                            + "JOIN testcaseexecutionsysver tcev "
+                                                            + " ON tcev.id = tce.id "
+                                                            + "WHERE "
                                                             + execclauses
-                                                            + " and test = '"
+                                                            + " and tce.test = '"
                                                             + rs_time.getString("tc.Test")
-                                                            + "' and testcase = '"
+                                                            + "' and tce.testcase = '"
                                                             + rs_time.getString("tc.testcase")
-                                                            + "' and country = '"
+                                                            + "' and tce.country = '"
                                                             + country_list[i]
-                                                            + "' order by ID desc");
+                                                            + "' order by tce.ID desc LIMIT 1";
+                                                    MyLogger.log("ReportingExecution.jsp", Level.DEBUG, stmt3SQL);
+
+                                                    ResultSet rs_exec = stmt3.executeQuery(stmt3SQL);
                                                     if (rs_exec.first()) {
                                                         if (StringUtils.isNotBlank(rs_exec.getString("ID"))) {
                                                             cssStatus = "NotExecuted";
@@ -817,12 +861,12 @@
                                     %>
                                         <td class="INF" style="width: 30px"><%
                                         if (rs_time.getString("tc.Comment") != null) {%><%=rs_time.getString("tc.Comment")%><%}%></td>
-                                        <td class="INF" style="width: 30px"><%
+                                    <td class="INF" style="width: 30px"><%
                                             if (SitdmossBugtrackingURL_tc.equalsIgnoreCase("") == false) {%><a href="<%=SitdmossBugtrackingURL_tc%>" target="_blank"><%=rs_time.getString("tc.BugID")%></a><%
                                             }
                                             if ((rs_time.getString("tc.TargetBuild") != null) && (rs_time.getString("tc.TargetBuild").equalsIgnoreCase("") == false)) {
                                         %> for <%=rs_time.getString("tc.TargetBuild")%>/<%=rs_time.getString("tc.TargetRev")%><%
-                                        }%></td>   
+                                            }%></td>   
                                 </tr>
 
                                 <%

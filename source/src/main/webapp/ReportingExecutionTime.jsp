@@ -5,13 +5,16 @@
 --%>
 
 
+<%@page import="com.redcats.tst.entity.BuildRevisionInvariant"%>
+<%@page import="com.redcats.tst.service.impl.BuildRevisionInvariantService"%>
+<%@page import="com.redcats.tst.service.IBuildRevisionInvariantService"%>
 <%@page import="org.apache.commons.lang3.StringUtils"%>
 <%@page import="java.lang.*" %>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
     "http://www.w3.org/TR/html4/loose.dtd">
-<% Date DatePageStart = new Date() ; %>
+<% Date DatePageStart = new Date();%>
 
 <html>
     <head>
@@ -33,30 +36,36 @@
         <div id="body">
 
             <%
+                IBuildRevisionInvariantService buildRevisionInvariantService = appContext.getBean(BuildRevisionInvariantService.class);
+
                 String tcclauses = " WHERE 1=1 ";
                 String execclauses = " 1=1 ";
                 String exetcepagelist = "";
                 String avgclauses = " 1=1 ";
                 String avgtcepagelist = "";
 
+                String MySystem = request.getAttribute("MySystem").toString();
+                if (request.getParameter("system") != null && request.getParameter("system").compareTo("") != 0) {
+                    MySystem = request.getParameter("system");
+                }
+
                 String tag;
                 if (request.getParameter("Tag") != null && request.getParameter("Tag").compareTo("") != 0) {
                     tag = request.getParameter("Tag");
                     execclauses = execclauses + " AND Tag = '" + tag + "'";
-                    exetcepagelist = exetcepagelist + "&tag=" + tag ;
-                        } else {
+                    exetcepagelist = exetcepagelist + "&tag=" + tag;
+                } else {
                     tag = new String("");
                 }
                 String tagRef;
                 if (request.getParameter("TagRef") != null && request.getParameter("TagRef").compareTo("") != 0) {
                     tagRef = request.getParameter("TagRef");
                     avgclauses = avgclauses + " AND Tag = '" + tagRef + "'";
-                    avgtcepagelist = avgtcepagelist + "&tag=" + tagRef ;
-                        }
-                     else {
+                    avgtcepagelist = avgtcepagelist + "&tag=" + tagRef;
+                } else {
                     tagRef = new String("");
                 }
-                
+
                 String group;
                 if (request.getParameter("Group") != null && request.getParameter("Group").compareTo("All") != 0) {
                     group = request.getParameter("Group");
@@ -66,39 +75,39 @@
                 }
 
                 String port;
-                if (request.getParameter("Port") != null && request.getParameter("Port").compareTo("") != 0 ) {
+                if (request.getParameter("Port") != null && request.getParameter("Port").compareTo("") != 0) {
                     port = request.getParameter("Port");
                     execclauses = execclauses + " AND Port = '" + request.getParameter("Port") + "'";
-                    exetcepagelist = exetcepagelist + "&port=" + port ;
+                    exetcepagelist = exetcepagelist + "&port=" + port;
                 } else {
                     port = new String("");
                 }
                 String portRef;
-                if (request.getParameter("PortRef") != null && request.getParameter("PortRef").compareTo("") != 0 ) {
+                if (request.getParameter("PortRef") != null && request.getParameter("PortRef").compareTo("") != 0) {
                     portRef = request.getParameter("PortRef");
                     avgclauses = avgclauses + " AND Port = '" + request.getParameter("PortRef") + "'";
-                    avgtcepagelist = avgtcepagelist + "&port=" + portRef ;
+                    avgtcepagelist = avgtcepagelist + "&port=" + portRef;
                 } else {
                     portRef = new String("");
                 }
-                
+
                 String ip;
-                if (request.getParameter("Ip") != null && request.getParameter("Ip").compareTo("") != 0 ) {
+                if (request.getParameter("Ip") != null && request.getParameter("Ip").compareTo("") != 0) {
                     ip = request.getParameter("Ip");
                     execclauses = execclauses + " AND Ip = '" + request.getParameter("Ip") + "'";
-                    exetcepagelist = exetcepagelist + "&ip=" + ip ;
+                    exetcepagelist = exetcepagelist + "&ip=" + ip;
                 } else {
                     ip = new String("");
                 }
                 String ipRef;
-                if (request.getParameter("IpRef") != null && request.getParameter("IpRef").compareTo("") != 0 ) {
+                if (request.getParameter("IpRef") != null && request.getParameter("IpRef").compareTo("") != 0) {
                     ipRef = request.getParameter("IpRef");
                     avgclauses = avgclauses + " AND Ip = '" + request.getParameter("IpRef") + "'";
-                    avgtcepagelist = avgtcepagelist + "&ip=" + ipRef ;
+                    avgtcepagelist = avgtcepagelist + "&ip=" + ipRef;
                 } else {
                     ipRef = new String("");
                 }
-                
+
                 String browser;
                 if (request.getParameter("browser") != null && request.getParameter("browser").compareTo("") != 0) {
                     browser = request.getParameter("browser");
@@ -113,7 +122,7 @@
                 } else {
                     browserRef = new String("");
                 }
-                
+
                 String logpath;
                 if (request.getParameter("logpath") != null && request.getParameter("logpath").compareTo("") != 0) {
                     logpath = request.getParameter("logpath");
@@ -156,7 +165,7 @@
                 if (request.getParameter("Environment") != null && request.getParameter("Environment").compareTo("All") != 0) {
                     environment = request.getParameter("Environment");
                     execclauses = execclauses + " AND Environment = '" + request.getParameter("Environment") + "'";
-                    exetcepagelist = exetcepagelist + "&environment=" + environment ;
+                    exetcepagelist = exetcepagelist + "&environment=" + environment;
                 } else {
                     environment = new String("%%");
                 }
@@ -164,16 +173,16 @@
                 if (request.getParameter("EnvironmentRef") != null && request.getParameter("EnvironmentRef").compareTo("All") != 0) {
                     environmentRef = request.getParameter("EnvironmentRef");
                     avgclauses = avgclauses + " AND Environment = '" + request.getParameter("EnvironmentRef") + "'";
-                    avgtcepagelist = avgtcepagelist + "&environment=" + environmentRef ;
+                    avgtcepagelist = avgtcepagelist + "&environment=" + environmentRef;
                 } else {
                     environmentRef = new String("%%");
                 }
-                
+
                 String revision;
                 if (request.getParameter("Revision") != null && request.getParameter("Revision").compareTo("All") != 0) {
                     revision = request.getParameter("Revision");
                     execclauses = execclauses + " AND Revision = '" + request.getParameter("Revision") + "'";
-                    exetcepagelist = exetcepagelist + "&revision=" + revision ;
+                    exetcepagelist = exetcepagelist + "&revision=" + revision;
                 } else {
                     revision = new String("%%");
                 }
@@ -181,7 +190,7 @@
                 if (request.getParameter("RevisionRef") != null && request.getParameter("RevisionRef").compareTo("All") != 0) {
                     revisionRef = request.getParameter("RevisionRef");
                     avgclauses = avgclauses + " AND Revision = '" + request.getParameter("RevisionRef") + "'";
-                    avgtcepagelist = avgtcepagelist + "&revision=" + revisionRef ;
+                    avgtcepagelist = avgtcepagelist + "&revision=" + revisionRef;
                 } else {
                     revisionRef = new String("%%");
                 }
@@ -190,7 +199,7 @@
                 if (request.getParameter("Build") != null && request.getParameter("Build").compareTo("All") != 0) {
                     build = request.getParameter("Build");
                     execclauses = execclauses + " AND Build = '" + request.getParameter("Build") + "'";
-                    exetcepagelist = exetcepagelist + "&build=" + build ;
+                    exetcepagelist = exetcepagelist + "&build=" + build;
                 } else {
                     build = new String("%%");
                 }
@@ -199,7 +208,7 @@
                 if (request.getParameter("BuildRef") != null && request.getParameter("BuildRef").compareTo("All") != 0) {
                     buildRef = request.getParameter("BuildRef");
                     avgclauses = avgclauses + " AND Build = '" + request.getParameter("BuildRef") + "'";
-                    avgtcepagelist = avgtcepagelist + "&build=" + buildRef ;
+                    avgtcepagelist = avgtcepagelist + "&build=" + buildRef;
                 } else {
                     buildRef = new String("%%");
                 }
@@ -245,10 +254,9 @@
 
                 String[] country_list = null;
                 // LinkedList<Country> country;
-                if (request.getParameter("Country") != null 
-                        ) {
+                if (request.getParameter("Country") != null) {
                     country_list = request.getParameterValues("Country");
-                    
+
                 } else {
                     country_list = new String[0];
                 }
@@ -300,17 +308,17 @@
                                             <tr>                        
                                                 <td id="wob">
                                                     <select id="test" style="width: 110px"  name="Test">
-                                            <option value="All">-- ALL --</option><%
-                                            String optstyle = "";
-                                                ResultSet rsTest = stmt.executeQuery("SELECT Test, active FROM Test where Test IS NOT NULL Order by Test asc");
-                                                while (rsTest.next()) {
-                                                    if (rsTest.getString("active").equalsIgnoreCase("Y")) {
-                                                        optstyle = "font-weight:bold;";
-                                                } else {
-                                                    optstyle = "font-weight:lighter;";
-                                                }%>
-                                            <option style="width: 200px;<%=optstyle%>" value="<%= rsTest.getString(1)%>" <%=test.compareTo(rsTest.getString(1)) == 0 ? " SELECTED " : ""%>><%= rsTest.getString(1)%></option><%
-                                             }%>
+                                                        <option value="All">-- ALL --</option><%
+                                                            String optstyle = "";
+                                                            ResultSet rsTest = stmt.executeQuery("SELECT Test, active FROM Test where Test IS NOT NULL Order by Test asc");
+                                                            while (rsTest.next()) {
+                                                                if (rsTest.getString("active").equalsIgnoreCase("Y")) {
+                                                                    optstyle = "font-weight:bold;";
+                                                                } else {
+                                                                    optstyle = "font-weight:lighter;";
+                                                                }%>
+                                                        <option style="width: 200px;<%=optstyle%>" value="<%= rsTest.getString(1)%>" <%=test.compareTo(rsTest.getString(1)) == 0 ? " SELECTED " : ""%>><%= rsTest.getString(1)%></option><%
+                                                            }%>
                                                     </select>
                                                 </td>
                                                 <td id="wob">
@@ -367,24 +375,24 @@
 
                                                                 rs_testcasecountrygeneral.first();
                                                                 do {%>
-                                                                <td class="wob" style="font-size : x-small ; width: 10px;"><%=rs_testcasecountrygeneral.getString("value")%></td>
-                                                                <% 		} while (rs_testcasecountrygeneral.next());%>
+                                                            <td class="wob" style="font-size : x-small ; width: 10px;"><%=rs_testcasecountrygeneral.getString("value")%></td>
+                                                            <% 		} while (rs_testcasecountrygeneral.next());%>
                                                         </tr>
                                                         <tr>
                                                             <%
 
                                                                 rs_testcasecountrygeneral.first();
                                                                 do {
-                                                                %>
-                                                                <td class="wob"><input value="<%=rs_testcasecountrygeneral.getString("value")%>" type="checkbox" 
-                                                                       <% for (int i = 0; i < country_list.length; i++) {
-                                                                               if (country_list[i].equals(rs_testcasecountrygeneral.getString("value"))) {%>  CHECKED  <% }
-                                                                                   }%>
-                                                                       name="Country" ></td>
+                                                            %>
+                                                            <td class="wob"><input value="<%=rs_testcasecountrygeneral.getString("value")%>" type="checkbox" 
+                                                                                   <% for (int i = 0; i < country_list.length; i++) {
+                                                                                           if (country_list[i].equals(rs_testcasecountrygeneral.getString("value"))) {%>  CHECKED  <% }
+                                                                                               }%>
+                                                                                   name="Country" ></td>
                                                                 <% //onclick="return false"
                                                                     } while (rs_testcasecountrygeneral.next());
                                                                 %>
-                                                            
+
 
                                                             <td id="wob"><input id="button" type="button" value="All" onclick="selectAll('country',true)"><input id="button" type="button" value="None" onclick="selectAll('country',false)"></td>
                                                         </tr>
@@ -417,20 +425,26 @@
                                                         <option style="width: 90px" value="<%= rsEnv.getString(1)%>" <%=environment.compareTo(rsEnv.getString(1)) == 0 ? " SELECTED " : ""%>><%= rsEnv.getString(1)%></option>
                                                         <% }%>
                                                     </select></td>
-                                                <td id="wob"><select id="build" name="Build" style="width: 70px">
-                                                        <option style="width: 70px" value="All">-- ALL --</option>
-                                                        <% ResultSet rsBuild = stmt.executeQuery("SELECT value from Invariant where id = 8 order by sort");
-                                                            while (rsBuild.next()) {%>
-                                                        <option style="width: 70px" value="<%= rsBuild.getString(1)%>" <%=build.compareTo(rsBuild.getString(1)) == 0 ? " SELECTED " : ""%>><%= rsBuild.getString(1)%></option>
-                                                        <% }%>
-                                                    </select></td>
-                                                <td id="wob"><select id="revision" name="Revision" style="width: 70px">
-                                                        <option style="width: 70px" value="All">-- ALL --</option>
-                                                        <% ResultSet rsRev = stmt.executeQuery("SELECT value from Invariant where id = 9 order by sort");
-                                                            while (rsRev.next()) {%>
-                                                        <option style="width: 70px" value="<%= rsRev.getString(1)%>" <%=revision.compareTo(rsRev.getString(1)) == 0 ? " SELECTED " : ""%>><%= rsRev.getString(1)%></option>
-                                                        <% }%>
-                                                    </select></td>
+                                                <td id="wob">
+                                                    <select id="build" name="Build" style="width: 70px" >
+                                                        <option style="width: 100px" value="All">-- ALL --</option>
+                                                        <%
+                                                            List<BuildRevisionInvariant> listBuildRev = buildRevisionInvariantService.findAllBuildRevisionInvariantBySystemLevel(MySystem, 1);
+                                                            for (BuildRevisionInvariant myBR : listBuildRev) {
+                                                        %><option style="width: 100px" value="<%= myBR.getVersionName()%>" <%=build.compareTo(myBR.getVersionName()) == 0 ? " SELECTED " : ""%>><%= myBR.getVersionName()%></option>
+                                                        <% }
+                                                        %></select>
+                                                </td>
+                                                <td id="wob">
+                                                    <select id="revision" name="Revision" style="width: 70px" >
+                                                        <option style="width: 100px" value="All">-- ALL --</option>
+                                                        <%
+                                                            listBuildRev = buildRevisionInvariantService.findAllBuildRevisionInvariantBySystemLevel(MySystem, 2);
+                                                            for (BuildRevisionInvariant myBR : listBuildRev) {
+                                                        %><option style="width: 100px" value="<%= myBR.getVersionName()%>" <%=revision.compareTo(myBR.getVersionName()) == 0 ? " SELECTED " : ""%>><%= myBR.getVersionName()%></option>
+                                                        <% }
+                                                        %></select>
+                                                </td>
                                                 <td id="wob"><input style="font-weight: bold; width: 90px" name="Ip" id="Ip" value="<%=ip%>"></td>
                                                 <td id="wob"><input style="font-weight: bold; width: 60px" name="Port" id="Port" value="<%=port%>"></td>
                                                 <td id="wob"><input style="font-weight: bold; width: 150px" name="Tag" id="Tag" value="<%=tag%>"></td>
@@ -458,20 +472,26 @@
                                                         <option style="width: 90px" value="<%= rsEnvRef.getString(1)%>" <%=environmentRef.compareTo(rsEnvRef.getString(1)) == 0 ? " SELECTED " : ""%>><%= rsEnvRef.getString(1)%></option>
                                                         <% }%>
                                                     </select></td>
-                                                <td id="wob"><select id="buildRef" name="BuildRef" style="width: 70px">
+                                                <td id="wob">
+                                                    <select id="buildRef" name="BuildRef" style="width: 70px" >
                                                         <option style="width: 70px" value="All">-- ALL --</option>
-                                                        <% ResultSet rsBuildRef = stmt.executeQuery("SELECT value from Invariant where id = 8 order by sort");
-                                                            while (rsBuildRef.next()) {%>
-                                                        <option style="width: 70px" value="<%= rsBuildRef.getString(1)%>" <%=buildRef.compareTo(rsBuildRef.getString(1)) == 0 ? " SELECTED " : ""%>><%= rsBuildRef.getString(1)%></option>
-                                                        <% }%>
-                                                    </select></td>
-                                                <td id="wob"><select id="revisionRef" name="RevisionRef" style="width: 70px">
-                                                        <option style="width: 70px" value="All">-- ALL --</option>
-                                                        <% ResultSet rsRevRef = stmt.executeQuery("SELECT value from Invariant where id = 9 order by sort");
-                                                            while (rsRevRef.next()) {%>
-                                                        <option style="width: 70px" value="<%= rsRevRef.getString(1)%>" <%=revisionRef.compareTo(rsRevRef.getString(1)) == 0 ? " SELECTED " : ""%>><%= rsRevRef.getString(1)%></option>
-                                                        <% }%>
-                                                    </select></td>
+                                                        <%
+                                                            listBuildRev = buildRevisionInvariantService.findAllBuildRevisionInvariantBySystemLevel(MySystem, 1);
+                                                            for (BuildRevisionInvariant myBR : listBuildRev) {
+                                                        %><option style="width: 100px" value="<%= myBR.getVersionName()%>" <%=buildRef.compareTo(myBR.getVersionName()) == 0 ? " SELECTED " : ""%>><%= myBR.getVersionName()%></option>
+                                                        <% }
+                                                        %></select>
+                                                </td>
+                                                <td id="wob">
+                                                    <select id="revisionRef" name="RevisionRef" style="width: 70px" >
+                                                        <option style="width: 100px" value="All">-- ALL --</option>
+                                                        <%
+                                                            listBuildRev = buildRevisionInvariantService.findAllBuildRevisionInvariantBySystemLevel(MySystem, 2);
+                                                            for (BuildRevisionInvariant myBR : listBuildRev) {
+                                                        %><option style="width: 100px" value="<%= myBR.getVersionName()%>" <%=revisionRef.compareTo(myBR.getVersionName()) == 0 ? " SELECTED " : ""%>><%= myBR.getVersionName()%></option>
+                                                        <% }
+                                                        %></select>
+                                                </td>
                                                 <td id="wob"><input style="font-weight: bold; width: 90px" name="IpRef" id="ipRef" value="<%=ipRef%>"></td>
                                                 <td id="wob"><input style="font-weight: bold; width: 60px" name="PortRef" id="portRef" value="<%=portRef%>"></td>
                                                 <td id="wob"><input style="font-weight: bold; width: 150px" name="TagRef" id="tagRef" value="<%=tagRef%>"></td>
@@ -493,7 +513,7 @@
                     </tr>
                 </table> 
             </form>
-                            
+
             <br><br>
 
             <%
@@ -715,17 +735,17 @@
                                         <img src="images/<%=cssTIME%>.png" border="0"/></a>
                                 </td>
                                 <td class="INF" style="font-size : x-small"><%
-                                if (elapsed.equalsIgnoreCase("NA")) { %>
+                                    if (elapsed.equalsIgnoreCase("NA")) {%>
                                     NA /
-                                 <%       }else{%>
+                                    <%       } else {%>
                                     <a href="ExecutionDetailList.jsp?test=<%=rs_time.getString("tc.Test")%>&testcase=<%=rs_time.getString("tc.testcase")%>&country=<%=country_list[i]%>&controlStatus=OK<%=exetcepagelist%>"><%=elapsed%></a>s /                 
                                     <%            }
-                                if (average.equalsIgnoreCase("NA")) { %>
+                                        if (average.equalsIgnoreCase("NA")) {%>
                                     NA
-                                 <%       }else{%>
+                                    <%       } else {%>
                                     <a href="ExecutionDetailList.jsp?test=<%=rs_time.getString("tc.Test")%>&testcase=<%=rs_time.getString("tc.testcase")%>&country=<%=country_list[i]%>&controlStatus=OK<%=avgtcepagelist%>"><%=average%></a>s               
                                     <%            }
-                                                    %>
+                                    %>
                                 </td>
                                 <%
                                     // } while (rs_exec.next());
@@ -734,30 +754,30 @@
                                 <td class="EQ"> 
                                     <%= country_list[i]%> </td>
                                 <td> / </td>
-                                    <%
-                                        }
-                                        if (rs_count.isLast()) {
-                                        } else {
-                                            rs_count.next();
-                                        }
+                                <%
+                                    }
+                                    if (rs_count.isLast()) {
                                     } else {
-                                    %>
+                                        rs_count.next();
+                                    }
+                                } else {
+                                %>
                                 <td class="NOINF"></td>
                                 <td class="NOINF"></td>
                                 <%   }
                                     }
                                     //} while (rs_testcasecountrygeneral.next());
-%>
+                                %>
+                                <%
+                                } else {
+                                    for (int i = 0; i < country_list.length; i++) {
+                                %>
+                                <td class="NOINF"></td>
+                                <td class="NOINF"></td>
+                                <%     }
+                                    }%>
+                            </tr>
                             <%
-                            } else {
-                                for (int i = 0; i < country_list.length; i++) {
-                            %>
-                            <td class="NOINF"></td>
-                            <td class="NOINF"></td>
-                            <%     }
-                                                }%>
-                                </tr>
-<%
                                             j++;
                                         } while (rs_time.next());
                                 }
@@ -766,23 +786,23 @@
                     </td>
                 </tr>
             </table>
-                            <%
-                                        stmt.close();
-                                        stmt1.close();
-                                    }
+            <%
+                        stmt.close();
+                        stmt1.close();
+                    }
 
-                                } catch (Exception e) {
-                                    out.println(e);
-                                } finally {
-                                    try {
-                                        conn.close();
-                                    } catch (Exception ex) {
-                                    }
-                                }
+                } catch (Exception e) {
+                    out.println(e);
+                } finally {
+                    try {
+                        conn.close();
+                    } catch (Exception ex) {
+                    }
+                }
 
-                            %>
+            %>
 
         </div>
-<br><% out.print(display_footer(DatePageStart)); %>
+        <br><% out.print(display_footer(DatePageStart));%>
     </body>
 </html>

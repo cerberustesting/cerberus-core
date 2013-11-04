@@ -5,6 +5,9 @@
     Description: This page display the content of a build/revision.
 --%>
 
+<%@page import="com.redcats.tst.entity.BuildRevisionInvariant"%>
+<%@page import="com.redcats.tst.service.impl.BuildRevisionInvariantService"%>
+<%@page import="com.redcats.tst.service.IBuildRevisionInvariantService"%>
 <%@page import="com.redcats.tst.service.impl.ApplicationService"%>
 <%@page import="com.redcats.tst.util.StringUtil"%>
 <%@page import="com.redcats.tst.entity.Application"%>
@@ -39,7 +42,8 @@
             try {
 
                 IApplicationService applicationService = appContext.getBean(ApplicationService.class);
-                
+                IBuildRevisionInvariantService buildRevisionInvariantService = appContext.getBean(BuildRevisionInvariantService.class);
+
                 String MySystem = request.getAttribute("MySystem").toString();
                 if (request.getParameter("system") != null && request.getParameter("system").compareTo("") != 0) {
                     MySystem = request.getParameter("system");
@@ -75,31 +79,35 @@
 
                 Statement stmtRev = conn.createStatement();
 
-        %>                    <form method="GET" name="SprintContent" id="buildcontent">
-            <table class="tablef"> <tr> <td><a href="?build=NONE&revision=NONE">Pending Release</a></td><td> 
-                <ftxt><%=dbDocS(conn, "invariant", "build", "")%></ftxt> <select id="build" name="build" style="width: 100px" OnChange ="document.buildcontent.submit()">
+        %>                    <form method="GET" name="BuildContent" id="buildcontent">
+            <table class="tablef"> 
+                <tr>
+                    <td><a href="?build=NONE&revision=NONE">Pending Release</a></td>
+                    <td><a href="BuildContent.jsp">Latest Release</a></td>
+                    <td> 
+                <ftxt><%=dbDocS(conn, "invariant", "build", "")%></ftxt> 
+                <select id="build" name="build" style="width: 100px" OnChange ="document.buildcontent.submit()">
                     <option style="width: 100px" value="NONE" <%=build.compareTo("NONE") == 0 ? " SELECTED " : ""%>>-- NONE --</option>
-                    <%ResultSet rsBuild = stmtBuild.executeQuery("SELECT value, description "
-                                + "FROM invariant "
-                                + "WHERE id = 8 "
-                                + "ORDER BY sort ASC");
-                        while (rsBuild.next()) {
-                    %><option style="width: 100px" value="<%= rsBuild.getString(1)%>" <%=build.compareTo(rsBuild.getString(1)) == 0 ? " SELECTED " : ""%>><%= rsBuild.getString(1)%></option>
+                    <%
+                        List<BuildRevisionInvariant> listBuildRev = buildRevisionInvariantService.findAllBuildRevisionInvariantBySystemLevel(MySystem, 1);
+                        for (BuildRevisionInvariant myBR : listBuildRev) {
+                    %><option style="width: 100px" value="<%= myBR.getVersionName()%>" <%=build.compareTo(myBR.getVersionName()) == 0 ? " SELECTED " : ""%>><%= myBR.getVersionName()%></option>
                     <% }
                     %></select>
-                <ftxt><%=dbDocS(conn, "invariant", "revision", "")%></ftxt> <select id="revision" name="revision" style="width: 100px" OnChange ="document.buildcontent.submit()">
+                <ftxt><%=dbDocS(conn, "invariant", "revision", "")%></ftxt> 
+                <select id="revision" name="revision" style="width: 100px" OnChange ="document.buildcontent.submit()">
                     <option style="width: 100px" value="ALL" <%=revision.compareTo("ALL") == 0 ? " SELECTED " : ""%>>-- ALL --</option>
                     <option style="width: 100px" value="NONE" <%=revision.compareTo("NONE") == 0 ? " SELECTED " : ""%>>-- NONE --</option>
-                    <%ResultSet rsRev = stmtRev.executeQuery("SELECT value, description "
-                                + "FROM invariant "
-                                + "WHERE id = 9 "
-                                + "ORDER BY sort ASC");
-                        while (rsRev.next()) {
-                    %><option style="width: 100px" value="<%= rsRev.getString(1)%>" <%=revision.compareTo(rsRev.getString(1)) == 0 ? " SELECTED " : ""%>><%= rsRev.getString(1)%></option>
+                    <%
+                        listBuildRev = buildRevisionInvariantService.findAllBuildRevisionInvariantBySystemLevel(MySystem, 2);
+                        for (BuildRevisionInvariant myBR : listBuildRev) {
+                    %><option style="width: 100px" value="<%= myBR.getVersionName()%>" <%=revision.compareTo(myBR.getVersionName()) == 0 ? " SELECTED " : ""%>><%= myBR.getVersionName()%></option>
                     <% }
                     %></select>
                 <input type="submit" name="FilterApply" value="Apply">
-                </td></tr></table>
+                </td>
+                </tr>
+            </table>
         </form><br>
         <%
             stmtBuild.close();
@@ -180,8 +188,26 @@
                 <tr>
                     <td class="wob" style="background-color:<%=backColor%>"><input name="ubcDelete" type="checkbox" style="width:10px ; background-color:<%=backColor%>" 
                                                                                    value="<%=rsBR.getString("b.ID")%>"></td>
-                    <td class="wob" style="background-color:<%=backColor%>"><%=ComboInvariant(conn, "ubcBuild", "width:60px ; background-color:" + backColor + "; font-size:x-small;border:0px", "ubcBuild", "", "8", rsBR.getString("b.build"), "", "NONE")%></td>
-                    <td class="wob" style="background-color:<%=backColor%>"><%=ComboInvariant(conn, "ubcRevision", "width:40px ; background-color:" + backColor + "; font-size:x-small; border:0px", "ubcRevision", "", "9", rsBR.getString("b.revision"), "", "NONE")%></td>
+                    <td class="wob" style="background-color:<%=backColor%>">
+                        <select id="ubcBuild" name="ubcBuild" style="width:60px ; background-color:<%=backColor%>; font-size:x-small;border:0px">
+                            <option style="width: 100px" value="NONE" <%=revision.compareTo("NONE") == 0 ? " SELECTED " : ""%>>-- NONE --</option>
+                            <%
+                                listBuildRev = buildRevisionInvariantService.findAllBuildRevisionInvariantBySystemLevel(MySystem, 1);
+                                for (BuildRevisionInvariant myBR : listBuildRev) {
+                            %><option style="width: 100px" value="<%= myBR.getVersionName()%>" <%=rsBR.getString("b.build").compareTo(myBR.getVersionName()) == 0 ? " SELECTED " : ""%>><%= myBR.getVersionName()%></option>
+                            <% }
+                            %></select>
+                    </td>
+                    <td class="wob" style="background-color:<%=backColor%>">
+                        <select id="ubcRevision" name="ubcRevision" style="width:40px ; background-color:<%=backColor%>; font-size:x-small;border:0px">
+                            <option style="width: 100px" value="NONE" <%=revision.compareTo("NONE") == 0 ? " SELECTED " : ""%>>-- NONE --</option>
+                            <%
+                                listBuildRev = buildRevisionInvariantService.findAllBuildRevisionInvariantBySystemLevel(MySystem, 2);
+                                for (BuildRevisionInvariant myBR : listBuildRev) {
+                            %><option style="width: 100px" value="<%= myBR.getVersionName()%>" <%=rsBR.getString("b.revision").compareTo(myBR.getVersionName()) == 0 ? " SELECTED " : ""%>><%= myBR.getVersionName()%></option>
+                            <% }
+                            %></select>
+                    </td>
                     <td class="wob" style="background-color:<%=backColor%>"><select id="ubcApplication" name="ubcApplication" class="wob" style="width:100px; font-size:x-small;background-color:<%=backColor%>"><%
                         ResultSet rsApp = stmtProj.executeQuery(" SELECT distinct application from application where application != '' and application " + appliInSQL + " order by sort ");
                         rsApp.first();
@@ -202,7 +228,7 @@
                     <td class="wob" style="background-color:<%=backColor%>"><textarea class="wob" name="ubcSubject" value="<%=rsBR.getString("b.Subject")%>" rows="1" style="width: 300px; background-color:<%=backColor%>; font-size:x-small"><%=rsBR.getString("b.Subject")%></textarea></td>
                     <td class="wob" style="background-color:<%=backColor%>"><select class="wob" name="ubcReleaseOwner" style="width: 100px; background-color:<%=backColor%>; font-size:x-small">
                             <option value="" ></option><%
-                                ResultSet rsOwner = stmtProj.executeQuery(" SELECT Login, Name FROM user where name like '%(CDI)';");
+                                ResultSet rsOwner = stmtProj.executeQuery(" SELECT Login, Name FROM user where defaultsystem like '" + MySystem + "';");
                                 while (rsOwner.next()) {
                             %><option value="<%=rsOwner.getString("Login")%>"<%=rsBR.getString("b.ReleaseOwner").compareTo(rsOwner.getString("Login")) == 0 ? " SELECTED " : ""%>><%=rsOwner.getString("Name")%></option><%
                                 }
@@ -218,10 +244,22 @@
                         } while (rsBR.next());
                     }%></table>
             <input type="button" value="New Line" onclick="addBuildContent('buildcontenttable' )"></td></tr>
-
-
-            <%=ComboInvariant(conn, "buildcontent_build_", "visibility:hidden", "buildcontent_build_", "", "8", build, "", "NONE")%>
-            <%=ComboInvariant(conn, "buildcontent_revision_", "visibility:hidden", "buildcontent_revision_", "", "9", revision, "", "NONE")%>
+            <select id="buildcontent_build_" name="buildcontent_build_" style="width:60px ; visibility:hidden; font-size:x-small;border:0px">
+                <option style="width: 100px" value="NONE" <%=revision.compareTo("NONE") == 0 ? " SELECTED " : ""%>>-- NONE --</option>
+                <%
+                    listBuildRev = buildRevisionInvariantService.findAllBuildRevisionInvariantBySystemLevel(MySystem, 1);
+                    for (BuildRevisionInvariant myBR : listBuildRev) {
+                %><option style="width: 100px" value="<%= myBR.getVersionName()%>" <%=build.compareTo(myBR.getVersionName()) == 0 ? " SELECTED " : ""%>><%= myBR.getVersionName()%></option>
+                <% }
+                %></select>
+            <select id="buildcontent_revision_" name="buildcontent_revision_" style="width:40px ; visibility:hidden; font-size:x-small;border:0px">
+                <option style="width: 100px" value="NONE" <%=revision.compareTo("NONE") == 0 ? " SELECTED " : ""%>>-- NONE --</option>
+                <%
+                    listBuildRev = buildRevisionInvariantService.findAllBuildRevisionInvariantBySystemLevel(MySystem, 2);
+                    for (BuildRevisionInvariant myBR : listBuildRev) {
+                %><option style="width: 100px" value="<%= myBR.getVersionName()%>" <%=revision.compareTo(myBR.getVersionName()) == 0 ? " SELECTED " : ""%>><%= myBR.getVersionName()%></option>
+                <% }
+                %></select>
             <select id="buildcontent_application_" name="buildcontent_application_" style="visibility:hidden"><%
                 ResultSet rsApp = stmtApp.executeQuery(" SELECT distinct application from application where application != '' and application " + appliInSQL + " order by sort ");
                 while (rsApp.next()) {
@@ -231,7 +269,7 @@
             <select id="ubcReleaseOwner_" name="ubcReleaseOwner_" style="visibility:hidden">
                 <option value="" ></option><%
                     Statement stmtProj = conn.createStatement();
-                    ResultSet rsOwner = stmtProj.executeQuery(" SELECT Login, Name FROM user where name like '%(CDI)';");
+                    ResultSet rsOwner = stmtProj.executeQuery(" SELECT Login, Name FROM user where defaultSystem like '" + MySystem + "';");
                     while (rsOwner.next()) {
                 %><option value="<%=rsOwner.getString("Login")%>"><%=rsOwner.getString("Name")%></option><%
                     }%>
@@ -249,10 +287,8 @@
         <%
                 rsApp.close();
                 rsBR.close();
-                rsBuild.close();
                 rsOwner.close();
                 rsProj.close();
-                rsRev.close();
 
                 stmtApp.close();
                 stmtBR.close();
