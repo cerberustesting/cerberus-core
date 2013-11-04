@@ -40,10 +40,18 @@
             document.selectFormulary.selectedValue.value = value.value;    
             }    
         </script>
+        <script>
+            function waitXSecondAndPrintValue(value){
+                document.selectTimeout.selectedTimeout.style.display = "none";
+            window.setTimeout( function(){document.selectTimeout.selectedTimeout.style.display = "inline";
+                                          document.selectTimeout.selectedTimeout.value = "Hello World!";} ,value.value );
+            }    
+        </script>
         <script language="text/javascript" type="text/javascript">
             var product = "12345";    
         </script>
         <form name="selectFormulary">
+            <p>Below is part to test select Regex</p>
             <input name="selectedValue" id="selectedValue">
             <select id="comboSelectRegex" onChange="printValue(this)">
                 <option value="val1">TestRegex1</option>
@@ -51,6 +59,13 @@
                 <option value="val3">Cerberus</option>
                 <option value="val4">TestRegex3</option>
             </select>
+        </form>
+        </br>
+        <form name="selectTimeout">
+            <p>Below is part to test Cerberus timeout</p>
+            <input id="selectTimeoutValue" onChange="waitXSecondAndPrintValue(this)">
+            <input name="selectedTimeout" id="selectedTimeout" style="display:none">
+                
         </form>
     </body>
 </html>
