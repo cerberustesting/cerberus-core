@@ -2626,6 +2626,12 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("DELETE FROM `invariant` where id in (8,9);");
         SQLInstruction.add(SQLS.toString());
 
+//-- New Parameter for Performance Monitoring Servlet.
+//-- ------------------------
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `parameter` (`param`, `value`, `description`) VALUES ('selenium_defaultWait', '90', 'Integer that correspond to the number of seconds that selenium will wait before give timeout, when searching for a element.');");
+        SQLInstruction.add(SQLS.toString());
+
         return SQLInstruction;
     }
 }

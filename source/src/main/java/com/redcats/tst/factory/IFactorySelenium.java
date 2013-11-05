@@ -23,6 +23,5 @@ public interface IFactorySelenium {
      * @param driver
      * @return 
      */
-    Selenium create(String host, String port,
-            String browser, String login, String ip, WebDriver driver);
+    Selenium create(String host, String port, String browser, String login, String ip, WebDriver driver, long wait);
 }

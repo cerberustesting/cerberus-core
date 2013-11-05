@@ -37,18 +37,23 @@
         <br>
         <script>
             function printValue(value){
-            document.selectFormulary.selectedValue.value = value.value;    
-            }    
+            document.selectFormulary.selectedValue.value = value.value;
+            }
         </script>
         <script>
             function waitXSecondAndPrintValue(value){
-                document.selectTimeout.selectedTimeout.style.display = "none";
-            window.setTimeout( function(){document.selectTimeout.selectedTimeout.style.display = "inline";
-                                          document.selectTimeout.selectedTimeout.value = "Hello World!";} ,value.value );
-            }    
+                window.setTimeout( function(){
+//                    document.selectTimeout.createElement('<input name="selectedTimeout" id="selectedTimeout" value="Hello World!">');
+                    var i = document.createElement('input');
+                    i.setAttribute('id', 'selectedTimeout');
+                    i.setAttribute('name', 'selectedTimeout');
+                    i.setAttribute('value', 'Hello World!');
+                    document.selectTimeout.appendChild(i);
+                }, value.value );
+            }
         </script>
         <script language="text/javascript" type="text/javascript">
-            var product = "12345";    
+            var product = "12345";
         </script>
         <form name="selectFormulary">
             <p>Below is part to test select Regex</p>
@@ -64,8 +69,6 @@
         <form name="selectTimeout">
             <p>Below is part to test Cerberus timeout</p>
             <input id="selectTimeoutValue" onChange="waitXSecondAndPrintValue(this)">
-            <input name="selectedTimeout" id="selectedTimeout" style="display:none">
-                
         </form>
     </body>
 </html>

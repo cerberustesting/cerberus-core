@@ -335,7 +335,7 @@ public class ControlService implements IControlService {
         } catch (NoSuchElementException exception) {
             MyLogger.log(ControlService.class.getName(), Level.ERROR, exception.toString());
             mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_TEXTINELEMENT_NO_SUCH_ELEMENT);
-            mes.setDescription(mes.getDescription().replaceAll("%STRING1%", html));
+            mes.setDescription(mes.getDescription().replaceAll("%ELEMENT%", html));
             return mes;
         } catch (WebDriverException exception) {
             MyLogger.log(SeleniumService.class.getName(), Level.FATAL, exception.toString());

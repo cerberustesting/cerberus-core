@@ -18,6 +18,7 @@ public class Selenium {
     private String login;
     private String ip;
     private WebDriver driver;
+    private long defaultWait;
 
 
     public String getHost() {
@@ -66,5 +67,13 @@ public class Selenium {
 
     public void setDriver(WebDriver webDriver) {
         this.driver = webDriver;
+    }
+
+    public long getDefaultWait() {
+        return defaultWait;
+    }
+
+    public void setDefaultWait(long defaultWait) {
+        this.defaultWait = defaultWait;
     }
 }
