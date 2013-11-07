@@ -218,6 +218,14 @@
         <servlet-name>ExportListTestCase</servlet-name>
         <servlet-class>com.redcats.tst.servlet.testCase.ExportListTestCase</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>GetBuildRevisionInvariant</servlet-name>
+        <servlet-class>com.redcats.tst.servlet.buildrevision.GetBuildRevisionInvariant</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>DeleteBuildRevisionInvariant</servlet-name>
+        <servlet-class>com.redcats.tst.servlet.buildrevision.DeleteBuildRevisionInvariant</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>RunTestCase</servlet-name>
         <url-pattern>/RunTestCase</url-pattern>
@@ -417,6 +425,14 @@
     <servlet-mapping>
         <servlet-name>ExportListTestCase</servlet-name>
         <url-pattern>/ExportListTestCase</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>GetBuildRevisionInvariant</servlet-name>
+        <url-pattern>/GetBuildRevisionInvariant</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DeleteBuildRevisionInvariant</servlet-name>
+        <url-pattern>/DeleteBuildRevisionInvariant</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>
