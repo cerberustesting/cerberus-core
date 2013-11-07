@@ -24,14 +24,12 @@ import java.util.Date;
 import java.util.List;
 import java.util.Random;
 import java.util.logging.Logger;
-import org.openqa.selenium.JavascriptExecutor;
 
 /**
  * {Insert class description here}
  *
  * @author Tiago Bernardes
- * @version 1.0, 10/01/2013
- * @since 2.0.0
+ * @since 0.9.0
  */
 @Service
 public class PropertyService implements IPropertyService {
@@ -224,22 +222,14 @@ public class PropertyService implements IPropertyService {
                 try {
                     List<String> list = this.connectionPoolDAO.queryDatabase(connectionName, sql, testCaseProperties.getRowLimit());
 
-                    if (list != null) {
+                    if (list != null && !list.isEmpty()) {
                         if (testCaseProperties.getNature().equalsIgnoreCase(Property.NATURE_STATIC)) {
-                            if (list.size() > 0) {
-                                MessageEvent mes = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_SQL);
-                                mes.setDescription(mes.getDescription().replaceAll("%DB%", db));
-                                mes.setDescription(mes.getDescription().replaceAll("%SQL%", sql));
-                                mes.setDescription(mes.getDescription().replaceAll("%JDBCPOOLNAME%", connectionName));
-                                testCaseExecutionData.setPropertyResultMessage(mes);
-                                testCaseExecutionData.setValue(list.get(0));
-                            } else {
-                                MessageEvent mes = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_SQL_NODATA);
-                                mes.setDescription(mes.getDescription().replaceAll("%DB%", db));
-                                mes.setDescription(mes.getDescription().replaceAll("%SQL%", sql));
-                                mes.setDescription(mes.getDescription().replaceAll("%JDBCPOOLNAME%", connectionName));
-                                testCaseExecutionData.setPropertyResultMessage(mes);
-                            }
+                            MessageEvent mes = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_SQL);
+                            mes.setDescription(mes.getDescription().replaceAll("%DB%", db));
+                            mes.setDescription(mes.getDescription().replaceAll("%SQL%", sql));
+                            mes.setDescription(mes.getDescription().replaceAll("%JDBCPOOLNAME%", connectionName));
+                            testCaseExecutionData.setPropertyResultMessage(mes);
+                            testCaseExecutionData.setValue(list.get(0));
 
                         } else if (testCaseProperties.getNature().equalsIgnoreCase(Property.NATURE_RANDOM)) {
                             testCaseExecutionData.setValue(this.calculateNatureRandom(list, testCaseProperties.getRowLimit()));
@@ -266,6 +256,12 @@ public class PropertyService implements IPropertyService {
                             testCaseExecutionData.setPropertyResultMessage(mes);
 
                         }
+                    } else {
+                        MessageEvent mes = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_SQL_NODATA);
+                        mes.setDescription(mes.getDescription().replaceAll("%DB%", db));
+                        mes.setDescription(mes.getDescription().replaceAll("%SQL%", sql));
+                        mes.setDescription(mes.getDescription().replaceAll("%JDBCPOOLNAME%", connectionName));
+                        testCaseExecutionData.setPropertyResultMessage(mes);
                     }
                 } catch (CerberusEventException ex) {
                     MessageEvent mes = ex.getMessageError();
@@ -299,12 +295,13 @@ public class PropertyService implements IPropertyService {
          10  |     7      =>     7
          */
         Random random = new Random();
-        if (list.size() > rowLimit && rowLimit == 0) {
-            return list.get(random.nextInt(list.size()));
-        } else if (list.size() > rowLimit && rowLimit > 0) {
-            return list.get(random.nextInt(rowLimit));
-        } else if (list.size() <= rowLimit) {
-            return list.get(random.nextInt(list.size()));
+        if (!list.isEmpty()) {
+            if (rowLimit == 0) {
+                return list.get(random.nextInt(list.size()));
+            } else {
+                int index = Math.min(list.size(), rowLimit);
+                return list.get(random.nextInt(index));
+            }
         }
         return null;
     }

@@ -37,13 +37,26 @@
         <br>
         <script>
             function printValue(value){
-            document.selectFormulary.selectedValue.value = value.value;    
-            }    
+            document.selectFormulary.selectedValue.value = value.value;
+            }
+        </script>
+        <script>
+            function waitXSecondAndPrintValue(value){
+                window.setTimeout( function(){
+//                    document.selectTimeout.createElement('<input name="selectedTimeout" id="selectedTimeout" value="Hello World!">');
+                    var i = document.createElement('input');
+                    i.setAttribute('id', 'selectedTimeout');
+                    i.setAttribute('name', 'selectedTimeout');
+                    i.setAttribute('value', 'Hello World!');
+                    document.selectTimeout.appendChild(i);
+                }, value.value );
+            }
         </script>
         <script language="text/javascript" type="text/javascript">
-            var product = "12345";    
+            var product = "12345";
         </script>
         <form name="selectFormulary">
+            <p>Below is part to test select Regex</p>
             <input name="selectedValue" id="selectedValue">
             <select id="comboSelectRegex" onChange="printValue(this)">
                 <option value="val1">TestRegex1</option>
@@ -51,6 +64,11 @@
                 <option value="val3">Cerberus</option>
                 <option value="val4">TestRegex3</option>
             </select>
+        </form>
+        </br>
+        <form name="selectTimeout">
+            <p>Below is part to test Cerberus timeout</p>
+            <input id="selectTimeoutValue" onChange="waitXSecondAndPrintValue(this)">
         </form>
     </body>
 </html>

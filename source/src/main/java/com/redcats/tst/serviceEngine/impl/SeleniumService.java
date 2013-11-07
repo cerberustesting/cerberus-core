@@ -70,7 +70,16 @@ public class SeleniumService implements ISeleniumService {
              * We activate Network Traffic for verbose 1 and 2.
              */
             boolean record = (verbose > 0);
-            this.selenium = factorySelenium.create(host, port, browser, login, ip, null);
+            long defaultWait;
+            try {
+                Parameter param = parameterService.findParameterByKey("selenium_defaultWait");
+                defaultWait = Long.parseLong(param.getValue());
+            } catch (CerberusException ex) {
+                MyLogger.log(Selenium.class.getName(), Level.WARN, "Parameter (selenium_defaultWait) not in Parameter table, default wait set to 90 seconds");
+                defaultWait = 90;
+            }
+
+            this.selenium = factorySelenium.create(host, port, browser, login, ip, null, defaultWait);
             if (browser.equalsIgnoreCase("firefox")) {
                 try {
                     startSeleniumFirefox(runId, record, country);
@@ -290,8 +299,16 @@ public class SeleniumService implements ISeleniumService {
     }
 
     private WebElement getSeleniumElement(String input) {
+        By locator = this.getIdentifier(input);
+        MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Waiting for Element : " + input);
+        try {
+            WebDriverWait wait = new WebDriverWait(this.selenium.getDriver(), this.selenium.getDefaultWait());
+            wait.until(ExpectedConditions.presenceOfElementLocated(locator));
+        } catch (TimeoutException exception) {
+            throw new NoSuchElementException(input);
+        }
         MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Finding selenium Element : " + input);
-        return this.selenium.getDriver().findElement(this.getIdentifier(input));
+        return this.selenium.getDriver().findElement(locator);
     }
 
     @Override
@@ -846,7 +863,7 @@ public class SeleniumService implements ISeleniumService {
                 } else {
                     try {
                         WebDriverWait wait = new WebDriverWait(this.selenium.getDriver(), TIMEOUT_WEBELEMENT);
-                        wait.until(ExpectedConditions.presenceOfElementLocated(this.getIdentifier(property)));
+                        wait.until(ExpectedConditions.presenceOfElementLocated(this.getIdentifier(object)));
                         message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_WAIT_ELEMENT);
                         message.setDescription(message.getDescription().replaceAll("%ELEMENT%", object));
                         return message;
