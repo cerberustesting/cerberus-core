@@ -628,41 +628,66 @@
                                     <td class="wob"><%=ComboInvariant(conn, "editTcActive", "width: 50px", "editTcActive", "active", "16", rs_testcase_general_info.getString("TcActive"), "", null)%></td>
                                     <td class="wob">
                                         <select id="editFromBuild" name="editFromBuild" class="active" style="width: 70px" >
-                                            <option style="width: 100px" value="" <%=rs_testcase_general_info.getString("tc.FromBuild").compareTo("") == 0 ? " SELECTED " : ""%>>----</option>
+                                            <% String fromBuild = "";
+                                                if(rs_testcase_general_info.getString("tc.FromBuild") != null){
+                                                    fromBuild = rs_testcase_general_info.getString("tc.FromBuild");
+                                                }
+                                                String fromRev = "";
+                                                if(rs_testcase_general_info.getString("tc.FromRev") != null){
+                                                    fromRev = rs_testcase_general_info.getString("tc.FromRev");
+                                                }
+                                                String toBuild = "";
+                                                if(rs_testcase_general_info.getString("tc.ToBuild") != null){
+                                                    toBuild = rs_testcase_general_info.getString("tc.ToBuild");
+                                                }
+                                                String toRev = "";
+                                                if(rs_testcase_general_info.getString("tc.ToRev") != null){
+                                                    toRev = rs_testcase_general_info.getString("tc.ToRev");
+                                                }
+                                                String targetBuild = "";
+                                                if(rs_testcase_general_info.getString("tc.TargetBuild") != null){
+                                                    targetBuild = rs_testcase_general_info.getString("tc.TargetBuild");
+                                                }
+                                                String targetRev = "";
+                                                if(rs_testcase_general_info.getString("tc.TargetRev") != null){
+                                                    targetRev = rs_testcase_general_info.getString("tc.TargetRev");
+                                                }
+                                                %>
+                                            <option style="width: 100px" value="" <%=fromBuild.compareTo("") == 0 ? " SELECTED " : ""%>>----</option>
                                             <%
                                                 List<BuildRevisionInvariant> listBuildRev = buildRevisionInvariantService.findAllBuildRevisionInvariantBySystemLevel(MySystem, 1);
                                                 for (BuildRevisionInvariant myBR : listBuildRev) {
-                                            %><option style="width: 100px" value="<%= myBR.getVersionName()%>" <%=rs_testcase_general_info.getString("tc.FromBuild").compareTo(myBR.getVersionName()) == 0 ? " SELECTED " : ""%>><%= myBR.getVersionName()%></option>
+                                            %><option style="width: 100px" value="<%= myBR.getVersionName()%>" <%=fromBuild.compareTo(myBR.getVersionName()) == 0 ? " SELECTED " : ""%>><%= myBR.getVersionName()%></option>
                                             <% }
                                             %></select>
                                     </td>
                                     <td class="wob">
                                         <select id="editFromRev" name="editFromRev" class="active" style="width: 50px" >
-                                            <option style="width: 100px" value="" <%=rs_testcase_general_info.getString("tc.FromRev").compareTo("") == 0 ? " SELECTED " : ""%>>----</option>
+                                            <option style="width: 100px" value="" <%=fromRev.compareTo("") == 0 ? " SELECTED " : ""%>>----</option>
                                             <%
                                                 listBuildRev = buildRevisionInvariantService.findAllBuildRevisionInvariantBySystemLevel(MySystem, 2);
                                                 for (BuildRevisionInvariant myBR : listBuildRev) {
-                                            %><option style="width: 100px" value="<%= myBR.getVersionName()%>" <%=rs_testcase_general_info.getString("tc.FromRev").compareTo(myBR.getVersionName()) == 0 ? " SELECTED " : ""%>><%= myBR.getVersionName()%></option>
+                                            %><option style="width: 100px" value="<%= myBR.getVersionName()%>" <%=fromRev.compareTo(myBR.getVersionName()) == 0 ? " SELECTED " : ""%>><%= myBR.getVersionName()%></option>
                                             <% }
                                             %></select>
                                     </td>
                                     <td class="wob">
                                         <select id="editToBuild" name="editToBuild" class="active" style="width: 70px" >
-                                            <option style="width: 100px" value="" <%=rs_testcase_general_info.getString("tc.ToBuild").compareTo("") == 0 ? " SELECTED " : ""%>>----</option>
+                                            <option style="width: 100px" value="" <%=toBuild.compareTo("") == 0 ? " SELECTED " : ""%>>----</option>
                                             <%
                                                 listBuildRev = buildRevisionInvariantService.findAllBuildRevisionInvariantBySystemLevel(MySystem, 1);
                                                 for (BuildRevisionInvariant myBR : listBuildRev) {
-                                            %><option style="width: 100px" value="<%= myBR.getVersionName()%>" <%=rs_testcase_general_info.getString("tc.ToBuild").compareTo(myBR.getVersionName()) == 0 ? " SELECTED " : ""%>><%= myBR.getVersionName()%></option>
+                                            %><option style="width: 100px" value="<%= myBR.getVersionName()%>" <%=toBuild.compareTo(myBR.getVersionName()) == 0 ? " SELECTED " : ""%>><%= myBR.getVersionName()%></option>
                                             <% }
                                             %></select>
                                     </td>
                                     <td class="wob">
                                         <select id="editToRev" name="editToRev" class="active" style="width: 50px" >
-                                            <option style="width: 100px" value="" <%=rs_testcase_general_info.getString("tc.ToRev").compareTo("") == 0 ? " SELECTED " : ""%>>----</option>
+                                            <option style="width: 100px" value="" <%=toRev.compareTo("") == 0 ? " SELECTED " : ""%>>----</option>
                                             <%
                                                 listBuildRev = buildRevisionInvariantService.findAllBuildRevisionInvariantBySystemLevel(MySystem, 2);
                                                 for (BuildRevisionInvariant myBR : listBuildRev) {
-                                            %><option style="width: 100px" value="<%= myBR.getVersionName()%>" <%=rs_testcase_general_info.getString("tc.ToRev").compareTo(myBR.getVersionName()) == 0 ? " SELECTED " : ""%>><%= myBR.getVersionName()%></option>
+                                            %><option style="width: 100px" value="<%= myBR.getVersionName()%>" <%=toRev.compareTo(myBR.getVersionName()) == 0 ? " SELECTED " : ""%>><%= myBR.getVersionName()%></option>
                                             <% }
                                             %></select>
                                     </td>
@@ -671,21 +696,21 @@
                                     <td class="wob"><% if (rs_testcase_general_info.getString("tc.BugID") != null) {%><a href="<%= SitdmossBugtrackingURL%>"><%=rs_testcase_general_info.getString("tc.BugID")%></a><%}%></td>
                                     <td class="wob">
                                         <select id="editTargetBuild" name="editTargetBuild" class="active" style="width: 70px" >
-                                            <option style="width: 100px" value="" <%=rs_testcase_general_info.getString("tc.TargetBuild").compareTo("") == 0 ? " SELECTED " : ""%>>----</option>
+                                            <option style="width: 100px" value="" <%=targetBuild.compareTo("") == 0 ? " SELECTED " : ""%>>----</option>
                                             <%
                                                 listBuildRev = buildRevisionInvariantService.findAllBuildRevisionInvariantBySystemLevel(MySystem, 1);
                                                 for (BuildRevisionInvariant myBR : listBuildRev) {
-                                            %><option style="width: 100px" value="<%= myBR.getVersionName()%>" <%=rs_testcase_general_info.getString("tc.TargetBuild").compareTo(myBR.getVersionName()) == 0 ? " SELECTED " : ""%>><%= myBR.getVersionName()%></option>
+                                            %><option style="width: 100px" value="<%= myBR.getVersionName()%>" <%=targetBuild.compareTo(myBR.getVersionName()) == 0 ? " SELECTED " : ""%>><%= myBR.getVersionName()%></option>
                                             <% }
                                             %></select>
                                     </td>
                                     <td class="wob">
                                         <select id="editTargetRev" name="editTargetRev" class="active" style="width: 50px" >
-                                            <option style="width: 100px" value="" <%=rs_testcase_general_info.getString("tc.TargetRev").compareTo("") == 0 ? " SELECTED " : ""%>>----</option>
+                                            <option style="width: 100px" value="" <%=targetRev.compareTo("") == 0 ? " SELECTED " : ""%>>----</option>
                                             <%
                                                 listBuildRev = buildRevisionInvariantService.findAllBuildRevisionInvariantBySystemLevel(MySystem, 2);
                                                 for (BuildRevisionInvariant myBR : listBuildRev) {
-                                            %><option style="width: 100px" value="<%= myBR.getVersionName()%>" <%=rs_testcase_general_info.getString("tc.TargetRev").compareTo(myBR.getVersionName()) == 0 ? " SELECTED " : ""%>><%= myBR.getVersionName()%></option>
+                                            %><option style="width: 100px" value="<%= myBR.getVersionName()%>" <%=targetRev.compareTo(myBR.getVersionName()) == 0 ? " SELECTED " : ""%>><%= myBR.getVersionName()%></option>
                                             <% }
                                             %></select>
                                     </td>
