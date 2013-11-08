@@ -295,25 +295,24 @@
             </form> 
             <br>
             <%
-                if (load) {
 
-                    ResultSet rs_testcase_general_info = stmt.executeQuery("SELECT t.Test, t.Description, "
-                            + "tc.testcase, tc.Description, tc.BehaviorOrValueExpected, Priority, "
-                            + "tc.Application, tc.TcActive ,tc.Project, tc.group, tc.status, tc.Comment, tc.HowTo, "
-                            + "tc.Ticket, tc.Origine, tc.RefOrigine, tc.FromBuild, tc.FromRev, tc.ToBuild, tc.ToRev, "
-                            + "tc.BugID, tc.TargetBuild, tc.TargetRev, tc.creator, tc.implementer, tc.lastModifier, "
-                            + "tc.activeQA, tc.activeUAT, tc.activePROD"
-                            + " FROM Test t, TestCase tc"
-                            + " WHERE t.test = tc.test"
-                            + " AND tc.Test = '" + test + "'"
-                            + " AND tc.TestCase = '" + testcase + "'");
+                ResultSet rs_testcase_general_info = stmt.executeQuery("SELECT t.Test, t.Description, "
+                        + "tc.testcase, tc.Description, tc.BehaviorOrValueExpected, Priority, "
+                        + "tc.Application, tc.TcActive ,tc.Project, tc.group, tc.status, tc.Comment, tc.HowTo, "
+                        + "tc.Ticket, tc.Origine, tc.RefOrigine, tc.FromBuild, tc.FromRev, tc.ToBuild, tc.ToRev, "
+                        + "tc.BugID, tc.TargetBuild, tc.TargetRev, tc.creator, tc.implementer, tc.lastModifier, "
+                        + "tc.activeQA, tc.activeUAT, tc.activePROD"
+                        + " FROM Test t, TestCase tc"
+                        + " WHERE t.test = tc.test"
+                        + " AND tc.Test = '" + test + "'"
+                        + " AND tc.TestCase = '" + testcase + "'");
 
-                    if (rs_testcase_general_info.next()) {
+                if (rs_testcase_general_info.next()) {
 
-                        test = rs_testcase_general_info.getString("Test");
-                        testcase = rs_testcase_general_info.getString("TestCase");
-                        group = rs_testcase_general_info.getString("Group");
-                        status = rs_testcase_general_info.getString("Status");
+                    test = rs_testcase_general_info.getString("Test");
+                    testcase = rs_testcase_general_info.getString("TestCase");
+                    group = rs_testcase_general_info.getString("Group");
+                    status = rs_testcase_general_info.getString("Status");
             %>
 
 
@@ -627,30 +626,30 @@
                                     <td class="wob">
                                         <select id="editFromBuild" name="editFromBuild" class="active" style="width: 70px" >
                                             <% String fromBuild = "";
-                                                if(rs_testcase_general_info.getString("tc.FromBuild") != null){
+                                                if (rs_testcase_general_info.getString("tc.FromBuild") != null) {
                                                     fromBuild = rs_testcase_general_info.getString("tc.FromBuild");
                                                 }
                                                 String fromRev = "";
-                                                if(rs_testcase_general_info.getString("tc.FromRev") != null){
+                                                if (rs_testcase_general_info.getString("tc.FromRev") != null) {
                                                     fromRev = rs_testcase_general_info.getString("tc.FromRev");
                                                 }
                                                 String toBuild = "";
-                                                if(rs_testcase_general_info.getString("tc.ToBuild") != null){
+                                                if (rs_testcase_general_info.getString("tc.ToBuild") != null) {
                                                     toBuild = rs_testcase_general_info.getString("tc.ToBuild");
                                                 }
                                                 String toRev = "";
-                                                if(rs_testcase_general_info.getString("tc.ToRev") != null){
+                                                if (rs_testcase_general_info.getString("tc.ToRev") != null) {
                                                     toRev = rs_testcase_general_info.getString("tc.ToRev");
                                                 }
                                                 String targetBuild = "";
-                                                if(rs_testcase_general_info.getString("tc.TargetBuild") != null){
+                                                if (rs_testcase_general_info.getString("tc.TargetBuild") != null) {
                                                     targetBuild = rs_testcase_general_info.getString("tc.TargetBuild");
                                                 }
                                                 String targetRev = "";
-                                                if(rs_testcase_general_info.getString("tc.TargetRev") != null){
+                                                if (rs_testcase_general_info.getString("tc.TargetRev") != null) {
                                                     targetRev = rs_testcase_general_info.getString("tc.TargetRev");
                                                 }
-                                                %>
+                                            %>
                                             <option style="width: 100px" value="" <%=fromBuild.compareTo("") == 0 ? " SELECTED " : ""%>>----</option>
                                             <%
                                                 List<BuildRevisionInvariant> listBuildRev = buildRevisionInvariantService.findAllBuildRevisionInvariantBySystemLevel(MySystem, 1);
@@ -1499,9 +1498,8 @@
              */
         %>
         <%
-                    }
-                    rs_testcase_general_info.close();
                 }
+                rs_testcase_general_info.close();
 
                 if (stmt != null) {
                     stmt.close();
