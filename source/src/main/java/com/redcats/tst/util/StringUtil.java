@@ -166,4 +166,16 @@ public final class StringUtil {
         String res = result.toString().substring(0, (result.length() - 1));
         return res + ")";
     }
+    
+    /**
+     *
+     * @param testIn String that needs to be cleaned
+     * @return a clean string.
+     */
+    public static String getCleanCSVTextField(String textIn) {
+        return textIn.replaceAll("\"", "\"\"");
+    }
+    
+    
+    
 }
