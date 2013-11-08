@@ -3,6 +3,9 @@
     Created on : 20 mai 2011, 13:41:49
     Author     : acraske
 --%>
+<%@page import="com.redcats.tst.service.impl.BuildRevisionInvariantService"%>
+<%@page import="com.redcats.tst.service.IBuildRevisionInvariantService"%>
+<%@page import="com.redcats.tst.entity.BuildRevisionInvariant"%>
 <%@page import="com.redcats.tst.service.impl.ApplicationService"%>
 <%@page import="com.redcats.tst.service.IApplicationService"%>
 <%@page import="com.redcats.tst.util.StringUtil"%>
@@ -58,6 +61,7 @@
 
                     IParameterService myParameterService = appContext.getBean(IParameterService.class);
                     IApplicationService applicationService = appContext.getBean(ApplicationService.class);
+                    IBuildRevisionInvariantService buildRevisionInvariantService = appContext.getBean(BuildRevisionInvariantService.class);
 
                     /*
                      * Filter requests
@@ -71,6 +75,11 @@
                     /*
                      * Get values if post parameters sended
                      */
+                    String MySystem = request.getAttribute("MySystem").toString();
+                    if (request.getParameter("system") != null && request.getParameter("system").compareTo("") != 0) {
+                        MySystem = request.getParameter("system");
+                    }
+
                     String test = "";
                     if (request.getParameter("test") != null) {
                         test = request.getParameter("test");
@@ -253,9 +262,23 @@
                                         <input type="checkbox" name="PerfExcluded" value="1" OnChange ="document.ExecFilters.submit()">    
                                         <% }%>
                                         <br>Build&nbsp;&nbsp;&nbsp;
-                                        <%=ComboInvariant(conn, "build", "width: 60px", "Build", "Build", "8", build, "document.ExecFilters.submit()", "")%>&nbsp;&nbsp;&nbsp;
+                                        <select id="Build" name="build" style="width: 60px" onchange="document.ExecFilters.submit()">
+                                            <option style="width: 100px" value="" <%=build.compareTo("NONE") == 0 ? " SELECTED " : ""%>>----</option>
+                                            <%
+                                                List<BuildRevisionInvariant> listBuildRev = buildRevisionInvariantService.findAllBuildRevisionInvariantBySystemLevel(MySystem, 1);
+                                                for (BuildRevisionInvariant myBR : listBuildRev) {
+                                            %><option style="width: 100px" value="<%= myBR.getVersionName()%>" <%=build.compareTo(myBR.getVersionName()) == 0 ? " SELECTED " : ""%>><%= myBR.getVersionName()%></option>
+                                            <% }
+                                            %></select>&nbsp;&nbsp;&nbsp;
                                         Revision&nbsp;&nbsp;&nbsp;
-                                        <%=ComboInvariant(conn, "revision", "width: 50px", "Revision", "Revision", "9", revision, "document.ExecFilters.submit()", "")%>&nbsp;&nbsp;&nbsp;
+                                        <select id="Revision" name="revision" style="width:50px" onchange="document.ExecFilters.submit()">
+                                            <option style="width: 100px" value="" <%=revision.compareTo("NONE") == 0 ? " SELECTED " : ""%>>----</option>
+                                            <%
+                                                listBuildRev = buildRevisionInvariantService.findAllBuildRevisionInvariantBySystemLevel(MySystem, 2);
+                                                for (BuildRevisionInvariant myBR : listBuildRev) {
+                                            %><option style="width: 100px" value="<%= myBR.getVersionName()%>" <%=revision.compareTo(myBR.getVersionName()) == 0 ? " SELECTED " : ""%>><%= myBR.getVersionName()%></option>
+                                            <% }
+                                            %></select>&nbsp;&nbsp;&nbsp;
                                         Status&nbsp;&nbsp;&nbsp;
                                         <%=ComboInvariant(conn, "controlStatus", "width: 50px", "ControlStatus", "ControlStatus", "35", controlStatus, "document.ExecFilters.submit()", "")%>&nbsp;&nbsp;&nbsp;
                                         System&nbsp;&nbsp;&nbsp;
@@ -414,7 +437,7 @@
             <table  id="arrond">
                 <tr>
                     <td><b>Agregated Statistics<br><br><%= j%> Executions in <%= (cal_exeend.getTimeInMillis() - cal_exestart.getTimeInMillis()) / 60000%> minutes</b><br><%
-                        long myDuration = (cal_exeend.getTimeInMillis() - cal_exestart.getTimeInMillis())/ 60000;
+                        long myDuration = (cal_exeend.getTimeInMillis() - cal_exestart.getTimeInMillis()) / 60000;
                         if (!(myDuration == 0)) {
                             out.print(j / (myDuration) + " Exec/m");
                         }
