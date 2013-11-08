@@ -33,16 +33,19 @@
 
         <script type="text/javascript">
             $().ready(function() {
+                elRTE.prototype.options.toolbars.cerberus = ['style', 'alignment', 'colors', 'format', 'indent', 'lists', 'links'];
                 var opts = {
                     lang         : 'en',
                     styleWithCSS : false,
-                    width        : 940,
+                    width        : 615,
                     height       : 200,
-                    toolbar      : 'complete',
-                    allowSource  : false
+                    toolbar      : 'cerberus',
+                    allowSource  : false,
+                    cssfiles     : ['css/crb_style.css']
                 };
 
                 $('#createHowTo').elrte(opts);
+                $('#createBehaviorOrValueExpected').elrte(opts);
             });
         </script>
     </head>
@@ -231,24 +234,29 @@
                                                 <td class="wob" style="text-align: left; vertical-align : top ; border-collapse: collapse">
                                                     <table class="wob"  style="text-align: left; border-collapse: collapse" border="0px" cellpadding="0px" cellspacing="0px">
                                                         <tr id="header">
-                                                            <td class="wob" style="width: 300px"><%out.print(dbDocS(conn, "testcase", "description", "Description"));%></td>
+                                                            <td class="wob" style="width: 1200px"><%out.print(dbDocS(conn, "testcase", "description", "Description"));%></td>
                                                         </tr><tr>
-                                                            <td class="wob"><input id="createDescription" style="width: 290px;" name="createDescription"></td>
+                                                            <td class="wob"><input id="createDescription" style="width: 1200px;" name="createDescription"></td>
                                                         </tr>
                                                         <tr  id="header">
-                                                            <td class="wob" style="width: 300px"><%out.print(dbDocS(conn, "testcase", "ValueExpected", "Value Expected"));%></td>
-                                                        </tr><tr>
-                                                            <td class="wob" style="text-align: left; border-collapse: collapse">
-                                                                <textarea id="createBehaviorOrValueExpected" rows="18" style="width: 290px;" name="createBehaviorOrValueExpected"></textarea>
-                                                        </tr></table></td>
+
+                                                        </tr>
+                                                        </table>
+                                                </td>
+                                            <tr></tr>
                                                 <td class="wob" style="text-align: left; vertical-align : top ; border-collapse: collapse">
                                                     <table>   
                                                         <tr id="header">
-                                                            <td class="wob" style="width: 800px"><%out.print(dbDocS(conn, "testcase", "HowTo", "HowTo"));%></td>
+                                                            <td class="wob" style="width: 600px"><%out.print(dbDocS(conn, "testcase", "ValueExpected", "Value Expected"));%></td>
+                                                            <td class="wob" style="width: 600px"><%out.print(dbDocS(conn, "testcase", "HowTo", "HowTo"));%></td>
                                                         </tr>
                                                         <tr>
+                                                            <td class="wob" style="text-align: left; border-collapse: collapse">
+                                                                <textarea id="createBehaviorOrValueExpected" rows="9" style="width: 600px;" name="createBehaviorOrValueExpected"></textarea>
+                                                                <input type="hidden" id="valueDetail" name="valueDetail" value="">
+                                                            </td>
                                                             <td class="wob">
-                                                                <textarea id="createHowTo" rows="9" style="width: 790px;" name="createHowTo"></textarea>
+                                                                <textarea id="createHowTo" rows="9" style="width: 600px;" name="createHowTo"></textarea>
                                                                 <input type="hidden" id="howtoDetail" name="howtoDetail" value="">
                                                             </td>
                                                         </tr>
@@ -264,7 +272,7 @@
                                         <input type="hidden" id="createTestSelect" name="createTestSelect" value="<%=testselected%>"> 
                                         <table>
                                             <tr>
-                                                <td class="wob"><input type="submit" name="submitCreation" value="Create Test Case" onclick="$('#howtoDetail').val($('#createHowTo').elrte('val'));">
+                                                <td class="wob"><input type="submit" name="submitCreation" value="Create Test Case" onclick="$('#howtoDetail').val($('#createHowTo').elrte('val'));$('#valueDetail').val($('#createBehaviorOrValueExpected').elrte('val'));">
                                                 </td>
                                             </tr>
                                         </table>
