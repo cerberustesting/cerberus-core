@@ -39,10 +39,6 @@
         <link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico" />
 
         <script type="text/javascript">
-            var track = 0;
-        </script>
-
-        <script type="text/javascript">
             function checkFieldDuplicate ( elementTest, elementTestCase )
             {
                 if (window.document.getElementById('editTest').value == elementTest && window.document.getElementById('editTestCase').value == elementTestCase) {
@@ -70,13 +66,15 @@
             }
 
             $().ready(function() {
+                elRTE.prototype.options.toolbars.cerberus = ['style', 'alignment', 'colors', 'format', 'indent', 'lists', 'links'];
                 var opts = {
                     lang         : 'en',
                     styleWithCSS : false,
-                    width        : 940,
+                    width        : 615,
                     height       : 200,
-                    toolbar      : 'complete',
-                    allowSource  : false
+                    toolbar      : 'cerberus',
+                    allowSource  : false,
+                    cssfiles     : ['css/crb_style.css']
                 };
                 var bool = $('#generalparameter').is(':visible');
 
@@ -85,17 +83,17 @@
                     $('#generalparameter').show();
                 }
                 $('#howto').elrte(opts);
+                $('#value').elrte(opts);
                 //plugin must be added with input visible - error NS_ERROR_FAILURE: Failure
                 if(!bool){
                     $('#generalparameter').hide();
                 }
             });
-
-
         </script>
 
 
         <script type="text/javascript">
+            var track = 0;
             function trackChanges(originalValue, newValue, element) {
                 if (originalValue != newValue) {
                     window.track = window.track + 1;
@@ -540,29 +538,29 @@
                                     <td class="wob" style="text-align: left; vertical-align : top ; border-collapse: collapse">
                                         <table class="wob"  style="text-align: left; border-collapse: collapse" border="0px" cellpadding="0px" cellspacing="0px">
                                             <tr id="header">
-                                                <td class="wob" style="width: 300px"><%out.print(dbDocS(conn, "testcase", "description", "Description"));%></td>
+                                                <td class="wob" style="width: 1200px"><%out.print(dbDocS(conn, "testcase", "description", "Description"));%></td>
                                             </tr><tr>
-                                                <td class="wob"><input id="desc" style="width: 290px;" name="editDescription"
+                                                <td class="wob"><input id="desc" style="width: 1200px;" name="editDescription"
                                                                        value="<%=rs_testcase_general_info.getString("tc.Description")%>"></td>
-                                            </tr>
-                                            <tr  id="header">
-                                                <td class="wob" style="width: 300px"><%out.print(dbDocS(conn, "testcase", "ValueExpected", "Value Expected"));%></td>
-                                            </tr><tr>
-                                                <td class="wob" style="text-align: left; border-collapse: collapse">
-
-                                                    <textarea id="value" rows="18" style="width: 290px;" name="BehaviorOrValueExpected" value="<%=behavior.trim()%>"
-                                                              onchange="trackChanges(this.value,'<%=URLEncoder.encode(behavior, "UTF-8")%>', 'submitButtonChanges')" ><%=behavior%></textarea>
                                             </tr>
                                         </table>
                                     </td>
+                                </tr><tr>
                                     <td class="wob" style="text-align: left; vertical-align : top ; border-collapse: collapse">
                                         <table>   
                                             <tr id="header">
-                                                <td class="wob" style="width: 800px"><%out.print(dbDocS(conn, "testcase", "HowTo", "HowTo"));%></td>
+                                                <td class="wob" style="width: 600px"><%out.print(dbDocS(conn, "testcase", "ValueExpected", "Value Expected"));%></td>
+                                                <td class="wob" style="width: 600px"><%out.print(dbDocS(conn, "testcase", "HowTo", "HowTo"));%></td>
                                             </tr>
                                             <tr>
+                                                <td class="wob" style="text-align: left; border-collapse: collapse">
+
+                                                    <textarea id="value" rows="9" style="width: 600px;" name="BehaviorOrValueExpected" value="<%=behavior.trim()%>"
+                                                              onchange="trackChanges(this.value,'<%=URLEncoder.encode(behavior, "UTF-8")%>', 'submitButtonChanges')" ><%=behavior%></textarea>
+                                                    <input type="hidden" id="valueDetail" name="valueDetail" value="">
+                                                </td>
                                                 <td class="wob">
-                                                    <textarea id="howto" rows="9" style="width: 790px;" name="HowTo" value="<%=howTo.trim()%>"
+                                                    <textarea id="howto" rows="9" style="width: 600px;" name="HowTo" value="<%=howTo.trim()%>"
                                                               onchange="trackChanges(this.value,'<%=URLEncoder.encode(howTo, "UTF-8")%>', 'submitButtonChanges')" ><%=howTo%></textarea>
                                                     <input id="howtoDetail" name="howtoDetail" type="hidden" value="" />
                                                 </td>
@@ -736,7 +734,7 @@
                                                                                                  value="<%=testcase%>">
                             <table>
                                 <tr>
-                                    <td class="wob"><input type="submit" name="submitInformation" value="Save TestCase Info" id="submitButtonInformation" onclick="$('#howtoDetail').val($('#howto').elrte('val'));"></td>
+                                    <td class="wob"><input type="submit" name="submitInformation" value="Save TestCase Info" id="submitButtonInformation" onclick="$('#howtoDetail').val($('#howto').elrte('val'));$('#valueDetail').val($('#value').elrte('val'));"></td>
                                 </tr>
                             </table>
                 </form>
