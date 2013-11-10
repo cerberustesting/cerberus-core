@@ -65,10 +65,10 @@ Document   : menu
                         <% }%>
                         <li id="active"><a id="current" name="menu" href="#" style="width:150px">Execution Reporting</a>
                             <ul id="subnavlist">
-                                <li id="subactive"><a name="menu" id="menuExecutionPerBuildRevision" href="ExecutionPerBuildRevision" style="width:130px">Execution Per Build/Rev</a></li>
-                                <li id="subactive"><a name="menu" id="menuReportingExecutionStatus" href="ReportingExecution.jsp" style="width:130px">Execution Status</a></li>
-                                <li id="subactive"><a name="menu" id="menuReportingExecutionTime" href="ReportingExecutionTime.jsp" style="width:130px">Execution Time</a></li>
-                                <li id="subactive"><a name="menu" id="menuReportingExecutionDetail" href="ExecutionDetailList.jsp" style="width:130px">Execution Detail</a></li>
+                                <li id="subactive"><a name="menu" id="menuExecutionPerBuildRevision" href="ExecutionPerBuildRevision" style="width:150px">Execution Per Build/Rev</a></li>
+                                <li id="subactive"><a name="menu" id="menuReportingExecutionStatus" href="ReportingExecution.jsp" style="width:150px">Execution Status</a></li>
+                                <li id="subactive"><a name="menu" id="menuReportingExecutionTime" href="ReportingExecutionTime.jsp" style="width:150px">Execution Time</a></li>
+                                <li id="subactive"><a name="menu" id="menuReportingExecutionDetail" href="ExecutionDetailList.jsp" style="width:150px">Execution Detail</a></li>
                             </ul>
                         </li>
                         <% if (request.getUserPrincipal() != null && request.isUserInRole("Integrator")) {%>
