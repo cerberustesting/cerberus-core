@@ -182,10 +182,7 @@
             title1 = dbDocS(conn, "homepage", "RegressionExecutionStatus1", "");
 
             arrayExecution = (ArrayList<ArrayList<String>>) request.getAttribute("arrayExecutionExternal");
-            arrayContent = (ArrayList<ArrayList<ArrayList<String>>>) request.getAttribute("arrayContentExternal");
             arrayExecutionEnv = (ArrayList<ArrayList<ArrayList<String>>>) request.getAttribute("arrayExecutionEnvExternal");
-            if (!(arrayExecution == null)) {
-                for (ArrayList<String> arrayE1 : arrayExecution) {
         %>
         <div class="divBorder">
             <h3 style="color: blue"><%=title1%></h3>
@@ -203,10 +200,13 @@
                         <th style="width: 80px"><%=nbTcPerDay%></th>
                         <th style="width: 80px"><%=nbApp%></th>
                         <th style="width: 80px">Env Detail</th>
-                        <th style="width: 80px">Build Content</th>
                     </tr>
                 </thead>
                 <tbody>
+                    <%
+                        if (!(arrayExecution == null)) {
+                            for (ArrayList<String> arrayE1 : arrayExecution) {
+                    %>
                     <tr>
                         <td style="font-weight: bold; background-color: white" name="Build"><%=arrayE1.get(0)%></td>
                         <td style="font-weight: bold; background-color: white" name="Revision"><%=arrayE1.get(1)%></td>
@@ -219,51 +219,15 @@
                         <td name="NbExecPerTcPerDay" style="background-color: white"><%=arrayE1.get(8)%></td>
                         <td name="NbApp" style="background-color: white"><%=arrayE1.get(9)%></td>
                         <td>
-                            <input id="button<%=arrayE1.get(0)%><%=arrayE1.get(1)%>EnvMore" style="display:inline" type="button"
-                                   value="+" onclick="setVisibleEnv('<%=arrayE1.get(0)%>', '<%=arrayE1.get(1)%>');">
-                            <input id="button<%=arrayE1.get(0)%><%=arrayE1.get(1)%>EnvLess" style="display:none" type="button" value="-"
-                                   onclick="setInvisibleEnv('<%=arrayE1.get(0)%>', '<%=arrayE1.get(1)%>');">
-                        </td>
-                        <td style="background-color: white; text-align: center">
-                            <%
-                                ArrayList<ArrayList<String>> content = arrayContent.get(arrayExecution.indexOf(arrayE1));
-                                ArrayList<ArrayList<String>> environment = arrayExecutionEnv.get(arrayExecution.indexOf(arrayE1));
-                                if (!content.isEmpty()) {
-                            %>
-                            <input id="button<%=arrayE1.get(0)%><%=arrayE1.get(1)%>More" style="display:inline" type="button" value="+" onclick="setVisibleContent('<%=arrayE1.get(0)%>', '<%=arrayE1.get(1)%>');">
-                            <input id="button<%=arrayE1.get(0)%><%=arrayE1.get(1)%>Less" style="display:none" type="button" value="-" onclick="setInvisibleContent('<%=arrayE1.get(0)%>', '<%=arrayE1.get(1)%>');">
-                            <%
-                                }
-                            %>
+                            <input id="button<%=arrayE1.get(0)%><%=arrayE1.get(1)%>EnvExtMore" style="display:inline" type="button"
+                                   value="+" onclick="setVisibleEnvExternal('<%=arrayE1.get(0)%>', '<%=arrayE1.get(1)%>');">
+                            <input id="button<%=arrayE1.get(0)%><%=arrayE1.get(1)%>EnvExtLess" style="display:none" type="button" value="-"
+                                   onclick="setInvisibleEnvExternal('<%=arrayE1.get(0)%>', '<%=arrayE1.get(1)%>');">
                         </td>
                     </tr>
-                    <%
-                        if (!content.isEmpty()) {
-                    %>
                     <tr>
                         <td id="wob" colspan="10">
-                            <table id="<%=arrayE1.get(0)%><%=arrayE1.get(1)%>" style="display: none">
-                                <%
-                                    for (ArrayList<String> arrayC : content) {
-                                %>
-                                <tr>
-                                    <td style="font-weight: bold; background-color: white; width:80px" name="Build"><%= arrayC.get(0)%></td>
-                                    <td style="font-weight: bold; background-color: white; width:60px" name="Revision"><%= arrayC.get(1)%></td>
-                                    <td name="Application" style="background-color: white" colspan="3"><%= arrayC.get(2)%></td>
-                                    <td name="Release" style="background-color: white" colspan="3">Rls: <%= arrayC.get(3)%></td>
-                                    <td><a style="text-align:right; color:black;" href="<%= arrayC.get(4)%>">Details</a></td>
-                                </tr>
-                                <%  }%>
-
-                            </table>
-                        </td>
-                    </tr>
-                    <%
-                        }
-                    %>
-                    <tr>
-                        <td id="wob" colspan="10">
-                            <table id="<%=arrayE1.get(0)%><%=arrayE1.get(1)%>Env" style="display: none">
+                            <table id="<%=arrayE1.get(0)%><%=arrayE1.get(1)%>EnvExt" style="display: none">
                                 <thead>
                                     <tr>
                                         <th style="width: 60px; border-style: none;"></th>
@@ -280,6 +244,7 @@
                                 </thead>
                                 <tbody>
                                     <%
+                                        ArrayList<ArrayList<String>> environment = arrayExecutionEnv.get(arrayExecution.indexOf(arrayE1));
                                         for (ArrayList<String> arrayEnv : environment) {
                                     %>
                                     <tr>
@@ -301,11 +266,13 @@
                             </table>
                         </td>
                     </tr>
+                    <%
+                        }
+                    %>
                 </tbody>
             </table>
         </div>
         <%
-            }
         } else {
         %>
         <div class="divBorder">
@@ -356,6 +323,19 @@
                 document.getElementById('button' + build + revision + 'EnvLess').style.display = "none";
                 document.getElementById('button' + build + revision + 'EnvMore').style.display = "inline";
             }
+            
+            function setVisibleEnvExternal(build, revision) {
+                document.getElementById(build + revision + 'EnvExt').style.display = "table";
+                document.getElementById('button' + build + revision + 'EnvExtLess').style.display = "inline";
+                document.getElementById('button' + build + revision + 'EnvExtMore').style.display = "none";
+            }
+
+            function setInvisibleEnvExternal(build, revision) {
+                document.getElementById(build + revision + 'EnvExt').style.display = "none";
+                document.getElementById('button' + build + revision + 'EnvExtLess').style.display = "none";
+                document.getElementById('button' + build + revision + 'EnvExtMore').style.display = "inline";
+            }
+            
         </script>
         <br/>
         <span><%=display_footer((Date) request.getAttribute("startPageGeneration"))%></span>

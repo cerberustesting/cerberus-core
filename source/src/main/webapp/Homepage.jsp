@@ -5,7 +5,7 @@
 <html>
     <head>
         <meta content="text/html; charset=UTF-8" http-equiv="content-type">
-        <title>Homepage</title>
+        <title>Cerberus Homepage</title>
         <link rel="stylesheet" type="text/css" href="css/crb_style.css">
         <link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico" />
         <script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>

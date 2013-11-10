@@ -31,7 +31,7 @@ Document   : menu
     <table >
         <tr>
             <td id="wob" rowspan="2">
-                <a href="Homepage"><img src="images/cerberus.png" valign="Top" alt="Cerberus" /></a>
+                <a href="Homepage"><img src="images/logo-1.png" valign="Top" alt="Cerberus" /></a>
             </td>
             <td id="wob" style="width: 100%;">
             </td>
@@ -63,7 +63,7 @@ Document   : menu
                             </ul>
                         </li>
                         <% }%>
-                        <li id="active"><a id="current" name="menu" href="#" style="width:130px">Execution Reporting</a>
+                        <li id="active"><a id="current" name="menu" href="#" style="width:150px">Execution Reporting</a>
                             <ul id="subnavlist">
                                 <li id="subactive"><a name="menu" id="menuExecutionPerBuildRevision" href="ExecutionPerBuildRevision" style="width:130px">Execution Per Build/Rev</a></li>
                                 <li id="subactive"><a name="menu" id="menuReportingExecutionStatus" href="ReportingExecution.jsp" style="width:130px">Execution Status</a></li>
@@ -133,7 +133,6 @@ Document   : menu
                         %>
                     </select>
                 </form>
-                <br/>
                 <a href="Logout.jsp">
                     <div id="logout" style="width: 75px; padding-left: 25px">
                         <img src="images/logout.png">

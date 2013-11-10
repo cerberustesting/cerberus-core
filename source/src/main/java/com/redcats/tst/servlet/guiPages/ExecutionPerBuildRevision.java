@@ -4,25 +4,16 @@ import com.redcats.tst.database.DatabaseSpring;
 import com.redcats.tst.entity.Application;
 import com.redcats.tst.entity.User;
 import com.redcats.tst.log.MyLogger;
-import com.redcats.tst.refactor.TestCaseExecutionStatistics;
-import com.redcats.tst.refactor.TestCaseExecutionStatisticsServiceImpl;
 import com.redcats.tst.service.IApplicationService;
 import com.redcats.tst.service.IParameterService;
 import com.redcats.tst.service.IUserService;
 import com.redcats.tst.service.impl.ApplicationService;
 import com.redcats.tst.service.impl.ParameterService;
 import com.redcats.tst.service.impl.UserService;
+import com.redcats.tst.statistics.BuildRevisionStatistics;
+import com.redcats.tst.statistics.TestCaseExecutionStatisticsServiceImpl;
 import com.redcats.tst.util.ParameterParserUtil;
 import com.redcats.tst.util.StringUtil;
-import org.apache.log4j.Level;
-import org.springframework.context.ApplicationContext;
-import org.springframework.web.context.support.WebApplicationContextUtils;
-
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -31,7 +22,14 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Logger;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import org.apache.log4j.Level;
+import org.springframework.context.ApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
  * @author ip100003
@@ -94,13 +92,13 @@ public class ExecutionPerBuildRevision extends HttpServlet {
 
                 TestCaseExecutionStatisticsServiceImpl tceStatsService = appContext.getBean(TestCaseExecutionStatisticsServiceImpl.class);
 
-                List<TestCaseExecutionStatistics> buildRev = tceStatsService.getListOfXLastBuildAndRevExecuted(MySystem, numberOfLastBR);
+                List<BuildRevisionStatistics> buildRev = tceStatsService.getListOfXLastBuildAndRev(MySystem, numberOfLastBR);
 
-                ArrayList<ArrayList<String>> arrayExecution = new ArrayList<ArrayList<String>>();
-                ArrayList<ArrayList<ArrayList<String>>> arrayContent = new ArrayList<ArrayList<ArrayList<String>>>();
-                List<List<List<String>>> arrayExecutionEnv = new ArrayList<List<List<String>>>();
+                ArrayList<ArrayList<String>> arrayBuildRevision = new ArrayList<ArrayList<String>>();
+                List<List<List<String>>> arrayBuildRevisionEnv = new ArrayList<List<List<String>>>();
+                ArrayList<ArrayList<ArrayList<String>>> arrayBuildRevisionContent = new ArrayList<ArrayList<ArrayList<String>>>();
 
-                for (TestCaseExecutionStatistics buildRevList : buildRev) {
+                for (BuildRevisionStatistics buildRevList : buildRev) {
                     //ITestCaseExecutionStatisticsService tceStatsS = appContext.getBean(ITestCaseExecutionStatisticsService.class);
                     String build = buildRevList.getBuild();
                     String revision = buildRevList.getRevision();
@@ -109,7 +107,7 @@ public class ExecutionPerBuildRevision extends HttpServlet {
                     env.add("PROD");
                     env.add("UAT");
                     env.add("QA");
-                    TestCaseExecutionStatistics globalStats = tceStatsService.getStatisticsOfExecution(MySystem, build, revision, env);
+                    BuildRevisionStatistics globalStats = tceStatsService.getStatisticsOfExecution(MySystem, build, revision, env);
 
                     al = new ArrayList<String>();
                     al.add(build);
@@ -122,12 +120,12 @@ public class ExecutionPerBuildRevision extends HttpServlet {
                     al.add(String.valueOf(globalStats.getDays()));
                     al.add(String.valueOf(globalStats.getNumberOfExecPerTcPerDay()));
                     al.add(String.valueOf(globalStats.getNumberOfApplicationExecuted()));
-                    arrayExecution.add(al);
+                    arrayBuildRevision.add(al);
 
 
                     List<List<String>> arrayEnv = new ArrayList<List<String>>();
                     for (String e : env) {
-                        TestCaseExecutionStatistics globalStatsEnv = tceStatsService.getStatisticsOfExecution(MySystem, build, revision, e);
+                        BuildRevisionStatistics globalStatsEnv = tceStatsService.getStatisticsOfExecution(MySystem, build, revision, e);
                         al = new ArrayList<String>();
                         al.add(e);
                         al.add(String.valueOf(globalStatsEnv.getTotal()));
@@ -140,13 +138,15 @@ public class ExecutionPerBuildRevision extends HttpServlet {
                         al.add(String.valueOf(globalStatsEnv.getNumberOfApplicationExecuted()));
                         arrayEnv.add(al);
                     }
-                    arrayExecutionEnv.add(arrayEnv);
+                    arrayBuildRevisionEnv.add(arrayEnv);
 
-                    PreparedStatement stmtContent = connection.prepareStatement("SELECT t.Build, t.Revision, "
+                    String contentSQL = "SELECT t.Build, t.Revision, "
                             + " t.application, t.release, t.link "
                             + "FROM buildrevisionparameters t "
-                            + "Where t.build = ? and t.revision = ? and t.application "
-                            + inSQL);
+                            + "Where t.build = ? and t.revision = ? "
+                            + inSQL;
+                    MyLogger.log(ExecutionPerBuildRevision.class.getName(), Level.DEBUG, contentSQL);
+                    PreparedStatement stmtContent = connection.prepareStatement(contentSQL);
 
                     try {
                         stmtContent.setString(1, build);
@@ -168,15 +168,73 @@ public class ExecutionPerBuildRevision extends HttpServlet {
                         } finally {
                             rsContent.close();
                         }
-                        arrayContent.add(array);
+                        arrayBuildRevisionContent.add(array);
                     } finally {
                         stmtContent.close();
                     }
                 }
 
-                request.setAttribute("arrayExecution", arrayExecution);
-                request.setAttribute("arrayContent", arrayContent);
-                request.setAttribute("arrayExecutionEnv", arrayExecutionEnv);
+                request.setAttribute("arrayExecution", arrayBuildRevision);
+                request.setAttribute("arrayContent", arrayBuildRevisionContent);
+                request.setAttribute("arrayExecutionEnv", arrayBuildRevisionEnv);
+
+                /**
+                 * Section that calculate the stats on application outside the
+                 * main system
+                 */
+                arrayBuildRevision = new ArrayList<ArrayList<String>>();
+                arrayBuildRevisionEnv = new ArrayList<List<List<String>>>();
+
+                for (BuildRevisionStatistics buildRevList : buildRev) {
+
+                    String build = buildRevList.getBuild();
+                    String revision = buildRevList.getRevision();
+                    List<String> env = new ArrayList<String>();
+
+                    env.add("PROD");
+                    env.add("UAT");
+                    env.add("QA");
+                    BuildRevisionStatistics globalStats = tceStatsService.getStatisticsOfExternalExecution(MySystem, build, revision, env);
+
+                    al = new ArrayList<String>();
+                    al.add(build);
+                    al.add(revision);
+                    al.add(String.valueOf(globalStats.getTotal()));
+                    al.add(String.valueOf(globalStats.getNumberOfOK()));
+                    al.add(String.valueOf(globalStats.getPercentageOfOK()));
+                    al.add(String.valueOf(globalStats.getNumberOfTestcaseExecuted()));
+                    al.add(String.valueOf(globalStats.getNumberOfExecPerTc()));
+                    al.add(String.valueOf(globalStats.getDays()));
+                    al.add(String.valueOf(globalStats.getNumberOfExecPerTcPerDay()));
+                    al.add(String.valueOf(globalStats.getNumberOfApplicationExecuted()));
+                    arrayBuildRevision.add(al);
+
+
+                    List<List<String>> arrayEnv = new ArrayList<List<String>>();
+                    for (String e : env) {
+                        BuildRevisionStatistics globalStatsEnv = tceStatsService.getStatisticsOfExternalExecution(MySystem, build, revision, e);
+                        al = new ArrayList<String>();
+                        al.add(e);
+                        al.add(String.valueOf(globalStatsEnv.getTotal()));
+                        al.add(String.valueOf(globalStatsEnv.getNumberOfOK()));
+                        al.add(String.valueOf(globalStatsEnv.getPercentageOfOK()));
+                        al.add(String.valueOf(globalStatsEnv.getNumberOfTestcaseExecuted()));
+                        al.add(String.valueOf(globalStatsEnv.getNumberOfExecPerTc()));
+                        al.add(String.valueOf(globalStatsEnv.getDays()));
+                        al.add(String.valueOf(globalStatsEnv.getNumberOfExecPerTcPerDay()));
+                        al.add(String.valueOf(globalStatsEnv.getNumberOfApplicationExecuted()));
+                        arrayEnv.add(al);
+                    }
+                    arrayBuildRevisionEnv.add(arrayEnv);
+
+                }
+
+                request.setAttribute("arrayExecutionExternal", arrayBuildRevision);
+                request.setAttribute("arrayExecutionEnvExternal", arrayBuildRevisionEnv);
+
+
+
+
                 request.getRequestDispatcher("/ExecutionPerBuildRevision.jsp").forward(request, response);
             }
         } catch (Exception ex) {
