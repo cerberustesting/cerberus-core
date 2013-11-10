@@ -43,16 +43,16 @@ Document   : menu
                         <% if (request.getUserPrincipal() != null && (request.isUserInRole("User"))) {%>
                         <li id="active"><a id="current" name="menu" href="#" style="width:130px">Test</a>
                             <ul id="subnavlist">
-                                <li id="subactive"> <a name="menu" id="menuEditTest" href="Test.jsp" style="width:130px">Edit Test</a></li>
-                                <li><a name="menu" id="menuCreateTest" href="TestCreate.jsp" style="width:130px">Create Test</a></li>
+                                <li id="subactive"><a name="menu" id="menuEditTest" href="Test.jsp" style="width:130px">Edit Test</a></li>
+                                <li id="subactive"><a name="menu" id="menuCreateTest" href="TestCreate.jsp" style="width:130px">Create Test</a></li>
                             </ul>
                         </li>
                         <% }%>
                         <li id="active"><a id="current" name="menu" href="#" style="width:130px">TestCase</a>
                             <ul id="subnavlist">
                                 <li id="subactive"><a name="menu" id="menuEditTestCase" href="TestCase.jsp" style="width:130px">Edit TestCase</a></li>
-                                <li><a name="menu" id="menuCreateTestCase" href="TestCaseCreate.jsp" style="width:130px">Create TestCase</a></li>
-                                <li><a name="menu" id="menuSearchTestCase" href="TestCaseSearch.jsp" style="width:130px">Search TestCase</a></li>
+                                <li id="subactive"><a name="menu" id="menuCreateTestCase" href="TestCaseCreate.jsp" style="width:130px">Create TestCase</a></li>
+                                <li id="subactive"><a name="menu" id="menuSearchTestCase" href="TestCaseSearch.jsp" style="width:130px">Search TestCase</a></li>
                             </ul>
                         </li>
                         <%  if (request.getUserPrincipal() != null && (request.isUserInRole("User"))) {%>
@@ -65,9 +65,10 @@ Document   : menu
                         <% }%>
                         <li id="active"><a id="current" name="menu" href="#" style="width:130px">Execution Reporting</a>
                             <ul id="subnavlist">
+                                <li id="subactive"><a name="menu" id="menuExecutionPerBuildRevision" href="ExecutionPerBuildRevision" style="width:130px">Execution Per Build/Rev</a></li>
                                 <li id="subactive"><a name="menu" id="menuReportingExecutionStatus" href="ReportingExecution.jsp" style="width:130px">Execution Status</a></li>
-                                <li><a name="menu" id="menuReportingExecutionTime" href="ReportingExecutionTime.jsp" style="width:130px">Execution Time</a></li>
-                                <li><a name="menu" id="menuReportingExecutionDetail" href="ExecutionDetailList.jsp" style="width:130px">Execution Detail</a></li>
+                                <li id="subactive"><a name="menu" id="menuReportingExecutionTime" href="ReportingExecutionTime.jsp" style="width:130px">Execution Time</a></li>
+                                <li id="subactive"><a name="menu" id="menuReportingExecutionDetail" href="ExecutionDetailList.jsp" style="width:130px">Execution Detail</a></li>
                             </ul>
                         </li>
                         <% if (request.getUserPrincipal() != null && request.isUserInRole("Integrator")) {%>
@@ -85,9 +86,9 @@ Document   : menu
                         <li id="active"><a id="current" name="menuAdmin" href="#" style="width:130px">Admin</a>
                             <ul id="subnavlist">
                                 <li id="subactive"><a name="menu" id="menuUsersManager" href="UserManager.jsp" style="width:130px">Users Manager</a></li>
-                                <li><a name="menu" id="menuLogViewer" href="LogViewer.jsp" style="width:130px">Log Viewer</a></li>
-                                <li><a name="menu" id="menuDatabaseMaintenance" href="DatabaseMaintenance.jsp" style="width:130px">Database Maintenance</a></li>
-                                <li><a name="menu" id="menuParameter" href="Parameter.jsp" style="width:130px">Parameters</a></li>
+                                <li id="subactive"><a name="menu" id="menuLogViewer" href="LogViewer.jsp" style="width:130px">Log Viewer</a></li>
+                                <li id="subactive"><a name="menu" id="menuDatabaseMaintenance" href="DatabaseMaintenance.jsp" style="width:130px">Database Maintenance</a></li>
+                                <li id="subactive"><a name="menu" id="menuParameter" href="Parameter.jsp" style="width:130px">Parameters</a></li>
                             </ul>
                         </li>
                         <% }%>

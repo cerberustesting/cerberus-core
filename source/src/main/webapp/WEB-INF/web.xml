@@ -226,6 +226,10 @@
         <servlet-name>DeleteBuildRevisionInvariant</servlet-name>
         <servlet-class>com.redcats.tst.servlet.buildrevision.DeleteBuildRevisionInvariant</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>ExecutionPerBuildRevision</servlet-name>
+        <servlet-class>com.redcats.tst.servlet.guiPages.ExecutionPerBuildRevision</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>RunTestCase</servlet-name>
         <url-pattern>/RunTestCase</url-pattern>
@@ -433,6 +437,10 @@
     <servlet-mapping>
         <servlet-name>DeleteBuildRevisionInvariant</servlet-name>
         <url-pattern>/DeleteBuildRevisionInvariant</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ExecutionPerBuildRevision</servlet-name>
+        <url-pattern>/ExecutionPerBuildRevision</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>

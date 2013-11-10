@@ -2620,18 +2620,28 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("  UNIQUE INDEX `IX_buildrevisioninvariant_01` (`system`,`level`,`versionname`) );");
         SQLInstruction.add(SQLS.toString());
        
-//-- Adding table that will host specific build revision lists per system.
+//-- Cleaning Build and Revision from invariant table.
 //-- ------------------------
         SQLS = new StringBuilder();
         SQLS.append("DELETE FROM `invariant` where id in (8,9);");
         SQLInstruction.add(SQLS.toString());
 
-//-- New Parameter for Performance Monitoring Servlet.
+//-- New Parameter for Selenium timeout when waiting for an element.
 //-- ------------------------
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `parameter` (`param`, `value`, `description`) VALUES ('selenium_defaultWait', '90', 'Integer that correspond to the number of seconds that selenium will wait before give timeout, when searching for a element.');");
         SQLInstruction.add(SQLS.toString());
-
+        
+//-- Updating documentation.
+//-- ------------------------
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `documentation` SET `DocDesc`='This section report the execution statistics of regression testcases by the last sprint / Revision.<br>Criterias :<br>- On the applications that belong to current system.<br>- Test cases had to be in WORKING status at the time of the execution.<br>- Monitoring test cases are excluded<br>  (ie not <i>\\'Performance Monitor\\'</i> and not <i>\\'Business Activity Monitor\\'</i> and not <i>\\'Data Integrity Monitor\\'</i>)' WHERE `DocTable`='homepage' and`DocField`='RegressionExecutionStatus' and`DocValue`='';");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `DocLabel`, `DocDesc`) VALUES ('homepage', 'RegressionExecutionStatus1', '', 'Regression Execution Status on External Applications', 'This section report the execution statistics of regression testcases by the last sprint / Revision.<br>Criterias :<br>- On the applications that <b>does not</b> belong to current system.<br>- Test cases had to be in WORKING status at the time of the execution.<br>- Monitoring test cases are excluded<br>  (ie not <i>\\'Performance Monitor\\'</i> and not <i>\\'Business Activity Monitor\\'</i> and not <i>\\'Data Integrity Monitor\\'</i>)');");
+        SQLInstruction.add(SQLS.toString());
+        
+        
         return SQLInstruction;
     }
 }
