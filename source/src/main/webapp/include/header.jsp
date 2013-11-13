@@ -60,6 +60,9 @@ Document   : menu
                             <ul id="subnavlist">
                                 <li id="subactive"><a name="menu" id="menuRunTestCase" href="RunTests.jsp" style="width:130px">Run Tests</a></li>
                                 <%--                              <li><a name="menu" id="menuResumeTestCase" href="ResumeTests.jsp" style="width:130px">Resume Tests</a></li> --%>
+                                <% if (request.getUserPrincipal() != null && request.isUserInRole("Integrator")) {%>
+                                    <li id="subactive"><a name="menu" id="menuRunManualTestCase" href="ManualTestCase.jsp" style="width:130px">Run Manual Tests</a></li>
+                                <% }%>
                             </ul>
                         </li>
                         <% }%>
