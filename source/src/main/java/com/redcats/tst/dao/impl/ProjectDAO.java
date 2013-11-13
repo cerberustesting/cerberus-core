@@ -48,7 +48,7 @@ public class ProjectDAO implements IProjectDAO {
                         vcCode = resultSet.getString("VCCode") == null ? "" : resultSet.getString("VCCode");
                         description = resultSet.getString("Description") == null ? "" : resultSet.getString("Description");
                         String active = resultSet.getString("active") == null ? "" : resultSet.getString("active");
-                        String dateCreation = resultSet.getString("dateCreation") == null ? "" : resultSet.getString("dateCreation");
+                        String dateCreation = resultSet.getString("datecre") == null ? "" : resultSet.getString("datecre");
                         result.add(factoryProject.create(idProject, vcCode, description, active, dateCreation));
                     }
                 } catch (SQLException exception) {
