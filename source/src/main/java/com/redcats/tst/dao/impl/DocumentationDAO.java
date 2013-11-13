@@ -47,7 +47,7 @@ public class DocumentationDAO implements IDocumentationDAO {
                         String docValue = resultSet.getString("DocValue");
                         String docLabel = resultSet.getString("DocLabel");
                         String description = resultSet.getString("DocDesc");
-                        factoryDocumentation.create(docTable, docField, docValue, docLabel, description);
+                        result = factoryDocumentation.create(docTable, docField, docValue, docLabel, description);
                     }
                 } catch (SQLException exception) {
                     MyLogger.log(DocumentationDAO.class.getName(), Level.ERROR, exception.toString());

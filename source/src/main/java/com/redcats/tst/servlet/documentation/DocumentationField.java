@@ -20,7 +20,7 @@ import java.io.IOException;
  *
  * @author Benoit CIVEL
  * @version 1.0, 07/02/2013
- * @since 2.0.0
+ * @since 0.9.0
  */
 @WebServlet(name = "DocumentationField", urlPatterns = {"/DocumentationField"})
 public class DocumentationField extends HttpServlet {

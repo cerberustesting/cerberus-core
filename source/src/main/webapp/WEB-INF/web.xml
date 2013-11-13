@@ -230,6 +230,18 @@
         <servlet-name>ExecutionPerBuildRevision</servlet-name>
         <servlet-class>com.redcats.tst.servlet.guiPages.ExecutionPerBuildRevision</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>GetDataForTestCaseSearch</servlet-name>
+        <servlet-class>com.redcats.tst.servlet.testCase.GetDataForTestCaseSearch</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>SearchTestCaseInformation</servlet-name>
+        <servlet-class>com.redcats.tst.servlet.testCase.SearchTestCaseInformation</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>SaveManualExecution</servlet-name>
+        <servlet-class>com.redcats.tst.servlet.execution.SaveManualExecution</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>RunTestCase</servlet-name>
         <url-pattern>/RunTestCase</url-pattern>
@@ -442,6 +454,18 @@
         <servlet-name>ExecutionPerBuildRevision</servlet-name>
         <url-pattern>/ExecutionPerBuildRevision</url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>GetDataForTestCaseSearch</servlet-name>
+        <url-pattern>/GetDataForTestCaseSearch</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>SearchTestCaseInformation</servlet-name>
+        <url-pattern>/SearchTestCaseInformation</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>SaveManualExecution</servlet-name>
+        <url-pattern>/SaveManualExecution</url-pattern>
+    </servlet-mapping>
     <session-config>
         <session-timeout>
             60
@@ -568,6 +592,10 @@
             <url-pattern>/UpdateTest</url-pattern>
             <url-pattern>/DuplicateTestCase</url-pattern>
             <url-pattern>/UpdateTestCase</url-pattern>
+            <url-pattern>/ManualTestCase.jsp</url-pattern>
+            <url-pattern>/GetDataForTestCaseSearch</url-pattern>
+            <url-pattern>/SearchTestCaseInformation</url-pattern>
+            <url-pattern>/SaveManualExecution</url-pattern>
         </web-resource-collection>
         <web-resource-collection>
             <web-resource-name>Integrator</web-resource-name>

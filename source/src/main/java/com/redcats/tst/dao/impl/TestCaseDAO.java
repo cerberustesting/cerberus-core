@@ -479,4 +479,44 @@ public class TestCaseDAO implements ITestCaseDAO {
                 status, description, behavior, howTo, tcactive, fromSprint, fromRevision, toSprint,
                 toRevision, status, bugID, targetSprint, targetRevision, comment, null, null, null, null);
     }
+
+    @Override
+    public List<String> findUniqueDataOfColumn(String column) {
+        List<String> list = null;
+        final String query = "SELECT DISTINCT tc."+column+" FROM testcase tc ORDER BY tc."+column+" ASC";
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            try {
+
+                ResultSet resultSet = preStat.executeQuery();
+                list = new ArrayList<String>();
+                try {
+                    while (resultSet.next()) {
+                        list.add(resultSet.getString(1));
+                    }
+                } catch (SQLException exception) {
+                    MyLogger.log(TestCaseDAO.class.getName(), Level.ERROR, exception.toString());
+                } finally {
+                    resultSet.close();
+                }
+            } catch (SQLException exception) {
+                MyLogger.log(TestCaseDAO.class.getName(), Level.ERROR, exception.toString());
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(TestCaseDAO.class.getName(), Level.ERROR, exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(TestCaseDAO.class.getName(), Level.WARN, e.toString());
+            }
+        }
+        return list;
+    }
 }

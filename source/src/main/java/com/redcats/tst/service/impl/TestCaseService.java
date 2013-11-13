@@ -88,4 +88,12 @@ public class TestCaseService implements ITestCaseService {
     public List<TCase> findTestCaseByAllCriteria(TCase tCase, String text, String system) {
         return this.testCaseDao.findTestCaseByCriteria(tCase, text, system);
     }
+
+    /**
+     * @since 0.9.1
+     */
+    @Override
+    public List<String> findUniqueDataOfColumn(String column) {
+        return this.testCaseDao.findUniqueDataOfColumn(column);
+    }
 }
