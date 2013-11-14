@@ -50,4 +50,6 @@ public interface ITestCaseDAO {
      * @since 0.9.1
      */
     List<TCase> findTestCaseByCriteria(TCase testCase, String text, String system);
+
+    List<String> findUniqueDataOfColumn(String column);
 }

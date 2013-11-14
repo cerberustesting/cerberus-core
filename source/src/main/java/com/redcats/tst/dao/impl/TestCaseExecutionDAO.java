@@ -39,7 +39,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
     public void insertTCExecution(TCExecution tCExecution) throws CerberusException {
         boolean throwEx = false;
         final String query = "INSERT INTO testcaseexecution(test, testcase, build, revision, environment, country, browser, application, ip, "
-                + "url, port, tag, verbose, status, start, end, controlstatus, controlMessage, crbversion) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                + "url, port, tag, verbose, status, start, end, controlstatus, controlMessage, crbversion, finished) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -72,6 +72,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                 preStat.setString(17, tCExecution.getControlStatus());
                 preStat.setString(18, StringUtil.getLeftString(tCExecution.getControlMessage(), 500));
                 preStat.setString(19, tCExecution.getCrbVersion());
+                preStat.setString(20, tCExecution.getFinished());
 
                 preStat.executeUpdate();
                 ResultSet resultSet = preStat.getGeneratedKeys();

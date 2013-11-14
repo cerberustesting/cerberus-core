@@ -43,12 +43,14 @@
         <script>
             function waitXSecondAndPrintValue(value){
                 window.setTimeout( function(){
-//                    document.selectTimeout.createElement('<input name="selectedTimeout" id="selectedTimeout" value="Hello World!">');
                     var i = document.createElement('input');
                     i.setAttribute('id', 'selectedTimeout');
                     i.setAttribute('name', 'selectedTimeout');
                     i.setAttribute('value', 'Hello World!');
                     document.selectTimeout.appendChild(i);
+
+                    document.getElementById('selectTimeoutHide').setAttribute('value', 'Hello World!');
+                    document.getElementById('selectTimeoutHide').style.display = 'inline';
                 }, value.value );
             }
         </script>
@@ -69,6 +71,7 @@
         <form name="selectTimeout">
             <p>Below is part to test Cerberus timeout</p>
             <input id="selectTimeoutValue" onChange="waitXSecondAndPrintValue(this)">
+            <input id="selectTimeoutHide" name="selectTimeoutHide" style="display: none"/>
         </form>
     </body>
 </html>

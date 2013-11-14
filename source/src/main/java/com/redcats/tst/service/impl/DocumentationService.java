@@ -29,7 +29,7 @@ public class DocumentationService implements IDocumentationService {
             label.append(labelFromDB);
             label.append(" <a href=\'javascript:popup(\"Documentation.jsp?DocTable=");
             label.append(docTable);
-            label.append("&DocField");
+            label.append("&DocField=");
             label.append(docField);
             label.append("\")\'>?</a>");
 

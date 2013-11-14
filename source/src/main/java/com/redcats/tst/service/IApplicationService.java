@@ -50,4 +50,12 @@ public interface IApplicationService {
      * in database.
      */
     boolean isApplicationExist(String Application);
+
+    /**
+     *
+     * @return
+     * @throws CerberusException
+     * @since 0.9.1
+     */
+    List<String> findDistinctSystem();
 }

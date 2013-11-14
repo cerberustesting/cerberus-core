@@ -51,4 +51,9 @@ public class ApplicationService implements IApplicationService {
             return false;
         }
     }
+
+    @Override
+    public List<String> findDistinctSystem() {
+        return this.ApplicationDAO.findDistinctSystem();
+    }
 }

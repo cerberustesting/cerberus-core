@@ -54,5 +54,9 @@ public interface ITestCaseService {
      * @since 0.9.1
      */
     List<TCase> findTestCaseByAllCriteria(TCase tCase, String text, String system);
-    
+
+    /**
+     * @since 0.9.1
+     */
+    List<String> findUniqueDataOfColumn(String column);
 }

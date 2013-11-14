@@ -34,7 +34,7 @@ public class FactoryTCase implements IFactoryTCase {
         newTestCase.setImplementer(implementer);
         newTestCase.setLastExecutionStatus(lastExecutionStatus);
         newTestCase.setLastModifier(lastModifier);
-        newTestCase.setOrigin(refOrigin);
+        newTestCase.setOrigin(origin);
         newTestCase.setPriority(priority);
         newTestCase.setProject(project);
         newTestCase.setRefOrigin(refOrigin);

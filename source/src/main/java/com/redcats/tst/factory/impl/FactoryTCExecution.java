@@ -22,7 +22,7 @@ public class FactoryTCExecution implements IFactoryTCExecution {
                               String seleniumIP, String seleniumPort, List<TestCaseStepExecution> testCaseStepExecution,
                               MessageGeneral resultMessage) {
         TCExecution newTce = new TCExecution();
-        newTce.setApplication(null);
+        newTce.setApplication(application);
         newTce.setBrowser(browser);
         newTce.setBuild(build);
         newTce.setControlMessage(controlMessage);
