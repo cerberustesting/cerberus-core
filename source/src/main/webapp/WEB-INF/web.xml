@@ -148,11 +148,6 @@
         <servlet-class>com.redcats.tst.refactor.GetConnectionPoolName</servlet-class>
     </servlet>
     <servlet>
-        <description>This Servlet is used to monitor from Nagios the number of execution performed for Performance monitoring.</description>
-        <servlet-name>PerformanceMonitorGetNumberOfExecutions</servlet-name>
-        <servlet-class>com.redcats.tst.servlet.publi.PerformanceMonitorGetNumberOfExecutions</servlet-class>
-    </servlet>
-    <servlet>
         <description>This Servlet is used to Record a new Release inside the pending sprint.</description>
         <servlet-name>NewRelease</servlet-name>
         <servlet-class>com.redcats.tst.servlet.publi.NewRelease</servlet-class>
@@ -329,10 +324,6 @@
     <servlet-mapping>
         <servlet-name>GetConnectionPoolName</servlet-name>
         <url-pattern>/GetConnectionPoolName</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>PerformanceMonitorGetNumberOfExecutions</servlet-name>
-        <url-pattern>/PerformanceMonitorGetNumberOfExecutions</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>GetNumberOfExecutions</servlet-name>

@@ -47,10 +47,10 @@ public class GetNumberOfExecutions extends HttpServlet {
      * <code>GET</code> and
      * <code>POST</code> methods.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -60,21 +60,21 @@ public class GetNumberOfExecutions extends HttpServlet {
         IApplicationService MyapplicationService = appContext.getBean(ApplicationService.class);
 
         // Parsing all parameters.
-        String environment = ParameterParserUtil.parseStringParam(request.getParameter("environment"),"PROD");
-        String test = ParameterParserUtil.parseStringParam(request.getParameter("test"),"");
-        String application = ParameterParserUtil.parseStringParam(request.getParameter("application"),"");
-        String country = ParameterParserUtil.parseStringParam(request.getParameter("country"),"");
-        String controlStatus = ParameterParserUtil.parseStringParam(request.getParameter("controlstatus"),"");
-        int NbMinutes = ParameterParserUtil.parseIntegerParam(request.getParameter("nbminuteshistory"),0);
+        String environment = ParameterParserUtil.parseStringParam(request.getParameter("environment"), "PROD");
+        String test = ParameterParserUtil.parseStringParam(request.getParameter("test"), "");
+        String application = ParameterParserUtil.parseStringParam(request.getParameter("application"), "");
+        String country = ParameterParserUtil.parseStringParam(request.getParameter("country"), "");
+        String controlStatus = ParameterParserUtil.parseStringParam(request.getParameter("controlstatus"), "");
+        int NbMinutes = ParameterParserUtil.parseIntegerParam(request.getParameter("nbminuteshistory"), 0);
 
-        String helpMessage="\nThis servlet return the number of execution that match the following criterias :\n"
+        String helpMessage = "\nThis servlet return the number of execution that match the following criterias :\n"
                 + "nbminuteshistory [mandatory] : the number of minutes in the past from the moment the servlet is called. This parameter must be > 0. " + NbMinutes + "\n"
                 + "test : Executions done on the test. " + test + "\n"
                 + "environment : Environment where the execution happened. Default to PROD. " + environment + "\n"
                 + "country : Executions done on the country. " + country + "\n"
                 + "application : Executions done against that application. " + application + "\n"
                 + "controlstatus : execution that return the following status. " + controlStatus + "\n";
-        
+
         try {
 
             boolean error = false;
@@ -82,13 +82,11 @@ public class GetNumberOfExecutions extends HttpServlet {
             // Checking the parameter validity. nbminuteshistory is a mandatory parameter.
             if (NbMinutes == 0) {
                 out.println("Error - Parameter nbminuteshistory is mandatory. Please feed it in order to specify the elapsed time where the history should be considered.");
-                out.println(helpMessage);
                 error = true;
             }
             // Checking the parameter validity. If application has been entered, does it exist ?
             if (!application.equalsIgnoreCase("") && !MyapplicationService.isApplicationExist(application)) {
                 out.println("Error - Application does not exist  : " + application);
-                out.println(helpMessage);
                 error = true;
             }
 
@@ -109,6 +107,10 @@ public class GetNumberOfExecutions extends HttpServlet {
                     out.println("0");
                 }
 
+            } else {
+                // In case of errors, we displayu the help message.
+                out.println(helpMessage);
+
             }
 
 
@@ -122,15 +124,14 @@ public class GetNumberOfExecutions extends HttpServlet {
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-
     /**
      * Handles the HTTP
      * <code>GET</code> method.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -142,10 +143,10 @@ public class GetNumberOfExecutions extends HttpServlet {
      * Handles the HTTP
      * <code>POST</code> method.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)

@@ -94,7 +94,7 @@ public class TestCaseExecutionStatisticsDAOImpl implements ITestCaseExecutionSta
         sbquery.append("') as KO ");
         sbquery.append(" JOIN ( SELECT Build, Revision, count(*) c FROM ( ");
         sbquery.append(" SELECT Build, Revision, test, testcase FROM testcaseexecution t ");
-        sbquery.append(" where ControlStatus in ('OK','KO') and and test not in ('Performance Monitor', 'Business Activity Monitor', 'Data Integrity Monitor') and status='WORKING' ");
+        sbquery.append(" where ControlStatus in ('OK','KO') and test not in ('Performance Monitor', 'Business Activity Monitor', 'Data Integrity Monitor') and status='WORKING' ");
         sbquery.append(" and application ");
         sbquery.append(appliSQL);
         sbquery.append(" and Environment in (");
@@ -106,7 +106,7 @@ public class TestCaseExecutionStatisticsDAOImpl implements ITestCaseExecutionSta
         sbquery.append("' GROUP BY test, testcase ) as toto) as dtc ");
         sbquery.append(" JOIN ( SELECT Build, Revision, count(*) c FROM ( ");
         sbquery.append(" SELECT Build, Revision, application FROM testcaseexecution t ");
-        sbquery.append(" where ControlStatus in ('OK','KO') and and test not in ('Performance Monitor', 'Business Activity Monitor', 'Data Integrity Monitor') and status='WORKING' ");
+        sbquery.append(" where ControlStatus in ('OK','KO') and test not in ('Performance Monitor', 'Business Activity Monitor', 'Data Integrity Monitor') and status='WORKING' ");
         sbquery.append(" and application ");
         sbquery.append(appliSQL);
         sbquery.append(" and Environment in (");
@@ -116,7 +116,7 @@ public class TestCaseExecutionStatisticsDAOImpl implements ITestCaseExecutionSta
         sbquery.append("' and revision='");
         sbquery.append(revision);
         sbquery.append("' GROUP BY application ) as toto) as dap ");
-        sbquery.append(" WHERE ControlStatus in ('OK','KO') and and test not in ('Performance Monitor', 'Business Activity Monitor', 'Data Integrity Monitor') and status='WORKING' ");
+        sbquery.append(" WHERE ControlStatus in ('OK','KO') and test not in ('Performance Monitor', 'Business Activity Monitor', 'Data Integrity Monitor') and status='WORKING' ");
         sbquery.append("and application ");
         sbquery.append(appliSQL);
         sbquery.append(" and Environment in (");

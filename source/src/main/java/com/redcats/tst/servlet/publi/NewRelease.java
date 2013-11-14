@@ -6,6 +6,13 @@ package com.redcats.tst.servlet.publi;
 
 import com.redcats.tst.database.DatabaseSpring;
 import com.redcats.tst.log.MyLogger;
+import com.redcats.tst.service.IApplicationService;
+import com.redcats.tst.service.IProjectService;
+import com.redcats.tst.service.IUserService;
+import com.redcats.tst.service.impl.ApplicationService;
+import com.redcats.tst.service.impl.ProjectService;
+import com.redcats.tst.service.impl.UserService;
+import com.redcats.tst.util.ParameterParserUtil;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 import version.Version;
@@ -35,147 +42,72 @@ public class NewRelease extends HttpServlet {
      * <code>GET</code> and
      * <code>POST</code> methods.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         PrintWriter out = response.getWriter();
 
-        String application = null;
-        if (request.getParameter("application") != null && request.getParameter("application").compareTo("") != 0) {
-            application = request.getParameter("application");
-        } else {
-            application = "";
-        }
-        String release = null;
-        if (request.getParameter("release") != null && request.getParameter("release").compareTo("") != 0) {
-            release = request.getParameter("release");
-        } else {
-            release = "";
-        }
-        String project = null;
-        if (request.getParameter("project") != null && request.getParameter("project").compareTo("") != 0) {
-            project = request.getParameter("project");
-        } else {
-            project = "";
-        }
-        String ticket = null;
-        if (request.getParameter("ticket") != null && request.getParameter("ticket").compareTo("") != 0) {
-            ticket = request.getParameter("ticket");
-        } else {
-            ticket = "";
-        }
-        String bug = null;
-        if (request.getParameter("bug") != null && request.getParameter("bug").compareTo("") != 0) {
-            bug = request.getParameter("bug");
-        } else {
-            bug = "";
-        }
-        String subject = null;
-        if (request.getParameter("subject") != null && request.getParameter("subject").compareTo("") != 0) {
-            subject = request.getParameter("subject");
-        } else {
-            subject = "";
-        }
-        String owner = null;
-        if (request.getParameter("owner") != null && request.getParameter("owner").compareTo("") != 0) {
-            owner = request.getParameter("owner");
-        } else {
-            owner = "";
-        }
-        String link = null;
-        if (request.getParameter("link") != null && request.getParameter("link").compareTo("") != 0) {
-            link = request.getParameter("link");
-        } else {
-            link = "";
-        }
+        // Parsing all parameters.
+        String application = ParameterParserUtil.parseStringParam(request.getParameter("application"), "");
+        String release = ParameterParserUtil.parseStringParam(request.getParameter("release"), "");
+        String project = ParameterParserUtil.parseStringParam(request.getParameter("project"), "");
+        String ticket = ParameterParserUtil.parseStringParam(request.getParameter("ticket"), "");
+        String bug = ParameterParserUtil.parseStringParam(request.getParameter("bug"), "");
+        String subject = ParameterParserUtil.parseStringParam(request.getParameter("subject"), "");
+        String owner = ParameterParserUtil.parseStringParam(request.getParameter("owner"), "");
+        String link = ParameterParserUtil.parseStringParam(request.getParameter("link"), "");
+        // Those Parameters could be used later when Cerberus send the deploy request to Jenkins. 
+        String jenkinsbuildid = ParameterParserUtil.parseStringParam(request.getParameter("jenkinsbuildid"), "");
+        String mavengroupid = ParameterParserUtil.parseStringParam(request.getParameter("mavengroupid"), "");
+        String mavenartifactid = ParameterParserUtil.parseStringParam(request.getParameter("mavenartifactid"), "");
+        String mavenversion = ParameterParserUtil.parseStringParam(request.getParameter("mavenversion"), "");
 
-        // Those Parameters will be used when Integration application send the deploy request to Jenkins. 
-        String jenkinsbuildid = null;
-        if (request.getParameter("jenkinsbuildid") != null && request.getParameter("jenkinsbuildid").compareTo("") != 0) {
-            jenkinsbuildid = request.getParameter("jenkinsbuildid");
-        } else {
-            jenkinsbuildid = "";
-        }
-        String mavengroupid = null;
-        if (request.getParameter("mavengroupid") != null && request.getParameter("mavengroupid").compareTo("") != 0) {
-            mavengroupid = request.getParameter("mavengroupid");
-        } else {
-            mavengroupid = "";
-        }
-        String mavenartifactid = null;
-        if (request.getParameter("mavenartifactid") != null && request.getParameter("mavenartifactid").compareTo("") != 0) {
-            mavenartifactid = request.getParameter("mavenartifactid");
-        } else {
-            mavenartifactid = "";
-        }
-        String mavenversion = null;
-        if (request.getParameter("mavenversion") != null && request.getParameter("mavenversion").compareTo("") != 0) {
-            mavenversion = request.getParameter("mavenversion");
-        } else {
-            mavenversion = "";
-        }
+        String helpMessage="\nThis servlet is used to create or update a release entry in a 'NONE' build and 'NONE' revision.\n\nParameter list :\n"
+                + "application [mandatory] : the application that produced the release. This parameter must match the application list in Cerberus. [" + application + "]\n"
+                + "release : release number or svn number. This should be unique at the application level. 2 calls on the same application and release will update the other parameters on the same entry. [" + release + "]\n"
+                + "project : Project reference. [" + project + "]\n"
+                + "ticket : Ticket Reference. [" + ticket + "]\n"
+                + "bug : Bug reference. [" + bug + "]\n"
+                + "subject : A short description of the change. [" + subject + "]\n"
+                + "owner : User name of the developper/ person who did the commit. [" + owner + "]\n"
+                + "link : URL Link on detail documentation on the release. [" + link + "]\n"
+                + "The following optional parameters could be used later when Cerberus send the deploy request to Jenkins.\n"
+                + "jenkinsbuildid : Jenkins Build ID. [" + jenkinsbuildid + "]\n"
+                + "mavengroupid : Maven Group ID. [" + mavengroupid + "]\n"
+                + "mavenartifactid : Maven Artifact ID. [" + mavenartifactid + "]\n"
+                + "mavenversion : Maven Version. [" + mavenversion + "]\n";
+        
 
         //Create Connexion // Statement
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         DatabaseSpring database = appContext.getBean(DatabaseSpring.class);
+        IApplicationService MyApplicationService = appContext.getBean(ApplicationService.class);
+        IUserService MyUserService = appContext.getBean(UserService.class);
+        IProjectService MyProjectService = appContext.getBean(ProjectService.class);
 
         Connection connection = database.connect();
         try {
 
             boolean error = false;
 
-            // Application Verification. We verify here that the Application exist on the database.
-            Statement stmt1 = connection.createStatement();
-            try {
-                String req_sel1 = "Select Application FROM  Application "
-                        + " WHERE Application = '" + application + "' and internal = 'Y'";
-                ResultSet rsBC1 = stmt1.executeQuery(req_sel1);
-                try {
-                    if (rsBC1.first() != true) {
-                        out.println("Error - Application does not exist or not an internal application : " + application);
-                        error = true;
-                    }
-                } finally {
-                    rsBC1.close();
-                }
-            } finally {
-                stmt1.close();
+            // Checking the parameter validity. If application has been entered, does it exist ?
+            if (!application.equalsIgnoreCase("") && !MyApplicationService.isApplicationExist(application)) {
+                out.println("Error - Application does not exist  : " + application);
+                error = true;
             }
 
-            // User Verification. We verify here that the User exist on the database.
-            Statement stmt2 = connection.createStatement();
-            try {
-                String req_sel2 = "Select Login FROM  User WHERE Login = '" + owner + "'";
-                ResultSet rsBC2 = stmt2.executeQuery(req_sel2);
-                try {
-                    if (rsBC2.first() != true) {
-                        out.println("Warning - User does not exist : " + owner);
-                    }
-                } finally {
-                    rsBC2.close();
-                }
-            } finally {
-                stmt2.close();
+            // Checking the parameter validity. If owner has been entered, does it exist ?
+            if (!owner.equalsIgnoreCase("") && !MyUserService.isUserExist(owner)) {
+                out.println("Warning - User does not exist : " + owner);
             }
 
-            // Project Verification. We verify here that the Project exist on the database.
-            Statement stmt3 = connection.createStatement();
-            try {
-                String req_sel3 = "Select idproject FROM  project WHERE idproject = '" + project + "'";
-                ResultSet rsBC3 = stmt3.executeQuery(req_sel3);
-                try {
-                    if (rsBC3.first() != true) {
-                        out.println("Warning - Project does not exist : " + project);
-                    }
-                } finally {
-                    rsBC3.close();
-                }
-            } finally {
-                stmt3.close();
+            // Checking the parameter validity. If project has been entered, does it exist ?
+            if (!project.equalsIgnoreCase("") && !MyProjectService.isProjectExist(project)) {
+                out.println("Warning - Project does not exist : " + project);
             }
 
             // Starting the database update only when no blocking error has been detected.
@@ -238,6 +170,10 @@ public class NewRelease extends HttpServlet {
                 } finally {
                     stmt4.close();
                 }
+            } else {
+                // In case of errors, we display the help message.
+                out.println(helpMessage);
+
             }
 
         } catch (Exception e) {
@@ -257,15 +193,14 @@ public class NewRelease extends HttpServlet {
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-
     /**
      * Handles the HTTP
      * <code>GET</code> method.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -277,10 +212,10 @@ public class NewRelease extends HttpServlet {
      * Handles the HTTP
      * <code>POST</code> method.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)

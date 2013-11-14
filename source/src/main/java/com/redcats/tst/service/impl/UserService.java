@@ -88,4 +88,16 @@ public class UserService implements IUserService {
     public boolean verifyPassword(User user, String password) {
         return userDAO.verifyPassword(user, password);
     }
+    
+    @Override
+    public boolean isUserExist(String user) {
+        try {
+            findUserByKey(user);
+            return true;
+        } catch (CerberusException e) {
+            return false;
+        }
+    }
+    
+    
 }

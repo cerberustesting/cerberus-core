@@ -28,6 +28,54 @@ public class ProjectDAO implements IProjectDAO {
     private IFactoryProject factoryProject;
 
     @Override
+    public Project findProjectByKey(String project) {
+        Project result = null;
+        String idProject;
+        String vcCode;
+        String description;
+        final String query = "SELECT * FROM project WHERE idproject = ?";
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            try {
+                preStat.setString(1, project);
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+                    if (resultSet.first()) {
+                        idProject = resultSet.getString("idproject") == null ? "" : resultSet.getString("idproject");
+                        vcCode = resultSet.getString("VCCode") == null ? "" : resultSet.getString("VCCode");
+                        description = resultSet.getString("Description") == null ? "" : resultSet.getString("Description");
+                        String active = resultSet.getString("active") == null ? "" : resultSet.getString("active");
+                        String dateCreation = resultSet.getString("dateCreation") == null ? "" : resultSet.getString("dateCreation");
+                        result = factoryProject.create(idProject, vcCode, description, active, dateCreation);
+                    }
+                } catch (SQLException exception) {
+                    MyLogger.log(ProjectDAO.class.getName(), Level.ERROR, exception.toString());
+                } finally {
+                    resultSet.close();
+                }
+            } catch (SQLException exception) {
+                MyLogger.log(ProjectDAO.class.getName(), Level.ERROR, exception.toString());
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(ProjectDAO.class.getName(), Level.ERROR, exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(ProjectDAO.class.getName(), Level.WARN, e.toString());
+            }
+        }
+
+        return result;
+    }
+
+    @Override
     public List<Project> findAllProject() {
         List<Project> result = null;
         String idProject;

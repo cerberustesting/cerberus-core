@@ -5,7 +5,10 @@
 package com.redcats.tst.service.impl;
 
 import com.redcats.tst.dao.IProjectDAO;
+import com.redcats.tst.entity.MessageGeneral;
+import com.redcats.tst.entity.MessageGeneralEnum;
 import com.redcats.tst.entity.Project;
+import com.redcats.tst.exception.CerberusException;
 import com.redcats.tst.service.IProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,6 +34,26 @@ public class ProjectService implements IProjectService {
         }
 
         return result;
+    }
+
+    @Override
+    public Project findProjectByKey(String project) throws CerberusException {
+        Project myProject = projectDao.findProjectByKey(project);
+        if (myProject == null) {
+            //TODO define message => error occur trying to find user
+            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
+        }
+        return myProject;
+    }
+
+    @Override
+    public boolean isProjectExist(String project) {
+        try {
+            findProjectByKey(project);
+            return true;
+        } catch (CerberusException e) {
+            return false;
+        }
     }
 
 }

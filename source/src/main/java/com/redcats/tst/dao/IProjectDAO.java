@@ -12,7 +12,8 @@ import java.util.List;
  * @author bcivel
  */
 public interface IProjectDAO {
-    
-List<Project> findAllProject();
-            
+
+    Project findProjectByKey(String project);
+
+    List<Project> findAllProject();
 }

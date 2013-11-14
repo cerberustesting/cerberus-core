@@ -63,4 +63,11 @@ public interface IUserService {
      * @return
      */
     boolean verifyPassword(User user, String password);
+
+    /**
+     *
+     * @param User
+     * @return true if user exist. false if not.
+     */
+    boolean isUserExist(String user);
 }
