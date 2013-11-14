@@ -21,70 +21,70 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Manual Test Case</title>
-<meta content="text/html; charset=UTF-8" http-equiv="content-type">
+    <title>Manual Test Case</title>
+    <meta content="text/html; charset=UTF-8" http-equiv="content-type">
 
-<link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico">
-<link rel="stylesheet" type="text/css" href="css/crb_style.css">
+    <link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico">
+    <link rel="stylesheet" type="text/css" href="css/crb_style.css">
 
-<style media="screen" type="text/css">
-    @import "css/demo_page.css";
-    @import "css/demo_table.css";
-    @import "css/demo_table_jui.css";
-    @import "css/themes/base/jquery-ui.css";
-    @import "css/themes/smoothness/jquery-ui-1.7.2.custom.css";
-</style>
+    <style media="screen" type="text/css">
+        @import "css/demo_page.css";
+        @import "css/demo_table.css";
+        @import "css/demo_table_jui.css";
+        @import "css/themes/base/jquery-ui.css";
+        @import "css/themes/smoothness/jquery-ui-1.7.2.custom.css";
+    </style>
 
-<style type="text/css">
-    .fields {
-        background-color: #E1E7F3;
-        border: 2px solid #8999C4;
-        display: inline-block;
-        border-radius: 15px;
-        padding: 5px;
-        margin-bottom: 3px;
-        margin-top: 3px;
-    }
+    <style type="text/css">
+        .fields {
+            background-color: #E1E7F3;
+            border: 2px solid #8999C4;
+            display: inline-block;
+            border-radius: 15px;
+            padding: 5px;
+            margin-bottom: 3px;
+            margin-top: 3px;
+        }
 
-    .field {
-        /*position: relative;*/
-        /*float: left;*/
-        display: inline-block;
-        padding-bottom: 5px;
-        padding-left: 5px;
-    }
+        .field {
+            /*position: relative;*/
+            /*float: left;*/
+            display: inline-block;
+            padding-bottom: 5px;
+            padding-left: 5px;
+        }
 
-    .field label {
-        font-weight: bold;
-        display: inline-block;
-        background-color: #CAD3F1;
-    }
+        .field label {
+            font-weight: bold;
+            display: inline-block;
+            background-color: #CAD3F1;
+        }
 
-    h4 {
-        color: blue;
-        margin-top: 2px;
-        margin-bottom: 2px;
-        font-weight: bold;
-    }
+        h4 {
+            color: blue;
+            margin-top: 2px;
+            margin-bottom: 2px;
+            font-weight: bold;
+        }
 
-    #searchTestCase {
-        position: relative;
-        float: left;
-    }
+        #searchTestCase {
+            position: relative;
+            float: left;
+        }
 
-    .ajax_loader {
-        background: url("images/spinner_squares_circle.gif") no-repeat center center transparent;
-        width: 100%;
-        height: 100%;
-    }
-</style>
+        .ajax_loader {
+            background: url("images/spinner_squares_circle.gif") no-repeat center center transparent;
+            width: 100%;
+            height: 100%;
+        }
+    </style>
 
-<script type="text/javascript" src="js/jquery-1.10.2.min.js"></script>
-<script type="text/javascript" src="js/ajax-loader.js"></script>
-<script type="text/javascript" src="js/jquery-ui-1.10.2.custom.min.js"></script>
-<script type="text/javascript" src="js/jquery.jeditable.mini.js"></script>
-<script type="text/javascript" src="js/jquery.dataTables.min.js"></script>
-<script type="text/javascript" src="js/jquery.dataTables.editable.js"></script>
+    <script type="text/javascript" src="js/jquery-1.10.2.min.js"></script>
+    <script type="text/javascript" src="js/ajax-loader.js"></script>
+    <script type="text/javascript" src="js/jquery-ui-1.10.2.custom.min.js"></script>
+    <script type="text/javascript" src="js/jquery.jeditable.mini.js"></script>
+    <script type="text/javascript" src="js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="js/jquery.dataTables.editable.js"></script>
 </head>
 <body>
 <%@ include file="include/function.jsp" %>
@@ -230,7 +230,7 @@
             </select>
         </div>
         <div class="field" style="float: right">
-            <button type="button" onclick="loadTestCases()">Search</button>
+            <button type="button" class="button" onclick="loadTestCases()">Search</button>
         </div>
     </div>
 </div>
@@ -256,6 +256,9 @@
                 <input type="text" id="executionTag" name="executionTag" style="width: 500px"/>
             </div>
         </div>
+    </div>
+    <div id="divResultMessage" class="field" style="width: 600px; text-align: center">
+        <span id="resultMessage" style="color: green; font-size: large; font-weight: 600;"></span>
     </div>
 
     <div style="width: 90%; padding-left: 25px; font: 90% sans-serif">
@@ -323,14 +326,21 @@
             var country = $('#executionCountry').val();
             var tag = $('#executionTag').val();
 
-            var d = {test: test, testCase: testCase, env: env, country: country, controlStatus: res, controlMessage: message, tag: tag}
+            var d = {test: test, testCase: testCase, env: env, country: country, controlStatus: res, controlMessage: message, tag: tag};
 
             $.post("SaveManualExecution", d,function () {
+                $("#resultMessage").html("Manual Execution of Test Case <i>" + test + " - " + testCase + "</i> created");
+                $("#divResultMessage").slideDown("slow");
                 data.hidden = true;
+                window.setTimeout(showMessage, 7000);
             }).fail(function (error) {
                         alert(error.responseText);
                     });
         }
+    }
+
+    function showMessage() {
+        $("#divResultMessage").slideUp("slow");
     }
 
     function loadTestCases() {
@@ -362,6 +372,7 @@
                     sUpdateURL: function (value, settings) {
                         return(value);
                     },
+                    oEditableSettings: { event: 'click' },
                     "aoColumns": [
                         null,
                         null,
@@ -419,6 +430,11 @@
             });
         });
 
+        $("#searchTestCase").keypress(function (e) {
+            if (e.which == 13) {
+                loadTestCases();
+            }
+        });
     });
 </script>
 </body>
