@@ -530,6 +530,8 @@
                                 String behavior = rs_testcase_general_info.getString("BehaviorOrValueExpected");
                                 if (behavior == null || behavior.compareTo("null") == 0) {
                                     behavior = new String(" ");
+                                } else {
+                                    behavior = behavior.replace(">", "&gt;");
                                 }
                             %> 
                             <table>
