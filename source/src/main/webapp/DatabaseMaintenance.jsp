@@ -1,16 +1,29 @@
-<%-- 
-    Document   : DatabaseMaintenance
-    Created on : Jun 9, 2013, 1:31:44 PM
-    Author     : vertigo
---%>
-
-<%@page import="com.redcats.tst.factory.IFactoryMyversion"%>
-<%@page import="com.redcats.tst.factory.impl.FactoryMyversion"%>
-<%@page import="com.redcats.tst.service.IDatabaseVersioningService"%>
-<%@page import="com.redcats.tst.log.MyLogger"%>
+<%--
+  ~ Cerberus  Copyright (C) 2013  vertigo17
+  ~ DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+  ~
+  ~ This file is part of Cerberus.
+  ~
+  ~ Cerberus is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ Cerberus is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
+  --%>
+<%@page import="org.cerberus.factory.IFactoryMyversion"%>
+<%@page import="org.cerberus.factory.impl.FactoryMyversion"%>
+<%@page import="org.cerberus.service.IDatabaseVersioningService"%>
+<%@page import="org.cerberus.log.MyLogger"%>
+<%@page import="org.cerberus.entity.MyVersion"%>
+<%@page import="org.cerberus.service.IMyVersionService"%>
 <%@page import="org.apache.log4j.Level"%>
-<%@page import="com.redcats.tst.entity.MyVersion"%>
-<%@page import="com.redcats.tst.service.IMyVersionService"%>
 <%@page import="org.springframework.web.context.support.WebApplicationContextUtils" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <% Date DatePageStart = new Date();%>

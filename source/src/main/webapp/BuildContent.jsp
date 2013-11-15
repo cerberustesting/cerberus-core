@@ -1,17 +1,29 @@
-<%-- 
-    Document   : buildcontent
-    Created on : Dec 2, 2011, 10:16:49 PM
-    Author     : vertigo
-    Description: This page display the content of a build/revision.
---%>
-
-<%@page import="com.redcats.tst.entity.BuildRevisionInvariant"%>
-<%@page import="com.redcats.tst.service.impl.BuildRevisionInvariantService"%>
-<%@page import="com.redcats.tst.service.IBuildRevisionInvariantService"%>
-<%@page import="com.redcats.tst.service.impl.ApplicationService"%>
-<%@page import="com.redcats.tst.util.StringUtil"%>
-<%@page import="com.redcats.tst.entity.Application"%>
-<%@page import="com.redcats.tst.service.IApplicationService"%>
+<%--
+  ~ Cerberus  Copyright (C) 2013  vertigo17
+  ~ DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+  ~
+  ~ This file is part of Cerberus.
+  ~
+  ~ Cerberus is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ Cerberus is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
+  --%>
+<%@page import="org.cerberus.entity.BuildRevisionInvariant"%>
+<%@page import="org.cerberus.service.impl.BuildRevisionInvariantService"%>
+<%@page import="org.cerberus.service.IBuildRevisionInvariantService"%>
+<%@page import="org.cerberus.service.impl.ApplicationService"%>
+<%@page import="org.cerberus.util.StringUtil"%>
+<%@page import="org.cerberus.entity.Application"%>
+<%@page import="org.cerberus.service.IApplicationService"%>
 <%@page import="java.util.logging.Logger"%>
 <%@page import="java.util.logging.Level"%>
 <%@page import="com.mysql.jdbc.StringUtils"%>

@@ -14,16 +14,16 @@
         <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
     </bean>
 
-    <bean id="seleniumService" class="com.redcats.tst.service.impl.SeleniumService">
+    <bean id="seleniumService" class="org.cerberus.service.impl.SeleniumService">
     </bean>
 
-    <bean id="runTestCaseService" class="com.redcats.tst.service.impl.RunTestCaseService">
+    <bean id="runTestCaseService" class="org.cerberus.service.impl.RunTestCaseService">
     </bean>
 
     <context:annotation-config/>
 
-    <context:component-scan base-package="com.redcats.tst.*">
-        <context:exclude-filter type="regex" expression="com.redcats.tst.srv.cerberus.*"/>
+    <context:component-scan base-package="org.cerberus.*">
+        <context:exclude-filter type="regex" expression="org.cerberus.srv.cerberus.*"/>
     </context:component-scan>
 
 </beans>

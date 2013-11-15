@@ -1,0 +1,42 @@
+/*
+ * Cerberus  Copyright (C) 2013  vertigo17
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+ *
+ * This file is part of Cerberus.
+ *
+ * Cerberus is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Cerberus is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
+ */
+package org.cerberus.factory;
+
+import org.cerberus.entity.Selenium;
+import org.openqa.selenium.WebDriver;
+
+/**
+ *
+ * @author bcivel
+ */
+public interface IFactorySelenium {
+
+    /**
+     * 
+     * @param host : IP of the Test Machine
+     * @param port : Port ued for connection to the test Machine
+     * @param browser : Browser Name used for the test
+     * @param login
+     * @param ip
+     * @param driver
+     * @return 
+     */
+    Selenium create(String host, String port, String browser, String login, String ip, WebDriver driver, long wait);
+}

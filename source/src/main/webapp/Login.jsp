@@ -1,12 +1,26 @@
-<%-- 
-    Document   : login
-    Created on : 7/Fev/2012, 16:06:22
-    Author     : ip100003
---%>
-<%@page import="version.Version"%>
-<%@page import="com.redcats.tst.log.MyLogger"%>
+<%--
+  ~ Cerberus  Copyright (C) 2013  vertigo17
+  ~ DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+  ~
+  ~ This file is part of Cerberus.
+  ~
+  ~ Cerberus is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ Cerberus is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
+  --%>
+<%@page import="org.cerberus.version.Version"%>
+<%@page import="org.cerberus.log.MyLogger"%>
+<%@page import="org.cerberus.service.IParameterService"%>
 <%@page import="org.apache.log4j.Level"%>
-<%@page import="com.redcats.tst.service.IParameterService"%>
 <%@page import="org.springframework.web.context.support.WebApplicationContextUtils"%>
 <%@page import="org.springframework.context.ApplicationContext"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>

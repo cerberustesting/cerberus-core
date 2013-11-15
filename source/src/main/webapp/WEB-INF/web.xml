@@ -5,237 +5,237 @@
     </welcome-file-list>
     <servlet>
         <servlet-name>Homepage</servlet-name>
-        <servlet-class>com.redcats.tst.servlet.guiPages.Homepage</servlet-class>
+        <servlet-class>org.cerberus.servlet.guiPages.Homepage</servlet-class>
     </servlet>
     <servlet>
         <display-name>RunTestCase</display-name>
         <servlet-name>RunTestCase</servlet-name>
-        <servlet-class>com.redcats.tst.servlet.publi.RunTestCase</servlet-class>
+        <servlet-class>org.cerberus.servlet.publi.RunTestCase</servlet-class>
     </servlet>
     <servlet>
         <display-name>SaveStatistic</display-name>
         <servlet-name>SaveStatistic</servlet-name>
-        <servlet-class>com.redcats.tst.servlet.engine.SaveStatistic</servlet-class>
+        <servlet-class>org.cerberus.servlet.engine.SaveStatistic</servlet-class>
     </servlet>
     <servlet>
         <display-name>ListOfTestcases</display-name>
         <servlet-name>GetTestCaseList</servlet-name>
-        <servlet-class>com.redcats.tst.servlet.testCase.GetTestCaseList</servlet-class>
+        <servlet-class>org.cerberus.servlet.testCase.GetTestCaseList</servlet-class>
     </servlet>
     <servlet>
         <display-name>TestcaseInformation</display-name>
         <servlet-name>GetTestCase</servlet-name>
-        <servlet-class>com.redcats.tst.servlet.testCase.GetTestCase</servlet-class>
+        <servlet-class>org.cerberus.servlet.testCase.GetTestCase</servlet-class>
     </servlet>
     <servlet>
         <display-name>DocumentationField</display-name>
         <servlet-name>DocumentationField</servlet-name>
-        <servlet-class>com.redcats.tst.servlet.documentation.DocumentationField</servlet-class>
+        <servlet-class>org.cerberus.servlet.documentation.DocumentationField</servlet-class>
     </servlet>
     <servlet>
         <display-name>GetApplicationList</display-name>
         <servlet-name>GetApplicationList</servlet-name>
-        <servlet-class>com.redcats.tst.servlet.application.GetApplicationList</servlet-class>
+        <servlet-class>org.cerberus.servlet.application.GetApplicationList</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>importXML</servlet-name>
-        <servlet-class>com.redcats.tst.refactor.ImportSeleniumIDE</servlet-class>
+        <servlet-class>org.cerberus.refactor.ImportSeleniumIDE</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>importFile</servlet-name>
-        <servlet-class>com.redcats.tst.refactor.importFile</servlet-class>
+        <servlet-class>org.cerberus.refactor.importFile</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>AddTest</servlet-name>
-        <servlet-class>com.redcats.tst.refactor.TestcaseList</servlet-class>
+        <servlet-class>org.cerberus.refactor.TestcaseList</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>UpdateTestCase1</servlet-name>
-        <servlet-class>com.redcats.tst.refactor.UpdateTestCase1</servlet-class>
+        <servlet-class>org.cerberus.refactor.UpdateTestCase1</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>UpdateTest</servlet-name>
-        <servlet-class>com.redcats.tst.servlet.test.UpdateTest</servlet-class>
+        <servlet-class>org.cerberus.servlet.test.UpdateTest</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>DeleteTest</servlet-name>
-        <servlet-class>com.redcats.tst.servlet.test.DeleteTest</servlet-class>
+        <servlet-class>org.cerberus.servlet.test.DeleteTest</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>ResultCI</servlet-name>
-        <servlet-class>com.redcats.tst.servlet.publi.ResultCI</servlet-class>
+        <servlet-class>org.cerberus.servlet.publi.ResultCI</servlet-class>
     </servlet>
     <servlet>
         <description>
         </description>
         <display-name>DuplicateTestCase</display-name>
         <servlet-name>DuplicateTestCase</servlet-name>
-        <servlet-class>com.redcats.tst.servlet.testCase.DuplicateTestCase</servlet-class>
+        <servlet-class>org.cerberus.servlet.testCase.DuplicateTestCase</servlet-class>
     </servlet>
     <servlet>
         <description>
         </description>
         <display-name>UpdateTestCase</display-name>
         <servlet-name>UpdateTestCase</servlet-name>
-        <servlet-class>com.redcats.tst.servlet.testCase.UpdateTestCase</servlet-class>
+        <servlet-class>org.cerberus.servlet.testCase.UpdateTestCase</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>TestcaseList</servlet-name>
-        <servlet-class>com.redcats.tst.refactor.TestcaseList</servlet-class>
+        <servlet-class>org.cerberus.refactor.TestcaseList</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>TestcaseListGrid</servlet-name>
-        <servlet-class>com.redcats.tst.refactor.TestcaseListGrid</servlet-class>
+        <servlet-class>org.cerberus.refactor.TestcaseListGrid</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>UpdateProperties</servlet-name>
-        <servlet-class>com.redcats.tst.refactor.UpdateProperties</servlet-class>
+        <servlet-class>org.cerberus.refactor.UpdateProperties</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>CreateTestCase</servlet-name>
-        <servlet-class>com.redcats.tst.servlet.testCase.CreateTestCase</servlet-class>
+        <servlet-class>org.cerberus.servlet.testCase.CreateTestCase</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>GetUsers</servlet-name>
-        <servlet-class>com.redcats.tst.servlet.user.GetUsers</servlet-class>
+        <servlet-class>org.cerberus.servlet.user.GetUsers</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>AddUser</servlet-name>
-        <servlet-class>com.redcats.tst.servlet.user.AddUser</servlet-class>
+        <servlet-class>org.cerberus.servlet.user.AddUser</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>UpdateUser</servlet-name>
-        <servlet-class>com.redcats.tst.servlet.user.UpdateUser</servlet-class>
+        <servlet-class>org.cerberus.servlet.user.UpdateUser</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>DeleteUser</servlet-name>
-        <servlet-class>com.redcats.tst.servlet.user.DeleteUser</servlet-class>
+        <servlet-class>org.cerberus.servlet.user.DeleteUser</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>ChangeUserPassword</servlet-name>
-        <servlet-class>com.redcats.tst.servlet.user.ChangeUserPassword</servlet-class>
+        <servlet-class>org.cerberus.servlet.user.ChangeUserPassword</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>CreateTest</servlet-name>
-        <servlet-class>com.redcats.tst.servlet.test.CreateTest</servlet-class>
+        <servlet-class>org.cerberus.servlet.test.CreateTest</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>DeleteTestCase</servlet-name>
-        <servlet-class>com.redcats.tst.servlet.testCase.DeleteTestCase</servlet-class>
+        <servlet-class>org.cerberus.servlet.testCase.DeleteTestCase</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>UpdateTestCaseDetail</servlet-name>
-        <servlet-class>com.redcats.tst.servlet.testCase.UpdateTestCaseDetail</servlet-class>
+        <servlet-class>org.cerberus.servlet.testCase.UpdateTestCaseDetail</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>ImportSeleniumIDE</servlet-name>
-        <servlet-class>com.redcats.tst.refactor.ImportSeleniumIDE</servlet-class>
+        <servlet-class>org.cerberus.refactor.ImportSeleniumIDE</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>TCEwwwDetail</servlet-name>
-        <servlet-class>com.redcats.tst.refactor.TCEwwwDetail</servlet-class>
+        <servlet-class>org.cerberus.refactor.TCEwwwDetail</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>GenerateGraph</servlet-name>
-        <servlet-class>com.redcats.tst.refactor.GenerateGraph</servlet-class>
+        <servlet-class>org.cerberus.refactor.GenerateGraph</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>TestCaseActionExecutionDetail</servlet-name>
-        <servlet-class>com.redcats.tst.refactor.TestCaseActionExecutionDetail</servlet-class>
+        <servlet-class>org.cerberus.refactor.TestCaseActionExecutionDetail</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>GetConnectionPoolName</servlet-name>
-        <servlet-class>com.redcats.tst.refactor.GetConnectionPoolName</servlet-class>
+        <servlet-class>org.cerberus.refactor.GetConnectionPoolName</servlet-class>
     </servlet>
     <servlet>
         <description>This Servlet is used to Record a new Release inside the pending sprint.</description>
         <servlet-name>NewRelease</servlet-name>
-        <servlet-class>com.redcats.tst.servlet.publi.NewRelease</servlet-class>
+        <servlet-class>org.cerberus.servlet.publi.NewRelease</servlet-class>
     </servlet>
     <servlet>
         <description>This Servlet is used to monitor from Nagios the number of execution performed for Performance monitoring.</description>
         <servlet-name>GetNumberOfExecutions</servlet-name>
-        <servlet-class>com.redcats.tst.servlet.publi.GetNumberOfExecutions</servlet-class>
+        <servlet-class>org.cerberus.servlet.publi.GetNumberOfExecutions</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>GetParameter</servlet-name>
-        <servlet-class>com.redcats.tst.servlet.parameter.GetParameter</servlet-class>
+        <servlet-class>org.cerberus.servlet.parameter.GetParameter</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>UpdateParameter</servlet-name>
-        <servlet-class>com.redcats.tst.servlet.parameter.UpdateParameter</servlet-class>
+        <servlet-class>org.cerberus.servlet.parameter.UpdateParameter</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>GetInvariantList</servlet-name>
-        <servlet-class>com.redcats.tst.servlet.invariant.GetInvariantList</servlet-class>
+        <servlet-class>org.cerberus.servlet.invariant.GetInvariantList</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>GetApplication</servlet-name>
-        <servlet-class>com.redcats.tst.servlet.application.GetApplication</servlet-class>
+        <servlet-class>org.cerberus.servlet.application.GetApplication</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>GetLogEvent</servlet-name>
-        <servlet-class>com.redcats.tst.servlet.log.GetLogEvent</servlet-class>
+        <servlet-class>org.cerberus.servlet.log.GetLogEvent</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>GetDeployTypeList</servlet-name>
-        <servlet-class>com.redcats.tst.servlet.application.GetDeployTypeList</servlet-class>
+        <servlet-class>org.cerberus.servlet.application.GetDeployTypeList</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>UpdateBuildRevisionParameter</servlet-name>
-        <servlet-class>com.redcats.tst.servlet.environment.UpdateBuildRevisionParameter</servlet-class>
+        <servlet-class>org.cerberus.servlet.environment.UpdateBuildRevisionParameter</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>UpdateApplicationAjax</servlet-name>
-        <servlet-class>com.redcats.tst.servlet.application.UpdateApplication</servlet-class>
+        <servlet-class>org.cerberus.servlet.application.UpdateApplication</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>NewBuildRev</servlet-name>
-        <servlet-class>com.redcats.tst.servlet.environment.NewBuildRev</servlet-class>
+        <servlet-class>org.cerberus.servlet.environment.NewBuildRev</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>DisableEnvironment</servlet-name>
-        <servlet-class>com.redcats.tst.servlet.environment.DisableEnvironment</servlet-class>
+        <servlet-class>org.cerberus.servlet.environment.DisableEnvironment</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>NewChain</servlet-name>
-        <servlet-class>com.redcats.tst.servlet.environment.NewChain</servlet-class>
+        <servlet-class>org.cerberus.servlet.environment.NewChain</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>JenkinsDeploy</servlet-name>
-        <servlet-class>com.redcats.tst.servlet.integration.JenkinsDeploy</servlet-class>
+        <servlet-class>org.cerberus.servlet.integration.JenkinsDeploy</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>UpdateCountryEnv</servlet-name>
-        <servlet-class>com.redcats.tst.servlet.environment.UpdateCountryEnv</servlet-class>
+        <servlet-class>org.cerberus.servlet.environment.UpdateCountryEnv</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>ExportListTestCase</servlet-name>
-        <servlet-class>com.redcats.tst.servlet.testCase.ExportListTestCase</servlet-class>
+        <servlet-class>org.cerberus.servlet.testCase.ExportListTestCase</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>GetBuildRevisionInvariant</servlet-name>
-        <servlet-class>com.redcats.tst.servlet.buildrevision.GetBuildRevisionInvariant</servlet-class>
+        <servlet-class>org.cerberus.servlet.buildrevision.GetBuildRevisionInvariant</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>DeleteBuildRevisionInvariant</servlet-name>
-        <servlet-class>com.redcats.tst.servlet.buildrevision.DeleteBuildRevisionInvariant</servlet-class>
+        <servlet-class>org.cerberus.servlet.buildrevision.DeleteBuildRevisionInvariant</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>ExecutionPerBuildRevision</servlet-name>
-        <servlet-class>com.redcats.tst.servlet.guiPages.ExecutionPerBuildRevision</servlet-class>
+        <servlet-class>org.cerberus.servlet.guiPages.ExecutionPerBuildRevision</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>GetDataForTestCaseSearch</servlet-name>
-        <servlet-class>com.redcats.tst.servlet.testCase.GetDataForTestCaseSearch</servlet-class>
+        <servlet-class>org.cerberus.servlet.testCase.GetDataForTestCaseSearch</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>SearchTestCaseInformation</servlet-name>
-        <servlet-class>com.redcats.tst.servlet.testCase.SearchTestCaseInformation</servlet-class>
+        <servlet-class>org.cerberus.servlet.testCase.SearchTestCaseInformation</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>SaveManualExecution</servlet-name>
-        <servlet-class>com.redcats.tst.servlet.execution.SaveManualExecution</servlet-class>
+        <servlet-class>org.cerberus.execution.SaveManualExecution</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>RunTestCase</servlet-name>

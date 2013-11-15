@@ -1,16 +1,29 @@
 <%--
-    Document   : RunTests
-    Created on : 22 févr. 2011, 13:48:03
-    Author     : acraske
+  ~ Cerberus  Copyright (C) 2013  vertigo17
+  ~ DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+  ~
+  ~ This file is part of Cerberus.
+  ~
+  ~ Cerberus is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ Cerberus is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
-
-<%@page import="com.redcats.tst.service.IParameterService"%>
-<%@page import="com.redcats.tst.log.MyLogger"%>
+<%@page import="org.cerberus.service.IParameterService"%>
+<%@page import="org.cerberus.log.MyLogger"%>
 <%@page import="org.apache.log4j.Level"%>
-<%@page import="com.redcats.tst.service.impl.ApplicationService"%>
-<%@page import="com.redcats.tst.util.StringUtil"%>
-<%@page import="com.redcats.tst.entity.Application"%>
-<%@page import="com.redcats.tst.service.IApplicationService"%>
+<%@page import="org.cerberus.service.impl.ApplicationService"%>
+<%@page import="org.cerberus.util.StringUtil"%>
+<%@page import="org.cerberus.entity.Application"%>
+<%@page import="org.cerberus.service.IApplicationService"%>
 <%@page import="org.apache.commons.lang3.StringUtils"%>
 <%@page import="java.util.Enumeration"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
@@ -21,7 +34,7 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Run TestCase</title>
+        <title>Run Test Case</title>
         <link rel="stylesheet" type="text/css" href="css/crb_style.css">
         <link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico" />
         <script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>

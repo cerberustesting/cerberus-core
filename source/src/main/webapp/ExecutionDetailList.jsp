@@ -1,19 +1,33 @@
-<%-- 
-    Document   : ExecutionDetail
-    Created on : 20 mai 2011, 13:41:49
-    Author     : acraske
---%>
-<%@page import="com.redcats.tst.service.impl.BuildRevisionInvariantService"%>
-<%@page import="com.redcats.tst.service.IBuildRevisionInvariantService"%>
-<%@page import="com.redcats.tst.entity.BuildRevisionInvariant"%>
-<%@page import="com.redcats.tst.service.impl.ApplicationService"%>
-<%@page import="com.redcats.tst.service.IApplicationService"%>
-<%@page import="com.redcats.tst.util.StringUtil"%>
-<%@page import="com.redcats.tst.entity.Application"%>
-<%@page import="com.redcats.tst.service.IParameterService"%>
+<%--
+  ~ Cerberus  Copyright (C) 2013  vertigo17
+  ~ DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+  ~
+  ~ This file is part of Cerberus.
+  ~
+  ~ Cerberus is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ Cerberus is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
+  --%>
+<%@page import="org.cerberus.service.impl.BuildRevisionInvariantService"%>
+<%@page import="org.cerberus.service.IBuildRevisionInvariantService"%>
+<%@page import="org.cerberus.entity.BuildRevisionInvariant"%>
+<%@page import="org.cerberus.service.impl.ApplicationService"%>
+<%@page import="org.cerberus.service.IApplicationService"%>
+<%@page import="org.cerberus.util.StringUtil"%>
+<%@page import="org.cerberus.entity.Application"%>
+<%@page import="org.cerberus.service.IParameterService"%>
 <%@page import="java.util.Calendar"%>
-<%@page import="com.redcats.tst.log.MyLogger"%>
-<%@page import="com.redcats.tst.refactor.GeneratePerformanceString"%>
+<%@page import="org.cerberus.log.MyLogger"%>
+<%@page import="org.cerberus.refactor.GeneratePerformanceString"%>
 <%@page import="org.apache.log4j.Level"%>
 <%@page import="java.sql.Statement"%>
 <%@page import="java.sql.ResultSet"%>
