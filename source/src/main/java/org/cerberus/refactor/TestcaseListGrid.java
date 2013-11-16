@@ -112,7 +112,7 @@ public class TestcaseListGrid extends HttpServlet {
             }
 
             PreparedStatement stmt_count = conn.prepareStatement("SELECT count(*) FROM testcase a JOIN testcasecountry b ON a.test=b.test "
-                    + " AND a.testcase=b.testcase WHERE a.TcActive = 'Y'  AND a.`Group` = 'Interactive' ? ORDER BY a.test,a.testcase");
+                    + " AND a.testcase=b.testcase WHERE a.TcActive = 'Y'  AND a.`Group` = 'AUTOMATED' ? ORDER BY a.test,a.testcase");
             int count;
             try {
                 stmt_count.setString(1, whereclauses);
@@ -140,7 +140,7 @@ public class TestcaseListGrid extends HttpServlet {
                         + "), \"%COUNTRY%\", country) AS list "
                         + " FROM testcase a JOIN testcasecountry b ON a.test=b.test "
                         + " AND a.testcase=b.testcase "
-                        + " WHERE a.TcActive = 'Y'  AND a.`Group` = 'Interactive' "
+                        + " WHERE a.TcActive = 'Y'  AND a.`Group` = 'AUTOMATED' "
                         + " ? "
                         + " ORDER BY a.test,a.testcase "
                         + " LIMIT ?, ?");

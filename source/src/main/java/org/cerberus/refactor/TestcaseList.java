@@ -85,7 +85,7 @@ public class TestcaseList extends HttpServlet {
 
             if (StringUtils.isNotBlank(url)) {
                 stmt_testlist = conn.prepareStatement("SELECT concat(?) AS list FROM testcase "
-                        + " WHERE TcActive = 'Y'  AND `Group` = 'Interactive' ? ? ORDER BY test,testcase");
+                        + " WHERE TcActive = 'Y'  AND `Group` = 'AUTOMATED' ? ? ORDER BY test,testcase");
                 stmt_testlist.setString(1, url);
                 stmt_testlist.setString(2, app);
                 stmt_testlist.setString(3, tes);
