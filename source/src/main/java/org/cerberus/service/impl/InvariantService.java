@@ -51,4 +51,14 @@ public class InvariantService implements IInvariantService {
     public List<Invariant> findInvariantByIdGp1(String idName, String gp) throws CerberusException {
         return invariantDao.findInvariantByIdGp1(idName, gp);
     }
+
+    @Override 
+    public boolean isInvariantExist(String idName, String value) {
+        try {
+            findInvariantByIdValue(idName, value);
+            return true;
+        } catch (CerberusException e) {
+            return false;
+        }
+    }
 }

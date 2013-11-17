@@ -37,6 +37,8 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.cerberus.service.IInvariantService;
+import org.cerberus.service.impl.InvariantService;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.cerberus.version.Version;
@@ -72,7 +74,8 @@ public class GetNumberOfExecutions extends HttpServlet {
         PrintWriter out = response.getWriter();
 
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-        IApplicationService MyapplicationService = appContext.getBean(ApplicationService.class);
+        IApplicationService myApplicationService = appContext.getBean(ApplicationService.class);
+        IInvariantService myInvariantService = appContext.getBean(InvariantService.class);
 
         // Parsing all parameters.
         String environment = ParameterParserUtil.parseStringParam(request.getParameter("environment"), "PROD");
@@ -100,11 +103,23 @@ public class GetNumberOfExecutions extends HttpServlet {
                 error = true;
             }
             // Checking the parameter validity. If application has been entered, does it exist ?
-            if (!application.equalsIgnoreCase("") && !MyapplicationService.isApplicationExist(application)) {
+            if (!application.equalsIgnoreCase("") && !myApplicationService.isApplicationExist(application)) {
                 out.println("Error - Application does not exist  : " + application);
                 error = true;
             }
 
+            if (!country.equalsIgnoreCase("") && !myInvariantService.isInvariantExist("COUNTRY", country)) {
+                out.println("Warning - Country does not exist  : " + country);
+            }
+
+            if (!environment.equalsIgnoreCase("") && !myInvariantService.isInvariantExist("ENVIRONMENT", environment)) {
+                out.println("Warning - Environment does not exist  : " + environment);
+            }
+
+            if (!controlStatus.equalsIgnoreCase("") && !myInvariantService.isInvariantExist("TCESTATUS", controlStatus)) {
+                out.println("Warning - Control Status does not exist  : " + controlStatus);
+            }
+            
             // Starting the request only if previous parameters exist.
             if (!error) {
 

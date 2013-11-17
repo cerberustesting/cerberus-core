@@ -34,4 +34,6 @@ public interface IInvariantService {
     List<Invariant> findListOfInvariantById(String idName) throws CerberusException;
 
     List<Invariant> findInvariantByIdGp1(String idName, String gp) throws CerberusException;
+    
+    boolean isInvariantExist(String idName, String value);
 }

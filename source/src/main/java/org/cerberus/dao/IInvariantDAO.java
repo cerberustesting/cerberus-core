@@ -35,4 +35,5 @@ public interface IInvariantDAO {
     List<Invariant> findListOfInvariantById(String idName) throws CerberusException;
 
     List<Invariant> findInvariantByIdGp1(String idName, String gp) throws CerberusException;
+
 }
