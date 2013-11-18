@@ -220,7 +220,7 @@
                             <% }
                             %></select>
                     </td>
-                    <td class="wob" style="background-color:<%=backColor%>"><select id="ubcApplication" name="ubcApplication" class="wob" style="width:100px; font-size:x-small;background-color:<%=backColor%>"><%
+                    <td class="wob" style="background-color:<%=backColor%>"><select id="ubcApplication" name="ubcApplication" class="wob" style="width:170px; font-size:x-small;background-color:<%=backColor%>"><%
                         ResultSet rsApp = stmtProj.executeQuery(" SELECT distinct application from application where application != '' and application " + appliInSQL + " order by sort ");
                         rsApp.first();
                         do {
@@ -249,7 +249,7 @@
                     <td class="wob" style="width:22px; background-color:<%=backColor%>">
                         <input style="display:inline; height:20px; width:20px; background-color: <%=backColor%>; color:blue; font-weight:bolder" title="Link" class="smallbutton" type="button" value="L" onclick="popup('<%=rsBR.getString("b.Link")%>')">
                     </td>
-                    <td class="wob" style="background-color:<%=backColor%>"><textarea class="wob" name="ubcLink" value="<%=rsBR.getString("b.Link")%>" rows="1" style="width: 300px; background-color:<%=backColor%>; font-size:x-small" maxlength="<%=rsBR.getMetaData().getColumnDisplaySize(5)%>"><%=rsBR.getString("b.Link")%></textarea></td>
+                    <td class="wob" style="background-color:<%=backColor%>"><textarea class="wob" name="ubcLink" value="<%=rsBR.getString("b.Link")%>" rows="1" style="width: 250px; background-color:<%=backColor%>; font-size:x-small" maxlength="<%=rsBR.getMetaData().getColumnDisplaySize(5)%>"><%=rsBR.getString("b.Link")%></textarea></td>
                     <!--                <td class="wob" style="width: 200px; background-color:<%=backColor%>"><%=linkToTickets%><%=linkToBugs%></td>-->
                 </tr><%
                             stmtProj.close();

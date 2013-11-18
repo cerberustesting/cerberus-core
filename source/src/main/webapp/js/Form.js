@@ -1189,7 +1189,7 @@ function addBuildContent(tableau) {
 	if (document.getElementById("buildcontent_application_")) {
 		form3.setAttribute('name', 'ubcApplication');
                 form3.setAttribute('class', 'wob');
-		form3.setAttribute('style', 'font-weight: bold;width: 100px;font-style: italic; font-size:x-small');
+		form3.setAttribute('style', 'font-weight: bold;width: 170px;font-style: italic; font-size:x-small');
 		form3.innerHTML = (form3.innerHTML + document.getElementById('buildcontent_application_').innerHTML);
 	}
         var form31 = document.createElement('input');
@@ -1272,7 +1272,7 @@ function addBuildContent(tableau) {
 
         /* Link */
 	var form6 = document.createElement('input');
-        form6.setAttribute('style', 'width:300px');
+        form6.setAttribute('style', 'width:250px');
         form6.setAttribute('class', 'wob');
         form6.setAttribute('name', 'ubcLink');
 	var TD6 = document.createElement('td');
