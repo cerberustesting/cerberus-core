@@ -57,7 +57,7 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
     @Override
     public TestCaseExecutionData findTestCaseExecutionDataByKey(long id, String property) {
         TestCaseExecutionData result = null;
-        final String query = "SELECT * FROM TestCaseExecutionData WHERE id = ? AND property = ?";
+        final String query = "SELECT * FROM testcaseexecutiondata WHERE id = ? AND property = ?";
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -207,8 +207,8 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
     @Override
     public List<String> getPastValuesOfProperty(String propName, String test, String testCase, String build, String environment, String country) {
         List<String> list = null;
-        final String query = "SELECT VALUE FROM TestCaseExecutionData WHERE Property = ? AND ID IN "
-                + "(SELECT id FROM TestCaseExecution WHERE test = ? AND testcase = ? AND build = ? AND environment = ? AND country = ?) "
+        final String query = "SELECT VALUE FROM testcaseexecutiondata WHERE Property = ? AND ID IN "
+                + "(SELECT id FROM testcaseexecution WHERE test = ? AND testcase = ? AND build = ? AND environment = ? AND country = ?) "
                 + "ORDER BY ID DESC";
 
         Connection connection = this.databaseSpring.connect();
@@ -258,7 +258,7 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
         List<TestCaseExecutionData> result = null;
         TestCaseExecutionData resultData;
         boolean throwEx = false;
-        final String query = "SELECT * FROM TestCaseExecutionData WHERE id = ? ORDER BY startlong";
+        final String query = "SELECT * FROM testcaseexecutiondata WHERE id = ? ORDER BY startlong";
 
         Connection connection = this.databaseSpring.connect();
         try {

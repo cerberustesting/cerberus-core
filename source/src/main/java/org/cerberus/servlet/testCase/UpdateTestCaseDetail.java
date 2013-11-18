@@ -253,7 +253,7 @@ public class UpdateTestCaseDetail extends HttpServlet {
                 //
 
                 ResultSet rs_Properties = stmt4.executeQuery("SELECT * "
-                        + " FROM TestCaseCountryProperties " + " WHERE Test = '"
+                        + " FROM testcasecountryproperties " + " WHERE Test = '"
                         + test_testcase_format_prop[0] + "'" + " AND TestCase = '"
                         + test_testcase_format_prop[1] + "'");
                 try {
@@ -270,7 +270,7 @@ public class UpdateTestCaseDetail extends HttpServlet {
                                     // country and the property:
                                     Statement stmt3 = connection.createStatement();
                                     try {
-                                        stmt3.execute("DELETE FROM TestCaseCountryProperties "
+                                        stmt3.execute("DELETE FROM testcasecountryproperties "
                                                 + " WHERE Test = '"
                                                 + test_testcase_format_prop[0]
                                                 + "' "
@@ -300,7 +300,7 @@ public class UpdateTestCaseDetail extends HttpServlet {
                                         && !testcase_properties_property[i].equals(tc_prop[2])) {
                                     Statement stmt3 = connection.createStatement();
                                     try {
-                                        stmt3.execute("DELETE FROM TestCaseCountryProperties "
+                                        stmt3.execute("DELETE FROM testcasecountryproperties "
                                                 + " WHERE Test = '"
                                                 + test_testcase_format_prop[0]
                                                 + "' "
@@ -333,7 +333,7 @@ public class UpdateTestCaseDetail extends HttpServlet {
                                     Statement stmt3 = connection.createStatement();
                                     try {
                                         ResultSet rs_numberOfTestCasesCountryProperties = stmt3.executeQuery("SELECT Test, TestCase, Country, Property "
-                                                + " FROM TestCaseCountryProperties "
+                                                + " FROM testcasecountryproperties "
                                                 + " WHERE Test = '"
                                                 + test_testcase_format_prop[0]
                                                 + "'"
@@ -440,7 +440,7 @@ public class UpdateTestCaseDetail extends HttpServlet {
                         for (String element : testcase_properties_delete) {
                             String property_and_country[] = element.split(" - ");
                             for (int i = 1; i < property_and_country.length; i++) {
-                                stmt3.execute("DELETE FROM TestCaseCountryProperties "
+                                stmt3.execute("DELETE FROM testcasecountryproperties "
                                         + " WHERE Test = '" + test_testcase_format_prop[0]
                                         + "' " + " AND TestCase = '"
                                         + test_testcase_format_prop[1] + "' "
@@ -454,7 +454,7 @@ public class UpdateTestCaseDetail extends HttpServlet {
                     }
                 }
 
-                String sqlupd = "UPDATE TestCase "
+                String sqlupd = "UPDATE testcase "
                         + "SET LastModifier = '" + request.getUserPrincipal().getName()
                         + "' WHERE Test = '" + test_testcase_format_prop[0]
                         + "' AND TestCase = '" + test_testcase_format_prop[1] + "' ";
@@ -564,7 +564,7 @@ public class UpdateTestCaseDetail extends HttpServlet {
                 int numberOfSteps = 0;
                 Integer steps = 0;
                 ResultSet rs_step = stmt4.executeQuery("SELECT COUNT(*) "
-                        + " FROM TestCaseStep " + " WHERE Test = '"
+                        + " FROM testcasestep " + " WHERE Test = '"
                         + test_testcase_format[0] + "'" + " AND TestCase = '"
                         + test_testcase_format[1] + "'");
                 try {
@@ -587,7 +587,7 @@ public class UpdateTestCaseDetail extends HttpServlet {
                     String step_batch[] = request.getParameterValues("batch-" + i2);
 
                     if (i < numberOfSteps) {
-                        stmt4.executeUpdate("UPDATE TestCaseStep "
+                        stmt4.executeUpdate("UPDATE testcasestep "
                                 + " SET Description = '" + step_desc[i] + "' "
                                 + " WHERE Test = '" + test_testcase_format[0] + "'"
                                 + " AND TestCase = '" + test_testcase_format[1]
@@ -628,7 +628,7 @@ public class UpdateTestCaseDetail extends HttpServlet {
                 for (int i = 0; i < step_number_toadd.length; i++) {
                     if (this.formIsFill(step_number_toadd[i])
                             && this.formIsFill(step_desc_toadd[i])) {
-                        String sql = ("INSERT INTO TestCaseStep (`Test`,`Testcase`,`Step`,`Description`) "
+                        String sql = ("INSERT INTO testcasestep (`Test`,`Testcase`,`Step`,`Description`) "
                                 + " VALUES('"
                                 + test_testcase_format[0]
                                 + "', "
@@ -688,7 +688,7 @@ public class UpdateTestCaseDetail extends HttpServlet {
                  */
                     if (this.formIsFill(step_sequence[i])
                             && (step_sequence[i].length() > 0)) {
-                        String sql = ("SELECT * " + " FROM TestCaseStepAction"
+                        String sql = ("SELECT * " + " FROM testcasestepaction"
                                 + " WHERE Test = '" + test_testcase_format[0] + "'"
                                 + " AND TestCase = '" + test_testcase_format[1]
                                 + "' " + " AND Step = " + step_number_hide[i] + " "
@@ -735,7 +735,7 @@ public class UpdateTestCaseDetail extends HttpServlet {
              */
                 int numberOfTestCasesControls = 0;
                 ResultSet rs_numberOfTestCasesControls = stmt4.executeQuery("SELECT COUNT(*)"
-                        + " FROM TestCaseStepActionControl "
+                        + " FROM testcasestepactioncontrol "
                         + " WHERE Test = '" + test_testcase_format[0] + "'"
                         + " AND TestCase = '" + test_testcase_format[1]
                         + "'");
@@ -790,7 +790,7 @@ public class UpdateTestCaseDetail extends HttpServlet {
 
                 if (step_delete != null) {
                     for (String step_to_delete : step_delete) {
-                        stmt4.execute("DELETE FROM TestCaseStep "
+                        stmt4.execute("DELETE FROM testcasestep "
                                 + " WHERE Test = '" + test_testcase_format[0]
                                 + "' " + " AND TestCase = '"
                                 + test_testcase_format[1] + "' " + " AND Step = "
@@ -808,7 +808,7 @@ public class UpdateTestCaseDetail extends HttpServlet {
 
                         String[] step_action_split = action_to_delete.split("-");
 
-                        stmt4.execute("DELETE FROM TestCaseStepAction "
+                        stmt4.execute("DELETE FROM testcasestepaction "
                                 + " WHERE Test = '" + test_testcase_format[0]
                                 + "' " + " AND TestCase = '"
                                 + test_testcase_format[1] + "' " + " AND Step = "
@@ -829,7 +829,7 @@ public class UpdateTestCaseDetail extends HttpServlet {
                         // and
                         // Control
 
-                        stmt4.execute("DELETE FROM TestCaseStepActionControl "
+                        stmt4.execute("DELETE FROM testcasestepactioncontrol "
                                 + " WHERE Test = '" + test_testcase_format[0]
                                 + "' " + " AND TestCase = '"
                                 + test_testcase_format[1] + "' " + " AND Step = "
@@ -840,7 +840,7 @@ public class UpdateTestCaseDetail extends HttpServlet {
                     }
                 }
 
-                stmt4.execute("UPDATE TestCase "
+                stmt4.execute("UPDATE testcase "
                         + "SET LastModifier = '" + request.getUserPrincipal().getName() + "' "
                         + "WHERE Test = '" + test_testcase_format[0] + "' "
                         + " AND TestCase = '" + test_testcase_format[1] + "' ");

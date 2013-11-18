@@ -162,14 +162,14 @@ public class CreateTest extends HttpServlet {
              */
 
             if (!test.equals("")) {
-                PreparedStatement stmt = connection.prepareStatement("SELECT Test FROM Test WHERE Test = ?");
+                PreparedStatement stmt = connection.prepareStatement("SELECT Test FROM test WHERE Test = ?");
                 try {
                     stmt.setString(1, test);
                     ResultSet rs_test_exists = stmt.executeQuery();
                     try {
                         if (!rs_test_exists.next()) {
 
-                            String sql = "INSERT INTO Test (`Test`,`Description`,`Active`,`Automated`) VALUES(?, ?, ?, ?)";
+                            String sql = "INSERT INTO test (`Test`,`Description`,`Active`,`Automated`) VALUES(?, ?, ?, ?)";
                             PreparedStatement stmt2 = connection.prepareStatement(sql);
                             try {
                                 stmt2.setString(1, test);

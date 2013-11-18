@@ -548,7 +548,7 @@
                         + " t2.comment, t2.TCDateCrea, t2.frombuild, t2.fromrev, t2.tobuild, t2.torev, t2.bugid, t2.targetbuild,"
                         + " t2.targetrev, t2.creator, t2.implementer, t2.lastmodifier, t2.activeQA, t2.activeUAT, t2.activePROD"
                         + " FROM testcase t2"
-                        + " LEFT OUTER JOIN Application a ON a.application=t2.application "
+                        + " LEFT OUTER JOIN application a ON a.application=t2.application "
                         + whereclause;
                 //                                out.print(SQLSearch);
                 ResultSet rs_testcase = stmt71.executeQuery(SQLSearch);

@@ -99,7 +99,7 @@
                                             <%	if (testselected.compareTo("%%") == 0) {
                                             %><option style="width: 200px" value="All">-- Choose Test --</option>
                                             <%}
-                                                ResultSet rsTestS = stmt30.executeQuery("SELECT DISTINCT Test, active FROM Test where Test IS NOT NULL Order by Test asc");
+                                                ResultSet rsTestS = stmt30.executeQuery("SELECT DISTINCT Test, active FROM test where Test IS NOT NULL Order by Test asc");
                                                 String optstyle = "";
                                                 while (rsTestS.next()) {
                                                     if (rsTestS.getString("active").equalsIgnoreCase("Y")) {
@@ -139,7 +139,7 @@
                                                     int testcasenumber = 0;
 
 
-                                                    ResultSet rsTestCase = stQueryTestCase.executeQuery("SELECT  Max( Testcase ) + 1 as MAXTC FROM TestCase where test = '"
+                                                    ResultSet rsTestCase = stQueryTestCase.executeQuery("SELECT  Max( Testcase ) + 1 as MAXTC FROM testcase where test = '"
                                                             + testselected + "'");
                                                     rsTestCase.first();
                                                     if (StringUtils.isNotBlank(rsTestCase.getString("MAXTC")) == true) {

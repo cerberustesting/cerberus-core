@@ -172,7 +172,7 @@ public class AddTest extends HttpServlet {
              * Check that a real modification has been done and the test not
              * already exists
              */
-            stmt = conn.prepareStatement("SELECT Test FROM Test WHERE Test = ?");
+            stmt = conn.prepareStatement("SELECT Test FROM test WHERE Test = ?");
             stmt.setString(1, test);
             rs_test_exists = stmt.executeQuery();
 
@@ -183,7 +183,7 @@ public class AddTest extends HttpServlet {
                  */
                 if (this.formIsFill(test)) {
                     stmt.close();
-                    String sql = "INSERT INTO Test (`Test`,`Description`,`Active`,`Automated`) VALUES( ?, ?, ?, ?)";
+                    String sql = "INSERT INTO test (`Test`,`Description`,`Active`,`Automated`) VALUES( ?, ?, ?, ?)";
                     stmt = conn.prepareStatement(sql);
                     stmt.setString(1, test);
                     stmt.setString(2, testDescription);

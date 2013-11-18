@@ -262,7 +262,7 @@
                                                             if (test.compareTo("%%") == 0) {
                                                         %><option style="width: 200px" value="All">-- Choose Test --</option>
                                                         <%                                                            }
-                                                            ResultSet rsTest = stQueryTest.executeQuery("SELECT Test, active FROM Test where Test IS NOT NULL Order by Test asc");
+                                                            ResultSet rsTest = stQueryTest.executeQuery("SELECT Test, active FROM test where Test IS NOT NULL Order by Test asc");
                                                             while (rsTest.next()) {
                                                                 if (rsTest.getString("active").equalsIgnoreCase("Y")) {
                                                                     optstyle = "font-weight:bold;";
@@ -282,7 +282,7 @@
                                                             if (test.compareTo("%%") == 0) {
                                                         %><option style="width: 200px" value="All">-- Choose Test First --</option>
                                                         <%                                                        } else {
-                                                            String sql = "SELECT TestCase, Application,  Description, tcactive FROM TestCase where TestCase IS NOT NULL and test like '" + test + "'Order by TestCase asc";
+                                                            String sql = "SELECT TestCase, Application,  Description, tcactive FROM testcase where TestCase IS NOT NULL and test like '" + test + "'Order by TestCase asc";
                                                             ResultSet rsTestCase = stQueryTestCase.executeQuery(sql);
                                                             while (rsTestCase.next()) {
                                                                 if (rsTestCase.getString("tcactive").equalsIgnoreCase("Y")) {
@@ -316,7 +316,7 @@
                         + "tc.Ticket, tc.Origine, tc.RefOrigine, tc.FromBuild, tc.FromRev, tc.ToBuild, tc.ToRev, "
                         + "tc.BugID, tc.TargetBuild, tc.TargetRev, tc.creator, tc.implementer, tc.lastModifier, "
                         + "tc.activeQA, tc.activeUAT, tc.activePROD"
-                        + " FROM Test t, TestCase tc"
+                        + " FROM test t, testcase tc"
                         + " WHERE t.test = tc.test"
                         + " AND tc.Test = '" + test + "'"
                         + " AND tc.TestCase = '" + testcase + "'");
@@ -781,7 +781,7 @@
                          */
                         Statement stmt5 = conn.createStatement();
                         ResultSet rs_testcasecountry = stmt5.executeQuery("SELECT DISTINCT Country"
-                                + " FROM TestCaseCountry t "
+                                + " FROM testcasecountry t "
                                 + " join invariant i on i.value=t.country and i.id=4 "
                                 + " WHERE Test = '"
                                 + rs_testcase_general_info.getString("t.Test")
@@ -828,7 +828,7 @@
                     Statement stmt18 = conn.createStatement();
 
                     ResultSet rs_tccountry = stmt18.executeQuery("SELECT DISTINCT Country"
-                            + " FROM TestCaseCountry t "
+                            + " FROM testcasecountry t "
                             + " join invariant i on i.value=t.country and i.id=4 "
                             + " WHERE Test = '"
                             + rs_testcase_general_info.getString("t.Test")
@@ -1166,7 +1166,7 @@
                                                      * Step / Actions request
                                                      */
                                                     ResultSet rs_step = stmt5.executeQuery("SELECT DISTINCT Test, Testcase, Step, Description "
-                                                            + " FROM TestCaseStep "
+                                                            + " FROM testcasestep "
                                                             + " WHERE test = '"
                                                             + rs_testcase_general_info.getString("t.Test")
                                                             + "' "
@@ -1247,7 +1247,7 @@
 
                                                                 int rs_stepaction_maxlength_cpt = 4;
                                                                 ResultSet rs_stepaction = stmt6.executeQuery("SELECT DISTINCT Test, TestCase, Step, Sequence, Action, Object, Property "
-                                                                        + " FROM TestCaseStepAction"
+                                                                        + " FROM testcasestepaction"
                                                                         + " WHERE Test = '"
                                                                         + rs_step.getString("Test")
                                                                         + "' "
@@ -1353,7 +1353,7 @@
 
                 <%
                     ResultSet rs_controls = stmt5.executeQuery("SELECT DISTINCT Test, Testcase, Step, Sequence, Control, Type, ControlValue, ControlProperty, Fatal "
-                            + " FROM TestCaseStepActionControl "
+                            + " FROM testcasestepactioncontrol "
                             + " WHERE test = '"
                             + rs_testcase_general_info.getString("t.Test")
                             + "' "

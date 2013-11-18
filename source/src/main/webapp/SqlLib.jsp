@@ -67,7 +67,7 @@
 
             //List of SQL script when type is selected
             Statement stmtQueryVal = conn.createStatement();
-            String sqVal = "SELECT Name, Script, Description FROM SqlLibrary where Type = '"+ Type +"'";
+            String sqVal = "SELECT Name, Script, Description FROM sqllibrary where Type = '"+ Type +"'";
             ResultSet qVal = stmtQueryVal.executeQuery(sqVal);
 
 
@@ -103,7 +103,7 @@
             Type = new String("empty");
                    //List of SQL Type
             Statement stmtQuery1 = conn.createStatement();
-            String sq1 = "SELECT distinct Type FROM SqlLibrary ";
+            String sq1 = "SELECT distinct Type FROM sqllibrary ";
             ResultSet q1 = stmtQuery1.executeQuery(sq1);
             
         %>

@@ -96,7 +96,7 @@ public class TestCaseExecutionSysVerDAO implements ITestCaseExecutionSysVerDAO {
     public List<TestCaseExecutionSysVer> findTestCaseExecutionSysVerById(long id) {
         List<TestCaseExecutionSysVer> result = null;
         TestCaseExecutionSysVer resultData;
-        final String query = "SELECT * FROM TestCaseExecutionSysVer WHERE id = ? ";
+        final String query = "SELECT * FROM testcaseexecutionsysver WHERE id = ? ";
 
         Connection connection = this.databaseSpring.connect();
         try {

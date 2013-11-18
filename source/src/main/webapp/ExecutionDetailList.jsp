@@ -98,7 +98,7 @@
                     if (request.getParameter("test") != null) {
                         test = request.getParameter("test");
                     }
-                    ResultSet rs_test_filter = stmt1.executeQuery("SELECT Test, Active FROM Test ");
+                    ResultSet rs_test_filter = stmt1.executeQuery("SELECT Test, Active FROM test ");
 
                     String testCase = "";
                     if (request.getParameter("testcase") != null) {
@@ -107,7 +107,7 @@
                     String TC_SQL = "";
                     ResultSet rs_testCase_filter = null;
                     if (test.equalsIgnoreCase("") == false) {
-                        TC_SQL = "SELECT tc.TestCase, tc.Description, tc.Application, tc.tcactive FROM TestCase tc ";
+                        TC_SQL = "SELECT tc.TestCase, tc.Description, tc.Application, tc.tcactive FROM testcase tc ";
                         TC_SQL += " WHERE tc.Test = '" + test + "'";
                         rs_testCase_filter = stmt2.executeQuery(TC_SQL);
                     }
@@ -150,7 +150,7 @@
                     if (request.getParameter("application") != null) {
                         Application = request.getParameter("application");
                     }
-                    ResultSet rs_application_filter = stmt3.executeQuery("SELECT DISTINCT Application, Description, system FROM Application ORDER BY sort ");
+                    ResultSet rs_application_filter = stmt3.executeQuery("SELECT DISTINCT Application, Description, system FROM application ORDER BY sort ");
 
                     String IP = "";
                     if (request.getParameter("IP") != null) {
@@ -345,7 +345,7 @@
                         + "tce.Start, tce.End, tce.ControlStatus, tce.Application, "
                         + "tce.Ip, tce.URL, UNIX_TIMESTAMP(tce.End)-UNIX_TIMESTAMP(tce.Start) time_elapsed "
                         + " FROM "
-                        + "(SELECT * FROM TestCaseExecution tce "
+                        + "(SELECT * FROM testcaseexecution tce "
                         + " WHERE 1=1 ";
                 if (test.equalsIgnoreCase("") == false) {
                     ExeclistWhereSQL += " and tce.test='" + test + "'";

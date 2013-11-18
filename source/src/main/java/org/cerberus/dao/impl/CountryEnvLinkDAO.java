@@ -51,7 +51,7 @@ public class CountryEnvLinkDAO implements ICountryEnvLinkDAO {
     public List<CountryEnvLink> findCountryEnvLinkByCriteria(String system, String country, String environment) {
         List<CountryEnvLink> result = null;
         CountryEnvLink resultData;
-        final String query = "SELECT * FROM CountryEnvLink WHERE `system` = ? and country = ? and environment = ? ";
+        final String query = "SELECT * FROM countryenvlink WHERE `system` = ? and country = ? and environment = ? ";
 
         Connection connection = this.databaseSpring.connect();
         try {

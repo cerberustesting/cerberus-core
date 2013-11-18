@@ -124,7 +124,7 @@
                             ssIP = request.getHeader("X-FORWARDED-FOR");
                             if (ssIP == null) {
 
-                                String defaultIP = "SELECT DefaultIP from USER where login = '"
+                                String defaultIP = "SELECT DefaultIP from user where login = '"
                                         + request.getUserPrincipal().getName() + "'";
 
                                 ResultSet rs_Ip = stmt2.executeQuery(defaultIP);

@@ -291,7 +291,7 @@ public class UpdateTestCase1 extends HttpServlet {
                 Integer steps = 0;
 
                 ResultSet rs_step = stmt.executeQuery("SELECT COUNT(*) "
-                        + " FROM TestCaseStep " + " WHERE Test = '"
+                        + " FROM testcasestep " + " WHERE Test = '"
                         + test_testcase_format[0] + "'" + " AND TestCase = '"
                         + test_testcase_format[1] + "'");
 
@@ -316,7 +316,7 @@ public class UpdateTestCase1 extends HttpServlet {
                     String step_batch[] = request.getParameterValues("batch-" + i2);
 
                     if (i < numberOfSteps) {
-                        stmt.executeUpdate("UPDATE TestCaseStep "
+                        stmt.executeUpdate("UPDATE testcasestep "
                                 + " SET Description = '" + step_desc[i] + "' "
                                 + " WHERE Test = '" + test_testcase_format[0] + "'"
                                 + " AND TestCase = '" + test_testcase_format[1]
@@ -359,7 +359,7 @@ public class UpdateTestCase1 extends HttpServlet {
                 for (int i = 0; i < step_number_toadd.length; i++) {
                     if (this.formIsFill(step_number_toadd[i])
                             && this.formIsFill(step_desc_toadd[i])) {
-                        String sql = ("INSERT INTO TestCaseStep (`Test`,`Testcase`,`Step`,`Description`) "
+                        String sql = ("INSERT INTO testcasestep (`Test`,`Testcase`,`Step`,`Description`) "
                                 + " VALUES('"
                                 + test_testcase_format[0]
                                 + "', "
@@ -419,7 +419,7 @@ public class UpdateTestCase1 extends HttpServlet {
                  */
                     if (this.formIsFill(step_sequence[i])
                             && (step_sequence[i].length() > 0)) {
-                        String sql = ("SELECT * " + " FROM TestCaseStepAction"
+                        String sql = ("SELECT * " + " FROM testcasestepaction"
                                 + " WHERE Test = '" + test_testcase_format[0] + "'"
                                 + " AND TestCase = '" + test_testcase_format[1]
                                 + "' " + " AND Step = " + step_number_hide[i] + " "
@@ -464,7 +464,7 @@ public class UpdateTestCase1 extends HttpServlet {
              * Get Number of actual testcase controls
              */
                 ResultSet rs_numberOfTestCasesControls = stmt.executeQuery("SELECT COUNT(*)"
-                        + " FROM TestCaseStepActionControl "
+                        + " FROM testcasestepactioncontrol "
                         + " WHERE Test = '" + test_testcase_format[0] + "'"
                         + " AND TestCase = '" + test_testcase_format[1]
                         + "'");
@@ -528,7 +528,7 @@ public class UpdateTestCase1 extends HttpServlet {
              *
              * String property_and_country[] = element.split("-");
              *
-             * stmt.execute("DELETE FROM TestCaseCountryProperties " + " WHERE
+             * stmt.execute("DELETE FROM testcasecountryproperties " + " WHERE
              * Test = '" + test_testcase_format[0] + "' " + " AND TestCase = '"
              * + test_testcase_format[1] + "' " + " AND Country = '" +
              * property_and_country[1] + "' " + " AND Property = '" +
@@ -540,7 +540,7 @@ public class UpdateTestCase1 extends HttpServlet {
              */
                 if (step_delete != null) {
                     for (String step_to_delete : step_delete) {
-                        stmt.execute("DELETE FROM TestCaseStep "
+                        stmt.execute("DELETE FROM testcasestep "
                                 + " WHERE Test = '" + test_testcase_format[0]
                                 + "' " + " AND TestCase = '"
                                 + test_testcase_format[1] + "' " + " AND Step = "
@@ -558,7 +558,7 @@ public class UpdateTestCase1 extends HttpServlet {
 
                         String[] step_action_split = action_to_delete.split("-");
 
-                        stmt.execute("DELETE FROM TestCaseStepAction "
+                        stmt.execute("DELETE FROM testcasestepaction "
                                 + " WHERE Test = '" + test_testcase_format[0]
                                 + "' " + " AND TestCase = '"
                                 + test_testcase_format[1] + "' " + " AND Step = "
@@ -579,7 +579,7 @@ public class UpdateTestCase1 extends HttpServlet {
                         // and
                         // Control
 
-                        stmt.execute("DELETE FROM TestCaseStepActionControl "
+                        stmt.execute("DELETE FROM testcasestepactioncontrol "
                                 + " WHERE Test = '" + test_testcase_format[0]
                                 + "' " + " AND TestCase = '"
                                 + test_testcase_format[1] + "' " + " AND Step = "
@@ -590,7 +590,7 @@ public class UpdateTestCase1 extends HttpServlet {
                     }
                 }
 
-                stmt.execute("UPDATE TestCase "
+                stmt.execute("UPDATE testcase "
                         + "SET LastModifier = '" + request.getUserPrincipal().getName() + "' "
                         + "WHERE Test = '" + test_testcase_format[0] + "' "
                         + " AND TestCase = '" + test_testcase_format[1] + "' ");

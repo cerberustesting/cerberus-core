@@ -214,7 +214,6 @@ public class ExecutionCheckService implements IExecutionCheckService {
         MyLogger.log(ExecutionCheckService.class.getName(), Level.DEBUG, "Checking environment " + tCExecution.getCountryEnvParam().getEnvironment());
         TCase tc = tCExecution.gettCase();
         CountryEnvParam env = tCExecution.getCountryEnvParam();
-        // TODO : Test needs to be done from Environment group and not directly from environment string.
         if (tCExecution.getEnvironmentDataObj().getGp1().equalsIgnoreCase("QA")) {
             return this.checkRunQA(tc, tCExecution.getEnvironmentData());
         } else if (tCExecution.getEnvironmentDataObj().getGp1().equalsIgnoreCase("UAT")) {

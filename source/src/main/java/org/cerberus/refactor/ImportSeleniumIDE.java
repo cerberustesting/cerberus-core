@@ -106,7 +106,7 @@ public class ImportSeleniumIDE extends HttpServlet {
 
             // SELECT THE LIST OF CONTROL
 
-            String selectControl = "SELECT value FROM Invariant WHERE id ='13'";
+            String selectControl = "SELECT value FROM invariant WHERE id ='13'";
             rs_control = stmt.executeQuery(selectControl);
 
             if (rs_control.first()) {
@@ -118,7 +118,7 @@ public class ImportSeleniumIDE extends HttpServlet {
 
             // SELECT THE NUMBER OF COUNTRY EXISTING FOR THE TESTCASE
 
-            String selectCountries = "SELECT Country FROM Testcasecountry WHERE test =? AND testcase = ?";
+            String selectCountries = "SELECT Country FROM testcasecountry WHERE test =? AND testcase = ?";
             prepStmt = conn.prepareStatement(selectCountries);
             prepStmt.setString(1, test);
             prepStmt.setString(2, testcase);
@@ -171,7 +171,7 @@ public class ImportSeleniumIDE extends HttpServlet {
             // FOR ALL THE ACTION, INSERT AN ACTION
             int seq = 0;
 
-            String selectSequence = "SELECT Sequence FROM Testcasestepaction WHERE test =? AND testcase = ? AND step = ?";
+            String selectSequence = "SELECT Sequence FROM testcasestepaction WHERE test =? AND testcase = ? AND step = ?";
 
             prepStmt = conn.prepareStatement(selectSequence);
             prepStmt.setString(1, test);
@@ -189,7 +189,7 @@ public class ImportSeleniumIDE extends HttpServlet {
             prepStmt.close();
 
             int control = 0;
-            String selectControlNumber = "SELECT Control FROM Testcasestepactioncontrol WHERE test =? AND testcase = ? AND step = ?";
+            String selectControlNumber = "SELECT Control FROM testcasestepactioncontrol WHERE test =? AND testcase = ? AND step = ?";
             prepStmt = conn.prepareStatement(selectControlNumber);
             prepStmt.setString(1, test);
             prepStmt.setString(2, testcase);

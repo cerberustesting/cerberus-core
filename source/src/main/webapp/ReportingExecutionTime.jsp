@@ -322,7 +322,7 @@
                                                     <select id="test" style="width: 110px"  name="Test">
                                                         <option value="All">-- ALL --</option><%
                                                             String optstyle = "";
-                                                            ResultSet rsTest = stmt.executeQuery("SELECT Test, active FROM Test where Test IS NOT NULL Order by Test asc");
+                                                            ResultSet rsTest = stmt.executeQuery("SELECT Test, active FROM test where Test IS NOT NULL Order by Test asc");
                                                             while (rsTest.next()) {
                                                                 if (rsTest.getString("active").equalsIgnoreCase("Y")) {
                                                                     optstyle = "font-weight:bold;";
@@ -355,21 +355,21 @@
                                                     </select></td>
                                                 <td id="wob"><select style="width: 110px" id="priority" name="Priority">
                                                         <option value="All">-- ALL --</option>
-                                                        <% ResultSet rsPri = stmt.executeQuery("SELECT value from Invariant where id = 15 order by sort");
+                                                        <% ResultSet rsPri = stmt.executeQuery("SELECT value from invariant where id = 15 order by sort");
                                                             while (rsPri.next()) {%>
                                                         <option value="<%= rsPri.getString(1)%>" <%=priority.compareTo(rsPri.getString(1)) == 0 ? " SELECTED " : ""%>><%= rsPri.getString(1)%></option>
                                                         <% }%>
                                                     </select></td>
                                                 <td id="wob"><select style="width: 110px" id="status" name="Status">
                                                         <option value="All">-- ALL --</option>
-                                                        <% ResultSet rsStatus = stmt.executeQuery("SELECT value from Invariant where id = 1 order by sort");
+                                                        <% ResultSet rsStatus = stmt.executeQuery("SELECT value from invariant where id = 1 order by sort");
                                                             while (rsStatus.next()) {%>
                                                         <option value="<%= rsStatus.getString(1)%>" <%=status.compareTo(rsStatus.getString(1)) == 0 ? " SELECTED " : ""%>><%= rsStatus.getString(1)%></option>
                                                         <% }%>
                                                     </select></td>
                                                 <td id="wob"><select style="width: 110px" id="group" name="Group">
                                                         <option value="All">-- ALL --</option>
-                                                        <% ResultSet rsGroup = stmt.executeQuery("SELECT value from Invariant where idname = 'Group' order by sort");
+                                                        <% ResultSet rsGroup = stmt.executeQuery("SELECT value from invariant where idname = 'Group' order by sort");
                                                             while (rsGroup.next()) {%>
                                                         <option value="<%= rsGroup.getString(1)%>" <%=group.compareTo(rsGroup.getString(1)) == 0 ? " SELECTED " : ""%>><%= rsGroup.getString(1)%></option>
                                                         <% }%>
@@ -432,7 +432,7 @@
                                             <tr>
                                                 <td id="wob"><select id="environment" name="Environment" style="width:90px">
                                                         <option style="width: 90px" value="All">-- ALL --</option>
-                                                        <% ResultSet rsEnv = stmt.executeQuery("SELECT value from Invariant where id = 5 order by sort");
+                                                        <% ResultSet rsEnv = stmt.executeQuery("SELECT value from invariant where id = 5 order by sort");
                                                             while (rsEnv.next()) {%>
                                                         <option style="width: 90px" value="<%= rsEnv.getString(1)%>" <%=environment.compareTo(rsEnv.getString(1)) == 0 ? " SELECTED " : ""%>><%= rsEnv.getString(1)%></option>
                                                         <% }%>
@@ -479,7 +479,7 @@
                                             <tr>
                                                 <td id="wob"><select id="environmentRef" name="EnvironmentRef" style="width:90px">
                                                         <option style="width: 90px" value="All">-- ALL --</option>
-                                                        <% ResultSet rsEnvRef = stmt.executeQuery("SELECT value from Invariant where id = 5 order by sort");
+                                                        <% ResultSet rsEnvRef = stmt.executeQuery("SELECT value from invariant where id = 5 order by sort");
                                                             while (rsEnvRef.next()) {%>
                                                         <option style="width: 90px" value="<%= rsEnvRef.getString(1)%>" <%=environmentRef.compareTo(rsEnvRef.getString(1)) == 0 ? " SELECTED " : ""%>><%= rsEnvRef.getString(1)%></option>
                                                         <% }%>

@@ -61,7 +61,7 @@
 
 
                 Statement stmtQuery = conn.createStatement();
-                String sq = "SELECT DocLabel, DocDesc FROM Documentation where DocTable = '" + DocTable + "' and docfield = '" + DocField + "' and length(docvalue)=0 and length(docdesc) > 1";
+                String sq = "SELECT DocLabel, DocDesc FROM documentation where DocTable = '" + DocTable + "' and docfield = '" + DocField + "' and length(docvalue)=0 and length(docdesc) > 1";
                 ResultSet q = stmtQuery.executeQuery(sq);
                 if (q.first()) {
 
@@ -86,7 +86,7 @@
 
                     <%
                         Statement stmtQuerydet = conn.createStatement();
-                        String sqDet = "SELECT DocValue, DocDesc FROM Documentation where DocTable = '" + DocTable + "' and docfield = '" + DocField + "' and docValue IS NOT NULL AND length (docdesc) > 1";
+                        String sqDet = "SELECT DocValue, DocDesc FROM documentation where DocTable = '" + DocTable + "' and docfield = '" + DocField + "' and docValue IS NOT NULL AND length (docdesc) > 1";
                         ResultSet qDet = stmtQuery.executeQuery(sqDet);
                         while (qDet.next()) {
                     %>
@@ -111,7 +111,7 @@
         <%    }
         } else {
                 Statement stmtQuery1 = conn.createStatement();
-                String sq1 = "SELECT DocLabel FROM Documentation where DocTable = '" + DocTable + "' and docfield = '" + DocField + "' and length(docvalue)=0 and length(docdesc) > 1";
+                String sq1 = "SELECT DocLabel FROM documentation where DocTable = '" + DocTable + "' and docfield = '" + DocField + "' and length(docvalue)=0 and length(docdesc) > 1";
                 ResultSet q1 = stmtQuery1.executeQuery(sq1);
                 String nav;
                 nav = "";
@@ -119,7 +119,7 @@
                                    nav = "<a href=\"?DocTable=" + DocTable + "&DocField=" + DocField + "\">" + q1.getString("DocLabel") + "</a> -- ";
                                    }
                            Statement stmtQueryVal = conn.createStatement();
-            String sqVal = "SELECT DocDesc FROM Documentation where DocTable = '" + DocTable + "' and docfield = '" + DocField + "' and docvalue = '" + DocValue + "' and length(docdesc) > 1";
+            String sqVal = "SELECT DocDesc FROM documentation where DocTable = '" + DocTable + "' and docfield = '" + DocField + "' and docvalue = '" + DocValue + "' and length(docdesc) > 1";
             ResultSet qVal = stmtQueryVal.executeQuery(sqVal);
             if (qVal.first()) {
         %>

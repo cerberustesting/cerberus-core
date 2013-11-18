@@ -170,7 +170,7 @@ public class TestCaseDAO implements ITestCaseDAO {
     @Override
     public boolean updateTestCaseInformation(TestCase testCase) {
         boolean res = false;
-        final String sql = "UPDATE Testcase tc SET tc.Application = ?, tc.Project = ?, tc.BehaviorOrValueExpected = ?, tc.activeQA = ?, tc.activeUAT = ?, tc.activePROD = ?, "
+        final String sql = "UPDATE testcase tc SET tc.Application = ?, tc.Project = ?, tc.BehaviorOrValueExpected = ?, tc.activeQA = ?, tc.activeUAT = ?, tc.activePROD = ?, "
                 + "tc.Priority = ?, tc.Status = ?, tc.TcActive = ?, tc.Description = ?, tc.Group = ?, tc.HowTo = ?, tc.Comment = ?, tc.Ticket = ?, tc.FromBuild = ?, "
                 + "tc.FromRev = ?, tc.ToBuild = ?, tc.ToRev = ?, tc.BugID = ?, tc.TargetBuild = ?, tc.Implementer = ?, tc.LastModifier = ?, tc.TargetRev = ? "
                 + "WHERE tc.Test = ? AND tc.Testcase = ?";
@@ -229,7 +229,7 @@ public class TestCaseDAO implements ITestCaseDAO {
     @Override
     public boolean updateTestCaseInformationCountries(TestCase tc) {
         boolean res = false;
-        final String sql_count = "SELECT Country FROM TestCaseCountry WHERE Test = ? AND TestCase = ?";
+        final String sql_count = "SELECT Country FROM testcasecountry WHERE Test = ? AND TestCase = ?";
         ArrayList<String> countriesDB = new ArrayList<String>();
 
         Connection connection = this.databaseSpring.connect();
@@ -243,7 +243,7 @@ public class TestCaseDAO implements ITestCaseDAO {
                     while (rsCount.next()) {
                         countriesDB.add(rsCount.getString("Country"));
                         if (!tc.getCountryList().contains(rsCount.getString("Country"))) {
-                            final String sql_delete = "DELETE FROM TestCaseCountry WHERE Test = ? AND TestCase = ? AND Country = ?";
+                            final String sql_delete = "DELETE FROM testcasecountry WHERE Test = ? AND TestCase = ? AND Country = ?";
 
                             PreparedStatement preStat2 = connection.prepareStatement(sql_delete);
                             try {
@@ -273,7 +273,7 @@ public class TestCaseDAO implements ITestCaseDAO {
             res = true;
             for (int i = 0; i < tc.getCountryList().size() && res; i++) {
                 if (!countriesDB.contains(tc.getCountryList().get(i))) {
-                    final String sql_insert = "INSERT INTO Testcasecountry (test, testcase, country) VALUES (?, ?, ?)";
+                    final String sql_insert = "INSERT INTO testcasecountry (test, testcase, country) VALUES (?, ?, ?)";
 
                     PreparedStatement preStat2 = connection.prepareStatement(sql_insert);
                     try {
@@ -361,7 +361,7 @@ public class TestCaseDAO implements ITestCaseDAO {
      */
     public List<TCase> findTestCaseByCriteria(TCase testCase, String text, String system) {
         List<TCase> list = null;
-        final String query = "SELECT * FROM testcase t2 LEFT OUTER JOIN Application a ON a.application=t2.application " +
+        final String query = "SELECT * FROM testcase t2 LEFT OUTER JOIN application a ON a.application=t2.application " +
                 "WHERE t2.test LIKE ? AND t2.project LIKE ? AND t2.ticket LIKE ? AND t2.bugid LIKE ? AND t2.origine LIKE ? " +
                 "AND t2.creator LIKE ? AND a.system LIKE ? AND t2.application LIKE ? AND t2.priority LIKE ? AND t2.status LIKE ? " +
                 "AND t2.group LIKE ? AND t2.activePROD LIKE ? AND t2.activeUAT LIKE ? AND t2.activeQA LIKE ? AND " +

@@ -108,7 +108,7 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
     @Override
     public List<String> getLoginStepFromTestCase(String countryCode, String application) {
         List<String> list = null;
-        final String query = "SELECT tc.testcase FROM TestCaseCountry t, TestCase tc WHERE t.country = ? AND t.test = 'Pre Testing' "
+        final String query = "SELECT tc.testcase FROM testcasecountry t, testcase tc WHERE t.country = ? AND t.test = 'Pre Testing' "
                 + "AND tc.application = ? AND tc.tcActive = 'Y' AND t.test = tc.test AND t.testcase = tc.testcase ORDER BY testcase ASC";
 
         Connection connection = this.databaseSpring.connect();

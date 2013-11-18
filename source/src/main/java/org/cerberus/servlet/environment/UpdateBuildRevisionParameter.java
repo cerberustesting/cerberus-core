@@ -166,7 +166,7 @@ public class UpdateBuildRevisionParameter extends HttpServlet {
             Statement stmt = connection.createStatement();
             List<String> releaseIDList = new ArrayList<String>();
             try {
-                ResultSet rs_bcContent = stmt.executeQuery("SELECT ID " + " FROM BuildRevisionParameters WHERE " + whereclause);
+                ResultSet rs_bcContent = stmt.executeQuery("SELECT ID " + " FROM buildrevisionparameters WHERE " + whereclause);
                 try {
                     //Put all the data from the database into a List
                     if (rs_bcContent.first()) {
@@ -187,7 +187,7 @@ public class UpdateBuildRevisionParameter extends HttpServlet {
                 // Update if the data already exists
                 if (releaseIDList.contains(releaseID[i])) {
 
-                    String update = (" UPDATE BuildRevisionParameters "
+                    String update = (" UPDATE buildrevisionparameters "
                             + " SET `Link` = '" + link[i] + "' , `releaseOwner` = '" + releaseOwner[i] + "'"
                             + " , subject = '" + subject[i] + "' "
                             + " , `build` = '" + build[i] + "' "
@@ -207,7 +207,7 @@ public class UpdateBuildRevisionParameter extends HttpServlet {
                 } else
                 // Insert if it's a new one
                 {
-                    String insert = ("INSERT INTO BuildRevisionParameters (`Build`,`Revision`,`Release`,`Link` , `Application`, `releaseOwner`, `Project`, `BugIDFixed`, `TicketIDFixed` , `Subject`) "
+                    String insert = ("INSERT INTO buildrevisionparameters (`Build`,`Revision`,`Release`,`Link` , `Application`, `releaseOwner`, `Project`, `BugIDFixed`, `TicketIDFixed` , `Subject`) "
                             + " VALUES('"
                             + build[i]
                             + "', "
@@ -252,7 +252,7 @@ public class UpdateBuildRevisionParameter extends HttpServlet {
                 for (int i = 0; i < delete.length; i++) {
                     Statement stmt4 = connection.createStatement();
                     try {
-                        stmt4.execute("DELETE FROM BuildRevisionParameters " + " WHERE `ID` = '" + delete[i] + "'");
+                        stmt4.execute("DELETE FROM buildrevisionparameters " + " WHERE `ID` = '" + delete[i] + "'");
                     } finally {
                         stmt4.close();
                     }

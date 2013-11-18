@@ -39,7 +39,7 @@
         try {
             Statement stmtQuery = conn.createStatement();
             try {
-                String sq = "SELECT * FROM Documentation where DocTable = '" + table + "' and docfield = '" + field + "' and doclabel IS NOT NULL AND trim(doclabel) <> ''";
+                String sq = "SELECT * FROM documentation where DocTable = '" + table + "' and docfield = '" + field + "' and doclabel IS NOT NULL AND trim(doclabel) <> ''";
                 ResultSet q = stmtQuery.executeQuery(sq);
                 try {
                     if (q.first()) {
@@ -72,7 +72,7 @@
             //TBDBSQL TODO
 
             Statement stmtQuery = conn.createStatement();
-            String sq = "SELECT * FROM Documentation where DocTable = '" + table + "' and docfield = '" + field + "' and doclabel IS NOT NULL AND trim(doclabel) <> ''";
+            String sq = "SELECT * FROM documentation where DocTable = '" + table + "' and docfield = '" + field + "' and doclabel IS NOT NULL AND trim(doclabel) <> ''";
             ResultSet q = stmtQuery.executeQuery(sq);
             if (q.first()) {
                 String ret;
@@ -105,7 +105,7 @@
         try {
             Statement stmtQuery = conn.createStatement();
             try {
-                String sq = "SELECT value from Invariant where id = '" + combonumber + "' order by sort";
+                String sq = "SELECT value from invariant where id = '" + combonumber + "' order by sort";
                 ResultSet q = stmtQuery.executeQuery(sq);
                 try {
                     String ret = "<select id=\"" + HTMLId + "\" class=\"" + HTMLClass + "\" style=\"" + HTMLComboStyle + "\" name=\"" + HTMLComboName + "\"";
@@ -142,7 +142,7 @@
         try {
             Statement stmtQuery = conn.createStatement();
             try {
-                String sq = "SELECT value from Invariant where id = '" + combonumber + "' order by sort";
+                String sq = "SELECT value from invariant where id = '" + combonumber + "' order by sort";
                 ResultSet q = stmtQuery.executeQuery(sq);
                 try {
                     String ret = "<select id=\"" + HTMLId + "\" rel=\"" + HTMLrel + "\" style=\"" + HTMLComboStyle + "\" name=\"" + HTMLComboName + "\"";
@@ -178,7 +178,7 @@
         try {
             Statement stmtQuery = conn.createStatement();
             try {
-                String sq = "SELECT value from Invariant where id = '" + combonumber + "' order by sort";
+                String sq = "SELECT value from invariant where id = '" + combonumber + "' order by sort";
                 ResultSet q = stmtQuery.executeQuery(sq);
                 try {
                     String ret = "<select id=\"" + HTMLId + "\" rel=\"" + HTMLrel + "\" style=\"" + HTMLComboStyle + "\" name=\"" + HTMLComboName + "\"";

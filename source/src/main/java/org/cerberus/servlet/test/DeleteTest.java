@@ -123,7 +123,7 @@ public class DeleteTest extends HttpServlet {
             String test = request.getParameter("test_test");
 
             if (this.formIsFill(test)) {
-                PreparedStatement stmt = connection.prepareStatement("DELETE FROM TestCaseExecution WHERE Test = ?");
+                PreparedStatement stmt = connection.prepareStatement("DELETE FROM testcaseexecution WHERE Test = ?");
                 try {
                     stmt.setString(1, test);
                     stmt.executeUpdate();
@@ -131,7 +131,7 @@ public class DeleteTest extends HttpServlet {
                     stmt.close();
                 }
 
-                stmt = connection.prepareStatement("DELETE FROM Test WHERE Test = ?");
+                stmt = connection.prepareStatement("DELETE FROM test WHERE Test = ?");
                 try {
                     stmt.setString(1, test);
                     stmt.executeUpdate();

@@ -65,7 +65,7 @@
                     String fil_tcdesc = "";
                     if (!testSelected.equals("")) {
                         ResultSet rs_test_filter = stmt.executeQuery("SELECT Test, Description "
-                                + " FROM Test " + " WHERE Test = '"
+                                + " FROM test " + " WHERE Test = '"
                                 + testSelected + "'");
 
                         if (rs_test_filter.next()) {

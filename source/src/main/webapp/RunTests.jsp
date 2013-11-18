@@ -110,7 +110,7 @@
                             ssIP = request.getHeader("X-FORWARDED-FOR");
                             if (ssIP == null) {
 
-                                String defaultIP = "SELECT DefaultIP from USER where login = '"
+                                String defaultIP = "SELECT DefaultIP from user where login = '"
                                         + request.getUserPrincipal().getName() + "'";
 
                                 ResultSet rs_Ip = stmt2.executeQuery(defaultIP);
@@ -270,7 +270,7 @@
                                     <td id="wob"><select size="16" id="test" name="Test"
                                                          style="width: 200px" onchange="document.RunTest.submit()">
                                             <%
-                                                ResultSet rsTest = stmt.executeQuery("SELECT DISTINCT t.Test FROM Test t, TestCase tc WHERE tc.test=t.test AND tc.tcactive='Y' AND t.active='Y' AND tc.application " + appliInSQL + " AND tc.group is not NULL AND tc.group not in ('PRIVATE') AND length(tc.group) > 1 ");
+                                                ResultSet rsTest = stmt.executeQuery("SELECT DISTINCT t.Test FROM test t, testcase tc WHERE tc.test=t.test AND tc.tcactive='Y' AND t.active='Y' AND tc.application " + appliInSQL + " AND tc.group is not NULL AND tc.group not in ('PRIVATE') AND length(tc.group) > 1 ");
                                                 while (rsTest.next()) {%>
                                             <option style="width: 300px" value="<%= rsTest.getString(1)%>"
                                                     <%=test.compareTo(rsTest.getString(1)) == 0 ? " SELECTED " : ""%>><%= rsTest.getString(1)%></option>
@@ -280,7 +280,7 @@
                                     <td id="wob"><select size="16" id="testcase"
                                                          name="TestCase" style="width: 600px"
                                                          onchange="document.RunTest.submit()">
-                                            <% ResultSet rsTestCase = stmt.executeQuery("SELECT DISTINCT tc.TestCase, tc.Description, tc.application FROM TestCase tc WHERE tc.test = '" + test + "' AND tc.application " + appliInSQL + " AND tc.group is not NULL AND tc.group not in ('PRIVATE') AND length(tc.group) > 1 AND TcActive = 'Y'");
+                                            <% ResultSet rsTestCase = stmt.executeQuery("SELECT DISTINCT tc.TestCase, tc.Description, tc.application FROM testcase tc WHERE tc.test = '" + test + "' AND tc.application " + appliInSQL + " AND tc.group is not NULL AND tc.group not in ('PRIVATE') AND length(tc.group) > 1 AND TcActive = 'Y'");
                                                 while (rsTestCase.next()) {
                                             %>
                                             <option style="width: 600px"

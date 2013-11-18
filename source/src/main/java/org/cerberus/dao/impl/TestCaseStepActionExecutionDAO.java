@@ -239,7 +239,7 @@ public class TestCaseStepActionExecutionDAO implements ITestCaseStepActionExecut
         List<TestCaseStepActionExecution> result = null;
         TestCaseStepActionExecution resultData;
         boolean throwEx = false;
-        final String query = "SELECT * FROM TestCaseStepActionExecution WHERE id = ? AND test = ? AND testcase = ? AND step = ? ORDER BY sequence";
+        final String query = "SELECT * FROM testcasestepactionexecution WHERE id = ? AND test = ? AND testcase = ? AND step = ? ORDER BY sequence";
 
         Connection connection = this.databaseSpring.connect();
         try {

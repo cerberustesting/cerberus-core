@@ -81,7 +81,7 @@ public class DeleteTestCase extends HttpServlet {
                     String testcasesplited[] = testcasedeleted[i].split(" - ");
                     test = testcasesplited[0];
 
-                    String deleteTestCaseExecutionStatement = "DELETE FROM TestCaseExecution WHERE Test = ? AND testcase = ? ";
+                    String deleteTestCaseExecutionStatement = "DELETE FROM testcaseexecution WHERE Test = ? AND testcase = ? ";
                     prepStmt = connection.prepareStatement(deleteTestCaseExecutionStatement);
                     try {
                         prepStmt.setString(1, testcasesplited[0]);
@@ -91,7 +91,7 @@ public class DeleteTestCase extends HttpServlet {
                         prepStmt.close();
                     }
 
-                    String deleteTestCasestepactioncontrolStatement = "DELETE FROM TestCasestepactioncontrol WHERE Test = ? AND testcase = ? ";
+                    String deleteTestCasestepactioncontrolStatement = "DELETE FROM testcasestepactioncontrol WHERE Test = ? AND testcase = ? ";
                     prepStmt = connection.prepareStatement(deleteTestCasestepactioncontrolStatement);
                     try {
                         prepStmt.setString(1, testcasesplited[0]);
@@ -100,9 +100,9 @@ public class DeleteTestCase extends HttpServlet {
                     } finally {
                         prepStmt.close();
                     }
-                    //stmt.execute("DELETE FROM TestCasestepactioncontrol where Test = '" + testcasesplited[0] + "'" + " and testcase = '" + testcasesplited[1] + "'");
+                    //stmt.execute("DELETE FROM testcasestepactioncontrol where Test = '" + testcasesplited[0] + "'" + " and testcase = '" + testcasesplited[1] + "'");
 
-                    String deleteTestCasestepactionStatement = "DELETE FROM TestCasestepaction WHERE Test = ? AND testcase = ? ";
+                    String deleteTestCasestepactionStatement = "DELETE FROM testcasestepaction WHERE Test = ? AND testcase = ? ";
                     prepStmt = connection.prepareStatement(deleteTestCasestepactionStatement);
                     try {
                         prepStmt.setString(1, testcasesplited[0]);
@@ -111,9 +111,9 @@ public class DeleteTestCase extends HttpServlet {
                     } finally {
                         prepStmt.close();
                     }
-                    //stmt.execute("DELETE FROM TestCasestepaction where Test = '" + testcasesplited[0] + "'" + " and testcase = '" + testcasesplited[1] + "'");
+                    //stmt.execute("DELETE FROM testcasestepaction where Test = '" + testcasesplited[0] + "'" + " and testcase = '" + testcasesplited[1] + "'");
 
-                    String deleteTestCasestepbatchStatement = "DELETE FROM TestCasestepbatch WHERE Test = ? AND testcase = ? ";
+                    String deleteTestCasestepbatchStatement = "DELETE FROM testcasestepbatch WHERE Test = ? AND testcase = ? ";
                     prepStmt = connection.prepareStatement(deleteTestCasestepbatchStatement);
                     try {
                         prepStmt.setString(1, testcasesplited[0]);
@@ -122,9 +122,9 @@ public class DeleteTestCase extends HttpServlet {
                     } finally {
                         prepStmt.close();
                     }
-                    //stmt.execute("DELETE FROM TestCasestepbatch where Test = '" + testcasesplited[0] + "'" + " and testcase = '" + testcasesplited[1] + "'");
+                    //stmt.execute("DELETE FROM testcasestepbatch where Test = '" + testcasesplited[0] + "'" + " and testcase = '" + testcasesplited[1] + "'");
 
-                    String deleteTestCasecountrypropertiesStatement = "DELETE FROM TestCasecountryproperties WHERE Test = ? AND testcase = ? ";
+                    String deleteTestCasecountrypropertiesStatement = "DELETE FROM testcasecountryproperties WHERE Test = ? AND testcase = ? ";
                     prepStmt = connection.prepareStatement(deleteTestCasecountrypropertiesStatement);
                     try {
                         prepStmt.setString(1, testcasesplited[0]);
@@ -133,9 +133,9 @@ public class DeleteTestCase extends HttpServlet {
                     } finally {
                         prepStmt.close();
                     }
-                    //stmt.execute("DELETE FROM TestCasecountryproperties where Test = '" + testcasesplited[0] + "'" + " and testcase = '" + testcasesplited[1] + "'");
+                    //stmt.execute("DELETE FROM testcasecountryproperties where Test = '" + testcasesplited[0] + "'" + " and testcase = '" + testcasesplited[1] + "'");
 
-                    String deleteTestCasecountryStatement = "DELETE FROM TestCasecountry WHERE Test = ? AND testcase = ? ";
+                    String deleteTestCasecountryStatement = "DELETE FROM testcasecountry WHERE Test = ? AND testcase = ? ";
                     prepStmt = connection.prepareStatement(deleteTestCasecountryStatement);
                     try {
                         prepStmt.setString(1, testcasesplited[0]);
@@ -144,9 +144,9 @@ public class DeleteTestCase extends HttpServlet {
                     } finally {
                         prepStmt.close();
                     }
-                    //stmt.execute("DELETE FROM TestCasecountry where Test = '" + testcasesplited[0] + "'" + " and testcase = '" + testcasesplited[1] + "'");
+                    //stmt.execute("DELETE FROM testcasecountry where Test = '" + testcasesplited[0] + "'" + " and testcase = '" + testcasesplited[1] + "'");
 
-                    String deleteTestCaseStatement = "DELETE FROM TestCase WHERE Test = ? AND testcase = ? ";
+                    String deleteTestCaseStatement = "DELETE FROM testcase WHERE Test = ? AND testcase = ? ";
                     prepStmt = connection.prepareStatement(deleteTestCaseStatement);
                     try {
                         prepStmt.setString(1, testcasesplited[0]);
@@ -155,7 +155,7 @@ public class DeleteTestCase extends HttpServlet {
                     } finally {
                         prepStmt.close();
                     }
-                    //stmt.execute("DELETE FROM TestCase where Test = '" + testcasesplited[0] + "'" + " and testcase = '" + testcasesplited[1] + "'");
+                    //stmt.execute("DELETE FROM testcase where Test = '" + testcasesplited[0] + "'" + " and testcase = '" + testcasesplited[1] + "'");
 
                     /**
                      * Adding Log entry.

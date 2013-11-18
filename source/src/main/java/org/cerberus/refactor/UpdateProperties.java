@@ -209,7 +209,7 @@ public class UpdateProperties extends HttpServlet {
             Statement stmt = connection.createStatement();
             try {
                 ResultSet rs_Properties = stmt.executeQuery("SELECT * "
-                        + " FROM TestCaseCountryProperties " + " WHERE Test = '"
+                        + " FROM testcasecountryproperties " + " WHERE Test = '"
                         + test_testcase_format[0] + "'" + " AND TestCase = '"
                         + test_testcase_format[1] + "'");
 
@@ -227,7 +227,7 @@ public class UpdateProperties extends HttpServlet {
                                     // country and the property:
                                     Statement stmt2 = connection.createStatement();
                                     try {
-                                        stmt2.execute("DELETE FROM TestCaseCountryProperties "
+                                        stmt2.execute("DELETE FROM testcasecountryproperties "
                                                 + " WHERE Test = '"
                                                 + test_testcase_format[0]
                                                 + "' "
@@ -257,7 +257,7 @@ public class UpdateProperties extends HttpServlet {
                                         && !testcase_properties_property[i].equals(tc_prop[2])) {
                                     Statement stmt2 = connection.createStatement();
                                     try {
-                                        stmt2.execute("DELETE FROM TestCaseCountryProperties "
+                                        stmt2.execute("DELETE FROM testcasecountryproperties "
                                                 + " WHERE Test = '"
                                                 + test_testcase_format[0]
                                                 + "' "
@@ -290,7 +290,7 @@ public class UpdateProperties extends HttpServlet {
                                     Statement stmt2 = connection.createStatement();
                                     try {
                                         ResultSet rs_numberOfTestCasesCountryProperties = stmt2.executeQuery("SELECT Test, TestCase, Country, Property "
-                                                + " FROM TestCaseCountryProperties "
+                                                + " FROM testcasecountryproperties "
                                                 + " WHERE Test = '"
                                                 + test_testcase_format[0]
                                                 + "'"
@@ -401,7 +401,7 @@ public class UpdateProperties extends HttpServlet {
                     for (String element : testcase_properties_delete) {
                         String property_and_country[] = element.split(" - ");
                         for (int i = 1; i < property_and_country.length; i++) {
-                            stmt2.execute("DELETE FROM TestCaseCountryProperties "
+                            stmt2.execute("DELETE FROM testcasecountryproperties "
                                     + " WHERE Test = '" + test_testcase_format[0]
                                     + "' " + " AND TestCase = '"
                                     + test_testcase_format[1] + "' "
@@ -415,7 +415,7 @@ public class UpdateProperties extends HttpServlet {
                 }
             }
 
-            String sql = "UPDATE TestCase "
+            String sql = "UPDATE testcase "
                     + "SET LastModifier = '" + request.getUserPrincipal().getName()
                     + "' WHERE Test = '" + test_testcase_format[0]
                     + "' AND TestCase = '" + test_testcase_format[1] + "' ";

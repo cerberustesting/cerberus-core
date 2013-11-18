@@ -142,7 +142,7 @@ public class CreateTestCase extends HttpServlet {
                     if (rs_control.first()) {
                         out.print("The testcase number already exists. Please, go back to the previous page and choose another testcase number");
                     } else {
-                        PreparedStatement stmt2 = connection.prepareStatement("INSERT INTO Testcase (`Test`,`TestCase`,`Application`,`Project` ,`Ticket`,`Description`,"
+                        PreparedStatement stmt2 = connection.prepareStatement("INSERT INTO testcase (`Test`,`TestCase`,`Application`,`Project` ,`Ticket`,`Description`,"
                                 + " `BehaviorOrValueExpected` ,`activeQA`,`activeUAT`,`activePROD`,`Priority`,`Status`,`TcActive`,`Origine`,"
                                 + " `HowTo`,`BugID`, `RefOrigine`, `group`, `Creator`) " + " VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
                         try {
@@ -173,7 +173,7 @@ public class CreateTestCase extends HttpServlet {
 
                         if (request.getParameterValues("createTestcase_country_general") != null) {
                             for (int i = 0; i < country.length; i++) {
-                                stmt2 = connection.prepareStatement("INSERT INTO Testcasecountry (`Test`, `TestCase`, `Country`) VALUES (?, ?, ?)");
+                                stmt2 = connection.prepareStatement("INSERT INTO testcasecountry (`Test`, `TestCase`, `Country`) VALUES (?, ?, ?)");
                                 try {
                                     stmt2.setString(1, test);
                                     stmt2.setString(2, testcase);

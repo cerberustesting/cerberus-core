@@ -49,7 +49,7 @@ public class DeployTypeDAO implements IDeployTypeDAO {
     public DeployType findDeployTypeByKey(String deploytype) throws CerberusException {
         boolean throwEx = false;
         DeployType result = null;
-        final String query = "SELECT * FROM DeployType a WHERE a.deploytype = ? ";
+        final String query = "SELECT * FROM deploytype a WHERE a.deploytype = ? ";
 
         Connection connection = this.databaseSpring.connect();
         try {

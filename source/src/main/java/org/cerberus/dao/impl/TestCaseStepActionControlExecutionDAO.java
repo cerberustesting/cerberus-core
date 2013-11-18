@@ -189,7 +189,7 @@ public class TestCaseStepActionControlExecutionDAO implements ITestCaseStepActio
         List<TestCaseStepActionControlExecution> result = null;
         TestCaseStepActionControlExecution resultData;
         boolean throwEx = false;
-        final String query = "SELECT * FROM TestCaseStepActionControlExecution WHERE id = ? AND test = ? AND testcase = ? AND step = ? AND sequence = ? ORDER BY control";
+        final String query = "SELECT * FROM testcasestepactioncontrolexecution WHERE id = ? AND test = ? AND testcase = ? AND step = ? AND sequence = ? ORDER BY control";
 
         Connection connection = this.databaseSpring.connect();
         try {

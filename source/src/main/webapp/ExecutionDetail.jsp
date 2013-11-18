@@ -133,7 +133,7 @@
                         + "tce.Start, tce.End, tce.ControlStatus, tce.Application, "
                         + "tce.Ip, tce.URL, UNIX_TIMESTAMP(tce.End)-UNIX_TIMESTAMP(tce.Start) time_elapsed, "
                         + "tce.port, tce.tag, tce.verbose, tce.controlmessage, tce.status, tce.CrbVersion "
-                        + " FROM TestCaseExecution tce "
+                        + " FROM testcaseexecution tce "
                         + " JOIN testcase tc "
                         + " ON tc.test=tce.test and tc.testcase=tce.testcase "
                         + " WHERE id = '" + id_filter + "'");

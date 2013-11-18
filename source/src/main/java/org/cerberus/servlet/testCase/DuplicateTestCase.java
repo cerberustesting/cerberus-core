@@ -224,7 +224,7 @@ public class DuplicateTestCase extends HttpServlet {
                 ResultSet rs = preStat.executeQuery();
                 try {
                     while (rs.next()) {
-                        PreparedStatement preStat2 = connection.prepareStatement("INSERT INTO TestCaseCountry (`Test`,`Testcase`,`Country`) VALUES (?, ?, ?)");
+                        PreparedStatement preStat2 = connection.prepareStatement("INSERT INTO testcasecountry (`Test`,`Testcase`,`Country`) VALUES (?, ?, ?)");
                         try {
                             preStat2.setString(1, newTest);
                             preStat2.setString(2, newTestCase);
@@ -379,7 +379,7 @@ public class DuplicateTestCase extends HttpServlet {
                 ResultSet rs = preStat.executeQuery();
                 try {
                     while (rs.next()) {
-                        PreparedStatement preStat2 = connection.prepareStatement("INSERT INTO Test (`Test`,`Description`,`Active`,`Automated`) VALUES (?, ?, ?, ?)");
+                        PreparedStatement preStat2 = connection.prepareStatement("INSERT INTO test (`Test`,`Description`,`Active`,`Automated`) VALUES (?, ?, ?, ?)");
                         try {
                             preStat2.setString(1, newTest);
                             preStat2.setString(2, rs.getString("Description"));
@@ -431,7 +431,7 @@ public class DuplicateTestCase extends HttpServlet {
                 ResultSet rs = preStat.executeQuery();
                 try {
                     while (rs.next()) {
-                        PreparedStatement preStat2 = connection.prepareStatement("INSERT INTO TestCase (`Test`,`Testcase`,`Application`,`Project`,`Description`,`BehaviorOrValueExpected`," +
+                        PreparedStatement preStat2 = connection.prepareStatement("INSERT INTO testcase (`Test`,`Testcase`,`Application`,`Project`,`Description`,`BehaviorOrValueExpected`," +
                                 "`activeQA`,`activeUAT`,`activePROD`,`Priority`,`Status`,`TcActive`,`Group`,`Origine`,`RefOrigine`,`HowTo`, `Creator`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
                         try {
                             preStat2.setString(1, newTest);

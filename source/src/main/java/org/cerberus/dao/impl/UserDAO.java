@@ -250,7 +250,7 @@ public class UserDAO implements IUserDAO {
     @Override
     public User updateUserPassword(User user, String password) throws CerberusException {
         boolean res = false;
-        final String sql = "UPDATE User SET Password = SHA(?) , Request = ? WHERE Login LIKE ?";
+        final String sql = "UPDATE user SET Password = SHA(?) , Request = ? WHERE Login LIKE ?";
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -289,7 +289,7 @@ public class UserDAO implements IUserDAO {
     @Override
     public boolean verifyPassword(User user, String password) {
         boolean bool = false;
-        final String sql = "SELECT Password, SHA(?) AS currentPassword FROM User WHERE Login LIKE ?";
+        final String sql = "SELECT Password, SHA(?) AS currentPassword FROM user WHERE Login LIKE ?";
 
         Connection connection = this.databaseSpring.connect();
         try {
