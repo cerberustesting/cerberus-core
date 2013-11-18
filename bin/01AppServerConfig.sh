@@ -28,7 +28,8 @@ $GLASSFISHPATH/asadmin create-resource-ref --target server jdbc/cerberusprd
 
 ### Security.
 echo Creating Authentication configuration...
-$GLASSFISHPATH/asadmin create-auth-realm  --target server --classname com.sun.enterprise.security.auth.realm.jdbc.JDBCRealm --property jaas-context=jdbcRealm:datasource-jndi=jdbc/cerberusprd:user-table=User:user-name-column=Login:password-column=Password:group-table=UserGroup:group-name-column=GroupName:digest-algorithm=SHA-1 securityCerberus
+$GLASSFISHPATH/asadmin delete-auth-realm securityCerberus
+$GLASSFISHPATH/asadmin create-auth-realm  --target server --classname com.sun.enterprise.security.auth.realm.jdbc.JDBCRealm --property jaas-context=jdbcRealm:datasource-jndi=jdbc/cerberusprd:user-table=user:user-name-column=Login:password-column=Password:group-table=usergroup:group-name-column=GroupName:digest-algorithm=SHA-1 securityCerberus
 $GLASSFISHPATH/asadmin set server-config.security-service.default-realm=securityCerberus
 
 ### Restarting instance.

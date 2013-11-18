@@ -3,7 +3,6 @@ Required Packages
 
 Make sure you've installed the following packages before continuing. 
 MySQL
-  Option "lower_case_table_names=1" must be activated.
 Java 1.6
 Glassfish Server v3
   - if necessary, copy the mysql jdbc drivers jar file on the glassfish/lib folder of your Glassfish installation.
