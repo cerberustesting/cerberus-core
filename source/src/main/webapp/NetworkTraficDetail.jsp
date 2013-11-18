@@ -1,9 +1,22 @@
-<%-- 
-    Document   : NetworkTraficDetail
-    Created on : 18 févr. 2013, 21:00:39
-    Author     : bcivel
+<%--
+  ~ Cerberus  Copyright (C) 2013  vertigo17
+  ~ DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+  ~
+  ~ This file is part of Cerberus.
+  ~
+  ~ Cerberus is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ Cerberus is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
-
 <%@page import="java.util.Date"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
@@ -26,17 +39,17 @@
         <script type="text/javascript" src="js/jquery.dataTables.min.js"></script>
         <script type="text/javascript" src="js/jquery.dataTables.editable.js"></script>
         <script type="text/javascript" src="js/jquery.validate.min.js"></script>
-       
+
     </head>
     <body>
         <%
-        String id = request.getParameter("id");
-%>
-<input style="display:none" id="idvalue" name="idvalue" value="<%=id%>">
-<script type="text/javascript">      
-       var id = document.getElementById("idvalue").value;
+            String id = request.getParameter("id");
+        %>
+        <input style="display:none" id="idvalue" name="idvalue" value="<%=id%>">
+        <script type="text/javascript">      
+            var id = document.getElementById("idvalue").value;
           
-           $(document).ready(function(){
+            $(document).ready(function(){
                 $('#nonConformityList').dataTable({
                     "bServerSide": true,
                     "sAjaxSource": "TCEwwwDetail?id="+id,
@@ -65,10 +78,10 @@
             });
   
         </script>
-          
-         <% 
-         Date DatePageStart = new Date() ;
-                  %>
+
+        <%
+            Date DatePageStart = new Date();
+        %>
         <div style="width: 80%; padding: 25px; font: 70% sans-serif">
             <table id="nonConformityList" class="display">
                 <thead>
@@ -85,16 +98,16 @@
                         <th>TimeInMillis</th>
                         <th>ReqHeader_Host</th>
                         <th>ResHeader_ContentType</th>
-                        </tr>
+                    </tr>
                 </thead>
                 <tbody>
                 </tbody>
             </table>
         </div>
-        
-                     <%
-                  
-%>
-    <br>          
+
+        <%
+
+        %>
+        <br>          
     </body>
 </html>

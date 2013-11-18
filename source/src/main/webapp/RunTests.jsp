@@ -1,16 +1,29 @@
 <%--
-    Document   : RunTests
-    Created on : 22 févr. 2011, 13:48:03
-    Author     : acraske
+  ~ Cerberus  Copyright (C) 2013  vertigo17
+  ~ DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+  ~
+  ~ This file is part of Cerberus.
+  ~
+  ~ Cerberus is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ Cerberus is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
-
-<%@page import="com.redcats.tst.service.IParameterService"%>
-<%@page import="com.redcats.tst.log.MyLogger"%>
+<%@page import="org.cerberus.service.IParameterService"%>
+<%@page import="org.cerberus.log.MyLogger"%>
 <%@page import="org.apache.log4j.Level"%>
-<%@page import="com.redcats.tst.service.impl.ApplicationService"%>
-<%@page import="com.redcats.tst.util.StringUtil"%>
-<%@page import="com.redcats.tst.entity.Application"%>
-<%@page import="com.redcats.tst.service.IApplicationService"%>
+<%@page import="org.cerberus.service.impl.ApplicationService"%>
+<%@page import="org.cerberus.util.StringUtil"%>
+<%@page import="org.cerberus.entity.Application"%>
+<%@page import="org.cerberus.service.IApplicationService"%>
 <%@page import="org.apache.commons.lang3.StringUtils"%>
 <%@page import="java.util.Enumeration"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
@@ -21,7 +34,7 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Run TestCase</title>
+        <title>Run Test Case</title>
         <link rel="stylesheet" type="text/css" href="css/crb_style.css">
         <link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico" />
         <script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>
@@ -97,7 +110,7 @@
                             ssIP = request.getHeader("X-FORWARDED-FOR");
                             if (ssIP == null) {
 
-                                String defaultIP = "SELECT DefaultIP from USER where login = '"
+                                String defaultIP = "SELECT DefaultIP from user where login = '"
                                         + request.getUserPrincipal().getName() + "'";
 
                                 ResultSet rs_Ip = stmt2.executeQuery(defaultIP);
@@ -257,7 +270,7 @@
                                     <td id="wob"><select size="16" id="test" name="Test"
                                                          style="width: 200px" onchange="document.RunTest.submit()">
                                             <%
-                                                ResultSet rsTest = stmt.executeQuery("SELECT DISTINCT t.Test FROM Test t, TestCase tc WHERE tc.test=t.test AND tc.tcactive='Y' AND t.active='Y' AND tc.application " + appliInSQL + " AND tc.group is not NULL AND tc.group not in ('PRIVATE') AND length(tc.group) > 1 ");
+                                                ResultSet rsTest = stmt.executeQuery("SELECT DISTINCT t.Test FROM test t, testcase tc WHERE tc.test=t.test AND tc.tcactive='Y' AND t.active='Y' AND tc.application " + appliInSQL + " AND tc.group is not NULL AND tc.group not in ('PRIVATE') AND length(tc.group) > 1 ");
                                                 while (rsTest.next()) {%>
                                             <option style="width: 300px" value="<%= rsTest.getString(1)%>"
                                                     <%=test.compareTo(rsTest.getString(1)) == 0 ? " SELECTED " : ""%>><%= rsTest.getString(1)%></option>
@@ -267,7 +280,7 @@
                                     <td id="wob"><select size="16" id="testcase"
                                                          name="TestCase" style="width: 600px"
                                                          onchange="document.RunTest.submit()">
-                                            <% ResultSet rsTestCase = stmt.executeQuery("SELECT DISTINCT tc.TestCase, tc.Description, tc.application FROM TestCase tc WHERE tc.test = '" + test + "' AND tc.application " + appliInSQL + " AND tc.group is not NULL AND tc.group not in ('PRIVATE') AND length(tc.group) > 1 AND TcActive = 'Y'");
+                                            <% ResultSet rsTestCase = stmt.executeQuery("SELECT DISTINCT tc.TestCase, tc.Description, tc.application FROM testcase tc WHERE tc.test = '" + test + "' AND tc.application " + appliInSQL + " AND tc.group is not NULL AND tc.group not in ('PRIVATE') AND length(tc.group) > 1 AND TcActive = 'Y'");
                                                 while (rsTestCase.next()) {
                                             %>
                                             <option style="width: 600px"

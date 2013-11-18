@@ -1,14 +1,28 @@
-<%-- 
-    Document   : doc
-    Created on : Nov 19, 2011, 4:27:49 PM
-    Author     : vertigo
---%>
+<%--
+  ~ Cerberus  Copyright (C) 2013  vertigo17
+  ~ DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+  ~
+  ~ This file is part of Cerberus.
+  ~
+  ~ Cerberus is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ Cerberus is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
+  --%>
 <%@ page import="java.sql.Connection"%>
 <%@ page import="java.sql.ResultSet"%>
 <%@ page import="java.sql.Statement"%>
 <%@ page import="org.springframework.context.ApplicationContext" %>
 <%@ page import="org.springframework.web.context.support.WebApplicationContextUtils" %>
-<%@ page import="com.redcats.tst.database.DatabaseSpring" %>
+<%@ page import="org.cerberus.database.DatabaseSpring" %>
 <%@ page import="java.sql.SQLException" %>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
@@ -47,7 +61,7 @@
 
 
                 Statement stmtQuery = conn.createStatement();
-                String sq = "SELECT DocLabel, DocDesc FROM Documentation where DocTable = '" + DocTable + "' and docfield = '" + DocField + "' and length(docvalue)=0 and length(docdesc) > 1";
+                String sq = "SELECT DocLabel, DocDesc FROM documentation where DocTable = '" + DocTable + "' and docfield = '" + DocField + "' and length(docvalue)=0 and length(docdesc) > 1";
                 ResultSet q = stmtQuery.executeQuery(sq);
                 if (q.first()) {
 
@@ -72,7 +86,7 @@
 
                     <%
                         Statement stmtQuerydet = conn.createStatement();
-                        String sqDet = "SELECT DocValue, DocDesc FROM Documentation where DocTable = '" + DocTable + "' and docfield = '" + DocField + "' and docValue IS NOT NULL AND length (docdesc) > 1";
+                        String sqDet = "SELECT DocValue, DocDesc FROM documentation where DocTable = '" + DocTable + "' and docfield = '" + DocField + "' and docValue IS NOT NULL AND length (docdesc) > 1";
                         ResultSet qDet = stmtQuery.executeQuery(sqDet);
                         while (qDet.next()) {
                     %>
@@ -97,7 +111,7 @@
         <%    }
         } else {
                 Statement stmtQuery1 = conn.createStatement();
-                String sq1 = "SELECT DocLabel FROM Documentation where DocTable = '" + DocTable + "' and docfield = '" + DocField + "' and length(docvalue)=0 and length(docdesc) > 1";
+                String sq1 = "SELECT DocLabel FROM documentation where DocTable = '" + DocTable + "' and docfield = '" + DocField + "' and length(docvalue)=0 and length(docdesc) > 1";
                 ResultSet q1 = stmtQuery1.executeQuery(sq1);
                 String nav;
                 nav = "";
@@ -105,7 +119,7 @@
                                    nav = "<a href=\"?DocTable=" + DocTable + "&DocField=" + DocField + "\">" + q1.getString("DocLabel") + "</a> -- ";
                                    }
                            Statement stmtQueryVal = conn.createStatement();
-            String sqVal = "SELECT DocDesc FROM Documentation where DocTable = '" + DocTable + "' and docfield = '" + DocField + "' and docvalue = '" + DocValue + "' and length(docdesc) > 1";
+            String sqVal = "SELECT DocDesc FROM documentation where DocTable = '" + DocTable + "' and docfield = '" + DocField + "' and docvalue = '" + DocValue + "' and length(docdesc) > 1";
             ResultSet qVal = stmtQueryVal.executeQuery(sqVal);
             if (qVal.first()) {
         %>

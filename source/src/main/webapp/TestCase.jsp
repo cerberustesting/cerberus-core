@@ -1,12 +1,26 @@
-<%-- 
-    Document   : TestCase
-    Created on : 20 mai 2011, 13:41:49
-    Author     : acraske
+<%--
+  ~ Cerberus  Copyright (C) 2013  vertigo17
+  ~ DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+  ~
+  ~ This file is part of Cerberus.
+  ~
+  ~ Cerberus is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ Cerberus is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
-<%@page import="com.redcats.tst.entity.BuildRevisionInvariant"%>
-<%@page import="com.redcats.tst.service.impl.BuildRevisionInvariantService"%>
-<%@page import="com.redcats.tst.service.IBuildRevisionInvariantService"%>
-<%@page import="com.redcats.tst.service.IApplicationService"%>
+<%@page import="org.cerberus.entity.BuildRevisionInvariant"%>
+<%@page import="org.cerberus.service.impl.BuildRevisionInvariantService"%>
+<%@page import="org.cerberus.service.IBuildRevisionInvariantService"%>
+<%@page import="org.cerberus.service.IApplicationService"%>
 <%@page import="org.apache.commons.lang3.StringUtils"%>
 <%@page import="java.sql.Connection"%>
 <%@page import="java.util.ArrayList"%>
@@ -248,7 +262,7 @@
                                                             if (test.compareTo("%%") == 0) {
                                                         %><option style="width: 200px" value="All">-- Choose Test --</option>
                                                         <%                                                            }
-                                                            ResultSet rsTest = stQueryTest.executeQuery("SELECT Test, active FROM Test where Test IS NOT NULL Order by Test asc");
+                                                            ResultSet rsTest = stQueryTest.executeQuery("SELECT Test, active FROM test where Test IS NOT NULL Order by Test asc");
                                                             while (rsTest.next()) {
                                                                 if (rsTest.getString("active").equalsIgnoreCase("Y")) {
                                                                     optstyle = "font-weight:bold;";
@@ -268,7 +282,7 @@
                                                             if (test.compareTo("%%") == 0) {
                                                         %><option style="width: 200px" value="All">-- Choose Test First --</option>
                                                         <%                                                        } else {
-                                                            String sql = "SELECT TestCase, Application,  Description, tcactive FROM TestCase where TestCase IS NOT NULL and test like '" + test + "'Order by TestCase asc";
+                                                            String sql = "SELECT TestCase, Application,  Description, tcactive FROM testcase where TestCase IS NOT NULL and test like '" + test + "'Order by TestCase asc";
                                                             ResultSet rsTestCase = stQueryTestCase.executeQuery(sql);
                                                             while (rsTestCase.next()) {
                                                                 if (rsTestCase.getString("tcactive").equalsIgnoreCase("Y")) {
@@ -302,7 +316,7 @@
                         + "tc.Ticket, tc.Origine, tc.RefOrigine, tc.FromBuild, tc.FromRev, tc.ToBuild, tc.ToRev, "
                         + "tc.BugID, tc.TargetBuild, tc.TargetRev, tc.creator, tc.implementer, tc.lastModifier, "
                         + "tc.activeQA, tc.activeUAT, tc.activePROD"
-                        + " FROM Test t, TestCase tc"
+                        + " FROM test t, testcase tc"
                         + " WHERE t.test = tc.test"
                         + " AND tc.Test = '" + test + "'"
                         + " AND tc.TestCase = '" + testcase + "'");
@@ -530,6 +544,8 @@
                                 String behavior = rs_testcase_general_info.getString("BehaviorOrValueExpected");
                                 if (behavior == null || behavior.compareTo("null") == 0) {
                                     behavior = new String(" ");
+                                } else {
+                                    behavior = behavior.replace(">", "&gt;");
                                 }
                             %> 
                             <table>
@@ -765,7 +781,7 @@
                          */
                         Statement stmt5 = conn.createStatement();
                         ResultSet rs_testcasecountry = stmt5.executeQuery("SELECT DISTINCT Country"
-                                + " FROM TestCaseCountry t "
+                                + " FROM testcasecountry t "
                                 + " join invariant i on i.value=t.country and i.id=4 "
                                 + " WHERE Test = '"
                                 + rs_testcase_general_info.getString("t.Test")
@@ -812,7 +828,7 @@
                     Statement stmt18 = conn.createStatement();
 
                     ResultSet rs_tccountry = stmt18.executeQuery("SELECT DISTINCT Country"
-                            + " FROM TestCaseCountry t "
+                            + " FROM testcasecountry t "
                             + " join invariant i on i.value=t.country and i.id=4 "
                             + " WHERE Test = '"
                             + rs_testcase_general_info.getString("t.Test")
@@ -1150,7 +1166,7 @@
                                                      * Step / Actions request
                                                      */
                                                     ResultSet rs_step = stmt5.executeQuery("SELECT DISTINCT Test, Testcase, Step, Description "
-                                                            + " FROM TestCaseStep "
+                                                            + " FROM testcasestep "
                                                             + " WHERE test = '"
                                                             + rs_testcase_general_info.getString("t.Test")
                                                             + "' "
@@ -1231,7 +1247,7 @@
 
                                                                 int rs_stepaction_maxlength_cpt = 4;
                                                                 ResultSet rs_stepaction = stmt6.executeQuery("SELECT DISTINCT Test, TestCase, Step, Sequence, Action, Object, Property "
-                                                                        + " FROM TestCaseStepAction"
+                                                                        + " FROM testcasestepaction"
                                                                         + " WHERE Test = '"
                                                                         + rs_step.getString("Test")
                                                                         + "' "
@@ -1337,7 +1353,7 @@
 
                 <%
                     ResultSet rs_controls = stmt5.executeQuery("SELECT DISTINCT Test, Testcase, Step, Sequence, Control, Type, ControlValue, ControlProperty, Fatal "
-                            + " FROM TestCaseStepActionControl "
+                            + " FROM testcasestepactioncontrol "
                             + " WHERE test = '"
                             + rs_testcase_general_info.getString("t.Test")
                             + "' "

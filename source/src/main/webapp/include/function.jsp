@@ -1,12 +1,25 @@
-<%-- 
-
-Document   : menu
-    Created on : 10 déc. 2010, 11:43:27
-    Author     : acraske
+<%--
+  ~ Cerberus  Copyright (C) 2013  vertigo17
+  ~ DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+  ~
+  ~ This file is part of Cerberus.
+  ~
+  ~ Cerberus is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ Cerberus is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
 <%@page import="org.springframework.web.context.support.WebApplicationContextUtils"%>
 <%@page import="org.springframework.context.ApplicationContext"%>
-<%@page import="com.redcats.tst.refactor.Country"%>
+<%@page import="org.cerberus.refactor.Country"%>
 <%@page import="java.util.Collection"%>
 <%@page import="java.util.Iterator"%>
 <%@page import="com.mysql.jdbc.ResultSetImpl"%>
@@ -19,14 +32,14 @@ Document   : menu
 <%@page import="java.util.Date"%>
 <%@page import="java.text.DateFormat"%>
 <%@page import="java.text.SimpleDateFormat"%>
-<%@page import="version.Version"%>
-<%@ page import="com.redcats.tst.database.DatabaseSpring" %>
+<%@page import="org.cerberus.version.Version"%>
+<%@page import="org.cerberus.database.DatabaseSpring" %>
 <%!
     String dbDocS(Connection conn, String table, String field, String label) {
         try {
             Statement stmtQuery = conn.createStatement();
             try {
-                String sq = "SELECT * FROM Documentation where DocTable = '" + table + "' and docfield = '" + field + "' and doclabel IS NOT NULL AND trim(doclabel) <> ''";
+                String sq = "SELECT * FROM documentation where DocTable = '" + table + "' and docfield = '" + field + "' and doclabel IS NOT NULL AND trim(doclabel) <> ''";
                 ResultSet q = stmtQuery.executeQuery(sq);
                 try {
                     if (q.first()) {
@@ -59,7 +72,7 @@ Document   : menu
             //TBDBSQL TODO
 
             Statement stmtQuery = conn.createStatement();
-            String sq = "SELECT * FROM Documentation where DocTable = '" + table + "' and docfield = '" + field + "' and doclabel IS NOT NULL AND trim(doclabel) <> ''";
+            String sq = "SELECT * FROM documentation where DocTable = '" + table + "' and docfield = '" + field + "' and doclabel IS NOT NULL AND trim(doclabel) <> ''";
             ResultSet q = stmtQuery.executeQuery(sq);
             if (q.first()) {
                 String ret;
@@ -92,7 +105,7 @@ Document   : menu
         try {
             Statement stmtQuery = conn.createStatement();
             try {
-                String sq = "SELECT value from Invariant where id = '" + combonumber + "' order by sort";
+                String sq = "SELECT value from invariant where id = '" + combonumber + "' order by sort";
                 ResultSet q = stmtQuery.executeQuery(sq);
                 try {
                     String ret = "<select id=\"" + HTMLId + "\" class=\"" + HTMLClass + "\" style=\"" + HTMLComboStyle + "\" name=\"" + HTMLComboName + "\"";
@@ -129,7 +142,7 @@ Document   : menu
         try {
             Statement stmtQuery = conn.createStatement();
             try {
-                String sq = "SELECT value from Invariant where id = '" + combonumber + "' order by sort";
+                String sq = "SELECT value from invariant where id = '" + combonumber + "' order by sort";
                 ResultSet q = stmtQuery.executeQuery(sq);
                 try {
                     String ret = "<select id=\"" + HTMLId + "\" rel=\"" + HTMLrel + "\" style=\"" + HTMLComboStyle + "\" name=\"" + HTMLComboName + "\"";
@@ -165,7 +178,7 @@ Document   : menu
         try {
             Statement stmtQuery = conn.createStatement();
             try {
-                String sq = "SELECT value from Invariant where id = '" + combonumber + "' order by sort";
+                String sq = "SELECT value from invariant where id = '" + combonumber + "' order by sort";
                 ResultSet q = stmtQuery.executeQuery(sq);
                 try {
                     String ret = "<select id=\"" + HTMLId + "\" rel=\"" + HTMLrel + "\" style=\"" + HTMLComboStyle + "\" name=\"" + HTMLComboName + "\"";

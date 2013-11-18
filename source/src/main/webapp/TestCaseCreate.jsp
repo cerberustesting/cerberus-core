@@ -1,7 +1,21 @@
-<%-- 
-    Document   : TestCase
-    Created on : 20 mai 2011, 13:41:49
-    Author     : acraske
+<%--
+  ~ Cerberus  Copyright (C) 2013  vertigo17
+  ~ DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+  ~
+  ~ This file is part of Cerberus.
+  ~
+  ~ Cerberus is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ Cerberus is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
 <%@page import="org.apache.commons.lang3.StringUtils"%>
 <%@page import="java.sql.Connection"%>
@@ -85,7 +99,7 @@
                                             <%	if (testselected.compareTo("%%") == 0) {
                                             %><option style="width: 200px" value="All">-- Choose Test --</option>
                                             <%}
-                                                ResultSet rsTestS = stmt30.executeQuery("SELECT DISTINCT Test, active FROM Test where Test IS NOT NULL Order by Test asc");
+                                                ResultSet rsTestS = stmt30.executeQuery("SELECT DISTINCT Test, active FROM test where Test IS NOT NULL Order by Test asc");
                                                 String optstyle = "";
                                                 while (rsTestS.next()) {
                                                     if (rsTestS.getString("active").equalsIgnoreCase("Y")) {
@@ -125,7 +139,7 @@
                                                     int testcasenumber = 0;
 
 
-                                                    ResultSet rsTestCase = stQueryTestCase.executeQuery("SELECT  Max( Testcase ) + 1 as MAXTC FROM TestCase where test = '"
+                                                    ResultSet rsTestCase = stQueryTestCase.executeQuery("SELECT  Max( Testcase ) + 1 as MAXTC FROM testcase where test = '"
                                                             + testselected + "'");
                                                     rsTestCase.first();
                                                     if (StringUtils.isNotBlank(rsTestCase.getString("MAXTC")) == true) {

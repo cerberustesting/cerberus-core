@@ -1,7 +1,21 @@
-<%-- 
-    Document   : doc
-    Created on : Dec 9, 2011, 9:57:49 PM
-    Author     : bcivel
+<%--
+  ~ Cerberus  Copyright (C) 2013  vertigo17
+  ~ DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+  ~
+  ~ This file is part of Cerberus.
+  ~
+  ~ Cerberus is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ Cerberus is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
 <%@page import="java.sql.Connection"%>
 <%@page import="java.sql.ResultSet"%>
@@ -53,7 +67,7 @@
 
             //List of SQL script when type is selected
             Statement stmtQueryVal = conn.createStatement();
-            String sqVal = "SELECT Name, Script, Description FROM SqlLibrary where Type = '"+ Type +"'";
+            String sqVal = "SELECT Name, Script, Description FROM sqllibrary where Type = '"+ Type +"'";
             ResultSet qVal = stmtQueryVal.executeQuery(sqVal);
 
 
@@ -89,7 +103,7 @@
             Type = new String("empty");
                    //List of SQL Type
             Statement stmtQuery1 = conn.createStatement();
-            String sq1 = "SELECT distinct Type FROM SqlLibrary ";
+            String sq1 = "SELECT distinct Type FROM sqllibrary ";
             ResultSet q1 = stmtQuery1.executeQuery(sq1);
             
         %>

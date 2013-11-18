@@ -1,25 +1,39 @@
-<%-- 
-    Document   : ExecutionDetail
-    Created on : 20 mai 2011, 13:41:49
-    Author     : acraske
---%>
-<%@page import="com.redcats.tst.entity.TestCaseExecutionSysVer"%>
-<%@page import="com.redcats.tst.service.ITestCaseExecutionSysVerService"%>
-<%@page import="com.redcats.tst.service.IApplicationService"%>
-<%@page import="com.redcats.tst.service.IParameterService"%>
-<%@page import="com.redcats.tst.util.DateUtil"%>
-<%@page import="com.redcats.tst.entity.TestCaseStepActionControlExecution"%>
-<%@page import="com.redcats.tst.service.ITestCaseStepActionControlExecutionService"%>
-<%@page import="com.redcats.tst.entity.TestCaseStepActionExecution"%>
-<%@page import="com.redcats.tst.service.ITestCaseStepActionExecutionService"%>
-<%@page import="com.redcats.tst.service.ITestCaseStepExecutionService"%>
-<%@page import="com.redcats.tst.entity.TestCaseStepExecution"%>
-<%@page import="com.redcats.tst.util.ParameterParserUtil"%>
-<%@page import="com.redcats.tst.entity.TestCaseExecutionData"%>
-<%@page import="com.redcats.tst.service.ITestCaseExecutionDataService"%>
-<%@page import="com.redcats.tst.refactor.TestcaseExecutionwwwSum"%>
-<%@page import="com.redcats.tst.refactor.ITCEwwwSumService"%>
-<%@page import="com.redcats.tst.log.MyLogger"%>
+<%--
+  ~ Cerberus  Copyright (C) 2013  vertigo17
+  ~ DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+  ~
+  ~ This file is part of Cerberus.
+  ~
+  ~ Cerberus is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ Cerberus is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
+  --%>
+<%@page import="org.cerberus.entity.TestCaseExecutionSysVer"%>
+<%@page import="org.cerberus.service.ITestCaseExecutionSysVerService"%>
+<%@page import="org.cerberus.service.IApplicationService"%>
+<%@page import="org.cerberus.service.IParameterService"%>
+<%@page import="org.cerberus.util.DateUtil"%>
+<%@page import="org.cerberus.entity.TestCaseStepActionControlExecution"%>
+<%@page import="org.cerberus.service.ITestCaseStepActionControlExecutionService"%>
+<%@page import="org.cerberus.entity.TestCaseStepActionExecution"%>
+<%@page import="org.cerberus.service.ITestCaseStepActionExecutionService"%>
+<%@page import="org.cerberus.service.ITestCaseStepExecutionService"%>
+<%@page import="org.cerberus.entity.TestCaseStepExecution"%>
+<%@page import="org.cerberus.util.ParameterParserUtil"%>
+<%@page import="org.cerberus.entity.TestCaseExecutionData"%>
+<%@page import="org.cerberus.service.ITestCaseExecutionDataService"%>
+<%@page import="org.cerberus.refactor.TestcaseExecutionwwwSum"%>
+<%@page import="org.cerberus.refactor.ITCEwwwSumService"%>
+<%@page import="org.cerberus.log.MyLogger"%>
 <%@page import="org.apache.log4j.Level"%>
 <%@page import="org.springframework.web.context.support.WebApplicationContextUtils"%>
 <%@page import="java.sql.Statement"%>
@@ -119,7 +133,7 @@
                         + "tce.Start, tce.End, tce.ControlStatus, tce.Application, "
                         + "tce.Ip, tce.URL, UNIX_TIMESTAMP(tce.End)-UNIX_TIMESTAMP(tce.Start) time_elapsed, "
                         + "tce.port, tce.tag, tce.verbose, tce.controlmessage, tce.status, tce.CrbVersion "
-                        + " FROM TestCaseExecution tce "
+                        + " FROM testcaseexecution tce "
                         + " JOIN testcase tc "
                         + " ON tc.test=tce.test and tc.testcase=tce.testcase "
                         + " WHERE id = '" + id_filter + "'");

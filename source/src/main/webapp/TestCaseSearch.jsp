@@ -1,7 +1,21 @@
-<%-- 
-    Document   : TestCase
-    Created on : 20 mai 2011, 13:41:49
-    Author     : acraske
+<%--
+  ~ Cerberus  Copyright (C) 2013  vertigo17
+  ~ DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+  ~
+  ~ This file is part of Cerberus.
+  ~
+  ~ Cerberus is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ Cerberus is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
 <%@page import="org.apache.commons.lang3.StringUtils"%>
 <%@page import="java.sql.Connection"%>
@@ -534,7 +548,7 @@
                         + " t2.comment, t2.TCDateCrea, t2.frombuild, t2.fromrev, t2.tobuild, t2.torev, t2.bugid, t2.targetbuild,"
                         + " t2.targetrev, t2.creator, t2.implementer, t2.lastmodifier, t2.activeQA, t2.activeUAT, t2.activePROD"
                         + " FROM testcase t2"
-                        + " LEFT OUTER JOIN Application a ON a.application=t2.application "
+                        + " LEFT OUTER JOIN application a ON a.application=t2.application "
                         + whereclause;
                 //                                out.print(SQLSearch);
                 ResultSet rs_testcase = stmt71.executeQuery(SQLSearch);

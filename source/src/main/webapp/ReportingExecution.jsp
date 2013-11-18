@@ -1,17 +1,29 @@
-<%-- 
-    Document   : ReportingExecution
-    Created on : 10 mars 2011, 10:09:26
-    Author     : acraske
+<%--
+  ~ Cerberus  Copyright (C) 2013  vertigo17
+  ~ DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+  ~
+  ~ This file is part of Cerberus.
+  ~
+  ~ Cerberus is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ Cerberus is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
-
-
-<%@page import="com.redcats.tst.log.MyLogger"%>
+<%@page import="org.cerberus.log.MyLogger"%>
 <%@page import="org.apache.log4j.Level"%>
-<%@page import="com.redcats.tst.service.impl.BuildRevisionInvariantService"%>
-<%@page import="com.redcats.tst.service.IBuildRevisionInvariantService"%>
-<%@page import="com.redcats.tst.entity.BuildRevisionInvariant"%>
-<%@page import="com.redcats.tst.service.impl.InvariantService"%>
-<%@page import="com.redcats.tst.service.IApplicationService"%>
+<%@page import="org.cerberus.service.impl.BuildRevisionInvariantService"%>
+<%@page import="org.cerberus.service.IBuildRevisionInvariantService"%>
+<%@page import="org.cerberus.entity.BuildRevisionInvariant"%>
+<%@page import="org.cerberus.service.impl.InvariantService"%>
+<%@page import="org.cerberus.service.IApplicationService"%>
 <%@page import="org.apache.commons.lang3.StringUtils"%>
 <%@page import="java.util.Collections"%>
 <%@page import="java.util.HashSet"%>
@@ -333,7 +345,7 @@
 
                     Statement stmt5 = conn.createStatement();
 
-                    insertURL = "UPDATE USER SET ReportingFavorite = '"
+                    insertURL = "UPDATE user SET ReportingFavorite = '"
                             + URL + "' where login = '"
                             + request.getUserPrincipal().getName()
                             + "'";
@@ -368,7 +380,7 @@
                                         <select id="test" style="width: 110px"  name="Test">
                                             <option value="All">-- ALL --</option><%
                                                 String optstyle = "";
-                                                ResultSet rsTest = stmt.executeQuery("SELECT Test, active FROM Test where Test IS NOT NULL Order by Test asc");
+                                                ResultSet rsTest = stmt.executeQuery("SELECT Test, active FROM test where Test IS NOT NULL Order by Test asc");
                                                 while (rsTest.next()) {
                                                     if (rsTest.getString("active").equalsIgnoreCase("Y")) {
                                                         optstyle = "font-weight:bold;";
@@ -385,7 +397,7 @@
                                     <td id="wob">
                                         <select id="system" style="width: 50px"  name="System">
                                             <option value="All">-- ALL --</option><%
-                                                ResultSet rsSys = stmt.executeQuery("SELECT DISTINCT System FROM Application Order by System asc");
+                                                ResultSet rsSys = stmt.executeQuery("SELECT DISTINCT System FROM application Order by System asc");
                                                 while (rsSys.next()) {%>
                                             <option value="<%= rsSys.getString("System")%>" <%=system.compareTo(rsSys.getString("System")) == 0 ? " SELECTED " : ""%>><%= rsSys.getString("System")%></option><%
                                                 }%>
@@ -394,7 +406,7 @@
                                     <td id="wob">
                                         <select id="application" style="width: 100px"  name="Application">
                                             <option value="All">-- ALL --</option><%
-                                                ResultSet rsApp = stmt.executeQuery("SELECT Application , System FROM Application Order by Sort asc");
+                                                ResultSet rsApp = stmt.executeQuery("SELECT Application , System FROM application Order by Sort asc");
                                                 while (rsApp.next()) {%>
                                             <option value="<%= rsApp.getString("Application")%>" <%=app.compareTo(rsApp.getString("Application")) == 0 ? " SELECTED " : ""%>><%= rsApp.getString("Application")%> [<%= rsApp.getString("System")%>]</option><%
                                                 }%>
@@ -426,7 +438,7 @@
                                     <td id="wob">
                                         <select style="width: 110px" id="status" name="Status">
                                             <option value="All">-- ALL --</option><%
-                                                ResultSet rsStatus = stmt.executeQuery("SELECT value from Invariant where id = 1 order by sort asc");
+                                                ResultSet rsStatus = stmt.executeQuery("SELECT value from invariant where id = 1 order by sort asc");
                                                 while (rsStatus.next()) {%>
                                             <option value="<%= rsStatus.getString(1)%>" <%=status.compareTo(rsStatus.getString(1)) == 0 ? " SELECTED " : ""%>><%= rsStatus.getString(1)%></option><%
                                                 }%>
@@ -436,7 +448,7 @@
                                     <td id="wob">
                                         <select style="width: 110px" id="group" name="Group">
                                             <option value="All">-- ALL --</option><%
-                                                ResultSet rsGroup = stmt.executeQuery("SELECT value from Invariant where id = 2 order by sort");
+                                                ResultSet rsGroup = stmt.executeQuery("SELECT value from invariant where id = 2 order by sort");
                                                 while (rsGroup.next()) {%>
                                             <option value="<%= rsGroup.getString(1)%>" <%=group.compareTo(rsGroup.getString(1)) == 0 ? " SELECTED " : ""%>><%= rsGroup.getString(1)%></option><%
                                                 }%>
@@ -446,7 +458,7 @@
                                         <select style="width: 110px" id="targetBuild" name="TargetBuild">
                                             <option value="All" <%=targetBuild.equals("All") == true ? " SELECTED " : ""%>>-- ALL --</option>
                                             <option value="NTB" <%=targetBuild.equals("") == true ? " SELECTED " : ""%>>--No Target Build--</option>
-                                            <% ResultSet rsTargetBuild = stmt.executeQuery("SELECT value from Invariant where idname = 'Build' order by sort");
+                                            <% ResultSet rsTargetBuild = stmt.executeQuery("SELECT value from invariant where idname = 'Build' order by sort");
                                                 while (rsTargetBuild.next()) {%>
                                             <option value="<%= rsTargetBuild.getString(1)%>" <%=targetBuild.compareTo(rsTargetBuild.getString(1)) == 0 ? " SELECTED " : ""%>><%= rsTargetBuild.getString(1)%></option><%
                                                 }%>
@@ -456,7 +468,7 @@
                                         <select style="width: 110px" id="targetRev" name="TargetRev">
                                             <option value="All" <%=targetRev.compareTo("All") == 0 ? " SELECTED " : ""%>>-- ALL --</option>
                                             <option value="NTR" <%=targetRev.compareTo("") == 0 ? " SELECTED " : ""%>>--No Target Rev--</option>
-                                            <% ResultSet rsTargetRev = stmt.executeQuery("SELECT value from Invariant where idname = 'Revision' order by sort");
+                                            <% ResultSet rsTargetRev = stmt.executeQuery("SELECT value from invariant where idname = 'Revision' order by sort");
                                                 while (rsTargetRev.next()) {%>
                                             <option value="<%= rsTargetRev.getString(1)%>" <%=targetRev.compareTo(rsTargetRev.getString(1)) == 0 ? " SELECTED " : ""%>><%= rsTargetRev.getString(1)%></option><%
                                                 }%>
@@ -498,7 +510,7 @@
                                     <td id="wob">
                                         <select id="environment" name="Environment" style="width: 130px">
                                             <option style="width: 130px" value="All">-- ALL --</option>
-                                            <% ResultSet rsEnv = stmt.executeQuery("SELECT value from Invariant where id = 5 order by sort");
+                                            <% ResultSet rsEnv = stmt.executeQuery("SELECT value from invariant where id = 5 order by sort");
                                                 while (rsEnv.next()) {%>
                                             <option style="width: 130px" value="<%= rsEnv.getString(1)%>" <%=environment.compareTo(rsEnv.getString(1)) == 0 ? " SELECTED " : ""%>><%= rsEnv.getString(1)%></option><%
                                                 }%>

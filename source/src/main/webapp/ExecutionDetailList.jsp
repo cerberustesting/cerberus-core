@@ -1,19 +1,33 @@
-<%-- 
-    Document   : ExecutionDetail
-    Created on : 20 mai 2011, 13:41:49
-    Author     : acraske
---%>
-<%@page import="com.redcats.tst.service.impl.BuildRevisionInvariantService"%>
-<%@page import="com.redcats.tst.service.IBuildRevisionInvariantService"%>
-<%@page import="com.redcats.tst.entity.BuildRevisionInvariant"%>
-<%@page import="com.redcats.tst.service.impl.ApplicationService"%>
-<%@page import="com.redcats.tst.service.IApplicationService"%>
-<%@page import="com.redcats.tst.util.StringUtil"%>
-<%@page import="com.redcats.tst.entity.Application"%>
-<%@page import="com.redcats.tst.service.IParameterService"%>
+<%--
+  ~ Cerberus  Copyright (C) 2013  vertigo17
+  ~ DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+  ~
+  ~ This file is part of Cerberus.
+  ~
+  ~ Cerberus is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ Cerberus is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
+  --%>
+<%@page import="org.cerberus.service.impl.BuildRevisionInvariantService"%>
+<%@page import="org.cerberus.service.IBuildRevisionInvariantService"%>
+<%@page import="org.cerberus.entity.BuildRevisionInvariant"%>
+<%@page import="org.cerberus.service.impl.ApplicationService"%>
+<%@page import="org.cerberus.service.IApplicationService"%>
+<%@page import="org.cerberus.util.StringUtil"%>
+<%@page import="org.cerberus.entity.Application"%>
+<%@page import="org.cerberus.service.IParameterService"%>
 <%@page import="java.util.Calendar"%>
-<%@page import="com.redcats.tst.log.MyLogger"%>
-<%@page import="com.redcats.tst.refactor.GeneratePerformanceString"%>
+<%@page import="org.cerberus.log.MyLogger"%>
+<%@page import="org.cerberus.refactor.GeneratePerformanceString"%>
 <%@page import="org.apache.log4j.Level"%>
 <%@page import="java.sql.Statement"%>
 <%@page import="java.sql.ResultSet"%>
@@ -84,7 +98,7 @@
                     if (request.getParameter("test") != null) {
                         test = request.getParameter("test");
                     }
-                    ResultSet rs_test_filter = stmt1.executeQuery("SELECT Test, Active FROM Test ");
+                    ResultSet rs_test_filter = stmt1.executeQuery("SELECT Test, Active FROM test ");
 
                     String testCase = "";
                     if (request.getParameter("testcase") != null) {
@@ -93,7 +107,7 @@
                     String TC_SQL = "";
                     ResultSet rs_testCase_filter = null;
                     if (test.equalsIgnoreCase("") == false) {
-                        TC_SQL = "SELECT tc.TestCase, tc.Description, tc.Application, tc.tcactive FROM TestCase tc ";
+                        TC_SQL = "SELECT tc.TestCase, tc.Description, tc.Application, tc.tcactive FROM testcase tc ";
                         TC_SQL += " WHERE tc.Test = '" + test + "'";
                         rs_testCase_filter = stmt2.executeQuery(TC_SQL);
                     }
@@ -136,7 +150,7 @@
                     if (request.getParameter("application") != null) {
                         Application = request.getParameter("application");
                     }
-                    ResultSet rs_application_filter = stmt3.executeQuery("SELECT DISTINCT Application, Description, system FROM Application ORDER BY sort ");
+                    ResultSet rs_application_filter = stmt3.executeQuery("SELECT DISTINCT Application, Description, system FROM application ORDER BY sort ");
 
                     String IP = "";
                     if (request.getParameter("IP") != null) {
@@ -331,7 +345,7 @@
                         + "tce.Start, tce.End, tce.ControlStatus, tce.Application, "
                         + "tce.Ip, tce.URL, UNIX_TIMESTAMP(tce.End)-UNIX_TIMESTAMP(tce.Start) time_elapsed "
                         + " FROM "
-                        + "(SELECT * FROM TestCaseExecution tce "
+                        + "(SELECT * FROM testcaseexecution tce "
                         + " WHERE 1=1 ";
                 if (test.equalsIgnoreCase("") == false) {
                     ExeclistWhereSQL += " and tce.test='" + test + "'";

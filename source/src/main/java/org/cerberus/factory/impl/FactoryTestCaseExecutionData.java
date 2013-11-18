@@ -1,0 +1,52 @@
+/*
+ * Cerberus  Copyright (C) 2013  vertigo17
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+ *
+ * This file is part of Cerberus.
+ *
+ * Cerberus is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Cerberus is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
+ */
+package org.cerberus.factory.impl;
+
+import org.cerberus.entity.MessageEvent;
+import org.cerberus.entity.TestCaseExecutionData;
+import org.cerberus.factory.IFactoryTestCaseExecutionData;
+import org.springframework.stereotype.Service;
+
+/**
+ * @author bcivel
+ */
+@Service
+public class FactoryTestCaseExecutionData implements IFactoryTestCaseExecutionData {
+
+    @Override
+    public TestCaseExecutionData create(long id, String property, String value, String type, String object,
+                                        String returnCode,String rMessage, long start, long end, long startLong, long endLong, MessageEvent message) {
+        TestCaseExecutionData testCaseExecutionData = new TestCaseExecutionData();
+        testCaseExecutionData.setId(id);
+        testCaseExecutionData.setProperty(property);
+        testCaseExecutionData.setValue(value);
+        testCaseExecutionData.setType(type);
+        testCaseExecutionData.setObject(object);
+        testCaseExecutionData.setRC(returnCode);
+        testCaseExecutionData.setrMessage(rMessage);
+        testCaseExecutionData.setStart(start);
+        testCaseExecutionData.setEnd(end);
+        testCaseExecutionData.setStartLong(startLong);
+        testCaseExecutionData.setEndLong(endLong);
+        testCaseExecutionData.setPropertyResultMessage(message);
+        return testCaseExecutionData;
+
+    }
+}
