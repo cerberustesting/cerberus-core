@@ -235,7 +235,7 @@
     </servlet>
     <servlet>
         <servlet-name>SaveManualExecution</servlet-name>
-        <servlet-class>org.cerberus.execution.SaveManualExecution</servlet-class>
+        <servlet-class>org.cerberus.servlet.execution.SaveManualExecution</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>RunTestCase</servlet-name>

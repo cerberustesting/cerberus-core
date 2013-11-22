@@ -18,7 +18,7 @@
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.cerberus.execution;
+package org.cerberus.servlet.execution;
 
 import org.cerberus.service.ITestCaseService;
 import org.cerberus.service.IApplicationService;

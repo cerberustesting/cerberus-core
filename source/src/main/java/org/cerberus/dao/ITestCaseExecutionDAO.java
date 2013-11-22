@@ -46,9 +46,12 @@ public interface ITestCaseExecutionDAO {
      * @param testcase TestCase Criteria
      * @param environment Environment Criteria
      * @param country Country Criteria
+     * @param build
+     * @param revision
      * @return TCExecution Object created only with attributes from database
      */
-//    TCExecution findLastTCExecutionByCriteria(String test, String testcase, String environment, String country) throws CerberusException;
+    TCExecution findLastTCExecutionByCriteria(String test, String testcase, String environment, String country,
+                                              String build, String revision) throws CerberusException;
 
     /**
      * @param dateLimitFrom The limit start date of the executions from which the selection is done. Mandatory parameter.

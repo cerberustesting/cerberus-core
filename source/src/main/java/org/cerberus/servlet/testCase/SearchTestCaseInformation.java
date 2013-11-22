@@ -20,14 +20,19 @@
 
 package org.cerberus.servlet.testCase;
 
-import org.cerberus.entity.TCase;
+import org.apache.log4j.Level;
+import org.cerberus.dao.ICountryEnvParamDAO;
+import org.cerberus.dao.ICountryEnvironmentParametersDAO;
+import org.cerberus.entity.*;
+import org.cerberus.exception.CerberusException;
 import org.cerberus.factory.IFactoryTCase;
 import org.cerberus.factory.impl.FactoryTCase;
 import org.cerberus.log.MyLogger;
+import org.cerberus.service.IApplicationService;
+import org.cerberus.service.ITestCaseCountryService;
+import org.cerberus.service.ITestCaseExecutionService;
 import org.cerberus.service.ITestCaseService;
 import org.cerberus.util.StringUtil;
-import org.apache.log4j.Level;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -39,9 +44,10 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
+import java.sql.Timestamp;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * {Insert class description here}
@@ -57,18 +63,76 @@ public class SearchTestCaseInformation extends HttpServlet {
         String echo = req.getParameter("sEcho");
         String text = this.getValue(req, "ScText");
         String system = this.getValue(req, "ScSystem");
+        String country = this.getValue(req, "ScCountry");
+        String env = this.getValue(req, "ScEnv");
         TCase tCase = this.getTestCaseFromRequest(req);
+
+        tCase.setGroup("MANUAL");
+        tCase.setActive("Y");
+        if (env.equalsIgnoreCase("QA")) {
+            tCase.setRunQA("Y");
+        } else if (env.equalsIgnoreCase("UAT")) {
+            tCase.setRunUAT("Y");
+        } else if (env.equalsIgnoreCase("PROD")) {
+            tCase.setRunPROD("Y");
+        }
 
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         ITestCaseService testService = appContext.getBean(ITestCaseService.class);
-
-        ObjectMapper mapper = new ObjectMapper();
-        OutputStream out = new ByteArrayOutputStream();
-        mapper.writeValue(out, testService.findTestCaseByAllCriteria(tCase, text, system));
+        ITestCaseCountryService testCaseCountryService = appContext.getBean(ITestCaseCountryService.class);
+        ITestCaseExecutionService testCaseExecutionService = appContext.getBean(ITestCaseExecutionService.class);
+        ICountryEnvironmentParametersDAO countryEnvironmentService = appContext.getBean(ICountryEnvironmentParametersDAO.class);
+        ICountryEnvParamDAO countryEnvParamDAO = appContext.getBean(ICountryEnvParamDAO.class);
+        IApplicationService applicationService = appContext.getBean(IApplicationService.class);
 
         try {
+            JSONArray data = new JSONArray();
+
+
+            List<TCase> tcList = testService.findTestCaseByAllCriteria(tCase, text, system);
+            for (Iterator<TCase> iter = tcList.iterator(); iter.hasNext(); ) {
+                TCase tc = iter.next();
+                if (!testCaseCountryService.findListOfCountryByTestTestCase(tc.getTest(), tc.getTestCase()).contains(country)) {
+                    iter.remove();
+                    continue;
+                }
+                JSONObject jsontCase = new JSONObject(tc);
+                String sprint = "";
+                String rev = "";
+                String url = "";
+                String appSystem = "";
+                String result = "";
+                String dateStr = "";
+                try {
+                    Application app = applicationService.findApplicationByKey(tc.getApplication());
+                    appSystem = app.getSystem();
+                    if (app.getType().equalsIgnoreCase("GUI")) {
+                        CountryEnvironmentApplication countryEnv = countryEnvironmentService.findCountryEnvironmentParameterByKey(app.getSystem(), country, env, tc.getApplication());
+                        url = countryEnv.getIp() + countryEnv.getUrl() + countryEnv.getUrlLogin();
+                    }
+                    CountryEnvParam countryEnvParam = countryEnvParamDAO.findCountryEnvParamByKey(app.getSystem(), country, env);
+                    sprint = countryEnvParam.getBuild();
+                    rev = countryEnvParam.getRevision();
+
+                    TCExecution execution = testCaseExecutionService.findLastTCExecutionByCriteria(tc.getTest(), tc.getTestCase(), env, country, sprint, rev);
+                    Timestamp date = new Timestamp(execution.getEnd());
+                    result = execution.getControlStatus();
+                    dateStr = date.toString().split("\\.")[0];
+                } catch (CerberusException e) {
+                    MyLogger.log(SearchTestCaseInformation.class.getName(), Level.WARN, e.getMessageError().getDescription());
+                }
+
+                jsontCase.put("appLink", url.replace("//", "/"));
+                jsontCase.put("appSystem", appSystem);
+                jsontCase.put("envSprint", sprint);
+                jsontCase.put("envRevision", rev);
+                jsontCase.put("lastResult", result);
+                jsontCase.put("lastResultDate", dateStr);
+
+                data.put(jsontCase);
+            }
+
             JSONObject jsonResponse = new JSONObject();
-            JSONArray data = new JSONArray(out.toString());
 
             jsonResponse.put("aaData", data);
             jsonResponse.put("sEcho", echo);
@@ -97,11 +161,6 @@ public class SearchTestCaseInformation extends HttpServlet {
             priority = Integer.parseInt(req.getParameter("ScPriority"));
         }
         String status = this.getValue(req, "ScStatus");
-        String group = this.getValue(req, "ScGroup");
-        String prod = this.getValue(req, "ScPROD");
-        String qa = this.getValue(req, "ScQA");
-        String uat = this.getValue(req, "ScUAT");
-        String active = this.getValue(req, "ScActive");
         String fBuild = this.getValue(req, "ScFBuild");
         String fRev = this.getValue(req, "ScFRev");
         String tBuild = this.getValue(req, "ScTBuild");
@@ -110,8 +169,8 @@ public class SearchTestCaseInformation extends HttpServlet {
         String targetRev = this.getValue(req, "ScTargetRev");
 
         IFactoryTCase factoryTCase = new FactoryTCase();
-        return factoryTCase.create(test, testCase, origin, null, creator, null, null, project, ticket, application, qa, uat, prod, priority, group,
-                status, null, null, null, active, fBuild, fRev, tBuild, tRev, null, bug, targetBuild, targetRev, null, null, null, null, null);
+        return factoryTCase.create(test, testCase, origin, null, creator, null, null, project, ticket, application, "", "", "", priority, "",
+                status, null, null, null, "", fBuild, fRev, tBuild, tRev, null, bug, targetBuild, targetRev, null, null, null, null, null);
     }
 
     private String getValue(HttpServletRequest req, String valueName) {

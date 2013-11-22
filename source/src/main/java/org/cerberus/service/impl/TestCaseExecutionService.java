@@ -51,10 +51,11 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
         testCaseExecutionDao.updateTCExecution(tCExecution);
     }
 
-//    @Override
-//    public TCExecution findLastTCExecutionByCriteria(String test, String testCase, String environment, String country) throws CerberusException {
-//        return testCaseExecutionDao.findLastTCExecutionByCriteria(test, testCase, environment, country);
-//    }
+    @Override
+    public TCExecution findLastTCExecutionByCriteria(String test, String testCase, String environment, String country,
+                                                     String build, String revision) throws CerberusException {
+        return testCaseExecutionDao.findLastTCExecutionByCriteria(test, testCase, environment, country, build, revision);
+    }
 
     @Override
     public List<TCExecution> findTCExecutionbyCriteria1(String dateLimitFrom, String test, String testCase, String application, String country, String environment, String controlStatus, String status) throws CerberusException {
