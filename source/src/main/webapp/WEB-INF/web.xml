@@ -237,6 +237,10 @@
         <servlet-name>SaveManualExecution</servlet-name>
         <servlet-class>org.cerberus.execution.SaveManualExecution</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>GetParameterSystem</servlet-name>
+        <servlet-class>org.cerberus.servlet.parameter.GetParameterSystem</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>RunTestCase</servlet-name>
         <url-pattern>/RunTestCase</url-pattern>
@@ -456,6 +460,10 @@
     <servlet-mapping>
         <servlet-name>SaveManualExecution</servlet-name>
         <url-pattern>/SaveManualExecution</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>GetParameterSystem</servlet-name>
+        <url-pattern>/GetParameterSystem</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>

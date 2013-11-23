@@ -30,7 +30,7 @@
     ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
     IParameterService myParameterService = appContext.getBean(IParameterService.class);
     try {
-        String CerberusSupportEmail = myParameterService.findParameterByKey("cerberus_support_email").getValue();
+        String CerberusSupportEmail = myParameterService.findParameterByKey("cerberus_support_email","").getValue();
 %>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
     "http://www.w3.org/TR/html4/loose.dtd">
@@ -79,6 +79,6 @@
 <%
     } catch (Exception ex) {
         request.getRequestDispatcher("/DatabaseMaintenance.jsp?GO=Y").forward(request, response);
-        MyLogger.log("Login.jsp", Level.FATAL, " Exception catched : " + ex);
+        MyLogger.log("Login_jsp", Level.FATAL, " Exception catched : " + ex);
     }
 %>

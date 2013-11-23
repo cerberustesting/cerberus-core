@@ -2685,6 +2685,12 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("UPDATE `documentation` SET `DocDesc`='The <i>group</i> is a property of a test case that can take the following list of values : <br><br><b>AUTOMATED</b> : The test is fully automated and does not require any manual action.<br><b>MANUAL</b> : The test has to be manually executed.<br><b>PRIVATE</b> : The test case exist for technical reason and will never appear on the reporting area. For Example : Pre Testing tests cases that are used for login purpose.<br><b>PROCESS</b> : The testcase is related to specific process and needs some intermediate batch treatment to be fully executed.<br><b>COMPARATIVE</b> : Tests that compare the results of 2 batch executions inside the database by SQL requests.' WHERE `DocTable`='testcase' and`DocField`='Group' and`DocValue`='';");
         SQLInstruction.add(SQLS.toString());
         
+//-- Adding system column to parameter table.
+//-- ------------------------
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `parameter` ADD COLUMN `system` VARCHAR(45) NOT NULL  FIRST ");
+        SQLS.append(", DROP PRIMARY KEY , ADD PRIMARY KEY (`system`, `param`) ; ");
+        SQLInstruction.add(SQLS.toString());
         
         return SQLInstruction;
     }

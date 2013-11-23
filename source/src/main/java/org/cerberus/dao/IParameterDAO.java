@@ -30,10 +30,11 @@ import java.util.List;
  */
 public interface IParameterDAO {
 
-    Parameter findParameterByKey(String key) throws CerberusException;
+    Parameter findParameterByKey(String system, String key) throws CerberusException;
 
     public List<Parameter> findAllParameter() throws CerberusException;
     
     public void updateParameter(Parameter parameter) throws CerberusException;
 
+    public void insertParameter(Parameter parameter) throws CerberusException;
 }

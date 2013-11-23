@@ -19,14 +19,6 @@
  */
 package org.cerberus.servlet.parameter;
 
-import org.cerberus.entity.Parameter;
-import org.cerberus.entity.User;
-import org.cerberus.exception.CerberusException;
-import org.cerberus.log.MyLogger;
-import org.cerberus.service.IParameterService;
-import org.cerberus.service.IUserService;
-import org.cerberus.service.impl.ParameterService;
-import org.cerberus.service.impl.UserService;
 import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -35,6 +27,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.cerberus.entity.ParameterSystem;
+import org.cerberus.exception.CerberusException;
+import org.cerberus.log.MyLogger;
+import org.cerberus.service.IParameterSystemService;
+import org.cerberus.service.impl.ParameterSystemService;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -44,8 +41,8 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 /**
  * @author ip100003
  */
-@WebServlet(name = "GetParameter", urlPatterns = {"/GetParameter"})
-public class GetParameter extends HttpServlet {
+@WebServlet(name = "GetParameterSystem", urlPatterns = {"/GetParameterSystem"})
+public class GetParameterSystem extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -57,18 +54,18 @@ public class GetParameter extends HttpServlet {
         String echo = request.getParameter("sEcho");
 
         String mySystem = request.getParameter("system");
-        Logger.getLogger(GetParameter.class.getName()).log(Level.DEBUG, "System : '" + mySystem + "'.");
+        Logger.getLogger(GetParameterSystem.class.getName()).log(Level.DEBUG, "System : '" + mySystem + "'.");
 
         JSONArray data = new JSONArray(); //data that will be shown in the table
 
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-        IParameterService parameterService = appContext.getBean(ParameterService.class);
+        IParameterSystemService parameterSystemService = appContext.getBean(ParameterSystemService.class);
         try {
             JSONObject jsonResponse = new JSONObject();
             try {
-                for (Parameter myParameter : parameterService.findAllParameter()) {
+                for (ParameterSystem myParameterSystem : parameterSystemService.findAllParameterSystem(mySystem)) {
                     JSONArray row = new JSONArray();
-                    row.put(myParameter.getParam()).put(myParameter.getValue()).put(myParameter.getValue()).put(myParameter.getDescription());
+                    row.put(myParameterSystem.getParam()).put(myParameterSystem.getValueCerberus()).put(myParameterSystem.getValueSystem()).put(myParameterSystem.getDescription());
                     data.put(row);
                 }
             } catch (CerberusException ex) {
@@ -82,7 +79,7 @@ public class GetParameter extends HttpServlet {
             response.setContentType("application/json");
             response.getWriter().print(jsonResponse.toString());
         } catch (JSONException e) {
-            MyLogger.log(GetParameter.class.getName(), Level.FATAL, "" + e);
+            MyLogger.log(GetParameterSystem.class.getName(), Level.FATAL, "" + e);
             response.setContentType("text/html");
             response.getWriter().print(e.getMessage());
         }

@@ -17,15 +17,26 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.factory;
+package org.cerberus.factory.impl;
 
-import org.cerberus.entity.Parameter;
+import org.cerberus.entity.ParameterSystem;
+import org.cerberus.factory.IFactoryParameterSystem;
+import org.springframework.stereotype.Service;
 
 /**
- *
  * @author bcivel
  */
-public interface IFactoryParameter {
-    
-    Parameter create(String system, String param,String value,String description);
+@Service
+public class FactoryParameterSystem implements IFactoryParameterSystem {
+
+    @Override
+    public ParameterSystem create(String param, String valueCerberus, String valueSystem, String description) {
+        ParameterSystem parameterSystem = new ParameterSystem();
+        parameterSystem.setParam(param);
+        parameterSystem.setValueCerberus(valueCerberus);
+        parameterSystem.setValueSystem(valueSystem);
+        parameterSystem.setDescription(description);
+        return parameterSystem;
+    }
+
 }

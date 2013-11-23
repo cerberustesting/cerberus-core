@@ -24,6 +24,10 @@ import org.cerberus.entity.Parameter;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.service.IParameterService;
 import java.util.List;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.cerberus.log.MyLogger;
+import org.cerberus.version.Version;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -36,19 +40,54 @@ public class ParameterService implements IParameterService {
 
     @Autowired
     private IParameterDAO parameterDao;
-    
+
     @Override
-    public Parameter findParameterByKey(String key) throws CerberusException{
-        return parameterDao.findParameterByKey(key);
+    public Parameter findParameterByKey(String key, String system) throws CerberusException {
+        Parameter myParameter;
+        /**
+         * We try to get the parameter using the system parameter but if it does
+         * not exist or empty, we get it with system="" which correspond to the default
+         * global Cerberus Parameter.
+         */
+        try {
+            Logger.getLogger(ParameterService.class.getName()).log(Level.DEBUG, Version.PROJECT_NAME_VERSION + " - Trying to retrieve parameter : " + key + " - [" + system + "]");
+            myParameter = parameterDao.findParameterByKey(system, key);
+            if (myParameter.getValue().equalsIgnoreCase("")) {
+                myParameter = parameterDao.findParameterByKey("", key);
+            }
+        } catch (CerberusException ex) {
+            Logger.getLogger(ParameterService.class.getName()).log(Level.DEBUG, Version.PROJECT_NAME_VERSION + " - Trying to retrieve parameter : " + key + " - []");
+            myParameter = parameterDao.findParameterByKey("", key);
+            return myParameter;
+        }
+        return myParameter;
     }
-    
+
     @Override
-    public List<Parameter> findAllParameter() throws CerberusException{
+    public List<Parameter> findAllParameter() throws CerberusException {
         return parameterDao.findAllParameter();
     }
-    
+
     @Override
-    public void updateParameter(Parameter parameter) throws CerberusException{
+    public void updateParameter(Parameter parameter) throws CerberusException {
         parameterDao.updateParameter(parameter);
+    }
+
+    @Override
+    public void insertParameter(Parameter parameter) throws CerberusException {
+        parameterDao.insertParameter(parameter);
+    }
+
+    @Override
+    public void saveParameter(Parameter parameter) throws CerberusException {
+        MyLogger.log(ParameterService.class.getName(), Level.DEBUG, "Saving Parameter");
+        try {
+            parameterDao.findParameterByKey(parameter.getSystem(), parameter.getParam());
+            parameterDao.updateParameter(parameter);
+            MyLogger.log(ParameterService.class.getName(), Level.DEBUG, "Parameter Updated");
+        } catch (CerberusException ex) {
+            parameterDao.insertParameter(parameter);
+            MyLogger.log(ParameterService.class.getName(), Level.DEBUG, "Parameter Inserted");
+        }
     }
 }

@@ -29,10 +29,13 @@ import java.util.List;
  */
 public interface IParameterService {
 
-    Parameter findParameterByKey(String key) throws CerberusException;
-    
+    Parameter findParameterByKey(String key, String system) throws CerberusException;
+
     List<Parameter> findAllParameter() throws CerberusException;
-    
+
     void updateParameter(Parameter parameter) throws CerberusException;
-    
+
+    void insertParameter(Parameter parameter) throws CerberusException;
+
+    void saveParameter(Parameter parameter) throws CerberusException;
 }

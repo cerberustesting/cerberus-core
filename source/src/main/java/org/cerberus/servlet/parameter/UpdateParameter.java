@@ -37,6 +37,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.cerberus.factory.IFactoryParameter;
+import org.cerberus.factory.impl.FactoryParameter;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -58,22 +60,27 @@ public class UpdateParameter extends HttpServlet {
         String param = request.getParameter("id");
         int columnPosition = Integer.parseInt(request.getParameter("columnPosition"));
         String value = request.getParameter("value").replaceAll("'", "");
+        String mySystem = request.getParameter("system");
 
-        MyLogger.log(UpdateParameter.class.getName(), Level.INFO, "value : " + value + " columnPosition : " + columnPosition + " param : " + param);
+        MyLogger.log(UpdateParameter.class.getName(), Level.DEBUG, "System : " + mySystem + " value : " + value + " columnPosition : " + columnPosition + " param : " + param);
 
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         IParameterService parameterService = appContext.getBean(ParameterService.class);
+        IFactoryParameter parameterFactory = appContext.getBean(FactoryParameter.class);
 
-        Parameter myParameter;
+        Parameter myParameter = null;
         try {
-            myParameter = parameterService.findParameterByKey(param);
             switch (columnPosition) {
                 case 1:
+                    myParameter = parameterService.findParameterByKey(param, "");
                     myParameter.setValue(value);
+                    break;
+                case 2:
+                    myParameter = parameterFactory.create(mySystem, param, value, "");
                     break;
             }
             try {
-                parameterService.updateParameter(myParameter);
+                parameterService.saveParameter(myParameter);
 
                 /**
                  * Adding Log entry.

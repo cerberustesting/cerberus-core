@@ -211,7 +211,7 @@
                 IParameterService myParameterService = appContext.getBean(IParameterService.class);
 
                 String JenkinsURL;
-                JenkinsURL = myParameterService.findParameterByKey("jenkins_deploy_pipeline_url").getValue();
+                JenkinsURL = myParameterService.findParameterByKey("jenkins_deploy_pipeline_url","").getValue();
                 String final_JenkinsURL = "";
 
                 String DeployURL;

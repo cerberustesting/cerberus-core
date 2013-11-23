@@ -107,7 +107,7 @@ public class ExecutionPerBuildRevision extends HttpServlet {
 
                 IParameterService parameterService = appContext.getBean(ParameterService.class);
 
-                int numberOfLastBR = Integer.valueOf(parameterService.findParameterByKey("cerberus_homepage_nbbuildhistorydetail").getValue());
+                int numberOfLastBR = Integer.valueOf(parameterService.findParameterByKey("cerberus_homepage_nbbuildhistorydetail",MySystem).getValue());
 
                 TestCaseExecutionStatisticsServiceImpl tceStatsService = appContext.getBean(TestCaseExecutionStatisticsServiceImpl.class);
 

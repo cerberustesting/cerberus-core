@@ -21,20 +21,12 @@ package org.cerberus.entity;
  *
  * @author bcivel
  */
-public class Parameter {
+public class ParameterSystem {
 
-    private String system;
     private String param;
-    private String value;
+    private String valueCerberus;
+    private String valueSystem;
     private String description;
-
-    public String getSystem() {
-        return system;
-    }
-
-    public void setSystem(String system) {
-        this.system = system;
-    }
 
     public String getDescription() {
         return description;
@@ -52,11 +44,20 @@ public class Parameter {
         this.param = param;
     }
 
-    public String getValue() {
-        return value;
+    public String getValueCerberus() {
+        return valueCerberus;
     }
 
-    public void setValue(String value) {
-        this.value = value;
+    public void setValueCerberus(String valueCerberus) {
+        this.valueCerberus = valueCerberus;
     }
+
+    public String getValueSystem() {
+        return valueSystem;
+    }
+
+    public void setValueSystem(String valueSystem) {
+        this.valueSystem = valueSystem;
+    }
+
 }

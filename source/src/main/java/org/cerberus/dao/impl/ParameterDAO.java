@@ -52,23 +52,24 @@ public class ParameterDAO implements IParameterDAO {
     private IFactoryParameter factoryParameter;
 
     @Override
-    public Parameter findParameterByKey(String key) throws CerberusException {
+    public Parameter findParameterByKey(String system, String key) throws CerberusException {
         boolean throwExep = false;
         Parameter result = null;
-        final String query = "SELECT * FROM parameter p WHERE p.param = ? ";
+        final String query = "SELECT * FROM parameter p WHERE p.`system` = ? and p.param = ? ";
 
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
             try {
-                preStat.setString(1, key);
+                preStat.setString(1, system);
+                preStat.setString(2, key);
 
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     if (resultSet.first()) {
                         String value = resultSet.getString("value");
                         String desc = resultSet.getString("description");
-                        result = factoryParameter.create(key, value, desc);
+                        result = factoryParameter.create(system, key, value, desc);
                     } else {
                         throwExep = true;
                     }
@@ -117,10 +118,11 @@ public class ParameterDAO implements IParameterDAO {
                 try {
                     result = new ArrayList<Parameter>();
                     while (resultSet.next()) {
+                        String system = resultSet.getString("system");
                         String param = resultSet.getString("param");
                         String value = resultSet.getString("value");
                         String desc = resultSet.getString("description");
-                        paramet = factoryParameter.create(param, value, desc);
+                        paramet = factoryParameter.create(system, param, value, desc);
                         result.add(paramet);
                         throwExep = false;
                     }
@@ -156,14 +158,15 @@ public class ParameterDAO implements IParameterDAO {
     @Override
     public void updateParameter(Parameter parameter) throws CerberusException {
 
-        final String query = "UPDATE parameter SET Value = ? WHERE param = ? ;";
+        final String query = "UPDATE parameter SET Value = ? WHERE system = ? and param = ? ;";
 
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
             try {
                 preStat.setString(1, parameter.getValue());
-                preStat.setString(2, parameter.getParam());
+                preStat.setString(2, parameter.getSystem());
+                preStat.setString(3, parameter.getParam());
 
                 preStat.executeUpdate();
 
@@ -185,5 +188,37 @@ public class ParameterDAO implements IParameterDAO {
         }
     }
 
+    @Override
+    public void insertParameter(Parameter parameter) throws CerberusException {
 
+        final String query = "INSERT INTO parameter (`system`, `param`, `value`, `description`) VALUES (?, ?, ?, ?) ;";
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            try {
+                preStat.setString(1, parameter.getSystem());
+                preStat.setString(2, parameter.getParam());
+                preStat.setString(3, parameter.getValue());
+                preStat.setString(4, parameter.getDescription());
+
+                preStat.executeUpdate();
+
+            } catch (SQLException exception) {
+                MyLogger.log(ParameterDAO.class.getName(), Level.ERROR, exception.toString());
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(ParameterDAO.class.getName(), Level.ERROR, exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(ParameterDAO.class.getName(), Level.WARN, e.toString());
+            }
+        }
+    }
 }

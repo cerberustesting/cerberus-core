@@ -184,9 +184,9 @@
 
 
                     int execmax = 100;
-                    execmax = Integer.valueOf(myParameterService.findParameterByKey("cerberus_testexecutiondetailpage_nbmaxexe").getValue());
+                    execmax = Integer.valueOf(myParameterService.findParameterByKey("cerberus_testexecutiondetailpage_nbmaxexe","").getValue());
                     int execmax_max = 100;
-                    execmax_max = Integer.valueOf(myParameterService.findParameterByKey("cerberus_testexecutiondetailpage_nbmaxexe_max").getValue());
+                    execmax_max = Integer.valueOf(myParameterService.findParameterByKey("cerberus_testexecutiondetailpage_nbmaxexe_max","").getValue());
                     if (request.getParameter("execmax") != null) {
                         if (Integer.valueOf(request.getParameter("execmax")) < execmax_max) {
                             execmax = Integer.valueOf(request.getParameter("execmax"));
