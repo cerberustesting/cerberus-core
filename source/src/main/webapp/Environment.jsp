@@ -238,7 +238,7 @@
                             Statement stmtCEP = conn.createStatement();
                             String CEP = "SELECT DISTINCT c.Application, c.IP, c.URL, c.URLLOGIN, a.internal "
                                     + "FROM `countryenvironmentparameters` c "
-                                    + "JOIN Application a ON a.application = c.application "
+                                    + "JOIN application a ON a.application = c.application "
                                     + "WHERE 1=1 "
                                     + " and c.System='" + MySystem + "' "
                                     + " and c.Country='" + country + "' "
