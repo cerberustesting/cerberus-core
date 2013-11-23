@@ -391,7 +391,7 @@ public class TestCaseDAO implements ITestCaseDAO {
                 preStat.setString(12, ParameterParserUtil.wildcardIfEmpty(testCase.getRunPROD()));
                 preStat.setString(13, ParameterParserUtil.wildcardIfEmpty(testCase.getRunUAT()));
                 preStat.setString(14, ParameterParserUtil.wildcardIfEmpty(testCase.getRunQA()));
-                if (text != null) {
+                if (text != null && !text.equalsIgnoreCase("")) {
                     preStat.setString(15, text);
                     preStat.setString(16, text);
                     preStat.setString(17, text);
