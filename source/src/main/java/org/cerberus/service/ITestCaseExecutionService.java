@@ -33,7 +33,8 @@ public interface ITestCaseExecutionService {
 
     void updateTCExecution(TCExecution tCExecution) throws CerberusException;
 
-//    TCExecution findLastTCExecutionByCriteria(String test, String testCase, String environment, String country) throws CerberusException;
+    TCExecution findLastTCExecutionByCriteria(String test, String testCase, String environment, String country,
+                                              String build, String revision) throws CerberusException;
 
     /**
      * @param dateLimitFrom The limit start date of the executions from which

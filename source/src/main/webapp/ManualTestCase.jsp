@@ -77,6 +77,10 @@
                 width: 100%;
                 height: 100%;
             }
+
+            .center {
+                text-align: center;
+            }
         </style>
 
         <script type="text/javascript" src="js/jquery-1.10.2.min.js"></script>
@@ -89,162 +93,121 @@
     <body>
         <%@ include file="include/function.jsp" %>
         <%@ include file="include/header.jsp" %>
-        <div class="fields" id="searchTestCase" style="margin-left: 25px">
-            <div>
-                <div class="field">
-                    <label for="test" style="width: 100px">Test</label><br/>
-                    <select id="test" name="test" style="width: 100px">
-                        <option value="All">-- ALL --</option>
-                    </select>
-                </div>
-                <div class="field">
-                    <label for="testCase" style="width: 60px">TestCase</label><br/>
-                    <input id="testCase" name="testCase" type="text" style="width: 60px"/>
-                </div>
-                <div class="field">
-                    <label for="project" style="width: 100px">Project</label><br/>
-                    <select id="project" name="project" style="width: 100px">
-                        <option value="All">-- ALL --</option>
-                    </select>
-                </div>
-                <div class="field">
-                    <label for="ticket" style="width: 100px">Ticket</label><br/>
-                    <select id="ticket" name="ticket" style="width: 100px">
-                        <option value="All">-- ALL --</option>
-                    </select>
-                </div>
-                <div class="field">
-                    <label for="bugID" style="width: 70px">Bug ID</label><br/>
-                    <select id="bugID" name="bugID" style="width: 70px">
-                        <option value="All">-- ALL --</option>
-                    </select>
-                </div>
-                <div class="field">
-                    <label for="origine" style="width: 90px">Origin</label><br/>
-                    <select id="origine" name="origine" style="width: 90px">
-                        <option value="All">-- ALL --</option>
-                    </select>
-                </div>
-                <div class="field">
-                    <label for="creator" style="width: 90px">Creator</label><br/>
-                    <select id="creator" name="creator" style="width: 90px">
-                        <option value="All">-- ALL --</option>
-                    </select>
-                </div>
-                <div class="field">
-                    <label for="system" style="width: 90px">System</label><br/>
-                    <select id="system" name="system" style="width: 90px">
-                        <option value="All">-- ALL --</option>
-                    </select>
-                </div>
-                <div class="field">
-                    <label for="application" style="width: 140px">Application</label><br/>
-                    <select id="application" name="application" style="width: 140px">
-                        <option value="All">-- ALL --</option>
-                    </select>
-                </div>
-                <div class="field">
-                    <label for="priority" style="width: 60px">Priority</label><br/>
-                    <select id="priority" name="priority" style="width: 60px">
-                        <option value="All">-- ALL --</option>
-                    </select>
-                </div>
-                <div class="field">
-                    <label for="status" style="width: 150px">Status</label><br/>
-                    <select id="status" name="status" style="width: 150px">
-                        <option value="All">-- ALL --</option>
-                    </select>
-                </div>
-            </div>
-            <div>
-                <div class="field">
-                    <label for="group" style="width: 150px">Group</label><br/>
-                    <select id="group" name="group" style="width: 150px">
-                        <option value="All">-- ALL --</option>
-                    </select>
-                </div>
-                <div class="field">
-                    <label for="activePROD" style="width: 90px">Active PROD</label><br/>
-                    <select id="activePROD" name="activePROD" style="width: 90px">
-                        <option value="All">-- ALL --</option>
-                    </select>
-                </div>
-                <div class="field">
-                    <label for="activeUAT" style="width: 90px">Active UAT</label><br/>
-                    <select id="activeUAT" name="activeUAT" style="width: 90px">
-                        <option value="All">-- ALL --</option>
-                    </select>
-                </div>
-                <div class="field">
-                    <label for="activeQA" style="width: 90px">Active QA</label><br/>
-                    <select id="activeQA" name="activeQA" style="width: 90px">
-                        <option value="All">-- ALL --</option>
-                    </select>
-                </div>
-                <div class="field">
-                    <label for="text" style="width: 500px">Text</label><br/>
-                    <input id="text" name="text" type="text" style="width: 500px"/>
-                </div>
-            </div>
-            <div>
-                <div class="field">
-                    <label for="tcActive" style="width: 150px">Active</label><br/>
-                    <select id="tcActive" name="tcActive" style="width: 150px">
-                        <option value="All">-- ALL --</option>
-                    </select>
-                </div>
-                <div class="field">
-                    <label for="fromBuild" style="width: 90px">From Sprint</label><br/>
-                    <select id="fromBuild" name="fromBuild" style="width: 90px">
-                        <option value="All">-- ALL --</option>
-                    </select>
-                </div>
-                <div class="field">
-                    <label for="fromRev" style="width: 90px">From Rev</label><br/>
-                    <select id="fromRev" name="fromRev" style="width: 90px">
-                        <option value="All">-- ALL --</option>
-                    </select>
-                </div>
-                <div class="field">
-                    <label for="toBuild" style="width: 90px">To Sprint</label><br/>
-                    <select id="toBuild" name="toBuild" style="width: 90px">
-                        <option value="All">-- ALL --</option>
-                    </select>
-                </div>
-                <div class="field">
-                    <label for="toRev" style="width: 90px">To Revision</label><br/>
-                    <select id="toRev" name="toRev" style="width: 90px">
-                        <option value="All">-- ALL --</option>
-                    </select>
-                </div>
-                <div class="field">
-                    <label for="targetBuild" style="width: 90px">Target Sprint</label><br/>
-                    <select id="targetBuild" name="targetBuild" style="width: 90px">
-                        <option value="All">-- ALL --</option>
-                    </select>
-                </div>
-                <div class="field">
-                    <label for="targetRev" style="width: 90px">Target Revision</label><br/>
-                    <select id="targetRev" name="targetRev" style="width: 90px">
-                        <option value="All">-- ALL --</option>
-                    </select>
-                </div>
-                <div class="field" style="float: right">
-                    <button type="button" class="button" onclick="loadTestCases()">Search</button>
-                </div>
-            </div>
-        </div>
-        <div id="manualTestCaseExecution" style="display: none; padding-top: 15px">
-            <div class="fields" style="margin-left: 25px">
+        <div id="searchTestCase">
+            <div class="fields" style="margin-left: 15px">
                 <div>
-                    <h4>Execution Parameters</h4>
-
+                    <h4>TestCase Parameters</h4>
                     <div class="field">
-                        <label for="executionEnv" style="width: 90px">Environment</label><br/>
-                        <select id="executionEnv" name="executionEnv" style="width: 90px">
-                            <option value="">----</option>
+                        <label for="test" style="width: 100px">Test</label><br/>
+                        <select id="test" name="test" style="width: 100px">
+                            <option value="All">-- ALL --</option>
                         </select>
                     </div>
+                    <div class="field">
+                        <label for="testCase" style="width: 60px">TestCase</label><br/>
+                        <input id="testCase" name="testCase" type="text" style="width: 60px"/>
+                    </div>
+                    <div class="field">
+                        <label for="project" style="width: 100px">Project</label><br/>
+                        <select id="project" name="project" style="width: 100px">
+                            <option value="All">-- ALL --</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label for="ticket" style="width: 100px">Ticket</label><br/>
+                        <select id="ticket" name="ticket" style="width: 100px">
+                            <option value="All">-- ALL --</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label for="bugID" style="width: 70px">Bug ID</label><br/>
+                        <select id="bugID" name="bugID" style="width: 70px">
+                            <option value="All">-- ALL --</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label for="origine" style="width: 90px">Origin</label><br/>
+                        <select id="origine" name="origine" style="width: 90px">
+                            <option value="All">-- ALL --</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label for="creator" style="width: 90px">Creator</label><br/>
+                        <select id="creator" name="creator" style="width: 90px">
+                            <option value="All">-- ALL --</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label for="system" style="width: 90px">System</label><br/>
+                        <select id="system" name="system" style="width: 90px">
+                            <option value="All">-- ALL --</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label for="application" style="width: 140px">Application</label><br/>
+                        <select id="application" name="application" style="width: 140px">
+                            <option value="All">-- ALL --</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label for="priority" style="width: 60px">Priority</label><br/>
+                        <select id="priority" name="priority" style="width: 60px">
+                            <option value="All">-- ALL --</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label for="status" style="width: 150px">Status</label><br/>
+                        <select id="status" name="status" style="width: 150px">
+                            <option value="All">-- ALL --</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <div class="field">
+                        <label for="fromBuild" style="width: 90px">From Sprint</label><br/>
+                        <select id="fromBuild" name="fromBuild" style="width: 90px">
+                            <option value="All">-- ALL --</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label for="fromRev" style="width: 90px">From Rev</label><br/>
+                        <select id="fromRev" name="fromRev" style="width: 90px">
+                            <option value="All">-- ALL --</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label for="toBuild" style="width: 90px">To Sprint</label><br/>
+                        <select id="toBuild" name="toBuild" style="width: 90px">
+                            <option value="All">-- ALL --</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label for="toRev" style="width: 90px">To Revision</label><br/>
+                        <select id="toRev" name="toRev" style="width: 90px">
+                            <option value="All">-- ALL --</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label for="targetBuild" style="width: 90px">Target Sprint</label><br/>
+                        <select id="targetBuild" name="targetBuild" style="width: 90px">
+                            <option value="All">-- ALL --</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label for="targetRev" style="width: 90px">Target Revision</label><br/>
+                        <select id="targetRev" name="targetRev" style="width: 90px">
+                            <option value="All">-- ALL --</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label for="text" style="width: 500px">Text</label><br/>
+                        <input id="text" name="text" type="text" style="width: 500px"/>
+                    </div>
+                </div>
+            </div>
+            <div class="fields" style="margin-left: 15px; width: 350px">
+                <div>
+                    <h4>Environment Parameters</h4>
                     <div class="field">
                         <label for="executionCountry" style="width: 90px">Country</label><br/>
                         <select id="executionCountry" name="executionCountry" style="width: 90px">
@@ -252,25 +215,39 @@
                         </select>
                     </div>
                     <div class="field">
-                        <label for="executionTag" style="width: 500px">Tag</label><br/>
-                        <input type="text" id="executionTag" name="executionTag" style="width: 500px"/>
+                        <label for="executionEnv" style="width: 90px">Environment</label><br/>
+                        <select id="executionEnv" name="executionEnv" style="width: 90px">
+                            <option value="">----</option>
+                        </select>
+                    </div>
+                    <div class="field" style="float: right; margin-top: 10px">
+                        <button type="button" class="button" onclick="loadTestCases()">Search</button>
                     </div>
                 </div>
             </div>
-            <div id="divResultMessage" class="field" style="width: 600px; text-align: center">
+        </div>
+        <div id="manualTestCaseExecution" style="display: none; padding-top: 25px; padding-left: 15px;">
+            <div class="fields">
+                <h4>Execution Parameters</h4>
+                <div class="field">
+                    <label for="executionTag" style="width: 500px">Tag</label><br/>
+                    <input type="text" id="executionTag" name="executionTag" style="width: 500px"/>
+                </div>
+            </div>
+            <div id="divResultMessage" class="field" style="width: 650px; text-align: center">
                 <span id="resultMessage" style="color: green; font-size: large; font-weight: 600;"></span>
             </div>
-
-            <div style="width: 90%; padding-left: 25px; font: 90% sans-serif">
+            <div style="width: 90%; font: 90% sans-serif">
                 <table id="testCaseTable" class="display">
                     <thead>
                         <tr>
-                            <th style="width: 150px">Test</th>
-                            <th style="width: 40px">Test Case</th>
-                            <th style="width: 200px">Value Expected</th>
-                            <th style="width: 450px">How To</th>
-                            <th style="width: 200px">Control Message</th>
-                            <th style="width: 50px">Result</th>
+                            <th>Test</th>
+                            <th>Test Case</th>
+                            <th>Value Expected</th>
+                            <th>How To</th>
+                            <th>Detail</th>
+                            <th>Control Message</th>
+                            <th>Result</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -295,18 +272,20 @@
                 url += "&ScApplication=" + $('#application').val();
                 url += "&ScPriority=" + $('#priority').val();
                 url += "&ScStatus=" + $('#status').val();
-                url += "&ScGroup=" + $('#group').val();
-                url += "&ScPROD=" + $('#activePROD').val();
-                url += "&ScUAT=" + $('#activeUAT').val();
-                url += "&ScQA=" + $('#activeQA').val();
+//                url += "&ScGroup=" + $('#group').val();
+//                url += "&ScPROD=" + $('#activePROD').val();
+//                url += "&ScUAT=" + $('#activeUAT').val();
+//                url += "&ScQA=" + $('#activeQA').val();
                 url += "&ScText=" + $('#text').val();
-                url += "&ScActive=" + $('#tcActive').val();
+//                url += "&ScActive=" + $('#tcActive').val();
                 url += "&ScFBuild=" + $('#fromBuild').val();
                 url += "&ScFRev=" + $('#fromRev').val();
                 url += "&ScTBuild=" + $('#toBuild').val();
                 url += "&ScTRev=" + $('#toRev').val();
                 url += "&ScTargetBuild=" + $('#targetBuild').val();
                 url += "&ScTargetRev=" + $('#targetRev').val();
+                url += "&ScCountry=" + $('#executionCountry').val();
+                url += "&ScEnv=" + $('#executionEnv').val();
                 return url;
             }
 
@@ -344,46 +323,65 @@
             }
 
             function loadTestCases() {
-                oTable = $('#testCaseTable').dataTable({
-                    "bJQueryUI": true,
-                    "bServerSide": false,
-                    "bDestroy": true,
-                    "bAutoWidth": false,
-                    "sAjaxSource": getAjaxSource(),
-                    "sServerMethod": "POST",
-                    "aoColumns": [
-                        {"mDataProp": "test", "sName": "test", sWidth: "150px"},
-                        {"mDataProp": "testCase", "sName": "ScTestCase", sWidth: "40px"},
-                        {"mDataProp": "description", "sName": "description", sWidth: "200px"},
-                        {"mDataProp": "howTo", "sName": "howTo", sWidth: "450px"},
-                        {"mDataProp": null, "sDefaultContent": '', "bSortable": false, sWidth: "200px"},
-                        {"mDataProp": null, "sDefaultContent": '', "bSortable": false, sWidth: "50px"}
-                    ],
-                    aoColumnDefs: [
-                        {
-                            "aTargets": [5],
-                            "fnRender": function (o, v) {
-                                return "<p style='text-align: center'><input type='button' style='background-image: url(images/ok.png); width: 20px; height: 20px; border: 0 none; top: 0px' onclick='saveManualTest(\"OK\"," + o.iDataRow + ")'/></p><br/><br/>" +
-                                    "<p style='text-align: center'><input type='button' style='background-image: url(images/ko.png); width: 20px; height: 20px; border: 0 none; bottom: 0px' onclick='saveManualTest(\"KO\"," + o.iDataRow + ")'/></p>"
+                if ($('#executionCountry').val() == "" || $('#executionEnv').val() == "") {
+                    alert("Please choose Country and Environment before search!");
+                } else {
+                    oTable = $('#testCaseTable').dataTable({
+                        "bJQueryUI": true,
+                        "bServerSide": false,
+                        "bDestroy": true,
+                        "bAutoWidth": false,
+                        "sAjaxSource": getAjaxSource(),
+                        "sServerMethod": "POST",
+                        "aoColumns": [
+                            {"mDataProp": "test", "sName": "test", "bSortable": false, sWidth: "130px"},
+                            {"mDataProp": "testCase", "sName": "ScTestCase", "bSortable": false, sWidth: "30px"},
+                            {"mDataProp": "description", "sName": "description", "bSortable": false, sWidth: "180px"},
+                            {"mDataProp": "howTo", "sName": "howTo", "bSortable": false, sWidth: "430px"},
+                            {"mDataProp": function(tCase, type, val){
+                                var detail = "Application: ";
+                                if (tCase.appLink != "") {
+                                    detail += "<a href='http://"+tCase.appLink+"' target='_blank'><b>"+tCase.application+"</b></a>";
+                                } else{
+                                    detail += "<b>"+tCase.application+"</b>";
+                                }
+                                detail += "<br/>System: <b>"+tCase.appSystem+"</b>";
+                                detail += "<br/>Build: <b>"+tCase.envSprint+"</b><br/>Revision: <b>"+tCase.envRevision+"</b>";
+                                if (tCase.lastResult != "") {
+                                    detail += "<br/><span style='background-color: green'><b>"+tCase.lastResult+"</b></span> on "+tCase.lastResultDate;
+                                }
+                                return detail;
+                            }, "sName": "detail", "bSortable": false, sWidth: "140px", sClass: "center"},
+                            {"mDataProp": null, "sDefaultContent": '', "bSortable": false, sWidth: "140px"},
+                            {"mDataProp": null, "sDefaultContent": '', "bSortable": false, sWidth: "30px"}
+                        ],
+                        aoColumnDefs: [
+                            {
+                                "aTargets": [6],
+                                "fnRender": function (o, v) {
+                                    return "<p style='text-align: center'><input type='button' style='background-image: url(images/ok.png); width: 20px; height: 20px; border: 0 none; top: 0px' onclick='saveManualTest(\"OK\"," + o.iDataRow + ")'/></p><br/><br/>" +
+                                        "<p style='text-align: center'><input type='button' style='background-image: url(images/ko.png); width: 20px; height: 20px; border: 0 none; bottom: 0px' onclick='saveManualTest(\"KO\"," + o.iDataRow + ")'/></p>"
+                                }
                             }
-                        }
-                    ]
-                }).makeEditable({
-                    sUpdateURL: function (value, settings) {
-                        return(value);
-                    },
-                    oEditableSettings: { event: 'click' },
-                    "aoColumns": [
-                        null,
-                        null,
-                        null,
-                        null,
-                        {type: 'textarea', onblur: 'submit'},
-                        null
-                    ]
-                });
+                        ]
+                    }).makeEditable({
+                        sUpdateURL: function (value, settings) {
+                            return(value);
+                        },
+                        oEditableSettings: { event: 'click' },
+                        "aoColumns": [
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            {type: 'textarea', onblur: 'submit'},
+                            null
+                        ]
+                    });
 
-                $('#manualTestCaseExecution').show();
+                    $('#manualTestCaseExecution').show();
+                }
             }
 
             $().ready(function () {
@@ -410,12 +408,12 @@
                     {label: "application", dTable: "testcase", dField: "Application", dLabel: "Application"},
                     {label: "priority", dTable: "testcase", dField: "Priority", dLabel: ""},
                     {label: "status", dTable: "testcase", dField: "Status", dLabel: ""},
-                    {label: "group", dTable: "testcase", dField: "Group", dLabel: ""},
-                    {label: "activePROD", dTable: "testcase", dField: "activePROD", dLabel: ""},
-                    {label: "activeUAT", dTable: "testcase", dField: "activeUAT", dLabel: ""},
-                    {label: "activeQA", dTable: "testcase", dField: "activeQA", dLabel: ""},
+//                    {label: "group", dTable: "testcase", dField: "Group", dLabel: ""},
+//                    {label: "activePROD", dTable: "testcase", dField: "activePROD", dLabel: ""},
+//                    {label: "activeUAT", dTable: "testcase", dField: "activeUAT", dLabel: ""},
+//                    {label: "activeQA", dTable: "testcase", dField: "activeQA", dLabel: ""},
                     {label: "text", dTable: "page_testcasesearch", dField: "text", dLabel: ""},
-                    {label: "tcActive", dTable: "testcase", dField: "TcActive", dLabel: "Active"},
+//                    {label: "tcActive", dTable: "testcase", dField: "TcActive", dLabel: "Active"},
                     {label: "fromBuild", dTable: "testcase", dField: "FromBuild", dLabel: ""},
                     {label: "fromRev", dTable: "testcase", dField: "FromRev", dLabel: ""},
                     {label: "toBuild", dTable: "testcase", dField: "ToBuild", dLabel: ""},

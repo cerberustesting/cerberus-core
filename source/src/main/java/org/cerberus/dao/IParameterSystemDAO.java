@@ -1,6 +1,4 @@
-/*
- * Cerberus  Copyright (C) 2013  vertigo17
- * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+/* DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This file is part of Cerberus.
  *
@@ -17,15 +15,20 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.factory;
+package org.cerberus.dao;
 
-import org.cerberus.entity.Parameter;
+import java.util.List;
+import org.cerberus.entity.ParameterSystem;
+import org.cerberus.exception.CerberusException;
 
 /**
+ * {Insert class description here}
  *
- * @author bcivel
+ * @author Tiago Bernardes
+ * @version 1.0, 22/03/2013
+ * @since 2.0.0
  */
-public interface IFactoryParameter {
-    
-    Parameter create(String system, String param,String value,String description);
+public interface IParameterSystemDAO {
+
+    public List<ParameterSystem> findAllParameterSystem(String system) throws CerberusException;
 }

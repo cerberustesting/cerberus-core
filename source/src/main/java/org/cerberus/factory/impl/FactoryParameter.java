@@ -30,10 +30,11 @@ import org.springframework.stereotype.Service;
 public class FactoryParameter implements IFactoryParameter {
 
     @Override
-    public Parameter create(String param, String value, String description) {
+    public Parameter create(String system, String param, String value, String description) {
         Parameter parameter = new Parameter();
-        parameter.setValue(value);
+        parameter.setSystem(system);
         parameter.setParam(param);
+        parameter.setValue(value);
         parameter.setDescription(description);
         return parameter;
     }

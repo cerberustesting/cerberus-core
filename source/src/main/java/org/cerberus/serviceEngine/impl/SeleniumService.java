@@ -98,7 +98,7 @@ public class SeleniumService implements ISeleniumService {
             boolean record = (verbose > 0);
             long defaultWait;
             try {
-                Parameter param = parameterService.findParameterByKey("selenium_defaultWait");
+                Parameter param = parameterService.findParameterByKey("selenium_defaultWait","");
                 defaultWait = Long.parseLong(param.getValue());
             } catch (CerberusException ex) {
                 MyLogger.log(Selenium.class.getName(), Level.WARN, "Parameter (selenium_defaultWait) not in Parameter table, default wait set to 90 seconds");
@@ -182,8 +182,8 @@ public class SeleniumService implements ISeleniumService {
         }
 
         if (record) {
-            String firebugPath = parameterService.findParameterByKey("cerberus_selenium_firefoxextension_firebug").getValue();
-            String netexportPath = parameterService.findParameterByKey("cerberus_selenium_firefoxextension_netexport").getValue();
+            String firebugPath = parameterService.findParameterByKey("cerberus_selenium_firefoxextension_firebug","").getValue();
+            String netexportPath = parameterService.findParameterByKey("cerberus_selenium_firefoxextension_netexport","").getValue();
             if (StringUtil.isNullOrEmpty(firebugPath)) {
                 MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_SELENIUM);
                 mes.setDescription(mes.getDescription().replaceAll("%MES%", "Mandatory parameter for network traffic 'cerberus_selenium_firefoxextension_firebug' not defined."));
@@ -230,7 +230,7 @@ public class SeleniumService implements ISeleniumService {
                 throw new CerberusException(mes);
             }
 
-            String cerberusUrl = parameterService.findParameterByKey("cerberus_url").getValue();
+            String cerberusUrl = parameterService.findParameterByKey("cerberus_url","").getValue();
             if (StringUtil.isNullOrEmpty(cerberusUrl)) {
                 MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_SELENIUM);
                 mes.setDescription(mes.getDescription().replaceAll("%MES%", "Mandatory parameter for network traffic 'cerberus_url' not defined."));
@@ -476,7 +476,7 @@ public class SeleniumService implements ISeleniumService {
 
             String imgPath;
             try {
-                imgPath = parameterService.findParameterByKey("cerberus_picture_path").getValue();
+                imgPath = parameterService.findParameterByKey("cerberus_picture_path","").getValue();
                 File dir = new File(imgPath + runId);
                 dir.mkdirs();
 

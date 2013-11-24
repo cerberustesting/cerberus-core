@@ -17,15 +17,17 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.factory;
+package org.cerberus.service;
 
-import org.cerberus.entity.Parameter;
+import org.cerberus.entity.ParameterSystem;
+import org.cerberus.exception.CerberusException;
+import java.util.List;
 
 /**
  *
  * @author bcivel
  */
-public interface IFactoryParameter {
-    
-    Parameter create(String system, String param,String value,String description);
+public interface IParameterSystemService {
+
+    List<ParameterSystem> findAllParameterSystem(String system) throws CerberusException;
 }

@@ -17,15 +17,29 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.factory;
+package org.cerberus.service.impl;
 
-import org.cerberus.entity.Parameter;
+import java.util.List;
+import org.cerberus.dao.IParameterSystemDAO;
+import org.cerberus.entity.ParameterSystem;
+import org.cerberus.exception.CerberusException;
+import org.cerberus.service.IParameterSystemService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 /**
  *
  * @author bcivel
  */
-public interface IFactoryParameter {
-    
-    Parameter create(String system, String param,String value,String description);
+@Service
+public class ParameterSystemService implements IParameterSystemService {
+
+    @Autowired
+    private IParameterSystemDAO parameterSystemDao;
+
+    @Override
+    public List<ParameterSystem> findAllParameterSystem(String system) throws CerberusException {
+        return parameterSystemDao.findAllParameterSystem(system);
+    }
+
 }

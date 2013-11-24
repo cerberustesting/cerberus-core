@@ -91,7 +91,7 @@
 
                     String PictureURL;
                     String MyPictureURL;
-                    PictureURL = myParameterService.findParameterByKey("cerberus_picture_url").getValue();
+                    PictureURL = myParameterService.findParameterByKey("cerberus_picture_url","").getValue();
 
                     /*
                      * Manage Filters

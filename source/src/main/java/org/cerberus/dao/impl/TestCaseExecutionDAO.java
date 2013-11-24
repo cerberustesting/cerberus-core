@@ -238,67 +238,54 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         return list;
     }
 
-//    @Override
-//    public TCExecution findLastTCExecutionByCriteria(String test, String testcase, String environment, String country) throws CerberusException {
-//        TCExecution result = null;
-//        boolean throwEx = false;
-//        final String query = "SELECT * FROM testcaseexecution WHERE test = ? AND testcase = ? AND environment = ? AND country = ? ORDER BY id DESC";
-//
-//        try {
-//            PreparedStatement preStat = this.databaseSpring.connect().prepareStatement(query);
-//            preStat.setString(1, test);
-//            preStat.setString(2, testcase);
-//            preStat.setString(3, environment);
-//            preStat.setString(4, country);
-//
-//            try {
-//                ResultSet resultSet = preStat.executeQuery();
-//                try {
-//                    if (!(resultSet.first())) {
-//                        throwEx = true;
-//                    }
-//                    //TODO get Application
-//                    long id = resultSet.getLong("ID");
-//                    String build = resultSet.getString("build");
-//                    String revision = resultSet.getString("revision");
-//                    String browser = resultSet.getString("browser");
-//                    long start = resultSet.getLong("start");
-//                    long end = resultSet.getLong("end");
-//                    String controlStatus = resultSet.getString("controlStatus");
-//                    String controlMessage = resultSet.getString("controlMessage");
-//                    String ip = resultSet.getString("ip"); // Host the Selenium IP
-//                    String url = resultSet.getString("url");
-//                    String port = resultSet.getString("port"); // host the Selenium Port
-//                    String tag = resultSet.getString("tag");
-//                    String finished = resultSet.getString("finished");
-//                    int verbose = resultSet.getInt("verbose");
-//                    String status = resultSet.getString("status");
-//                    String crbVersion = resultSet.getString("crbVersion");
-//                    result = factoryTCExecution.create(id, test, testcase, build, revision, environment,
-//                            country, browser, start, end, controlStatus, controlMessage, null, ip, url,
-//                            port, tag, finished, verbose, 0, "", status, crbVersion, null, null, null,
-//                            false, null, null, null, null, null, null, null, null);
-//
-//                } catch (SQLException exception) {
-//                    MyLogger.log(TestCaseExecutionDAO.class.getName(), Level.ERROR, exception.toString());
-//                } finally {
-//                    resultSet.close();
-//                }
-//            } catch (Exception exception) {
-//                MyLogger.log(TestCaseExecutionDAO.class.getName(), Level.ERROR, exception.toString());
-//            } finally {
-//                preStat.close();
-//            }
-//        } catch (Exception exception) {
-//            MyLogger.log(TestCaseExecutionDAO.class.getName(), Level.ERROR, exception.toString());
-//        } finally {
-//            this.databaseSpring.disconnect();
-//        }
-//        if (throwEx) {
-//            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.EXECUTION_FA));
-//        }
-//        return result;
-//    }
+    @Override
+    public TCExecution findLastTCExecutionByCriteria(String test, String testcase, String environment, String country,
+                                                     String build, String revision) throws CerberusException {
+        TCExecution result = null;
+        final String query = "SELECT * FROM testcaseexecution WHERE test = ? AND testcase = ? AND environment = ? AND " +
+                "country = ? AND build = ? AND revision = ? ORDER BY id DESC";
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            preStat.setString(1, test);
+            preStat.setString(2, testcase);
+            preStat.setString(3, environment);
+            preStat.setString(4, country);
+            preStat.setString(5, build);
+            preStat.setString(6, revision);
+
+            try {
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+                    if (resultSet.first()) {
+                        result = this.loadFromResultSet(resultSet);
+                    } else {
+                        throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
+                    }
+                } catch (SQLException exception) {
+                    MyLogger.log(TestCaseExecutionDAO.class.getName(), Level.ERROR, exception.toString());
+                } finally {
+                    resultSet.close();
+                }
+            } catch (SQLException exception) {
+                MyLogger.log(TestCaseExecutionDAO.class.getName(), Level.ERROR, exception.toString());
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(TestCaseExecutionDAO.class.getName(), Level.ERROR, exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(TestCaseExecutionDAO.class.getName(), Level.WARN, e.toString());
+            }
+        }
+        return result;
+    }
 
     @Override
     public List<TCExecution> findExecutionbyCriteria1(String dateLimit, String test, String testCase, String application, String country, String environment, String controlStatus, String status) throws CerberusException {
@@ -328,28 +315,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                     } else {
                         myTestCaseExecutions = new ArrayList<TCExecution>();
                         do {
-                            long id = resultSet.getLong("ID");
-                            String test1 = resultSet.getString("test");
-                            String testcase1 = resultSet.getString("testcase");
-                            String build = resultSet.getString("build");
-                            String revision = resultSet.getString("revision");
-                            String browser = resultSet.getString("browser");
-                            long start = resultSet.getLong("start");
-                            long end = resultSet.getLong("end");
-                            String controlStatus1 = resultSet.getString("controlStatus");
-                            String controlMessage = resultSet.getString("controlMessage");
-                            String ip = resultSet.getString("ip"); // Host the Selenium IP
-                            String url = resultSet.getString("url");
-                            String port = resultSet.getString("port"); // host the Selenium Port
-                            String tag = resultSet.getString("tag");
-                            String finished = resultSet.getString("finished");
-                            int verbose = resultSet.getInt("verbose");
-                            String status1 = resultSet.getString("status");
-                            String crbVersion = resultSet.getString("crbVersion");
-                            Execution = factoryTCExecution.create(id, test1, testcase1, build, revision, environment,
-                                    country, browser, start, end, controlStatus1, controlMessage, null, ip, url,
-                                    port, tag, finished, verbose, 0, "", status1, crbVersion, null, null, null,
-                                    false, null, null, null, null, null, null, null, null);
+                            Execution = this.loadFromResultSet(resultSet);
 
                             myTestCaseExecutions.add(Execution);
                         } while (resultSet.next());
@@ -382,5 +348,34 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         }
 
         return myTestCaseExecutions;
+    }
+
+    private TCExecution loadFromResultSet(ResultSet resultSet) throws SQLException{
+        long id = resultSet.getLong("ID");
+        String test = resultSet.getString("test");
+        String testcase = resultSet.getString("testcase");
+        String build = resultSet.getString("build");
+        String revision = resultSet.getString("revision");
+        String environment = resultSet.getString("environment");
+        String country = resultSet.getString("country");
+        String browser = resultSet.getString("browser");
+        long start = resultSet.getTimestamp("start").getTime();
+        long end = resultSet.getTimestamp("end").getTime();
+        String controlStatus = resultSet.getString("controlStatus");
+        String controlMessage = resultSet.getString("controlMessage");
+        //TODO get Application
+//        String application = resultSet.getString("application");
+        String ip = resultSet.getString("ip"); // Host the Selenium IP
+        String url = resultSet.getString("url");
+        String port = resultSet.getString("port"); // host the Selenium Port
+        String tag = resultSet.getString("tag");
+        String finished = resultSet.getString("finished");
+        int verbose = resultSet.getInt("verbose");
+        String status = resultSet.getString("status");
+        String crbVersion = resultSet.getString("crbVersion");
+        return factoryTCExecution.create(id, test, testcase, build, revision, environment,
+                country, browser, start, end, controlStatus, controlMessage, null, ip, url,
+                port, tag, finished, verbose, 0, "", status, crbVersion, null, null, null,
+                false, null, null, null, null, null, null, null, null);
     }
 }

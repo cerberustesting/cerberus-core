@@ -16,7 +16,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
-  --%>
+--%>
 <%@page import="org.cerberus.entity.BuildRevisionInvariant"%>
 <%@page import="org.cerberus.service.impl.BuildRevisionInvariantService"%>
 <%@page import="org.cerberus.service.IBuildRevisionInvariantService"%>
@@ -220,7 +220,8 @@
                             <% }
                             %></select>
                     </td>
-                    <td class="wob" style="background-color:<%=backColor%>"><select id="ubcApplication" name="ubcApplication" class="wob" style="width:170px; font-size:x-small;background-color:<%=backColor%>"><%
+                    <td class="wob" style="background-color:<%=backColor%>">
+                        <select id="ubcApplication" name="ubcApplication" class="wob" style="width:170px; font-size:x-small;background-color:<%=backColor%>"><%
                         ResultSet rsApp = stmtProj.executeQuery(" SELECT distinct application from application where application != '' and application " + appliInSQL + " order by sort ");
                         rsApp.first();
                         do {
@@ -229,28 +230,31 @@
                             %></select>
                         <input style="display:none" name="ubcReleaseID" value="<%=rsBR.getString("b.ID")%>"></td>
                     <td class="wob" style="background-color:<%=backColor%>"><input class="wob" name="ubcRelease" style="width:100px ; background-color:<%=backColor%>; font-size:x-small" value="<%=rsBR.getString("b.Release")%>"></td>
-                    <td class="wob" style="background-color:<%=backColor%>"><select class="wob" name="ubcProject" value="<%=rsBR.getString("b.Project")%>" style="width: 50px; background-color:<%=backColor%>; font-size:x-small"><%
-                        ResultSet rsProj = stmtProj.executeQuery(" SELECT idproject, VCCode, Description from project order by idproject ");
-                        while (rsProj.next()) {
+                    <td class="wob" style="background-color:<%=backColor%>">
+                        <select class="wob" name="ubcProject" value="<%=rsBR.getString("b.Project")%>" style="width: 50px; background-color:<%=backColor%>; font-size:x-small"><%
+                            ResultSet rsProj = stmtProj.executeQuery(" SELECT idproject, VCCode, Description from project order by idproject ");
+                            while (rsProj.next()) {
                             %><option value="<%=rsProj.getString("idproject")%>"<%=rsBR.getString("b.Project").compareTo(rsProj.getString("idproject")) == 0 ? " SELECTED " : ""%>><%=rsProj.getString("idproject")%> [<%=rsProj.getString("VCCode")%>] <%=rsProj.getString("Description")%></option><%
                                 }
-                            %></select></td>
+                            %></select>
+                    </td>
                     <td class="wob" style="background-color:<%=backColor%>"><input class="wob" name="ubcTicketIDFixed" value="<%=rsBR.getString("b.TicketIDFixed")%>" style="width: 50px; background-color:<%=backColor%>; font-size:x-small"></td>
                     <td class="wob" style="background-color:<%=backColor%>"><input class="wob" name="ubcBugIDFixed" value="<%=rsBR.getString("b.BugIDFixed")%>" style="width: 50px; background-color:<%=backColor%>; font-size:x-small"></td>
                     <td class="wob" style="background-color:<%=backColor%>"><textarea class="wob" name="ubcSubject" value="<%=rsBR.getString("b.Subject")%>" rows="1" style="width: 300px; background-color:<%=backColor%>; font-size:x-small"><%=rsBR.getString("b.Subject")%></textarea></td>
-                    <td class="wob" style="background-color:<%=backColor%>"><select class="wob" name="ubcReleaseOwner" style="width: 100px; background-color:<%=backColor%>; font-size:x-small">
+                    <td class="wob" style="background-color:<%=backColor%>">
+                        <select class="wob" name="ubcReleaseOwner" style="width: 100px; background-color:<%=backColor%>; font-size:x-small">
                             <option value="" ></option><%
                                 ResultSet rsOwner = stmtProj.executeQuery(" SELECT Login, Name FROM user where defaultsystem like '" + MySystem + "';");
                                 while (rsOwner.next()) {
                             %><option value="<%=rsOwner.getString("Login")%>"<%=rsBR.getString("b.ReleaseOwner").compareTo(rsOwner.getString("Login")) == 0 ? " SELECTED " : ""%>><%=rsOwner.getString("Name")%></option><%
                                 }
                             %>
-                        </select></td>
+                        </select>
+                    </td>
                     <td class="wob" style="width:22px; background-color:<%=backColor%>">
                         <input style="display:inline; height:20px; width:20px; background-color: <%=backColor%>; color:blue; font-weight:bolder" title="Link" class="smallbutton" type="button" value="L" onclick="popup('<%=rsBR.getString("b.Link")%>')">
                     </td>
-                    <td class="wob" style="background-color:<%=backColor%>"><textarea class="wob" name="ubcLink" value="<%=rsBR.getString("b.Link")%>" rows="1" style="width: 250px; background-color:<%=backColor%>; font-size:x-small" maxlength="<%=rsBR.getMetaData().getColumnDisplaySize(5)%>"><%=rsBR.getString("b.Link")%></textarea></td>
-                    <!--                <td class="wob" style="width: 200px; background-color:<%=backColor%>"><%=linkToTickets%><%=linkToBugs%></td>-->
+                    <td class="wob" style="background-color:<%=backColor%>"><textarea class="wob" name="ubcLink" value="<%=rsBR.getString("b.Link")%>" rows="1" style="width: 250px; background-color:<%=backColor%>; font-size:x-small" ><%=rsBR.getString("b.Link")%></textarea></td>
                 </tr><%
                             stmtProj.close();
                         } while (rsBR.next());

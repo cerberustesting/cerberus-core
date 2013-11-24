@@ -59,10 +59,10 @@ public class EmailGeneration implements IEmailGeneration {
             myCountryEnvParam = countryEnvParamService.findCountryEnvParamByKey(system, country, env);
 
             /* Pick the datas from the database */
-            String to = parameterService.findParameterByKey("integration_notification_newbuildrevision_to").getValue();
-            String cc = parameterService.findParameterByKey("integration_notification_newbuildrevision_cc").getValue();
-            String subject = parameterService.findParameterByKey("integration_notification_newbuildrevision_subject").getValue();
-            String body = parameterService.findParameterByKey("integration_notification_newbuildrevision_body").getValue();
+            String to = parameterService.findParameterByKey("integration_notification_newbuildrevision_to",system).getValue();
+            String cc = parameterService.findParameterByKey("integration_notification_newbuildrevision_cc",system).getValue();
+            String subject = parameterService.findParameterByKey("integration_notification_newbuildrevision_subject",system).getValue();
+            String body = parameterService.findParameterByKey("integration_notification_newbuildrevision_body",system).getValue();
 
             if (!StringUtil.isNullOrEmptyOrNull(myCountryEnvParam.geteMailBodyRevision())) {
                 body = myCountryEnvParam.geteMailBodyRevision();
@@ -117,10 +117,10 @@ public class EmailGeneration implements IEmailGeneration {
             CountryEnvParam myCountryEnvParam;
             myCountryEnvParam = countryEnvParamService.findCountryEnvParamByKey(system, country, env);
 
-            String to = parameterService.findParameterByKey("integration_notification_disableenvironment_to").getValue();
-            String cc = parameterService.findParameterByKey("integration_notification_disableenvironment_cc").getValue();
-            String subject = parameterService.findParameterByKey("integration_notification_disableenvironment_subject").getValue();
-            String body = parameterService.findParameterByKey("integration_notification_disableenvironment_body").getValue();
+            String to = parameterService.findParameterByKey("integration_notification_disableenvironment_to",system).getValue();
+            String cc = parameterService.findParameterByKey("integration_notification_disableenvironment_cc",system).getValue();
+            String subject = parameterService.findParameterByKey("integration_notification_disableenvironment_subject",system).getValue();
+            String body = parameterService.findParameterByKey("integration_notification_disableenvironment_body",system).getValue();
 
             if (!StringUtil.isNullOrEmptyOrNull(myCountryEnvParam.geteMailBodyDisableEnvironment())) {
                 body = myCountryEnvParam.geteMailBodyDisableEnvironment();
@@ -165,10 +165,10 @@ public class EmailGeneration implements IEmailGeneration {
             myBatchInvariant = batchInvariantService.findBatchInvariantByKey(chain);
             String lastchain = myBatchInvariant.getBatch() + " (" + myBatchInvariant.getDescription() + ")";
 
-            String to = parameterService.findParameterByKey("integration_notification_newchain_to").getValue();
-            String cc = parameterService.findParameterByKey("integration_notification_newchain_cc").getValue();
-            String subject = parameterService.findParameterByKey("integration_notification_newchain_subject").getValue();
-            String body = parameterService.findParameterByKey("integration_notification_newchain_body").getValue();
+            String to = parameterService.findParameterByKey("integration_notification_newchain_to",system).getValue();
+            String cc = parameterService.findParameterByKey("integration_notification_newchain_cc",system).getValue();
+            String subject = parameterService.findParameterByKey("integration_notification_newchain_subject",system).getValue();
+            String body = parameterService.findParameterByKey("integration_notification_newchain_body",system).getValue();
 
             if (!StringUtil.isNullOrEmptyOrNull(myCountryEnvParam.geteMailBodyChain())) {
                 body = myCountryEnvParam.geteMailBodyChain();

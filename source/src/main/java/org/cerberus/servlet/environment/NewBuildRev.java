@@ -130,9 +130,9 @@ public class NewBuildRev extends HttpServlet {
 
             IParameterService parameterService = appContext.getBean(ParameterService.class);
 
-            from = parameterService.findParameterByKey("integration_smtp_from").getValue();
-            host = parameterService.findParameterByKey("integration_smtp_host").getValue();
-            port = Integer.valueOf(parameterService.findParameterByKey("integration_smtp_port").getValue());
+            from = parameterService.findParameterByKey("integration_smtp_from",system).getValue();
+            host = parameterService.findParameterByKey("integration_smtp_host",system).getValue();
+            port = Integer.valueOf(parameterService.findParameterByKey("integration_smtp_port",system).getValue());
 
 
             //sendMail Mail = new sendMail();

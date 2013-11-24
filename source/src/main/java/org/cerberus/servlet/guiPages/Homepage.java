@@ -24,13 +24,9 @@ import org.cerberus.entity.Application;
 import org.cerberus.entity.User;
 import org.cerberus.log.MyLogger;
 import org.cerberus.service.IApplicationService;
-import org.cerberus.service.IParameterService;
 import org.cerberus.service.IUserService;
 import org.cerberus.service.impl.ApplicationService;
-import org.cerberus.service.impl.ParameterService;
 import org.cerberus.service.impl.UserService;
-import org.cerberus.statistics.BuildRevisionStatistics;
-import org.cerberus.statistics.TestCaseExecutionStatisticsServiceImpl;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
 import java.io.IOException;
@@ -195,96 +191,9 @@ public class Homepage extends HttpServlet {
                 } finally {
                     stmt_teststatus.close();
                 }
-                IParameterService parameterService = appContext.getBean(ParameterService.class);
 
-                int numberOfLastBR = Integer.valueOf(parameterService.findParameterByKey("cerberus_homepage_nbbuildhistorydetail").getValue());
-
-                TestCaseExecutionStatisticsServiceImpl tceStatsService = appContext.getBean(TestCaseExecutionStatisticsServiceImpl.class);
-
-                List<BuildRevisionStatistics> buildRev = tceStatsService.getListOfXLastBuildAndRevExecuted(MySystem, numberOfLastBR);
-
-                ArrayList<ArrayList<String>> arrayExecution = new ArrayList<ArrayList<String>>();
-                ArrayList<ArrayList<ArrayList<String>>> arrayContent = new ArrayList<ArrayList<ArrayList<String>>>();
-                List<List<List<String>>> arrayExecutionEnv = new ArrayList<List<List<String>>>();
-
-                for (BuildRevisionStatistics buildRevList : buildRev) {
-                    //ITestCaseExecutionStatisticsService tceStatsS = appContext.getBean(ITestCaseExecutionStatisticsService.class);
-                    String build = buildRevList.getBuild();
-                    String revision = buildRevList.getRevision();
-                    List<String> env = new ArrayList<String>();
-
-                    env.add("PROD");
-                    env.add("UAT");
-                    env.add("QA");
-                    BuildRevisionStatistics globalStats = tceStatsService.getStatisticsOfExecution(MySystem, build, revision, env);
-
-                    al = new ArrayList<String>();
-                    al.add(build);
-                    al.add(revision);
-                    al.add(String.valueOf(globalStats.getTotal()));
-                    al.add(String.valueOf(globalStats.getNumberOfOK()));
-                    al.add(String.valueOf(globalStats.getPercentageOfOK()));
-                    al.add(String.valueOf(globalStats.getNumberOfTestcaseExecuted()));
-                    al.add(String.valueOf(globalStats.getNumberOfExecPerTc()));
-                    al.add(String.valueOf(globalStats.getDays()));
-                    al.add(String.valueOf(globalStats.getNumberOfExecPerTcPerDay()));
-                    al.add(String.valueOf(globalStats.getNumberOfApplicationExecuted()));
-                    arrayExecution.add(al);
-
-
-                    List<List<String>> arrayEnv = new ArrayList<List<String>>();
-                    for (String e : env) {
-                        BuildRevisionStatistics globalStatsEnv = tceStatsService.getStatisticsOfExecution(MySystem, build, revision, e);
-                        al = new ArrayList<String>();
-                        al.add(e);
-                        al.add(String.valueOf(globalStatsEnv.getTotal()));
-                        al.add(String.valueOf(globalStatsEnv.getNumberOfOK()));
-                        al.add(String.valueOf(globalStatsEnv.getPercentageOfOK()));
-                        al.add(String.valueOf(globalStatsEnv.getNumberOfTestcaseExecuted()));
-                        al.add(String.valueOf(globalStatsEnv.getNumberOfExecPerTc()));
-                        al.add(String.valueOf(globalStatsEnv.getDays()));
-                        al.add(String.valueOf(globalStatsEnv.getNumberOfExecPerTcPerDay()));
-                        al.add(String.valueOf(globalStatsEnv.getNumberOfApplicationExecuted()));
-                        arrayEnv.add(al);
-                    }
-                    arrayExecutionEnv.add(arrayEnv);
-
-                    PreparedStatement stmtContent = connection.prepareStatement("SELECT t.Build, t.Revision, "
-                            + " t.application, t.release, t.link "
-                            + "FROM buildrevisionparameters t "
-                            + "Where t.build = ? and t.revision = ? and t.application "
-                            + inSQL);
-
-                    try {
-                        stmtContent.setString(1, build);
-                        stmtContent.setString(2, revision);
-                        ResultSet rsContent = stmtContent.executeQuery();
-                        ArrayList<ArrayList<String>> array = new ArrayList<ArrayList<String>>();
-                        try {
-                            if (rsContent.first()) {
-                                do {
-                                    al = new ArrayList<String>();
-                                    al.add(rsContent.getString("t.Build"));
-                                    al.add(rsContent.getString("t.Revision"));
-                                    al.add(rsContent.getString("t.application"));
-                                    al.add(rsContent.getString("t.release"));
-                                    al.add(rsContent.getString("t.link"));
-                                    array.add(al);
-                                } while (rsContent.next());
-                            }
-                        } finally {
-                            rsContent.close();
-                        }
-                        arrayContent.add(array);
-                    } finally {
-                        stmtContent.close();
-                    }
-                }
 
                 request.setAttribute("arrayTest", arrayTest);
-                request.setAttribute("arrayExecution", arrayExecution);
-                request.setAttribute("arrayContent", arrayContent);
-                request.setAttribute("arrayExecutionEnv", arrayExecutionEnv);
                 request.getRequestDispatcher("/Homepage.jsp").forward(request, response);
             }
         } catch (Exception ex) {

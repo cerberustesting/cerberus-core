@@ -19,13 +19,13 @@
  */
 package org.cerberus.factory;
 
-import org.cerberus.entity.Parameter;
+import org.cerberus.entity.ParameterSystem;
 
 /**
  *
  * @author bcivel
  */
-public interface IFactoryParameter {
-    
-    Parameter create(String system, String param,String value,String description);
+public interface IFactoryParameterSystem {
+
+    ParameterSystem create(String param, String valueCerberus, String valueSystem, String description);
 }

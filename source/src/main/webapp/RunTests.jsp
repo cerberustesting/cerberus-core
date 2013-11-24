@@ -202,7 +202,7 @@
                         String seleniumUrl = "";
                         IParameterService myParameterService = appContext.getBean(IParameterService.class);
                         try {
-                            seleniumUrl = myParameterService.findParameterByKey("selenium_download_url").getValue();
+                            seleniumUrl = myParameterService.findParameterByKey("selenium_download_url","").getValue();
                         } catch (Exception ex) {
                             MyLogger.log("RunTests.jsp", Level.FATAL, " Exception catched : " + ex);
                         }

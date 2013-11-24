@@ -251,7 +251,7 @@ public class EmailBodyGeneration implements IEmailBodyGeneration {
             Logger.getLogger(EmailBodyGeneration.class.getName()).log(Level.DEBUG, Version.PROJECT_NAME_VERSION + " - SQL : " + contentSQL);
             
             ResultSet rsBC = stmtBuildContent.executeQuery(contentSQL);
-            String Cerberus_URL = parameterService.findParameterByKey("cerberus_reporting_url").getValue();;
+            String Cerberus_URL = parameterService.findParameterByKey("cerberus_reporting_url", "").getValue();;
             Cerberus_URL = Cerberus_URL.replaceAll("%env%", "");
             Cerberus_URL = Cerberus_URL.replaceAll("%appli%", "");
             Cerberus_URL = Cerberus_URL.replaceAll("%system%", system);

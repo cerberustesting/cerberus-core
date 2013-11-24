@@ -150,10 +150,10 @@ public class ResultCI extends HttpServlet {
 
                 IParameterService parameterService = appContext.getBean(ParameterService.class);
 
-                float pond1 = Float.valueOf(parameterService.findParameterByKey("CI_OK_prio1").getValue());
-                float pond2 = Float.valueOf(parameterService.findParameterByKey("CI_OK_prio2").getValue());
-                float pond3 = Float.valueOf(parameterService.findParameterByKey("CI_OK_prio3").getValue());
-                float pond4 = Float.valueOf(parameterService.findParameterByKey("CI_OK_prio4").getValue());
+                float pond1 = Float.valueOf(parameterService.findParameterByKey("CI_OK_prio1","").getValue());
+                float pond2 = Float.valueOf(parameterService.findParameterByKey("CI_OK_prio2","").getValue());
+                float pond3 = Float.valueOf(parameterService.findParameterByKey("CI_OK_prio3","").getValue());
+                float pond4 = Float.valueOf(parameterService.findParameterByKey("CI_OK_prio4","").getValue());
 
                 if ((nbkop1 * pond1) + (nbkop2 * pond2) + (nbkop3 * pond3) + (nbkop4 * pond4) < 1) {
                     out.print("OK");
