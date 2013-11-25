@@ -47,8 +47,6 @@
             }
 
             .field {
-                /*position: relative;*/
-                /*float: left;*/
                 display: inline-block;
                 padding-bottom: 5px;
                 padding-left: 5px;
@@ -260,7 +258,7 @@
             var loader = new ajaxLoader("#searchTestCase");
 
             function getAjaxSource() {
-                var url = "SearchTestCaseInformation";
+                var url = "SearchManualTestCaseInformation";
                 url += "?ScTest=" + $('#test').val();
                 url += "&ScTestTest=" + $('#testCase').val();
                 url += "&ScProject=" + $('#project').val();
@@ -272,12 +270,7 @@
                 url += "&ScApplication=" + $('#application').val();
                 url += "&ScPriority=" + $('#priority').val();
                 url += "&ScStatus=" + $('#status').val();
-//                url += "&ScGroup=" + $('#group').val();
-//                url += "&ScPROD=" + $('#activePROD').val();
-//                url += "&ScUAT=" + $('#activeUAT').val();
-//                url += "&ScQA=" + $('#activeQA').val();
                 url += "&ScText=" + $('#text').val();
-//                url += "&ScActive=" + $('#tcActive').val();
                 url += "&ScFBuild=" + $('#fromBuild').val();
                 url += "&ScFRev=" + $('#fromRev').val();
                 url += "&ScTBuild=" + $('#toBuild').val();
@@ -336,19 +329,25 @@
                         "aoColumns": [
                             {"mDataProp": "test", "sName": "test", "bSortable": false, sWidth: "130px"},
                             {"mDataProp": "testCase", "sName": "ScTestCase", "bSortable": false, sWidth: "30px"},
-                            {"mDataProp": "description", "sName": "description", "bSortable": false, sWidth: "180px"},
+                            {"mDataProp": "valueExpected", "sName": "description", "bSortable": false, sWidth: "180px"},
                             {"mDataProp": "howTo", "sName": "howTo", "bSortable": false, sWidth: "430px"},
                             {"mDataProp": function(tCase, type, val){
                                 var detail = "Application: ";
-                                if (tCase.appLink != "") {
-                                    detail += "<a href='http://"+tCase.appLink+"' target='_blank'><b>"+tCase.application+"</b></a>";
+                                if (tCase.appType == "GUI") {
+                                    detail += "<a href='http://"+tCase.url+"' target='_blank'><b>"+tCase.application+"</b></a>";
                                 } else{
                                     detail += "<b>"+tCase.application+"</b>";
                                 }
-                                detail += "<br/>System: <b>"+tCase.appSystem+"</b>";
-                                detail += "<br/>Build: <b>"+tCase.envSprint+"</b><br/>Revision: <b>"+tCase.envRevision+"</b>";
-                                if (tCase.lastResult != "") {
-                                    detail += "<br/><span style='background-color: green'><b>"+tCase.lastResult+"</b></span> on "+tCase.lastResultDate;
+                                detail += "<br/>System: <b>"+tCase.system+"</b>";
+                                detail += "<br/>Build: <b>"+tCase.build+"</b><br/>Revision: <b>"+tCase.revision+"</b>";
+                                if (tCase.lastStatus != "" && tCase.lastStatus != null) {
+                                    if (tCase.lastStatus == "OK"){
+                                        detail += "<br/><span style='background-color: #00ff00; color: #000000'>";
+                                    } else {
+                                        detail += "<br/><span style='background-color: #ff0000; color: #ffffff'>";
+                                    }
+                                    detail += "<b>"+tCase.lastStatus+"</b></span> on "+
+                                            new Date(tCase.lastStatusDate).toISOString().replace("T", " ").split(".")[0];
                                 }
                                 return detail;
                             }, "sName": "detail", "bSortable": false, sWidth: "140px", sClass: "center"},
@@ -408,12 +407,7 @@
                     {label: "application", dTable: "testcase", dField: "Application", dLabel: "Application"},
                     {label: "priority", dTable: "testcase", dField: "Priority", dLabel: ""},
                     {label: "status", dTable: "testcase", dField: "Status", dLabel: ""},
-//                    {label: "group", dTable: "testcase", dField: "Group", dLabel: ""},
-//                    {label: "activePROD", dTable: "testcase", dField: "activePROD", dLabel: ""},
-//                    {label: "activeUAT", dTable: "testcase", dField: "activeUAT", dLabel: ""},
-//                    {label: "activeQA", dTable: "testcase", dField: "activeQA", dLabel: ""},
                     {label: "text", dTable: "page_testcasesearch", dField: "text", dLabel: ""},
-//                    {label: "tcActive", dTable: "testcase", dField: "TcActive", dLabel: "Active"},
                     {label: "fromBuild", dTable: "testcase", dField: "FromBuild", dLabel: ""},
                     {label: "fromRev", dTable: "testcase", dField: "FromRev", dLabel: ""},
                     {label: "toBuild", dTable: "testcase", dField: "ToBuild", dLabel: ""},

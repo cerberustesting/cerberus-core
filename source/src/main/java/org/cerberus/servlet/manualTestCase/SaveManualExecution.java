@@ -18,7 +18,7 @@
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.cerberus.servlet.execution;
+package org.cerberus.servlet.manualTestCase;
 
 import org.cerberus.service.ITestCaseService;
 import org.cerberus.service.IApplicationService;
@@ -81,7 +81,7 @@ public class SaveManualExecution extends HttpServlet {
         try {
             TCase tCase = testService.findTestCaseByKey(test, testCase);
             Application application = applicationService.findApplicationByKey(tCase.getApplication());
-            CountryEnvParam countryEnvParam = null;
+            CountryEnvParam countryEnvParam;
             try {
                 countryEnvParam = countryEnvParamService.findCountryEnvParamByKey(application.getSystem(), country, env);
             } catch (CerberusException e) {

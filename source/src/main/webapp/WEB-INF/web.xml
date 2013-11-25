@@ -230,12 +230,12 @@
         <servlet-class>org.cerberus.servlet.testCase.GetDataForTestCaseSearch</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>SearchTestCaseInformation</servlet-name>
-        <servlet-class>org.cerberus.servlet.testCase.SearchTestCaseInformation</servlet-class>
+        <servlet-name>SearchManualTestCaseInformation</servlet-name>
+        <servlet-class>org.cerberus.servlet.manualTestCase.SearchManualTestCaseInformation</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>SaveManualExecution</servlet-name>
-        <servlet-class>org.cerberus.servlet.execution.SaveManualExecution</servlet-class>
+        <servlet-class>org.cerberus.servlet.manualTestCase.SaveManualExecution</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>GetParameterSystem</servlet-name>
@@ -454,8 +454,8 @@
         <url-pattern>/GetDataForTestCaseSearch</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>SearchTestCaseInformation</servlet-name>
-        <url-pattern>/SearchTestCaseInformation</url-pattern>
+        <servlet-name>SearchManualTestCaseInformation</servlet-name>
+        <url-pattern>/SearchManualTestCaseInformation</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>SaveManualExecution</servlet-name>

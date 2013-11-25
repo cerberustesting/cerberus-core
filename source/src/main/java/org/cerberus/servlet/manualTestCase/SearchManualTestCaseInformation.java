@@ -18,21 +18,16 @@
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.cerberus.servlet.testCase;
+package org.cerberus.servlet.manualTestCase;
 
 import org.apache.log4j.Level;
-import org.cerberus.dao.ICountryEnvParamDAO;
-import org.cerberus.dao.ICountryEnvironmentParametersDAO;
-import org.cerberus.entity.*;
-import org.cerberus.exception.CerberusException;
+import org.cerberus.entity.TCase;
 import org.cerberus.factory.IFactoryTCase;
 import org.cerberus.factory.impl.FactoryTCase;
 import org.cerberus.log.MyLogger;
-import org.cerberus.service.IApplicationService;
-import org.cerberus.service.ITestCaseCountryService;
-import org.cerberus.service.ITestCaseExecutionService;
-import org.cerberus.service.ITestCaseService;
+import org.cerberus.service.IManualTestCaseService;
 import org.cerberus.util.StringUtil;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -44,10 +39,9 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.sql.Timestamp;
-import java.util.Iterator;
-import java.util.List;
+import java.io.OutputStream;
 
 /**
  * {Insert class description here}
@@ -56,8 +50,8 @@ import java.util.List;
  * @version 1.0, 28/10/2013
  * @since 0.9.1
  */
-@WebServlet(name = "SearchTestCaseInformation", urlPatterns = {"/SearchTestCaseInformation"})
-public class SearchTestCaseInformation extends HttpServlet {
+@WebServlet(name = "SearchManualTestCaseInformation", urlPatterns = {"/SearchManualTestCaseInformation"})
+public class SearchManualTestCaseInformation extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String echo = req.getParameter("sEcho");
@@ -78,59 +72,14 @@ public class SearchTestCaseInformation extends HttpServlet {
         }
 
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-        ITestCaseService testService = appContext.getBean(ITestCaseService.class);
-        ITestCaseCountryService testCaseCountryService = appContext.getBean(ITestCaseCountryService.class);
-        ITestCaseExecutionService testCaseExecutionService = appContext.getBean(ITestCaseExecutionService.class);
-        ICountryEnvironmentParametersDAO countryEnvironmentService = appContext.getBean(ICountryEnvironmentParametersDAO.class);
-        ICountryEnvParamDAO countryEnvParamDAO = appContext.getBean(ICountryEnvParamDAO.class);
-        IApplicationService applicationService = appContext.getBean(IApplicationService.class);
+        IManualTestCaseService manualTestCaseService = appContext.getBean(IManualTestCaseService.class);
 
         try {
-            JSONArray data = new JSONArray();
 
-
-            List<TCase> tcList = testService.findTestCaseByAllCriteria(tCase, text, system);
-            for (Iterator<TCase> iter = tcList.iterator(); iter.hasNext(); ) {
-                TCase tc = iter.next();
-                if (!testCaseCountryService.findListOfCountryByTestTestCase(tc.getTest(), tc.getTestCase()).contains(country)) {
-                    iter.remove();
-                    continue;
-                }
-                JSONObject jsontCase = new JSONObject(tc);
-                String sprint = "";
-                String rev = "";
-                String url = "";
-                String appSystem = "";
-                String result = "";
-                String dateStr = "";
-                try {
-                    Application app = applicationService.findApplicationByKey(tc.getApplication());
-                    appSystem = app.getSystem();
-                    if (app.getType().equalsIgnoreCase("GUI")) {
-                        CountryEnvironmentApplication countryEnv = countryEnvironmentService.findCountryEnvironmentParameterByKey(app.getSystem(), country, env, tc.getApplication());
-                        url = countryEnv.getIp() + countryEnv.getUrl() + countryEnv.getUrlLogin();
-                    }
-                    CountryEnvParam countryEnvParam = countryEnvParamDAO.findCountryEnvParamByKey(app.getSystem(), country, env);
-                    sprint = countryEnvParam.getBuild();
-                    rev = countryEnvParam.getRevision();
-
-                    TCExecution execution = testCaseExecutionService.findLastTCExecutionByCriteria(tc.getTest(), tc.getTestCase(), env, country, sprint, rev);
-                    Timestamp date = new Timestamp(execution.getEnd());
-                    result = execution.getControlStatus();
-                    dateStr = date.toString().split("\\.")[0];
-                } catch (CerberusException e) {
-                    MyLogger.log(SearchTestCaseInformation.class.getName(), Level.WARN, e.getMessageError().getDescription());
-                }
-
-                jsontCase.put("appLink", url.replace("//", "/"));
-                jsontCase.put("appSystem", appSystem);
-                jsontCase.put("envSprint", sprint);
-                jsontCase.put("envRevision", rev);
-                jsontCase.put("lastResult", result);
-                jsontCase.put("lastResultDate", dateStr);
-
-                data.put(jsontCase);
-            }
+            ObjectMapper mapper = new ObjectMapper();
+            OutputStream out = new ByteArrayOutputStream();
+            mapper.writeValue(out, manualTestCaseService.findTestCaseManualExecution(tCase, text, system, country, env));
+            JSONArray data = new JSONArray(out.toString());
 
             JSONObject jsonResponse = new JSONObject();
 
@@ -141,7 +90,7 @@ public class SearchTestCaseInformation extends HttpServlet {
             resp.setContentType("application/json");
             resp.getWriter().print(jsonResponse.toString());
         } catch (JSONException e) {
-            MyLogger.log(SearchTestCaseInformation.class.getName(), Level.FATAL, "" + e);
+            MyLogger.log(SearchManualTestCaseInformation.class.getName(), Level.FATAL, "" + e);
             resp.setContentType("text/html");
             resp.getWriter().print(e.getMessage());
         }
