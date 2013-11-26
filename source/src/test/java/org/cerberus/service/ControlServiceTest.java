@@ -1,15 +1,36 @@
+/*
+ * Cerberus  Copyright (C) 2013  vertigo17
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+ *
+ * This file is part of Cerberus.
+ *
+ * Cerberus is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Cerberus is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package org.cerberus.service;
 
+import junit.framework.Assert;
 import org.cerberus.entity.TestCaseStepActionControlExecution;
 import org.cerberus.serviceEngine.impl.ControlService;
 import org.cerberus.serviceEngine.impl.SeleniumService;
-import junit.framework.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.openqa.selenium.WebDriverException;
+import org.springframework.test.context.ContextConfiguration;
 
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
@@ -19,25 +40,25 @@ import static org.mockito.Mockito.when;
  *
  * @author Tiago Bernardes
  * @version 1.0, 18/07/2013
- * @since 2.0.0
+ * @since 0.9.0
  */
 @RunWith(MockitoJUnitRunner.class)
+@ContextConfiguration(locations = {"/applicationContextTest.xml"})
 public class ControlServiceTest {
 
     @Mock
     private SeleniumService seleniumService;
-
     @InjectMocks
     private ControlService controlService;
 
     @Test
-    public void testDoControlPropertyEqualWhenSuccess() {
+    public void testDoControlStringEqualWhenSuccess() {
         String property = "test";
         String value = "test";
         String msg = "'" + property + "' is equal to '" + value + "'.";
 
         TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
-        tcsace.setControlType("verifyPropertyEqual");
+        tcsace.setControlType("verifyStringEqual");
         tcsace.setControlProperty(property);
         tcsace.setControlValue(value);
 
@@ -48,15 +69,16 @@ public class ControlServiceTest {
     }
 
     @Test
-    public void testDoControlPropertyEqualWhenFail() {
+    public void testDoControlStringEqualWhenFail() {
         String property = "test";
         String value = "test fail";
         String msg = "'" + value + "' is not equal to '" + property + "'.";
 
         TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
-        tcsace.setControlType("verifyPropertyEqual");
+        tcsace.setControlType("verifyStringEqual");
         tcsace.setControlProperty(property);
         tcsace.setControlValue(value);
+        tcsace.setFatal("Y");
 
         this.controlService.doControl(tcsace);
 
@@ -66,13 +88,13 @@ public class ControlServiceTest {
     }
 
     @Test
-    public void testDoControlPropertyDifferentWhenSuccess() {
+    public void testDoControlStringDifferentWhenSuccess() {
         String property = "test";
         String value = "test success";
         String msg = "'" + value + "' is different from '" + property + "'.";
 
         TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
-        tcsace.setControlType("verifyPropertyDifferent");
+        tcsace.setControlType("verifyStringDifferent");
         tcsace.setControlProperty(property);
         tcsace.setControlValue(value);
 
@@ -83,15 +105,16 @@ public class ControlServiceTest {
     }
 
     @Test
-    public void testDoControlPropertyDifferentWhenFail() {
+    public void testDoControlStringDifferentWhenFail() {
         String property = "test";
         String value = "test";
         String msg = "'" + value + "' is not different from '" + property + "'.";
 
         TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
-        tcsace.setControlType("verifyPropertyDifferent");
+        tcsace.setControlType("verifyStringDifferent");
         tcsace.setControlProperty(property);
         tcsace.setControlValue(value);
+        tcsace.setFatal("Y");
 
         this.controlService.doControl(tcsace);
 
@@ -101,13 +124,13 @@ public class ControlServiceTest {
     }
 
     @Test
-    public void testDoControlPropertyGreaterWhenSuccess() {
-        String property = "5";
-        String value = "10";
-        String msg = "'" + value + "' is greater than '" + property + "'.";
+    public void testDoControlIntegerGreaterWhenSuccess() {
+        String property = "10";
+        String value = "5";
+        String msg = "'" + property + "' is greater than '" + value + "'.";
 
         TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
-        tcsace.setControlType("verifyPropertyGreater");
+        tcsace.setControlType("verifyIntegerGreater");
         tcsace.setControlProperty(property);
         tcsace.setControlValue(value);
 
@@ -118,15 +141,16 @@ public class ControlServiceTest {
     }
 
     @Test
-    public void testDoControlPropertyGreaterWhenFail() {
-        String property = "10";
-        String value = "5";
-        String msg = "'" + value + "' is not greater than '" + property + "'.";
+    public void testDoControlIntegerGreaterWhenFail() {
+        String property = "5";
+        String value = "10";
+        String msg = "'" + property + "' is not greater than '" + value + "'.";
 
         TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
-        tcsace.setControlType("verifyPropertyGreater");
+        tcsace.setControlType("verifyIntegerGreater");
         tcsace.setControlProperty(property);
         tcsace.setControlValue(value);
+        tcsace.setFatal("Y");
 
         this.controlService.doControl(tcsace);
 
@@ -136,15 +160,16 @@ public class ControlServiceTest {
     }
 
     @Test
-    public void testDoControlPropertyGreaterWhenPropertyNotNumeric() {
-        String property = "5";
-        String value = "ten";
+    public void testDoControlIntegerGreaterWhenPropertyNotNumeric() {
+        String property = "ten";
+        String value = "5";
         String msg = "At least one of the Properties is not numeric, can not compare properties!";
 
         TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
-        tcsace.setControlType("verifyPropertyGreater");
+        tcsace.setControlType("verifyIntegerGreater");
         tcsace.setControlProperty(property);
         tcsace.setControlValue(value);
+        tcsace.setFatal("Y");
 
         this.controlService.doControl(tcsace);
 
@@ -154,50 +179,71 @@ public class ControlServiceTest {
     }
 
     @Test
-    public void testDoControlPropertyGreaterWhenValueNotNumeric() {
+    public void testDoControlIntegerGreaterWhenValueNotNumeric() {
+        String property = "10";
+        String value = "five";
+        String msg = "At least one of the Properties is not numeric, can not compare properties!";
+
+        TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
+        tcsace.setControlType("verifyIntegerGreater");
+        tcsace.setControlProperty(property);
+        tcsace.setControlValue(value);
+        tcsace.setFatal("Y");
+
+        this.controlService.doControl(tcsace);
+
+        Assert.assertEquals(msg, tcsace.getControlResultMessage().getDescription());
+        Assert.assertEquals("KO", tcsace.getReturnCode());
+        Assert.assertEquals("Y", tcsace.getFatal());
+    }
+
+    @Test
+    public void testDoControlIntegerMinorWhenSuccess() {
+        String property = "5";
+        String value = "10";
+        String msg = "'" + property + "' is minor than '" + value + "'.";
+
+        TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
+        tcsace.setControlType("verifyIntegerMinor");
+        tcsace.setControlProperty(property);
+        tcsace.setControlValue(value);
+
+        this.controlService.doControl(tcsace);
+
+        Assert.assertEquals(msg, tcsace.getControlResultMessage().getDescription());
+        Assert.assertEquals("OK", tcsace.getReturnCode());
+    }
+
+    @Test
+    public void testDoControlIntegerMinorWhenFail() {
+        String property = "10";
+        String value = "5";
+        String msg = "'" + property + "' is not minor than '" + value + "'.";
+
+        TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
+        tcsace.setControlType("verifyIntegerMinor");
+        tcsace.setControlProperty(property);
+        tcsace.setControlValue(value);
+        tcsace.setFatal("Y");
+
+        this.controlService.doControl(tcsace);
+
+        Assert.assertEquals(msg, tcsace.getControlResultMessage().getDescription());
+        Assert.assertEquals("KO", tcsace.getReturnCode());
+        Assert.assertEquals("Y", tcsace.getFatal());
+    }
+
+    @Test
+    public void testDoControlIntegerMinorWhenPropertyNotNumeric() {
         String property = "five";
-        String value = "10";
-        String msg = "At least one of the Properties is not numeric, can not compare properties!";
-
-        TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
-        tcsace.setControlType("verifyPropertyGreater");
-        tcsace.setControlProperty(property);
-        tcsace.setControlValue(value);
-
-        this.controlService.doControl(tcsace);
-
-        Assert.assertEquals(msg, tcsace.getControlResultMessage().getDescription());
-        Assert.assertEquals("KO", tcsace.getReturnCode());
-        Assert.assertEquals("Y", tcsace.getFatal());
-    }
-
-    @Test
-    public void testDoControlPropertyMinorWhenSuccess() {
-        String property = "10";
         String value = "5";
-        String msg = "'" + value + "' is minor than '" + property + "'.";
+        String msg = "At least one of the Properties is not numeric, can not compare properties!";
 
         TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
-        tcsace.setControlType("verifyPropertyMinor");
+        tcsace.setControlType("verifyIntegerMinor");
         tcsace.setControlProperty(property);
         tcsace.setControlValue(value);
-
-        this.controlService.doControl(tcsace);
-
-        Assert.assertEquals(msg, tcsace.getControlResultMessage().getDescription());
-        Assert.assertEquals("OK", tcsace.getReturnCode());
-    }
-
-    @Test
-    public void testDoControlPropertyMinorWhenFail() {
-        String property = "5";
-        String value = "10";
-        String msg = "'" + value + "' is not minor than '" + property + "'.";
-
-        TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
-        tcsace.setControlType("verifyPropertyMinor");
-        tcsace.setControlProperty(property);
-        tcsace.setControlValue(value);
+        tcsace.setFatal("Y");
 
         this.controlService.doControl(tcsace);
 
@@ -207,33 +253,16 @@ public class ControlServiceTest {
     }
 
     @Test
-    public void testDoControlPropertyMinorWhenPropertyNotNumeric() {
+    public void testDoControlIntegerMinorWhenValueNotNumeric() {
         String property = "10";
         String value = "five";
         String msg = "At least one of the Properties is not numeric, can not compare properties!";
 
         TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
-        tcsace.setControlType("verifyPropertyMinor");
+        tcsace.setControlType("verifyIntegerMinor");
         tcsace.setControlProperty(property);
         tcsace.setControlValue(value);
-
-        this.controlService.doControl(tcsace);
-
-        Assert.assertEquals(msg, tcsace.getControlResultMessage().getDescription());
-        Assert.assertEquals("KO", tcsace.getReturnCode());
-        Assert.assertEquals("Y", tcsace.getFatal());
-    }
-
-    @Test
-    public void testDoControlPropertyMinorWhenValueNotNumeric() {
-        String property = "10";
-        String value = "five";
-        String msg = "At least one of the Properties is not numeric, can not compare properties!";
-
-        TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
-        tcsace.setControlType("verifyPropertyGreater");
-        tcsace.setControlProperty(property);
-        tcsace.setControlValue(value);
+        tcsace.setFatal("Y");
 
         this.controlService.doControl(tcsace);
 
@@ -271,6 +300,7 @@ public class ControlServiceTest {
         tcsace.setControlType("verifyElementPresent");
         tcsace.setControlProperty(property);
         tcsace.setControlValue(value);
+        tcsace.setFatal("Y");
 
         when(seleniumService.isElementPresent(anyString())).thenReturn(false);
 
@@ -291,6 +321,7 @@ public class ControlServiceTest {
         tcsace.setControlType("verifyElementPresent");
         tcsace.setControlProperty(property);
         tcsace.setControlValue(value);
+        tcsace.setFatal("Y");
 
         this.controlService.doControl(tcsace);
 
@@ -309,6 +340,7 @@ public class ControlServiceTest {
         tcsace.setControlType("verifyElementPresent");
         tcsace.setControlProperty(property);
         tcsace.setControlValue(value);
+        tcsace.setFatal("Y");
 
         when(seleniumService.isElementPresent(anyString())).thenThrow(new WebDriverException());
 
@@ -348,6 +380,7 @@ public class ControlServiceTest {
         tcsace.setControlType("verifyElementNotPresent");
         tcsace.setControlProperty(property);
         tcsace.setControlValue(value);
+        tcsace.setFatal("Y");
 
         when(seleniumService.isElementPresent(anyString())).thenReturn(true);
 
@@ -368,6 +401,7 @@ public class ControlServiceTest {
         tcsace.setControlType("verifyElementNotPresent");
         tcsace.setControlProperty(property);
         tcsace.setControlValue(value);
+        tcsace.setFatal("Y");
 
         this.controlService.doControl(tcsace);
 
@@ -386,6 +420,7 @@ public class ControlServiceTest {
         tcsace.setControlType("verifyElementNotPresent");
         tcsace.setControlProperty(property);
         tcsace.setControlValue(value);
+        tcsace.setFatal("Y");
 
         when(seleniumService.isElementPresent(anyString())).thenThrow(new WebDriverException());
 

@@ -1,3 +1,23 @@
+/*
+ * Cerberus  Copyright (C) 2013  vertigo17
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+ *
+ * This file is part of Cerberus.
+ *
+ * Cerberus is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Cerberus is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package org.cerberus.dao;
 
 import org.cerberus.dao.impl.ApplicationDAO;
@@ -10,6 +30,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.test.context.ContextConfiguration;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -26,9 +47,10 @@ import static org.mockito.Mockito.when;
  * @author Tiago Bernardes
  * @version 1.0, 02/07/2013
  * @see org.cerberus.dao.impl.ApplicationDAO
- * @since 2.0.0
+ * @since 0.9.0
  */
 @RunWith(MockitoJUnitRunner.class)
+@ContextConfiguration(locations = {"/applicationContextTest.xml"})
 public class ApplicationDAOTest {
 
     @Mock

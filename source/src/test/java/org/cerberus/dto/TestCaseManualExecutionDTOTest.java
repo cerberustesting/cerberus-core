@@ -28,6 +28,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.test.context.ContextConfiguration;
 
 import java.sql.*;
 import java.util.Date;
@@ -44,6 +45,7 @@ import static org.mockito.Mockito.when;
  * @since 0.9.1
  */
 @RunWith(MockitoJUnitRunner.class)
+@ContextConfiguration(locations = {"/applicationContextTest.xml"})
 public class TestCaseManualExecutionDTOTest {
 
     @Mock
@@ -58,7 +60,6 @@ public class TestCaseManualExecutionDTOTest {
     private TestCaseManualExecutionDTO testCaseManualExecutionDTO;
 
     /**
-     *
      * @throws SQLException
      */
     @Test
@@ -76,7 +77,6 @@ public class TestCaseManualExecutionDTOTest {
     }
 
     /**
-     *
      * @throws SQLException
      */
     @Test
@@ -128,7 +128,6 @@ public class TestCaseManualExecutionDTOTest {
     }
 
     /**
-     *
      * @throws SQLException
      */
     @Test
@@ -181,6 +180,7 @@ public class TestCaseManualExecutionDTOTest {
 
     /**
      * This test intent to validate that no error occur
+     *
      * @throws SQLException
      */
     @Test
