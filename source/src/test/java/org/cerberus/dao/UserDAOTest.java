@@ -34,6 +34,7 @@ import org.springframework.test.context.ContextConfiguration;
 import java.sql.*;
 
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.when;
 
 /**
@@ -63,7 +64,7 @@ public class UserDAOTest {
         int id = 99999;
 
         when(databaseSpring.connect()).thenReturn(connection);
-        when(connection.prepareStatement(anyString(), Statement.RETURN_GENERATED_KEYS)).thenReturn(statement);
+        when(connection.prepareStatement(anyString(), eq(Statement.RETURN_GENERATED_KEYS))).thenReturn(statement);
         when(statement.executeUpdate()).thenReturn(1);
         when(statement.getGeneratedKeys()).thenReturn(resultSet);
         when(resultSet.first()).thenReturn(true);
@@ -80,7 +81,7 @@ public class UserDAOTest {
     @Test
     public void testInsertUserWhenFailToInsert() throws SQLException {
         when(databaseSpring.connect()).thenReturn(connection);
-        when(connection.prepareStatement(anyString(), Statement.RETURN_GENERATED_KEYS)).thenReturn(statement);
+        when(connection.prepareStatement(anyString(), eq(Statement.RETURN_GENERATED_KEYS))).thenReturn(statement);
         when(statement.executeUpdate()).thenReturn(0);
         when(statement.getGeneratedKeys()).thenReturn(resultSet);
         when(resultSet.first()).thenReturn(false);
