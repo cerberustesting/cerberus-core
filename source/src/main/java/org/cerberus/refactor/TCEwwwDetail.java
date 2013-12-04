@@ -20,7 +20,6 @@
 package org.cerberus.refactor;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -54,11 +53,11 @@ public class TCEwwwDetail extends HttpServlet {
         String dir = "asc";
         String[] cols = {"id","execID","start","url",
                         "end","ext","statusCode","method","bytes","timeInMillis","reqHeader_Host","resHeader_ContentType"};
-                       
+
         int start = 0;
         int amount = 0;
         int col = 0;
-        
+
         if (sStart != null) {
         start = Integer.parseInt(sStart);
         if (start < 0)
@@ -77,18 +76,17 @@ public class TCEwwwDetail extends HttpServlet {
         if (!sdir.equals("asc"))
             dir = "desc";
     }
-    String colName = cols[col];
-        
+//    String colName = cols[col];
+
         JSONArray data = new JSONArray(); //data that will be shown in the table
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         ITCEwwwDetService tCEwwwDetService = appContext.getBean(ITCEwwwDetService.class);
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
 
         String id = policy.sanitize(httpServletRequest.getParameter("id"));
-        JSONObject jsonObject = new JSONObject();
-        
+
         List<TestcaseExecutionwwwDet> detailList = tCEwwwDetService.getListOfDetail(Integer.valueOf(id));
-        
+
             try {
             JSONObject jsonResponse = new JSONObject();
 
@@ -107,7 +105,7 @@ public class TCEwwwDetail extends HttpServlet {
             }
             jsonResponse.put("aaData", data);
             jsonResponse.put("sEcho", echo);
-            
+
             httpServletResponse.setContentType("application/json");
             httpServletResponse.getWriter().print(jsonResponse.toString());
         } catch (JSONException e) {

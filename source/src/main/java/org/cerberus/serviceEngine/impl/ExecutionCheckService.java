@@ -20,8 +20,6 @@
 package org.cerberus.serviceEngine.impl;
 
 import org.cerberus.entity.CountryEnvParam;
-import org.cerberus.entity.Invariant;
-import org.cerberus.entity.MessageEventEnum;
 import org.cerberus.entity.MessageGeneral;
 import org.cerberus.entity.MessageGeneralEnum;
 import org.cerberus.entity.TCExecution;
@@ -30,10 +28,8 @@ import org.cerberus.exception.CerberusException;
 import org.cerberus.log.MyLogger;
 import org.cerberus.service.IApplicationService;
 import org.cerberus.serviceEngine.IExecutionCheckService;
-import org.cerberus.service.IInvariantService;
 import org.cerberus.service.ITestCaseCountryService;
 import org.cerberus.util.ParameterParserUtil;
-import org.cerberus.util.StringUtil;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -47,7 +43,7 @@ import org.springframework.stereotype.Service;
  *
  * @author Tiago Bernardes
  * @version 1.0, 15/01/2013
- * @since 2.0.0
+ * @since 0.9.0
  */
 @Service
 public class ExecutionCheckService implements IExecutionCheckService {
@@ -58,8 +54,6 @@ public class ExecutionCheckService implements IExecutionCheckService {
     private IApplicationService applicationService;
     @Autowired
     private ITestCaseCountryService testCaseCountryService;
-    @Autowired
-    private IInvariantService invariantService;
     private MessageGeneral message;
 
     @Override
@@ -213,7 +207,6 @@ public class ExecutionCheckService implements IExecutionCheckService {
     private boolean checkActiveEnvironmentGroup(TCExecution tCExecution) {
         MyLogger.log(ExecutionCheckService.class.getName(), Level.DEBUG, "Checking environment " + tCExecution.getCountryEnvParam().getEnvironment());
         TCase tc = tCExecution.gettCase();
-        CountryEnvParam env = tCExecution.getCountryEnvParam();
         if (tCExecution.getEnvironmentDataObj().getGp1().equalsIgnoreCase("QA")) {
             return this.checkRunQA(tc, tCExecution.getEnvironmentData());
         } else if (tCExecution.getEnvironmentDataObj().getGp1().equalsIgnoreCase("UAT")) {

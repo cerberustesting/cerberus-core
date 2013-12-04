@@ -21,8 +21,6 @@ package org.cerberus.servlet.testCase;
 
 import org.cerberus.log.MyLogger;
 import org.cerberus.service.ITestCaseCountryService;
-import org.cerberus.service.ITestCaseService;
-import org.cerberus.service.impl.TestCaseService;
 import org.apache.log4j.Level;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -44,7 +42,7 @@ import java.io.IOException;
  *
  * @author Tiago Bernardes
  * @version 1.0, 21/02/2013
- * @since 2.0.0
+ * @since 0.9.0
  */
 @WebServlet(value = "/GetCountryForTestCase")
 public class GetCountryForTestCase extends HttpServlet {
@@ -56,7 +54,6 @@ public class GetCountryForTestCase extends HttpServlet {
         String testCaseName = policy.sanitize(httpServletRequest.getParameter("testCase"));
 
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-        ITestCaseService testCaseService = appContext.getBean(TestCaseService.class);
         ITestCaseCountryService testCaseCountryService = appContext.getBean(ITestCaseCountryService.class);
 
         JSONArray array = new JSONArray();

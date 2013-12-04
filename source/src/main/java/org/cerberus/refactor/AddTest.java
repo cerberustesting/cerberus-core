@@ -35,7 +35,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -190,7 +189,6 @@ public class AddTest extends HttpServlet {
                     stmt.setString(3, active);
                     stmt.setString(4, automated);
                     stmt.executeUpdate();
-                    Date date = new Date();
                 }
 
             }

@@ -80,7 +80,6 @@ public class PropertyService implements IPropertyService {
         testCaseExecutionData.setStart(new Date().getTime());
         MessageEvent res;
 
-        List<TestCaseCountryProperties> tccpList = testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().gettCase().getTestCaseCountryProperties();
         TCExecution tCExecution = testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution();
 
         if (testCaseCountryProperty.getValue().contains("%")) {

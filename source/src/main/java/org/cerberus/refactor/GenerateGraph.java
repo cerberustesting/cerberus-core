@@ -56,7 +56,7 @@ public class GenerateGraph extends HttpServlet {
         response.setContentType("image/png");
 
         ServletOutputStream os = response.getOutputStream();
-        String img = request.getParameter("source");
+//        String img = request.getParameter("source");
 
         String test = "Performance Monitor";
         if (request.getParameter("test") != null) {

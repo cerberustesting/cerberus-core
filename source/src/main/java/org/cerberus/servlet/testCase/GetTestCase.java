@@ -30,7 +30,6 @@ import org.cerberus.dao.impl.TestCaseCountryPropertiesDAO;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.log.MyLogger;
 import org.cerberus.service.ILoadTestCaseService;
-import org.cerberus.service.ITestCaseCountryService;
 import org.cerberus.service.ITestCaseService;
 import org.apache.log4j.Level;
 import org.json.JSONArray;
@@ -55,7 +54,7 @@ import java.util.logging.Logger;
  *
  * @author Benoit CIVEL
  * @version 1.0, 07/02/2013
- * @since 2.0.0
+ * @since 0.9.0
  */
 @WebServlet(name = "GetTestCase", urlPatterns = {"/GetTestCase"})
 public class GetTestCase extends HttpServlet {
@@ -69,7 +68,6 @@ public class GetTestCase extends HttpServlet {
             //TODO pass DAO to Service
             ITestCaseCountryPropertiesDAO testCaseDAO = appContext.getBean(TestCaseCountryPropertiesDAO.class);
 
-            ITestCaseCountryService tccService = appContext.getBean(ITestCaseCountryService.class);
             ILoadTestCaseService loadTestCaseService = appContext.getBean(ILoadTestCaseService.class);
 
             PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);

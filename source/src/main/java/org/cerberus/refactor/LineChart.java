@@ -52,8 +52,8 @@ public class LineChart {
         numberaxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
         Shape point = ShapeUtilities.createDiagonalCross(1, 1);
         //TODO check this - seriesColors never used
-        String[] seriesColors = {"#FF0000", "#D7D6F6", "#0F07F3", "#EEFFBD", "#75C53E", "#FED7BA", "#FE6F01"};
-        String[] seriesColors2 = {"#D7D6F6", "#0F07F3", "#EEFFBD", "#75C53E", "#FED7BA", "#FE6F01"};
+//        String[] seriesColors = {"#FF0000", "#D7D6F6", "#0F07F3", "#EEFFBD", "#75C53E", "#FED7BA", "#FE6F01"};
+//        String[] seriesColors2 = {"#D7D6F6", "#0F07F3", "#EEFFBD", "#75C53E", "#FED7BA", "#FE6F01"};
 
 
         LineAndShapeRenderer lineandshaperenderer = (LineAndShapeRenderer) categoryplot.getRenderer();

@@ -169,7 +169,7 @@ public class UpdateProperties extends HttpServlet {
              */
             String[] test_testcase_format = new String[]{"", ""};
             test_testcase_format = test_testcase_no_format.split(" - ");
-            String[] country_list = country_list_no_format.split(" - ");
+//            String[] country_list = country_list_no_format.split(" - ");
 
             /*
              * Properties

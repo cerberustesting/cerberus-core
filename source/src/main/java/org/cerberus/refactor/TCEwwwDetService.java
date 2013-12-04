@@ -35,12 +35,12 @@ import org.springframework.stereotype.Service;
  * @author bcivel
  */
 @Service
-public class TCEwwwDetService implements ITCEwwwDetService{
+public class TCEwwwDetService implements ITCEwwwDetService {
 
     @Autowired
     ITCEwwwDetDAO tCEwwwDetDAO;
-    
-    
+
+
     @Override
     public List<TestcaseExecutionwwwDet> getListOfDetail(int id) {
         return tCEwwwDetDAO.getListOfDetail(id);
@@ -53,35 +53,28 @@ public class TCEwwwDetService implements ITCEwwwDetService{
         DefaultCategoryDataset defaultcategorydataset = new DefaultCategoryDataset();
         TimeSeriesCollection timeseriescollection = new TimeSeriesCollection();
         
-        String test = testcase.getTest();
-        String tc = testcase.getTestCase();
-        String country = testcase.getCountryList().get(1);
-        
-        
-               /*Create timeseries with the data*/
-                String timeseriesname = parameter;
-                TimeSeries timeseries = new TimeSeries(timeseriesname, Minute.class);
-                
-                for (TestCaseExecutionwwwSumHistoric ep : historic){
-                    defaultcategorydataset.addValue(Float.valueOf(ep.getParameter()),parameter,ep.getStart());
-                        if (!ep.getStart().equals("2011-01-01 00:00")){
-                        String tims = ep.getStart().toString();
-                        int year = Integer.valueOf(tims.substring(0, 4));
-                        int month = Integer.valueOf(tims.substring(5, 7));
-                        int day = Integer.valueOf(tims.substring(8, 10));
-                        int hour = Integer.valueOf(tims.substring(11, 13));
-                        int min = Integer.valueOf(tims.substring(14, 16));
-                        float value = Float.valueOf(ep.getParameter().toString());
-                        timeseries.addOrUpdate(new Minute(min, hour, day, month, year), value);
-                        }
-                        }
-                 timeseriescollection.addSeries(timeseries);
-                  
+       /*Create timeseries with the data*/
+        String timeseriesname = parameter;
+        TimeSeries timeseries = new TimeSeries(timeseriesname, Minute.class);
+
+        for (TestCaseExecutionwwwSumHistoric ep : historic) {
+            defaultcategorydataset.addValue(Float.valueOf(ep.getParameter()), parameter, ep.getStart());
+            if (!ep.getStart().equals("2011-01-01 00:00")) {
+                String tims = ep.getStart().toString();
+                int year = Integer.valueOf(tims.substring(0, 4));
+                int month = Integer.valueOf(tims.substring(5, 7));
+                int day = Integer.valueOf(tims.substring(8, 10));
+                int hour = Integer.valueOf(tims.substring(11, 13));
+                int min = Integer.valueOf(tims.substring(14, 16));
+                float value = Float.valueOf(ep.getParameter().toString());
+                timeseries.addOrUpdate(new Minute(min, hour, day, month, year), value);
+            }
+        }
+        timeseriescollection.addSeries(timeseries);
+
         LineChart lc = new LineChart();
         result = lc.bi(timeseriescollection, "test", parameter, 1);
-        
-               return result;
+
+        return result;
     }
-    
-    
 }

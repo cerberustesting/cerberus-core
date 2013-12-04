@@ -65,7 +65,7 @@ public class TestCaseExecutionDetailService implements ITestCaseExecutionDetailS
             List<List<String>> listOfDuration = testCaseStepActionExecutionDAO.getListOfSequenceDuration(idList.toString());
             String serie = "";
 
-            JSONArray data = new JSONArray();
+            JSONArray data;
             JSONArray line = new JSONArray();
 
             for (List<String> listInformation : listOfDuration) {
