@@ -284,7 +284,8 @@
 
             function saveManualTest(res, row) {
                 var data = oTable.fnGetNodes(row);
-                if (data.cells[4].textContent == "Click to edit" || data.cells[4].textContent == "") {
+                var message = data.cells[5].children[0].value;
+                if (message == "Click to edit" || message == "") {
                     alert("Please edit Control Message before update Result!");
                 } else if ($('#executionEnv').val() == "") {
                     alert("Please choose Environment before update Result!");
@@ -293,7 +294,6 @@
                 } else {
                     var test = data.cells[0].textContent;
                     var testCase = data.cells[1].textContent;
-                    var message = data.cells[4].textContent;
                     var env = $('#executionEnv').val();
                     var country = $('#executionCountry').val();
                     var tag = $('#executionTag').val();
@@ -361,21 +361,13 @@
                                     return "<p style='text-align: center'><input type='button' style='background-image: url(images/ok.png); width: 20px; height: 20px; border: 0 none; top: 0px' onclick='saveManualTest(\"OK\"," + o.iDataRow + ")'/></p><br/><br/>" +
                                         "<p style='text-align: center'><input type='button' style='background-image: url(images/ko.png); width: 20px; height: 20px; border: 0 none; bottom: 0px' onclick='saveManualTest(\"KO\"," + o.iDataRow + ")'/></p>"
                                 }
+                            },
+                            {
+                                "aTargets": [5],
+                                "mRender": function ( data, type, full ){
+                                    return "<textarea></textarea>";
+                                }
                             }
-                        ]
-                    }).makeEditable({
-                        sUpdateURL: function (value, settings) {
-                            return(value);
-                        },
-                        oEditableSettings: { event: 'click' },
-                        "aoColumns": [
-                            null,
-                            null,
-                            null,
-                            null,
-                            null,
-                            {type: 'textarea', onblur: 'submit'},
-                            null
                         ]
                     });
 
