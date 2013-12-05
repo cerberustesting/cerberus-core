@@ -173,9 +173,8 @@ public class TestCaseStepActionExecutionDAO implements ITestCaseStepActionExecut
         query.append("substr(StartLong,5,2),'-',substr(StartLong,7,2),' ',");
         query.append("substr(StartLong,9,2),':',substr(StartLong,11,2),':',");
         query.append("substr(StartLong,13,2),'.',substr(StartLong,15,3)) as testStart, a.`action` as ctrl ");
-        query.append(" from testcasestepactionexecution a join testcaseexecution b on a.id=b.id where step != '0' and a.test!='Pre Testing' and a.id in (");
-        query.append(idList);
-        query.append(") union select c.ID, c.Step, c.Sequence, 'Control', d.Start,");
+        query.append(" from testcasestepactionexecution a join testcaseexecution b on a.id=b.id where step != '0' and a.test!='Pre Testing' and a.id in (?)");
+        query.append(" union select c.ID, c.Step, c.Sequence, 'Control', d.Start,");
         query.append("concat(substr(EndLong,1,4),'-',");
         query.append("substr(EndLong,5,2),'-',substr(EndLong,7,2),' ',substr(EndLong,9,2),");
         query.append("':',substr(EndLong,11,2),':',substr(EndLong,13,2),'.',");
@@ -183,13 +182,14 @@ public class TestCaseStepActionExecutionDAO implements ITestCaseStepActionExecut
         query.append("substr(StartLong,5,2),'-',substr(StartLong,7,2),' ',");
         query.append("substr(StartLong,9,2),':',substr(StartLong,11,2),':',");
         query.append("substr(StartLong,13,2),'.',substr(StartLong,15,3)) as testStart, c.`control` as ctrl ");
-        query.append(" from testcasestepactioncontrolexecution c join testcaseexecution d on c.id=d.id where step != '0' and c.test!='Pre Testing' and c.id in (");
-        query.append(idList);
-        query.append(") order by step, sequence,ctrl,  type, ID");
+        query.append(" from testcasestepactioncontrolexecution c join testcaseexecution d on c.id=d.id where step != '0' and c.test!='Pre Testing' and c.id in (?)");
+        query.append(" order by step, sequence,ctrl,  type, ID");
 
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
+            preStat.setString(1, idList);
+            preStat.setString(2, idList);
             MyLogger.log(TestCaseStepActionControlDAO.class.getName(), Level.WARN, query.toString());
             try {
                 ResultSet resultSet = preStat.executeQuery();

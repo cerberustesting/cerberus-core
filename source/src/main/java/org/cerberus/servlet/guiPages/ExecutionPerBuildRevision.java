@@ -162,14 +162,14 @@ public class ExecutionPerBuildRevision extends HttpServlet {
                     String contentSQL = "SELECT t.Build, t.Revision, "
                             + " t.application, t.release, t.link "
                             + "FROM buildrevisionparameters t "
-                            + "Where t.build = ? and t.revision = ? "
-                            + inSQL;
+                            + "Where t.build = ? and t.revision = ? ?";
                     MyLogger.log(ExecutionPerBuildRevision.class.getName(), Level.DEBUG, contentSQL);
                     PreparedStatement stmtContent = connection.prepareStatement(contentSQL);
 
                     try {
                         stmtContent.setString(1, build);
                         stmtContent.setString(2, revision);
+                        stmtContent.setString(3, inSQL);
                         ResultSet rsContent = stmtContent.executeQuery();
                         ArrayList<ArrayList<String>> array = new ArrayList<ArrayList<String>>();
                         try {
