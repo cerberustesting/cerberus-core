@@ -211,20 +211,17 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                         list.add(resultSet.getString("ID"));
                     }
                 } catch (SQLException exception) {
-                    //TODO logger ERROR
-                    //error on resultSet.getString
+                    MyLogger.log(TestCaseExecutionDAO.class.getName(), Level.ERROR, exception.toString());
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                //TODO logger ERROR
-                //preStat.executeQuery();
+                MyLogger.log(TestCaseExecutionDAO.class.getName(), Level.ERROR, exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            //TODO logger ERROR
-            //conn.prepareStatement(query);
+            MyLogger.log(TestCaseExecutionDAO.class.getName(), Level.ERROR, exception.toString());
         } finally {
             try {
                 if (connection != null) {

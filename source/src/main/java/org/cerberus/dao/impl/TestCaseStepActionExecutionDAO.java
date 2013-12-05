@@ -208,20 +208,17 @@ public class TestCaseStepActionExecutionDAO implements ITestCaseStepActionExecut
                         list.add(array);
                     }
                 } catch (SQLException exception) {
-                    //TODO logger ERROR
-                    //error on resultSet.getString
+                    MyLogger.log(TestCaseStepActionControlDAO.class.getName(), Level.ERROR, exception.toString());
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                //TODO logger ERROR
-                //preStat.executeQuery();
+                MyLogger.log(TestCaseStepActionControlDAO.class.getName(), Level.ERROR, exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            //TODO logger ERROR
-            //conn.prepareStatement(query);
+            MyLogger.log(TestCaseStepActionControlDAO.class.getName(), Level.ERROR, exception.toString());
         } finally {
             try {
                 if (connection != null) {
@@ -238,7 +235,6 @@ public class TestCaseStepActionExecutionDAO implements ITestCaseStepActionExecut
     public List<TestCaseStepActionExecution> findTestCaseStepActionExecutionByCriteria(long id, String test, String testCase, int step) {
         List<TestCaseStepActionExecution> result = null;
         TestCaseStepActionExecution resultData;
-        boolean throwEx = false;
         final String query = "SELECT * FROM testcasestepactionexecution WHERE id = ? AND test = ? AND testcase = ? AND step = ? ORDER BY sequence";
 
         Connection connection = this.databaseSpring.connect();
