@@ -105,53 +105,53 @@ public class Homepage extends HttpServlet {
                         + "left join "
                         + "(SELECT g.test, count(*) as TBI from testcase g "
                         + "where Status = 'TO BE IMPLEMENTED' ");
-                SQL.append("?");
-                SQL.append("group by Test)s "
+                SQL.append(inSQL);
+                SQL.append(" GROUP BY Test) s "
                         + "on s.test=t.test "
                         + "left join "
                         + "(SELECT h.test, count(*) as WORKING from testcase h "
                         + "where Status = 'WORKING' ");
-                SQL.append("?");
-                SQL.append("group by Test)u "
+                SQL.append(inSQL);
+                SQL.append(" GROUP BY Test) u "
                         + "on u.test=t.test "
                         + "left join "
                         + "(SELECT a.test, count(*) as STANDBY from testcase a "
                         + "where Status = 'Standby' ");
-                SQL.append("?");
-                SQL.append("group by Test)v "
+                SQL.append(inSQL);
+                SQL.append(" GROUP BY Test) v "
                         + "on v.test=t.test "
                         + "left join "
                         + "(SELECT b.test, count(*) as INPROGRESS from testcase b "
                         + "where Status = 'IN PROGRESS' ");
-                SQL.append("?");
-                SQL.append("group by Test)w "
+                SQL.append(inSQL);
+                SQL.append(" GROUP BY Test) w "
                         + "on w.test=t.test "
                         + "left join "
                         + "(SELECT i.test, count(*) as TBV from testcase i "
                         + "where Status = 'TO BE VALIDATED' ");
-                SQL.append("?");
-                SQL.append("group by Test)x "
+                SQL.append(inSQL);
+                SQL.append(" GROUP BY Test) x "
                         + "on x.test=t.test "
                         + "left join "
                         + "(SELECT j.test, count(*) as TBD from testcase j "
                         + "where Status = 'TO BE DELETED' ");
-                SQL.append("?");
-                SQL.append("group by Test)y "
+                SQL.append(inSQL);
+                SQL.append(" GROUP BY Test) y "
                         + "on y.test=t.test "
                         + "WHERE 1=1  ");
-                SQL.append("?");
+                SQL.append(inSQL);
                 SQL.append(" GROUP BY test;");
 
                 MyLogger.log(Homepage.class.getName(), Level.DEBUG, " SQL : " + SQL.toString());
 
                 PreparedStatement stmt_teststatus = connection.prepareStatement(SQL.toString());
-                stmt_teststatus.setString(1, inSQL);
-                stmt_teststatus.setString(2, inSQL);
-                stmt_teststatus.setString(3, inSQL);
-                stmt_teststatus.setString(4, inSQL);
-                stmt_teststatus.setString(5, inSQL);
-                stmt_teststatus.setString(6, inSQL);
-                stmt_teststatus.setString(7, inSQL);
+//                stmt_teststatus.setString(1, inSQL);
+//                stmt_teststatus.setString(2, inSQL);
+//                stmt_teststatus.setString(3, inSQL);
+//                stmt_teststatus.setString(4, inSQL);
+//                stmt_teststatus.setString(5, inSQL);
+//                stmt_teststatus.setString(6, inSQL);
+//                stmt_teststatus.setString(7, inSQL);
 
                 ArrayList<ArrayList<String>> arrayTest = new ArrayList<ArrayList<String>>();
                 ArrayList<String> al;
