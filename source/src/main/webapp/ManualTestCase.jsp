@@ -18,6 +18,7 @@
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<% Date start = new Date(); %>
 <!DOCTYPE html>
 <html>
     <head>
@@ -260,7 +261,7 @@
             function getAjaxSource() {
                 var url = "SearchManualTestCaseInformation";
                 url += "?ScTest=" + $('#test').val();
-                url += "&ScTestTest=" + $('#testCase').val();
+                url += "&ScTestCase=" + $('#testCase').val();
                 url += "&ScProject=" + $('#project').val();
                 url += "&ScTicket=" + $('#ticket').val();
                 url += "&ScBugID=" + $('#bugID').val();
@@ -328,7 +329,9 @@
                         "sServerMethod": "POST",
                         "aoColumns": [
                             {"mDataProp": "test", "sName": "test", "bSortable": false, sWidth: "130px"},
-                            {"mDataProp": "testCase", "sName": "ScTestCase", "bSortable": false, sWidth: "30px"},
+                            {"mDataProp": function(tCase, type, val){
+                                return testCase = "<a href='TestCase.jsp?Test="+tCase.test+"&TestCase="+tCase.testCase+"&Load=Load' target='_blank'>"+tCase.testCase+"</a>";
+                            }, "sName": "ScTestCase", "bSortable": false, sWidth: "30px"},
                             {"mDataProp": "valueExpected", "sName": "description", "bSortable": false, sWidth: "180px"},
                             {"mDataProp": "howTo", "sName": "howTo", "bSortable": false, sWidth: "430px"},
                             {"mDataProp": function(tCase, type, val){
@@ -339,7 +342,7 @@
                                     detail += "<b>"+tCase.application+"</b>";
                                 }
                                 detail += "<br/>System: <b>"+tCase.system+"</b>";
-                                detail += "<br/>Build: <b>"+tCase.build+"</b><br/>Revision: <b>"+tCase.revision+"</b>";
+                                detail += "<br/><b>"+tCase.build+" / "+tCase.revision+"</b>";
                                 if (tCase.lastStatus != "" && tCase.lastStatus != null) {
                                     if (tCase.lastStatus == "OK"){
                                         detail += "<br/><span style='background-color: #00ff00; color: #000000'>";
@@ -348,6 +351,7 @@
                                     }
                                     detail += "<b>"+tCase.lastStatus+"</b></span> on "+
                                             new Date(tCase.lastStatusDate).toISOString().replace("T", " ").split(".")[0];
+//                                            new Date(tCase.lastStatusDate).toUTCString().replace("T", " ").split(".")[0];
                                 }
                                 return detail;
                             }, "sName": "detail", "bSortable": false, sWidth: "140px", sClass: "center"},
@@ -421,5 +425,9 @@
                 });
             });
         </script>
+        <br/>
+        <div style="">
+            <%=display_footer(start)%>
+        </div>
     </body>
 </html>
