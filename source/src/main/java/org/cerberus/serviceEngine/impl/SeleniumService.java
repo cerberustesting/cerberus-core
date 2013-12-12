@@ -674,6 +674,18 @@ public class SeleniumService implements ISeleniumService {
                 message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CLICKANDNOWAIT);
                 message.setDescription(message.getDescription().replaceAll("%ELEMENT%", actionObject));
                 return message;
+            } else if (!StringUtil.isNull(actionProperty) && StringUtil.isNull(actionObject)) {
+                try {
+                    this.getSeleniumElement(actionProperty, true).click();
+                } catch (NoSuchElementException exception) {
+                    message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CLICK_NO_SUCH_ELEMENT);
+                    message.setDescription(message.getDescription().replaceAll("%ELEMENT%", actionProperty));
+                    MyLogger.log(SeleniumService.class.getName(), Level.ERROR, exception.toString());
+                    return message;
+                }
+                message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CLICKANDNOWAIT);
+                message.setDescription(message.getDescription().replaceAll("%ELEMENT%", actionProperty));
+                return message;
             }
         } catch (WebDriverException exception) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_SELENIUM_CONNECTIVITY);
