@@ -78,11 +78,10 @@ public class GetDataForTestCaseSearch extends HttpServlet {
             data.put("name", "system");
             jsonResponse.put(data);
 
-            HashSet<String> envAux = new HashSet<String>();
+            JSONArray env = new JSONArray();
             for (Invariant i : invariantService.findListOfInvariantById("ENVIRONMENT")) {
-                envAux.add(i.getGp1());
+                env.put(i.getValue());
             }
-            JSONArray env = new JSONArray(envAux.toArray());
             data = new JSONObject();
             data.put("data", env);
             data.put("name", "executionEnv");

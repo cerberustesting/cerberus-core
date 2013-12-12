@@ -55,7 +55,7 @@ public class SearchManualTestCaseInformation extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String echo = req.getParameter("sEcho");
-        String text = this.getValue(req, "ScText");
+        String text = "%" + this.getValue(req, "ScText") + "%";
         String system = this.getValue(req, "ScSystem");
         String country = this.getValue(req, "ScCountry");
         String env = this.getValue(req, "ScEnv");
@@ -98,7 +98,7 @@ public class SearchManualTestCaseInformation extends HttpServlet {
 
     private TCase getTestCaseFromRequest(HttpServletRequest req) {
         String test = this.getValue(req, "ScTest");
-        String testCase = this.getValue(req, "ScTestCase");
+        String testCase = "%" + this.getValue(req, "ScTestCase") + "%";
         String project = this.getValue(req, "ScProject");
         String ticket = this.getValue(req, "ScTicket");
         String bug = this.getValue(req, "ScBugID");
