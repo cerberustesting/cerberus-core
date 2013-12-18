@@ -137,12 +137,6 @@
                         </select>
                     </div>
                     <div class="field">
-                        <label for="system" style="width: 90px">System</label><br/>
-                        <select id="system" name="system" style="width: 90px">
-                            <option value="All">-- ALL --</option>
-                        </select>
-                    </div>
-                    <div class="field">
                         <label for="application" style="width: 140px">Application</label><br/>
                         <select id="application" name="application" style="width: 140px">
                             <option value="All">-- ALL --</option>
@@ -267,7 +261,7 @@
                 url += "&ScBugID=" + $('#bugID').val();
                 url += "&ScOrigin=" + $('#origine').val();
                 url += "&ScCreator=" + $('#creator').val();
-                url += "&ScSystem=" + $('#system').val();
+                url += "&ScSystem=" + $('#MySystem').val();
                 url += "&ScApplication=" + $('#application').val();
                 url += "&ScPriority=" + $('#priority').val();
                 url += "&ScStatus=" + $('#status').val();
@@ -286,7 +280,7 @@
             function saveManualTest(res, row) {
                 var data = oTable.fnGetNodes(row);
                 var message = data.cells[5].children[0].value;
-                if (message == "Click to edit" || message == "") {
+                if (message == "") {
                     alert("Please edit Control Message before update Result!");
                 } else if ($('#executionEnv').val() == "") {
                     alert("Please choose Environment before update Result!");
@@ -349,8 +343,8 @@
                                     } else {
                                         detail += "<br/><span style='background-color: #ff0000; color: #ffffff'>";
                                     }
-                                    detail += "<b>"+tCase.lastStatus+"</b></span> on "+
-                                            new Date(tCase.lastStatusDate).toISOString().replace("T", " ").split(".")[0];
+                                    detail += "<b>"+tCase.lastStatus+"</b></span> on <a href='ExecutionDetail.jsp?id_tc="+tCase.lastStatusID+"' target='_blank'>"+
+                                            new Date(tCase.lastStatusDate).toISOString().replace("T", " ").split(".")[0]+"</a> for "+tCase.lastStatusBuild+" / "+tCase.lastStatusRevision;
 //                                            new Date(tCase.lastStatusDate).toUTCString().replace("T", " ").split(".")[0];
                                 }
                                 return detail;
@@ -426,7 +420,7 @@
             });
         </script>
         <br/>
-        <div style="">
+        <div style="float: left">
             <%=display_footer(start)%>
         </div>
     </body>

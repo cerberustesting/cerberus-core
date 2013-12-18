@@ -37,6 +37,7 @@ import org.cerberus.factory.IFactoryTCExecution;
 import org.cerberus.factory.IFactoryTestCaseExecutionSysVer;
 import org.cerberus.log.MyLogger;
 import org.apache.log4j.Level;
+import org.cerberus.version.Version;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -93,7 +94,7 @@ public class SaveManualExecution extends HttpServlet {
             String build = countryEnvParam.getBuild();
             String revision = countryEnvParam.getRevision();
             long now = new Date().getTime();
-            String version = "";
+            String version = Version.VERSION;
 
             TCExecution execution = factoryTCExecution.create(0, test, testCase, build, revision, env, country, "", now, now,
                     controlStatus, controlMessage, application, "", "", "", tag, "Y", 0, 0, "", tCase.getStatus(), version,

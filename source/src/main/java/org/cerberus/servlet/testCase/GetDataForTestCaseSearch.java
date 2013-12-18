@@ -39,7 +39,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.HashSet;
 
 /**
  * {Insert class description here}
@@ -73,10 +72,10 @@ public class GetDataForTestCaseSearch extends HttpServlet {
                 jsonResponse.put(data);
             }
 
-            data = new JSONObject();
-            data.put("data", new JSONArray(applicationService.findDistinctSystem()));
-            data.put("name", "system");
-            jsonResponse.put(data);
+//            data = new JSONObject();
+//            data.put("data", new JSONArray(applicationService.findDistinctSystem()));
+//            data.put("name", "system");
+//            jsonResponse.put(data);
 
             JSONArray env = new JSONArray();
             for (Invariant i : invariantService.findListOfInvariantById("ENVIRONMENT")) {

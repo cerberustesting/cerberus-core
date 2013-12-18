@@ -36,7 +36,7 @@ public class TestCaseManualExecutionDTO implements ITestCaseManualExecutionDTO {
     @Override
     public List<TestCaseManualExecution> findTestCaseManualExecution(TCase testCase, String text, String system, String country, String env) {
         List<TestCaseManualExecution> list = null;
-        final String query = "SELECT tc.test, tc.testcase, tc.behaviororvalueexpected, tc.howto, tcc.country, a.application, a.system, a.type, CONCAT( CONCAT( cep.ip , cep.url ), cep.urllogin ) AS url, cenvp.build, cenvp.revision, tce.controlstatus, tce.end " +
+        final String query = "SELECT tc.test, tc.testcase, tc.behaviororvalueexpected, tc.howto, tcc.country, a.application, a.system, a.type, CONCAT( CONCAT( cep.ip , cep.url ), cep.urllogin ) AS url, cenvp.build, cenvp.revision, tce.controlstatus, tce.end, tce.id, tce.build, tce.revision " +
                 "FROM testcase tc " +
                 "  JOIN testcasecountry tcc " +
                 "    ON (tc.test = tcc.test AND tc.testcase=tcc.testcase) " +
@@ -119,6 +119,9 @@ public class TestCaseManualExecutionDTO implements ITestCaseManualExecutionDTO {
                         if (resultSet.getTimestamp("end") != null) {
                             tcme.setLastStatusDate(resultSet.getTimestamp("end").getTime());
                         }
+                        tcme.setLastStatusID(resultSet.getLong("ID"));
+                        tcme.setLastStatusBuild(resultSet.getString("build"));
+                        tcme.setLastStatusRevision(resultSet.getString("revision"));
                         list.add(tcme);
                     }
                 } catch (SQLException exception) {
