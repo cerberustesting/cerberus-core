@@ -86,6 +86,11 @@ public class MessageEvent {
         return this.code == msg.code;
     }
 
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
     /**
      * The only thing that can be changed is the description. All the rest is
      * static.

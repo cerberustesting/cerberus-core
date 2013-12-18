@@ -22,7 +22,7 @@ package org.cerberus.entity;
  *
  * @author Tiago Bernardes
  * @version 1.0, 19/Dez/2012
- * @since 2.0.0
+ * @since 0.9.0
  */
 public enum MessageEventEnum {
 
@@ -209,9 +209,5 @@ public enum MessageEventEnum {
 
     public String getCodeString() {
         return codeString;
-    }
-
-    public boolean equals(MessageEventEnum msg) {
-        return this.code == msg.code;
     }
 }

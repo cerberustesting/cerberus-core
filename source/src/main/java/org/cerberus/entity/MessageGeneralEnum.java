@@ -22,7 +22,7 @@ package org.cerberus.entity;
  *
  * @author Tiago Bernardes
  * @version 1.0, 19/Dez/2012
- * @since 2.0.0
+ * @since 0.9.0
  */
 public enum MessageGeneralEnum {
 
@@ -108,9 +108,5 @@ public enum MessageGeneralEnum {
 
     public String getDescription() {
         return this.description;
-    }
-
-    public boolean equals(MessageGeneralEnum msg) {
-        return this.code == msg.code;
     }
 }
