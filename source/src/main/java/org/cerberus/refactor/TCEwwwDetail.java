@@ -51,8 +51,8 @@ public class TCEwwwDetail extends HttpServlet {
         String sCol = httpServletRequest.getParameter("iSortCol_0");
         String sdir = httpServletRequest.getParameter("sSortDir_0");
         String dir = "asc";
-        String[] cols = {"id","execID","start","url",
-                        "end","ext","statusCode","method","bytes","timeInMillis","reqHeader_Host","resHeader_ContentType"};
+//        String[] cols = {"id","execID","start","url",
+//                        "end","ext","statusCode","method","bytes","timeInMillis","reqHeader_Host","resHeader_ContentType"};
 
         int start = 0;
         int amount = 0;

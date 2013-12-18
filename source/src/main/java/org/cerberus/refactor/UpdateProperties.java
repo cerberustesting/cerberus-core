@@ -133,8 +133,8 @@ public class UpdateProperties extends HttpServlet {
                     "testcase_hidden", request);
             this.getStringParameter("Test", request);
             this.getStringParameter("TestCase", request);
-            String country_list_no_format = this.getStringParameter(
-                    "CountryList", request);
+//            String country_list_no_format = this.getStringParameter(
+//                    "CountryList", request);
 
             /*
              * Properties Insert/Update

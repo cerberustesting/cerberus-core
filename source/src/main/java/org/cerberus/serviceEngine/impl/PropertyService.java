@@ -118,9 +118,9 @@ public class PropertyService implements IPropertyService {
                     res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_RANDOM);
                     res.setDescription(res.getDescription().replaceAll("%VALUE%", ParameterParserUtil.securePassword(value, testCaseCountryProperty.getProperty())));
                     testCaseExecutionData.setPropertyResultMessage(res);
-                    if (testCaseCountryProperty.getNature().equals("RANDOM_NEW")) {
-                        //TODO check if value exist on DB ( used in another test case of the revision )
-                    }
+//                    if (testCaseCountryProperty.getNature().equals("RANDOM_NEW")) {
+//                        //TODO check if value exist on DB ( used in another test case of the revision )
+//                    }
                 }
             } else {
                 MyLogger.log(PropertyService.class.getName(), Level.DEBUG, "Setting value : " + testCaseCountryProperty.getValue());
@@ -140,7 +140,6 @@ public class PropertyService implements IPropertyService {
                     res.setDescription(res.getDescription().replaceAll("%ELEMENT%", testCaseCountryProperty.getValue()));
                     res.setDescription(res.getDescription().replaceAll("%VALUE%", valueFromHTML));
                     testCaseExecutionData.setPropertyResultMessage(res);
-                } else {
                 }
             } catch (NoSuchElementException exception) {
                 MyLogger.log(PropertyService.class.getName(), Level.ERROR, exception.toString());
@@ -351,7 +350,8 @@ public class PropertyService implements IPropertyService {
 
     private String calculateNatureNotInUse(List<String> list, String propName, TCExecution tCExecution) {
         try {
-            List<TCExecution> exelist = this.testCaseExecutionService.findTCExecutionbyCriteria1(DateUtil.getMySQLTimestampTodayDeltaMinutes(10), "%", "%", "%", "%", "%", "PE", "%");
+//            List<TCExecution> exelist = this.testCaseExecutionService.findTCExecutionbyCriteria1(DateUtil.getMySQLTimestampTodayDeltaMinutes(10), "%", "%", "%", "%", "%", "PE", "%");
+            this.testCaseExecutionService.findTCExecutionbyCriteria1(DateUtil.getMySQLTimestampTodayDeltaMinutes(10), "%", "%", "%", "%", "%", "PE", "%");
             // boucle sur list
             for (String value : list) {
                 /**
