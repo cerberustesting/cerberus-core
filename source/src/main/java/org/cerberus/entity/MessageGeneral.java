@@ -62,7 +62,7 @@ public class MessageGeneral {
 
     @Override
     public boolean equals(Object obj) {
-        if (this.getClass() != obj.getClass()) {
+        if (obj == null || this.getClass() != obj.getClass()) {
             return false;
         }
         MessageGeneral msg = (MessageGeneral) obj;
