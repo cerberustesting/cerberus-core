@@ -22,7 +22,7 @@ package org.cerberus.entity;
  *
  * @author Tiago Bernardes
  * @version 1.0, 19/Dez/2012
- * @since 2.0.0
+ * @since 0.9.0
  */
 public class MessageEvent {
 
@@ -77,7 +77,12 @@ public class MessageEvent {
         return this.description;
     }
 
-    public boolean equals(MessageEvent msg) {
+    @Override
+    public boolean equals(Object obj) {
+        if (this.getClass() != obj.getClass()) {
+            return false;
+        }
+        MessageEvent msg = (MessageEvent) obj;
         return this.code == msg.code;
     }
 
