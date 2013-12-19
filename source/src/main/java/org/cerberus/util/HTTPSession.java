@@ -101,7 +101,7 @@ public class HTTPSession {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        if(response.getStatusLine()!=null){
+        if( response!=null && response.getStatusLine()!=null){
             return response.getStatusLine().getStatusCode();
         }
         return 0;
