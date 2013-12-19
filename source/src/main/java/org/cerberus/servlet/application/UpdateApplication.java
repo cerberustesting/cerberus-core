@@ -69,68 +69,63 @@ public class UpdateApplication extends HttpServlet {
 
         Application myApplication;
         try {
-            try {
-                myApplication = applicationService.findApplicationByKey(application);
-                switch (columnPosition) {
-                    case 1:
-                        myApplication.setSystem(value);
-                        break;
-                    case 2:
-                        myApplication.setSubsystem(value);
-                        break;
-                    case 3:
-                        myApplication.setDescription(value);
-                        break;
-                    case 4:
-                        myApplication.setInternal(value);
-                        break;
-                    case 5:
-                        myApplication.setType(value);
-                        break;
-                    case 6:
-                        myApplication.setMavengroupid(value);
-                        break;
-                    case 7:
-                        myApplication.setDeploytype(value);
-                        break;
-                    case 8:
-                        try {
-                            myApplication.setSort(Integer.valueOf(value));
-                        } catch (Exception ex) {
-                            response.getWriter().print(ex.getMessage());
-                        }
-                        break;
-                    case 9:
-                        myApplication.setSvnurl(value);
-                        break;
-                    case 10:
-                        myApplication.setBugTrackerUrl(value);
-                        break;
-                    case 11:
-                        myApplication.setBugTrackerNewUrl(value);
-                        break;
-                }
-
-                applicationService.updateApplication(myApplication);
-                
-                /**
-                 * Adding Log entry.
-                 */
-                ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
-                try {
-                    logEventService.insertLogEvent(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/UpdateApplicationAjax", "UPDATE", "Update application : " + application, "", ""));
-                } catch (CerberusException ex) {
-                    Logger.getLogger(UpdateApplication.class.getName()).log(Level.ERROR, null, ex);
-                }
-                response.getWriter().print(value);
-
-            } catch (CerberusException ex) {
-                java.util.logging.Logger.getLogger(UpdateApplication.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            myApplication = applicationService.findApplicationByKey(application);
+            switch (columnPosition) {
+                case 1:
+                    myApplication.setSystem(value);
+                    break;
+                case 2:
+                    myApplication.setSubsystem(value);
+                    break;
+                case 3:
+                    myApplication.setDescription(value);
+                    break;
+                case 4:
+                    myApplication.setInternal(value);
+                    break;
+                case 5:
+                    myApplication.setType(value);
+                    break;
+                case 6:
+                    myApplication.setMavengroupid(value);
+                    break;
+                case 7:
+                    myApplication.setDeploytype(value);
+                    break;
+                case 8:
+                    try {
+                        myApplication.setSort(Integer.valueOf(value));
+                    } catch (Exception ex) {
+                        response.getWriter().print(ex.getMessage());
+                    }
+                    break;
+                case 9:
+                    myApplication.setSvnurl(value);
+                    break;
+                case 10:
+                    myApplication.setBugTrackerUrl(value);
+                    break;
+                case 11:
+                    myApplication.setBugTrackerNewUrl(value);
+                    break;
             }
 
+            applicationService.updateApplication(myApplication);
 
-        } finally {
+            /**
+             * Adding Log entry.
+             */
+            ILogEventService logEventService = appContext.getBean(LogEventService.class);
+            IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
+            try {
+                logEventService.insertLogEvent(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/UpdateApplicationAjax", "UPDATE", "Update application : " + application, "", ""));
+            } catch (CerberusException ex) {
+                Logger.getLogger(UpdateApplication.class.getName()).log(Level.ERROR, null, ex);
+            }
+            response.getWriter().print(value);
+
+        } catch (CerberusException ex) {
+            java.util.logging.Logger.getLogger(UpdateApplication.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
     }
 
