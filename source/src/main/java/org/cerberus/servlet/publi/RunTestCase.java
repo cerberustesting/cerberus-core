@@ -164,15 +164,6 @@ public class RunTestCase extends HttpServlet {
             out.println("ReturnCode" + separator + tCExecution.getResultMessage().getCode());
             out.println("ReturnCodeDescription" + separator + tCExecution.getResultMessage().getDescription());
             out.println("ControlStatus" + separator + tCExecution.getResultMessage().getCodeString());
-        } else if (outputFormat.equalsIgnoreCase("compact")) {
-            out.println(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(tCExecution.getStart()) + " - " + runID
-                    + " [" + test
-                    + "|" + testCase
-                    + "|" + country
-                    + "|" + environment
-                    + "] : '" + tCExecution.getResultMessage().getCodeString() + "' - "
-                    + tCExecution.getResultMessage().getCode()
-                    + " " + tCExecution.getResultMessage().getDescription());
         } else {
             out.println(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(tCExecution.getStart()) + " - " + runID
                     + " [" + test
