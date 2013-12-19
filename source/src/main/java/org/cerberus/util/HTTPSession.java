@@ -101,8 +101,10 @@ public class HTTPSession {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        return response.getStatusLine().getStatusCode();
-
+        if(response.getStatusLine()!=null){
+            return response.getStatusLine().getStatusCode();
+        }
+        return 0;
     }
 
     /**
