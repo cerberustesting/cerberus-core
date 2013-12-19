@@ -70,10 +70,12 @@ public class TestCaseExecutionStatisticsDAOImpl implements ITestCaseExecutionSta
                 inv.addAll(invariantService.findInvariantByIdGp1("ENVIRONMENT", e));
             }
 
+            StringBuffer buf = new StringBuffer();
             for (Invariant i : inv) {
-                env += "'" + i.getValue() + "', ";
+                buf.append("'" + i.getValue() + "', ");
+//                env += "'" + i.getValue() + "', ";
             }
-            env = env.substring(0, env.length() - 2);
+            env = buf.toString().substring(0, env.length() - 2);
         } catch (CerberusException e) {
             //TODO ---
             return null;
@@ -207,10 +209,12 @@ public class TestCaseExecutionStatisticsDAOImpl implements ITestCaseExecutionSta
                 inv.addAll(invariantService.findInvariantByIdGp1("ENVIRONMENT", e));
             }
 
+            StringBuffer buf = new StringBuffer();
             for (Invariant i : inv) {
-                env += "'" + i.getValue() + "', ";
+                buf.append("'" + i.getValue() + "', ");
+//                env += "'" + i.getValue() + "', ";
             }
-            env = env.substring(0, env.length() - 2);
+            env = buf.toString().substring(0, env.length() - 2);
         } catch (CerberusException e) {
             //TODO ---
             return null;

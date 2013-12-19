@@ -285,6 +285,7 @@ public class EmailBodyGeneration implements IEmailBodyGeneration {
 
                 String bckColor = "#f3f6fa";
                 int a = 1;
+                StringBuffer buf = new StringBuffer();
                 do {
                     a++;
                     int b;
@@ -319,15 +320,16 @@ public class EmailBodyGeneration implements IEmailBodyGeneration {
                         contentNBDAPP = rsBC.getString("nb_dapp");
                     }
 
-                    TestRecapTable = TestRecapTable + "<tr style=\"background-color:" + bckColor + "; font-size:80%\"><td>"
+//                    TestRecapTable = TestRecapTable + "<tr style=\"background-color:" + bckColor + "; font-size:80%\"><td>"
+                    buf.append("<tr style=\"background-color:" + bckColor + "; font-size:80%\"><td>"
                             + contentEnv + "</td><td>"
                             + contentNBExe + "</td><td>"
                             + contentPerOK + "</td><td>"
                             + contentNBDTC + "</td><td>"
-                            + contentNBDAPP + "</td></tr>";
+                            + contentNBDAPP + "</td></tr>");
                 } while (rsBC.next());
 
-                TestRecapTable = TestRecapTable + "</table><br>";
+                TestRecapTable += buf.toString() + "</table><br>";
 
             } else {
                 if (country.equalsIgnoreCase("ALL")) {
