@@ -393,7 +393,6 @@ public class ControlService implements IControlService {
                 }
             } else {
                 mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_REGEXINELEMENT_NULL);
-                mes.setDescription(mes.getDescription().replaceAll("%STRING1%", html));
                 return mes;
             }
         } catch (NoSuchElementException exception) {

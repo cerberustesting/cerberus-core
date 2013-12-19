@@ -158,7 +158,7 @@ public enum MessageEventEnum {
     CONTROL_FAILED_TEXTNOTINPAGE(374, "KO", "Pattern '%STRING1%' found in page!", true, true, MessageGeneralEnum.EXECUTION_KO),
     CONTROL_FAILED_TEXTNOTINPAGE_INVALIDPATERN(375, "KO", "Pattern '%PATERN%' is not valid. Detailed error : %ERROR%", true, false, MessageGeneralEnum.EXECUTION_FA),
     CONTROL_FAILED_REGEXINELEMENT(376, "KO", "Element '%STRING1%' with value '%STRING2%' does not match '%STRING3%'.", true, true, MessageGeneralEnum.EXECUTION_KO),
-    CONTROL_FAILED_REGEXINELEMENT_NULL(377, "KO", "Found Element '%STRING1%' but can not find text or value.", true, true, MessageGeneralEnum.EXECUTION_KO),
+    CONTROL_FAILED_REGEXINELEMENT_NULL(377, "KO", "Object is 'null'. This is mandatory in order to perform the control verify regex in element", true, true, MessageGeneralEnum.EXECUTION_KO),
     CONTROL_FAILED_REGEXINELEMENT_NO_SUCH_ELEMENT(378, "KO", "Failed to verifyRegex because could not find element '%ELEMENT%'", true, true, MessageGeneralEnum.EXECUTION_KO),
     CONTROL_FAILED_REGEXINELEMENT_INVALIDPATERN(379, "KO", "Pattern '%PATERN%' is not valid. Detailed error : %ERROR%", true, true, MessageGeneralEnum.EXECUTION_KO),
     CONTROL_PENDING(399, "PE", "Control beeing performed...", false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
