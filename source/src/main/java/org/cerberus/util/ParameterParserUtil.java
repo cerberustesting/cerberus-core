@@ -92,10 +92,10 @@ public final class ParameterParserUtil {
         if (inParam == null) {
             return defaultVal;
         }
-        if ((inParam != null) && (inParam.equalsIgnoreCase("Y") || inParam.equalsIgnoreCase("yes") || inParam.equalsIgnoreCase("true"))) {
+        if ((inParam.equalsIgnoreCase("Y") || inParam.equalsIgnoreCase("yes") || inParam.equalsIgnoreCase("true"))) {
             return true;
         }
-        if ((inParam != null) && (inParam.equalsIgnoreCase("N") || inParam.equalsIgnoreCase("no") || inParam.equalsIgnoreCase("false"))) {
+        if ((inParam.equalsIgnoreCase("N") || inParam.equalsIgnoreCase("no") || inParam.equalsIgnoreCase("false"))) {
             return false;
         }
         return defaultVal;
