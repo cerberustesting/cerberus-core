@@ -22,14 +22,11 @@ package org.cerberus.servlet.buildrevision;
 import org.cerberus.entity.BuildRevisionInvariant;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.factory.IFactoryBuildRevisionInvariant;
-import org.cerberus.factory.IFactoryGroup;
 import org.cerberus.factory.IFactoryLogEvent;
 import org.cerberus.factory.impl.FactoryBuildRevisionInvariant;
-import org.cerberus.factory.impl.FactoryGroup;
 import org.cerberus.factory.impl.FactoryLogEvent;
 import org.cerberus.service.IBuildRevisionInvariantService;
 import org.cerberus.service.ILogEventService;
-import org.cerberus.service.IUserService;
 import org.cerberus.service.impl.BuildRevisionInvariantService;
 import org.cerberus.service.impl.LogEventService;
 import org.cerberus.service.impl.UserService;
@@ -41,6 +38,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.owasp.html.PolicyFactory;
+import org.owasp.html.Sanitizers;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -57,9 +56,11 @@ public class DeleteBuildRevisionInvariant extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String system = request.getParameter("system");
-        Integer level = Integer.valueOf(request.getParameter("level"));
-        Integer seq = Integer.valueOf(request.getParameter("seq"));
+        PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
+
+        String system = policy.sanitize(request.getParameter("system"));
+        Integer level = Integer.valueOf(policy.sanitize(request.getParameter("level")));
+        Integer seq = Integer.valueOf(policy.sanitize(request.getParameter("seq")));
 
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         IBuildRevisionInvariantService briService = appContext.getBean(BuildRevisionInvariantService.class);
@@ -74,13 +75,13 @@ public class DeleteBuildRevisionInvariant extends HttpServlet {
             ILogEventService logEventService = appContext.getBean(LogEventService.class);
             IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
             try {
-                logEventService.insertLogEvent(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/DeleteBuildRevisionInvariant", "DELETE", "Delete buildRevisionInvariant : " + system + "-" + level + "-" + seq, "",""));
+                logEventService.insertLogEvent(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/DeleteBuildRevisionInvariant", "DELETE", "Delete buildRevisionInvariant : " + system + "-" + level + "-" + seq, "", ""));
             } catch (CerberusException ex) {
                 Logger.getLogger(UserService.class.getName()).log(Level.ERROR, null, ex);
             }
 
         } else {
-            response.getWriter().print("Could not Delete Build Revision : " + system + "-" + level + "-" + seq );
+            response.getWriter().print("Could not Delete Build Revision : " + system + "-" + level + "-" + seq);
 
         }
 
