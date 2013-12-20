@@ -269,7 +269,7 @@ public class ExecutionCheckService implements IExecutionCheckService {
 
             if (year1 > year2) {
                 return 1;
-            } else if (year1 > year2) {
+            } else if (year1 < year2) {
                 return -1;
             } else {
                 if (num1 > num2) {
