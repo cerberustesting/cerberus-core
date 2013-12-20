@@ -99,8 +99,8 @@ public class RunTestCase extends HttpServlet {
 
         try {
             tCExecution = runTestCaseService.runTestCase(tCExecution);
-        } catch (Throwable throwable) {
-            MyLogger.log(RunTestCase.class.getName(), Level.FATAL, "Exception on testcase: " + tCExecution.getId() + "\nDetail: " + throwable.getMessage() + "\n\n" + throwable.toString());
+        } catch (Exception ex) {
+            MyLogger.log(RunTestCase.class.getName(), Level.FATAL, "Exception on testcase: " + tCExecution.getId() + "\nDetail: " + ex.getMessage() + "\n\n" + ex.toString());
         }
 
         long runID = tCExecution.getId();
