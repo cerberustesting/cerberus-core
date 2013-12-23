@@ -34,10 +34,7 @@ import org.cerberus.statistics.TestCaseExecutionStatisticsServiceImpl;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -162,14 +159,13 @@ public class ExecutionPerBuildRevision extends HttpServlet {
                     String contentSQL = "SELECT t.Build, t.Revision, "
                             + " t.application, t.release, t.link "
                             + "FROM buildrevisionparameters t "
-                            + "Where t.build = ? and t.revision = ? ?";
+                            + "Where t.build = ? and t.revision = ? "+inSQL;
                     MyLogger.log(ExecutionPerBuildRevision.class.getName(), Level.DEBUG, contentSQL);
                     PreparedStatement stmtContent = connection.prepareStatement(contentSQL);
 
                     try {
                         stmtContent.setString(1, build);
                         stmtContent.setString(2, revision);
-                        stmtContent.setString(3, inSQL);
                         ResultSet rsContent = stmtContent.executeQuery();
                         ArrayList<ArrayList<String>> array = new ArrayList<ArrayList<String>>();
                         try {

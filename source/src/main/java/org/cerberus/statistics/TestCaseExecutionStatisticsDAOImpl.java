@@ -63,7 +63,7 @@ public class TestCaseExecutionStatisticsDAOImpl implements ITestCaseExecutionSta
             Logger.getLogger(TestCaseExecutionStatisticsDAOImpl.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
 
-        String env = "";
+        String env;
         try {
             List<Invariant> inv = new ArrayList<Invariant>();
             for (String e : environment) {
@@ -75,7 +75,7 @@ public class TestCaseExecutionStatisticsDAOImpl implements ITestCaseExecutionSta
                 buf.append("'" + i.getValue() + "', ");
 //                env += "'" + i.getValue() + "', ";
             }
-            env = buf.toString().substring(0, env.length() - 2);
+            env = buf.toString().substring(0, buf.length() - 2);
         } catch (CerberusException e) {
             //TODO ---
             return null;
@@ -214,7 +214,7 @@ public class TestCaseExecutionStatisticsDAOImpl implements ITestCaseExecutionSta
                 buf.append("'" + i.getValue() + "', ");
 //                env += "'" + i.getValue() + "', ";
             }
-            env = buf.toString().substring(0, env.length() - 2);
+            env = buf.toString().substring(0, buf.length() - 2);
         } catch (CerberusException e) {
             //TODO ---
             return null;
