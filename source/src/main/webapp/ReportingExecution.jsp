@@ -774,19 +774,15 @@
                                             cssStatus = "NE";
                                             color = "black";
 
-                                            rs_count.last();
-                                            int rownumber = rs_count.getRow();
-                                            rs_count.first();
                                             for (int i = 0; i < country_list.length; i++) {
 
-                                                while (rs_count.getString("Country").compareTo(country_list[i]) < 0 && rs_count.getRow() < rownumber) {
-                                                    if (!rs_count.isAfterLast()) {
-                                                        rs_count.next();
+                                                rs_count.first();
+                                                while (!rs_count.isLast()){
+                                                    if (rs_count.getString("Country").equalsIgnoreCase(country_list[i])){
+                                                        break;
                                                     }
+                                                    rs_count.next();
                                                 }
-
-
-                                                //    if(rs_count.isLast()) {} else { rs_count.next(); }
 
                                                 if (country_list[i].equals(rs_count.getString("country"))) {
                                                     //out.println(execclauses);
