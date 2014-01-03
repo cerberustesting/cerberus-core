@@ -19,7 +19,7 @@ public class TestCaseManualExecution {
     private String build;
     private String revision;
     private String lastStatus;
-    private long lastStatusDate;
+    private String lastStatusDate;
     private long lastStatusID;
     private String lastStatusBuild;
     private String lastStatusRevision;
@@ -112,11 +112,11 @@ public class TestCaseManualExecution {
         this.lastStatus = lastStatus;
     }
 
-    public long getLastStatusDate() {
+    public String getLastStatusDate() {
         return lastStatusDate;
     }
 
-    public void setLastStatusDate(long lastStatusDate) {
+    public void setLastStatusDate(String lastStatusDate) {
         this.lastStatusDate = lastStatusDate;
     }
 

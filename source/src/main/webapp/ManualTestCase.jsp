@@ -344,8 +344,9 @@
                                         detail += "<br/><span style='background-color: #ff0000; color: #ffffff'>";
                                     }
                                     detail += "<b>"+tCase.lastStatus+"</b></span> on <a href='ExecutionDetail.jsp?id_tc="+tCase.lastStatusID+"' target='_blank'>"+
-                                            new Date(tCase.lastStatusDate).toISOString().replace("T", " ").split(".")[0]+"</a> for "+tCase.lastStatusBuild+" / "+tCase.lastStatusRevision;
-//                                            new Date(tCase.lastStatusDate).toUTCString().replace("T", " ").split(".")[0];
+                                            tCase.lastStatusDate+"</a> for "+tCase.lastStatusBuild+" / "+tCase.lastStatusRevision;
+                                } else {
+                                    detail += "<br/>Never manually executed";
                                 }
                                 return detail;
                             }, "sName": "detail", "bSortable": false, sWidth: "140px", sClass: "center"},

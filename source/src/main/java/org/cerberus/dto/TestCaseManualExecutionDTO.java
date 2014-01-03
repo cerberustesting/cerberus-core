@@ -12,6 +12,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,7 +37,7 @@ public class TestCaseManualExecutionDTO implements ITestCaseManualExecutionDTO {
     @Override
     public List<TestCaseManualExecution> findTestCaseManualExecution(TCase testCase, String text, String system, String country, String env) {
         List<TestCaseManualExecution> list = null;
-        final String query = "SELECT tc.test, tc.testcase, tc.behaviororvalueexpected, tc.howto, tcc.country, a.application, a.system, a.type, CONCAT( CONCAT( cep.ip , cep.url ), cep.urllogin ) AS url, cenvp.build, cenvp.revision, tce.controlstatus, tce.end, tce.id, tce.build, tce.revision " +
+        final String query = "SELECT tc.test, tc.testcase, tc.behaviororvalueexpected, tc.howto, tcc.country, a.application, a.system, a.type, CONCAT( CONCAT( cep.ip , cep.url ), cep.urllogin ) AS url, cenvp.build, cenvp.revision, tce.controlstatus, tce.end, tce.id, tce.build as lastbuild, tce.revision as lastrevision " +
                 "FROM testcase tc " +
                 "  JOIN testcasecountry tcc " +
                 "    ON (tc.test = tcc.test AND tc.testcase=tcc.testcase) " +
@@ -47,7 +48,7 @@ public class TestCaseManualExecutionDTO implements ITestCaseManualExecutionDTO {
                 "  JOIN countryenvparam cenvp " +
                 "    ON (cenvp.system=a.system AND cenvp.country=tcc.country AND cenvp.environment=cep.environment) " +
                 "  LEFT JOIN testcaseexecution tce " +
-                "    ON tce.id = (SELECT max(id) FROM testcaseexecution ttce WHERE ttce.test=tc.test AND ttce.testcase=tc.testcase AND ttce.build=cenvp.build AND ttce.revision=cenvp.revision AND ttce.environment=cep.environment AND ttce.country=tcc.country) " +
+                "    ON tce.id = (SELECT max(id) FROM testcaseexecution ttce WHERE ttce.test=tc.test AND ttce.testcase=tc.testcase AND ttce.environment=cep.environment AND ttce.country=tcc.country) " +
                 "WHERE tc.group='MANUAL' AND tc.tcactive='Y' AND tcc.country=? AND cep.environment=? AND " +
                 "tc.test LIKE ? AND tc.project LIKE ? AND tc.ticket LIKE ? AND tc.bugid LIKE ? AND tc.origine LIKE ? " +
                 "AND tc.creator LIKE ? AND a.system LIKE ? AND tc.application LIKE ? AND tc.priority LIKE ? " +
@@ -117,11 +118,11 @@ public class TestCaseManualExecutionDTO implements ITestCaseManualExecutionDTO {
                         tcme.setRevision(resultSet.getString("revision"));
                         tcme.setLastStatus(resultSet.getString("controlstatus"));
                         if (resultSet.getTimestamp("end") != null) {
-                            tcme.setLastStatusDate(resultSet.getTimestamp("end").getTime());
+                            tcme.setLastStatusDate(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(resultSet.getTimestamp("end")));
                         }
                         tcme.setLastStatusID(resultSet.getLong("ID"));
-                        tcme.setLastStatusBuild(resultSet.getString("build"));
-                        tcme.setLastStatusRevision(resultSet.getString("revision"));
+                        tcme.setLastStatusBuild(resultSet.getString("lastbuild"));
+                        tcme.setLastStatusRevision(resultSet.getString("lastrevision"));
                         list.add(tcme);
                     }
                 } catch (SQLException exception) {
