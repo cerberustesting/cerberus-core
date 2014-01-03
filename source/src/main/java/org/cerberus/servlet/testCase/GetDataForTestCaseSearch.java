@@ -20,10 +20,11 @@
 
 package org.cerberus.servlet.testCase;
 
+import org.cerberus.entity.BuildRevisionInvariant;
 import org.cerberus.entity.Invariant;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.log.MyLogger;
-import org.cerberus.service.IApplicationService;
+import org.cerberus.service.IBuildRevisionInvariantService;
 import org.cerberus.service.IInvariantService;
 import org.cerberus.service.ITestCaseService;
 import org.apache.log4j.Level;
@@ -55,13 +56,14 @@ public class GetDataForTestCaseSearch extends HttpServlet {
 
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         ITestCaseService testService = appContext.getBean(ITestCaseService.class);
-        IApplicationService applicationService = appContext.getBean(IApplicationService.class);
         IInvariantService invariantService = appContext.getBean(IInvariantService.class);
+        IBuildRevisionInvariantService buildRevisionInvariantService = appContext.getBean(IBuildRevisionInvariantService.class);
+
+        String system = req.getParameter("system");
 
         JSONArray jsonResponse = new JSONArray();
         String[] columns = {"test", "project", "ticket", "bugID", "origine", "creator", "application", "priority",
-                "status", "group", "activePROD", "activeUAT", "activeQA", "tcActive", "fromBuild", "fromRev", "toBuild",
-                "toRev", "targetBuild", "targetRev"};
+                "status", "group", "activePROD", "activeUAT", "activeQA", "tcActive"};
 
         try {
             JSONObject data;
@@ -72,10 +74,39 @@ public class GetDataForTestCaseSearch extends HttpServlet {
                 jsonResponse.put(data);
             }
 
-//            data = new JSONObject();
-//            data.put("data", new JSONArray(applicationService.findDistinctSystem()));
-//            data.put("name", "system");
-//            jsonResponse.put(data);
+            JSONArray build = new JSONArray();
+            for(BuildRevisionInvariant bri : buildRevisionInvariantService.findAllBuildRevisionInvariantBySystemLevel(system, 1)){
+                build.put(bri.getVersionName());
+            }
+            data = new JSONObject();
+            data.put("data", build);
+            data.put("name", "fromBuild");
+            jsonResponse.put(data);
+            data = new JSONObject();
+            data.put("data", build);
+            data.put("name", "toBuild");
+            jsonResponse.put(data);
+            data = new JSONObject();
+            data.put("data", build);
+            data.put("name", "targetBuild");
+            jsonResponse.put(data);
+
+            JSONArray revision = new JSONArray();
+            for(BuildRevisionInvariant bri : buildRevisionInvariantService.findAllBuildRevisionInvariantBySystemLevel(system, 2)){
+                revision.put(bri.getVersionName());
+            }
+            data = new JSONObject();
+            data.put("data", revision);
+            data.put("name", "fromRev");
+            jsonResponse.put(data);
+            data = new JSONObject();
+            data.put("data", revision);
+            data.put("name", "toRev");
+            jsonResponse.put(data);
+            data = new JSONObject();
+            data.put("data", revision);
+            data.put("name", "targetRev");
+            jsonResponse.put(data);
 
             JSONArray env = new JSONArray();
             for (Invariant i : invariantService.findListOfInvariantById("ENVIRONMENT")) {

@@ -375,7 +375,7 @@
             }
 
             $().ready(function () {
-                $.post("GetDataForTestCaseSearch", function (testData) {
+                $.post("GetDataForTestCaseSearch?system="+$("#MySystem").val(), function (testData) {
                     $.each(testData, function (key, value) {
                         $.each(value.data, function (k, v) {
                             if (v !== null && v !== "null" && v != "" && v != " ") {
