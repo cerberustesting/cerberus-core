@@ -65,6 +65,9 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.ie.InternetExplorerDriver;
 
 /**
  * {Insert class description here}
@@ -106,9 +109,19 @@ public class SeleniumService implements ISeleniumService {
             }
 
             this.selenium = factorySelenium.create(host, port, browser, login, ip, null, defaultWait);
-            if (browser.equalsIgnoreCase("firefox")) {
+            Logger.getLogger(SeleniumService.class.getName()).log(java.util.logging.Level.WARNING, null, browser);
+            
                 try {
-                    startSeleniumFirefox(runId, record, country);
+                    
+                    if (this.invariantService.isInvariantExist("BROWSER", browser)){
+                    startSeleniumBrowser(runId, record, country, browser);
+                    }
+                    else {
+                    MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_SELENIUM);
+                    mes.setDescription(mes.getDescription().replaceAll("%MES%", "Browser " + browser + " is not supported."));
+                    return mes;
+                    }
+                    
                     this.selenium.getDriver().manage().window().maximize();
                     this.started = true;
                     return new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_CHECKINGPARAMETERS);
@@ -116,13 +129,7 @@ public class SeleniumService implements ISeleniumService {
                     Logger.getLogger(SeleniumService.class.getName()).log(java.util.logging.Level.WARNING, null, ex.getMessage());
                     return ex.getMessageError();
                 }
-            } else {
-                MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_SELENIUM);
-                mes.setDescription(mes.getDescription().replaceAll("%MES%", "Browser " + browser + " is not supported."));
-                return mes;
-            }
         }
-
         return new MessageGeneral(MessageGeneralEnum.EXECUTION_FA);
     }
 
@@ -157,13 +164,10 @@ public class SeleniumService implements ISeleniumService {
         return false;
     }
 
+    
     @Override
-    public boolean startSeleniumFirefox(long runId, boolean record, String country) throws CerberusException {
-
-        MyLogger.log(SeleniumService.class.getName(), Level.DEBUG, "Starting firefox");
-
+    public FirefoxProfile setFirefoxProfile(long runId, boolean record, String country) throws CerberusException{
         FirefoxProfile profile = new FirefoxProfile();
-        WebDriver driver;
         profile.setEnableNativeEvents(true);
         profile.setAcceptUntrustedCertificates(true);
         profile.setPreference("network.http.connection-timeout", "300");
@@ -267,12 +271,32 @@ public class SeleniumService implements ISeleniumService {
 
         }
 
-        DesiredCapabilities dc = DesiredCapabilities.firefox();
-        dc.setCapability(FirefoxDriver.PROFILE, profile);
+        return profile;
+    }
+    
+    @Override
+    public boolean startSeleniumBrowser(long runId, boolean record, String country, String browser) throws CerberusException {
 
+        MyLogger.log(SeleniumService.class.getName(), Level.DEBUG, "Starting "+browser);
+
+        DesiredCapabilities capabilities = null;
+        
+        if (browser.equalsIgnoreCase("firefox")){
+            capabilities = DesiredCapabilities.firefox();
+            FirefoxProfile profile = setFirefoxProfile(runId,record, country);
+            capabilities.setCapability(FirefoxDriver.PROFILE, profile);
+        }
+        else if (browser.equalsIgnoreCase("iexplorer")){
+            capabilities = DesiredCapabilities.internetExplorer();
+        }
+        else if (browser.equalsIgnoreCase("chrome")){
+            capabilities = DesiredCapabilities.chrome();
+        }
+        
+        
         try {
             MyLogger.log(SeleniumService.class.getName(), Level.DEBUG, "Set Driver");
-            driver = new RemoteWebDriver(new URL("http://" + selenium.getHost() + ":" + selenium.getPort() + "/wd/hub"), dc);
+            WebDriver driver = new RemoteWebDriver(new URL("http://" + selenium.getHost() + ":" + selenium.getPort() + "/wd/hub"), capabilities);
             selenium.setDriver(driver);
         } catch (MalformedURLException exception) {
             MyLogger.log(Selenium.class.getName(), Level.ERROR, exception.toString());
@@ -281,10 +305,6 @@ public class SeleniumService implements ISeleniumService {
             MyLogger.log(Selenium.class.getName(), Level.WARN, exception.toString());
             return false;
         }
-
-        //hide firebug
-//        WebElement element = this.getSeleniumElement("xpath=/html/body");
-//        element.sendKeys(Keys.valueOf("F12"));
 
         return true;
     }

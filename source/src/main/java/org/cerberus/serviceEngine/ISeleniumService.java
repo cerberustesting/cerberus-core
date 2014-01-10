@@ -23,6 +23,7 @@ import org.cerberus.entity.MessageGeneral;
 import org.cerberus.entity.TestCaseStepActionExecution;
 import org.cerberus.exception.CerberusEventException;
 import org.cerberus.exception.CerberusException;
+import org.openqa.selenium.firefox.FirefoxProfile;
 
 /**
  * {Insert class description here}
@@ -39,7 +40,9 @@ public interface ISeleniumService {
 
     boolean stopSeleniumServer();
 
-    boolean startSeleniumFirefox(long runId, boolean record, String country) throws CerberusException;
+    FirefoxProfile setFirefoxProfile(long runId, boolean record, String country) throws CerberusException;;
+    
+    boolean startSeleniumBrowser(long runId, boolean record, String country, String browser) throws CerberusException;
 
     String getValueFromHTMLVisible(String locator);
     
