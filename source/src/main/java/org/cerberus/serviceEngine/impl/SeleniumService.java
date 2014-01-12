@@ -65,6 +65,7 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
+import org.apache.commons.net.telnet.TelnetClient;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.ie.InternetExplorerDriver;
@@ -136,23 +137,11 @@ public class SeleniumService implements ISeleniumService {
     @Override
     public boolean isSeleniumServerReachable(String host, String port) {
         try {
-            URL url;
-
-            if (port.equalsIgnoreCase("5575")) {
-                //HUB + NODE
-                url = new URL("http://" + host + ":" + port + "/grid/status");
-            } else {
-                //STANDALONE
-                url = new URL("http://" + host + ":" + port + "/wd/hub/status");
-            }
-
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("GET");
-            connection.connect();
-
-            int code = connection.getResponseCode();
-            if (code == 200) {
-                return true;
+            TelnetClient tc = new TelnetClient();
+            tc.connect(host, Integer.valueOf(port));
+                if (tc.isConnected()) {
+                    tc.disconnect();
+                    return true;
             }
         } catch (MalformedURLException exception) {
             MyLogger.log(SeleniumService.class.getName(), Level.WARN, exception.toString());
