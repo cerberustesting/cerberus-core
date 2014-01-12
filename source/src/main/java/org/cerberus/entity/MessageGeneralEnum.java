@@ -63,6 +63,7 @@ public enum MessageGeneralEnum {
     VALIDATION_FAILED_ENVIRONMENT_DOESNOTEXIST_MAN(82, "", "The environment you defined in myenvdata parameter '%ENV%' does not exit."),
     VALIDATION_FAILED_SELENIUM_EMPTYORBADIP(83, "", "Selenium IP parameter (ss_ip) : '%IP%' is empty or badly formated."),
     VALIDATION_FAILED_SELENIUM_EMPTYORBADPORT(84, "", "Selenium Port parameter (ss_p) : '%PORT%' is empty or badly formated."),
+    VALIDATION_FAILED_VERBOSE_USED_WITH_INCORRECT_BROWSER(85, "", "Verbose should be used only with Firefox. For other browsers, it should be set to 0"),
 
     EXECUTION_PE_TESTSTARTED(5, "PE", "Test started..."),
     EXECUTION_PE_CHECKINGPARAMETERS(5, "PE", "Checking parameters..."),

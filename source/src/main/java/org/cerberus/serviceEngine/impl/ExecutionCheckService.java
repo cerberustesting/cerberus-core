@@ -79,7 +79,8 @@ public class ExecutionCheckService implements IExecutionCheckService {
                     && this.checkTestCaseActive(tCExecution.gettCase())
                     && this.checkTypeEnvironment(tCExecution)
                     && this.checkCountry(tCExecution)
-                    && this.checkMaintenanceTime(tCExecution)) {
+                    && this.checkMaintenanceTime(tCExecution)
+                    && this.checkVerboseIsNotZeroForFirefoxOnly(tCExecution)){
                 return new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_CHECKINGPARAMETERS);
             }
         }
@@ -327,6 +328,16 @@ public class ExecutionCheckService implements IExecutionCheckService {
             }
             message = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_ENVIRONMENT_UNDER_MAINTENANCE);
             return false;
+        }
+        return true;
+    }
+    
+    private boolean checkVerboseIsNotZeroForFirefoxOnly(TCExecution tCExecution){
+        if (!tCExecution.getBrowser().equalsIgnoreCase("firefox")) {
+            if(tCExecution.getVerbose() > 0){
+            message = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_VERBOSE_USED_WITH_INCORRECT_BROWSER);
+            return false;
+            }
         }
         return true;
     }
