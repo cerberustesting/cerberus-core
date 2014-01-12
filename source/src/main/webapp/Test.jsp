@@ -25,7 +25,7 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
     "http://www.w3.org/TR/html4/loose.dtd">
-<% Date DatePageStart = new Date() ; %>
+<% Date DatePageStart = new Date();%>
 <html>
     <head>
         <meta content="text/html; charset=UTF-8" http-equiv="content-type">
@@ -39,10 +39,10 @@
         <%@ include file="include/header.jsp" %>
         <div id="body">
             <%
-            
+
                 ITestService testService;
                 ITestDAO testDao;
-            
+
                 /*
                  * Database connexion
                  */
@@ -97,13 +97,13 @@
                                                         <select id="stestbox" name="stestbox" style="width: 300px">
                                                             <option style="width: 500px" value="NONE">-- Choose Test --</option>
                                                             <%
-                                                            String optstyle = "";
-                                                            for (Test test : tests) {
-                                                                if (test.getActive().equalsIgnoreCase("Y")) {
-                                                                    optstyle = "font-weight:bold;";
-                                                                } else {
-                                                                    optstyle = "font-weight:lighter;";
-                                                                }
+                                                                String optstyle = "";
+                                                                for (Test test : tests) {
+                                                                    if (test.getActive().equalsIgnoreCase("Y")) {
+                                                                        optstyle = "font-weight:bold;";
+                                                                    } else {
+                                                                        optstyle = "font-weight:lighter;";
+                                                                    }
                                                             %><option style="width: 500px;<%=optstyle%>" <%
                                                                 if (fil_tc.equalsIgnoreCase(test.getTest())) {
                                                                     out.print("selected=\"selected\"");
@@ -174,7 +174,7 @@
 
                                     <td class="wob"><input style="font-weight: bold; width: 200px" name="test_test" id="test_test"
                                                            maxlength="<%=rs_test_select.getMetaData().getColumnDisplaySize(
-                                                                rs_test_select_cpt_incr_field_length++)%>"
+                                                                   rs_test_select_cpt_incr_field_length++)%>"
                                                            value="<%=test_test%>"
                                                            onchange="EnableAddTestButton('add_test', 'submit_changes', updateTest.test_test.value, '<%=test_test%>' );"></td>
                                 </tr>
@@ -182,7 +182,7 @@
                                     <td id="wob" style="font-weight: bold; width: 110px"><%out.print(dbDocS(conn, "test", "description", "Description"));%></td>
                                     <td class="wob" ><input id="test_description" style="width: 900px" name="test_description" value="<%=test_description%>"
                                                             maxlength="<%=rs_test_select.getMetaData().getColumnDisplaySize(
-                                                                rs_test_select_cpt_incr_field_length++)%>"></td>
+                                                                    rs_test_select_cpt_incr_field_length++)%>"></td>
                                 </tr>
 
                                 <tr>
@@ -253,22 +253,6 @@
 
                                             do {
 
-                                                /*
-                                                 * Set String value for
-                                                 * Select Read Only
-                                                 */
-                                                
-                                                String tcActive_toselect = "N";
-                                                if (!rs_testcase.getString("t2.tcActive").trim().equals("Y")) {
-                                                    tcActive_toselect = "Y";
-                                                }
-                                                String readonly = "";
-                                                String disabled = "";
-                                                if (!request.isUserInRole("Admin") && rs_testcase.getString("t2.status").equalsIgnoreCase("WORKING")) {
-                                                    readonly = "readonly=\"readonly\"";
-                                                    disabled = "disabled";
-                                                }
-
                                                 Statement stmt2 = conn.createStatement();
                                                 ResultSet rs_testcasecountry = stmt2.executeQuery("SELECT DISTINCT country "
                                                         + " FROM testcasecountry "
@@ -337,8 +321,12 @@
                                     <tr style="background-color: <%=color%>">
                                         <td>
 
-                                            <table><tr><td>
-                                                        <input id="test_testcase_delete" name="test_testcase_delete" type="checkbox" value="<%=rs_testcase.getString("t1.Test")%> - <%=rs_testcase.getString("testcase")%>"></td>
+                                            <table><tr>
+                                                    <td>
+                                                        <%if (request.isUserInRole("TestAdmin")) {%>
+                                                        <input id="test_testcase_delete" name="test_testcase_delete" type="checkbox" value="<%=rs_testcase.getString("t1.Test")%> - <%=rs_testcase.getString("testcase")%>">
+                                                        <%}%>
+                                                    </td>
                                                 </tr><tr><td style="text-align: center">
                                                         <a style="font-size: xx-small;" href="TestCase.jsp?Test=<%=rs_testcase.getString("T1.Test")%>&TestCase=<%=rs_testcase.getString("testcase")%>&Load=Load">edit</a></td>
                                                 </tr></table>
@@ -350,11 +338,11 @@
                                                     <td id="testcase_origine" class="wob" style=" width: 150px;" name="testcase_origine">
                                                         <%=StringUtils.isBlank(rs_testcase.getString("t2.origine")) ? "" : origine%></td></tr><tr>
                                                         <% }
-                                            if (StringUtils.isNotBlank(rs_testcase.getString("t2.reforigine"))) {%>
+                                                            if (StringUtils.isNotBlank(rs_testcase.getString("t2.reforigine"))) {%>
                                                     <td id="testcase_reforigine" class="wob" style="width: 150px;" name="testcase_refOrigine">
                                                         <%=StringUtils.isBlank(rs_testcase.getString("t2.reforigine")) ? "" : refOrigine%></td></tr><tr>
                                                         <%}
-                                            if (StringUtils.isNotBlank(rs_testcase.getString("t2.creator"))) {%>
+                                                            if (StringUtils.isNotBlank(rs_testcase.getString("t2.creator"))) {%>
                                                     <td id="testcase_creator" class="wob" style="width: 150px;" name="testcase_creator">
                                                         <%=StringUtils.isBlank(rs_testcase.getString("t2.creator")) ? "" : creator%></td></tr><tr>
                                                         <%}%>
@@ -368,35 +356,35 @@
                                         </td><td valign="top">
                                             <table><tr>
                                                     <%
-                                            if (StringUtils.isNotBlank(rs_testcase.getString("t2.application"))) {%> 
+                                                        if (StringUtils.isNotBlank(rs_testcase.getString("t2.application"))) {%> 
                                                     <td id="testcase_application" class="wob" name="testcase_application" style="width: 250px">
                                                         <%=StringUtils.isBlank(rs_testcase.getString("t2.application")) ? "" : app%></td></tr><tr>
                                                         <%}
-                                             if (StringUtils.isNotBlank(rs_testcase.getString("t2.bugid"))) {%>
+                                                            if (StringUtils.isNotBlank(rs_testcase.getString("t2.bugid"))) {%>
                                                     <td id="testcase_bugID" class="wob" style="width: 150px;" name="testcase_bugID">
                                                         <%=StringUtils.isBlank(rs_testcase.getString("t2.bugid")) ? "" : bugID%></td></tr><tr>
                                                         <%}
-                                            if (StringUtils.isNotBlank(rs_testcase.getString("t2.project"))) {%> 
+                                                            if (StringUtils.isNotBlank(rs_testcase.getString("t2.project"))) {%> 
                                                     <td id="testcase_project" class="wob" style="width: 150px;" name="testcase_project">
                                                         <%=StringUtils.isBlank(rs_testcase.getString("t2.project")) ? "" : project%></td></tr><tr>
                                                         <%}
-                                            if (StringUtils.isNotBlank(rs_testcase.getString("t2.ticket"))) {%>
+                                                            if (StringUtils.isNotBlank(rs_testcase.getString("t2.ticket"))) {%>
                                                     <td id="testcase_ticket" class="wob" style="width: 150px;" name="testcase_ticket">
                                                         <%=StringUtils.isBlank(rs_testcase.getString("t2.ticket")) ? "" : ticket%></td></tr><tr>
                                                         <%}
-                                            if (StringUtils.isNotBlank(rs_testcase.getString("priority"))) {%> 
+                                                            if (StringUtils.isNotBlank(rs_testcase.getString("priority"))) {%> 
                                                     <td id="testcase_priority" class="wob" style="width: 150px;" name="testcase_priority">
                                                         <%=StringUtils.isBlank(rs_testcase.getString("priority")) ? "" : priority%></td></tr><tr>
                                                     <%}%></tr></table>   
                                         </td><td valign="top">
                                             <table><tr>
                                                     <%
-                                            if (StringUtils.isNotBlank(rs_testcase.getString("t2.group"))) {%> 
+                                                        if (StringUtils.isNotBlank(rs_testcase.getString("t2.group"))) {%> 
 
                                                     <td id="testcase_group" class="wob" style="width: 250px;" name="testcase_group">
                                                         <%=StringUtils.isBlank(rs_testcase.getString("t2.group")) ? "" : group%></td></tr><tr>
                                                         <%}
-                                             if (StringUtils.isNotBlank(rs_testcase.getString("t2.status"))) {%>
+                                                            if (StringUtils.isNotBlank(rs_testcase.getString("t2.status"))) {%>
                                                     <td id="testcase_status" class="wob" style="width: 250px;" name="testcase_status">
                                                         <%=StringUtils.isBlank(rs_testcase.getString("t2.status")) ? "" : status%></td></tr><tr>
                                                         <%}%>
@@ -413,20 +401,20 @@
                                         </td><td valign="top">
                                             <table><tr>
                                                     <%
-                                                    if (StringUtils.isNotBlank(rs_testcase.getString("t2.tcActive"))) {%>
+                                                        if (StringUtils.isNotBlank(rs_testcase.getString("t2.tcActive"))) {%>
                                                     <td id="testcase_tcActive" class="wob" style="width: 150px;" name="testcase_tcActive">
                                                         <%=StringUtils.isBlank(rs_testcase.getString("t2.tcActive")) ? "" : tcActive%></td>
 
                                                     <%}
-                                            if (StringUtils.isNotBlank(rs_testcase.getString("t2.frombuild"))) {%>
+                                                        if (StringUtils.isNotBlank(rs_testcase.getString("t2.frombuild"))) {%>
                                                     <td id="testcase_frombuild" class="wob" style="width: 100px;" name="testcase_fromBuild">
                                                         <%=StringUtils.isBlank(rs_testcase.getString("t2.frombuild")) ? "" : fromBuild%></td></tr><tr>
                                                         <%}
-                                            if (StringUtils.isNotBlank(rs_testcase.getString("t2.fromrev"))) {%>
+                                                            if (StringUtils.isNotBlank(rs_testcase.getString("t2.fromrev"))) {%>
                                                     <td id="testcase_fromrev" class="wob" style="width: 100px;" name="testcase_fromRev">
                                                         <%=StringUtils.isBlank(rs_testcase.getString("t2.fromrev")) ? "" : fromRev%></td></tr><tr>
                                                         <%}
-                                            if (StringUtils.isNotBlank(rs_testcase.getString("t2.tobuild"))) {%>
+                                                            if (StringUtils.isNotBlank(rs_testcase.getString("t2.tobuild"))) {%>
                                                     <td id="testcase_tobuild" class="wob" style="width: 100px;" name="testcase_toBuild">
                                                         <%=StringUtils.isBlank(rs_testcase.getString("t2.tobuild")) ? "" : toBuild%></td></tr><tr>
                                                         <%}%>
@@ -461,7 +449,9 @@
                                     stmt_testcase.close();
                                 %>
                                 <br> 
+                                                        <%if (request.isUserInRole("TestAdmin")) {%>
                                 <input class="button" name="submit_changes" id="submit_changes" value="Delete TestCase" type="submit"> 
+                                                        <%}%>
                             </div></td></tr></table>
             </form>
             <%
@@ -478,6 +468,6 @@
                 }
             }
         %>
-<br><% out.print(display_footer(DatePageStart)); %>
+        <br><% out.print(display_footer(DatePageStart));%>
     </body>
 </html>

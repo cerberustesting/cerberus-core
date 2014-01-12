@@ -53,32 +53,35 @@
             <td id="wob" valign="Bottom">
                 <div id="navcontainer">
                     <ul id="navlist">
-                        <% if (request.getUserPrincipal() != null && (request.isUserInRole("User"))) {%>
+                        <% if (request.getUserPrincipal() != null && (request.isUserInRole("TestRO"))) {%>
                         <li id="active"><a id="current" name="menu" href="#" style="width:130px">Test</a>
                             <ul id="subnavlist">
                                 <li id="subactive"><a name="menu" id="menuEditTest" href="Test.jsp" style="width:130px">Edit Test</a></li>
+                                <% if (request.getUserPrincipal() != null && (request.isUserInRole("Test"))) {%>
                                 <li id="subactive"><a name="menu" id="menuCreateTest" href="TestCreate.jsp" style="width:130px">Create Test</a></li>
+                                <% }%>
                             </ul>
                         </li>
-                        <% }%>
                         <li id="active"><a id="current" name="menu" href="#" style="width:130px">TestCase</a>
                             <ul id="subnavlist">
                                 <li id="subactive"><a name="menu" id="menuEditTestCase" href="TestCase.jsp" style="width:130px">Edit TestCase</a></li>
+                                <% if (request.getUserPrincipal() != null && (request.isUserInRole("Test"))) {%>
                                 <li id="subactive"><a name="menu" id="menuCreateTestCase" href="TestCaseCreate.jsp" style="width:130px">Create TestCase</a></li>
+                                <% }%>
                                 <li id="subactive"><a name="menu" id="menuSearchTestCase" href="TestCaseSearch.jsp" style="width:130px">Search TestCase</a></li>
                             </ul>
                         </li>
-                        <%  if (request.getUserPrincipal() != null && (request.isUserInRole("User"))) {%>
+                        <% }%>
+                        <%  if (request.getUserPrincipal() != null && (request.isUserInRole("RunTest"))) {%>
                         <li id="active"><a id="current" name="menu" href="#" style="width:130px">Run</a>
                             <ul id="subnavlist">
                                 <li id="subactive"><a name="menu" id="menuRunTestCase" href="RunTests.jsp" style="width:130px">Run Tests</a></li>
                                 <%--                              <li><a name="menu" id="menuResumeTestCase" href="ResumeTests.jsp" style="width:130px">Resume Tests</a></li> --%>
-                                <% if (request.getUserPrincipal() != null && request.isUserInRole("Integrator")) {%>
-                                    <li id="subactive"><a name="menu" id="menuRunManualTestCase" href="ManualTestCase.jsp" style="width:130px">Run Manual Tests</a></li>
-                                <% }%>
+                                <li id="subactive"><a name="menu" id="menuRunManualTestCase" href="ManualTestCase.jsp" style="width:130px">Run Manual Tests</a></li>
                             </ul>
                         </li>
                         <% }%>
+                        <% if (request.getUserPrincipal() != null && (request.isUserInRole("TestRO"))) {%>
                         <li id="active"><a id="current" name="menu" href="#" style="width:150px">Execution Reporting</a>
                             <ul id="subnavlist">
                                 <li id="subactive"><a name="menu" id="menuExecutionPerBuildRevision" href="ExecutionPerBuildRevision" style="width:150px">Execution Per Build/Rev</a></li>
@@ -87,7 +90,8 @@
                                 <li id="subactive"><a name="menu" id="menuReportingExecutionDetail" href="ExecutionDetailList.jsp" style="width:150px">Execution Detail</a></li>
                             </ul>
                         </li>
-                        <% if (request.getUserPrincipal() != null && request.isUserInRole("Integrator")) {%>
+                        <% }%>
+                        <% if (request.getUserPrincipal() != null && request.isUserInRole("IntegratorRO")) {%>
                         <li id="active"><a id="current" name="menuIntegration" href="#" style="width:130px">Integration</a>
                             <ul id="subnavlist">
                                 <li id="subactive"><a name="menu" id="menuIntegrationStatus" href="IntegrationStatus.jsp" style="width:130px">Integration Status</a></li>
@@ -98,7 +102,7 @@
                             </ul>
                         </li>
                         <% }%>
-                        <% if (request.getUserPrincipal() != null && request.isUserInRole("Admin")) {%>
+                        <% if (request.getUserPrincipal() != null && request.isUserInRole("Administrator")) {%>
                         <li id="active"><a id="current" name="menuAdmin" href="#" style="width:130px">Admin</a>
                             <ul id="subnavlist">
                                 <li id="subactive"><a name="menu" id="menuUsersManager" href="UserManager.jsp" style="width:130px">Users Manager</a></li>

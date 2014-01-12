@@ -132,6 +132,8 @@
         <div id="body">
             <%
                 Connection conn = db.connect();
+
+
                 try {
 
                     /*
@@ -327,6 +329,18 @@
                     testcase = rs_testcase_general_info.getString("TestCase");
                     group = rs_testcase_general_info.getString("Group");
                     status = rs_testcase_general_info.getString("Status");
+
+                    /**
+                     * We can edit the testcase only if User role is TestAdmin
+                     * or if role is Test and testcase is not WORKING
+                     */
+                    boolean canEdit = false;
+                    if (request.getUserPrincipal() != null
+                            && (request.isUserInRole("TestAdmin")) || ((request.isUserInRole("Test")) && !(status.equalsIgnoreCase("WORKING")))) {
+                        canEdit = true;
+                    }
+
+
             %>
 
 
@@ -334,7 +348,7 @@
                    <%if (tinf == false) {%> style="display : none" <%} else {%>style="display : table"<%}%> >
                 <tr>
                     <td class="separation">
-                        <%  if (request.getUserPrincipal() != null && (request.isUserInRole("User"))) {%>
+                        <%  if (canEdit) {%>
                         <form method="post" name="DuplicateTestCase" action="DuplicateTestCase">
                             <% }%>
                             <table  class="wob" style="text-align: left; border-collapse: collapse" border="0px" cellpadding="0px" cellspacing="0px">
@@ -358,14 +372,14 @@
                                     <td class="wob"><input id="editDescription" style="width: 950px; background-color: #DCDCDC" name="editDescription" readonly="readonly"
                                                            value="<%=rs_testcase_general_info.getString("Description")%>"></td>
                                     <td class="wob">
-                                        <%  if (request.getUserPrincipal() != null && (request.isUserInRole("User"))) {%>
+                                        <%  if (canEdit) {%>
                                         <input rowspan="2" style=" valign: center" class="_Duplicate" type="submit" name="submitDuplicate"
                                                value="Duplicate" id="submitButtonDuplicate" disabled="disabled">
                                         <% }%>
                                     </td>
                                 </tr>
                             </table><br>
-                            <%  if (request.getUserPrincipal() != null && (request.isUserInRole("User"))) {%>
+                            <%  if (canEdit) {%>
                             <input type="hidden" id="Test" name="Test" value="<%=test%>"> <input type="hidden" id="TestCase" name="TestCase"
                                                                                                  value="<%=testcase%>">
                         </form>
@@ -374,7 +388,7 @@
                 </tr>
 
 
-                <%  if (request.getUserPrincipal() != null && (request.isUserInRole("User"))) {%>
+                <%  if (canEdit) {%>
 
                 <form method="post" name="UpdateTestCase" action="UpdateTestCase">
                     <% }%> 
@@ -743,10 +757,10 @@
                     <tr>
                         <td class="wob">
 
-                            <%  if (request.getUserPrincipal() != null && (request.isUserInRole("User"))) {%>
+                            <%  if (canEdit) {%>
 
-                            <input type="hidden" id="Test" name="Test" value="<%=test%>"> <input type="hidden" id="TestCase" name="TestCase"
-                                                                                                 value="<%=testcase%>">
+                            <input type="hidden" id="Test" name="Test" value="<%=test%>"> 
+                            <input type="hidden" id="TestCase" name="TestCase" value="<%=testcase%>">
                             <table>
                                 <tr>
                                     <td class="wob"><input type="submit" name="submitInformation" value="Save TestCase Info" id="submitButtonInformation" onclick="$('#howtoDetail').val($('#howto').elrte('val'));$('#valueDetail').val($('#value').elrte('val'));"></td>
@@ -770,7 +784,7 @@
                 </tr>
             </table>
             <div id="table">
-                <%  if (request.getUserPrincipal() != null && (request.isUserInRole("User"))) {%>
+                <%  if (canEdit) {%>
                 <form id="select_country_properties" action="TestCase.jsp"
                       method="post">
                     <% }%>
@@ -856,7 +870,7 @@
 
 
                 %>                          
-                <%  if (request.getUserPrincipal() != null && (request.isUserInRole("User"))) {%>
+                <%  if (canEdit) {%>
                 <form method="post" name="UpdateTestCaseDetail" action="UpdateTestCaseDetail">
                     <% }%>                                   <%--Countries checkbox for adding property (javascript) --%>
                     <input type="hidden" name="testcase_hidden"
@@ -1031,9 +1045,12 @@
                                                                 }
                                                 %>
                                                 <tr style="background-color : <%=color%>">
-                                                    <td><input name="properties_delete" type="checkbox" style="width: 30px"
+                                                    <td>
+                                                        <%  if (canEdit) {%>
+                                                        <input name="properties_delete" type="checkbox" style="width: 30px"
                                                                value="<%=delete_value%>"
                                                                onchange="trackChanges(this.defaultChecked, this.checked, 'SavePropertyChanges')">
+                                                        <%}%>
                                                         <input type="hidden" name="property_hidden" value="<%=rowNumber%>">
                                                         <% rs_tccountry.first();
                                                             do {%>
@@ -1111,7 +1128,7 @@
                                                     }
                                                 %>
                                             </table><br>
-                                            <%  if (request.getUserPrincipal() != null && (request.isUserInRole("User"))) {%>
+                                            <%  if (canEdit) {%>
                                             <input type="button" value="Add Property" id="AddProperty"
                                                    onclick="addTestCaseProperties('testcaseproperties_table', <%=testcase_proproperties_maxlength_country%>,<%=testcase_proproperties_maxlength_property%>, <%=testcase_proproperties_maxlength_value%>, <%=testcase_proproperties_maxlength_length%>, <%=testcase_proproperties_maxlength_rowlimit%>, <%=rowNumber%>, <%=size%>, <%=size2%> ) ; enableField('SavePropertyChanges'); disableField('AddProperty');">
                                             <input type="submit" value="Save Changes" 
@@ -1193,8 +1210,11 @@
                                                     <tr>
                                                         <td id="wob" style="width: 30px; text-align: center; height:20px">
 
+                                                            <%  if (canEdit) {%>
                                                             <input type="checkbox" name="testcasestep_delete" style="font-weight: bold; width:20px"
-                                                                   value="<%=rs_step.getString("step")%>"></td><td id="wob">
+                                                                   value="<%=rs_step.getString("step")%>">
+                                                            <% }%>
+                                                        </td><td id="wob">
                                                             <%--Step--%>
                                                             &nbsp;&nbsp;<%=rs_step.getString("step")%>&nbsp;&nbsp; <input
                                                                 type="hidden" name="testcasestep_hidden" style="font-weight: bold; width:20px"
@@ -1287,13 +1307,16 @@
                                                                         }
                                                                 %>
                                                                 <tr>
-                                                                    <td style="background-color: <%=actionColor%>"><input class="wob" type="checkbox" name="actions_delete" style="width: 30px; background-color: <%=actionColor%>"
-                                                                                                                          value="<%=rs_stepaction.getString("Step") + "-"
-                                                                                                                                  + rs_stepaction.getString("Sequence")%>"
-                                                                                                                          onchange="trackChanges(this.defaultChecked, this.checked, 'submitButtonAction')"><input
-                                                                                                                          type="hidden" name="stepnumber_hidden" style="width: 30px"
-                                                                                                                          value="<%=rs_stepaction.getString("Step")%>"
-                                                                                                                          >
+                                                                    <td style="background-color: <%=actionColor%>">
+                                                                        <%  if (canEdit) {%>
+                                                                        <input class="wob" type="checkbox" name="actions_delete" style="width: 30px; background-color: <%=actionColor%>"
+                                                                               value="<%=rs_stepaction.getString("Step") + "-" + rs_stepaction.getString("Sequence")%>"
+                                                                               onchange="trackChanges(this.defaultChecked, this.checked, 'submitButtonAction')">
+                                                                        <% }%>
+                                                                        <input
+                                                                            type="hidden" name="stepnumber_hidden" style="width: 30px"
+                                                                            value="<%=rs_stepaction.getString("Step")%>"
+                                                                            >
                                                                     </td>
                                                                     <td style="background-color: <%=actionColor%>"><input class="wob" style="width: 60px; font-weight: bold; background-color: <%=actionColor%>; height:20px"
                                                                                                                           value="<%=rs_stepaction.getString("Sequence")%>"
@@ -1325,7 +1348,7 @@
                                                                     stmt66.close();
                                                                 %>
                                                             </table>
-                                                            <%  if (request.getUserPrincipal() != null && (request.isUserInRole("User"))) {%>
+                                                            <%  if (canEdit) {%>
                                                             <table><tr><td id="wob"><input type="button" value="Add Action"
                                                                                            onclick="addTestCaseAction('<%=step_loop_number%>', <%=testcase_stepaction_maxlength_sequence%>, <%=testcase_stepaction_maxlength_action%>, <%=testcase_stepaction_maxlength_object%>, <%=testcase_stepaction_maxlength_property%>) ; enableField('submitButtonAction');">
                                                                     <td id="wob"><input type="button" value="import HTML Scenario" onclick="importer('ImportHTML.jsp?Test=<%=test%>&Testcase=<%=testcase%>&Step=<%=rs_step.getString("step")%>')"></td>
@@ -1342,7 +1365,7 @@
                                                                 %>
                                     </div>
 
-                                    <%  if (request.getUserPrincipal() != null && (request.isUserInRole("User"))) {%>
+                                    <%  if (canEdit) {%>
                                     <div id="hide_div"></div>
                                     <table><tr><td id="wob"><input type="button" value="Add Step"
                                                                    onclick="addStep('hide_div', '<%=step_loop_number%>', <%=testcase_step_maxlength_desc%>, <%=testcase_stepaction_maxlength_sequence%>, <%=testcase_stepaction_maxlength_action%>, <%=testcase_stepaction_maxlength_object%>, <%=testcase_stepaction_maxlength_property%>) ; enableField('submitButtonAction');">
@@ -1411,11 +1434,14 @@
                                                                 cpt_control_maxlength++);
                                                 %>
                                                 <tr>
-                                                    <td style="text-align: center; background-color: <%=controlColor%>"><input class="wob" type="checkbox" name="controls_delete" 
-                                                                                                                               value="<%=rs_controls.getString("Step") + '-'
-                                                                                                                                       + rs_controls.getString("Sequence") + '-'
-                                                                                                                                       + rs_controls.getString("Control")%>"
-                                                                                                                               onchange="trackChanges(this.defaultChecked, this.checked, 'submitButtonChanges')" />
+                                                    <td style="text-align: center; background-color: <%=controlColor%>">
+                                                        <%  if (canEdit) {%>
+                                                        <input class="wob" type="checkbox" name="controls_delete" 
+                                                               value="<%=rs_controls.getString("Step") + '-'
+                                                                       + rs_controls.getString("Sequence") + '-'
+                                                                       + rs_controls.getString("Control")%>"
+                                                               onchange="trackChanges(this.defaultChecked, this.checked, 'submitButtonChanges')" />
+                                                        <% }%>
                                                     </td>
                                                     <td style="background-color: <%=controlColor%>"><input class="wob" style="width: 30px; font-weight: bold; height:20px ;background-color: <%=controlColor%>"
                                                                                                            value="<%=rs_controls.getString("Step")%>"
@@ -1460,18 +1486,18 @@
 
                                             %>
                                         </table>
-                                        <%  if (request.getUserPrincipal() != null && (request.isUserInRole("User"))) {%>
+                                        <%  if (canEdit) {%>
                                         <%=ComboInvariant(conn, "controls_type_", "width: 200px;visibility:hidden", "controls_type_", "controls_type_", "13", "", "", null)%>
                                         <%=ComboInvariant(conn, "controls_fatal_", "width: 40px;visibility:hidden", "controls_fatal_", "controls_fatal_", "18", "", "", null)%>
                                         <table><tr><td id="wob"><input type="button"
                                                                        value="Add Control"
                                                                        onclick="addTestCaseControl('control_table', <%=testcase_control_maxlength_step%>, <%=testcase_control_maxlength_sequence%>, <%=testcase_control_maxlength_control%>, <%=testcase_control_maxlength_type%>, <%=testcase_control_maxlength_value%>, <%=testcase_control_maxlength_property%>) ; enableField('submitButtonChanges');">
-                                                    <% }%>
                                                 </td><td id="wob"><input	value="Save changes" id="submitButtonChanges" name="submitChanges"
                                                                          type="submit" ></td></tr></table>
+                                                    <% }%>
                                     </td></tr></table>        
                         </div></td></tr></table>
-                        <%  if (request.getUserPrincipal() != null && (request.isUserInRole("User"))) {%>
+                        <%  if (canEdit) {%>
             <input type="hidden" id="Test" name="Test" value="<%=test%>">
             <input type="hidden" id="TestCase" name="TestCase"
                    value="<%=testcase%>">
