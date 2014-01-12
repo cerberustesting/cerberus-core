@@ -100,6 +100,17 @@ public class TestcaseListGrid extends HttpServlet {
                 }
                 whereclauses = strb.toString();
             }
+            
+            if (request.getParameter("status") != null) {
+                String[] status = request.getParameterValues("status");
+                StringBuilder strb = new StringBuilder(whereclauses);
+                for (int x = 0; x < status.length; x++) {
+                    strb.append(" and b.status = '");
+                    strb.append(status[x]);
+                    strb.append("'");
+                }
+                whereclauses = strb.toString();
+            }
 
             int number = 1;
             if (request.getParameter("number") != null) {
@@ -111,11 +122,15 @@ public class TestcaseListGrid extends HttpServlet {
                 totalnumber = Integer.valueOf(request.getParameter("totalnumber"));
             }
 
-            PreparedStatement stmt_count = conn.prepareStatement("SELECT count(*) FROM testcase a JOIN testcasecountry b ON a.test=b.test "
-                    + " AND a.testcase=b.testcase WHERE a.TcActive = 'Y'  AND a.`Group` = 'AUTOMATED' ? ORDER BY a.test,a.testcase");
+            StringBuilder sb = new StringBuilder();
+            sb.append("SELECT count(*) FROM testcase a JOIN testcasecountry b ON a.test=b.test ");
+            sb.append(" AND a.testcase=b.testcase WHERE a.TcActive = 'Y'  AND a.`Group` = 'AUTOMATED'");
+            sb.append(whereclauses);
+            sb.append(" ORDER BY a.test,a.testcase");
+            PreparedStatement stmt_count = conn.prepareStatement(sb.toString());
             int count;
             try {
-                stmt_count.setString(1, whereclauses);
+//                stmt_count.setString(1, whereclauses);
                 ResultSet rs_count = stmt_count.executeQuery();
 
                 try {
@@ -135,20 +150,23 @@ public class TestcaseListGrid extends HttpServlet {
             if (request.getParameter("url") != null) {
                 url = request.getParameter("url");
 
-                PreparedStatement stmt_testlist = conn.prepareStatement("SELECT replace(concat( "
-                        + "?"
-                        + "), \"%COUNTRY%\", country) AS list "
-                        + " FROM testcase a JOIN testcasecountry b ON a.test=b.test "
-                        + " AND a.testcase=b.testcase "
-                        + " WHERE a.TcActive = 'Y'  AND a.`Group` = 'AUTOMATED' "
-                        + " ? "
-                        + " ORDER BY a.test,a.testcase "
-                        + " LIMIT ?, ?");
+                StringBuilder sb2 = new StringBuilder();
+            sb2.append("SELECT replace(concat( ");
+            sb2.append(url);
+            sb2.append("), \"%COUNTRY%\", country) AS list  FROM testcase a JOIN testcasecountry b ON a.test=b.test");
+            sb2.append(" AND a.testcase=b.testcase WHERE a.TcActive = 'Y'  AND a.`Group` = 'AUTOMATED' ");
+            sb2.append(whereclauses);
+            sb2.append(" ORDER BY a.test,a.testcase LIMIT ");
+            sb2.append(number);
+            sb2.append(",");
+            sb2.append(count);
+            MyLogger.log(TestcaseListGrid.class.getName(), Level.INFO, "SQL query: " + sb2.toString());
+                PreparedStatement stmt_testlist = conn.prepareStatement(sb2.toString());
                 try {
-                    stmt_testlist.setString(1, url);
-                    stmt_testlist.setString(2, whereclauses);
-                    stmt_testlist.setInt(3, number);
-                    stmt_testlist.setInt(4, count);
+//                    stmt_testlist.setString(1, url);
+//                    stmt_testlist.setString(2, whereclauses);
+//                    stmt_testlist.setInt(3, number);
+//                    stmt_testlist.setInt(4, count);
 
                     ResultSet rs_testlist = stmt_testlist.executeQuery();
                     try {
