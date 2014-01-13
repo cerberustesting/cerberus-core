@@ -19,6 +19,12 @@
  */
 package org.cerberus.serviceEngine.impl;
 
+import java.util.Date;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
+
+import org.apache.log4j.Level;
 import org.cerberus.entity.MessageEvent;
 import org.cerberus.entity.MessageEventEnum;
 import org.cerberus.entity.MessageGeneral;
@@ -29,11 +35,6 @@ import org.cerberus.serviceEngine.IControlService;
 import org.cerberus.serviceEngine.IPropertyService;
 import org.cerberus.serviceEngine.ISeleniumService;
 import org.cerberus.util.StringUtil;
-import java.util.Date;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
-import org.apache.log4j.Level;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriverException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -272,8 +273,7 @@ public class ControlService implements IControlService {
                     return mes;
                 }
             } catch (WebDriverException exception) {
-                MyLogger.log(SeleniumService.class.getName(), Level.FATAL, exception.toString());
-                return new MessageEvent(MessageEventEnum.CONTROL_FAILED_SELENIUM_CONNECTIVITY);
+                return parseWebDriverException(exception);
             }
         } else {
             return new MessageEvent(MessageEventEnum.CONTROL_FAILED_PRESENT_NULL);
@@ -295,8 +295,7 @@ public class ControlService implements IControlService {
                     return mes;
                 }
             } catch (WebDriverException exception) {
-                MyLogger.log(SeleniumService.class.getName(), Level.FATAL, exception.toString());
-                return new MessageEvent(MessageEventEnum.CONTROL_FAILED_SELENIUM_CONNECTIVITY);
+                return parseWebDriverException(exception);
             }
         } else {
             return new MessageEvent(MessageEventEnum.CONTROL_FAILED_NOTPRESENT_NULL);
@@ -318,8 +317,7 @@ public class ControlService implements IControlService {
                     return mes;
                 }
             } catch (WebDriverException exception) {
-                MyLogger.log(SeleniumService.class.getName(), Level.FATAL, exception.toString());
-                return new MessageEvent(MessageEventEnum.CONTROL_FAILED_SELENIUM_CONNECTIVITY);
+                return parseWebDriverException(exception);
             }
         } else {
             return new MessageEvent(MessageEventEnum.CONTROL_FAILED_VISIBLE_NULL);
@@ -357,8 +355,7 @@ public class ControlService implements IControlService {
             mes.setDescription(mes.getDescription().replaceAll("%ELEMENT%", html));
             return mes;
         } catch (WebDriverException exception) {
-            MyLogger.log(SeleniumService.class.getName(), Level.FATAL, exception.toString());
-            return new MessageEvent(MessageEventEnum.CONTROL_FAILED_SELENIUM_CONNECTIVITY);
+            return parseWebDriverException(exception);
         }
     }
 
@@ -401,8 +398,7 @@ public class ControlService implements IControlService {
             mes.setDescription(mes.getDescription().replaceAll("%ELEMENT%", html));
             return mes;
         } catch (WebDriverException exception) {
-            MyLogger.log(SeleniumService.class.getName(), Level.FATAL, exception.toString());
-            return new MessageEvent(MessageEventEnum.CONTROL_FAILED_SELENIUM_CONNECTIVITY);
+            return parseWebDriverException(exception);
         }
     }
 
@@ -432,8 +428,7 @@ public class ControlService implements IControlService {
                 return mes;
             }
         } catch (WebDriverException exception) {
-            MyLogger.log(SeleniumService.class.getName(), Level.FATAL, exception.toString());
-            return new MessageEvent(MessageEventEnum.CONTROL_FAILED_SELENIUM_CONNECTIVITY);
+            return parseWebDriverException(exception);
         }
     }
 
@@ -463,8 +458,7 @@ public class ControlService implements IControlService {
                 return mes;
             }
         } catch (WebDriverException exception) {
-            MyLogger.log(SeleniumService.class.getName(), Level.FATAL, exception.toString());
-            return new MessageEvent(MessageEventEnum.CONTROL_FAILED_SELENIUM_CONNECTIVITY);
+            return parseWebDriverException(exception);
         }
     }
 
@@ -486,8 +480,7 @@ public class ControlService implements IControlService {
                 return mes;
             }
         } catch (WebDriverException exception) {
-            MyLogger.log(SeleniumService.class.getName(), Level.FATAL, exception.toString());
-            return new MessageEvent(MessageEventEnum.CONTROL_FAILED_SELENIUM_CONNECTIVITY);
+            return parseWebDriverException(exception);
         }
     }
 
@@ -508,8 +501,20 @@ public class ControlService implements IControlService {
                 return mes;
             }
         } catch (WebDriverException exception) {
-            MyLogger.log(SeleniumService.class.getName(), Level.FATAL, exception.toString());
-            return new MessageEvent(MessageEventEnum.CONTROL_FAILED_SELENIUM_CONNECTIVITY);
+            return parseWebDriverException(exception);
         }
+    }
+    
+    /**
+     * @author memiks
+     * @param exception the exception need to be parsed by Cerberus
+     * @return A new Event Message with selenium related description
+     */
+    private MessageEvent parseWebDriverException(WebDriverException exception) {
+        MessageEvent mes;
+        MyLogger.log(SeleniumService.class.getName(), Level.FATAL, exception.toString());
+        mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_SELENIUM_CONNECTIVITY);
+        mes.setDescription(mes.getDescription().replaceAll("%ERROR%", exception.getMessage().split("\n")[0]));
+        return mes;
     }
 }
