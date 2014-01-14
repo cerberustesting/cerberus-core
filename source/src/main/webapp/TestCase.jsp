@@ -1181,6 +1181,10 @@
                                                     int testcase_stepaction_maxlength_object = 100;
                                                     int testcase_stepaction_maxlength_property = 45;
                                                     Integer i1 = 0;
+                                                    boolean isStepExist = false;
+                                                    if(rs_step.isBeforeFirst()){
+                                                        isStepExist = true;
+                                                    }
                                                     while (rs_step.next()) { /*
                                                          * Loop on steps
                                                          */
@@ -1204,7 +1208,7 @@
                                                                 value="<%=rs_step.getString("description")%>"
                                                                 maxlength="<%=rs_step.getMetaData().getColumnDisplaySize(4)%>">
                                                         </td>
-                                                        <%if (i1 > 1) {%>					
+                                                        <%if (0 > 1) {%>					
                                                         <td id="wob"> Batch : 
                                                             <%
                                                                 Statement stmt15 = conn.createStatement();
@@ -1344,14 +1348,15 @@
 
                                     <%  if (request.getUserPrincipal() != null && (request.isUserInRole("User"))) {%>
                                     <div id="hide_div"></div>
-                                    <table><tr><td id="wob"><input type="button" value="Add Step"
-                                                                   onclick="addStep('hide_div', '<%=step_loop_number%>', <%=testcase_step_maxlength_desc%>, <%=testcase_stepaction_maxlength_sequence%>, <%=testcase_stepaction_maxlength_action%>, <%=testcase_stepaction_maxlength_object%>, <%=testcase_stepaction_maxlength_property%>) ; enableField('submitButtonAction');">
+                                    <table><tr><td id="wob"><input type="button" value="Add Step" id="AddStepButton" style="display:inline"
+                                                                   onclick="addStep('hide_div', '<%=step_loop_number%>', <%=testcase_step_maxlength_desc%>, <%=testcase_stepaction_maxlength_sequence%>, <%=testcase_stepaction_maxlength_action%>, <%=testcase_stepaction_maxlength_object%>, <%=testcase_stepaction_maxlength_property%>) ; enableField('submitButtonAction'); hidebutton('AddStepButton')">
 
                                                 <% }%>
                                             </td></tr> </table>  </td></tr></table>          
                     </td></tr>
 
                 <%
+                                    if (isStepExist){
                     ResultSet rs_controls = stmt5.executeQuery("SELECT DISTINCT Test, Testcase, Step, Sequence, Control, Type, ControlValue, ControlProperty, Fatal "
                             + " FROM testcasestepactioncontrol "
                             + " WHERE test = '"
@@ -1470,7 +1475,7 @@
                                                 </td><td id="wob"><input	value="Save changes" id="submitButtonChanges" name="submitChanges"
                                                                          type="submit" ></td></tr></table>
                                     </td></tr></table>        
-                        </div></td></tr></table>
+                        </div></td></tr></table><% }%>
                         <%  if (request.getUserPrincipal() != null && (request.isUserInRole("User"))) {%>
             <input type="hidden" id="Test" name="Test" value="<%=test%>">
             <input type="hidden" id="TestCase" name="TestCase"
@@ -1488,8 +1493,9 @@
                 </tr>
             </table>	
         </form>
+                    <br>
         <% }%>
-        <br>
+        
         <table id="arrond" style="text-align: left" border="1" >
             <tr><td colspan="2"><h4>Contextual Actions</h4></td></tr>
             <tr>
@@ -1501,7 +1507,7 @@
                 </td>
             </tr>
         </table>
-        <%
+        <% 
         } else {
         %> <br><table id="nocountrydefined" class="arrond">
             <tr><td class="wob"></td></tr><tr>
