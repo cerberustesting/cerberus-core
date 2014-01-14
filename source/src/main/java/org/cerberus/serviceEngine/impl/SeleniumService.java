@@ -42,6 +42,7 @@ import org.openqa.selenium.*;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.interactions.ClickAndHoldAction;
 import org.openqa.selenium.remote.Augmenter;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -56,7 +57,6 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
@@ -66,9 +66,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 import org.apache.commons.net.telnet.TelnetClient;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.ie.InternetExplorerDriver;
 
 /**
  * {Insert class description here}
@@ -579,6 +576,12 @@ public class SeleniumService implements ISeleniumService {
         } else if (testCaseStepActionExecution.getAction().equals("wait")) {
             res = this.doActionWait(object, property);
 
+        } else if (testCaseStepActionExecution.getAction().equals("mouseDown")) {
+            res = this.doActionMouseDown(object, property);
+
+        } else if (testCaseStepActionExecution.getAction().equals("mouseUp")) {
+            res = this.doActionMouseUp(object, property);
+
         } else if (testCaseStepActionExecution.getAction().equals("calculateProperty")) {
             res = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_PROPERTYCALCULATED);
             res.setDescription(res.getDescription().replaceAll("%PROP%", testCaseStepActionExecution.getPropertyName()));
@@ -642,7 +645,88 @@ public class SeleniumService implements ISeleniumService {
         }
         return new MessageEvent(MessageEventEnum.ACTION_FAILED_NO_ELEMENT_TO_CLICK);
     }
+    
+    private MessageEvent doActionMouseDown(String string1, String string2) {
+        MessageEvent message;
+        try {
+            if (!StringUtil.isNull(string1)) {
+                try {
+                    Actions actions = new Actions(this.selenium.getDriver());
+                    actions.clickAndHold(this.getSeleniumElement(string1, true));
+                    actions.perform();
+                    message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_MOUSEDOWN);
+                    message.setDescription(message.getDescription().replaceAll("%ELEMENT%", string1));
+                    return message;
+                } catch (NoSuchElementException exception) {
+                    message = new MessageEvent(MessageEventEnum.ACTION_FAILED_MOUSEDOWN_NO_SUCH_ELEMENT);
+                    message.setDescription(message.getDescription().replaceAll("%ELEMENT%", string1));
+                    MyLogger.log(SeleniumService.class.getName(), Level.ERROR, exception.toString());
+                    return message;
+                }
+            } else if (!StringUtil.isNull(string2)) {
+                try {
+                    Actions actions = new Actions(this.selenium.getDriver());
+                    actions.clickAndHold(this.getSeleniumElement(string2, true));
+                    actions.perform();
+                    message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_MOUSEDOWN);
+                    message.setDescription(message.getDescription().replaceAll("%ELEMENT%", string2));
+                    return message;
+                } catch (NoSuchElementException exception) {
+                    message = new MessageEvent(MessageEventEnum.ACTION_FAILED_MOUSEDOWN_NO_SUCH_ELEMENT);
+                    message.setDescription(message.getDescription().replaceAll("%ELEMENT%", string2));
+                    MyLogger.log(SeleniumService.class.getName(), Level.ERROR, exception.toString());
+                    return message;
+                }
+            }
+        } catch (WebDriverException exception) {
+            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_SELENIUM_CONNECTIVITY);
+            MyLogger.log(SeleniumService.class.getName(), Level.FATAL, exception.toString());
+            return message;
+        }
+        return new MessageEvent(MessageEventEnum.ACTION_FAILED_NO_ELEMENT_TO_CLICK);
+    }
 
+       private MessageEvent doActionMouseUp(String string1, String string2) {
+        MessageEvent message;
+        try {
+            if (!StringUtil.isNull(string1)) {
+                try {
+                    Actions actions = new Actions(this.selenium.getDriver());
+                    actions.release(this.getSeleniumElement(string1, true));
+                    actions.perform();
+                    message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_MOUSEUP);
+                    message.setDescription(message.getDescription().replaceAll("%ELEMENT%", string1));
+                    return message;
+                } catch (NoSuchElementException exception) {
+                    message = new MessageEvent(MessageEventEnum.ACTION_FAILED_MOUSEUP_NO_SUCH_ELEMENT);
+                    message.setDescription(message.getDescription().replaceAll("%ELEMENT%", string1));
+                    MyLogger.log(SeleniumService.class.getName(), Level.ERROR, exception.toString());
+                    return message;
+                }
+            } else if (!StringUtil.isNull(string2)) {
+                try {
+                    Actions actions = new Actions(this.selenium.getDriver());
+                    actions.release(this.getSeleniumElement(string2, true));
+                    actions.perform();
+                    message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_MOUSEUP);
+                    message.setDescription(message.getDescription().replaceAll("%ELEMENT%", string2));
+                    return message;
+                } catch (NoSuchElementException exception) {
+                    message = new MessageEvent(MessageEventEnum.ACTION_FAILED_MOUSEUP_NO_SUCH_ELEMENT);
+                    message.setDescription(message.getDescription().replaceAll("%ELEMENT%", string2));
+                    MyLogger.log(SeleniumService.class.getName(), Level.ERROR, exception.toString());
+                    return message;
+                }
+            }
+        } catch (WebDriverException exception) {
+            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_SELENIUM_CONNECTIVITY);
+            MyLogger.log(SeleniumService.class.getName(), Level.FATAL, exception.toString());
+            return message;
+        }
+        return new MessageEvent(MessageEventEnum.ACTION_FAILED_NO_ELEMENT_TO_CLICK);
+    }
+
+       
     private MessageEvent doActionClickWait(String actionObject, String actionProperty) {
         MessageEvent message;
         try {

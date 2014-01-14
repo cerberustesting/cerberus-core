@@ -2759,6 +2759,14 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `id`, `description`) VALUES ('BROWSER', 'chrome', 3, 37, 'Chrome Browser');");
         SQLInstruction.add(SQLS.toString());
+        
+ // MouseUp And MouseDown Added to the invariant table
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `id`, `description`) VALUES ('ACTION', 'mouseDown', 54, 12, 'Selenium Action mouseDown');");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `id`, `description`) VALUES ('ACTION', 'mouseUp', 55, 12, 'Selenium Action mouseDown');");
+        SQLInstruction.add(SQLS.toString());
 
         return SQLInstruction;
     }
