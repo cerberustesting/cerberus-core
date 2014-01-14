@@ -32,7 +32,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.sql.*;
-import java.text.SimpleDateFormat;
+import org.cerberus.util.DateUtil;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -124,8 +124,8 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
                 preStat.setString(7, StringUtil.getLeftString(testCaseExecutionData.getrMessage(), 3000));
                 preStat.setTimestamp(8, new Timestamp(testCaseExecutionData.getStart()));
                 preStat.setTimestamp(9, new Timestamp(testCaseExecutionData.getEnd()));
-                preStat.setString(10, new SimpleDateFormat("yyyyMMddHHmmssSSS").format(testCaseExecutionData.getStart()));
-                preStat.setString(11, new SimpleDateFormat("yyyyMMddHHmmssSSS").format(testCaseExecutionData.getEnd()));
+                preStat.setString(10, DateUtil.DATE_FORMAT_TIMESTAMP.format(testCaseExecutionData.getStart()));
+                preStat.setString(11, DateUtil.DATE_FORMAT_TIMESTAMP.format(testCaseExecutionData.getEnd()));
 
                 preStat.executeUpdate();
                 throwException = false;
@@ -167,8 +167,8 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
                 preStat.setString(5, StringUtil.getLeftString(testCaseExecutionData.getrMessage(), 3000));
                 preStat.setTimestamp(6, new Timestamp(testCaseExecutionData.getStart()));
                 preStat.setTimestamp(7, new Timestamp(testCaseExecutionData.getEnd()));
-                preStat.setString(8, new SimpleDateFormat("yyyyMMddHHmmssSSS").format(testCaseExecutionData.getStart()));
-                preStat.setString(9, new SimpleDateFormat("yyyyMMddHHmmssSSS").format(testCaseExecutionData.getEnd()));
+                preStat.setString(8, DateUtil.DATE_FORMAT_TIMESTAMP.format(testCaseExecutionData.getStart()));
+                preStat.setString(9, DateUtil.DATE_FORMAT_TIMESTAMP.format(testCaseExecutionData.getEnd()));
                 preStat.setLong(10, testCaseExecutionData.getId());
                 preStat.setString(11, testCaseExecutionData.getProperty());
 

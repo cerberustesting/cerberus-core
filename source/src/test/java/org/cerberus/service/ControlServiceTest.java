@@ -334,7 +334,7 @@ public class ControlServiceTest {
     public void testDoControlElementPresentWhenWebDriverException() {
         String property = "id=test";
         String value = "null";
-        String msg = "The test case is canceled due to lost connection to Selenium Server!";
+        String msg = "The test case is canceled due to lost connection to Selenium Server! Detailed error : .*";
 
         TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
         tcsace.setControlType("verifyElementPresent");
@@ -346,7 +346,7 @@ public class ControlServiceTest {
 
         this.controlService.doControl(tcsace);
 
-        Assert.assertEquals(msg, tcsace.getControlResultMessage().getDescription());
+        Assert.assertTrue( tcsace.getControlResultMessage().getDescription().matches(msg));
         Assert.assertEquals("CA", tcsace.getReturnCode());
         Assert.assertEquals("Y", tcsace.getFatal());
     }
@@ -414,7 +414,7 @@ public class ControlServiceTest {
     public void testDoControlElementNotPresentWhenWebDriverException() {
         String property = "id=test";
         String value = "null";
-        String msg = "The test case is canceled due to lost connection to Selenium Server!";
+        String msg = "The test case is canceled due to lost connection to Selenium Server! Detailed error : .*";
 
         TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
         tcsace.setControlType("verifyElementNotPresent");
@@ -426,7 +426,7 @@ public class ControlServiceTest {
 
         this.controlService.doControl(tcsace);
 
-        Assert.assertEquals(msg, tcsace.getControlResultMessage().getDescription());
+        Assert.assertTrue( tcsace.getControlResultMessage().getDescription().matches(msg));
         Assert.assertEquals("CA", tcsace.getReturnCode());
         Assert.assertEquals("Y", tcsace.getFatal());
     }

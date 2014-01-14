@@ -28,9 +28,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.sql.*;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import org.cerberus.util.DateUtil;
 
 /**
  * {Insert class description here}
@@ -84,8 +84,8 @@ public class TestCaseStepExecutionDAO implements ITestCaseStepExecutionDAO {
                 } else {
                     preStat.setString(8, "0000-00-00 00:00:00");
                 }
-                preStat.setString(9, new SimpleDateFormat("yyyyMMddHHmmssSSS").format(testCaseStepExecution.getStart()));
-                preStat.setString(10, new SimpleDateFormat("yyyyMMddHHmmssSSS").format(testCaseStepExecution.getEnd()));
+                preStat.setString(9, DateUtil.DATE_FORMAT_TIMESTAMP.format(testCaseStepExecution.getStart()));
+                preStat.setString(10, DateUtil.DATE_FORMAT_TIMESTAMP.format(testCaseStepExecution.getEnd()));
                 MyLogger.log(TestCaseStepExecutionDAO.class.getName(), Level.DEBUG, "Insert testcasestepexecution " + testCaseStepExecution.getId() + "-"
                         + testCaseStepExecution.getTest() + "-" + testCaseStepExecution.getTestCase() + "-" + testCaseStepExecution.getStep());
 
@@ -122,9 +122,9 @@ public class TestCaseStepExecutionDAO implements ITestCaseStepExecutionDAO {
             try {
                 preStat.setString(1, ParameterParserUtil.parseStringParam(testCaseStepExecution.getReturnCode(), ""));
                 preStat.setTimestamp(2, timeStart);
-                preStat.setString(3, new SimpleDateFormat("yyyyMMddHHmmssSSS").format(timeStart));
+                preStat.setString(3, DateUtil.DATE_FORMAT_TIMESTAMP.format(timeStart));
                 preStat.setTimestamp(4, timeEnd);
-                preStat.setString(5, new SimpleDateFormat("yyyyMMddHHmmssSSS").format(timeEnd));
+                preStat.setString(5, DateUtil.DATE_FORMAT_TIMESTAMP.format(timeEnd));
                 preStat.setFloat(6, (timeEnd.getTime() - timeStart.getTime()) / (float) 1000);
                 preStat.setLong(7, testCaseStepExecution.getId());
                 preStat.setInt(8, testCaseStepExecution.getStep());

@@ -32,6 +32,7 @@ import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import org.cerberus.util.DateUtil;
 
 /**
  * {Insert class description here}
@@ -75,8 +76,8 @@ public class TestCaseStepActionExecutionDAO implements ITestCaseStepActionExecut
                 } else {
                     preStat.setString(5, "0000-00-00 00:00:00");
                 }
-                preStat.setString(6, new SimpleDateFormat("yyyyMMddHHmmssSSS").format(testCaseStepActionExecution.getStart()));
-                preStat.setString(7, new SimpleDateFormat("yyyyMMddHHmmssSSS").format(testCaseStepActionExecution.getEnd()));
+                preStat.setString(6, DateUtil.DATE_FORMAT_TIMESTAMP.format(testCaseStepActionExecution.getStart()));
+                preStat.setString(7, DateUtil.DATE_FORMAT_TIMESTAMP.format(testCaseStepActionExecution.getEnd()));
                 preStat.setString(8, testCaseStepActionExecution.getReturnCode());
                 preStat.setString(9, StringUtil.getLeftString(testCaseStepActionExecution.getReturnMessage(), 500));
                 preStat.setString(10, testCaseStepActionExecution.getScreenshotFilename());
@@ -133,8 +134,8 @@ public class TestCaseStepActionExecutionDAO implements ITestCaseStepActionExecut
                 } else {
                     preStat.setString(8, "0000-00-00 00:00:00");
                 }
-                preStat.setString(9, new SimpleDateFormat("yyyyMMddHHmmssSSS").format(testCaseStepActionExecution.getStart()));
-                preStat.setString(10, new SimpleDateFormat("yyyyMMddHHmmssSSS").format(testCaseStepActionExecution.getEnd()));
+                preStat.setString(9, DateUtil.DATE_FORMAT_TIMESTAMP.format(testCaseStepActionExecution.getStart()));
+                preStat.setString(10, DateUtil.DATE_FORMAT_TIMESTAMP.format(testCaseStepActionExecution.getEnd()));
                 preStat.setString(11, testCaseStepActionExecution.getReturnCode());
                 preStat.setString(12, StringUtil.getLeftString(testCaseStepActionExecution.getReturnMessage(), 500));
                 preStat.setString(13, testCaseStepActionExecution.getTest());
