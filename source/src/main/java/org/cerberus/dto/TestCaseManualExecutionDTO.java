@@ -12,6 +12,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import org.cerberus.util.DateUtil;
@@ -118,7 +120,8 @@ public class TestCaseManualExecutionDTO implements ITestCaseManualExecutionDTO {
                         tcme.setRevision(resultSet.getString("revision"));
                         tcme.setLastStatus(resultSet.getString("controlstatus"));
                         if (resultSet.getTimestamp("end") != null) {
-                            tcme.setLastStatusDate(DateUtil.DATE_FORMAT_DISPLAY.format(resultSet.getTimestamp("end")));
+                            DateFormat df = new SimpleDateFormat(DateUtil.DATE_FORMAT_DISPLAY);
+                            tcme.setLastStatusDate(df.format(resultSet.getTimestamp("end")));
                         }
                         tcme.setLastStatusID(resultSet.getLong("ID"));
                         tcme.setLastStatusBuild(resultSet.getString("lastbuild"));

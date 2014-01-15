@@ -44,6 +44,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Timestamp;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+
 import org.cerberus.util.DateUtil;
 
 /**
@@ -51,7 +54,7 @@ import org.cerberus.util.DateUtil;
  *
  * @author Tiago Bernardes
  * @version 1.0, 25/01/2013
- * @since 2.0.0
+ * @since 0.9.0
  */
 @WebServlet(name = "RunTestCase", urlPatterns = {"/RunTestCase"})
 public class RunTestCase extends HttpServlet {
@@ -165,7 +168,8 @@ public class RunTestCase extends HttpServlet {
             out.println("ReturnCodeDescription" + separator + tCExecution.getResultMessage().getDescription());
             out.println("ControlStatus" + separator + tCExecution.getResultMessage().getCodeString());
         } else {
-            out.println(DateUtil.DATE_FORMAT_DISPLAY.format(tCExecution.getStart()) + " - " + runID
+            DateFormat df = new SimpleDateFormat(DateUtil.DATE_FORMAT_DISPLAY);
+            out.println(df.format(tCExecution.getStart()) + " - " + runID
                     + " [" + test
                     + "|" + testCase
                     + "|" + country

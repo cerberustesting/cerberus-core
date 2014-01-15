@@ -28,6 +28,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.sql.*;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import org.cerberus.util.DateUtil;
@@ -37,7 +39,7 @@ import org.cerberus.util.DateUtil;
  *
  * @author Tiago Bernardes
  * @version 1.0, 03/01/2013
- * @since 2.0.0
+ * @since 0.9.0
  */
 @Repository
 public class TestCaseStepExecutionDAO implements ITestCaseStepExecutionDAO {
@@ -84,8 +86,9 @@ public class TestCaseStepExecutionDAO implements ITestCaseStepExecutionDAO {
                 } else {
                     preStat.setString(8, "0000-00-00 00:00:00");
                 }
-                preStat.setString(9, DateUtil.DATE_FORMAT_TIMESTAMP.format(testCaseStepExecution.getStart()));
-                preStat.setString(10, DateUtil.DATE_FORMAT_TIMESTAMP.format(testCaseStepExecution.getEnd()));
+                DateFormat df = new SimpleDateFormat(DateUtil.DATE_FORMAT_TIMESTAMP);
+                preStat.setString(9, df.format(testCaseStepExecution.getStart()));
+                preStat.setString(10, df.format(testCaseStepExecution.getEnd()));
                 MyLogger.log(TestCaseStepExecutionDAO.class.getName(), Level.DEBUG, "Insert testcasestepexecution " + testCaseStepExecution.getId() + "-"
                         + testCaseStepExecution.getTest() + "-" + testCaseStepExecution.getTestCase() + "-" + testCaseStepExecution.getStep());
 
@@ -120,11 +123,12 @@ public class TestCaseStepExecutionDAO implements ITestCaseStepExecutionDAO {
 
             PreparedStatement preStat = connection.prepareStatement(query);
             try {
+                DateFormat df = new SimpleDateFormat(DateUtil.DATE_FORMAT_TIMESTAMP);
                 preStat.setString(1, ParameterParserUtil.parseStringParam(testCaseStepExecution.getReturnCode(), ""));
                 preStat.setTimestamp(2, timeStart);
-                preStat.setString(3, DateUtil.DATE_FORMAT_TIMESTAMP.format(timeStart));
+                preStat.setString(3, df.format(timeStart));
                 preStat.setTimestamp(4, timeEnd);
-                preStat.setString(5, DateUtil.DATE_FORMAT_TIMESTAMP.format(timeEnd));
+                preStat.setString(5, df.format(timeEnd));
                 preStat.setFloat(6, (timeEnd.getTime() - timeStart.getTime()) / (float) 1000);
                 preStat.setLong(7, testCaseStepExecution.getId());
                 preStat.setInt(8, testCaseStepExecution.getStep());

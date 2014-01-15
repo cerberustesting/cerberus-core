@@ -19,14 +19,11 @@
  */
 package org.cerberus.util;
 
-import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * @author vertigo
@@ -36,14 +33,14 @@ public class DateUtil {
     /**
      * SimpleDateFormat use to display date in Cerberus GUI
      */
-    public static final SimpleDateFormat DATE_FORMAT_DISPLAY = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-    
+    public static final String DATE_FORMAT_DISPLAY = "yyyy-MM-dd HH:mm:ss";
+
     
     /**
      * SimpleDateFormat use to parse SQL Date in Cerberus BO
      */
-    public static final SimpleDateFormat DATE_FORMAT_TIMESTAMP = new SimpleDateFormat("yyyyMMddHHmmssSSS");
-    
+    public static final String DATE_FORMAT_TIMESTAMP = "yyyyMMddHHmmssSSS";
+
     
     /**
      * @param nbMinutes
@@ -56,7 +53,7 @@ public class DateUtil {
         // 
         Date today = new Date(); // Getting now.
         SimpleDateFormat formater; // Define the MySQL Format.
-        formater = DateUtil.DATE_FORMAT_DISPLAY;
+        formater = new SimpleDateFormat(DateUtil.DATE_FORMAT_DISPLAY);
 
         Calendar cal = Calendar.getInstance();
         cal.setTime(today);
@@ -107,7 +104,7 @@ public class DateUtil {
         try {
             String dateStart = String.valueOf(startL);
             String dateEnd = String.valueOf(endL);
-            DateFormat df = DateUtil.DATE_FORMAT_TIMESTAMP;
+            DateFormat df = new SimpleDateFormat(DateUtil.DATE_FORMAT_TIMESTAMP);
             Date dS = df.parse(dateStart);
             Date dE = df.parse(dateEnd);
             double elap = ((double) (dE.getTime() - dS.getTime()));
