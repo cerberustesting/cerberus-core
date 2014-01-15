@@ -2636,7 +2636,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("  PRIMARY KEY (`system`, `level`, `seq`),");
         SQLS.append("  UNIQUE INDEX `IX_buildrevisioninvariant_01` (`system`,`level`,`versionname`) );");
         SQLInstruction.add(SQLS.toString());
-       
+
 //-- Cleaning Build and Revision from invariant table.
 //-- ------------------------
         SQLS = new StringBuilder();
@@ -2648,7 +2648,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `parameter` (`param`, `value`, `description`) VALUES ('selenium_defaultWait', '90', 'Integer that correspond to the number of seconds that selenium will wait before give timeout, when searching for a element.');");
         SQLInstruction.add(SQLS.toString());
-        
+
 //-- Updating documentation.
 //-- ------------------------
         SQLS = new StringBuilder();
@@ -2657,7 +2657,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `DocLabel`, `DocDesc`) VALUES ('homepage', 'RegressionExecutionStatus1', '', 'Regression Execution Status on External Applications', 'This section report the execution statistics of regression testcases by the last sprint / Revision.<br>Criterias :<br>- On the applications that <b>does not</b> belong to current system.<br>- Test cases had to be in WORKING status at the time of the execution.<br>- Monitoring test cases are excluded<br>  (ie not <i>\\'Performance Monitor\\'</i> and not <i>\\'Business Activity Monitor\\'</i> and not <i>\\'Data Integrity Monitor\\'</i>)');");
         SQLInstruction.add(SQLS.toString());
-        
+
 //-- Clean Group occurence.
 //-- ------------------------
         SQLS = new StringBuilder(); // INTERACTIVE becomes AUTOMATED
@@ -2684,7 +2684,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS = new StringBuilder();
         SQLS.append("UPDATE `documentation` SET `DocDesc`='The <i>group</i> is a property of a test case that can take the following list of values : <br><br><b>AUTOMATED</b> : The test is fully automated and does not require any manual action.<br><b>MANUAL</b> : The test has to be manually executed.<br><b>PRIVATE</b> : The test case exist for technical reason and will never appear on the reporting area. For Example : Pre Testing tests cases that are used for login purpose.<br><b>PROCESS</b> : The testcase is related to specific process and needs some intermediate batch treatment to be fully executed.<br><b>COMPARATIVE</b> : Tests that compare the results of 2 batch executions inside the database by SQL requests.' WHERE `DocTable`='testcase' and`DocField`='Group' and`DocValue`='';");
         SQLInstruction.add(SQLS.toString());
-        
+
 //-- Adding system column to parameter table.
 //-- ------------------------
         SQLS = new StringBuilder();
@@ -2692,7 +2692,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(", DROP PRIMARY KEY , ADD PRIMARY KEY (`system`, `param`) ; ");
         SQLInstruction.add(SQLS.toString());
 
-       
+
 //-- Adding Index for performance optimisation and renaming other index for MySQL compliance (Index must have different names from Foreign Keys).
 //-- ------------------------
         SQLS = new StringBuilder();
@@ -2705,8 +2705,8 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(" DROP INDEX `FK_testcaseexecutionsysver_01` , ADD INDEX `FK_testcaseexecutionsysver_01_IX` (`ID` ASC) ");
         SQLS.append(" , ADD INDEX `IX_testcaseexecutionsysver_02` (`system` ASC, `Build` ASC, `Revision` ASC) ;");
         SQLInstruction.add(SQLS.toString());
-        
-        
+
+
         SQLS = new StringBuilder();
         SQLS.append("ALTER TABLE `application` ");
         SQLS.append(" DROP INDEX `FK_application_01` , ADD INDEX `FK_application_01_IX` (`deploytype` ASC) ;");
@@ -2768,6 +2768,65 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `id`, `description`) VALUES ('ACTION', 'mouseUp', 55, 12, 'Selenium Action mouseDown');");
         SQLInstruction.add(SQLS.toString());
 
+
+// New usergroups added to the invariant table
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `id`, `description`) VALUES ");
+        SQLS.append(" ('USERGROUP', 'TestRO', '100', '42', 'Has read only access to the information related to test cases and also has access to execution reporting options.')");
+        SQLS.append(" ,('USERGROUP', 'Test', '110', '42', 'Can modify non WORKING test cases but cannot delete test cases.')");
+        SQLS.append(" ,('USERGROUP', 'TestAdmin', '120', '42', 'Can modify or delete any test case (including Pre Testing test cases). Can also create or delete a test.')");
+        SQLS.append(" ,('USERGROUP', 'RunTest', '200', '42', 'Can run both Manual and Automated test cases from GUI.')");
+        SQLS.append(" ,('USERGROUP', 'IntegratorRO', '300', '42', 'Has access to the integration status.')");
+        SQLS.append(" ,('USERGROUP', 'IntegratorNewChain', '350', '42', 'Can register the end of the chain execution. Has read only access to the other informations on the same page.')");
+        SQLS.append(" ,('USERGROUP', 'IntegratorDeploy', '360', '42', 'Can disable or enable environments and register new build / revision.')");
+        SQLS.append(" ,('USERGROUP', 'Integrator', '310', '42', 'Can add an application. Can change parameters of the environments.')");
+        SQLS.append(" ,('USERGROUP', 'Administrator', '400', '42', 'Can create, modify or delete users. Has access to log Event and Database Maintenance. Can change Parameter values.');");
+        SQLInstruction.add(SQLS.toString());
+
+// GroupName column resized in order to support the new group list.
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `usergroup` CHANGE COLUMN `GroupName` `GroupName` VARCHAR(45) NOT NULL  ;");
+        SQLInstruction.add(SQLS.toString());
+
+// Creating the new groups from the previous groups.
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO usergroup SELECT distinct Login, 'TestRO' FROM usergroup where GroupName in ('User','Visitor','Admin');");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO usergroup SELECT distinct Login, 'Test' FROM usergroup where GroupName in ('User','Admin');");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO usergroup SELECT distinct Login, 'TestAdmin' FROM usergroup where GroupName in ('Admin');");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO usergroup SELECT distinct Login, 'RunTest' FROM usergroup where GroupName in ('User','Admin');");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO usergroup SELECT distinct Login, 'IntegratorRO' FROM usergroup where GroupName in ('Visitor','Integrator');");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO usergroup SELECT distinct Login, 'IntegratorNewChain' FROM usergroup where GroupName in ('Integrator');");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO usergroup SELECT distinct Login, 'IntegratorDeploy' FROM usergroup where GroupName in ('Integrator');");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO usergroup SELECT distinct Login, 'Administrator' FROM usergroup where GroupName in ('Admin');");
+        SQLInstruction.add(SQLS.toString());
+
+// Removing the old groups.
+        SQLS = new StringBuilder();
+        SQLS.append("DELETE FROM `invariant` WHERE `id`='42' and `sort` in ('5','10','15','20');");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("DELETE FROM `usergroup` where GroupName in ('Admin','User','Visitor');");
+        SQLInstruction.add(SQLS.toString());
+
+// Group definition documentation.
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `DocLabel`, `DocDesc`) VALUES ('usergroup', 'GroupName', '', 'Group Name', 'Authorities are managed by group. In order to be granted to a set of feature, you must belong to the corresponding group.<br>\nEvery user can of course belong to as many group as necessary in order to get access to as many feature as required.<br>\nIn order to get the full access to the system you must belong to every group.<br>\nSome groups are linked together on the test perimeter and integration perimeter.<br>\n<br>\n<b>Test perimeter :</b><br>\n<br>\n    <i>TestRO</i>: Has read only access to the information related to test cases and also has access to execution reporting options.<br>\n<br>\n    <i>Test</i>: Can modify non WORKING test cases but cannot delete test cases.<br>\n<br>\n    <i>TestAdmin</i>: Can modify or delete any test case (including Pre Testing test cases). Can also create or delete a test.<br>\n<br>\nThe minimum group you need to belong is <i>TestRO</i> that will give you access in read only to all test data (including its execution reporting page).<br>\nIf you want to be able to modify the testcases (except the WORKING ones), you need <i>Test</i> group on top of <i>TestRO</i> group.<br>\nIf you want the full access to all testcase (including beeing able to delete any testcase), you will need <i>TestAdmin</i> on top of <i>TestRO</i> and <i>Test</i> group.<br>\n<br>\n<b>Test Execution perimeter :</b><br>\n<br>\n    <i>RunTest</i>: Can run both Manual and Automated test cases from GUI.<br>\n<br>\n<b>Integration perimeter :</b><br>\n<br>\n    <i>IntegratorRO</i>: Has access to the integration status.<br>\n<br>\n    <i>Integrator</i>: Can add an application. Can change parameters of the environments.<br>\n<br>\n    <i>IntegratorNewChain</i>: Can register the end of the chain execution. Has read only access to the other informations on the same page.<br>\n<br>\n    <i>IntegratorDeploy</i>: Can disable or enable environments and register new build / revision.<br>\n<br>\nThe minimum group you need to belong is <i>IntegratorRO</i> that will give you access in read only to all environment data.<br>\nIf you want to be able to modify the environment data, you need <i>Integrator</i> group on top of <i>IntegratorRO</i> group.<br>\n<i>IntegratorNewChain</i> and <i>IntegratorDeploy</i> are used on top of <i>Integrator</i> Group to be able to create a new chain on an environment or perform a deploy operation.<br>\n<br>\n<b>Administration perimeter :</b><br>\n<br>\n    <i>Administrator</i>: Can create, modify or delete users. Has access to log Event and Database Maintenance. Can change Parameter values.<br>\n<br>\n');");
+        SQLInstruction.add(SQLS.toString());
+        
         return SQLInstruction;
     }
 }

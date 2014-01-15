@@ -193,6 +193,7 @@
                 try {
 
             %>
+            Documentation on how to define groups can be found <a href="javascript:popup('Documentation.jsp?DocTable=usergroup&DocField=GroupName')">here</a>.
             <table id="usersTable" class="display">
                 <thead>
                     <tr>

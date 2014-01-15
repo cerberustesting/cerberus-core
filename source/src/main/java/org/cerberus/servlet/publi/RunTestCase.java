@@ -44,7 +44,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
+import org.cerberus.util.DateUtil;
 
 /**
  * {Insert class description here}
@@ -165,7 +165,7 @@ public class RunTestCase extends HttpServlet {
             out.println("ReturnCodeDescription" + separator + tCExecution.getResultMessage().getDescription());
             out.println("ControlStatus" + separator + tCExecution.getResultMessage().getCodeString());
         } else {
-            out.println(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(tCExecution.getStart()) + " - " + runID
+            out.println(DateUtil.DATE_FORMAT_DISPLAY.format(tCExecution.getStart()) + " - " + runID
                     + " [" + test
                     + "|" + testCase
                     + "|" + country

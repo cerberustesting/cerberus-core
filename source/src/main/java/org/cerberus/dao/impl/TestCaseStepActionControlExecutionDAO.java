@@ -29,9 +29,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.sql.*;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import org.cerberus.util.DateUtil;
 
 /**
  * {Insert class description here}
@@ -89,8 +89,8 @@ public class TestCaseStepActionControlExecutionDAO implements ITestCaseStepActio
                 } else {
                     preStat.setString(11, "0000-00-00 00:00:00");
                 }
-                preStat.setString(12, new SimpleDateFormat("yyyyMMddHHmmssSSS").format(testCaseStepActionControlExecution.getStart()));
-                preStat.setString(13, new SimpleDateFormat("yyyyMMddHHmmssSSS").format(testCaseStepActionControlExecution.getEnd()));
+                preStat.setString(12, DateUtil.DATE_FORMAT_TIMESTAMP.format(testCaseStepActionControlExecution.getStart()));
+                preStat.setString(13, DateUtil.DATE_FORMAT_TIMESTAMP.format(testCaseStepActionControlExecution.getEnd()));
                 preStat.setString(14, StringUtil.getLeftString(ParameterParserUtil.parseStringParam(testCaseStepActionControlExecution.getReturnMessage(), ""), 500));
                 preStat.setString(15, testCaseStepActionControlExecution.getTest());
                 preStat.setString(16, testCaseStepActionControlExecution.getTestCase());
@@ -152,8 +152,8 @@ public class TestCaseStepActionControlExecutionDAO implements ITestCaseStepActio
                 } else {
                     preStat.setString(7, "0000-00-00 00:00:00");
                 }
-                preStat.setString(8, new SimpleDateFormat("yyyyMMddHHmmssSSS").format(testCaseStepActionControlExecution.getStart()));
-                preStat.setString(9, new SimpleDateFormat("yyyyMMddHHmmssSSS").format(testCaseStepActionControlExecution.getEnd()));
+                preStat.setString(8, DateUtil.DATE_FORMAT_TIMESTAMP.format(testCaseStepActionControlExecution.getStart()));
+                preStat.setString(9, DateUtil.DATE_FORMAT_TIMESTAMP.format(testCaseStepActionControlExecution.getEnd()));
                 preStat.setString(10, StringUtil.getLeftString(ParameterParserUtil.parseStringParam(testCaseStepActionControlExecution.getReturnMessage(), ""), 500));
                 preStat.setString(11, testCaseStepActionControlExecution.getScreenshotFilename());
 

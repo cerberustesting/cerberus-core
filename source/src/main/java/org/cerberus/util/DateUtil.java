@@ -34,6 +34,18 @@ import java.util.logging.Logger;
 public class DateUtil {
 
     /**
+     * SimpleDateFormat use to display date in Cerberus GUI
+     */
+    public static final SimpleDateFormat DATE_FORMAT_DISPLAY = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    
+    
+    /**
+     * SimpleDateFormat use to parse SQL Date in Cerberus BO
+     */
+    public static final SimpleDateFormat DATE_FORMAT_TIMESTAMP = new SimpleDateFormat("yyyyMMddHHmmssSSS");
+    
+    
+    /**
      * @param nbMinutes
      * @return a String that contains a timestamp + the nb of minutes sent as a
      * parameter. It can also be used to substract some minutes and use it for
@@ -44,7 +56,7 @@ public class DateUtil {
         // 
         Date today = new Date(); // Getting now.
         SimpleDateFormat formater; // Define the MySQL Format.
-        formater = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        formater = DateUtil.DATE_FORMAT_DISPLAY;
 
         Calendar cal = Calendar.getInstance();
         cal.setTime(today);
@@ -95,7 +107,7 @@ public class DateUtil {
         try {
             String dateStart = String.valueOf(startL);
             String dateEnd = String.valueOf(endL);
-            DateFormat df = new SimpleDateFormat("yyyyMMddHHmmssSSS");
+            DateFormat df = DateUtil.DATE_FORMAT_TIMESTAMP;
             Date dS = df.parse(dateStart);
             Date dE = df.parse(dateEnd);
             double elap = ((double) (dE.getTime() - dS.getTime()));

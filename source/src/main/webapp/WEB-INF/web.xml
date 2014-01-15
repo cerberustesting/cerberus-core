@@ -471,139 +471,280 @@
         </session-timeout>
     </session-config>
     <!-- Start JAAS Configuration -->
+    <security-role>
+        <description/>
+        <role-name>TestRO</role-name>
+    </security-role>
+    <security-role>
+        <description/>
+        <role-name>Test</role-name>
+    </security-role>
+    <security-role>
+        <description/>
+        <role-name>TestAdmin</role-name>
+    </security-role>
+    <security-role>
+        <description/>
+        <role-name>RunTest</role-name>
+    </security-role>
+    <security-role>
+        <description/>
+        <role-name>IntegratorRO</role-name>
+    </security-role>
+    <security-role>
+        <description/>
+        <role-name>Integrator</role-name>
+    </security-role>
+    <security-role>
+        <description/>
+        <role-name>IntegratorNewChain</role-name>
+    </security-role>
+    <security-role>
+        <description/>
+        <role-name>IntegratorDeploy</role-name>
+    </security-role>
+    <security-role>
+        <description/>
+        <role-name>Administrator</role-name>
+    </security-role>
     <security-constraint>
-        <display-name>Admin Access can do everything on the system.</display-name>
+        <display-name>TestRO</display-name>
         <web-resource-collection>
-            <web-resource-name>Restricted</web-resource-name>
-            <description>Restricted Access</description>
-            <url-pattern>/Homepage</url-pattern>
-            <url-pattern>/Homepage.jsp</url-pattern>
-            <url-pattern>/Test.jsp</url-pattern>
-            <url-pattern>/TestCase.jsp</url-pattern>
-            <url-pattern>/RunTests.jsp</url-pattern>
-            <url-pattern>/ResumeTests.jsp</url-pattern>
-            <url-pattern>/ReportingExecution.jsp</url-pattern>
-            <url-pattern>/ReportingExecutionTime.jsp</url-pattern>
+            <web-resource-name>jsp</web-resource-name>
+            <description>jsp</description>
             <url-pattern>/ExecutionDetail.jsp</url-pattern>
             <url-pattern>/ExecutionDetailList.jsp</url-pattern>
-            <url-pattern>/DeleteTest</url-pattern>
-            <url-pattern>/UpdateTestCase</url-pattern>
+            <url-pattern>/ExecutionPerBuildRevision.jsp</url-pattern>
+            <url-pattern>/NetworkTraficDetail.jsp</url-pattern>
+            <url-pattern>/ReportingExecution.jsp</url-pattern>
+            <url-pattern>/ReportingExecutionTime.jsp</url-pattern>
+            <url-pattern>/Test.jsp</url-pattern>
+            <url-pattern>/TestCase.jsp</url-pattern>
+            <url-pattern>/TestCaseSearch.jsp</url-pattern>
+            <url-pattern>/V2_TestCase2.jsp</url-pattern>
+        </web-resource-collection>
+        <web-resource-collection>
+            <web-resource-name>servlet</web-resource-name>
+            <description>servlet</description>
+            <url-pattern>/GetTestCaseList</url-pattern>
+            <url-pattern>/GetTestCase</url-pattern>
+            <url-pattern>/TestcaseList</url-pattern>
+            <url-pattern>/TestcaseListGrid</url-pattern>
+            <url-pattern>/ExportListTestCase</url-pattern>
+            <url-pattern>/GetDataForTestCaseSearch</url-pattern>
+            <url-pattern>/SearchManualTestCaseInformation</url-pattern>
+            <url-pattern>/TCEwwwDetail</url-pattern>
+            <url-pattern>/GenerateGraph</url-pattern>
+            <url-pattern>/TestCaseActionExecutionDetail</url-pattern>
+            <url-pattern>/ExecutionPerBuildRevision</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <description>TestRO</description>
+            <role-name>TestRO</role-name>
+        </auth-constraint>
+    </security-constraint>
+    <security-constraint>
+        <display-name>Test</display-name>
+        <web-resource-collection>
+            <web-resource-name>jsp</web-resource-name>
+            <description>jsp</description>
+            <url-pattern>/SqlLib.jsp</url-pattern>
+            <url-pattern>/TestCaseCreate.jsp</url-pattern>
+            <url-pattern>/TestCreate.jsp</url-pattern>
+            <url-pattern>/ImportHTML.jsp</url-pattern>
+        </web-resource-collection>
+        <web-resource-collection>
+            <web-resource-name>servlet</web-resource-name>
+            <description>servlet</description>
             <url-pattern>/AddTest</url-pattern>
+            <url-pattern>/UpdateTestCase1</url-pattern>
+            <url-pattern>/UpdateTest</url-pattern>
+            <url-pattern>/DuplicateTestCase</url-pattern>
+            <url-pattern>/UpdateTestCase</url-pattern>
             <url-pattern>/UpdateProperties</url-pattern>
             <url-pattern>/CreateTestCase</url-pattern>
             <url-pattern>/CreateTest</url-pattern>
+            <url-pattern>/UpdateTestCaseDetail</url-pattern>
+            <url-pattern>/ImportSeleniumIDE</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <description>Test</description>
+            <role-name>Test</role-name>
+        </auth-constraint>
+    </security-constraint>
+    <security-constraint>
+        <display-name>TestAdmin</display-name>
+        <web-resource-collection>
+            <web-resource-name>servlet</web-resource-name>
+            <description>servlet</description>
+            <url-pattern>/DeleteTest</url-pattern>
             <url-pattern>/DeleteTestCase</url-pattern>
-            <url-pattern>/UpdateComparativeInformation</url-pattern>
-            <url-pattern>/UpdateTestCaseScript</url-pattern>
-            <url-pattern>/ImportSeleniumIDE</url-pattern>
-            <url-pattern>/UpdateTest</url-pattern>
-            <url-pattern>/DuplicateTestCase</url-pattern>
-            <url-pattern>/UpdateTestCase</url-pattern>
-        </web-resource-collection>
-        <web-resource-collection>
-            <web-resource-name>Admin</web-resource-name>
-            <description>Administrator Access</description>
-            <url-pattern>/LogViewer.jsp</url-pattern>
-            <url-pattern>/UserManager.jsp</url-pattern>
-            <url-pattern>/AddUser</url-pattern>
-            <url-pattern>/UpdateUser</url-pattern>
-            <url-pattern>/DeleteUser</url-pattern>
-            <url-pattern>/LogsData</url-pattern>
-            <url-pattern>/GetUsers</url-pattern>
         </web-resource-collection>
         <auth-constraint>
-            <description>Administrators</description>
-            <role-name>Admin</role-name>
+            <description>TestAdmin</description>
+            <role-name>TestAdmin</role-name>
         </auth-constraint>
     </security-constraint>
     <security-constraint>
-        <display-name>User Access</display-name>
+        <display-name>RunTest</display-name>
         <web-resource-collection>
-            <web-resource-name>Restricted</web-resource-name>
-            <description>Restricted Access</description>
-            <url-pattern>/Homepage</url-pattern>
-            <url-pattern>/Homepage.jsp</url-pattern>
-            <url-pattern>/Test.jsp</url-pattern>
-            <url-pattern>/TestCase.jsp</url-pattern>
-            <url-pattern>/RunTests.jsp</url-pattern>
+            <web-resource-name>jsp</web-resource-name>
+            <description>jsp</description>
+            <url-pattern>/ManualTestCase.jsp</url-pattern>
             <url-pattern>/ResumeTests.jsp</url-pattern>
-            <url-pattern>/ReportingExecution.jsp</url-pattern>
-            <url-pattern>/ReportingExecutionTime.jsp</url-pattern>
-            <url-pattern>/ExecutionDetail.jsp</url-pattern>
-            <url-pattern>/ExecutionDetailList.jsp</url-pattern>
-            <url-pattern>/UpdateTestCase</url-pattern>
-            <url-pattern>/AddTest</url-pattern>
-            <url-pattern>/UpdateProperties</url-pattern>
-            <url-pattern>/CreateTestCase</url-pattern>
-            <url-pattern>/UpdateComparativeInformation</url-pattern>
-            <url-pattern>/UpdateTestCaseScript</url-pattern>
-            <url-pattern>/ImportSeleniumIDE</url-pattern>
-            <url-pattern>/UpdateTest</url-pattern>
-            <url-pattern>/DuplicateTestCase</url-pattern>
-            <url-pattern>/UpdateTestCase</url-pattern>
+            <url-pattern>/RunTests.jsp</url-pattern>
+            <url-pattern>/V2_RunTests.jsp</url-pattern>
         </web-resource-collection>
         <auth-constraint>
-            <description>Users. Can access everything except a test creation (they can create test cases inside a test thought) and test or testcase delete.</description>
-            <role-name>User</role-name>
+            <description>RunTest</description>
+            <role-name>RunTest</role-name>
         </auth-constraint>
     </security-constraint>
     <security-constraint>
-        <display-name>Visitor Access</display-name>
+        <display-name>IntegratorRO</display-name>
         <web-resource-collection>
-            <web-resource-name>Visitor</web-resource-name>
-            <description>Visitor Access</description>
-            <url-pattern>/Homepage</url-pattern>
-            <url-pattern>/Homepage.jsp</url-pattern>
-            <url-pattern>/Test.jsp</url-pattern>
-            <url-pattern>/TestCase.jsp</url-pattern>
-            <url-pattern>/ReportingExecution.jsp</url-pattern>
-            <url-pattern>/ReportingExecutionTime.jsp</url-pattern>
-            <url-pattern>/ExecutionDetail.jsp</url-pattern>
-            <url-pattern>/ExecutionDetailList.jsp</url-pattern>
+            <web-resource-name>jsp</web-resource-name>
+            <description>jsp</description>
+            <url-pattern>/Application.jsp</url-pattern>
+            <url-pattern>/BuildContent.jsp</url-pattern>
+            <url-pattern>/BuildRevDefinition.jsp</url-pattern>
+            <url-pattern>/Environment.jsp</url-pattern>
+            <url-pattern>/EnvironmentList.jsp</url-pattern>
+            <url-pattern>/IntegrationStatus.jsp</url-pattern>
+            <url-pattern>/Notification.jsp</url-pattern>
+        </web-resource-collection>
+        <web-resource-collection>
+            <web-resource-name>servlet</web-resource-name>
+            <description>servlet</description>
+            <url-pattern>/GetApplicationList</url-pattern>
+            <url-pattern>/GetApplication</url-pattern>
+            <url-pattern>/GetDeployTypeList</url-pattern>
+            <url-pattern>/GetBuildRevisionInvariant</url-pattern>
         </web-resource-collection>
         <auth-constraint>
-            <description>Visitors can only access jsp (no servlet to prevent modifications). Visitors cannot execute tests as well.</description>
-            <role-name>Visitor</role-name>
+            <description>IntegratorRO</description>
+            <role-name>IntegratorRO</role-name>
         </auth-constraint>
     </security-constraint>
     <security-constraint>
         <display-name>Integrator</display-name>
         <web-resource-collection>
-            <web-resource-name>Restricted</web-resource-name>
-            <description/>
-            <url-pattern>/Homepage</url-pattern>
-            <url-pattern>/Homepage.jsp</url-pattern>
-            <url-pattern>/Test.jsp</url-pattern>
-            <url-pattern>/TestCase.jsp</url-pattern>
-            <url-pattern>/RunTests.jsp</url-pattern>
-            <url-pattern>/ResumeTests.jsp</url-pattern>
-            <url-pattern>/ReportingExecution.jsp</url-pattern>
-            <url-pattern>/ReportingExecutionTime.jsp</url-pattern>
-            <url-pattern>/ExecutionDetail.jsp</url-pattern>
-            <url-pattern>/ExecutionDetailList.jsp</url-pattern>
-            <url-pattern>/UpdateTestCase</url-pattern>
-            <url-pattern>/AddTest</url-pattern>
-            <url-pattern>/UpdateProperties</url-pattern>
-            <url-pattern>/CreateTestCase</url-pattern>
-            <url-pattern>/UpdateComparativeInformation</url-pattern>
-            <url-pattern>/UpdateTestCaseScript</url-pattern>
-            <url-pattern>/ImportSeleniumIDE</url-pattern>
-            <url-pattern>/UpdateTest</url-pattern>
-            <url-pattern>/DuplicateTestCase</url-pattern>
-            <url-pattern>/UpdateTestCase</url-pattern>
-            <url-pattern>/ManualTestCase.jsp</url-pattern>
-            <url-pattern>/GetDataForTestCaseSearch</url-pattern>
-            <url-pattern>/SearchTestCaseInformation</url-pattern>
-            <url-pattern>/SaveManualExecution</url-pattern>
-        </web-resource-collection>
-        <web-resource-collection>
-            <web-resource-name>Integrator</web-resource-name>
-            <description/>
-            <url-pattern>/Environment.jsp</url-pattern>
+            <web-resource-name>servlet</web-resource-name>
+            <description>servlet</description>
+            <url-pattern>/UpdateApplicationAjax</url-pattern>
+            <url-pattern>/UpdateBuildRevisionParameter</url-pattern>
+            <url-pattern>/UpdateCountryEnv</url-pattern>
+            <url-pattern>/DeleteBuildRevisionInvariant</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <description>Integrator</description>
             <role-name>Integrator</role-name>
+        </auth-constraint>
+    </security-constraint>
+    <security-constraint>
+        <display-name>IntegratorNewChain</display-name>
+        <web-resource-collection>
+            <web-resource-name>servlet</web-resource-name>
+            <description>servlet</description>
+            <url-pattern>/NewChain</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <description>IntegratorNewChain</description>
+            <role-name>IntegratorNewChain</role-name>
+        </auth-constraint>
+    </security-constraint>
+    <security-constraint>
+        <display-name>IntegratorDeploy</display-name>
+        <web-resource-collection>
+            <web-resource-name>servlet</web-resource-name>
+            <description>servlet</description>
+            <url-pattern>/DisableEnvironment</url-pattern>
+            <url-pattern>/NewBuildRev</url-pattern>
+            <url-pattern>/JenkinsDeploy</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <description>IntegratorDeploy</description>
+            <role-name>IntegratorDeploy</role-name>
+        </auth-constraint>
+    </security-constraint>
+    <security-constraint>
+        <display-name>Administrator</display-name>
+        <web-resource-collection>
+            <web-resource-name>jsp</web-resource-name>
+            <description>jsp</description>
+            <url-pattern>/LogViewer.jsp</url-pattern>
+            <url-pattern>/Parameter.jsp</url-pattern>
+            <url-pattern>/UserManager.jsp</url-pattern>
+        </web-resource-collection>
+        <web-resource-collection>
+            <web-resource-name>servlet</web-resource-name>
+            <description>servlet</description>
+            <url-pattern>/GetParameter</url-pattern>
+            <url-pattern>/GetParameterSystem</url-pattern>
+            <url-pattern>/UpdateParameter</url-pattern>
+            <url-pattern>/GetUsers</url-pattern>
+            <url-pattern>/AddUser</url-pattern>
+            <url-pattern>/UpdateUser</url-pattern>
+            <url-pattern>/DeleteUser</url-pattern>
+            <url-pattern>/ChangeUserPassword</url-pattern>
+            <url-pattern>/GetLogEvent</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <description>Administrator</description>
+            <role-name>Administrator</role-name>
+        </auth-constraint>
+    </security-constraint>
+    <security-constraint>
+        <display-name>NONE</display-name>
+        <web-resource-collection>
+            <web-resource-name>jsp</web-resource-name>
+            <description>jsp</description>
+            <url-pattern>/ChangePassword.jsp</url-pattern>
+            <url-pattern>/DatabaseMaintenance.jsp</url-pattern>
+            <url-pattern>/Documentation.jsp</url-pattern>
+            <url-pattern>/Login.jsp</url-pattern>
+            <url-pattern>/LoginError.jsp</url-pattern>
+            <url-pattern>/Logout.jsp</url-pattern>
+        </web-resource-collection>
+        <web-resource-collection>
+            <web-resource-name>servlet</web-resource-name>
+            <description>servlet</description>
+            <url-pattern>/RunTestCase</url-pattern>
+            <url-pattern>/SaveStatistic</url-pattern>
+            <url-pattern>/GetNumberOfExecutions</url-pattern>
+            <url-pattern>/ResultCI</url-pattern>
+            <url-pattern>/GetConnectionPoolName</url-pattern>
+            <url-pattern>/SaveManualExecution</url-pattern>
+            <url-pattern>/DocumentationField</url-pattern>
+            <url-pattern>/GetInvariantList</url-pattern>
+            <url-pattern>/importXML</url-pattern>
+            <url-pattern>/importFile</url-pattern>
+            <url-pattern>/NewRelease</url-pattern>
+        </web-resource-collection>
+    </security-constraint>
+    <security-constraint>
+        <display-name>ANY</display-name>
+        <web-resource-collection>
+            <web-resource-name>jsp</web-resource-name>
+            <description>jsp</description>
+            <url-pattern>/Homepage.jsp</url-pattern>
+        </web-resource-collection>
+        <web-resource-collection>
+            <web-resource-name>servlet</web-resource-name>
+            <description>servlet</description>
+            <url-pattern>/Homepage</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <description/>
+            <role-name>TestRO</role-name>
+            <role-name>Test</role-name>
+            <role-name>TestAdmin</role-name>
+            <role-name>RunTest</role-name>
+            <role-name>IntegratorRO</role-name>
+            <role-name>Integrator</role-name>
+            <role-name>IntegratorNewChain</role-name>
+            <role-name>IntegratorDeploy</role-name>
+            <role-name>Administrator</role-name>
         </auth-constraint>
     </security-constraint>
     <login-config>
@@ -615,22 +756,6 @@
             <form-error-page>/LoginError.jsp</form-error-page>
         </form-login-config>
     </login-config>
-    <security-role>
-        <description>Administrators</description>
-        <role-name>Admin</role-name>
-    </security-role>
-    <security-role>
-        <description>Users</description>
-        <role-name>User</role-name>
-    </security-role>
-    <security-role>
-        <description>Visitor</description>
-        <role-name>Visitor</role-name>
-    </security-role>
-    <security-role>
-        <description>Integrator</description>
-        <role-name>Integrator</role-name>
-    </security-role>
     <!--End JAAS Configuration -->
     <context-param>
         <param-name>contextConfigLocation</param-name>
