@@ -630,7 +630,7 @@ function addStep(div, id, max_tcs_desc, max_tcsa_sequence, max_tcsa_action,
 TR.appendChild(document.createTextNode("  Step ID  :"));
         var input1 = document.createElement('input');
 	input1.setAttribute('style',
-			'font-weight: bold;font-style: italic; color: #FF0000; width:20px');
+			'font-weight: bold;font-style: italic; width:20px');
 	input1.setAttribute('name', 'step_number_add');
         input1.setAttribute('class', 'wob');
         input1.setAttribute('title', 'Step ID');
