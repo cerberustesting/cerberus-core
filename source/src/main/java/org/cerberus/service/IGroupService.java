@@ -19,10 +19,11 @@
  */
 package org.cerberus.service;
 
+import java.util.List;
+
 import org.cerberus.entity.Group;
 import org.cerberus.entity.User;
 import org.cerberus.exception.CerberusException;
-import java.util.List;
 
 /**
  *

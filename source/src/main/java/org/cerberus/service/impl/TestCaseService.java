@@ -19,6 +19,8 @@
  */
 package org.cerberus.service.impl;
 
+import java.util.List;
+
 import org.cerberus.dao.ITestCaseDAO;
 import org.cerberus.entity.TCase;
 import org.cerberus.entity.TestCase;
@@ -28,8 +30,6 @@ import org.cerberus.service.ITestCaseCountryService;
 import org.cerberus.service.ITestCaseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 /**
  * @author bcivel

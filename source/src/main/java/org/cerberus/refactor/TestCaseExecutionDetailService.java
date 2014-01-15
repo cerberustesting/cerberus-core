@@ -19,18 +19,18 @@
  */
 package org.cerberus.refactor;
 
-import org.cerberus.dao.ITestCaseExecutionDAO;
-import org.cerberus.dao.ITestCaseStepActionExecutionDAO;
-import org.cerberus.log.MyLogger;
-import org.apache.log4j.Level;
-import org.json.JSONArray;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+
+import org.apache.log4j.Level;
+import org.cerberus.dao.ITestCaseExecutionDAO;
+import org.cerberus.dao.ITestCaseStepActionExecutionDAO;
+import org.cerberus.log.MyLogger;
+import org.json.JSONArray;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 /**
  * @author bcivel

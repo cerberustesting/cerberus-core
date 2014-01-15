@@ -19,11 +19,11 @@
  */
 package org.cerberus.service.impl;
 
+import java.util.List;
+
 import org.cerberus.dao.ITestCaseStepActionExecutionDAO;
-import org.cerberus.entity.TestCaseStepActionControlExecution;
 import org.cerberus.entity.TestCaseStepActionExecution;
 import org.cerberus.service.ITestCaseStepActionExecutionService;
-import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

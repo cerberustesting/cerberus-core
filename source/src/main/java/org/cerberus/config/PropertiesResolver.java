@@ -17,12 +17,12 @@
  */
 package org.cerberus.config;
 
-import org.cerberus.log.MyLogger;
-import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
-
 import java.io.IOException;
 import java.util.Properties;
+
 import org.apache.log4j.Level;
+import org.cerberus.log.MyLogger;
+import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
 
 /**
  * {Insert class description here}

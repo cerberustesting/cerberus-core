@@ -19,25 +19,26 @@
  */
 package org.cerberus.servlet.publi;
 
-import org.cerberus.database.DatabaseSpring;
-import org.cerberus.log.MyLogger;
-import org.cerberus.service.IParameterService;
-import org.cerberus.service.impl.ParameterService;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.context.ApplicationContext;
-import org.springframework.web.context.support.WebApplicationContextUtils;
-
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.lang3.StringUtils;
+import org.cerberus.database.DatabaseSpring;
+import org.cerberus.log.MyLogger;
+import org.cerberus.service.IParameterService;
+import org.cerberus.service.impl.ParameterService;
+import org.springframework.context.ApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
  * @author bcivel

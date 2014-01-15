@@ -17,17 +17,17 @@
  */
 package org.cerberus.dao.impl;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
+import org.apache.log4j.Level;
 import org.cerberus.dao.ITestCaseExecutionWWWSumDAO;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.entity.StatisticSummary;
 import org.cerberus.log.MyLogger;
-import org.apache.log4j.Level;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 
 /**
  * {Insert class description here}

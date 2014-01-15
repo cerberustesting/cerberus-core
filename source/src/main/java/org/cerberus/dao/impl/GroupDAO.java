@@ -17,12 +17,12 @@
  */
 package org.cerberus.dao.impl;
 
+import java.util.List;
+
 import org.cerberus.dao.IGroupDAO;
 import org.cerberus.entity.Group;
 import org.cerberus.entity.User;
 import org.springframework.stereotype.Repository;
-
-import java.util.List;
 
 @Repository
 public class GroupDAO implements IGroupDAO {

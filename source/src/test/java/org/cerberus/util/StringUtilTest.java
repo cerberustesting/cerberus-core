@@ -1,7 +1,7 @@
 package org.cerberus.util;
 
-import org.cerberus.util.StringUtil;
 import junit.framework.Assert;
+
 import org.junit.Test;
 
 /**

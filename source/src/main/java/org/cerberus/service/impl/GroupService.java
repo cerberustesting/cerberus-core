@@ -19,6 +19,9 @@
  */
 package org.cerberus.service.impl;
 
+import java.util.List;
+
+import org.apache.log4j.Level;
 import org.cerberus.dao.IGroupDAO;
 import org.cerberus.entity.Group;
 import org.cerberus.entity.MessageGeneral;
@@ -27,8 +30,6 @@ import org.cerberus.entity.User;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.log.MyLogger;
 import org.cerberus.service.IGroupService;
-import java.util.List;
-import org.apache.log4j.Level;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

@@ -19,20 +19,20 @@
  */
 package org.cerberus.refactor;
 
-import org.cerberus.exception.CerberusException;
-import org.cerberus.service.ICountryEnvironmentDatabaseService;
-import org.cerberus.util.ParameterParserUtil;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.jws.WebService;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.cerberus.exception.CerberusException;
+import org.cerberus.service.ICountryEnvironmentDatabaseService;
+import org.cerberus.util.ParameterParserUtil;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 

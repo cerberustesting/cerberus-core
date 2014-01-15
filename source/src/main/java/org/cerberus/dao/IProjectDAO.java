@@ -17,8 +17,9 @@
  */
 package org.cerberus.dao;
 
-import org.cerberus.entity.Project;
 import java.util.List;
+
+import org.cerberus.entity.Project;
 
 /**
  *

@@ -19,13 +19,13 @@
  */
 package org.cerberus.factory;
 
-import org.cerberus.entity.TestCaseStepBatch;
-import org.cerberus.entity.TestCaseCountryProperties;
+import java.util.List;
+
 import org.cerberus.entity.TCase;
 import org.cerberus.entity.TestCaseCountry;
+import org.cerberus.entity.TestCaseCountryProperties;
 import org.cerberus.entity.TestCaseStep;
-
-import java.util.List;
+import org.cerberus.entity.TestCaseStepBatch;
 
 /**
  * @author bcivel

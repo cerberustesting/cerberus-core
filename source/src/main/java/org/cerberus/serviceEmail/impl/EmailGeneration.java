@@ -19,6 +19,10 @@
  */
 package org.cerberus.serviceEmail.impl;
 
+import java.sql.Connection;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.cerberus.entity.BatchInvariant;
 import org.cerberus.entity.CountryEnvParam;
 import org.cerberus.exception.CerberusException;
@@ -28,12 +32,9 @@ import org.cerberus.service.IParameterService;
 import org.cerberus.serviceEmail.IEmailBodyGeneration;
 import org.cerberus.serviceEmail.IEmailGeneration;
 import org.cerberus.util.StringUtil;
-import java.sql.Connection;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.cerberus.version.Version;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.cerberus.version.Version;
 
 /**
  *

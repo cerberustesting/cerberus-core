@@ -17,6 +17,12 @@
  */
 package org.cerberus.dao.impl;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+import org.apache.log4j.Level;
 import org.cerberus.dao.ICountryEnvParamDAO;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.entity.CountryEnvParam;
@@ -26,14 +32,8 @@ import org.cerberus.exception.CerberusException;
 import org.cerberus.factory.IFactoryCountryEnvParam;
 import org.cerberus.log.MyLogger;
 import org.cerberus.util.StringUtil;
-import org.apache.log4j.Level;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 
 /**
  * @author bcivel

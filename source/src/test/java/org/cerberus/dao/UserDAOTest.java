@@ -20,7 +20,18 @@
 
 package org.cerberus.dao;
 
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.when;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+
 import junit.framework.Assert;
+
 import org.cerberus.dao.impl.UserDAO;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.entity.User;
@@ -30,12 +41,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.test.context.ContextConfiguration;
-
-import java.sql.*;
-
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.when;
 
 /**
  * {Insert class description here}

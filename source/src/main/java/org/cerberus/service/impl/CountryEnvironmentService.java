@@ -19,12 +19,13 @@
  */
 package org.cerberus.service.impl;
 
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.cerberus.dao.IApplicationDAO;
 import org.cerberus.dao.ICountryEnvParamDAO;
 import org.cerberus.dao.ICountryEnvironmentParametersDAO;
-import org.cerberus.entity.CountryEnvParam;
-import org.cerberus.entity.CountryEnvironmentApplication;
-import org.cerberus.entity.Environment;
 import org.cerberus.entity.TCase;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.factory.IFactoryEnvironment;
@@ -32,10 +33,6 @@ import org.cerberus.service.ICountryEnvironmentService;
 import org.cerberus.service.ITestCaseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * {Insert class description here}

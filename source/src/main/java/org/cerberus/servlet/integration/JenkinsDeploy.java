@@ -19,22 +19,23 @@
  */
 package org.cerberus.servlet.integration;
 
-import org.cerberus.service.IParameterService;
-import org.cerberus.service.impl.ParameterService;
-import org.cerberus.util.HTTPSession;
-import org.springframework.context.ApplicationContext;
-import org.springframework.web.context.support.WebApplicationContextUtils;
-import org.cerberus.version.Version;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.cerberus.service.IParameterService;
+import org.cerberus.service.impl.ParameterService;
+import org.cerberus.util.HTTPSession;
+import org.cerberus.version.Version;
+import org.springframework.context.ApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
  * Servlet called from JQuery Datatable to request Jenkins to run deploy

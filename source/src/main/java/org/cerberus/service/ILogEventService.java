@@ -19,9 +19,10 @@
  */
 package org.cerberus.service;
 
+import java.util.List;
+
 import org.cerberus.entity.LogEvent;
 import org.cerberus.exception.CerberusException;
-import java.util.List;
 
 /**
  *

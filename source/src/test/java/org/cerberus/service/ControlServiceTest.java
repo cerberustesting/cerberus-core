@@ -20,7 +20,10 @@
 
 package org.cerberus.service;
 
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.when;
 import junit.framework.Assert;
+
 import org.cerberus.entity.TestCaseStepActionControlExecution;
 import org.cerberus.serviceEngine.impl.ControlService;
 import org.cerberus.serviceEngine.impl.SeleniumService;
@@ -31,9 +34,6 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.openqa.selenium.WebDriverException;
 import org.springframework.test.context.ContextConfiguration;
-
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.when;
 
 /**
  * {Insert class description here}

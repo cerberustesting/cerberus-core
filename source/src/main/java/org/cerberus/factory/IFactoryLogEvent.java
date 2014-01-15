@@ -19,8 +19,9 @@
  */
 package org.cerberus.factory;
 
-import org.cerberus.entity.LogEvent;
 import java.sql.Timestamp;
+
+import org.cerberus.entity.LogEvent;
 
 /**
  *

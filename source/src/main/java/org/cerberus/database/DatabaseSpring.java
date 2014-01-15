@@ -17,16 +17,17 @@
  */
 package org.cerberus.database;
 
-import org.cerberus.log.MyLogger;
-import org.apache.log4j.Level;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.SQLException;
+
+import org.apache.log4j.Level;
+import org.cerberus.log.MyLogger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
 /**
  * Database class, allow to get Connections defined on glassfish.

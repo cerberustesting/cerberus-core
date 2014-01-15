@@ -20,14 +20,14 @@
 
 package org.cerberus.service.impl;
 
+import java.util.List;
+
 import org.cerberus.dto.TestCaseManualExecution;
 import org.cerberus.dto.TestCaseManualExecutionDTO;
 import org.cerberus.entity.TCase;
 import org.cerberus.service.IManualTestCaseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 /**
  * {Insert class description here}

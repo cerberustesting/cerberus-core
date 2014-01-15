@@ -20,6 +20,12 @@
 package org.cerberus.refactor;
 
 
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Shape;
+import java.awt.image.BufferedImage;
+import java.text.SimpleDateFormat;
+
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.DateAxis;
@@ -34,10 +40,6 @@ import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.util.ShapeUtilities;
-
-import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.text.SimpleDateFormat;
 
 public class LineChart {
 

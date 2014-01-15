@@ -4,14 +4,13 @@
  */
 package org.cerberus.factory;
 
-import org.cerberus.factory.IFactoryTest;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.ContextConfiguration;
-import org.junit.runner.RunWith;
-import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import static org.junit.Assert.assertEquals;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /**
  * {Insert class description here}

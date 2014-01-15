@@ -17,9 +17,9 @@
  */
 package org.cerberus.entity;
 
-import org.cerberus.util.StringUtil;
-
 import java.util.List;
+
+import org.cerberus.util.StringUtil;
 
 /**
  * {Insert class description here}

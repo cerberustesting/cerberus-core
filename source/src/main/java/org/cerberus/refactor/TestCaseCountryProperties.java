@@ -19,16 +19,16 @@
  */
 package org.cerberus.refactor;
 
-import org.cerberus.database.DatabaseSpring;
-import org.cerberus.log.MyLogger;
-import org.apache.log4j.Level;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+
+import org.apache.log4j.Level;
+import org.cerberus.database.DatabaseSpring;
+import org.cerberus.log.MyLogger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class TestCaseCountryProperties implements DatabaseCRUD {

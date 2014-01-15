@@ -20,6 +20,17 @@
 
 package org.cerberus.dto;
 
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.when;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.util.Date;
+import java.util.List;
+
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.entity.TCase;
 import org.junit.Assert;
@@ -29,13 +40,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.test.context.ContextConfiguration;
-
-import java.sql.*;
-import java.util.Date;
-import java.util.List;
-
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.when;
 
 /**
  * {Insert class description here}

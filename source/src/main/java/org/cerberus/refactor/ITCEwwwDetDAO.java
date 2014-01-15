@@ -20,8 +20,9 @@
 package org.cerberus.refactor;
 
 
-import org.cerberus.entity.TestCase;
 import java.util.List;
+
+import org.cerberus.entity.TestCase;
 
 /**
  *

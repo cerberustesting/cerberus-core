@@ -19,9 +19,10 @@
  */
 package org.cerberus.factory.impl;
 
+import java.sql.Timestamp;
+
 import org.cerberus.entity.LogEvent;
 import org.cerberus.factory.IFactoryLogEvent;
-import java.sql.Timestamp;
 import org.springframework.stereotype.Service;
 
 /**

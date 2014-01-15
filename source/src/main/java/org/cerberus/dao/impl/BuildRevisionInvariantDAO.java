@@ -17,6 +17,15 @@
  */
 package org.cerberus.dao.impl;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.log4j.Level;
 import org.cerberus.dao.IBuildRevisionInvariantDAO;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.entity.BuildRevisionInvariant;
@@ -27,14 +36,6 @@ import org.cerberus.factory.IFactoryBuildRevisionInvariant;
 import org.cerberus.factory.impl.FactoryBuildRevisionInvariant;
 import org.cerberus.log.MyLogger;
 import org.cerberus.util.ParameterParserUtil;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.List;
-import org.apache.log4j.Level;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 

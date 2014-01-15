@@ -17,6 +17,15 @@
  */
 package org.cerberus.dao.impl;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.log4j.Level;
 import org.cerberus.dao.ITestCaseExecutionDataDAO;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.entity.MessageGeneral;
@@ -25,16 +34,11 @@ import org.cerberus.entity.TestCaseExecutionData;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.factory.IFactoryTestCaseExecutionData;
 import org.cerberus.log.MyLogger;
+import org.cerberus.util.DateUtil;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
-import org.apache.log4j.Level;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-
-import java.sql.*;
-import org.cerberus.util.DateUtil;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * {Insert class description here}

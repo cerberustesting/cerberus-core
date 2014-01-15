@@ -19,27 +19,6 @@
  */
 package org.cerberus.servlet.testCase;
 
-import org.cerberus.database.DatabaseSpring;
-import org.cerberus.exception.CerberusException;
-import org.cerberus.factory.IFactoryLogEvent;
-import org.cerberus.factory.impl.FactoryLogEvent;
-import org.cerberus.log.MyLogger;
-import org.cerberus.refactor.TestCaseCountryProperties;
-import org.cerberus.refactor.TestCaseStepAction;
-import org.cerberus.refactor.TestCaseStepActionControl;
-import org.cerberus.service.ILogEventService;
-import org.cerberus.service.impl.LogEventService;
-import org.cerberus.service.impl.UserService;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.springframework.context.ApplicationContext;
-import org.springframework.web.context.support.WebApplicationContextUtils;
-
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
@@ -52,6 +31,28 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.cerberus.database.DatabaseSpring;
+import org.cerberus.exception.CerberusException;
+import org.cerberus.factory.IFactoryLogEvent;
+import org.cerberus.factory.impl.FactoryLogEvent;
+import org.cerberus.log.MyLogger;
+import org.cerberus.refactor.TestCaseCountryProperties;
+import org.cerberus.refactor.TestCaseStepAction;
+import org.cerberus.refactor.TestCaseStepActionControl;
+import org.cerberus.service.ILogEventService;
+import org.cerberus.service.impl.LogEventService;
+import org.cerberus.service.impl.UserService;
+import org.springframework.context.ApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
  * @author bcivel

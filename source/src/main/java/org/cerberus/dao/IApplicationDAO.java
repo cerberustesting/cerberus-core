@@ -17,9 +17,10 @@
  */
 package org.cerberus.dao;
 
+import java.util.List;
+
 import org.cerberus.entity.Application;
 import org.cerberus.exception.CerberusException;
-import java.util.List;
 
 /**
  * Interface that defines the public methods to manage Application data on table

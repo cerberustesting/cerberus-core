@@ -17,9 +17,9 @@
  */
 package org.cerberus.dao;
 
-import org.cerberus.entity.StatisticDetail;
-
 import java.util.List;
+
+import org.cerberus.entity.StatisticDetail;
 
 /**
  * {Insert class description here}

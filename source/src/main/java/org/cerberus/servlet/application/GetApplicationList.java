@@ -19,17 +19,19 @@
  */
 package org.cerberus.servlet.application;
 
-import org.cerberus.entity.Application;
-import org.cerberus.exception.CerberusException;
-import org.cerberus.service.IApplicationService;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.cerberus.entity.Application;
+import org.cerberus.exception.CerberusException;
+import org.cerberus.service.IApplicationService;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
