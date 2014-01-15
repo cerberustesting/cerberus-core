@@ -45,7 +45,7 @@ import org.springframework.stereotype.Repository;
  *
  * @author Tiago Bernardes
  * @version 1.0, 02/01/2013
- * @since 2.0.0
+ * @since 0.9.0
  */
 @Repository
 public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
@@ -119,6 +119,7 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
             try {
+                DateFormat df = new SimpleDateFormat(DateUtil.DATE_FORMAT_TIMESTAMP);
                 preStat.setLong(1, testCaseExecutionData.getId());
                 preStat.setString(2, testCaseExecutionData.getProperty());
                 preStat.setString(3, ParameterParserUtil.securePassword(StringUtil.getLeftString(testCaseExecutionData.getValue(), 3000), testCaseExecutionData.getProperty()));
@@ -128,8 +129,8 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
                 preStat.setString(7, StringUtil.getLeftString(testCaseExecutionData.getrMessage(), 3000));
                 preStat.setTimestamp(8, new Timestamp(testCaseExecutionData.getStart()));
                 preStat.setTimestamp(9, new Timestamp(testCaseExecutionData.getEnd()));
-                preStat.setString(10, DateUtil.DATE_FORMAT_TIMESTAMP.format(testCaseExecutionData.getStart()));
-                preStat.setString(11, DateUtil.DATE_FORMAT_TIMESTAMP.format(testCaseExecutionData.getEnd()));
+                preStat.setString(10, df.format(testCaseExecutionData.getStart()));
+                preStat.setString(11, df.format(testCaseExecutionData.getEnd()));
 
                 preStat.executeUpdate();
                 throwException = false;
@@ -164,6 +165,7 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
             try {
+                DateFormat df = new SimpleDateFormat(DateUtil.DATE_FORMAT_TIMESTAMP);
                 preStat.setString(1, ParameterParserUtil.securePassword(StringUtil.getLeftString(testCaseExecutionData.getValue(), 3000), testCaseExecutionData.getProperty()));
                 preStat.setString(2, testCaseExecutionData.getType());
                 preStat.setString(3, StringUtil.getLeftString(testCaseExecutionData.getObject(), 2500));
@@ -171,8 +173,8 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
                 preStat.setString(5, StringUtil.getLeftString(testCaseExecutionData.getrMessage(), 3000));
                 preStat.setTimestamp(6, new Timestamp(testCaseExecutionData.getStart()));
                 preStat.setTimestamp(7, new Timestamp(testCaseExecutionData.getEnd()));
-                preStat.setString(8, DateUtil.DATE_FORMAT_TIMESTAMP.format(testCaseExecutionData.getStart()));
-                preStat.setString(9, DateUtil.DATE_FORMAT_TIMESTAMP.format(testCaseExecutionData.getEnd()));
+                preStat.setString(8, df.format(testCaseExecutionData.getStart()));
+                preStat.setString(9, df.format(testCaseExecutionData.getEnd()));
                 preStat.setLong(10, testCaseExecutionData.getId());
                 preStat.setString(11, testCaseExecutionData.getProperty());
 
@@ -261,7 +263,6 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
     public List<TestCaseExecutionData> findTestCaseExecutionDataById(long id) {
         List<TestCaseExecutionData> result = null;
         TestCaseExecutionData resultData;
-        boolean throwEx = false;
         final String query = "SELECT * FROM testcaseexecutiondata WHERE id = ? ORDER BY startlong";
 
         Connection connection = this.databaseSpring.connect();

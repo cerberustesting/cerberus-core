@@ -42,7 +42,7 @@ import org.springframework.stereotype.Repository;
  *
  * @author Tiago Bernardes
  * @version 1.0, 02/01/2013
- * @since 2.0.0
+ * @since 0.9.0
  */
 @Repository
 public class TestCaseStepActionExecutionDAO implements ITestCaseStepActionExecutionDAO {
@@ -79,8 +79,9 @@ public class TestCaseStepActionExecutionDAO implements ITestCaseStepActionExecut
                 } else {
                     preStat.setString(5, "0000-00-00 00:00:00");
                 }
-                preStat.setString(6, DateUtil.DATE_FORMAT_TIMESTAMP.format(testCaseStepActionExecution.getStart()));
-                preStat.setString(7, DateUtil.DATE_FORMAT_TIMESTAMP.format(testCaseStepActionExecution.getEnd()));
+                DateFormat df = new SimpleDateFormat(DateUtil.DATE_FORMAT_TIMESTAMP);
+                preStat.setString(6, df.format(testCaseStepActionExecution.getStart()));
+                preStat.setString(7, df.format(testCaseStepActionExecution.getEnd()));
                 preStat.setString(8, testCaseStepActionExecution.getReturnCode());
                 preStat.setString(9, StringUtil.getLeftString(testCaseStepActionExecution.getReturnMessage(), 500));
                 preStat.setString(10, testCaseStepActionExecution.getScreenshotFilename());
@@ -137,8 +138,9 @@ public class TestCaseStepActionExecutionDAO implements ITestCaseStepActionExecut
                 } else {
                     preStat.setString(8, "0000-00-00 00:00:00");
                 }
-                preStat.setString(9, DateUtil.DATE_FORMAT_TIMESTAMP.format(testCaseStepActionExecution.getStart()));
-                preStat.setString(10, DateUtil.DATE_FORMAT_TIMESTAMP.format(testCaseStepActionExecution.getEnd()));
+                DateFormat df = new SimpleDateFormat(DateUtil.DATE_FORMAT_TIMESTAMP);
+                preStat.setString(9, df.format(testCaseStepActionExecution.getStart()));
+                preStat.setString(10, df.format(testCaseStepActionExecution.getEnd()));
                 preStat.setString(11, testCaseStepActionExecution.getReturnCode());
                 preStat.setString(12, StringUtil.getLeftString(testCaseStepActionExecution.getReturnMessage(), 500));
                 preStat.setString(13, testCaseStepActionExecution.getTest());

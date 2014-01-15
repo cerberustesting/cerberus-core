@@ -80,7 +80,7 @@ public class TestCaseExecutionDetailService implements ITestCaseExecutionDetailS
                     serie = newserie;
                 }
                 data = new JSONArray();
-                DateFormat df2 = org.cerberus.util.DateUtil.DATE_FORMAT_DISPLAY;
+                DateFormat df2 = new SimpleDateFormat(org.cerberus.util.DateUtil.DATE_FORMAT_DISPLAY);
                 Date dat = df2.parse(listInformation.get(4));
 //                MyLogger.log(TestCaseExecutionDetailService.class.getName(), Level.INFO, dat.toString());
                 String datea = df2.format(dat);

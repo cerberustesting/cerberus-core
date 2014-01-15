@@ -2758,9 +2758,23 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `id`, `description`) VALUES ('BROWSER', 'chrome', 3, 37, 'Chrome Browser');");
         SQLInstruction.add(SQLS.toString());
+        
+ // MouseUp And MouseDown Added to the invariant table
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `cerberus`.`invariant` SET `sort`='54' WHERE `id`='12' and`sort`='55';");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `id`, `description`) VALUES ('ACTION', 'mouseDown', 55, 12, 'Selenium Action mouseDown');");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `id`, `description`) VALUES ('ACTION', 'mouseUp', 56, 12, 'Selenium Action mouseDown');");
+        SQLInstruction.add(SQLS.toString());
 
 
 // New usergroups added to the invariant table
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `cerberus`.`invariant` CHANGE COLUMN `description` `description` VARCHAR(250) NOT NULL ;");
+        SQLInstruction.add(SQLS.toString());
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `id`, `description`) VALUES ");
         SQLS.append(" ('USERGROUP', 'TestRO', '100', '42', 'Has read only access to the information related to test cases and also has access to execution reporting options.')");
