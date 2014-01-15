@@ -554,7 +554,16 @@ function addTestCaseAction(table, max_tcsa_seq, max_tcsa_action, max_tcsa_obj,
 	form2.setAttribute('onfocus', 'keyOnFocus(this)');
         form2.setAttribute('class', 'wob');
 	form2.setAttribute('onblur', 'keyOnBlur(this)');
-	form2.setAttribute('value', 'Mandatory, KEY');
+        
+        var value = getMaxValueForParentElementIdAndElementName(table,'actions_sequence');
+        
+        if(value && parseInt(value) > 0) {
+            value = parseInt(value) + 10;
+        } else {
+            value = 10;
+        }
+
+        form2.setAttribute('value', value);
 	form2.setAttribute('maxlength', max_tcsa_seq);
 	var TD2 = document.createElement('td');
         TD2.setAttribute('style', 'background-color:white; text-align: center');
@@ -627,7 +636,7 @@ function addStep(div, id, max_tcs_desc, max_tcsa_sequence, max_tcsa_action,
 //	TD0.appendChild(input0); /* Add form to column */
 //        TR.appendChild(TD0);
 
-TR.appendChild(document.createTextNode("  Step ID  :"));
+        TR.appendChild(document.createTextNode("  Step ID  :"));
         var input1 = document.createElement('input');
 	input1.setAttribute('style',
 			'font-weight: bold;font-style: italic; width:20px');
@@ -637,14 +646,22 @@ TR.appendChild(document.createTextNode("  Step ID  :"));
 	input1.setAttribute('maxlength', 10);
 	input1.setAttribute('onfocus', 'keyOnFocus(this)');
 	input1.setAttribute('onblur', 'keyOnBlur(this)');
-	input1.setAttribute('value', parseInt(id)+1);
+        
+        var value = getMaxValueForParentElementIdAndElementName(null,'testcasestep_hidden');
+        if(value && parseInt(value) > 0) {
+            value = parseInt(value) + 1;
+        } else {
+            value = 1;
+        }
+
+        input1.setAttribute('value', value);
         var TD1 = document.createElement('td'); /* Create column */
         TD1.setAttribute('style', 'background-color:#e1e7f3; text-align: center; valign:center');
         TD1.setAttribute('class', 'wob');
 	TD1.appendChild(input1); /* Add form to column */
 	TR.appendChild(TD1);
 
-TR.appendChild(document.createTextNode("  Step Description  :"));
+        TR.appendChild(document.createTextNode("  Step Description  :"));
 	var input2 = document.createElement('input');
 	input2.setAttribute('size', '100%');
         input2.setAttribute('class', 'wob');
@@ -824,6 +841,7 @@ function addTestCaseControl(table, max_tcc_step, max_tcc_sequence,
 	form2.setAttribute('onfocus', 'keyOnFocus(this)');
 	form2.setAttribute('onblur', 'keyOnBlur(this)');
         form2.setAttribute('class', 'wob');
+        
 	form2.setAttribute('value', 'Mandatory, KEY');
 	var TD2 = document.createElement('td');
         TD2.setAttribute('style', 'background-color:white');
@@ -1293,4 +1311,24 @@ function addBuildContent(tableau) {
 
 function hidebutton(buttonID) {
 	document.getElementById(buttonID).style.display = "none";
+}
+
+function getMaxValueForParentElementIdAndElementName(parentElementId,elementName) {
+    var elements = null;
+    var value = 0;
+
+    if(parentElementId) {
+        elements = $('#' + parentElementId + ' [name="' + elementName + '"]');
+    } else {
+        elements = document.getElementsByName(elementName);
+    }
+    
+    if(elements && elements.length > 0){
+        for(i=0; i<=elements.length; i++) {
+            if(elements[i] && elements[i].value && value < parseInt(elements[i].value)) {
+                value = parseInt(elements[i].value);
+            }
+        }
+    }
+    return value;
 }
