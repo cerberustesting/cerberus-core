@@ -1501,7 +1501,7 @@
                                                                          type="submit" ></td></tr></table>
                                                     <% }%>
                                     </td></tr></table>        
-                        </div></td></tr></table>
+                        </div></td></tr></table><% }%>
                         <%  if (canEdit) {%>
             <input type="hidden" id="Test" name="Test" value="<%=test%>">
             <input type="hidden" id="TestCase" name="TestCase"
