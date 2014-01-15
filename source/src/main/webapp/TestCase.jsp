@@ -37,7 +37,6 @@
     <head>
         <meta content="text/html; charset=UTF-8" http-equiv="content-type">
         <title>TestCase</title>
-
         <script type="text/javascript" src="js/jquery-1.10.2.min.js"></script>
         <!--must import to use elRTE plugin-->
         <script type="text/javascript" src="js/jquery-migrate-1.2.1.min.js"></script>
