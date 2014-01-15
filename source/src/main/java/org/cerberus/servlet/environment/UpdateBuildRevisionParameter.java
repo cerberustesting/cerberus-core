@@ -164,7 +164,9 @@ public class UpdateBuildRevisionParameter extends HttpServlet {
             Statement stmt = connection.createStatement();
             List<String> releaseIDList = new ArrayList<String>();
             try {
-                ResultSet rs_bcContent = stmt.executeQuery("SELECT ID " + " FROM buildrevisionparameters WHERE " + whereclause);
+                StringBuilder sb = new StringBuilder("SELECT ID FROM buildrevisionparameters WHERE ");
+                sb.append(whereclause);
+                ResultSet rs_bcContent = stmt.executeQuery(sb.toString());
                 try {
                     //Put all the data from the database into a List
                     if (rs_bcContent.first()) {
@@ -185,7 +187,7 @@ public class UpdateBuildRevisionParameter extends HttpServlet {
                 // Update if the data already exists
                 if (releaseIDList.contains(releaseID[i])) {
 
-                    String update = (" UPDATE buildrevisionparameters "
+                    String update = " UPDATE buildrevisionparameters "
                             + " SET `Link` = '" + link[i] + "' , `releaseOwner` = '" + releaseOwner[i] + "'"
                             + " , subject = '" + subject[i] + "' "
                             + " , `build` = '" + build[i] + "' "
@@ -195,7 +197,7 @@ public class UpdateBuildRevisionParameter extends HttpServlet {
                             + " , `bugIDFixed` = '" + bugIDFixed[i] + "'"
                             + " , `TicketIDFixed` = '" + ticketIDFixed[i] + "'"
                             + " , `application` = '" + application[i] + "'"
-                            + " WHERE ID = '" + releaseID[i] + "'");
+                            + " WHERE ID = '" + releaseID[i] + "'";
                     Statement stmt2 = connection.createStatement();
                     try {
                         stmt2.executeUpdate(update);
@@ -205,7 +207,7 @@ public class UpdateBuildRevisionParameter extends HttpServlet {
                 } else
                 // Insert if it's a new one
                 {
-                    String insert = ("INSERT INTO buildrevisionparameters (`Build`,`Revision`,`Release`,`Link` , `Application`, `releaseOwner`, `Project`, `BugIDFixed`, `TicketIDFixed` , `Subject`) "
+                    String insert = "INSERT INTO buildrevisionparameters (`Build`,`Revision`,`Release`,`Link` , `Application`, `releaseOwner`, `Project`, `BugIDFixed`, `TicketIDFixed` , `Subject`) "
                             + " VALUES('"
                             + build[i]
                             + "', "
@@ -233,7 +235,7 @@ public class UpdateBuildRevisionParameter extends HttpServlet {
                             + ticketIDFixed[i]
                             + "', "
                             + "'"
-                            + subject[i] + "')");
+                            + subject[i] + "')";
                     // System.out.println ( sql ) ;
                     Statement stmt3 = connection.createStatement();
                     try {
