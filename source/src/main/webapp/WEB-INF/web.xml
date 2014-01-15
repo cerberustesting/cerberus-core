@@ -241,6 +241,10 @@
         <servlet-name>GetParameterSystem</servlet-name>
         <servlet-class>org.cerberus.servlet.parameter.GetParameterSystem</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>ImportTestCaseStep</servlet-name>
+        <servlet-class>org.cerberus.servlet.testCase.ImportTestCaseStep</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>RunTestCase</servlet-name>
         <url-pattern>/RunTestCase</url-pattern>
@@ -465,6 +469,10 @@
         <servlet-name>GetParameterSystem</servlet-name>
         <url-pattern>/GetParameterSystem</url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ImportTestCaseStep</servlet-name>
+        <url-pattern>/ImportTestCaseStep</url-pattern>
+    </servlet-mapping>
     <session-config>
         <session-timeout>
             60
@@ -565,6 +573,7 @@
             <url-pattern>/CreateTest</url-pattern>
             <url-pattern>/UpdateTestCaseDetail</url-pattern>
             <url-pattern>/ImportSeleniumIDE</url-pattern>
+            <url-pattern>/ImportTestCaseStep</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <description>Test</description>
@@ -711,7 +720,6 @@
             <url-pattern>/RunTestCase</url-pattern>
             <url-pattern>/SaveStatistic</url-pattern>
             <url-pattern>/GetNumberOfExecutions</url-pattern>
-            <url-pattern>/TestcaseListGrid</url-pattern>
             <url-pattern>/ResultCI</url-pattern>
             <url-pattern>/GetConnectionPoolName</url-pattern>
             <url-pattern>/SaveManualExecution</url-pattern>
@@ -720,6 +728,7 @@
             <url-pattern>/importXML</url-pattern>
             <url-pattern>/importFile</url-pattern>
             <url-pattern>/NewRelease</url-pattern>
+            <url-pattern>/TestcaseListGrid</url-pattern>
         </web-resource-collection>
     </security-constraint>
     <security-constraint>

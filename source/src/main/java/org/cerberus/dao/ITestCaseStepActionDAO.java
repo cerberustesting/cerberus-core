@@ -20,6 +20,7 @@ package org.cerberus.dao;
 import org.cerberus.entity.TestCaseStepAction;
 
 import java.util.List;
+import org.cerberus.exception.CerberusException;
 
 /**
  * {Insert class description here}
@@ -29,5 +30,8 @@ import java.util.List;
  * @since 2.0.0
  */
 public interface ITestCaseStepActionDAO {
+
     List<TestCaseStepAction> findActionByTestTestCaseStep(String test, String testcase, int stepNumber);
+
+    void insertTestCaseStepAction(TestCaseStepAction testCaseStepAction) throws CerberusException;
 }

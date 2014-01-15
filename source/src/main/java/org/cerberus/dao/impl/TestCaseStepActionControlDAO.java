@@ -32,6 +32,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import org.cerberus.entity.MessageGeneral;
+import org.cerberus.entity.MessageGeneralEnum;
+import org.cerberus.exception.CerberusException;
 
 /**
  * {Insert class description here}
@@ -81,6 +84,109 @@ public class TestCaseStepActionControlDAO implements ITestCaseStepActionControlD
 
                     while (resultSet.next()) {
                         int step = resultSet.getInt("Step");
+                        int control = resultSet.getInt("Control");
+                        String type = resultSet.getString("Type");
+                        String object = resultSet.getString("ControlValue");
+                        String property = resultSet.getString("ControlProperty");
+                        String fatal = resultSet.getString("Fatal");
+                        list.add(factoryTestCaseStepActionControl.create(test, testcase, step, sequence, control, type, object, property, fatal));
+                    }
+                } catch (SQLException exception) {
+                    MyLogger.log(TestCaseStepActionControlDAO.class.getName(), Level.ERROR, exception.toString());
+                } finally {
+                    resultSet.close();
+                }
+            } catch (SQLException exception) {
+                MyLogger.log(TestCaseStepActionControlDAO.class.getName(), Level.ERROR, exception.toString());
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(TestCaseStepActionControlDAO.class.getName(), Level.ERROR, exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(TestCaseStepActionControlDAO.class.getName(), Level.WARN, e.toString());
+            }
+        }
+        return list;
+    }
+
+    @Override
+    public void insertTestCaseStepActionControl(TestCaseStepActionControl testCaseStepActionControl) throws CerberusException {
+        boolean throwExcep = false;
+        StringBuilder query = new StringBuilder();
+        query.append("INSERT INTO testcasestepactioncontrol (`test`, `testCase`, `step`, `sequence`, `control`, `type`, `controlvalue`, `controlproperty`, `fatal`) ");
+        query.append("VALUES (?,?,?,?,?,?,?,?,?)");
+        
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query.toString());
+            try {
+                preStat.setString(1, testCaseStepActionControl.getTest());
+                preStat.setString(2, testCaseStepActionControl.getTestCase());
+                preStat.setInt(3, testCaseStepActionControl.getStep());
+                preStat.setInt(4, testCaseStepActionControl.getSequence());
+                preStat.setInt(5, testCaseStepActionControl.getControl());
+                preStat.setString(6, testCaseStepActionControl.getType());
+                preStat.setString(7, testCaseStepActionControl.getControlValue());
+                preStat.setString(6, testCaseStepActionControl.getControlProperty());
+                preStat.setString(7, testCaseStepActionControl.getFatal());
+
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+                    if (resultSet.first()) {
+                        throwExcep = false;
+                    } else {
+                        throwExcep = true;
+                    }
+                } catch (SQLException exception) {
+                    MyLogger.log(TestCaseStepActionControlDAO.class.getName(), Level.ERROR, exception.toString());
+                } finally {
+                    resultSet.close();
+                }
+            } catch (SQLException exception) {
+                MyLogger.log(TestCaseStepActionControlDAO.class.getName(), Level.ERROR, exception.toString());
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(TestCaseStepActionControlDAO.class.getName(), Level.ERROR, exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(TestCaseStepActionControlDAO.class.getName(), Level.WARN, e.toString());
+            }
+        }
+        if (throwExcep) {
+            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.CANNOT_UPDATE_TABLE));
+        }}
+
+    @Override
+    public List<TestCaseStepActionControl> findControlByTestTestCaseStep(String test, String testcase, int step) {
+        List<TestCaseStepActionControl> list = null;
+        final String query = "SELECT * FROM testcasestepactioncontrol WHERE test = ? AND testcase = ? AND step = ? ORDER BY control";
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            try {
+                preStat.setString(1, test);
+                preStat.setString(2, testcase);
+                preStat.setInt(3, step);
+
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+                    list = new ArrayList<TestCaseStepActionControl>();
+
+                    while (resultSet.next()) {
+                        int sequence = resultSet.getInt("Sequence");
                         int control = resultSet.getInt("Control");
                         String type = resultSet.getString("Type");
                         String object = resultSet.getString("ControlValue");

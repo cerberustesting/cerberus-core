@@ -32,6 +32,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import org.cerberus.entity.MessageGeneral;
+import org.cerberus.entity.MessageGeneralEnum;
+import org.cerberus.exception.CerberusException;
 
 /**
  * {Insert class description here}
@@ -147,5 +150,97 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
             }
         }
         return list;
+    }
+
+    @Override
+    public void insertTestCaseStep(TestCaseStep testCaseStep) throws CerberusException {
+        boolean throwExcep = false;
+        StringBuilder query = new StringBuilder();
+        query.append("INSERT INTO testcasestep (`test`, `testCase`, `step`, `Description`) ");
+        query.append("VALUES (?,?,?,?)");
+        
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query.toString());
+            try {
+                preStat.setString(1, testCaseStep.getTest());
+                preStat.setString(2, testCaseStep.getTestCase());
+                preStat.setInt(3, testCaseStep.getStep());
+                preStat.setString(4, testCaseStep.getDescription());
+
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+                    if (resultSet.first()) {
+                        throwExcep = false;
+                    } else {
+                        throwExcep = true;
+                    }
+                } catch (SQLException exception) {
+                    MyLogger.log(TestCaseStepDAO.class.getName(), Level.ERROR, exception.toString());
+                } finally {
+                    resultSet.close();
+                }
+            } catch (SQLException exception) {
+                MyLogger.log(TestCaseStepDAO.class.getName(), Level.ERROR, exception.toString());
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(TestCaseStepDAO.class.getName(), Level.ERROR, exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(TestCaseStepDAO.class.getName(), Level.WARN, e.toString());
+            }
+        }
+        if (throwExcep) {
+            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.CANNOT_UPDATE_TABLE));
+        }
+    }
+
+    @Override
+    public TestCaseStep findTestCaseStep(String test, String testcase, Integer step) {
+        TestCaseStep result = null;
+        final String query = "SELECT * FROM testcasestep WHERE test = ? AND testcase = ? AND step = ?";
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            try {
+                preStat.setString(1, test);
+                preStat.setString(2, testcase);
+                preStat.setInt(2, step);
+
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+                    if (resultSet.first()) {
+                        String description = resultSet.getString("Description");
+                        factoryTestCaseStep.create(test, testcase, step, description);
+                    }
+                } catch (SQLException exception) {
+                    MyLogger.log(TestCaseStepDAO.class.getName(), Level.ERROR, exception.toString());
+                } finally {
+                    resultSet.close();
+                }
+            } catch (SQLException exception) {
+                MyLogger.log(TestCaseStepDAO.class.getName(), Level.ERROR, exception.toString());
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(TestCaseStepDAO.class.getName(), Level.ERROR, exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(TestCaseStepDAO.class.getName(), Level.WARN, e.toString());
+            }
+        }
+        return result;
     }
 }

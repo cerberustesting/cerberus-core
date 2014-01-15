@@ -84,7 +84,8 @@ public enum MessageGeneralEnum {
     APPLICATION_NOT_FOUND(100, "FA", "Application does not exist."),
     NOT_IMPLEMEMTED(101, "FA", "Missing data."),
     NO_DATA_FOUND(102, "FA", "Missing data."),
-    SQLLIB_NOT_FOUND(103, "FA", "SQL Library was not found.")
+    SQLLIB_NOT_FOUND(103, "FA", "SQL Library was not found."),
+    CANNOT_UPDATE_TABLE(104, "", "Cannot update table."),
     
     
     ;

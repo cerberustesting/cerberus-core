@@ -21,15 +21,45 @@ package org.cerberus.service;
 
 import org.cerberus.entity.TestCaseStep;
 import java.util.List;
+import org.cerberus.exception.CerberusException;
 
 /**
  *
  * @author bcivel
  */
 public interface ITestCaseStepService {
-    
+
+    /**
+     * GetListOfSteps
+     * @param test
+     * @param testcase
+     * @return List of TestCaseStep
+     */
     List<TestCaseStep> getListOfSteps(String test, String testcase);
-    
+
     List<String> getLoginStepFromTestCase(String countryCode, String application);
-   
+
+    /**
+     * InsertTestCaseStep
+     * @param testCaseStep
+     * @throws CerberusException 
+     */
+    void insertTestCaseStep(TestCaseStep testCaseStep) throws CerberusException;
+
+    /**
+     * InsertListTestCaseStep
+     * @param testCaseStepList
+     * @return true if no exception reached
+     */
+    boolean insertListTestCaseStep(List<TestCaseStep> testCaseStepList);
+    
+    /**
+     * FindTestCaseStep
+     * @param test
+     * @param testcase
+     * @param step
+     * @return TestCaseStep object
+     */
+    TestCaseStep findTestCaseStep(String test, String testcase, Integer step);
+
 }

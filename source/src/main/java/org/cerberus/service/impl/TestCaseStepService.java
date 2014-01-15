@@ -23,6 +23,10 @@ import org.cerberus.dao.ITestCaseStepDAO;
 import org.cerberus.entity.TestCaseStep;
 import org.cerberus.service.ITestCaseStepService;
 import java.util.List;
+import java.util.logging.Logger;
+import org.apache.log4j.Level;
+import org.cerberus.exception.CerberusException;
+import org.cerberus.log.MyLogger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -44,6 +48,29 @@ public class TestCaseStepService implements ITestCaseStepService {
     @Override
     public List<String> getLoginStepFromTestCase(String countryCode, String application) {
         return testCaseStepDAO.getLoginStepFromTestCase(countryCode, application);
+    }
+
+    @Override
+    public void insertTestCaseStep(TestCaseStep testCaseStep) throws CerberusException {
+        testCaseStepDAO.insertTestCaseStep(testCaseStep);
+    }
+
+    @Override
+    public boolean insertListTestCaseStep(List<TestCaseStep> testCaseStepList) {
+        for (TestCaseStep tcs : testCaseStepList){
+            try {
+                insertTestCaseStep(tcs);
+            } catch (CerberusException ex) {
+                MyLogger.log(TestCaseStepService.class.getName(), Level.FATAL, ex.toString());
+                return false;
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public TestCaseStep findTestCaseStep(String test, String testcase, Integer step) {
+        return testCaseStepDAO.findTestCaseStep(test, testcase, step);
     }
     
 }

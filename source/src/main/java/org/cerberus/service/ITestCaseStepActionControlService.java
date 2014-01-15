@@ -21,6 +21,7 @@ package org.cerberus.service;
 
 import org.cerberus.entity.TestCaseStepActionControl;
 import java.util.List;
+import org.cerberus.exception.CerberusException;
 
 /**
  *
@@ -29,4 +30,11 @@ import java.util.List;
 public interface ITestCaseStepActionControlService {
     
     List<TestCaseStepActionControl> findControlByTestTestCaseStepSequence(String test, String testcase, int stepNumber, int sequence);
-}
+
+    void insertTestCaseStepActionControl(TestCaseStepActionControl testCaseStepActionControl) throws CerberusException ;
+    
+    boolean insertListTestCaseStepActionControl(List<TestCaseStepActionControl> testCaseStepActionControlList);
+
+    List<TestCaseStepActionControl> findControlByTestTestCaseStep(String test, String testcase, int step);
+
+    }

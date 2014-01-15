@@ -21,9 +21,11 @@ package org.cerberus.service.impl;
 
 import org.cerberus.dao.ITestCaseStepActionControlDAO;
 import org.cerberus.entity.TestCaseStepActionControl;
-import org.cerberus.entity.TestCaseStepActionControlExecution;
 import org.cerberus.service.ITestCaseStepActionControlService;
 import java.util.List;
+import org.apache.log4j.Level;
+import org.cerberus.exception.CerberusException;
+import org.cerberus.log.MyLogger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -41,8 +43,27 @@ public class TestCaseStepActionControlService implements ITestCaseStepActionCont
     public List<TestCaseStepActionControl> findControlByTestTestCaseStepSequence(String test, String testcase, int stepNumber, int sequence) {
         return testCaseStepActionControlDao.findControlByTestTestCaseStepSequence(test, testcase, stepNumber, sequence);
     }
-    
-    
-    
-    
+
+    @Override
+    public void insertTestCaseStepActionControl(TestCaseStepActionControl testCaseStepActionControl) throws CerberusException {
+        testCaseStepActionControlDao.insertTestCaseStepActionControl(testCaseStepActionControl);
+    }
+
+    @Override
+    public boolean insertListTestCaseStepActionControl(List<TestCaseStepActionControl> testCaseStepActionControlList) {
+        for (TestCaseStepActionControl tcs : testCaseStepActionControlList){
+            try {
+                insertTestCaseStepActionControl(tcs);
+            } catch (CerberusException ex) {
+                MyLogger.log(TestCaseStepActionControlService.class.getName(), Level.FATAL, ex.toString());
+                return false;
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public List<TestCaseStepActionControl> findControlByTestTestCaseStep(String test, String testcase, int step) {
+        return testCaseStepActionControlDao.findControlByTestTestCaseStep(test, testcase, step);
+    }
 }
