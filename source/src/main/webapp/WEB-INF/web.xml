@@ -529,7 +529,6 @@
             <url-pattern>/GetTestCaseList</url-pattern>
             <url-pattern>/GetTestCase</url-pattern>
             <url-pattern>/TestcaseList</url-pattern>
-            <url-pattern>/TestcaseListGrid</url-pattern>
             <url-pattern>/ExportListTestCase</url-pattern>
             <url-pattern>/GetDataForTestCaseSearch</url-pattern>
             <url-pattern>/SearchManualTestCaseInformation</url-pattern>
@@ -712,6 +711,7 @@
             <url-pattern>/RunTestCase</url-pattern>
             <url-pattern>/SaveStatistic</url-pattern>
             <url-pattern>/GetNumberOfExecutions</url-pattern>
+            <url-pattern>/TestcaseListGrid</url-pattern>
             <url-pattern>/ResultCI</url-pattern>
             <url-pattern>/GetConnectionPoolName</url-pattern>
             <url-pattern>/SaveManualExecution</url-pattern>
