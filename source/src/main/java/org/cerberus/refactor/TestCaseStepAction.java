@@ -33,11 +33,13 @@ import org.springframework.stereotype.Service;
 @Service
 public class TestCaseStepAction implements DatabaseCRUD {
 
-    private static final String COLUMNS = "`Test`, `TestCase`, `Step`, `Sequence`, `Action`, `Object`, `Property`";
+    private static final String COLUMNS = "`Test`, `TestCase`, `Step`, `Sequence`, `Action`, `Object`, `Property`, `Description`";
     private static final String TABLE = "testcasestepaction";
     private String action;
     private String object;
     private String property;
+    private String description;
+
     private Integer sequence;
     private Integer step;
     private String test;
@@ -55,6 +57,7 @@ public class TestCaseStepAction implements DatabaseCRUD {
         this.action = new String();
         this.object = new String();
         this.property = new String();
+        this.description = new String();
 
     }
 
@@ -88,6 +91,14 @@ public class TestCaseStepAction implements DatabaseCRUD {
         this.property = property;
     }
 
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+    
     public Integer getSequence() {
 
         return this.sequence;
@@ -139,6 +150,7 @@ public class TestCaseStepAction implements DatabaseCRUD {
             this.setAction(rs.getString("Action"));
             this.setObject(rs.getString("Object"));
             this.setProperty(rs.getString("Property"));
+            this.setDescription(rs.getString("Description"));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -149,7 +161,7 @@ public class TestCaseStepAction implements DatabaseCRUD {
 
         StringBuilder sql = new StringBuilder();
         sql.append("INSERT INTO " + TestCaseStepAction.TABLE + " ( " + TestCaseStepAction.COLUMNS + ") ");
-        sql.append(" VALUES ( ?,?,?,?,?,?,?) ");
+        sql.append(" VALUES ( ?,?,?,?,?,?,?,?) ");
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -162,6 +174,7 @@ public class TestCaseStepAction implements DatabaseCRUD {
                 preStat.setString(5, this.action);
                 preStat.setString(6, this.object);
                 preStat.setString(7, this.property);
+                preStat.setString(8, this.description);
 
                 preStat.executeUpdate();
             } catch (SQLException exception) {
@@ -190,7 +203,8 @@ public class TestCaseStepAction implements DatabaseCRUD {
 
         sql.append(" Action = ? ,");
         sql.append(" Object = ?,");
-        sql.append(" Property = ? ");
+        sql.append(" Property = ?, ");
+        sql.append(" Description = ? ");
 
         sql.append(" WHERE Test = ? AND TestCase = ? AND Step = ? AND Sequence = ? ");
 
@@ -201,10 +215,11 @@ public class TestCaseStepAction implements DatabaseCRUD {
                 preStat.setString(1, this.action);
                 preStat.setString(2, this.object);
                 preStat.setString(3, this.property);
-                preStat.setString(4, this.test);
-                preStat.setString(5, this.testcase);
-                preStat.setString(6, this.step.toString());
-                preStat.setString(7, this.sequence.toString());
+                preStat.setString(4, this.description);
+                preStat.setString(5, this.test);
+                preStat.setString(6, this.testcase);
+                preStat.setString(7, this.step.toString());
+                preStat.setString(8, this.sequence.toString());
 
                 preStat.executeUpdate();
             } catch (SQLException exception) {

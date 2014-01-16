@@ -2831,7 +2831,24 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `DocLabel`, `DocDesc`) VALUES ('usergroup', 'GroupName', '', 'Group Name', 'Authorities are managed by group. In order to be granted to a set of feature, you must belong to the corresponding group.<br>\nEvery user can of course belong to as many group as necessary in order to get access to as many feature as required.<br>\nIn order to get the full access to the system you must belong to every group.<br>\nSome groups are linked together on the test perimeter and integration perimeter.<br>\n<br>\n<b>Test perimeter :</b><br>\n<br>\n    <i>TestRO</i>: Has read only access to the information related to test cases and also has access to execution reporting options.<br>\n<br>\n    <i>Test</i>: Can modify non WORKING test cases but cannot delete test cases.<br>\n<br>\n    <i>TestAdmin</i>: Can modify or delete any test case (including Pre Testing test cases). Can also create or delete a test.<br>\n<br>\nThe minimum group you need to belong is <i>TestRO</i> that will give you access in read only to all test data (including its execution reporting page).<br>\nIf you want to be able to modify the testcases (except the WORKING ones), you need <i>Test</i> group on top of <i>TestRO</i> group.<br>\nIf you want the full access to all testcase (including beeing able to delete any testcase), you will need <i>TestAdmin</i> on top of <i>TestRO</i> and <i>Test</i> group.<br>\n<br>\n<b>Test Execution perimeter :</b><br>\n<br>\n    <i>RunTest</i>: Can run both Manual and Automated test cases from GUI.<br>\n<br>\n<b>Integration perimeter :</b><br>\n<br>\n    <i>IntegratorRO</i>: Has access to the integration status.<br>\n<br>\n    <i>Integrator</i>: Can add an application. Can change parameters of the environments.<br>\n<br>\n    <i>IntegratorNewChain</i>: Can register the end of the chain execution. Has read only access to the other informations on the same page.<br>\n<br>\n    <i>IntegratorDeploy</i>: Can disable or enable environments and register new build / revision.<br>\n<br>\nThe minimum group you need to belong is <i>IntegratorRO</i> that will give you access in read only to all environment data.<br>\nIf you want to be able to modify the environment data, you need <i>Integrator</i> group on top of <i>IntegratorRO</i> group.<br>\n<i>IntegratorNewChain</i> and <i>IntegratorDeploy</i> are used on top of <i>Integrator</i> Group to be able to create a new chain on an environment or perform a deploy operation.<br>\n<br>\n<b>Administration perimeter :</b><br>\n<br>\n    <i>Administrator</i>: Can create, modify or delete users. Has access to log Event and Database Maintenance. Can change Parameter values.<br>\n<br>\n');");
         SQLInstruction.add(SQLS.toString());
+
+// Description definition documentation.
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `DocLabel`, `DocDesc`) VALUES ('testcasestepaction', 'description', '', 'Description', 'Description of the action');");
+        SQLInstruction.add(SQLS.toString());
         
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `DocLabel`, `DocDesc`) VALUES ('testcasestepactioncontrol', 'ControleDescription', '', 'Description', 'Description of the action control');");
+        SQLInstruction.add(SQLS.toString());
+
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepactioncontrol` ADD COLUMN `ControlDescription` VARCHAR(255) NOT NULL DEFAULT ''  AFTER `ControlProperty` ;");
+        SQLInstruction.add(SQLS.toString());
+
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepaction` ADD COLUMN `Description` VARCHAR(255) NOT NULL DEFAULT ''  AFTER `Property` ;");
+        SQLInstruction.add(SQLS.toString());
+
         return SQLInstruction;
     }
 }

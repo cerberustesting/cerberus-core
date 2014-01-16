@@ -504,7 +504,8 @@ public class UpdateTestCaseDetail extends HttpServlet {
                         request);
                 String step_property[] = this.getStringTable("actions_property",
                         request);
-
+                String step_description[] = this.getStringTable("actions_description",
+                        request);
             /*
              * Get TestCase Step Controls Informations
              */
@@ -521,6 +522,8 @@ public class UpdateTestCaseDetail extends HttpServlet {
                         "controls_controlvalue", request);
                 String controls_controlproperty[] = this.getStringTable(
                         "controls_controlproperty", request);
+                String controls_controldescription[] = this.getStringTable(
+                        "controls_controldescription", request);
                 String controls_fatal[] = this.getStringTable("controls_fatal",
                         request);
 
@@ -543,12 +546,14 @@ public class UpdateTestCaseDetail extends HttpServlet {
                 testcase_actions_info.add(step_action);
                 testcase_actions_info.add(step_object);
                 testcase_actions_info.add(step_property);
+                testcase_actions_info.add(step_description);
 
             /*
              * Controls
              */
                 List<String[]> testcase_controls_info = new ArrayList<String[]>();
                 testcase_controls_info.add(controls_control);
+                testcase_controls_info.add(controls_controldescription);
                 testcase_controls_info.add(controls_controlproperty);
                 testcase_controls_info.add(controls_controlvalue);
                 testcase_controls_info.add(controls_sequence);
@@ -704,8 +709,9 @@ public class UpdateTestCaseDetail extends HttpServlet {
                             action.setSequence(Integer.parseInt(step_sequence[i]));
                             action.setAction(step_action[i]);
                             action.setObject(step_object[i]);
-
                             action.setProperty(step_property[i]);
+
+                            action.setDescription(step_description[i]);
 
                             if (rs_stepaction.next()) { /*
                          * Update
@@ -765,6 +771,7 @@ public class UpdateTestCaseDetail extends HttpServlet {
                         }
 
                         control.setControlProperty(controls_controlproperty[i]);
+                        control.setControlDescription(controls_controldescription[i]);
 
                         if (rs_stepactioncontrol.next()) {
 

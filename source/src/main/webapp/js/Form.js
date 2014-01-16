@@ -520,7 +520,7 @@ function addTestCaseProperties(tableau,  max_tcp_country,
 }
 
 function addTestCaseAction(table,id, max_tcsa_seq, max_tcsa_action, max_tcsa_obj,
-		max_tcsa_pro) {
+		max_tcsa_pro, max_tcsa_desc) {
 
 	TR = document.createElement('tr');
 
@@ -535,16 +535,24 @@ function addTestCaseAction(table,id, max_tcsa_seq, max_tcsa_action, max_tcsa_obj
         TD1.setAttribute('style', 'background-color:white; text-align: center');
 	TD1.appendChild(form1); /* Add form to column */
 
-	var value_test1 = parseInt(id) + 1;
 	var form = document.createElement('input');
 	form.setAttribute('type', 'hidden');
 	form.setAttribute('name', 'stepnumber_hidden');
-	form.setAttribute('value', value_test1);
+	form.setAttribute('value', id);
 
 	TD1.appendChild(form);
 	TR.appendChild(TD1);
 
 	/* Sequence */
+        
+        var value = getMaxValueForParentElementIdAndElementName(table,'actions_sequence');
+        
+        if(value && parseInt(value) > 0) {
+            value = parseInt(value) + 10;
+        } else {
+            value = 10;
+        }
+
 	var form2 = document.createElement('input');
 	form2.setAttribute('name', 'actions_sequence');
 	form2.setAttribute('size', '6%');
@@ -554,7 +562,7 @@ function addTestCaseAction(table,id, max_tcsa_seq, max_tcsa_action, max_tcsa_obj
 	form2.setAttribute('onfocus', 'keyOnFocus(this)');
         form2.setAttribute('class', 'wob');
 	form2.setAttribute('onblur', 'keyOnBlur(this)');
-	form2.setAttribute('value', 'Mandatory, KEY');
+	form2.setAttribute('value', value);
 	form2.setAttribute('maxlength', max_tcsa_seq);
 	var TD2 = document.createElement('td');
         TD2.setAttribute('style', 'background-color:white; text-align: center');
@@ -580,7 +588,7 @@ function addTestCaseAction(table,id, max_tcsa_seq, max_tcsa_action, max_tcsa_obj
 	form4.setAttribute('name', 'actions_object');
 	form4.setAttribute('size', '100%');
         form4.setAttribute('class', 'wob');
-	form4.setAttribute('style', 'width: 680px');
+	form4.setAttribute('style', 'width: 380px');
 	form4.setAttribute('maxlength', max_tcsa_obj);
 	var TD4 = document.createElement('td');
         TD4.setAttribute('style', 'background-color:white; text-align: center');
@@ -599,35 +607,31 @@ function addTestCaseAction(table,id, max_tcsa_seq, max_tcsa_action, max_tcsa_obj
 	TD5.appendChild(form5);
 	TR.appendChild(TD5);
 
+	/* Description */
+	var form6 = document.createElement('input');
+	form6.setAttribute('name', 'actions_description');
+	form6.setAttribute('size', '100%');
+        form6.setAttribute('class', 'wob');
+	form6.setAttribute('style', 'width: 210px');
+	form6.setAttribute('maxlength', max_tcsa_desc);
+	var TD6 = document.createElement('td');
+        TD6.setAttribute('style', 'background-color:white;');
+	TD6.appendChild(form6);
+	TR.appendChild(TD6);
+
 	document.getElementById(table).appendChild(TR);
 }
 
 var numberOfCall = 0;
-function addStep(div, id, max_tcs_desc, max_tcsa_sequence, max_tcsa_action,
-		max_tcsa_object, max_tcsa_property) {
+function addStep(div, max_tcs_desc) {
 
-	
-
-	var table = document.createElement('div');
+        var table = document.createElement('div');
 	table.setAttribute('id', 'table');
         
         TR = document.createElement('tr');
         table.appendChild(TR);
-//	table.appendChild(document.createTextNode("Step  "));
 
-        
-//        var input0 = document.createElement('input'); /* Create form */
-//	input0.setAttribute('type', 'checkbox');
-//        input0.setAttribute('style', 'width:30px');
-//        input0.setAttribute('class', 'wob');
-//	input0.setAttribute('name', 'testcasestep_delete');
-//	var TD0 = document.createElement('td'); /* Create column */
-//        TD0.setAttribute('style', 'background-color:#e1e7f3; text-align: center; valign:center');
-//        TD0.setAttribute('class', 'wob');
-//	TD0.appendChild(input0); /* Add form to column */
-//        TR.appendChild(TD0);
-
-TR.appendChild(document.createTextNode("  Step ID  :"));
+        TR.appendChild(document.createTextNode("  Step ID  :"));
         var input1 = document.createElement('input');
 	input1.setAttribute('style',
 			'font-weight: bold;font-style: italic; width:20px');
@@ -637,14 +641,22 @@ TR.appendChild(document.createTextNode("  Step ID  :"));
 	input1.setAttribute('maxlength', 10);
 	input1.setAttribute('onfocus', 'keyOnFocus(this)');
 	input1.setAttribute('onblur', 'keyOnBlur(this)');
-	input1.setAttribute('value', parseInt(id)+1);
+        
+        var value = getMaxValueForParentElementIdAndElementName(null,'testcasestep_hidden');
+        if(value && parseInt(value) > 0) {
+            value = parseInt(value) + 10;
+        } else {
+            value = 10;
+        }
+
+	input1.setAttribute('value', value);
         var TD1 = document.createElement('td'); /* Create column */
         TD1.setAttribute('style', 'background-color:#e1e7f3; text-align: center; valign:center');
         TD1.setAttribute('class', 'wob');
 	TD1.appendChild(input1); /* Add form to column */
 	TR.appendChild(TD1);
 
-TR.appendChild(document.createTextNode("  Step Description  :"));
+        TR.appendChild(document.createTextNode("  Step Description  :"));
 	var input2 = document.createElement('input');
 	input2.setAttribute('size', '100%');
         input2.setAttribute('class', 'wob');
@@ -657,49 +669,10 @@ TR.appendChild(document.createTextNode("  Step Description  :"));
 	TD2.appendChild(input2); /* Add form to column */
 	TR.appendChild(TD2);
 
-//	var TD6 = document.createElement('td');
-//	// <input type="checkbox" id="batch-<%=rs_step.getString("Step")%>"
-//	// name="batch-<%=rs_step.getString("Step")%>" <%= found ? " checked " : ""
-//	// %> value="<%= rs_batch.getString(1)%>"> <%= rs_batch.getString(1)%>
-//	TD6.setAttribute('style',
-//			'background-color: rgb(204, 204, 204); font-weight: bold;');
-//        TD6.setAttribute('class', 'wob');
-
-//	TR.appendChild(document.createTextNode("  Batch  :"));
-
         var TD7 = document.createElement('td');
         TD7.setAttribute('class', 'wob');
         TR.appendChild(TD7);
         
-	var number = document.getElementsByName("testcasestep_delete").length
-			+ document.getElementsByName("step_number_add").length + 1;
-//	var form11 = document.createElement('input'); /* Create form */
-//	form11.setAttribute('type', 'checkbox');
-//	form11.setAttribute('id', 'batch-' + number);
-//	form11.setAttribute('name', 'batch-' + number);
-//	form11.setAttribute('value', 'D');
-//	// form11.setAttribute('onclick', 'enableField(\'submitButtonChanges\');');
-//	TD7.appendChild(form11); /* Add form to column */
-//	TD7.appendChild(document.createTextNode(" D "));
-//
-//	var form12 = document.createElement('input'); /* Create form */
-//	form12.setAttribute('type', 'checkbox');
-//	form12.setAttribute('id', 'batch-' + number);
-//	form12.setAttribute('name', 'batch-' + number);
-//	form12.setAttribute('value', 'F');
-//	TD7.appendChild(form12); /* Add form to column */
-//	TD7.appendChild(document.createTextNode(" F "));
-//
-//	var form13 = document.createElement('input'); /* Create form */
-//	form13.setAttribute('type', 'checkbox');
-//	form13.setAttribute('id', 'batch-' + number);
-//	form13.setAttribute('name', 'batch-' + number);
-//	form13.setAttribute('value', 'M');
-//	TD7.appendChild(form13); /* Add form to column */
-//	TD7.appendChild(document.createTextNode(" M "));
-
-//	TR.appendChild(TD6);
-
         TR2 = document.createElement('tr');
         
         var TD13 = document.createElement('td');
@@ -707,82 +680,6 @@ TR.appendChild(document.createTextNode("  Step Description  :"));
         TD13.setAttribute('class', 'wob');
         TR2.appendChild(TD13);
         
-//        var TD14 = document.createElement('td');
-//        TD14.setAttribute('style', 'width:30px');
-//        TD14.setAttribute('id', 'leftlined');
-//        TR2.appendChild(TD14);
-        
-//        var TD12 = document.createElement('td');
-//        TD12.appendChild(document.createTextNode("Actions  :"));
-//        TD12.setAttribute('class', 'wob');
-//        TR2.appendChild(TD12);
-//        table.appendChild(TR2);
-//        
-//        TR3 = document.createElement('tr');
-//        
-//	/* Table 2 */
-//	var value_test = parseInt(id) + parseInt(numberOfCall);
-//
-//	var table2 = document.createElement('table');
-//	table2.setAttribute('id', '' + value_test + '');
-//	table2.setAttribute('style', 'text-align: left; border-collapse:');
-//
-//	TR4 = document.createElement('tr');
-//        
-//        var TD41 = document.createElement('td');
-//        TD41.setAttribute('style', 'width:10px');
-//        TD41.setAttribute('class', 'wob');
-//        TR4.appendChild(TD41);
-//
-//	var TD11 = document.createElement('td');
-//	TD11.setAttribute('width', '30px');
-//	TD11.setAttribute('style',
-//			'background-color: #cad3f1; font-weight: bold;');
-//	TD11.appendChild(document.createTextNode("Delete"));
-//	TR4.appendChild(TD11);
-//
-//	var TD22 = document.createElement('td');
-//	TD22.setAttribute('width', '60px');
-//	TD22.setAttribute('style',
-//			'background-color: #cad3f1; font-weight: bold;');
-//	TD22.appendChild(document.createTextNode("Sequence"));
-//	TR4.appendChild(TD22);
-//
-//	var TD33 = document.createElement('td');
-//	TD33.setAttribute('width', '150px');
-//	TD33.setAttribute('style',
-//			'background-color: #cad3f1; font-weight: bold;');
-//	TD33.appendChild(document.createTextNode("Action"));
-//	TR4.appendChild(TD33);
-//
-//	var TD44 = document.createElement('td');
-//	TD44.setAttribute('width', '680px');
-//	TD44.setAttribute('style',
-//			'background-color: #cad3f1; font-weight: bold;');
-//	TD44.appendChild(document.createTextNode("Object"));
-//	TR4.appendChild(TD44);
-//
-//	var TD55 = document.createElement('td');
-//	TD55.setAttribute('width', '210px');
-//	TD55.setAttribute('style',
-//			'background-color: #cad3f1; font-weight: bold;');
-//	TD55.appendChild(document.createTextNode("Property"));
-//	TR4.appendChild(TD55);
-//
-//	table2.appendChild(TR4);
-//	table.appendChild(table2);
-//	/* End Table 2 */
-//
-//	table.appendChild(document.createElement('br'));
-
-//	var input3 = document.createElement('input');
-//	input3.setAttribute('type', 'button');
-//	input3.setAttribute('value', 'Add Action');
-//	input3.setAttribute('onclick', 'addTestCaseAction(\'' + value_test + '\', '
-//			+ max_tcsa_sequence + ', ' + max_tcsa_action + ', '
-//			+ max_tcsa_object + ', ' + max_tcsa_property + ')');
-//	table.appendChild(input3);
-
         var input4 = document.createElement('input');
 	input4.setAttribute('type', 'submit');
 	input4.setAttribute('value', 'Save Changes');
@@ -798,9 +695,9 @@ TR.appendChild(document.createTextNode("  Step Description  :"));
 	numberOfCall++;
 }
 
-function addTestCaseControl(table, max_tcc_step, max_tcc_sequence,
+function addTestCaseControl(table, step_id, max_tcc_step, max_tcc_sequence,
 		max_tcc_control, max_tcc_type, max_tcc_value, max_tcc_property,
-		tab_type) {
+		max_tcc_description, tab_type) {
 	TR = document.createElement('tr');
 
 	/* Delete box */
@@ -824,13 +721,14 @@ function addTestCaseControl(table, max_tcc_step, max_tcc_sequence,
 	form2.setAttribute('onfocus', 'keyOnFocus(this)');
 	form2.setAttribute('onblur', 'keyOnBlur(this)');
         form2.setAttribute('class', 'wob');
-	form2.setAttribute('value', 'Mandatory, KEY');
+	form2.setAttribute('value', step_id);
 	var TD2 = document.createElement('td');
         TD2.setAttribute('style', 'background-color:white');
 	TD2.appendChild(form2);
 	TR.appendChild(TD2);
 
-	/* Sequence */
+        /* Sequence */
+        var value_actions = getMaxValueForParentElementIdAndElementName('Action'+step_id,'actions_sequence');
 	var form3 = document.createElement('input');
 	form3.setAttribute('name', 'controls_sequence');
 	form3
@@ -840,13 +738,21 @@ function addTestCaseControl(table, max_tcc_step, max_tcc_sequence,
 	form3.setAttribute('onfocus', 'keyOnFocus(this)');
 	form3.setAttribute('onblur', 'keyOnBlur(this)');
         form3.setAttribute('class', 'wob');
-	form3.setAttribute('value', 'Mandatory, KEY');
+	form3.setAttribute('value', value_actions);
 	var TD3 = document.createElement('td');
         TD3.setAttribute('style', 'background-color:white');
 	TD3.appendChild(form3);
 	TR.appendChild(TD3);
 
 	/* Control */
+        var value_control = getMaxValueForParentElementIdAndElementName('control_table'+step_id,'controls_control');
+        if(value_control && parseInt(value_control) > 0) {
+            value_control = parseInt(value_control) + 10;
+        } else {
+            value_control = 10;
+        }
+
+
 	var form4 = document.createElement('input');
 	form4.setAttribute('name', 'controls_control');
 	form4
@@ -856,7 +762,7 @@ function addTestCaseControl(table, max_tcc_step, max_tcc_sequence,
 	form4.setAttribute('onfocus', 'keyOnFocus(this)');
         form4.setAttribute('class', 'wob');
 	form4.setAttribute('onblur', 'keyOnBlur(this)');
-	form4.setAttribute('value', 'Mandatory, KEY');
+	form4.setAttribute('value', value_control);
 	var TD4 = document.createElement('td');
         TD4.setAttribute('style', 'background-color:white');
 	TD4.appendChild(form4);
@@ -879,7 +785,7 @@ function addTestCaseControl(table, max_tcc_step, max_tcc_sequence,
 	/* Property */
 	var form7 = document.createElement('input');
 	form7.setAttribute('name', 'controls_controlproperty');
-	form7.setAttribute('style', 'width: 350px');
+	form7.setAttribute('style', 'width: 250px');
         form7.setAttribute('class', 'wob');
 	form7.setAttribute('maxlength', max_tcc_property);
 	var TD7 = document.createElement('td');
@@ -891,12 +797,23 @@ function addTestCaseControl(table, max_tcc_step, max_tcc_sequence,
 	var form6 = document.createElement('input');
 	form6.setAttribute('name', 'controls_controlvalue');
         form6.setAttribute('class', 'wob');
-	form6.setAttribute('style', 'width: 330px');
+	form6.setAttribute('style', 'width: 130px');
 	form6.setAttribute('maxlength', max_tcc_value);
 	var TD6 = document.createElement('td');
         TD6.setAttribute('style', 'background-color:white');
 	TD6.appendChild(form6);
 	TR.appendChild(TD6);
+
+	/* Description */
+	var form7 = document.createElement('input');
+	form7.setAttribute('name', 'controls_controldescription');
+        form7.setAttribute('class', 'wob');
+	form7.setAttribute('style', 'width: 230px');
+	form7.setAttribute('maxlength', max_tcc_description);
+	var TD7 = document.createElement('td');
+        TD7.setAttribute('style', 'background-color:white');
+	TD7.appendChild(form7);
+	TR.appendChild(TD7);
 
 	/* Fatal */
 	var form14 = document.createElement('select');
@@ -1293,4 +1210,24 @@ function addBuildContent(tableau) {
 
 function hidebutton(buttonID) {
 	document.getElementById(buttonID).style.display = "none";
+}
+
+function getMaxValueForParentElementIdAndElementName(parentElementId,elementName) {
+    var elements = null;
+    var value = 0;
+
+    if(parentElementId) {
+        elements = $('#' + parentElementId + ' [name="' + elementName + '"]');
+    } else {
+        elements = document.getElementsByName(elementName);
+    }
+    
+    if(elements && elements.length > 0){
+        for(i=0; i<=elements.length; i++) {
+            if(elements[i] && elements[i].value && value < parseInt(elements[i].value)) {
+                value = parseInt(elements[i].value);
+            }
+        }
+    }
+    return value;
 }
