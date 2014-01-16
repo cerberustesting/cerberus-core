@@ -733,24 +733,22 @@ public class UpdateTestCaseDetail extends HttpServlet {
             /*
              * Get Number of actual testcase controls
              */
-                int numberOfTestCasesControls = 0;
-                ResultSet rs_numberOfTestCasesControls = stmt4.executeQuery("SELECT COUNT(*)"
-                        + " FROM testcasestepactioncontrol "
-                        + " WHERE Test = '" + test_testcase_format[0] + "'"
-                        + " AND TestCase = '" + test_testcase_format[1]
-                        + "'");
-                try {
-                    if (rs_numberOfTestCasesControls.next()) {
-                        numberOfTestCasesControls = rs_numberOfTestCasesControls.getInt(1);
-                    }
-                } finally {
-                    rs_numberOfTestCasesControls.close();
-                }
-
                 for (int i = 0; i < controls_control.length; i++) {
-                    if (this.formIsFill(controls_step[i].toString())
-                            && this.formIsFill(controls_sequence[i].toString())
-                            && this.formIsFill(controls_control[i].toString())) {
+
+                /*
+                 * Select to know if need to update or insert
+                 */
+                    if (this.formIsFill(controls_sequence[i])
+                            && (controls_sequence[i].length() > 0)) {
+                        String sql = ("SELECT * " + " FROM testcasestepactioncontrol"
+                                + " WHERE Test = '" + test_testcase_format[0] + "'"
+                                + " AND TestCase = '" + test_testcase_format[1]
+                                + "' " + " AND Step = " + controls_step[i] + " "
+                                + " AND Sequence = " + controls_sequence[i] + " "
+                                + " AND control = " + controls_control[i]);
+                        // System.out.println ( "Step Key : " + sql ) ;
+                        ResultSet rs_stepactioncontrol = stmt4.executeQuery(sql);
+                        try {
                         TestCaseStepActionControl control = appContext.getBean(TestCaseStepActionControl.class);
                         control.setTest(test_testcase_format[0]);
                         control.setTestcase(test_testcase_format[1]);
@@ -767,7 +765,7 @@ public class UpdateTestCaseDetail extends HttpServlet {
 
                         control.setControlProperty(controls_controlproperty[i]);
 
-                        if (i < numberOfTestCasesControls) {
+                        if (rs_stepactioncontrol.next()) {
 
                             control.update();
 
@@ -780,8 +778,13 @@ public class UpdateTestCaseDetail extends HttpServlet {
 
 //                        }
                         }
+                            
+                        } finally {
+                            rs_stepactioncontrol.close();
+                        }
                     }
                 }
+                
 
             /*
              * DELETE

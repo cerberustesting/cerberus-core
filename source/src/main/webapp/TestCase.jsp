@@ -156,6 +156,8 @@
                     Statement stmt23 = conn.createStatement();
                     Statement stmt70 = conn.createStatement();
                     Statement stmt71 = conn.createStatement();
+                    Statement stmt66 = null;
+                    Statement stmt51 = null;
                     Statement stmtLastExe = conn.createStatement();
                     String proplist = "";
 
@@ -1179,10 +1181,29 @@
                                             <div id="table1">
 
                                                 <%
+                                        
+                                        /* 
+                                        
+                                        */
+                                                if (stmt51 == null){
+                                                stmt51 = conn.createStatement();}
+                                                
+                                                ResultSet rs_controls1 = stmt51.executeQuery("SELECT value from invariant where id = 4");
+
+                                                String[] sarray = new String[100];
+                                                int m = 0;
+                                                if (rs_controls1.next()) {
+                                                    sarray[m] = rs_controls1.getString("value");
+                                                    m++;
+                                                }
+                                                
                                                     /*
                                                      * Step / Actions request
                                                      */
-                                                    ResultSet rs_step = stmt5.executeQuery("SELECT DISTINCT Test, Testcase, Step, Description "
+                                        
+                                        
+                                                    ResultSet rs_stepaction = null;
+                                                    ResultSet rs_step = stmt5.executeQuery("SELECT Test, Testcase, Step, Description "
                                                             + " FROM testcasestep "
                                                             + " WHERE test = '"
                                                             + rs_testcase_general_info.getString("t.Test")
@@ -1199,78 +1220,47 @@
                                                     int testcase_stepaction_maxlength_property = 45;
                                                     Integer i1 = 0;
                                                     boolean isStepExist = false;
-                                                    if(rs_step.isBeforeFirst()){
+                                                    if(rs_step.first()){
                                                         isStepExist = true;
+                                                        rs_step.beforeFirst();
                                                     }
-                                                    while (rs_step.next()) { /*
+                                                    
+                                                    while (rs_step.next())  { 
+                                                        rs_stepaction = null;
+                                                        /*
                                                          * Loop on steps
                                                          */
                                                         i1 = i1 + 1;
-
-                                                        testcase_step_maxlength_desc = rs_step.getMetaData().getColumnDisplaySize(4);
-                                                %>
+     %>
                                                 <table style="text-align: left; border-collapse: collapse">
-
                                                     <tr>
                                                         <td id="wob" style="width: 30px; text-align: center; height:20px">
-
                                                             <%  if (canEdit) {%>
                                                             <input type="checkbox" name="testcasestep_delete" style="font-weight: bold; width:20px"
                                                                    value="<%=rs_step.getString("step")%>">
                                                             <% }%>
-                                                        </td><td id="wob">
+                                                        </td>
+                                                        <td id="wob">
                                                             <%--Step--%>
-                                                            &nbsp;&nbsp;<%=rs_step.getString("step")%>&nbsp;&nbsp; <input
+                                                            &nbsp;&nbsp;Step <%=rs_step.getString("step")%>&nbsp;&nbsp; <input
                                                                 type="hidden" name="testcasestep_hidden" style="font-weight: bold; width:20px"
                                                                 value="<%=rs_step.getString("step")%>"></td><td id="wob">
                                                             <input
                                                                 size="100%" style="font-weight: bold; width: 500px" name="step_description"
-                                                                value="<%=rs_step.getString("description")%>"
-                                                                maxlength="<%=rs_step.getMetaData().getColumnDisplaySize(4)%>">
+                                                                value="<%=rs_step.getString("description")%>">
                                                         </td>
-                                                        <%if (0 > 1) {%>					
-                                                        <td id="wob"> Batch : 
-                                                            <%
-                                                                Statement stmt15 = conn.createStatement();
-                                                                Statement stmt16 = conn.createStatement();
-                                                                ResultSet rs_batch2;
-                                                                ResultSet rs_batch = stmt15.executeQuery("Select Batch from batchinvariant");
-                                                            %>
-                                                            <%     while (rs_batch.next()) {
-
-                                                                    Boolean found = false;
-                                                                    rs_batch2 = stmt16.executeQuery("Select Batch from testcasestepbatch where test = '" + rs_step.getString("Test") + "' AND testcase = '" + rs_step.getString("TestCase") + "' AND Step = '" + rs_step.getString("Step") + "' ");%>
-                                                            <% while (rs_batch2.next()) {
-                                                                    if (rs_batch.getString(1).compareTo(rs_batch2.getString(1)) == 0) {
-                                                                        found = true;
-                                                                    }
-
-                                                                }
-
-                                                            %>                            		
-                                                            <input type="checkbox" id="batch-<%=rs_step.getString("Step")%>" name="batch-<%=rs_step.getString("Step")%>" <%= found ? " checked " : ""%> value="<%= rs_batch.getString(1)%>" onclick="enableField('submitButtonAction');"> <%= rs_batch.getString(1)%>
-
-
-                                                            <%                                }
-
-                                                            %>
-
-                                                        </td>
-                                                        <%}%>
                                                     </tr>
-
-
-                                                </table>
-
-                                                <table><tr><td id="wob" style="width:10px"></td><td id="leftlined"></td>
-                                                        <td id="wob">
+                                                            </table>
+                                                        <table><tr><td id="wob" style="width:10px"></td><td id="leftlined"></td>
+                                                        <td id="wob"><table><tr><td class="wob">
                                                             <h5>Actions</h5>
 
                                                             <%
-                                                                Statement stmt66 = conn.createStatement();
+                                                                if (stmt == null){
+                                                                    stmt6 = conn.createStatement();
+                                                                }
 
-                                                                int rs_stepaction_maxlength_cpt = 4;
-                                                                ResultSet rs_stepaction = stmt6.executeQuery("SELECT DISTINCT Test, TestCase, Step, Sequence, Action, Object, Property "
+                                                                rs_stepaction = stmt6.executeQuery("SELECT Test, TestCase, Step, Sequence, Action, Object, Property "
                                                                         + " FROM testcasestepaction"
                                                                         + " WHERE Test = '"
                                                                         + rs_step.getString("Test")
@@ -1281,7 +1271,7 @@
                                                                         + " AND Step = "
                                                                         + rs_step.getString("Step") + " ");
                                                             %>
-                                                            <table id="<%=step_loop_number%>" style="text-align: left; border-collapse: collapse">
+                                                            <table id="Action<%=step_loop_number%>" style="text-align: left; border-collapse: collapse">
                                                                 <tr id="header">
                                                                     <td style="width: 30px"><%out.print(dbDocS(conn, "testcasecountryproperties", "delete", "Delete"));%></td>
                                                                     <td style="width: 60px"><%out.print(dbDocS(conn, "testcasestepaction", "sequence", "Sequence"));%></td>
@@ -1295,11 +1285,6 @@
                                                                     while (rs_stepaction.next()) { /*
                                                                          * Loop on actions
                                                                          */
-
-                                                                        testcase_stepaction_maxlength_sequence = rs_stepaction.getMetaData().getColumnDisplaySize(4);
-                                                                        testcase_stepaction_maxlength_action = rs_stepaction.getMetaData().getColumnDisplaySize(5);
-                                                                        testcase_stepaction_maxlength_object = rs_stepaction.getMetaData().getColumnDisplaySize(6);
-                                                                        testcase_stepaction_maxlength_property = rs_stepaction.getMetaData().getColumnDisplaySize(7);
 
                                                                         a++;
                                                                         int b;
@@ -1324,9 +1309,7 @@
                                                                     </td>
                                                                     <td style="background-color: <%=actionColor%>"><input class="wob" style="width: 60px; font-weight: bold; background-color: <%=actionColor%>; height:20px"
                                                                                                                           value="<%=rs_stepaction.getString("Sequence")%>"
-                                                                                                                          name="actions_sequence" readonly="readonly"
-                                                                                                                          maxlength="<%=rs_stepaction.getMetaData().getColumnDisplaySize(
-                                                                                                                                  rs_stepaction_maxlength_cpt++)%>">
+                                                                                                                          name="actions_sequence" readonly="readonly">
                                                                     </td>
                                                                     <td  style="background-color: <%=actionColor%>"><%=ComboInvariant(conn, "actions_action", "width: 150px; background-color:" + actionColor, "actions_action", "wob", "12", rs_stepaction.getString("Action"), "trackChanges(0, this.selectedIndex, 'submitButtonAction')", null)%></td>
                                                                     <td  style="background-color: <%=actionColor%>"><input class="wob" style="width: 680px; background-color: <%=actionColor%>"
@@ -1337,68 +1320,48 @@
                                                                     <td style="background-color: <%=actionColor%>"><input class="wob" style="width: 210px; background-color: <%=actionColor%>"
                                                                                                                           value="<%=rs_stepaction.getString("Property")%>"
                                                                                                                           name="actions_property"
-                                                                                                                          onchange="trackChanges(this.value, '<%=rs_stepaction.getString("Property")%>', 'submitButtonAction')"
-                                                                                                                          maxlength="<%=rs_stepaction.getMetaData().getColumnDisplaySize(
-                                                                                                                                  rs_stepaction_maxlength_cpt++)%>">
+                                                                                                                          onchange="trackChanges(this.value, '<%=rs_stepaction.getString("Property")%>', 'submitButtonAction')">
                                                                     </td>
                                                                 </tr>
                                                                 <%
-                                                                        rs_stepaction_maxlength_cpt = 4; // Reset maxlength for actions
+                                                                        
 
                                                                     } /*
                                                                      * End actions loop
                                                                      */
-                                                                    rs_stepaction.close();
-                                                                    stmt66.close();
+                                                                    
+                                                                    
                                                                 %>
                                                             </table>
                                                             <%  if (canEdit) {%>
                                                             <table><tr><td id="wob"><input type="button" value="Add Action"
-                                                                                           onclick="addTestCaseAction('<%=step_loop_number%>', <%=testcase_stepaction_maxlength_sequence%>, <%=testcase_stepaction_maxlength_action%>, <%=testcase_stepaction_maxlength_object%>, <%=testcase_stepaction_maxlength_property%>) ; enableField('submitButtonAction');">
+                                                                                           onclick="addTestCaseAction('Action<%=step_loop_number%>','<%=step_loop_number%>', <%=testcase_stepaction_maxlength_sequence%>, <%=testcase_stepaction_maxlength_action%>, <%=testcase_stepaction_maxlength_object%>, <%=testcase_stepaction_maxlength_property%>) ; enableField('submitButtonAction');">
                                                                     <td id="wob"><input type="button" value="import HTML Scenario" onclick="importer('ImportHTML.jsp?Test=<%=test%>&Testcase=<%=testcase%>&Step=<%=rs_step.getString("step")%>')"></td>
                                                                 </td><td id="wob"><input value="Save Changes" id="submitButtonAction" name="submitChanges"
                                                                                          type="submit" >
-                                                                <%=ComboInvariant(conn, "actions_action_", "width: 150px;visibility:hidden", "actions_action_", "actions_action_", "12", "", "", null)%></td></tr></table></td></tr></table> <br>
+                                                                <%=ComboInvariant(conn, "actions_action_", "width: 150px;visibility:hidden", "actions_action_", "actions_action_", "12", "", "", null)%></td></tr></table></td></tr>
                                                                 <% }%>
-                                                                <%
-                                                                        step_loop_number++;
-                                                                    } /*
-                                                                     * End Step loop
-                                                                     */
-                                                                    rs_step.close();
-                                                                %>
-                                    </div>
-
-                                    <%  if (canEdit) {%>
-                                    <div id="hide_div"></div>
-                                    <table><tr><td id="wob"><input type="button" value="Add Step" id="AddStepButton" style="display:inline"
-                                                                   onclick="addStep('hide_div', '<%=step_loop_number%>', <%=testcase_step_maxlength_desc%>, <%=testcase_stepaction_maxlength_sequence%>, <%=testcase_stepaction_maxlength_action%>, <%=testcase_stepaction_maxlength_object%>, <%=testcase_stepaction_maxlength_property%>) ; enableField('submitButtonAction'); hidebutton('AddStepButton')">
-
-                                                <% }%>
-                                            </td></tr> </table>  </td></tr></table>          
-                    </td></tr>
-
+                                                                
+                                                                 
+                                                                
                 <%
                                     if (isStepExist){
-                    ResultSet rs_controls = stmt5.executeQuery("SELECT DISTINCT Test, Testcase, Step, Sequence, Control, Type, ControlValue, ControlProperty, Fatal "
+                    ResultSet rs_controls = null;
+                    Statement stmt56 = conn.createStatement();
+                            rs_controls = stmt56.executeQuery("SELECT Test, Testcase, Step, Sequence, Control, Type, ControlValue, ControlProperty, Fatal "
                             + " FROM testcasestepactioncontrol "
                             + " WHERE test = '"
-                            + rs_testcase_general_info.getString("t.Test")
+                            + rs_step.getString("Test")
                             + "' "
                             + " AND testcase = '"
-                            + rs_testcase_general_info.getString("tc.testcase") + "'");
+                            + rs_step.getString("testcase") + "' And Step = '"
+                            + rs_step.getString("Step") + "' ");
 
-                    int testcase_control_maxlength_step = 10; // Default max length values for javascript adding if any controls define for the testcase
-                    int testcase_control_maxlength_sequence = 10;
-                    int testcase_control_maxlength_control = 10;
-                    int testcase_control_maxlength_type = 200;
-                    int testcase_control_maxlength_value = 200;
-                    int testcase_control_maxlength_property = 200;
                 %>
                 <tr><td class="wob"><div id="table">
-                            <br><br><h4>Controls</h4>
-                            <table><tr><td id="wob" style="width:10px"></td><td id="leftlined"  style="width:10px"></td><td id="underlined">
-                                        <table id="control_table" style="text-align: left; border-collapse: collapse">
+                            <h5>         Controls</h5>
+                            <table><tr><td id="underlined">
+                                        <table id="control_table<%=step_loop_number%>" style="text-align: left; border-collapse: collapse">
                                             <tbody>
                                                 <tr id="header">
                                                     <td style="width: 30px"><%out.print(dbDocS(conn, "testcasecountryproperties", "delete", "Delete"));%></td>
@@ -1414,7 +1377,6 @@
                                                 <%
                                                     int d = 1;
                                                     String controlColor = "white";
-                                                    int cpt_control_maxlength = 3;
                                                     while (rs_controls.next()) {
                                                         d++;
                                                         int e;
@@ -1425,18 +1387,7 @@
                                                             controlColor = "White";
                                                         }
 
-                                                        testcase_control_maxlength_step = rs_controls.getMetaData().getColumnDisplaySize(
-                                                                cpt_control_maxlength++);
-                                                        testcase_control_maxlength_sequence = rs_controls.getMetaData().getColumnDisplaySize(
-                                                                cpt_control_maxlength++);
-                                                        testcase_control_maxlength_control = rs_controls.getMetaData().getColumnDisplaySize(
-                                                                cpt_control_maxlength++);
-                                                        testcase_control_maxlength_type = rs_controls.getMetaData().getColumnDisplaySize(
-                                                                cpt_control_maxlength++);
-                                                        testcase_control_maxlength_value = rs_controls.getMetaData().getColumnDisplaySize(
-                                                                cpt_control_maxlength++);
-                                                        testcase_control_maxlength_property = rs_controls.getMetaData().getColumnDisplaySize(
-                                                                cpt_control_maxlength++);
+                                                        
                                                 %>
                                                 <tr>
                                                     <td style="text-align: center; background-color: <%=controlColor%>">
@@ -1450,44 +1401,30 @@
                                                     </td>
                                                     <td style="background-color: <%=controlColor%>"><input class="wob" style="width: 30px; font-weight: bold; height:20px ;background-color: <%=controlColor%>"
                                                                                                            value="<%=rs_controls.getString("Step")%>"
-                                                                                                           name="controls_step" readonly="readonly"
-                                                                                                           maxlength="<%=testcase_control_maxlength_step%>"></td>
+                                                                                                           name="controls_step" readonly="readonly"></td>
                                                     <td style="background-color: <%=controlColor%>"><input class="wob" style="width: 60px; font-weight: bold;background-color: <%=controlColor%>"
                                                                                                            value="<%=rs_controls.getString("Sequence")%>"
-                                                                                                           name="controls_sequence" readonly="readonly"
-                                                                                                           maxlength="<%=testcase_control_maxlength_sequence%>"></td>
+                                                                                                           name="controls_sequence" readonly="readonly"></td>
                                                     <td style="background-color: <%=controlColor%>"><input class="wob" style="width: 60px; font-weight: bold;background-color: <%=controlColor%>"
                                                                                                            value="<%=rs_controls.getString("Control")%>"
-                                                                                                           name="controls_control" readonly="readonly"
-                                                                                                           maxlength="<%=testcase_control_maxlength_control%>"></td>
+                                                                                                           name="controls_control" readonly="readonly"></td>
                                                     <td style="background-color: <%=controlColor%>"><%=ComboInvariant(conn, "controls_type", "width: 200px", "controls_type", "wob", "13", rs_controls.getString("Type"), "trackChanges(this.value, '" + rs_controls.getString("Type") + "', 'submitButtonChanges')", null)%></td>
                                                     <td style="background-color: <%=controlColor%>"><input class="wob" style="width: 350px;background-color: <%=controlColor%>"
                                                                                                            value="<%=rs_controls.getString("ControlProperty")%>"
                                                                                                            name="controls_controlproperty"
-                                                                                                           onchange="trackChanges(this.value, '<%=rs_controls.getString("ControlProperty")%>', 'submitButtonChanges')"
-                                                                                                           maxlength="<%=testcase_control_maxlength_property%>"></td>
+                                                                                                           onchange="trackChanges(this.value, '<%=rs_controls.getString("ControlProperty")%>', 'submitButtonChanges')"></td>
                                                     <td style="background-color: <%=controlColor%>"><input class="wob" style="width: 360px;background-color: <%=controlColor%>"
                                                                                                            value="<%=rs_controls.getString("ControlValue")%>"
                                                                                                            name="controls_controlvalue"
-                                                                                                           onchange="trackChanges(this.value, '<%=rs_controls.getString("ControlValue")%>', 'submitButtonChanges')"
-                                                                                                           maxlength="<%=testcase_control_maxlength_value%>"></td>
+                                                                                                           onchange="trackChanges(this.value, '<%=rs_controls.getString("ControlValue")%>', 'submitButtonChanges')"></td>
                                                     <td style="background-color: <%=controlColor%>"><%=ComboInvariant(conn, "controls_fatal", "width: 40px", "controls_fatal", "wob", "18", rs_controls.getString("Fatal"), "trackChanges(this.value, '" + rs_controls.getString("Fatal") + "', 'submitButtonChanges')", null)%></td>
                                                 </tr>
 
                                             </tbody>
                                             <%
-                                                    cpt_control_maxlength = 3;
+                                                    
                                                 }
 
-
-                                                ResultSet rs_controls1 = stmt5.executeQuery("SELECT value from invariant where id = 4");
-
-                                                String[] sarray = new String[100];
-                                                int m = 0;
-                                                if (rs_controls1.next()) {
-                                                    sarray[m] = rs_controls1.getString("value");
-                                                    m++;
-                                                }
 
                                             %>
                                         </table>
@@ -1496,12 +1433,37 @@
                                         <%=ComboInvariant(conn, "controls_fatal_", "width: 40px;visibility:hidden", "controls_fatal_", "controls_fatal_", "18", "", "", null)%>
                                         <table><tr><td id="wob"><input type="button"
                                                                        value="Add Control"
-                                                                       onclick="addTestCaseControl('control_table', <%=testcase_control_maxlength_step%>, <%=testcase_control_maxlength_sequence%>, <%=testcase_control_maxlength_control%>, <%=testcase_control_maxlength_type%>, <%=testcase_control_maxlength_value%>, <%=testcase_control_maxlength_property%>) ; enableField('submitButtonChanges');">
+                                                                       onclick="addTestCaseControl('control_table<%=step_loop_number%>', '10', '10', '10', '100', '250', '250') ; enableField('submitButtonChanges');">
                                                 </td><td id="wob"><input	value="Save changes" id="submitButtonChanges" name="submitChanges"
                                                                          type="submit" ></td></tr></table>
                                                     <% }%>
                                     </td></tr></table>        
-                        </div></td></tr></table><% }%>
+                        </div></td></tr></table><tr><td class="wob" style="height:30px"></td></tr></td></tr><% }%>
+                        
+                                                                
+                                                                <%
+                                                                        step_loop_number++;
+                                                                    } 
+                                                            /*
+                                                                     * End Step loop
+                                                                     */
+                                                                    if (stmt66!=null){stmt66.close();}
+                                                                    if (rs_step!=null){rs_step.close();}
+                                                                    if (rs_stepaction!=null){rs_stepaction.close();}
+                                                                    if (stmt51!=null){stmt51.close();}
+                                                                %>
+                                    </div>
+                                                                </td></tr></table>
+                                    <%  if (canEdit) {%>
+                                    <div id="hide_div"></div>
+                                    <table><tr><td id="wob"><input type="button" value="Add Step" id="AddStepButton" style="display:inline"
+                                                                   onclick="addStep('hide_div', '<%=step_loop_number%>', <%=testcase_step_maxlength_desc%>, <%=testcase_stepaction_maxlength_sequence%>, <%=testcase_stepaction_maxlength_action%>, <%=testcase_stepaction_maxlength_object%>, <%=testcase_stepaction_maxlength_property%>) ; enableField('submitButtonAction'); hidebutton('AddStepButton')">
+
+                                                <% }%>
+                                            </td></tr> </table>  </td></tr></table>          
+                    <br><br>
+
+                        
                         <%  if (canEdit) {%>
             <input type="hidden" id="Test" name="Test" value="<%=test%>">
             <input type="hidden" id="TestCase" name="TestCase"

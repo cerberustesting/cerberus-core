@@ -519,7 +519,7 @@ function addTestCaseProperties(tableau,  max_tcp_country,
 
 }
 
-function addTestCaseAction(table, max_tcsa_seq, max_tcsa_action, max_tcsa_obj,
+function addTestCaseAction(table,id, max_tcsa_seq, max_tcsa_action, max_tcsa_obj,
 		max_tcsa_pro) {
 
 	TR = document.createElement('tr');
@@ -535,7 +535,7 @@ function addTestCaseAction(table, max_tcsa_seq, max_tcsa_action, max_tcsa_obj,
         TD1.setAttribute('style', 'background-color:white; text-align: center');
 	TD1.appendChild(form1); /* Add form to column */
 
-	var value_test1 = parseInt(table) + 1;
+	var value_test1 = parseInt(id) + 1;
 	var form = document.createElement('input');
 	form.setAttribute('type', 'hidden');
 	form.setAttribute('name', 'stepnumber_hidden');
