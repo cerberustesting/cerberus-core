@@ -4,20 +4,40 @@
   <parameter-encoding default-charset="UTF-8"/>
   <context-root>/Cerberus-0.9.1-SNAPSHOT</context-root>
   <security-role-mapping>
-    <role-name>Admin</role-name>
-    <group-name>Admin</group-name>
+    <role-name>Administrator</role-name>
+    <group-name>Administrator</group-name>
   </security-role-mapping>
   <security-role-mapping>
-    <role-name>User</role-name>
-    <group-name>User</group-name>
+    <role-name>IntegratorDeploy</role-name>
+    <group-name>IntegratorDeploy</group-name>
   </security-role-mapping>
   <security-role-mapping>
-    <role-name>Visitor</role-name>
-    <group-name>Visitor</group-name>
+    <role-name>IntegratorNewChain</role-name>
+    <group-name>IntegratorNewChain</group-name>
   </security-role-mapping>
   <security-role-mapping>
     <role-name>Integrator</role-name>
     <group-name>Integrator</group-name>
+  </security-role-mapping>
+  <security-role-mapping>
+    <role-name>IntegratorRO</role-name>
+    <group-name>IntegratorRO</group-name>
+  </security-role-mapping>
+  <security-role-mapping>
+    <role-name>RunTest</role-name>
+    <group-name>RunTest</group-name>
+  </security-role-mapping>
+  <security-role-mapping>
+    <role-name>TestAdmin</role-name>
+    <group-name>TestAdmin</group-name>
+  </security-role-mapping>
+  <security-role-mapping>
+    <role-name>Test</role-name>
+    <group-name>Test</group-name>
+  </security-role-mapping>
+  <security-role-mapping>
+    <role-name>TestRO</role-name>
+    <group-name>TestRO</group-name>
   </security-role-mapping>
   <class-loader delegate="true"/>
   <jsp-config>
