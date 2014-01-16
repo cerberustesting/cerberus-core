@@ -19,6 +19,15 @@
 
 package org.cerberus.servlet.testCase;
 
+import java.io.IOException;
+import java.util.List;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.cerberus.entity.TCase;
 import org.cerberus.factory.IFactoryTCase;
 import org.cerberus.factory.impl.FactoryTCase;
@@ -27,14 +36,6 @@ import org.cerberus.service.impl.TestCaseService;
 import org.cerberus.util.StringUtil;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
-
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.List;
 
 /**
  * Search for all test cases given by the filters and convert them to CSV file

@@ -19,11 +19,12 @@
  */
 package org.cerberus.service.impl;
 
+import java.util.List;
+
 import org.cerberus.dao.IInvariantDAO;
 import org.cerberus.entity.Invariant;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.service.IInvariantService;
-import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

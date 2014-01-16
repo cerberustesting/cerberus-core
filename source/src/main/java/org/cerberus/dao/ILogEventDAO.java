@@ -17,10 +17,10 @@
  */
 package org.cerberus.dao;
 
-import org.cerberus.entity.LogEvent;
-import org.cerberus.entity.User;
-import org.cerberus.exception.CerberusException;
 import java.util.List;
+
+import org.cerberus.entity.LogEvent;
+import org.cerberus.exception.CerberusException;
 
 /**
  *

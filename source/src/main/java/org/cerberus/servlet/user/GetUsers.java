@@ -19,6 +19,15 @@
  */
 package org.cerberus.servlet.user;
 
+import java.io.IOException;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.log4j.Level;
 import org.cerberus.entity.Group;
 import org.cerberus.entity.User;
 import org.cerberus.exception.CerberusException;
@@ -27,19 +36,11 @@ import org.cerberus.service.IUserGroupService;
 import org.cerberus.service.IUserService;
 import org.cerberus.service.impl.UserGroupService;
 import org.cerberus.service.impl.UserService;
-import org.apache.log4j.Level;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
-
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 
 /**
  * @author ip100003

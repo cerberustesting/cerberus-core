@@ -19,6 +19,16 @@
  */
 package org.cerberus.servlet.buildrevision;
 
+import java.io.IOException;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.cerberus.entity.BuildRevisionInvariant;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.factory.IFactoryBuildRevisionInvariant;
@@ -30,14 +40,6 @@ import org.cerberus.service.ILogEventService;
 import org.cerberus.service.impl.BuildRevisionInvariantService;
 import org.cerberus.service.impl.LogEventService;
 import org.cerberus.service.impl.UserService;
-import java.io.IOException;
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
 import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;
 import org.springframework.context.ApplicationContext;

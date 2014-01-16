@@ -19,6 +19,8 @@
  */
 package org.cerberus.service.impl;
 
+import java.util.List;
+
 import org.cerberus.dao.IUserGroupDAO;
 import org.cerberus.entity.Group;
 import org.cerberus.entity.MessageGeneral;
@@ -28,8 +30,6 @@ import org.cerberus.exception.CerberusException;
 import org.cerberus.service.IUserGroupService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 /**
  * {Insert class description here}

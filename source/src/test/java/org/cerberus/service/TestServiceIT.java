@@ -1,8 +1,5 @@
 package org.cerberus.service;
 
-import org.cerberus.service.ITestService;
-import org.cerberus.entity.TestCase;
-import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;

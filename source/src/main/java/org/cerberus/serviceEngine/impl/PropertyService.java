@@ -19,15 +19,21 @@
  */
 package org.cerberus.serviceEngine.impl;
 
-import org.cerberus.entity.TestCaseExecutionData;
-import org.cerberus.entity.CountryEnvironmentDatabase;
-import org.cerberus.entity.TCExecution;
-import org.cerberus.entity.MessageEventEnum;
-import org.cerberus.entity.TestCaseStepActionExecution;
-import org.cerberus.entity.TestCaseCountryProperties;
-import org.cerberus.entity.MessageEvent;
-import org.cerberus.entity.Property;
+import java.util.Date;
+import java.util.List;
+import java.util.Random;
+import java.util.logging.Logger;
+
+import org.apache.log4j.Level;
 import org.cerberus.dao.ITestCaseExecutionDataDAO;
+import org.cerberus.entity.CountryEnvironmentDatabase;
+import org.cerberus.entity.MessageEvent;
+import org.cerberus.entity.MessageEventEnum;
+import org.cerberus.entity.Property;
+import org.cerberus.entity.TCExecution;
+import org.cerberus.entity.TestCaseCountryProperties;
+import org.cerberus.entity.TestCaseExecutionData;
+import org.cerberus.entity.TestCaseStepActionExecution;
 import org.cerberus.exception.CerberusEventException;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.log.MyLogger;
@@ -41,15 +47,9 @@ import org.cerberus.serviceEngine.ISeleniumService;
 import org.cerberus.util.DateUtil;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
-import org.apache.log4j.Level;
 import org.openqa.selenium.NoSuchElementException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.Date;
-import java.util.List;
-import java.util.Random;
-import java.util.logging.Logger;
 
 /**
  * {Insert class description here}

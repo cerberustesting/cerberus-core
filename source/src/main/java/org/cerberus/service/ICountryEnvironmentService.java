@@ -19,8 +19,6 @@
  */
 package org.cerberus.service;
 
-import org.cerberus.entity.Environment;
-
 import java.util.List;
 
 /**

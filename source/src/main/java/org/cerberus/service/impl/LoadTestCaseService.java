@@ -19,28 +19,28 @@
  */
 package org.cerberus.service.impl;
 
-import org.cerberus.service.ILoadTestCaseService;
-import org.cerberus.service.ITestCaseCountryPropertiesService;
-import org.cerberus.service.ITestCaseStepActionControlService;
-import org.cerberus.service.ITestCaseStepService;
-import org.cerberus.service.ITestCaseStepActionService;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.log4j.Level;
 import org.cerberus.entity.TCExecution;
-import org.cerberus.entity.TestCaseStepAction;
-import org.cerberus.entity.TestCaseCountryProperties;
-import org.cerberus.entity.TestCaseStepActionControl;
 import org.cerberus.entity.TCase;
 import org.cerberus.entity.TestCaseCountry;
+import org.cerberus.entity.TestCaseCountryProperties;
 import org.cerberus.entity.TestCaseStep;
-import org.cerberus.serviceEngine.impl.RunTestCaseService;
+import org.cerberus.entity.TestCaseStepAction;
+import org.cerberus.entity.TestCaseStepActionControl;
 import org.cerberus.factory.IFactoryTCase;
 import org.cerberus.factory.IFactoryTestCaseCountry;
 import org.cerberus.log.MyLogger;
-import org.apache.log4j.Level;
+import org.cerberus.service.ILoadTestCaseService;
+import org.cerberus.service.ITestCaseCountryPropertiesService;
+import org.cerberus.service.ITestCaseStepActionControlService;
+import org.cerberus.service.ITestCaseStepActionService;
+import org.cerberus.service.ITestCaseStepService;
+import org.cerberus.serviceEngine.impl.RunTestCaseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @author bcivel

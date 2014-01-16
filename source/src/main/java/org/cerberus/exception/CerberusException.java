@@ -17,7 +17,6 @@
  */
 package org.cerberus.exception;
 
-import org.cerberus.entity.MessageEventEnum;
 import org.cerberus.entity.MessageGeneral;
 
 /**

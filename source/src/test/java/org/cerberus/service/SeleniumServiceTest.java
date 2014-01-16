@@ -20,7 +20,10 @@
 
 package org.cerberus.service;
 
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.when;
 import junit.framework.Assert;
+
 import org.cerberus.entity.Selenium;
 import org.cerberus.entity.TestCaseStepActionExecution;
 import org.cerberus.serviceEngine.impl.SeleniumService;
@@ -28,7 +31,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.openqa.selenium.*;
+import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebDriverException;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.RemoteWebElement;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -38,9 +45,6 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.springframework.test.context.ContextConfiguration;
-
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.when;
 
 
 /**

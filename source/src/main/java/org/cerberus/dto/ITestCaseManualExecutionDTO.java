@@ -1,8 +1,8 @@
 package org.cerberus.dto;
 
-import org.cerberus.entity.TCase;
-
 import java.util.List;
+
+import org.cerberus.entity.TCase;
 
 /**
  * {Insert class description here}

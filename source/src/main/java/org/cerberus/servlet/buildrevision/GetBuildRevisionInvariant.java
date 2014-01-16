@@ -19,6 +19,15 @@
  */
 package org.cerberus.servlet.buildrevision;
 
+import java.io.IOException;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.log4j.Level;
 import org.cerberus.entity.BuildRevisionInvariant;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.log.MyLogger;
@@ -26,13 +35,6 @@ import org.cerberus.service.IBuildRevisionInvariantService;
 import org.cerberus.service.impl.BuildRevisionInvariantService;
 import org.cerberus.servlet.user.GetUsers;
 import org.cerberus.util.ParameterParserUtil;
-import java.io.IOException;
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import org.apache.log4j.Level;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;

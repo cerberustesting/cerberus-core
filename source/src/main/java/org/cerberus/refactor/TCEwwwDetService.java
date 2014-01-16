@@ -20,9 +20,10 @@
 package org.cerberus.refactor;
 
 
-import org.cerberus.entity.TestCase;
 import java.awt.image.BufferedImage;
 import java.util.List;
+
+import org.cerberus.entity.TestCase;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.data.time.Minute;
 import org.jfree.data.time.TimeSeries;

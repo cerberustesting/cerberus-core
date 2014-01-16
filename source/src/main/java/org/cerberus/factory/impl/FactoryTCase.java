@@ -19,15 +19,15 @@
  */
 package org.cerberus.factory.impl;
 
-import org.cerberus.entity.TestCaseStepBatch;
-import org.cerberus.entity.TestCaseCountryProperties;
+import java.util.List;
+
 import org.cerberus.entity.TCase;
 import org.cerberus.entity.TestCaseCountry;
+import org.cerberus.entity.TestCaseCountryProperties;
 import org.cerberus.entity.TestCaseStep;
+import org.cerberus.entity.TestCaseStepBatch;
 import org.cerberus.factory.IFactoryTCase;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 /**
  * @author bcivel

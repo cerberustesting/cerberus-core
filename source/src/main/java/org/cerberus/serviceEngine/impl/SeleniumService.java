@@ -19,41 +19,7 @@
  */
 package org.cerberus.serviceEngine.impl;
 
-import org.cerberus.entity.MessageGeneral;
-import org.cerberus.entity.Selenium;
-import org.cerberus.entity.MessageEventEnum;
-import org.cerberus.entity.Invariant;
-import org.cerberus.entity.Parameter;
-import org.cerberus.entity.MessageGeneralEnum;
-import org.cerberus.entity.TestCaseStepActionExecution;
-import org.cerberus.entity.MessageEvent;
-import org.cerberus.exception.CerberusEventException;
-import org.cerberus.exception.CerberusException;
-import org.cerberus.factory.IFactorySelenium;
-import org.cerberus.log.MyLogger;
-import org.cerberus.service.IInvariantService;
-import org.cerberus.service.IParameterService;
-import org.cerberus.serviceEngine.IPropertyService;
-import org.cerberus.serviceEngine.ISeleniumService;
-import org.cerberus.util.ParameterParserUtil;
-import org.cerberus.util.StringUtil;
-import org.apache.log4j.Level;
-import org.openqa.selenium.*;
-import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.firefox.FirefoxProfile;
-import org.openqa.selenium.interactions.Actions;
-import org.openqa.selenium.interactions.ClickAndHoldAction;
-import org.openqa.selenium.remote.Augmenter;
-import org.openqa.selenium.remote.DesiredCapabilities;
-import org.openqa.selenium.remote.RemoteWebDriver;
-import org.openqa.selenium.remote.UnreachableBrowserException;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.Select;
-import org.openqa.selenium.support.ui.WebDriverWait;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import javax.imageio.ImageIO;
-import java.awt.*;
+import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -65,7 +31,50 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
+
+import javax.imageio.ImageIO;
+
 import org.apache.commons.net.telnet.TelnetClient;
+import org.apache.log4j.Level;
+import org.cerberus.entity.Invariant;
+import org.cerberus.entity.MessageEvent;
+import org.cerberus.entity.MessageEventEnum;
+import org.cerberus.entity.MessageGeneral;
+import org.cerberus.entity.MessageGeneralEnum;
+import org.cerberus.entity.Parameter;
+import org.cerberus.entity.Selenium;
+import org.cerberus.entity.TestCaseStepActionExecution;
+import org.cerberus.exception.CerberusEventException;
+import org.cerberus.exception.CerberusException;
+import org.cerberus.factory.IFactorySelenium;
+import org.cerberus.log.MyLogger;
+import org.cerberus.service.IInvariantService;
+import org.cerberus.service.IParameterService;
+import org.cerberus.serviceEngine.IPropertyService;
+import org.cerberus.serviceEngine.ISeleniumService;
+import org.cerberus.util.ParameterParserUtil;
+import org.cerberus.util.StringUtil;
+import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.Keys;
+import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.TakesScreenshot;
+import org.openqa.selenium.TimeoutException;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebDriverException;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.firefox.FirefoxProfile;
+import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.remote.Augmenter;
+import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.remote.RemoteWebDriver;
+import org.openqa.selenium.remote.UnreachableBrowserException;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.Select;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * {Insert class description here}

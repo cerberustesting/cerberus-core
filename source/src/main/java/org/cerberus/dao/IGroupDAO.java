@@ -17,9 +17,10 @@
  */
 package org.cerberus.dao;
 
+import java.util.List;
+
 import org.cerberus.entity.Group;
 import org.cerberus.entity.User;
-import java.util.List;
 
 /**
  *

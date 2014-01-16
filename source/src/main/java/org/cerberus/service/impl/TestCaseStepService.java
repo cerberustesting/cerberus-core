@@ -19,14 +19,14 @@
  */
 package org.cerberus.service.impl;
 
+import java.util.List;
+
+import org.apache.log4j.Level;
 import org.cerberus.dao.ITestCaseStepDAO;
 import org.cerberus.entity.TestCaseStep;
-import org.cerberus.service.ITestCaseStepService;
-import java.util.List;
-import java.util.logging.Logger;
-import org.apache.log4j.Level;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.log.MyLogger;
+import org.cerberus.service.ITestCaseStepService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

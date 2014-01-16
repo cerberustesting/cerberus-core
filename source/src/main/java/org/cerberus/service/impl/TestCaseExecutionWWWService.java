@@ -19,22 +19,23 @@
  */
 package org.cerberus.service.impl;
 
+import java.io.IOException;
+
+import org.apache.log4j.Level;
 import org.cerberus.dao.ITestCaseExecutionWWWDetDAO;
 import org.cerberus.dao.ITestCaseExecutionWWWSumDAO;
 import org.cerberus.entity.StatisticDetail;
 import org.cerberus.entity.StatisticSummary;
 import org.cerberus.log.MyLogger;
 import org.cerberus.service.ITestCaseExecutionWWWService;
-import edu.umass.cs.benchlab.har.HarEntry;
-import edu.umass.cs.benchlab.har.HarLog;
-import edu.umass.cs.benchlab.har.tools.HarFileReader;
-import org.apache.log4j.Level;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
+import edu.umass.cs.benchlab.har.HarEntry;
+import edu.umass.cs.benchlab.har.HarLog;
+import edu.umass.cs.benchlab.har.tools.HarFileReader;
 
 /**
  * {Insert class description here}

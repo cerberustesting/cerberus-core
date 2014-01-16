@@ -19,20 +19,21 @@
  */
 package org.cerberus.serviceEmail.impl;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.util.List;
+
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.cerberus.entity.Application;
 import org.cerberus.service.IApplicationService;
 import org.cerberus.service.IParameterService;
 import org.cerberus.serviceEmail.IEmailBodyGeneration;
 import org.cerberus.util.StringUtil;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.Statement;
-import java.util.List;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.cerberus.version.Version;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.cerberus.version.Version;
 
 /**
  *

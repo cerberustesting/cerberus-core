@@ -1,13 +1,5 @@
 package org.cerberus.dto;
 
-import org.apache.log4j.Level;
-import org.cerberus.database.DatabaseSpring;
-import org.cerberus.entity.TCase;
-import org.cerberus.log.MyLogger;
-import org.cerberus.util.ParameterParserUtil;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -16,7 +8,15 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.log4j.Level;
+import org.cerberus.database.DatabaseSpring;
+import org.cerberus.entity.TCase;
+import org.cerberus.log.MyLogger;
 import org.cerberus.util.DateUtil;
+import org.cerberus.util.ParameterParserUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
 /**
  * {Insert class description here}

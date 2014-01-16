@@ -1,18 +1,11 @@
 package org.cerberus.dao;
 
-import org.cerberus.dao.ITestCaseDAO;
 import org.junit.Ignore;
-import org.cerberus.entity.TestCase;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 
 /**
  * {Insert class description here}

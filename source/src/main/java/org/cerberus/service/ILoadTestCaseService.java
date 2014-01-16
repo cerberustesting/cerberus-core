@@ -19,10 +19,11 @@
  */
 package org.cerberus.service;
 
+import java.util.List;
+
 import org.cerberus.entity.TCExecution;
 import org.cerberus.entity.TCase;
 import org.cerberus.entity.TestCaseStep;
-import java.util.List;
 
 /**
  * @author bcivel

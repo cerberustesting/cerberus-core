@@ -19,26 +19,27 @@
  */
 package org.cerberus.servlet.invariant;
 
-import org.cerberus.entity.Invariant;
-import org.cerberus.exception.CerberusException;
-import org.cerberus.log.MyLogger;
-import org.cerberus.service.IInvariantService;
-import org.cerberus.service.impl.InvariantService;
-import org.cerberus.util.ParameterParserUtil;
-import org.apache.log4j.Level;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.owasp.html.PolicyFactory;
-import org.owasp.html.Sanitizers;
-import org.springframework.context.ApplicationContext;
-import org.springframework.web.context.support.WebApplicationContextUtils;
+import java.io.IOException;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
+
+import org.apache.log4j.Level;
+import org.cerberus.entity.Invariant;
+import org.cerberus.exception.CerberusException;
+import org.cerberus.log.MyLogger;
+import org.cerberus.service.IInvariantService;
+import org.cerberus.service.impl.InvariantService;
+import org.cerberus.util.ParameterParserUtil;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.owasp.html.PolicyFactory;
+import org.owasp.html.Sanitizers;
+import org.springframework.context.ApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 @WebServlet(name = "GetInvariantList", urlPatterns = {"/GetInvariantList"})
 public class GetInvariantList extends HttpServlet {

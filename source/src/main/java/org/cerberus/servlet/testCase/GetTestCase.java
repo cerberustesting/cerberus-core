@@ -19,19 +19,29 @@
  */
 package org.cerberus.servlet.testCase;
 
-import org.cerberus.entity.TestCaseStepAction;
-import org.cerberus.entity.TestCaseCountryProperties;
-import org.cerberus.entity.TestCaseStepActionControl;
-import org.cerberus.entity.TCase;
-import org.cerberus.entity.TestCaseCountry;
-import org.cerberus.entity.TestCaseStep;
+import java.io.IOException;
+import java.util.List;
+import java.util.logging.Logger;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.log4j.Level;
 import org.cerberus.dao.ITestCaseCountryPropertiesDAO;
 import org.cerberus.dao.impl.TestCaseCountryPropertiesDAO;
+import org.cerberus.entity.TCase;
+import org.cerberus.entity.TestCaseCountry;
+import org.cerberus.entity.TestCaseCountryProperties;
+import org.cerberus.entity.TestCaseStep;
+import org.cerberus.entity.TestCaseStepAction;
+import org.cerberus.entity.TestCaseStepActionControl;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.log.MyLogger;
 import org.cerberus.service.ILoadTestCaseService;
 import org.cerberus.service.ITestCaseService;
-import org.apache.log4j.Level;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -39,15 +49,6 @@ import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
-
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.List;
-import java.util.logging.Logger;
 
 /**
  * {Insert class description here}

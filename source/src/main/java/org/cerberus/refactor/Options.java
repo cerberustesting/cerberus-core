@@ -19,8 +19,8 @@
  */
 package org.cerberus.refactor;
 
-import org.cerberus.log.MyLogger;
 import org.apache.log4j.Level;
+import org.cerberus.log.MyLogger;
 
 public class Options {
 

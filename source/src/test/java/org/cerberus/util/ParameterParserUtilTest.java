@@ -1,7 +1,7 @@
 package org.cerberus.util;
 
-import org.cerberus.util.ParameterParserUtil;
 import junit.framework.Assert;
+
 import org.junit.Test;
 
 /**
