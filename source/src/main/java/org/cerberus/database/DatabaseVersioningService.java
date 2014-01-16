@@ -2762,7 +2762,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         
  // MouseUp And MouseDown Added to the invariant table
         SQLS = new StringBuilder();
-        SQLS.append("UPDATE `cerberus`.`invariant` SET `sort`='54' WHERE `id`='12' and`sort`='55';");
+        SQLS.append("UPDATE `invariant` SET `sort`='54' WHERE `id`='12' and`sort`='55';");
         SQLInstruction.add(SQLS.toString());
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `id`, `description`) VALUES ('ACTION', 'mouseDown', 55, 12, 'Selenium Action mouseDown');");
@@ -2774,7 +2774,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
 
 // New usergroups added to the invariant table
         SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `cerberus`.`invariant` CHANGE COLUMN `description` `description` VARCHAR(250) NOT NULL ;");
+        SQLS.append("ALTER TABLE `invariant` CHANGE COLUMN `description` `description` VARCHAR(250) NOT NULL ;");
         SQLInstruction.add(SQLS.toString());
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `id`, `description`) VALUES ");
