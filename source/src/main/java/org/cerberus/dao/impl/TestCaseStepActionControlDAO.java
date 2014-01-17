@@ -89,7 +89,8 @@ public class TestCaseStepActionControlDAO implements ITestCaseStepActionControlD
                         String object = resultSet.getString("ControlValue");
                         String property = resultSet.getString("ControlProperty");
                         String fatal = resultSet.getString("Fatal");
-                        list.add(factoryTestCaseStepActionControl.create(test, testcase, step, sequence, control, type, object, property, fatal));
+                        String description = resultSet.getString("ControlDescription");
+                        list.add(factoryTestCaseStepActionControl.create(test, testcase, step, sequence, control, type, object, property, fatal, description));
                     }
                 } catch (SQLException exception) {
                     MyLogger.log(TestCaseStepActionControlDAO.class.getName(), Level.ERROR, exception.toString());
@@ -119,8 +120,8 @@ public class TestCaseStepActionControlDAO implements ITestCaseStepActionControlD
     public void insertTestCaseStepActionControl(TestCaseStepActionControl testCaseStepActionControl) throws CerberusException {
         boolean throwExcep = false;
         StringBuilder query = new StringBuilder();
-        query.append("INSERT INTO testcasestepactioncontrol (`test`, `testCase`, `step`, `sequence`, `control`, `type`, `controlvalue`, `controlproperty`, `fatal`) ");
-        query.append("VALUES (?,?,?,?,?,?,?,?,?)");
+        query.append("INSERT INTO testcasestepactioncontrol (`test`, `testCase`, `step`, `sequence`, `control`, `type`, `controlvalue`, `controlproperty`, `fatal`, `ControlDescription`) ");
+        query.append("VALUES (?,?,?,?,?,?,?,?,?,?)");
         
         Connection connection = this.databaseSpring.connect();
         try {
@@ -133,21 +134,13 @@ public class TestCaseStepActionControlDAO implements ITestCaseStepActionControlD
                 preStat.setInt(5, testCaseStepActionControl.getControl());
                 preStat.setString(6, testCaseStepActionControl.getType());
                 preStat.setString(7, testCaseStepActionControl.getControlValue());
-                preStat.setString(6, testCaseStepActionControl.getControlProperty());
-                preStat.setString(7, testCaseStepActionControl.getFatal());
+                preStat.setString(8, testCaseStepActionControl.getControlProperty());
+                preStat.setString(9, testCaseStepActionControl.getFatal());
+                preStat.setString(10, testCaseStepActionControl.getDescription());
 
-                ResultSet resultSet = preStat.executeQuery();
-                try {
-                    if (resultSet.first()) {
-                        throwExcep = false;
-                    } else {
-                        throwExcep = true;
-                    }
-                } catch (SQLException exception) {
-                    MyLogger.log(TestCaseStepActionControlDAO.class.getName(), Level.ERROR, exception.toString());
-                } finally {
-                    resultSet.close();
-                }
+                preStat.executeUpdate();
+                throwExcep = false;
+                
             } catch (SQLException exception) {
                 MyLogger.log(TestCaseStepActionControlDAO.class.getName(), Level.ERROR, exception.toString());
             } finally {
@@ -192,7 +185,8 @@ public class TestCaseStepActionControlDAO implements ITestCaseStepActionControlD
                         String object = resultSet.getString("ControlValue");
                         String property = resultSet.getString("ControlProperty");
                         String fatal = resultSet.getString("Fatal");
-                        list.add(factoryTestCaseStepActionControl.create(test, testcase, step, sequence, control, type, object, property, fatal));
+                        String description = resultSet.getString("ControlDescription");
+                        list.add(factoryTestCaseStepActionControl.create(test, testcase, step, sequence, control, type, object, property, fatal, description));
                     }
                 } catch (SQLException exception) {
                     MyLogger.log(TestCaseStepActionControlDAO.class.getName(), Level.ERROR, exception.toString());

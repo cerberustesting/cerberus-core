@@ -31,7 +31,7 @@ public class FactoryTestCaseStepActionControl implements IFactoryTestCaseStepAct
 
     @Override
     public TestCaseStepActionControl create(String test, String testCase, int step, int sequence,
-                                            int control, String type, String controlValue, String controlProperty, String fatal) {
+                                            int control, String type, String controlValue, String controlProperty, String fatal, String description) {
         TestCaseStepActionControl testCaseStepActionControl = new TestCaseStepActionControl();
         testCaseStepActionControl.setTest(test);
         testCaseStepActionControl.setTestCase(testCase);
@@ -42,6 +42,7 @@ public class FactoryTestCaseStepActionControl implements IFactoryTestCaseStepAct
         testCaseStepActionControl.setControlValue(controlValue);
         testCaseStepActionControl.setControlProperty(controlProperty);
         testCaseStepActionControl.setFatal(fatal);
+        testCaseStepActionControl.setDescription(description);
         return testCaseStepActionControl;
     }
 

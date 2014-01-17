@@ -27,5 +27,5 @@ import org.cerberus.entity.TestCaseStepAction;
 public interface IFactoryTestCaseStepAction {
 
     TestCaseStepAction create(String test, String testCase, int step, int sequence,
-                              String action, String object, String property);
+                              String action, String object, String property, String description);
 }

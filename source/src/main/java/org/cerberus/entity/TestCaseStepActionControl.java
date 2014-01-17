@@ -31,6 +31,15 @@ public class TestCaseStepActionControl {
     private String controlValue;
     private String controlProperty;
     private String fatal;
+    private String description;
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
     public int getControl() {
         return control;

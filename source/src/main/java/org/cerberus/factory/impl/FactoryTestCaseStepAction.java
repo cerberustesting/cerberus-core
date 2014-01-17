@@ -30,7 +30,7 @@ import org.springframework.stereotype.Service;
 public class FactoryTestCaseStepAction implements IFactoryTestCaseStepAction {
 
     @Override
-    public TestCaseStepAction create(String test, String testCase, int step, int sequence, String action, String object, String property) {
+    public TestCaseStepAction create(String test, String testCase, int step, int sequence, String action, String object, String property, String description) {
         TestCaseStepAction testCaseStepAction = new TestCaseStepAction();
         testCaseStepAction.setAction(action);
         testCaseStepAction.setObject(object);
@@ -39,6 +39,7 @@ public class FactoryTestCaseStepAction implements IFactoryTestCaseStepAction {
         testCaseStepAction.setStep(step);
         testCaseStepAction.setTest(test);
         testCaseStepAction.setTestCase(testCase);
+        testCaseStepAction.setDescription(description);
         return testCaseStepAction;
     }
 

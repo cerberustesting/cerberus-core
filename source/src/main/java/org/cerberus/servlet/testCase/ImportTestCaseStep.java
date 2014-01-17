@@ -31,12 +31,14 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.cerberus.dao.impl.TestCaseStepDAO;
 
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.entity.TestCaseStep;
 import org.cerberus.entity.TestCaseStepAction;
 import org.cerberus.entity.TestCaseStepActionControl;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.log.MyLogger;
 import org.cerberus.service.ITestCaseStepActionControlService;
 import org.cerberus.service.ITestCaseStepActionService;
 import org.cerberus.service.ITestCaseStepService;
@@ -92,10 +94,12 @@ public class ImportTestCaseStep extends HttpServlet {
         /**
          * Modify the object with the target test, testcase, step
          */
+        MyLogger.log(ImportTestCaseStep.class.getName(), org.apache.log4j.Level.INFO, "Rewrite TestCaseStep");
         fromTcs.setTest(test);
         fromTcs.setTestCase(testCase);
         fromTcs.setStep(step);
         
+        MyLogger.log(ImportTestCaseStep.class.getName(), org.apache.log4j.Level.INFO, "Rewrite TestCaseStepAction");
         List<TestCaseStepAction> tcsaToImport = new ArrayList();
         for (TestCaseStepAction tcsa : fromTcsa){
         tcsa.setTest(test);
@@ -104,6 +108,7 @@ public class ImportTestCaseStep extends HttpServlet {
         tcsaToImport.add(tcsa);
         }
         
+        MyLogger.log(ImportTestCaseStep.class.getName(), org.apache.log4j.Level.INFO, "Rewrite TestCaseStepActionControl");
         List<TestCaseStepActionControl> tcsacToImport = new ArrayList();
         for (TestCaseStepActionControl tcsac : fromTcsac){
         tcsac.setTest(test);
@@ -115,9 +120,12 @@ public class ImportTestCaseStep extends HttpServlet {
         /**
          * Import Step, List of testcasestepaction, List of testcasestepactioncontrol
          */
+        MyLogger.log(ImportTestCaseStep.class.getName(), org.apache.log4j.Level.INFO, "Import Step");
         testCaseStepService.insertTestCaseStep(fromTcs);
         testCaseStepActionService.insertListTestCaseStepAction(tcsaToImport);
         testCaseStepActionControlService.insertListTestCaseStepActionControl(tcsacToImport);
+        
+        response.sendRedirect("TestCase.jsp?Load=Load&Test="+test+"&TestCase="+testCase);
         
     }
 

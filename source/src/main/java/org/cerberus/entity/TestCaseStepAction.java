@@ -31,6 +31,8 @@ public class TestCaseStepAction {
     private String action;
     private String object;
     private String property;
+    private String description;
+
     List<TestCaseStepActionControl> testCaseStepActionControl;
 
     public List<TestCaseStepActionControl> getTestCaseStepActionControl() {
@@ -87,6 +89,14 @@ public class TestCaseStepAction {
 
     public void setTest(String test) {
         this.test = test;
+    }
+    
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public String getTestCase() {

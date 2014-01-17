@@ -168,18 +168,10 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
                 preStat.setInt(3, testCaseStep.getStep());
                 preStat.setString(4, testCaseStep.getDescription());
 
-                ResultSet resultSet = preStat.executeQuery();
-                try {
-                    if (resultSet.first()) {
-                        throwExcep = false;
-                    } else {
-                        throwExcep = true;
-                    }
-                } catch (SQLException exception) {
-                    MyLogger.log(TestCaseStepDAO.class.getName(), Level.ERROR, exception.toString());
-                } finally {
-                    resultSet.close();
-                }
+                preStat.executeUpdate();
+                throwExcep = false;
+                
+                
             } catch (SQLException exception) {
                 MyLogger.log(TestCaseStepDAO.class.getName(), Level.ERROR, exception.toString());
             } finally {
@@ -212,13 +204,13 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
             try {
                 preStat.setString(1, test);
                 preStat.setString(2, testcase);
-                preStat.setInt(2, step);
+                preStat.setInt(3, step);
 
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     if (resultSet.first()) {
                         String description = resultSet.getString("Description");
-                        factoryTestCaseStep.create(test, testcase, step, description);
+                        result = factoryTestCaseStep.create(test, testcase, step, description);
                     }
                 } catch (SQLException exception) {
                     MyLogger.log(TestCaseStepDAO.class.getName(), Level.ERROR, exception.toString());
