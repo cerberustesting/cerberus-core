@@ -573,13 +573,18 @@ function addTestCaseAction(table,id, max_tcsa_seq, max_tcsa_action, max_tcsa_obj
 	var form3 = document.createElement('select');
 	if (document.getElementById("actions_action_")) {
 		form3.setAttribute('name', 'actions_action');
-		form3.setAttribute('style', 'width: 150px');
+		form3.setAttribute('style', 'width: 136px');
                 form3.setAttribute('class', 'wob');
 		form3.innerHTML = (form3.innerHTML + document
 				.getElementById('actions_action_').innerHTML);
 	}
 	var TD3 = document.createElement('td');
         TD3.setAttribute('style', 'background-color:white; text-align: center');
+        if(displayOnlyFunctional) {
+            TD3.setAttribute('class', 'technical_part only_functional');
+        } else {
+            TD3.setAttribute('class', 'technical_part');
+        }
 	TD3.appendChild(form3);
 	TR.appendChild(TD3);
 
@@ -588,10 +593,15 @@ function addTestCaseAction(table,id, max_tcsa_seq, max_tcsa_action, max_tcsa_obj
 	form4.setAttribute('name', 'actions_object');
 	form4.setAttribute('size', '100%');
         form4.setAttribute('class', 'wob');
-	form4.setAttribute('style', 'width: 380px');
+	form4.setAttribute('style', 'width: 350px');
 	form4.setAttribute('maxlength', max_tcsa_obj);
 	var TD4 = document.createElement('td');
         TD4.setAttribute('style', 'background-color:white; text-align: center');
+        if(displayOnlyFunctional) {
+            TD4.setAttribute('class', 'technical_part only_functional');
+        } else {
+            TD4.setAttribute('class', 'technical_part');
+        }
 	TD4.appendChild(form4);
 	TR.appendChild(TD4);
 
@@ -604,6 +614,11 @@ function addTestCaseAction(table,id, max_tcsa_seq, max_tcsa_action, max_tcsa_obj
 	form5.setAttribute('maxlength', max_tcsa_pro);
 	var TD5 = document.createElement('td');
         TD5.setAttribute('style', 'background-color:white; text-align: center');
+        if(displayOnlyFunctional) {
+            TD5.setAttribute('class', 'technical_part only_functional');
+        } else {
+            TD5.setAttribute('class', 'technical_part');
+        }
 	TD5.appendChild(form5);
 	TR.appendChild(TD5);
 
@@ -611,11 +626,20 @@ function addTestCaseAction(table,id, max_tcsa_seq, max_tcsa_action, max_tcsa_obj
 	var form6 = document.createElement('input');
 	form6.setAttribute('name', 'actions_description');
 	form6.setAttribute('size', '100%');
-        form6.setAttribute('class', 'wob');
-	form6.setAttribute('style', 'width: 210px');
+        if(displayOnlyFunctional) {
+            form6.setAttribute('class', 'wob functional_description only_functional_description_size');
+        } else {
+            form6.setAttribute('class', 'wob functional_description');
+        }
+	form6.setAttribute('style', 'width: 296px');
 	form6.setAttribute('maxlength', max_tcsa_desc);
 	var TD6 = document.createElement('td');
         TD6.setAttribute('style', 'background-color:white;');
+        if(displayOnlyFunctional) {
+            TD6.setAttribute('class', 'functional_description only_functional_description_size');
+        } else {
+            TD6.setAttribute('class', 'functional_description');
+        }
 	TD6.appendChild(form6);
 	TR.appendChild(TD6);
 
@@ -706,26 +730,19 @@ function addTestCaseControl(table, step_id, max_tcc_step, max_tcc_sequence,
         form1.setAttribute('style', 'width:30px');
         form1.setAttribute('class', 'wob');
 	form1.setAttribute('name', 'controls_delete');
-	var TD1 = document.createElement('td'); /* Create column */
-        TD1.setAttribute('style', 'background-color:white; text-align: center');
-	TD1.appendChild(form1); /* Add form to column */
-	TR.appendChild(TD1);
 
+    
 	/* Step */
 	var form2 = document.createElement('input');
 	form2.setAttribute('name', 'controls_step');
-	form2
-			.setAttribute('style',
-					'width: 30px; font-weight: bold;font-style: italic; color: #FF0000; height:20px');
-	form2.setAttribute('maxlength', max_tcc_step);
-	form2.setAttribute('onfocus', 'keyOnFocus(this)');
-	form2.setAttribute('onblur', 'keyOnBlur(this)');
-        form2.setAttribute('class', 'wob');
+        form2.setAttribute('type', 'hidden');
 	form2.setAttribute('value', step_id);
-	var TD2 = document.createElement('td');
-        TD2.setAttribute('style', 'background-color:white');
-	TD2.appendChild(form2);
-	TR.appendChild(TD2);
+
+        var TD1 = document.createElement('td'); /* Create column */
+        TD1.setAttribute('style', 'background-color:white; text-align: center');
+	TD1.appendChild(form1); /* Add form to column */
+	TD1.appendChild(form2); /* Add form to column */
+	TR.appendChild(TD1);
 
         /* Sequence */
         var value_actions = getMaxValueForParentElementIdAndElementName('Action'+step_id,'actions_sequence');
@@ -773,23 +790,33 @@ function addTestCaseControl(table, step_id, max_tcc_step, max_tcc_sequence,
 	if (document.getElementById("controls_type_")) {
 		form5.setAttribute('name', 'controls_type');
                 form5.setAttribute('class', 'wob');
-		form5.setAttribute('style', 'width: 200px');
+		form5.setAttribute('style', 'width: 150px');
 		form5.innerHTML = (form5.innerHTML + document
 				.getElementById('controls_type_').innerHTML);
 	}
 	var TD5 = document.createElement('td');
         TD5.setAttribute('style', 'background-color:white');
+        if(displayOnlyFunctional) {
+            TD5.setAttribute('class', 'technical_part only_functional');
+        } else {
+            TD5.setAttribute('class', 'technical_part');
+        }
 	TD5.appendChild(form5);
 	TR.appendChild(TD5);
 
 	/* Property */
 	var form7 = document.createElement('input');
 	form7.setAttribute('name', 'controls_controlproperty');
-	form7.setAttribute('style', 'width: 250px');
+	form7.setAttribute('style', 'width: 260px');
         form7.setAttribute('class', 'wob');
 	form7.setAttribute('maxlength', max_tcc_property);
 	var TD7 = document.createElement('td');
         TD7.setAttribute('style', 'background-color:white');
+        if(displayOnlyFunctional) {
+            TD7.setAttribute('class', 'technical_part only_functional');
+        } else {
+            TD7.setAttribute('class', 'technical_part');
+        }
 	TD7.appendChild(form7);
 	TR.appendChild(TD7);
 
@@ -797,37 +824,57 @@ function addTestCaseControl(table, step_id, max_tcc_step, max_tcc_sequence,
 	var form6 = document.createElement('input');
 	form6.setAttribute('name', 'controls_controlvalue');
         form6.setAttribute('class', 'wob');
-	form6.setAttribute('style', 'width: 130px');
+	form6.setAttribute('style', 'width: 180px');
 	form6.setAttribute('maxlength', max_tcc_value);
 	var TD6 = document.createElement('td');
         TD6.setAttribute('style', 'background-color:white');
+        if(displayOnlyFunctional) {
+            TD6.setAttribute('class', 'technical_part only_functional');
+        } else {
+            TD6.setAttribute('class', 'technical_part');
+        }
 	TD6.appendChild(form6);
 	TR.appendChild(TD6);
 
-	/* Description */
-	var form7 = document.createElement('input');
-	form7.setAttribute('name', 'controls_controldescription');
-        form7.setAttribute('class', 'wob');
-	form7.setAttribute('style', 'width: 230px');
-	form7.setAttribute('maxlength', max_tcc_description);
+	/* Fatal */
+	var form7 = document.createElement('select');
+	if (document.getElementById("controls_fatal_")) {
+		form7.setAttribute('name', 'controls_fatal');
+                form7.setAttribute('class', 'wob');
+		form7.setAttribute('style', 'width: 40px');
+		form7.innerHTML = (form7.innerHTML + document
+				.getElementById('controls_fatal_').innerHTML);
+	}
 	var TD7 = document.createElement('td');
         TD7.setAttribute('style', 'background-color:white');
+        if(displayOnlyFunctional) {
+            TD7.setAttribute('class', 'technical_part only_functional');
+        } else {
+            TD7.setAttribute('class', 'technical_part');
+        }
+
 	TD7.appendChild(form7);
 	TR.appendChild(TD7);
 
-	/* Fatal */
-	var form14 = document.createElement('select');
-	if (document.getElementById("controls_fatal_")) {
-		form14.setAttribute('name', 'controls_fatal');
-                form14.setAttribute('class', 'wob');
-		form14.setAttribute('style', 'width: 40px');
-		form14.innerHTML = (form14.innerHTML + document
-				.getElementById('controls_fatal_').innerHTML);
-	}
-	var TD14 = document.createElement('td');
-        TD14.setAttribute('style', 'background-color:white');
-	TD14.appendChild(form14);
-	TR.appendChild(TD14);
+	/* Description */
+	var form8 = document.createElement('input');
+	form8.setAttribute('name', 'controls_controldescription');
+        if(displayOnlyFunctional) {
+            form8.setAttribute('class', 'wob functional_description_control only_functional_description_control_size');
+        } else {
+            form8.setAttribute('class', 'wob functional_description_control');
+        }
+	form8.setAttribute('style', 'width: 296px');
+	form8.setAttribute('maxlength', max_tcc_description);
+	var TD8 = document.createElement('td');
+        TD8.setAttribute('style', 'background-color:white');
+        if(displayOnlyFunctional) {
+            TD8.setAttribute('class', 'functional_description_control only_functional_description_control_size');
+        } else {
+            TD8.setAttribute('class', 'functional_description_control');
+        }
+	TD8.appendChild(form8);
+	TR.appendChild(TD8);
 
 	document.getElementById(table).appendChild(TR);
 }
