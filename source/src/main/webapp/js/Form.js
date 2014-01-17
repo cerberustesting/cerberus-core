@@ -1278,3 +1278,55 @@ function getMaxValueForParentElementIdAndElementName(parentElementId,elementName
     }
     return value;
 }
+
+
+function displayImportStep() {
+        var value = getMaxValueForParentElementIdAndElementName(null,'testcasestep_hidden');
+        if(value && parseInt(value) > 0) {
+            value = parseInt(value) + 10;
+        } else {
+            value = 10;
+        }
+
+        document.getElementById('import_step').value = value;
+
+        $('#ImportStepButton').hide();
+        $('#ImportStepTable').fadeIn(1000);
+}
+
+function getTestCasesForImportStep(select){
+    var testSelected = select.options[select.selectedIndex].value;
+    $('#trImportTestCase').load('./ImportTestCase.jsp?Test='+testSelected, function() {
+        $('#trImportTestCase').fadeIn(250);
+    });
+}
+
+function importStep(){
+    
+    
+    var selectTest = document.getElementById('filtertest');
+    var test = selectTest.options[selectTest.selectedIndex].value;
+    
+    selectTest = document.getElementById('filtertestcase');
+    var testCase = selectTest.options[selectTest.selectedIndex].value;
+    
+    selectTest = document.getElementById('fromTest');
+    var fromTest = selectTest.options[selectTest.selectedIndex].value;
+
+    selectTest = document.getElementById('fromTestCase');
+    var fromTestCase = selectTest.options[selectTest.selectedIndex].value;
+    
+    var fromStep = document.getElementById('fromStep').value;
+    
+    var importStep = document.getElementById('import_step').value;
+    
+    var urlImportStep='./ImportTestCaseStep?';
+    urlImportStep += 'Test='+encodeURI(test);
+    urlImportStep += '&TestCase='+encodeURI(testCase);
+    urlImportStep += '&Step='+encodeURI(importStep);
+    urlImportStep += '&FromTest='+encodeURI(fromTest);
+    urlImportStep += '&FromTestCase='+encodeURI(fromTestCase);
+    urlImportStep += '&FromStep='+encodeURI(fromStep);
+    
+    location.href=urlImportStep;
+}
