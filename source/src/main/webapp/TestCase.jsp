@@ -1428,13 +1428,13 @@
                                                         <% }%>
                                                         <input type="hidden" value="<%=rs_controls.getString("Step")%>" name="controls_step" readonly="readonly">
                                                     </td>
-                                                    <td style="background-color: <%=controlColor%>"><input class="wob" style="width: 60px; font-weight: bold;background-color: <%=controlColor%>"
+                                                    <td style="background-color: <%=controlColor%>;height:20px"><input class="wob" style="width: 60px; font-weight: bold;background-color: <%=controlColor%>"
                                                                                                            value="<%=rs_controls.getString("Sequence")%>"
                                                                                                            name="controls_sequence" readonly="readonly"></td>
                                                     <td style="background-color: <%=controlColor%>"><input class="wob" style="width: 60px; font-weight: bold;background-color: <%=controlColor%>"
                                                                                                            value="<%=rs_controls.getString("Control")%>"
                                                                                                            name="controls_control" readonly="readonly"></td>
-                                                    <td class="technical_part" style="background-color: <%=controlColor%>"><%=ComboInvariant(conn, "controls_type", "width: 150px", "controls_type", "wob", "13", rs_controls.getString("Type"), "trackChanges(this.value, '" + rs_controls.getString("Type") + "', 'submitButtonChanges')", null)%></td>
+                                                    <td class="technical_part" style="background-color: <%=controlColor%>"><%=ComboInvariant(conn, "controls_type", "width: 150px; background-color:" + controlColor, "controls_type", "wob", "13", rs_controls.getString("Type"), "trackChanges(this.value, '" + rs_controls.getString("Type") + "', 'submitButtonChanges')", null)%></td>
                                                     <td class="technical_part" style="background-color: <%=controlColor%>"><input class="wob" style="width: 260px;background-color: <%=controlColor%>"
                                                                                                            value="<%=rs_controls.getString("ControlProperty")%>"
                                                                                                            name="controls_controlproperty"
@@ -1443,7 +1443,7 @@
                                                                                                            value="<%=rs_controls.getString("ControlValue")%>"
                                                                                                            name="controls_controlvalue"
                                                                                                            onchange="trackChanges(this.value, '<%=rs_controls.getString("ControlDescription")%>', 'submitButtonChanges')"></td>
-                                                    <td class="technical_part" style="background-color: <%=controlColor%>"><%=ComboInvariant(conn, "controls_fatal", "width: 40px", "controls_fatal", "wob", "18", rs_controls.getString("Fatal"), "trackChanges(this.value, '" + rs_controls.getString("Fatal") + "', 'submitButtonChanges')", null)%></td>
+                                                    <td class="technical_part" style="background-color: <%=controlColor%>"><%=ComboInvariant(conn, "controls_fatal", "width: 40px; background-color:" + controlColor, "controls_fatal", "wob", "18", rs_controls.getString("Fatal"), "trackChanges(this.value, '" + rs_controls.getString("Fatal") + "', 'submitButtonChanges')", null)%></td>
                                                     <td class="functional_description_control" style="background-color: <%=controlColor%>"><input class="wob" class="functional_description_control" style="width: 296px;background-color: <%=controlColor%>"
                                                                                                            value="<%=rs_controls.getString("ControlDescription")%>"
                                                                                                            name="controls_controldescription"
