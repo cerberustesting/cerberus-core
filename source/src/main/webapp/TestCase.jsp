@@ -78,6 +78,14 @@
                     window.document.getElementById('submitButtonChanges').disabled = false;
                 }
             }
+            
+            var displayOnlyFunctional = false;
+            function showOnlyFunctional() {
+                displayOnlyFunctional = !displayOnlyFunctional;
+                $('.functional_description').toggleClass('only_functional_description_size');
+                $('.functional_description_control').toggleClass('only_functional_description_control_size');
+                $('.technical_part').toggleClass('only_functional');
+            }
 
             $().ready(function() {
                 elRTE.prototype.options.toolbars.cerberus = ['style', 'alignment', 'colors', 'format', 'indent', 'lists', 'links'];
@@ -125,18 +133,20 @@
             }
         </script>
 
-<%
-    if (request.getParameter("Functional") != null
-            && request.getParameter("Functional").compareTo("Y") != 0) {
-        %>
         <style>
-            .technical_part {
+            .only_functional {
                 display: none;
             }
+
+            .only_functional_description_size {
+                width: 1000px;
+            }
+            
+            .only_functional_description_control_size {
+                width: 937px;
+            }
+            
         </style>
-        <%
-    }
-%>
         
     </head>
     <body>
@@ -357,7 +367,6 @@
 
             %>
 
-
             <table id="generalparameter" class="arrond"
                    <%if (tinf == false) {%> style="display : none" <%} else {%>style="display : table"<%}%> >
                 <tr>
@@ -401,12 +410,13 @@
                     </td>
                 </tr>
 
-
                 <%  if (canEdit) {%>
 
                 <form method="post" name="UpdateTestCase" action="UpdateTestCase">
-                    <% }%> 
-                    <tr><td class="separation">
+                <% }%> 
+
+                    <tr>
+                        <td class="separation">
                             <table style="text-align: left; border-collapse: collapse" border="0px" cellpadding="0px" cellspacing="0px">
                                 <tr><td class="wob">
                                         <table class="wob" style="text-align: left; border-collapse: collapse" border="0px" cellpadding="0px" cellspacing="0px">
@@ -768,10 +778,10 @@
                             </table>
                         </td>
                     </tr>
+                <%  if (canEdit) {%>
                     <tr>
                         <td class="wob">
 
-                            <%  if (canEdit) {%>
 
                             <input type="hidden" id="Test" name="Test" value="<%=test%>"> 
                             <input type="hidden" id="TestCase" name="TestCase" value="<%=testcase%>">
@@ -780,11 +790,13 @@
                                     <td class="wob"><input type="submit" name="submitInformation" value="Save TestCase Info" id="submitButtonInformation" onclick="$('#howtoDetail').val($('#howto').elrte('val'));$('#valueDetail').val($('#value').elrte('val'));"></td>
                                 </tr>
                             </table>
+
+                        </td>
+                    </tr>
                 </form>
 
                 <% }%>
-                </td>
-                </tr>
+
             </table>
             <table id="parametergeneral" class="arrond" <%if (tinf == false) {%> style="display : table" <%} else {%>style="display : none"<%}%> >
                 <tr><td id="wob" style="width: 150px"><h4 style="color : blue">General Parameters:</h4></td>
@@ -895,7 +907,7 @@
                     <table id="propertytable" class="arrond" style="display : table">
                         <tr>
                             <td id="wob"><h3>TestCase Automation Script</h3></td>
-                            <td id="wob"><input id="button3" style="height:18px; width:10px" type="button" value="-" onclick="javascript:setInvisibleP();"></td>
+                            <td id="wob"><input id="button3" style="height:18px; width:10px" type="button" value="F" onclick="javascript:showOnlyFunctional();"></td>
                         </tr>
                         <tr>
                             <td id="wob"><h4>Properties</h4></td>
@@ -1223,13 +1235,13 @@
                                                             + " AND testcase = '"
                                                             + rs_testcase_general_info.getString("tc.testcase") + "'");
 
-                                                    int testcase_step_maxlength_desc = 150; // Max length for javascritp if any default value
+                                                    int testcase_step_maxlength_desc = 1000; // Max length for javascritp if any default value
 
                                                     int testcase_stepaction_maxlength_sequence = 10; // Default max length values for javascript adding if any actions set by default
                                                     int testcase_stepaction_maxlength_action = 45;
                                                     int testcase_stepaction_maxlength_object = 100;
                                                     int testcase_stepaction_maxlength_property = 45;
-                                                    int testcase_stepaction_maxlength_description = 100;
+                                                    int testcase_stepaction_maxlength_description = 1000;
                                                     Integer i1 = 0;
                                                     boolean isStepExist = false;
                                                     if(rs_step.first()){
@@ -1290,7 +1302,7 @@
                                                                     <td class="technical_part" style="width: 136px"><%out.print(dbDocS(conn, "testcasestepaction", "action", "Action"));%></td>
                                                                     <td class="technical_part" style="width: 350px"><%out.print(dbDocS(conn, "testcasestepaction", "object", "Object"));%></td>
                                                                     <td class="technical_part" style="width: 210px"><%out.print(dbDocS(conn, "testcasestepaction", "property", "Property"));%></td>
-                                                                    <td style="width: 396px"><%out.print(dbDocS(conn, "testcasestepaction", "description", "Description"));%></td>
+                                                                    <td class="functional_description" style="width: 296px"><%out.print(dbDocS(conn, "testcasestepaction", "description", "Description"));%></td>
                                                                 </tr>
                                                                 <%
                                                                     int a = 1;
@@ -1332,9 +1344,10 @@
                                                                                                                           name="actions_property"
                                                                                                                           onchange="trackChanges(this.value, '<%=rs_stepaction.getString("Property")%>', 'submitButtonAction')">
                                                                     </td>
-                                                                    <td style="background-color: <%=actionColor%>"><input class="wob" style="width: 396px; background-color: <%=actionColor%>"
+                                                                    <td class="functional_description" style="background-color: <%=actionColor%>"><input class="wob" class="functional_description" style="width: 296px; background-color: <%=actionColor%>"
                                                                                                                           value="<%=rs_stepaction.getString("Description")%>"
                                                                                                                           name="actions_description"
+                                                                                                                          maxlength="1000"
                                                                                                                           onchange="trackChanges(this.value, '<%=rs_stepaction.getString("Description")%>', 'submitButtonAction')">
                                                                     </td>
                                                                 </tr>
@@ -1386,7 +1399,7 @@
                                                     <td class="technical_part" style="width: 260px"><%out.print(dbDocS(conn, "testcasestepactioncontrol", "ControleProperty", "Control Property"));%></td>
                                                     <td class="technical_part" style="width: 180px"><%out.print(dbDocS(conn, "testcasestepactioncontrol", "ControleValue", "Control Value"));%></td>
                                                     <td class="technical_part" style="width: 40px"><%out.print(dbDocS(conn, "testcasestepactioncontrol", "Fatal", "Fatal"));%></td>
-                                                    <td style="width: 396px"><%out.print(dbDocS(conn, "testcasestepactioncontrol", "ControleDescription", "Control Description"));%></td>
+                                                    <td class="functional_description" style="width: 296px"><%out.print(dbDocS(conn, "testcasestepactioncontrol", "ControleDescription", "Control Description"));%></td>
 
                                                 </tr>
                                                 <%
@@ -1421,7 +1434,7 @@
                                                     <td style="background-color: <%=controlColor%>"><input class="wob" style="width: 60px; font-weight: bold;background-color: <%=controlColor%>"
                                                                                                            value="<%=rs_controls.getString("Control")%>"
                                                                                                            name="controls_control" readonly="readonly"></td>
-                                                    <td style="background-color: <%=controlColor%>"><%=ComboInvariant(conn, "controls_type", "width: 150px", "controls_type", "wob", "13", rs_controls.getString("Type"), "trackChanges(this.value, '" + rs_controls.getString("Type") + "', 'submitButtonChanges')", null)%></td>
+                                                    <td class="technical_part" style="background-color: <%=controlColor%>"><%=ComboInvariant(conn, "controls_type", "width: 150px", "controls_type", "wob", "13", rs_controls.getString("Type"), "trackChanges(this.value, '" + rs_controls.getString("Type") + "', 'submitButtonChanges')", null)%></td>
                                                     <td class="technical_part" style="background-color: <%=controlColor%>"><input class="wob" style="width: 260px;background-color: <%=controlColor%>"
                                                                                                            value="<%=rs_controls.getString("ControlProperty")%>"
                                                                                                            name="controls_controlproperty"
@@ -1431,9 +1444,10 @@
                                                                                                            name="controls_controlvalue"
                                                                                                            onchange="trackChanges(this.value, '<%=rs_controls.getString("ControlDescription")%>', 'submitButtonChanges')"></td>
                                                     <td class="technical_part" style="background-color: <%=controlColor%>"><%=ComboInvariant(conn, "controls_fatal", "width: 40px", "controls_fatal", "wob", "18", rs_controls.getString("Fatal"), "trackChanges(this.value, '" + rs_controls.getString("Fatal") + "', 'submitButtonChanges')", null)%></td>
-                                                    <td style="background-color: <%=controlColor%>"><input class="wob" style="width: 396px;background-color: <%=controlColor%>"
+                                                    <td class="functional_description_control" style="background-color: <%=controlColor%>"><input class="wob" class="functional_description_control" style="width: 296px;background-color: <%=controlColor%>"
                                                                                                            value="<%=rs_controls.getString("ControlDescription")%>"
                                                                                                            name="controls_controldescription"
+                                                                                                           maxlength="1000"
                                                                                                            onchange="trackChanges(this.value, '<%=rs_controls.getString("ControlDescription")%>', 'submitButtonChanges')"></td>
                                                 </tr>
 
@@ -1495,7 +1509,9 @@
                     <td>Properties = <%=proplist%></td>
                     <td td align="right"><input id="button4" style="height:18px; width:10px" type="button" value="+" onclick="javascript:setVisibleP();"></td>
                 </tr>
-            </table>	
+            </table>
+                        </tr>
+                    </table>
         </form>
                     <br>
         <% }%>

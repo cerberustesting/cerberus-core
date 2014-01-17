@@ -580,6 +580,11 @@ function addTestCaseAction(table,id, max_tcsa_seq, max_tcsa_action, max_tcsa_obj
 	}
 	var TD3 = document.createElement('td');
         TD3.setAttribute('style', 'background-color:white; text-align: center');
+        if(displayOnlyFunctional) {
+            TD3.setAttribute('class', 'technical_part only_functional');
+        } else {
+            TD3.setAttribute('class', 'technical_part');
+        }
 	TD3.appendChild(form3);
 	TR.appendChild(TD3);
 
@@ -592,6 +597,11 @@ function addTestCaseAction(table,id, max_tcsa_seq, max_tcsa_action, max_tcsa_obj
 	form4.setAttribute('maxlength', max_tcsa_obj);
 	var TD4 = document.createElement('td');
         TD4.setAttribute('style', 'background-color:white; text-align: center');
+        if(displayOnlyFunctional) {
+            TD4.setAttribute('class', 'technical_part only_functional');
+        } else {
+            TD4.setAttribute('class', 'technical_part');
+        }
 	TD4.appendChild(form4);
 	TR.appendChild(TD4);
 
@@ -604,6 +614,11 @@ function addTestCaseAction(table,id, max_tcsa_seq, max_tcsa_action, max_tcsa_obj
 	form5.setAttribute('maxlength', max_tcsa_pro);
 	var TD5 = document.createElement('td');
         TD5.setAttribute('style', 'background-color:white; text-align: center');
+        if(displayOnlyFunctional) {
+            TD5.setAttribute('class', 'technical_part only_functional');
+        } else {
+            TD5.setAttribute('class', 'technical_part');
+        }
 	TD5.appendChild(form5);
 	TR.appendChild(TD5);
 
@@ -611,11 +626,20 @@ function addTestCaseAction(table,id, max_tcsa_seq, max_tcsa_action, max_tcsa_obj
 	var form6 = document.createElement('input');
 	form6.setAttribute('name', 'actions_description');
 	form6.setAttribute('size', '100%');
-        form6.setAttribute('class', 'wob');
-	form6.setAttribute('style', 'width: 396px');
+        if(displayOnlyFunctional) {
+            form6.setAttribute('class', 'wob functional_description only_functional_description_size');
+        } else {
+            form6.setAttribute('class', 'wob functional_description');
+        }
+	form6.setAttribute('style', 'width: 296px');
 	form6.setAttribute('maxlength', max_tcsa_desc);
 	var TD6 = document.createElement('td');
         TD6.setAttribute('style', 'background-color:white;');
+        if(displayOnlyFunctional) {
+            TD6.setAttribute('class', 'functional_description only_functional_description_size');
+        } else {
+            TD6.setAttribute('class', 'functional_description');
+        }
 	TD6.appendChild(form6);
 	TR.appendChild(TD6);
 
@@ -772,6 +796,11 @@ function addTestCaseControl(table, step_id, max_tcc_step, max_tcc_sequence,
 	}
 	var TD5 = document.createElement('td');
         TD5.setAttribute('style', 'background-color:white');
+        if(displayOnlyFunctional) {
+            TD5.setAttribute('class', 'technical_part only_functional');
+        } else {
+            TD5.setAttribute('class', 'technical_part');
+        }
 	TD5.appendChild(form5);
 	TR.appendChild(TD5);
 
@@ -783,6 +812,11 @@ function addTestCaseControl(table, step_id, max_tcc_step, max_tcc_sequence,
 	form7.setAttribute('maxlength', max_tcc_property);
 	var TD7 = document.createElement('td');
         TD7.setAttribute('style', 'background-color:white');
+        if(displayOnlyFunctional) {
+            TD7.setAttribute('class', 'technical_part only_functional');
+        } else {
+            TD7.setAttribute('class', 'technical_part');
+        }
 	TD7.appendChild(form7);
 	TR.appendChild(TD7);
 
@@ -794,6 +828,11 @@ function addTestCaseControl(table, step_id, max_tcc_step, max_tcc_sequence,
 	form6.setAttribute('maxlength', max_tcc_value);
 	var TD6 = document.createElement('td');
         TD6.setAttribute('style', 'background-color:white');
+        if(displayOnlyFunctional) {
+            TD6.setAttribute('class', 'technical_part only_functional');
+        } else {
+            TD6.setAttribute('class', 'technical_part');
+        }
 	TD6.appendChild(form6);
 	TR.appendChild(TD6);
 
@@ -808,17 +847,32 @@ function addTestCaseControl(table, step_id, max_tcc_step, max_tcc_sequence,
 	}
 	var TD7 = document.createElement('td');
         TD7.setAttribute('style', 'background-color:white');
+        if(displayOnlyFunctional) {
+            TD7.setAttribute('class', 'technical_part only_functional');
+        } else {
+            TD7.setAttribute('class', 'technical_part');
+        }
+
 	TD7.appendChild(form7);
 	TR.appendChild(TD7);
 
 	/* Description */
 	var form8 = document.createElement('input');
 	form8.setAttribute('name', 'controls_controldescription');
-        form8.setAttribute('class', 'wob');
-	form8.setAttribute('style', 'width: 396px');
+        if(displayOnlyFunctional) {
+            form8.setAttribute('class', 'wob functional_description_control only_functional_description_control_size');
+        } else {
+            form8.setAttribute('class', 'wob functional_description_control');
+        }
+	form8.setAttribute('style', 'width: 296px');
 	form8.setAttribute('maxlength', max_tcc_description);
 	var TD8 = document.createElement('td');
         TD8.setAttribute('style', 'background-color:white');
+        if(displayOnlyFunctional) {
+            TD8.setAttribute('class', 'functional_description_control only_functional_description_control_size');
+        } else {
+            TD8.setAttribute('class', 'functional_description_control');
+        }
 	TD8.appendChild(form8);
 	TR.appendChild(TD8);
 
