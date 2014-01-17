@@ -1499,7 +1499,7 @@
                                             <tr>
                                                 <td id="wob" style="font-weight: bold;">From :</td>
                                                 <td  class="wob">
-                                                    <select id="fromTest" name="FromTest" style="width: 200px" onChange="getTestCasesForImportStep(this)">
+                                                    <select id="fromTest" name="FromTest" style="width: 200px" onChange="getTestCasesForImportStep()">
                                                         <%
                                                             %><option style="width: 200px" value="All">-- Choose Test --</option><%                                                            
                                                             rsTest.first();

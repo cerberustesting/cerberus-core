@@ -1294,9 +1294,19 @@ function displayImportStep() {
         $('#ImportStepTable').fadeIn(1000);
 }
 
-function getTestCasesForImportStep(select){
-    var testSelected = select.options[select.selectedIndex].value;
-    $('#trImportTestCase').load('./ImportTestCase.jsp?Test='+testSelected, function() {
+function getTestCasesForImportStep(){
+    var selectTest = document.getElementById('fromTest');
+    var testSelected = selectTest.options[selectTest.selectedIndex].value;
+    
+    var URL = './ImportTestCase.jsp?Test='+encodeURI(testSelected);
+    
+    var selectTestCase = document.getElementById('fromTestCase');
+    if(selectTestCase !== null && selectTestCase.selectedIndex >=0 ) {
+    var testCaseSelected = selectTestCase.options[selectTestCase.selectedIndex].value;
+        URL += '&TestCase='+encodeURI(testCaseSelected);
+    }
+    
+    $('#trImportTestCase').load(URL, function() {
         $('#trImportTestCase').fadeIn(250);
     });
 }
@@ -1316,7 +1326,8 @@ function importStep(){
     selectTest = document.getElementById('fromTestCase');
     var fromTestCase = selectTest.options[selectTest.selectedIndex].value;
     
-    var fromStep = document.getElementById('fromStep').value;
+    selectTest = document.getElementById('fromStep');
+    var fromStep = selectTest.options[selectTest.selectedIndex].value;
     
     var importStep = document.getElementById('import_step').value;
     

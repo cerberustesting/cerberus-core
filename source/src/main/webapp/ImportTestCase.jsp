@@ -48,15 +48,24 @@
         testcase = new String("%%");
     }
 
+    String step;
+    if (request.getParameter("Step") != null
+            && request.getParameter("Step").compareTo("All") != 0) {
+        step = request.getParameter("Step");
+    } else {
+        step = new String("%%");
+    }
+
     Connection conn = db.connect();
     
     String optstyle;
     Statement stQueryTestCase = conn.createStatement();
+    Statement stQueryTestCaseStep = conn.createStatement();
 
 %>
 <td class="wob" style="width: 70px; font-weight: bold;"><%out.print(dbDocS(conn, "testcase", "testcase", "OriginTestCase"));%></td>
 <td  class="wob">
-    <select id="fromTestCase" name="FromTestCase" style="width: 500px">
+    <select id="fromTestCase" name="FromTestCase" style="width: 200px" onchange="getTestCasesForImportStep()">
         <%
             if (test.compareTo("%%") == 0) {
                 %><option style="width: 200px" value="All">-- Choose Test First --</option><%
@@ -69,10 +78,28 @@
                     } else {
                         optstyle = "font-weight:lighter;";
                     }
-                    %><option style="width: 500px;<%=optstyle%>" value="<%=rsTestCase.getString("TestCase")%>" <%=testcase.compareTo(rsTestCase.getString("TestCase")) == 0 ? " SELECTED " : ""%>><%=rsTestCase.getString("TestCase")%>  [<%=rsTestCase.getString("Application")%>]  : <%=rsTestCase.getString("Description")%></option><%
+                    %><option style="width: 200px;<%=optstyle%>" value="<%=rsTestCase.getString("TestCase")%>" <%=testcase.compareTo(rsTestCase.getString("TestCase")) == 0 ? " SELECTED " : ""%>><%=rsTestCase.getString("TestCase")%>  [<%=rsTestCase.getString("Application")%>]  : <%=rsTestCase.getString("Description")%></option><%
                 }
             }
         %>
     </select>
 </td>
-<td  class="wob">Step <input id="fromStep" type="text" name="FromStep" value="1"></td>
+<td  class="wob">
+        <select id="fromStep" name="FromStep" style="width: 200px">
+        <%
+            if (testcase.compareTo("%%") == 0) {
+                %><option style="width: 200px" value="All">-- Choose Test Case First --</option><%
+            } else {
+
+                String sql = "SELECT Step, Description FROM testcasestep WHERE Test like '"+test+"' and TestCase like '"+testcase+"' Order by Step asc";
+                //String sql = "SELECT TestCase, Application,  Description, tcactive FROM testcase where TestCase IS NOT NULL and test like '" + test + "'Order by TestCase asc";
+                
+                ResultSet rsTestCaseStep = stQueryTestCaseStep.executeQuery(sql);
+                while (rsTestCaseStep.next()) {
+                    %><option style="width: 200px;" value="<%=rsTestCaseStep.getString("Step")%>" <%=step.compareTo(rsTestCaseStep.getString("Step")) == 0 ? " SELECTED " : ""%>>[<%=rsTestCaseStep.getString("Step")%>] <%=rsTestCaseStep.getString("Description")%></option><%
+                }
+            }
+        %>
+        </select>
+</td>
+
