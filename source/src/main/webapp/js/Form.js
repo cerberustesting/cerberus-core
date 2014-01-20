@@ -631,7 +631,7 @@ function addTestCaseAction(table,id, max_tcsa_seq, max_tcsa_action, max_tcsa_obj
         } else {
             form6.setAttribute('class', 'wob functional_description');
         }
-	form6.setAttribute('style', 'width: 296px');
+	form6.setAttribute('style', 'width: 100%');
 	form6.setAttribute('maxlength', max_tcsa_desc);
 	var TD6 = document.createElement('td');
         TD6.setAttribute('style', 'background-color:white;');
@@ -864,7 +864,7 @@ function addTestCaseControl(table, step_id, max_tcc_step, max_tcc_sequence,
         } else {
             form8.setAttribute('class', 'wob functional_description_control');
         }
-	form8.setAttribute('style', 'width: 296px');
+	form8.setAttribute('style', 'width: 100%');
 	form8.setAttribute('maxlength', max_tcc_description);
 	var TD8 = document.createElement('td');
         TD8.setAttribute('style', 'background-color:white');

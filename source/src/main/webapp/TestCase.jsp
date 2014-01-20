@@ -1344,7 +1344,7 @@
                                                                                                                           name="actions_property"
                                                                                                                           onchange="trackChanges(this.value, '<%=rs_stepaction.getString("Property")%>', 'submitButtonAction')">
                                                                     </td>
-                                                                    <td class="functional_description" style="background-color: <%=actionColor%>"><input class="wob" class="functional_description" style="width: 296px; background-color: <%=actionColor%>"
+                                                                    <td class="functional_description" style="background-color: <%=actionColor%>"><input class="wob" class="functional_description" style="width: 100%; background-color: <%=actionColor%>"
                                                                                                                           value="<%=rs_stepaction.getString("Description")%>"
                                                                                                                           name="actions_description"
                                                                                                                           maxlength="1000"
@@ -1444,7 +1444,7 @@
                                                                                                            name="controls_controlvalue"
                                                                                                            onchange="trackChanges(this.value, '<%=rs_controls.getString("ControlDescription")%>', 'submitButtonChanges')"></td>
                                                     <td class="technical_part" style="background-color: <%=controlColor%>"><%=ComboInvariant(conn, "controls_fatal", "width: 40px", "controls_fatal", "wob", "18", rs_controls.getString("Fatal"), "trackChanges(this.value, '" + rs_controls.getString("Fatal") + "', 'submitButtonChanges')", null)%></td>
-                                                    <td class="functional_description_control" style="background-color: <%=controlColor%>"><input class="wob" class="functional_description_control" style="width: 296px;background-color: <%=controlColor%>"
+                                                    <td class="functional_description_control" style="background-color: <%=controlColor%>"><input class="wob" class="functional_description_control" style="width: 100%;background-color: <%=controlColor%>"
                                                                                                            value="<%=rs_controls.getString("ControlDescription")%>"
                                                                                                            name="controls_controldescription"
                                                                                                            maxlength="1000"
