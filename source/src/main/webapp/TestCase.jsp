@@ -1344,7 +1344,7 @@
                                                                                                                           name="actions_property"
                                                                                                                           onchange="trackChanges(this.value, '<%=rs_stepaction.getString("Property")%>', 'submitButtonAction')">
                                                                     </td>
-                                                                    <td class="functional_description" style="background-color: <%=actionColor%>"><input class="wob" class="functional_description" style="width: 296px; background-color: <%=actionColor%>"
+                                                                    <td class="functional_description" style="background-color: <%=actionColor%>"><input class="wob" class="functional_description" style="width: 100%; background-color: <%=actionColor%>"
                                                                                                                           value="<%=rs_stepaction.getString("Description")%>"
                                                                                                                           name="actions_description"
                                                                                                                           maxlength="1000"
