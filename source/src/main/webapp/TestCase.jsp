@@ -139,11 +139,11 @@
             }
 
             .only_functional_description_size {
-                width: 1000px;
+                width: 864px;
             }
             
             .only_functional_description_control_size {
-                width: 937px;
+                width: 787px;
             }
             
         </style>
@@ -1299,7 +1299,7 @@
                                                                 <tr id="header">
                                                                     <td style="width: 30px"><%out.print(dbDocS(conn, "testcasecountryproperties", "delete", "Delete"));%></td>
                                                                     <td style="width: 60px"><%out.print(dbDocS(conn, "testcasestepaction", "sequence", "Sequence"));%></td>
-                                                                    <td class="technical_part" style="width: 136px"><%out.print(dbDocS(conn, "testcasestepaction", "action", "Action"));%></td>
+                                                                    <td style="width: 136px"><%out.print(dbDocS(conn, "testcasestepaction", "action", "Action"));%></td>
                                                                     <td class="technical_part" style="width: 350px"><%out.print(dbDocS(conn, "testcasestepaction", "object", "Object"));%></td>
                                                                     <td class="technical_part" style="width: 210px"><%out.print(dbDocS(conn, "testcasestepaction", "property", "Property"));%></td>
                                                                     <td class="functional_description" style="width: 296px"><%out.print(dbDocS(conn, "testcasestepaction", "description", "Description"));%></td>
@@ -1333,7 +1333,7 @@
                                                                                                                           value="<%=rs_stepaction.getString("Sequence")%>"
                                                                                                                           name="actions_sequence" readonly="readonly">
                                                                     </td>
-                                                                    <td class="technical_part" style="background-color: <%=actionColor%>"><%=ComboInvariant(conn, "actions_action", "width: 136px; background-color:" + actionColor, "actions_action", "wob", "12", rs_stepaction.getString("Action"), "trackChanges(0, this.selectedIndex, 'submitButtonAction')", null)%></td>
+                                                                    <td style="background-color: <%=actionColor%>"><%=ComboInvariant(conn, "actions_action", "width: 136px; background-color:" + actionColor, "actions_action", "wob", "12", rs_stepaction.getString("Action"), "trackChanges(0, this.selectedIndex, 'submitButtonAction')", null)%></td>
                                                                     <td class="technical_part" style="background-color: <%=actionColor%>"><input class="wob" style="width: 350px; background-color: <%=actionColor%>"
                                                                                                                            value="<%=rs_stepaction.getString("Object")%>"
                                                                                                                            name="actions_object"
@@ -1395,7 +1395,7 @@
                                                     <td style="width: 30px"><%out.print(dbDocS(conn, "testcasecountryproperties", "delete", "Delete"));%></td>
                                                     <td style="width: 60px"><%out.print(dbDocS(conn, "testcasestepactioncontrol", "sequence", "Sequence"));%></td>
                                                     <td style="width: 60px"><%out.print(dbDocS(conn, "testcasestepactioncontrol", "control", "Control"));%></td>
-                                                    <td class="technical_part" style="width: 150px"><%out.print(dbDocS(conn, "testcasestepactioncontrol", "type", "Type"));%></td>
+                                                    <td style="width: 150px"><%out.print(dbDocS(conn, "testcasestepactioncontrol", "type", "Type"));%></td>
                                                     <td class="technical_part" style="width: 260px"><%out.print(dbDocS(conn, "testcasestepactioncontrol", "ControleProperty", "Control Property"));%></td>
                                                     <td class="technical_part" style="width: 180px"><%out.print(dbDocS(conn, "testcasestepactioncontrol", "ControleValue", "Control Value"));%></td>
                                                     <td class="technical_part" style="width: 40px"><%out.print(dbDocS(conn, "testcasestepactioncontrol", "Fatal", "Fatal"));%></td>
@@ -1434,7 +1434,7 @@
                                                     <td style="background-color: <%=controlColor%>"><input class="wob" style="width: 60px; font-weight: bold;background-color: <%=controlColor%>"
                                                                                                            value="<%=rs_controls.getString("Control")%>"
                                                                                                            name="controls_control" readonly="readonly"></td>
-                                                    <td class="technical_part" style="background-color: <%=controlColor%>"><%=ComboInvariant(conn, "controls_type", "width: 150px; background-color:" + controlColor, "controls_type", "wob", "13", rs_controls.getString("Type"), "trackChanges(this.value, '" + rs_controls.getString("Type") + "', 'submitButtonChanges')", null)%></td>
+                                                    <td style="background-color: <%=controlColor%>"><%=ComboInvariant(conn, "controls_type", "width: 150px; background-color:" + controlColor, "controls_type", "wob", "13", rs_controls.getString("Type"), "trackChanges(this.value, '" + rs_controls.getString("Type") + "', 'submitButtonChanges')", null)%></td>
                                                     <td class="technical_part" style="background-color: <%=controlColor%>"><input class="wob" style="width: 260px;background-color: <%=controlColor%>"
                                                                                                            value="<%=rs_controls.getString("ControlProperty")%>"
                                                                                                            name="controls_controlproperty"
