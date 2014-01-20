@@ -337,6 +337,9 @@ public class SeleniumService implements ISeleniumService {
         } else if (identifier.equalsIgnoreCase("link")) {
             return By.linkText(locator);
 
+        } else if (identifier.equalsIgnoreCase("data-cerberus")) {
+            return By.xpath("//*[@data-cerberus='"+locator+"']");
+
         } else {
             throw new NoSuchElementException(identifier);
         }
