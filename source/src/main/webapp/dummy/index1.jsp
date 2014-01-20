@@ -86,5 +86,7 @@
             <input id="selectTimeoutValue" onChange="waitXSecondAndPrintValue(this)">
             <input id="selectTimeoutHide" name="selectTimeoutHide" style="display: none"/>
         </form>
+            <p>Below is part to test Attribute data-cerberus</p>
+            <input data-cerberus="index1_input" value="Test Value">
     </body>
 </html>
