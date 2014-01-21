@@ -597,11 +597,6 @@ function addTestCaseAction(table,id, max_tcsa_seq, max_tcsa_action, max_tcsa_obj
 	form4.setAttribute('maxlength', max_tcsa_obj);
 	var TD4 = document.createElement('td');
         TD4.setAttribute('style', 'background-color:white; text-align: center');
-        if(displayOnlyFunctional) {
-            TD4.setAttribute('class', 'technical_part only_functional');
-        } else {
-            TD4.setAttribute('class', 'technical_part');
-        }
 	TD4.appendChild(form4);
 	TR.appendChild(TD4);
 
@@ -796,11 +791,6 @@ function addTestCaseControl(table, step_id, max_tcc_step, max_tcc_sequence,
 	}
 	var TD5 = document.createElement('td');
         TD5.setAttribute('style', 'background-color:white');
-        if(displayOnlyFunctional) {
-            TD5.setAttribute('class', 'technical_part only_functional');
-        } else {
-            TD5.setAttribute('class', 'technical_part');
-        }
 	TD5.appendChild(form5);
 	TR.appendChild(TD5);
 
