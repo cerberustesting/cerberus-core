@@ -19,19 +19,19 @@
  */
 package org.cerberus.factory;
 
-import org.cerberus.entity.ZZTestData;
+import org.cerberus.entity.TestData;
 
 /**
  *
  * @author bcivel
  */
-public interface IFactoryZZTestData {
+public interface IFactoryTestData {
 
     /**
      *
      * @param key Key of the data. Should be unique
      * @param value Value related to the key
-     * @return a ZZTestData
+     * @return a TestData
      */
-    ZZTestData create(String key, String value);
+    TestData create(String key, String value);
 }

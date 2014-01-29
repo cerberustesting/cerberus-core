@@ -20,8 +20,8 @@
 
 package org.cerberus.factory.impl;
 
-import org.cerberus.entity.ZZTestData;
-import org.cerberus.factory.IFactoryZZTestData;
+import org.cerberus.entity.TestData;
+import org.cerberus.factory.IFactoryTestData;
 import org.springframework.stereotype.Service;
 
 /**
@@ -29,11 +29,11 @@ import org.springframework.stereotype.Service;
  * @author bcivel
  */
 @Service
-public class FactoryZZTestData implements IFactoryZZTestData{
+public class FactoryTestData implements IFactoryTestData{
 
     @Override
-    public ZZTestData create(String key, String value) {
-        ZZTestData newData = new ZZTestData();
+    public TestData create(String key, String value) {
+        TestData newData = new TestData();
         newData.setKey(key);
         newData.setValue(value);
         return newData;

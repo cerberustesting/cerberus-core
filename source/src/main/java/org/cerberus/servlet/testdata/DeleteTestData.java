@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package org.cerberus.servlet.zztestdata;
+package org.cerberus.servlet.testdata;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -14,11 +14,10 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.cerberus.entity.ZZTestData;
+import org.cerberus.entity.TestData;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.factory.IFactoryZZTestData;
-import org.cerberus.log.MyLogger;
-import org.cerberus.service.IZZTestDataService;
+import org.cerberus.factory.IFactoryTestData;
+import org.cerberus.service.ITestDataService;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -26,7 +25,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  *
  * @author bcivel
  */
-public class UpdateZZTestData extends HttpServlet {
+public class DeleteTestData extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -42,19 +41,17 @@ public class UpdateZZTestData extends HttpServlet {
         response.setContentType("text/html;charset=UTF-8");
         PrintWriter out = response.getWriter();
         try {
-        //String key = request.getParameter("Key");
-        String key = request.getParameter("id");
-        String value = request.getParameter("value");
+            //String key = request.getParameter("Key");
+            String key = request.getParameter("id");
+            String value = request.getParameter("value");
 
-        MyLogger.log("test", org.apache.log4j.Level.FATAL, key+value);
-        ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-        IZZTestDataService zzTestDataService = appContext.getBean(IZZTestDataService.class);
-        IFactoryZZTestData factoryZZTestData = appContext.getBean(IFactoryZZTestData.class);
-        
-        ZZTestData testData = factoryZZTestData.create(key,value);
-        zzTestDataService.updateZZTestData(testData);
-           
-        out.print(value);
+            ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+            ITestDataService testDataService = appContext.getBean(ITestDataService.class);
+            IFactoryTestData factoryTestData = appContext.getBean(IFactoryTestData.class);
+
+            TestData testData = factoryTestData.create(key,value);
+            testDataService.deleteTestData(testData);
+            
         } finally {
             out.close();
         }
@@ -75,7 +72,7 @@ public class UpdateZZTestData extends HttpServlet {
         try {
             processRequest(request, response);
         } catch (CerberusException ex) {
-            Logger.getLogger(UpdateZZTestData.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(DeleteTestData.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -93,7 +90,7 @@ public class UpdateZZTestData extends HttpServlet {
         try {
             processRequest(request, response);
         } catch (CerberusException ex) {
-            Logger.getLogger(UpdateZZTestData.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(DeleteTestData.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 

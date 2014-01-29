@@ -246,20 +246,20 @@
         <servlet-class>org.cerberus.servlet.testCase.ImportTestCaseStep</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>CreateZZTestData</servlet-name>
-        <servlet-class>org.cerberus.servlet.zztestdata.CreateZZTestData</servlet-class>
+        <servlet-name>CreateTestData</servlet-name>
+        <servlet-class>org.cerberus.servlet.testdata.CreateTestData</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>UpdateZZTestData</servlet-name>
-        <servlet-class>org.cerberus.servlet.zztestdata.UpdateZZTestData</servlet-class>
+        <servlet-name>UpdateTestData</servlet-name>
+        <servlet-class>org.cerberus.servlet.testdata.UpdateTestData</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>DeleteZZTestData</servlet-name>
-        <servlet-class>org.cerberus.servlet.zztestdata.DeleteZZTestData</servlet-class>
+        <servlet-name>DeleteTestData</servlet-name>
+        <servlet-class>org.cerberus.servlet.testdata.DeleteTestData</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>FindAllZZTestData</servlet-name>
-        <servlet-class>org.cerberus.servlet.zztestdata.FindAllZZTestData</servlet-class>
+        <servlet-name>FindAllTestData</servlet-name>
+        <servlet-class>org.cerberus.servlet.testdata.FindAllTestData</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>RunTestCase</servlet-name>
@@ -490,20 +490,20 @@
         <url-pattern>/ImportTestCaseStep</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>CreateZZTestData</servlet-name>
-        <url-pattern>/CreateZZTestData</url-pattern>
+        <servlet-name>CreateTestData</servlet-name>
+        <url-pattern>/CreateTestData</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>UpdateZZTestData</servlet-name>
-        <url-pattern>/UpdateZZTestData</url-pattern>
+        <servlet-name>UpdateTestData</servlet-name>
+        <url-pattern>/UpdateTestData</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>DeleteZZTestData</servlet-name>
-        <url-pattern>/DeleteZZTestData</url-pattern>
+        <servlet-name>DeleteTestData</servlet-name>
+        <url-pattern>/DeleteTestData</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>FindAllZZTestData</servlet-name>
-        <url-pattern>/FindAllZZTestData</url-pattern>
+        <servlet-name>FindAllTestData</servlet-name>
+        <url-pattern>/FindAllTestData</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>
@@ -608,10 +608,10 @@
             <url-pattern>/UpdateTestCaseDetail</url-pattern>
             <url-pattern>/ImportSeleniumIDE</url-pattern>
             <url-pattern>/ImportTestCaseStep</url-pattern>
-            <url-pattern>/CreateZZTestData</url-pattern>
-            <url-pattern>/DeleteZZTestData</url-pattern>
-            <url-pattern>/UpdateZZTestData</url-pattern>
-            <url-pattern>/FindAllZZTestData</url-pattern>
+            <url-pattern>/CreateTestData</url-pattern>
+            <url-pattern>/DeleteTestData</url-pattern>
+            <url-pattern>/UpdateTestData</url-pattern>
+            <url-pattern>/FindAllTestData</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <description>Test</description>

@@ -45,7 +45,7 @@
                 var oTable = $('#testDataList').dataTable({
                     "aaSorting": [[0, "desc"]],
                     "bServerSide": true,
-                    "sAjaxSource": "FindAllZZTestData",
+                    "sAjaxSource": "FindAllTestData",
                     "bJQueryUI": true,
                     "bProcessing": true,
                     "bPaginate": true,
@@ -60,7 +60,7 @@
                     ]
                 }
                 ).makeEditable({
-                    sAddURL: "CreateZZTestData",
+                    sAddURL: "CreateTestData",
                     sAddHttpMethod: "POST",
                     oAddNewRowButtonOptions: {
                         label: "<b>Create Data...</b>",
@@ -68,13 +68,13 @@
                         icons: {primary: 'ui-icon-plus'}
                     },
                     sDeleteHttpMethod: "POST",
-                    sDeleteURL: "DeleteZZTestData",
+                    sDeleteURL: "DeleteTestData",
                     sAddDeleteToolbarSelector: ".dataTables_length",
                     oDeleteRowButtonOptions: {
                         label: "Remove",
                         icons: {primary: 'ui-icon-trash'}
                     },
-                    sUpdateURL: "UpdateZZTestData",
+                    sUpdateURL: "UpdateTestData",
                     fnOnEdited: function(status) {
                         $(".dataTables_processing").css('visibility', 'hidden');
                     },

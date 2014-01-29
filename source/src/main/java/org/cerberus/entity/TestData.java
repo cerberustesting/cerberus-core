@@ -10,7 +10,7 @@ package org.cerberus.entity;
  *
  * @author bcivel
  */
-public class ZZTestData {
+public class TestData {
     
     private String key;
     private String value;

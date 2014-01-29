@@ -25,13 +25,13 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.log4j.Level;
-import org.cerberus.dao.IZZTestDataDAO;
+import org.cerberus.dao.ITestDataDAO;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.entity.MessageGeneral;
 import org.cerberus.entity.MessageGeneralEnum;
-import org.cerberus.entity.ZZTestData;
+import org.cerberus.entity.TestData;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.factory.IFactoryZZTestData;
+import org.cerberus.factory.IFactoryTestData;
 import org.cerberus.log.MyLogger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -41,18 +41,18 @@ import org.springframework.stereotype.Repository;
  * @author bcivel
  */
 @Repository
-public class ZZTestDataDAO implements IZZTestDataDAO {
+public class TestDataDAO implements ITestDataDAO {
 
     @Autowired
     private DatabaseSpring databaseSpring;
     @Autowired
-    private IFactoryZZTestData factoryZZTestData;
+    private IFactoryTestData factoryTestData;
 
     @Override
-    public void createZZTestData(ZZTestData testData) throws CerberusException {
+    public void createTestData(TestData testData) throws CerberusException {
         boolean throwExcep = false;
         StringBuilder query = new StringBuilder();
-        query.append("INSERT INTO zztestdata (`key`, `value`) ");
+        query.append("INSERT INTO testdata (`key`, `value`) ");
         query.append("VALUES (?,?)");
 
         Connection connection = this.databaseSpring.connect();
@@ -66,19 +66,19 @@ public class ZZTestDataDAO implements IZZTestDataDAO {
                 throwExcep = false;
 
             } catch (SQLException exception) {
-                MyLogger.log(ZZTestDataDAO.class.getName(), Level.ERROR, exception.toString());
+                MyLogger.log(TestDataDAO.class.getName(), Level.ERROR, exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(ZZTestDataDAO.class.getName(), Level.ERROR, exception.toString());
+            MyLogger.log(TestDataDAO.class.getName(), Level.ERROR, exception.toString());
         } finally {
             try {
                 if (connection != null) {
                     connection.close();
                 }
             } catch (SQLException e) {
-                MyLogger.log(ZZTestDataDAO.class.getName(), Level.WARN, e.toString());
+                MyLogger.log(TestDataDAO.class.getName(), Level.WARN, e.toString());
             }
         }
         if (throwExcep) {
@@ -87,10 +87,10 @@ public class ZZTestDataDAO implements IZZTestDataDAO {
     }
 
     @Override
-    public void updateZZTestData(ZZTestData testData) throws CerberusException {
+    public void updateTestData(TestData testData) throws CerberusException {
         boolean throwExcep = false;
         StringBuilder query = new StringBuilder();
-        query.append("update zztestdata set `value`=? where `key`=? ");
+        query.append("update testdata set `value`=? where `key`=? ");
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -103,19 +103,19 @@ public class ZZTestDataDAO implements IZZTestDataDAO {
                 throwExcep = false;
 
             } catch (SQLException exception) {
-                MyLogger.log(ZZTestDataDAO.class.getName(), Level.ERROR, exception.toString());
+                MyLogger.log(TestDataDAO.class.getName(), Level.ERROR, exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(ZZTestDataDAO.class.getName(), Level.ERROR, exception.toString());
+            MyLogger.log(TestDataDAO.class.getName(), Level.ERROR, exception.toString());
         } finally {
             try {
                 if (connection != null) {
                     connection.close();
                 }
             } catch (SQLException e) {
-                MyLogger.log(ZZTestDataDAO.class.getName(), Level.WARN, e.toString());
+                MyLogger.log(TestDataDAO.class.getName(), Level.WARN, e.toString());
             }
         }
         if (throwExcep) {
@@ -124,10 +124,10 @@ public class ZZTestDataDAO implements IZZTestDataDAO {
     }
 
     @Override
-    public void deleteZZTestData(ZZTestData testData) throws CerberusException {
+    public void deleteTestData(TestData testData) throws CerberusException {
         boolean throwExcep = false;
         StringBuilder query = new StringBuilder();
-        query.append("delete from zztestdata where `key`=? ");
+        query.append("delete from testdata where `key`=? ");
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -139,19 +139,19 @@ public class ZZTestDataDAO implements IZZTestDataDAO {
                 throwExcep = false;
 
             } catch (SQLException exception) {
-                MyLogger.log(ZZTestDataDAO.class.getName(), Level.ERROR, exception.toString());
+                MyLogger.log(TestDataDAO.class.getName(), Level.ERROR, exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(ZZTestDataDAO.class.getName(), Level.ERROR, exception.toString());
+            MyLogger.log(TestDataDAO.class.getName(), Level.ERROR, exception.toString());
         } finally {
             try {
                 if (connection != null) {
                     connection.close();
                 }
             } catch (SQLException e) {
-                MyLogger.log(ZZTestDataDAO.class.getName(), Level.WARN, e.toString());
+                MyLogger.log(TestDataDAO.class.getName(), Level.WARN, e.toString());
             }
         }
         if (throwExcep) {
@@ -160,52 +160,52 @@ public class ZZTestDataDAO implements IZZTestDataDAO {
     }
 
     @Override
-    public List<ZZTestData> findAllZZTestData() {
-        List<ZZTestData> list = null;
-        final String query = "SELECT * FROM zztestdata";
+    public List<TestData> findAllTestData() {
+        List<TestData> list = null;
+        final String query = "SELECT * FROM testdata";
 
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
             try {
                 ResultSet resultSet = preStat.executeQuery();
-                list = new ArrayList<ZZTestData>();
+                list = new ArrayList<TestData>();
                 try {
                     while (resultSet.next()) {
-                        list.add(this.loadZZTestDataFromResultSet(resultSet));
+                        list.add(this.loadTestDataFromResultSet(resultSet));
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(ZZTestDataDAO.class.getName(), Level.ERROR, exception.toString());
+                    MyLogger.log(TestDataDAO.class.getName(), Level.ERROR, exception.toString());
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(ZZTestDataDAO.class.getName(), Level.ERROR, exception.toString());
+                MyLogger.log(TestDataDAO.class.getName(), Level.ERROR, exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(ZZTestDataDAO.class.getName(), Level.ERROR, exception.toString());
+            MyLogger.log(TestDataDAO.class.getName(), Level.ERROR, exception.toString());
         } finally {
             try {
                 if (connection != null) {
                     connection.close();
                 }
             } catch (SQLException e) {
-                MyLogger.log(ZZTestDataDAO.class.getName(), Level.WARN, e.toString());
+                MyLogger.log(TestDataDAO.class.getName(), Level.WARN, e.toString());
             }
         }
         return list;
     }
 
     @Override
-    public List<ZZTestData> findZZTestDataListByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
-        List<ZZTestData> testDataList = new ArrayList<ZZTestData>();
+    public List<TestData> findTestDataListByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
+        List<TestData> testDataList = new ArrayList<TestData>();
         StringBuilder gSearch = new StringBuilder();
         String searchSQL = "";
 
         StringBuilder query = new StringBuilder();
-        query.append("SELECT * FROM zztestdata ");
+        query.append("SELECT * FROM testdata ");
 
         gSearch.append(" where (`key` like '%");
         gSearch.append(searchTerm);
@@ -232,7 +232,7 @@ public class ZZTestDataDAO implements IZZTestDataDAO {
         query.append(" , ");
         query.append(amount);
 
-        ZZTestData testData;
+        TestData testData;
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -242,40 +242,40 @@ public class ZZTestDataDAO implements IZZTestDataDAO {
                 try {
 
                     while (resultSet.next()) {
-                        testDataList.add(this.loadZZTestDataFromResultSet(resultSet));
+                        testDataList.add(this.loadTestDataFromResultSet(resultSet));
                     }
 
                 } catch (SQLException exception) {
-                    MyLogger.log(ZZTestDataDAO.class.getName(), Level.ERROR, exception.toString());
+                    MyLogger.log(TestDataDAO.class.getName(), Level.ERROR, exception.toString());
                 } finally {
                     resultSet.close();
                 }
 
             } catch (SQLException exception) {
-                MyLogger.log(ZZTestDataDAO.class.getName(), Level.ERROR, exception.toString());
+                MyLogger.log(TestDataDAO.class.getName(), Level.ERROR, exception.toString());
             } finally {
                 preStat.close();
             }
 
         } catch (SQLException exception) {
-            MyLogger.log(ZZTestDataDAO.class.getName(), Level.ERROR, exception.toString());
+            MyLogger.log(TestDataDAO.class.getName(), Level.ERROR, exception.toString());
         } finally {
             try {
                 if (connection != null) {
                     connection.close();
                 }
             } catch (SQLException e) {
-                MyLogger.log(ZZTestDataDAO.class.getName(), Level.ERROR, e.toString());
+                MyLogger.log(TestDataDAO.class.getName(), Level.ERROR, e.toString());
             }
         }
 
         return testDataList;
     }
 
-    private ZZTestData loadZZTestDataFromResultSet(ResultSet resultSet) throws SQLException {
+    private TestData loadTestDataFromResultSet(ResultSet resultSet) throws SQLException {
         String key = resultSet.getString("key");
         String value = resultSet.getString("value");
 
-        return factoryZZTestData.create(key, value);
+        return factoryTestData.create(key, value);
     }
 }
