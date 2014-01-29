@@ -2854,6 +2854,10 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS = new StringBuilder();
         SQLS.append("ALTER TABLE `testcasestepaction` ADD COLUMN `Description` VARCHAR(255) NOT NULL DEFAULT ''  AFTER `Property` ;");
         SQLInstruction.add(SQLS.toString());
+        
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `zztestdata` CHANGE COLUMN `key` `key` VARCHAR(150) NOT NULL");
+        SQLInstruction.add(SQLS.toString());
 
 // Creating table to host test data inside Cerberus (used when we cannot dynamically retreive data from the system).
         SQLS = new StringBuilder();
