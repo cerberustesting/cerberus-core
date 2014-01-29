@@ -104,11 +104,20 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         // SQL Script Instructions.
         // ***********************************************
         // ***********************************************
-        // Every Query must be independant.
-        // Drop and Create index of the table / columns inside the same SQL
-        // Drop and creation of Foreign Key inside the same SQL
-        // 1 Index or Foreign Key at a time.
-        // Baware of big tables that may result a timeout on the GUI side.
+        // - Every Query must be independant.<ul>
+        //    - Drop and Create index of the table / columns inside the same SQL
+        //    - Drop and creation of Foreign Key inside the same SQL
+        // - SQL must be fast (even on big tables)
+        //    - 1 Index or Foreign Key at a time.
+        //    - Beware of big tables that may result a timeout on the GUI side.
+        // - Limit the number of SQL required in this class.
+        //    - When inserting some data in table, group them inside the same SQL
+        // - Never introduce an SQL between 2 SQL. 
+        //    - it messup the seq of SQL to execute in all users that moved to 
+        //      earlier version
+        // - Only modify the SQL to fix an SQL issue but not to change a 
+        //   structure or enrich some data on an existing SQL. You need to 
+        //   create a new one to secure that it gets executed in all env.
         // ***********************************************
         // ***********************************************
 
@@ -2758,8 +2767,8 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `id`, `description`) VALUES ('BROWSER', 'chrome', 3, 37, 'Chrome Browser');");
         SQLInstruction.add(SQLS.toString());
-        
- // MouseUp And MouseDown Added to the invariant table
+
+// MouseUp And MouseDown Added to the invariant table
         SQLS = new StringBuilder();
         SQLS.append("UPDATE `invariant` SET `sort`='54' WHERE `id`='12' and`sort`='55';");
         SQLInstruction.add(SQLS.toString());
@@ -2832,22 +2841,30 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `DocLabel`, `DocDesc`) VALUES ('usergroup', 'GroupName', '', 'Group Name', 'Authorities are managed by group. In order to be granted to a set of feature, you must belong to the corresponding group.<br>\nEvery user can of course belong to as many group as necessary in order to get access to as many feature as required.<br>\nIn order to get the full access to the system you must belong to every group.<br>\nSome groups are linked together on the test perimeter and integration perimeter.<br>\n<br>\n<b>Test perimeter :</b><br>\n<br>\n    <i>TestRO</i>: Has read only access to the information related to test cases and also has access to execution reporting options.<br>\n<br>\n    <i>Test</i>: Can modify non WORKING test cases but cannot delete test cases.<br>\n<br>\n    <i>TestAdmin</i>: Can modify or delete any test case (including Pre Testing test cases). Can also create or delete a test.<br>\n<br>\nThe minimum group you need to belong is <i>TestRO</i> that will give you access in read only to all test data (including its execution reporting page).<br>\nIf you want to be able to modify the testcases (except the WORKING ones), you need <i>Test</i> group on top of <i>TestRO</i> group.<br>\nIf you want the full access to all testcase (including beeing able to delete any testcase), you will need <i>TestAdmin</i> on top of <i>TestRO</i> and <i>Test</i> group.<br>\n<br>\n<b>Test Execution perimeter :</b><br>\n<br>\n    <i>RunTest</i>: Can run both Manual and Automated test cases from GUI.<br>\n<br>\n<b>Integration perimeter :</b><br>\n<br>\n    <i>IntegratorRO</i>: Has access to the integration status.<br>\n<br>\n    <i>Integrator</i>: Can add an application. Can change parameters of the environments.<br>\n<br>\n    <i>IntegratorNewChain</i>: Can register the end of the chain execution. Has read only access to the other informations on the same page.<br>\n<br>\n    <i>IntegratorDeploy</i>: Can disable or enable environments and register new build / revision.<br>\n<br>\nThe minimum group you need to belong is <i>IntegratorRO</i> that will give you access in read only to all environment data.<br>\nIf you want to be able to modify the environment data, you need <i>Integrator</i> group on top of <i>IntegratorRO</i> group.<br>\n<i>IntegratorNewChain</i> and <i>IntegratorDeploy</i> are used on top of <i>Integrator</i> Group to be able to create a new chain on an environment or perform a deploy operation.<br>\n<br>\n<b>Administration perimeter :</b><br>\n<br>\n    <i>Administrator</i>: Can create, modify or delete users. Has access to log Event and Database Maintenance. Can change Parameter values.<br>\n<br>\n');");
         SQLInstruction.add(SQLS.toString());
 
-// Description definition documentation.
+// Adding Description column in actions and control with associated documentation.
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `DocLabel`, `DocDesc`) VALUES ('testcasestepaction', 'description', '', 'Description', 'Description of the action');");
         SQLInstruction.add(SQLS.toString());
-        
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `DocLabel`, `DocDesc`) VALUES ('testcasestepactioncontrol', 'ControleDescription', '', 'Description', 'Description of the action control');");
         SQLInstruction.add(SQLS.toString());
-
         SQLS = new StringBuilder();
         SQLS.append("ALTER TABLE `testcasestepactioncontrol` ADD COLUMN `ControlDescription` VARCHAR(255) NOT NULL DEFAULT ''  AFTER `ControlProperty` ;");
         SQLInstruction.add(SQLS.toString());
-
         SQLS = new StringBuilder();
         SQLS.append("ALTER TABLE `testcasestepaction` ADD COLUMN `Description` VARCHAR(255) NOT NULL DEFAULT ''  AFTER `Property` ;");
         SQLInstruction.add(SQLS.toString());
+
+// Creating table to host test data inside Cerberus (used when we cannot dynamically retreive data from the system).
+        SQLS = new StringBuilder();
+        SQLS.append("CREATE TABLE `testdata` (");
+        SQLS.append("  `key` varchar(200) NOT NULL ,");
+        SQLS.append("  `value` varchar(5000) NOT NULL DEFAULT '',");
+        SQLS.append("  PRIMARY KEY (`key`)");
+        SQLS.append(") ENGINE=InnoDB DEFAULT CHARSET=utf8");
+        SQLInstruction.add(SQLS.toString());
+
+
 
         return SQLInstruction;
     }
