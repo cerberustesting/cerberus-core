@@ -85,7 +85,7 @@
                         width: "1000px"
                     },
                     "aoColumns": [
-                        {},
+                        null,
                         {onblur: 'submit',
                             placeholder: ''}
 
