@@ -125,13 +125,13 @@
                 }
 
                 String tcActive;
-                if (request.getParameter("TcActive") != null && request.getParameter("TcActive").compareTo("A") != 0) {
-
-                    tcActive = request.getParameter("TcActive");
-                    tcclauses = tcclauses + " AND TcActive = '" + request.getParameter("TcActive") + "'";
-                    URL = URL + "&TcActive=" + tcActive;
+                if (request.getParameter("TcActive") != null) {
                     if (request.getParameter("TcActive").compareTo("A") == 0) {
                         tcActive = "%%";
+                    } else {
+                        tcActive = request.getParameter("TcActive");
+                        tcclauses = tcclauses + " AND TcActive = '" + request.getParameter("TcActive") + "'";
+                        URL = URL + "&TcActive=" + tcActive;
                     }
                 } else {
                     tcActive = new String("Y");
@@ -570,12 +570,12 @@
 
                                                 rs_testcasecountrygeneral.first();
                                                 do {
-                                                                   %>
-                                                                   <td class="wob"><input value="<%=rs_testcasecountrygeneral.getString("value")%>" type="checkbox" <%
-                                                                       for (int i = 0; i < country_list.length; i++) {
-                                                                           if (country_list[i].equals(rs_testcasecountrygeneral.getString("value"))) {%> CHECKED <%}
-                                                                                                                              }%> name="Country" ></td><%
-                                                                                                                                                     } while (rs_testcasecountrygeneral.next());
+                                                %>
+                                                <td class="wob"><input value="<%=rs_testcasecountrygeneral.getString("value")%>" type="checkbox" <%
+                                                    for (int i = 0; i < country_list.length; i++) {
+                                                        if (country_list[i].equals(rs_testcasecountrygeneral.getString("value"))) {%> CHECKED <%}
+                                                            }%> name="Country" ></td><%
+                                                                                                               } while (rs_testcasecountrygeneral.next());
                                                     %>
                                                 <td id="wob"><input id="button" type="button" value="All" onclick="selectAll('country',true)"><input id="button" type="button" value="None" onclick="selectAll('country',false)"></td>
                                             </tr>
@@ -777,8 +777,8 @@
                                             for (int i = 0; i < country_list.length; i++) {
 
                                                 rs_count.first();
-                                                while (!rs_count.isLast()){
-                                                    if (rs_count.getString("Country").equalsIgnoreCase(country_list[i])){
+                                                while (!rs_count.isLast()) {
+                                                    if (rs_count.getString("Country").equalsIgnoreCase(country_list[i])) {
                                                         break;
                                                     }
                                                     rs_count.next();
@@ -868,11 +868,11 @@
                                         }
                                     %>
                                         <td class="INF" style="width: 30px"><%
-                                        if (rs_time.getString("tc.Comment") != null) {%><%=rs_time.getString("tc.Comment")%><%}%></td>
-                                    <td class="INF" style="width: 30px"><%
+                                            if (rs_time.getString("tc.Comment") != null) {%><%=rs_time.getString("tc.Comment")%><%}%></td>
+                                        <td class="INF" style="width: 30px"><%
                                             if (SitdmossBugtrackingURL_tc.equalsIgnoreCase("") == false) {%><a href="<%=SitdmossBugtrackingURL_tc%>" target="_blank"><%=rs_time.getString("tc.BugID")%></a><%
-                                            }
-                                            if ((rs_time.getString("tc.TargetBuild") != null) && (rs_time.getString("tc.TargetBuild").equalsIgnoreCase("") == false)) {
+                                                    }
+                                                    if ((rs_time.getString("tc.TargetBuild") != null) && (rs_time.getString("tc.TargetBuild").equalsIgnoreCase("") == false)) {
                                         %> for <%=rs_time.getString("tc.TargetBuild")%>/<%=rs_time.getString("tc.TargetRev")%><%
                                             }%></td>   
                                 </tr>

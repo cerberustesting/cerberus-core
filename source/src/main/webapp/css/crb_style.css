@@ -718,6 +718,7 @@ table.doctb {
     position: absolute;
     left: 130px;
     top: 50px;
+    z-index: 999;
 }
 
 #navlist li
@@ -728,6 +729,7 @@ table.doctb {
     margin: 0;
     padding: 0;
     border: 0;
+    z-index: 999;
 }
 #navlist li a:link, #navlist li a:visited
 {
@@ -746,6 +748,7 @@ table.doctb {
     border-right: 1px solid #fff;
     text-decoration: none;
     font-weight: bold;
+    z-index: 999;
 }
 #navlist li a:hover { background-color: #F2462E; }
 #navlist li a:active { background-color: #5F879D; }
@@ -757,6 +760,7 @@ table.doctb {
     margin: 0;
     padding: 0;
     border: 0;
+    z-index: 999;
 }
 #navlist .subnav li
 {
@@ -766,6 +770,7 @@ table.doctb {
     border: 0;
     border-top: 1px solid transparent;
     border-right: 1px solid transparent;
+    z-index: 999;
 }
 #navlist .subnav li a:link, #navlist .subnav li a:visited
 {
@@ -783,12 +788,14 @@ table.doctb {
     -box-shadow: -1px -1px 5px #d0d0d0;
     /* for IE effect */
     border-color:#DCDCDC #696969 #696969 #DCDCDC;
+    z-index: 999;
 }
 #navlist .subnav li a:hover
 {
     background-image: none;
     background-color:#cad3f1;
     border-color:#ccffcc #00ff00 #00ff00 #ccffcc;
+    z-index: 999;
 }
 
 #navlist li:hover > .subnav { display: block; }
