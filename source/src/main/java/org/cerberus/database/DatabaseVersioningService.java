@@ -2870,7 +2870,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
 
 //Add parameters for the cerberus acount creation emailing
         SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `cerberus`.`parameter` (`system`, `param`, `value`, `description`) VALUES ");
+        SQLS.append("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) VALUES ");
         SQLS.append("('', 'cerberus_notification_accountcreation_defaultPassword', 'Cerberus2014', 'Default Password when creating an account')");
         SQLS.append(",('', 'cerberus_notification_accountcreation_cc', 'Cerberus <no.reply@redoute.pt>', 'Copy List for used for Cerberus creation emailing')");
         SQLS.append(",('', 'cerberus_notification_accountcreation_subject', '[Cerberus] Welcome, your account has been created', 'Subject of account creation emailing')");
@@ -2881,7 +2881,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         
 //Add email column in user table
         SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `cerberus`.`user` ADD COLUMN `Email` VARCHAR(100) NULL AFTER `DefaultSystem`");
+        SQLS.append("ALTER TABLE `user` ADD COLUMN `Email` VARCHAR(100) NULL AFTER `DefaultSystem`");
         SQLInstruction.add(SQLS.toString());
 
         return SQLInstruction;
