@@ -41,11 +41,15 @@ import org.cerberus.factory.impl.FactoryGroup;
 import org.cerberus.factory.impl.FactoryLogEvent;
 import org.cerberus.factory.impl.FactoryUser;
 import org.cerberus.service.ILogEventService;
+import org.cerberus.service.IParameterService;
 import org.cerberus.service.IUserGroupService;
 import org.cerberus.service.IUserService;
 import org.cerberus.service.impl.LogEventService;
+import org.cerberus.service.impl.ParameterService;
 import org.cerberus.service.impl.UserGroupService;
 import org.cerberus.service.impl.UserService;
+import org.cerberus.serviceEmail.IEmailGeneration;
+import org.cerberus.serviceEmail.impl.EmailGeneration;
 import org.cerberus.util.ParameterParserUtil;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
@@ -75,15 +79,25 @@ public class AddUser extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         //TODO create class Validator to validate all parameter from page
+        ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+        IUserService userService = appContext.getBean(UserService.class);
+        IUserGroupService userGroupService = appContext.getBean(UserGroupService.class);
+        IEmailGeneration generateEmailService = appContext.getBean(EmailGeneration.class);
+        IFactoryUser factory = appContext.getBean(FactoryUser.class);
+        IParameterService parameterService = appContext.getBean(ParameterService.class);
+        String system = "";
+        
+        try {
         String login = request.getParameter("login").replaceAll("'", "");
         if (login.length() > 10) {
             login = login.substring(0, 10);
         }
         String name = ParameterParserUtil.parseStringParam(request.getParameter("name"), "");
-        String password = "";
+        String password = parameterService.findParameterByKey("cerberus_notification_accountcreation_defaultPassword", system).getValue();
         String newPassword = ParameterParserUtil.parseStringParam(request.getParameter("newPassword"),"Y");
         String team = ParameterParserUtil.parseStringParam(request.getParameter("team"),"");
         String defaultSystem = ParameterParserUtil.parseStringParam(request.getParameter("defaultSystem"),"");
+        String email = ParameterParserUtil.parseStringParam(request.getParameter("email"),"");
         
         IFactoryGroup factoryGroup = new FactoryGroup();
         List<Group> groups = new ArrayList<Group>();
@@ -91,18 +105,22 @@ public class AddUser extends HttpServlet {
             groups.add(factoryGroup.create(group));
         }
 
-        ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-        IUserService userService = appContext.getBean(UserService.class);
-        IUserGroupService userGroupService = appContext.getBean(UserGroupService.class);
-        IFactoryUser factory = appContext.getBean(FactoryUser.class);
-
         /**
          * Creating user.
          */
-        User myUser = factory.create(0, login, password, newPassword, name, team, "", "", defaultSystem);
-        try {
+        User myUser = factory.create(0, login, password, newPassword, name, team, "", "", defaultSystem, email);
+        
             userService.insertUser(myUser);
             userGroupService.updateUserGroups(myUser, groups);
+            
+            /**
+             * Send Email to explain how to connect Cerberus if activateNotification is set to Y
+             */
+            String sendNotification = parameterService.findParameterByKey("cerberus_notification_accountcreation_activateNotification", system).getValue();
+        
+            if (sendNotification.equalsIgnoreCase("Y")){
+            generateEmailService.BuildAndSendAccountCreationEmail(myUser);
+            }
             
             /**
              * Adding Log entry.

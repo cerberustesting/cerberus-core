@@ -218,6 +218,9 @@
                 <label for="name">Name</label>
                 <input type="text" name="name" id="name" maxlength="25" rel="2" />
                 <br /><br />
+                <label for="name">Email</label>
+                <input type="text" name="email" id="email" maxlength="25" rel="5" />
+                <br /><br />
                 <label for="team">Team</label>
                 <%=ComboInvariantAjax(conn, "team", "", "team", "3", "40", "", "", false)%>
                 <br /><br />
