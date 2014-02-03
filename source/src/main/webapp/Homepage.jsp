@@ -1,3 +1,5 @@
+<%@page contentType="text/html" pageEncoding="UTF-8"%><!DOCTYPE HTML>
+<%@page import="org.cerberus.service.IDatabaseVersioningService"%>
 <%--
   ~ Cerberus  Copyright (C) 2013  vertigo17
   ~ DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
@@ -17,9 +19,6 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
   --%>
-<%@page import="org.cerberus.service.IDatabaseVersioningService"%>
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
-<!DOCTYPE HTML>
 
 <html>
     <head>
@@ -76,13 +75,13 @@
                                     String wor = (dbDocS(conn, "homepage", "Working", "Working")).split(" ")[0];
                             %>
                             <tr id="header">
-                                <th style="width: 145px; text-align: left"><%=test%></th>
-                                <th class="verticalText"><%=nbtest%></th>
-                                <th class="verticalText"><%=standby%></th>
-                                <th class="verticalText"><%=tbi%></th>
-                                <th class="verticalText"><%=inp%></th>
-                                <th class="verticalText"><%=tbv%></th>
-                                <th class="verticalText"><%=wor%></th>
+                                <th style="width: 145px; text-align: left"><%=test%>&nbsp;</th>
+                                <th class="verticalText"><%=nbtest%>&nbsp;</th>
+                                <th class="verticalText"><%=standby%>&nbsp;</th>
+                                <th class="verticalText"><%=tbi%>&nbsp;</th>
+                                <th class="verticalText"><%=inp%>&nbsp;</th>
+                                <th class="verticalText"><%=tbv%>&nbsp;</th>
+                                <th class="verticalText"><%=wor%>&nbsp;</th>
                             </tr>
                             <%
                                 ArrayList<ArrayList<String>> arrayTest = (ArrayList<ArrayList<String>>) request.getAttribute("arrayTest");
@@ -93,13 +92,13 @@
                             %>
                         </table> </td> <td id="wob" valign="top"> <table id="tableau">
                             <tr id="header">
-                                <th style="width: 145px; text-align: left"><%=test%></th>
-                                <th class="verticalText"><%=nbtest%></th>
-                                <th class="verticalText"><%=standby%></th>
-                                <th class="verticalText"><%=tbi%></th>
-                                <th class="verticalText"><%=inp%></th>
-                                <th class="verticalText"><%=tbv%></th>
-                                <th class="verticalText"><%=wor%></th>
+                                <th style="width: 145px; text-align: left"><%=test%>&nbsp;</th>
+                                <th class="verticalText"><%=nbtest%>&nbsp;</th>
+                                <th class="verticalText"><%=standby%>&nbsp;</th>
+                                <th class="verticalText"><%=tbi%>&nbsp;</th>
+                                <th class="verticalText"><%=inp%>&nbsp;</th>
+                                <th class="verticalText"><%=tbv%>&nbsp;</th>
+                                <th class="verticalText"><%=wor%>&nbsp;</th>
                             </tr>
                             <% }%>
                             <tr>
@@ -110,12 +109,12 @@
                                     <a style="color:black; text-decoration:none"><%=array.get(0)%></a>
                                     <% }%>
                                 </td>
-                                <td id="nbtest" name="NbTest" style="background-color: white;"><%=array.get(1)%></td>
-                                <td name="StandBy" style="background-color: white;"><%=array.get(2)%></td>
-                                <td name="TBI" style="background-color: white;"><%=array.get(3)%></td>
-                                <td name="InProgress" style="background-color: white;"><%=array.get(4)%></td>
-                                <td name="TBV" style="background-color: white;"><%=array.get(5)%></td>
-                                <td name="Working" style="background-color: white;"><%=array.get(6)%></td>
+                                <td id="nbtest" name="NbTest" style="background-color: white;"><%=array.get(1)%>&nbsp;</td>
+                                <td name="StandBy" style="background-color: white;"><%=array.get(2)%>&nbsp;</td>
+                                <td name="TBI" style="background-color: white;"><%=array.get(3)%>&nbsp;</td>
+                                <td name="InProgress" style="background-color: white;"><%=array.get(4)%>&nbsp;</td>
+                                <td name="TBV" style="background-color: white;"><%=array.get(5)%>&nbsp;</td>
+                                <td name="Working" style="background-color: white;"><%=array.get(6)%>&nbsp;</td>
                             </tr>
                             <% }%>
                         </table>

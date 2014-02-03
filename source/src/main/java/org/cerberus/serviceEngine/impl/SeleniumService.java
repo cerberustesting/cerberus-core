@@ -27,6 +27,7 @@ import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
 import java.util.Date;
+import java.util.Set;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -58,6 +59,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.NoSuchWindowException;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.TimeoutException;
@@ -345,7 +347,7 @@ public class SeleniumService implements ISeleniumService {
         }
     }
 
-    private WebElement getSeleniumElement(String input, boolean visible) {
+private WebElement getSeleniumElement(String input, boolean visible) {
         By locator = this.getIdentifier(input);
         MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Waiting for Element : " + input);
         try {
@@ -423,13 +425,15 @@ public class SeleniumService implements ISeleniumService {
 
     @Override
     public String getValueFromJS (String script){
-    String result = "";
-    JavascriptExecutor js = (JavascriptExecutor)selenium.getDriver();
-    Object response = js.executeScript(script);
-    result = (String) response;
-    return result;
+        JavascriptExecutor js = (JavascriptExecutor)selenium.getDriver();
+        Object response = js.executeScript(script);
+
+        if(response == null) {
+            return "";
+        }
+
+        return String.valueOf(response);
     }
-    
     
     @Override
     public boolean isElementPresent(String locator) {
@@ -594,6 +598,9 @@ public class SeleniumService implements ISeleniumService {
         } else if (testCaseStepActionExecution.getAction().equals("mouseUp")) {
             res = this.doActionMouseUp(object, property);
 
+        } else if (testCaseStepActionExecution.getAction().equals("switchToWindow")) {
+            res = this.doActionSwitchToWindow(object, property);
+
         } else if (testCaseStepActionExecution.getAction().equals("calculateProperty")) {
             res = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_PROPERTYCALCULATED);
             res.setDescription(res.getDescription().replaceAll("%PROP%", testCaseStepActionExecution.getPropertyName()));
@@ -736,6 +743,62 @@ public class SeleniumService implements ISeleniumService {
             return message;
         }
         return new MessageEvent(MessageEventEnum.ACTION_FAILED_NO_ELEMENT_TO_CLICK);
+    }
+
+       private MessageEvent doActionSwitchToWindow(String string1, String string2) {
+        MessageEvent message;
+        String windowTitle;
+        try {
+            if(!StringUtil.isNullOrEmpty(string1)) {
+                windowTitle = string1;
+            } else if (!StringUtil.isNull(string2)) {
+                windowTitle = string2;
+            } else {
+                message = new MessageEvent(MessageEventEnum.ACTION_FAILED_SWITCHTOWINDOW_NO_SUCH_ELEMENT);
+                message.setDescription(message.getDescription().replaceAll("%WINDOW%", "No Title Specified"));
+                return message;
+            }
+
+            if (!StringUtil.isNullOrEmpty(windowTitle)) {
+                String currentHandle;
+                try {
+                    // Current serial handle of the window.
+                    currentHandle = this.selenium.getDriver().getWindowHandle();
+                } catch (NoSuchWindowException exception) {
+                    // Add try catch to handle not exist anymore window (like when popup is closed).
+                    currentHandle = null;
+                    MyLogger.log(SeleniumService.class.getName(), Level.DEBUG, "Window is closed ? " + exception.toString());
+                }
+
+                try {
+                    // Get serials handles list of all browser windows
+                    Set<String> handles =  this.selenium.getDriver().getWindowHandles();
+                    
+                    // Loop into each of them
+                    for(String windowHandle  : handles)
+                    {
+                        if(!windowHandle.equals(currentHandle)) {
+                            this.selenium.getDriver().switchTo().window(windowHandle);
+                            if(windowTitle.equals(this.selenium.getDriver().getTitle())) {
+                                message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_SWITCHTOWINDOW);
+                                message.setDescription(message.getDescription().replaceAll("%WINDOW%", windowTitle));
+                                return message;
+                            }
+                        }
+                        MyLogger.log(SeleniumService.class.getName(), Level.DEBUG, "windowHandle=" + windowHandle);
+                    }
+                } catch (NoSuchElementException exception) {
+                    MyLogger.log(SeleniumService.class.getName(), Level.ERROR, exception.toString());
+                }
+            }
+        } catch (WebDriverException exception) {
+            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_SELENIUM_CONNECTIVITY);
+            MyLogger.log(SeleniumService.class.getName(), Level.FATAL, exception.toString());
+            return message;
+        }
+        message = new MessageEvent(MessageEventEnum.ACTION_FAILED_SWITCHTOWINDOW_NO_SUCH_ELEMENT);
+        message.setDescription(message.getDescription().replaceAll("%WINDOW%", windowTitle));
+        return message;
     }
 
        
@@ -1091,7 +1154,7 @@ public class SeleniumService implements ISeleniumService {
 
     private MessageEvent doActionSelect(String html, String property) {
         MessageEvent message;
-        String identifier = "";
+        String identifier;
         String value = "";
         
         try {
