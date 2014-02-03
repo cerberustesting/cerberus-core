@@ -165,4 +165,44 @@ public class TestCaseCountryDAO implements ITestCaseCountryDAO {
         }
         return result;
     }
+
+    @Override
+    public void insertTestCaseCountry(TestCaseCountry testCaseCountry) throws CerberusException {
+        boolean throwExcep = false;
+        StringBuilder query = new StringBuilder();
+        query.append("INSERT INTO testcasecountry (`test`, `testCase`, `country`) ");
+        query.append("VALUES (?,?,?)");
+        
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query.toString());
+            try {
+                preStat.setString(1, testCaseCountry.getTest());
+                preStat.setString(2, testCaseCountry.getTestCase());
+                preStat.setString(3, testCaseCountry.getCountry());
+
+                preStat.executeUpdate();
+                throwExcep = false;
+                
+                
+            } catch (SQLException exception) {
+                MyLogger.log(TestCaseStepDAO.class.getName(), Level.ERROR, exception.toString());
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(TestCaseStepDAO.class.getName(), Level.ERROR, exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(TestCaseStepDAO.class.getName(), Level.WARN, e.toString());
+            }
+        }
+        if (throwExcep) {
+            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.CANNOT_UPDATE_TABLE));
+        }
+    }
 }

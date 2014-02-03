@@ -21,10 +21,12 @@ package org.cerberus.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.log4j.Level;
 
 import org.cerberus.dao.impl.TestCaseCountryDAO;
 import org.cerberus.entity.TestCaseCountry;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.log.MyLogger;
 import org.cerberus.service.ITestCaseCountryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -55,5 +57,23 @@ public class TestCaseCountryService implements ITestCaseCountryService {
     @Override
     public TestCaseCountry findTestCaseCountryByKey(String test, String testCase, String country) throws CerberusException {
         return this.tccDao.findTestCaseCountryByKey(test, testCase, country);
+    }
+    
+    @Override
+    public void insertTestCaseCountry(TestCaseCountry testCaseCountry) throws CerberusException {
+        tccDao.insertTestCaseCountry(testCaseCountry);
+    }
+    
+    @Override
+    public boolean insertListTestCaseCountry(List<TestCaseCountry> testCaseCountryList) {
+        for (TestCaseCountry tcc : testCaseCountryList){
+            try {
+                insertTestCaseCountry(tcc);
+            } catch (CerberusException ex) {
+                MyLogger.log(TestCaseStepService.class.getName(), Level.FATAL, ex.toString());
+                return false;
+            }
+        }
+        return true;
     }
 }

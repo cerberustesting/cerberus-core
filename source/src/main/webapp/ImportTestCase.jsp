@@ -102,4 +102,8 @@
         %>
         </select>
 </td>
+<td  class="wob">
+    <p>import Properties</p>
+    <input id="ImportProperty" name="ImportProperty" type="checkbox" value="Y"> 
+</td>
 

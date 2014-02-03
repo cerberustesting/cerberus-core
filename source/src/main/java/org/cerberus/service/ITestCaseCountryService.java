@@ -29,7 +29,7 @@ import org.cerberus.exception.CerberusException;
  * @author bcivel
  */
 public interface ITestCaseCountryService {
-    
+
     /**
      *
      * @param test
@@ -37,11 +37,14 @@ public interface ITestCaseCountryService {
      * @param Country
      * @return
      */
-    TestCaseCountry findTestCaseCountryByKey (String test, String testCase, String Country) throws CerberusException;
-    
+    TestCaseCountry findTestCaseCountryByKey(String test, String testCase, String Country) throws CerberusException;
+
     List<TestCaseCountry> findTestCaseCountryByTestTestCase(String test, String testCase);
-    
+
     List<String> findListOfCountryByTestTestCase(String test, String testcase);
-    
-    
+
+    void insertTestCaseCountry(TestCaseCountry testCaseCountry) throws CerberusException;
+
+    boolean insertListTestCaseCountry(List<TestCaseCountry> testCaseCountryList);
+
 }

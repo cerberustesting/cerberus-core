@@ -1319,6 +1319,15 @@ function importStep(){
     selectTest = document.getElementById('fromStep');
     var fromStep = selectTest.options[selectTest.selectedIndex].value;
     
+    selectTest = document.getElementById('ImportProperty');
+    var importProperty;
+    if (selectTest.checked) {
+    importProperty = selectTest.value;
+    } else {
+    importProperty = "N";    
+    }
+
+    
     var importStep = document.getElementById('import_step').value;
     
     var urlImportStep='./ImportTestCaseStep?';
@@ -1328,6 +1337,7 @@ function importStep(){
     urlImportStep += '&FromTest='+encodeURI(fromTest);
     urlImportStep += '&FromTestCase='+encodeURI(fromTestCase);
     urlImportStep += '&FromStep='+encodeURI(fromStep);
+    urlImportStep += '&ImportProperty='+encodeURI(importProperty);
     
     location.href=urlImportStep;
 }
