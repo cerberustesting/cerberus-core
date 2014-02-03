@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.cerberus.servlet.zztestdata;
+package org.cerberus.servlet.testdata;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -15,8 +15,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.cerberus.entity.ZZTestData;
-import org.cerberus.service.IZZTestDataService;
+import org.cerberus.entity.TestData;
+import org.cerberus.service.ITestDataService;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -27,7 +27,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  *
  * @author bcivel
  */
-public class FindAllZZTestData extends HttpServlet {
+public class FindAllTestData extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -120,13 +120,13 @@ public class FindAllZZTestData extends HttpServlet {
             JSONArray data = new JSONArray(); //data that will be shown in the table
 
             ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-            IZZTestDataService zzTestDataService = appContext.getBean(IZZTestDataService.class);
+            ITestDataService testDataService = appContext.getBean(ITestDataService.class);
 
-            List<ZZTestData> testList = zzTestDataService.findZZTestDataListByCriteria(start, amount, colName, dir, searchTerm, inds);
+            List<TestData> testList = testDataService.findTestDataListByCriteria(start, amount, colName, dir, searchTerm, inds);
 
             JSONObject jsonResponse = new JSONObject();
 
-            for (ZZTestData testData : testList) {
+            for (TestData testData : testList) {
                 JSONArray row = new JSONArray();
                 row.put(testData.getKey())
                         .put(testData.getValue());
@@ -143,7 +143,7 @@ public class FindAllZZTestData extends HttpServlet {
             response.setContentType("application/json");
             response.getWriter().print(jsonResponse.toString());
         } catch (JSONException ex) {
-            Logger.getLogger(FindAllZZTestData.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(FindAllTestData.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
             out.close();
         }

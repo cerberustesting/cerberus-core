@@ -91,14 +91,19 @@
                             </ul>
                         </li>
                         <% }%>
-                        <% if (request.getUserPrincipal() != null && request.isUserInRole("IntegratorRO")) {%>
+                        <% if (request.getUserPrincipal() != null && (request.isUserInRole("IntegratorRO") || request.isUserInRole("Test"))) {%>
                         <li id="active"><a id="current" name="menuIntegration" href="#" style="width:130px">Integration</a>
                             <ul class="subnav" id="subnavlist">
+                                <% if (request.isUserInRole("IntegratorRO")) {%>
                                 <li id="subactive"><a name="menu" id="menuIntegrationStatus" href="IntegrationStatus.jsp" style="width:130px">Integration Status</a></li>
                                 <li id="subactive"><a name="menu" id="menuApplications" href="Application.jsp" style="width:130px">Applications</a></li>
                                 <li id="subactive"><a name="menu" id="menuEnvironments" href="EnvironmentList.jsp" style="width:130px">Environments</a></li>
                                 <li id="subactive"><a name="menu" id="menuBuildRevision" href="BuildRevDefinition.jsp" style="width:130px">Build/Rev Definition</a></li>
                                 <li id="subactive"><a name="menu" id="menuBuildContent" href="BuildContent.jsp" style="width:130px">Build Content</a></li>
+                                <% }%>
+                                <% if (request.isUserInRole("Test")) {%>
+                                <li id="subactive"><a name="menu" id="menuBuildContent" href="TestData.jsp" style="width:130px">Test Data</a></li>
+                                <% }%>
                             </ul>
                         </li>
                         <% }%>

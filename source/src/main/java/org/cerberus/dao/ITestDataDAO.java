@@ -18,41 +18,41 @@
 package org.cerberus.dao;
 
 import java.util.List;
-import org.cerberus.entity.ZZTestData;
+import org.cerberus.entity.TestData;
 import org.cerberus.exception.CerberusException;
 
 /**
  *
  * @author bcivel
  */
-public interface IZZTestDataDAO {
+public interface ITestDataDAO {
 
     /**
      *
-     * @param testData ZZTestData to insert
+     * @param testData TestData to insert
      * @throws CerberusException
      */
-    void createZZTestData(ZZTestData testData) throws CerberusException;
+    void createTestData(TestData testData) throws CerberusException;
 
     /**
      *
-     * @param testData ZZTestData to update using the key
+     * @param testData TestData to update using the key
      * @throws CerberusException
      */
-    void updateZZTestData(ZZTestData testData) throws CerberusException;
+    void updateTestData(TestData testData) throws CerberusException;
 
     /**
      *
-     * @param testData ZZTestData to delete
+     * @param testData TestData to delete
      * @throws CerberusException
      */
-    void deleteZZTestData(ZZTestData testData) throws CerberusException;
+    void deleteTestData(TestData testData) throws CerberusException;
 
     /**
      *
-     * @return All ZZTestData
+     * @return All TestData
      */
-    List<ZZTestData> findAllZZTestData();
+    List<TestData> findAllTestData();
 
     /**
      *
@@ -64,5 +64,5 @@ public interface IZZTestDataDAO {
      * @param individualSearch search term on a dedicated column of the resultSet
      * @return
      */
-    List<ZZTestData> findZZTestDataListByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch);
+    List<TestData> findTestDataListByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch);
 }

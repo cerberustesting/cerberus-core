@@ -19,10 +19,10 @@
 package org.cerberus.service.impl;
 
 import java.util.List;
-import org.cerberus.dao.IZZTestDataDAO;
-import org.cerberus.entity.ZZTestData;
+import org.cerberus.dao.ITestDataDAO;
+import org.cerberus.entity.TestData;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.service.IZZTestDataService;
+import org.cerberus.service.ITestDataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,34 +31,34 @@ import org.springframework.stereotype.Service;
  * @author bcivel
  */
 @Service
-public class ZZTestDataService implements IZZTestDataService {
+public class TestDataService implements ITestDataService {
 
     @Autowired
-    IZZTestDataDAO zzTestDataDAO;
+    ITestDataDAO TestDataDAO;
     
     @Override
-    public void createZZTestData(ZZTestData testData) throws CerberusException {
-        zzTestDataDAO.createZZTestData(testData);
+    public void createTestData(TestData testData) throws CerberusException {
+        TestDataDAO.createTestData(testData);
     }
 
     @Override
-    public void updateZZTestData(ZZTestData testData) throws CerberusException {
-        zzTestDataDAO.updateZZTestData(testData);
+    public void updateTestData(TestData testData) throws CerberusException {
+        TestDataDAO.updateTestData(testData);
     }
 
     @Override
-    public void deleteZZTestData(ZZTestData testData) throws CerberusException {
-        zzTestDataDAO.deleteZZTestData(testData);
+    public void deleteTestData(TestData testData) throws CerberusException {
+        TestDataDAO.deleteTestData(testData);
     }
 
     @Override
-    public List<ZZTestData> findAllZZTestData() {
-        return zzTestDataDAO.findAllZZTestData();
+    public List<TestData> findAllTestData() {
+        return TestDataDAO.findAllTestData();
     }
 
     @Override
-    public List<ZZTestData> findZZTestDataListByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
-        return zzTestDataDAO.findZZTestDataListByCriteria(start, amount, column, dir, searchTerm, individualSearch);
+    public List<TestData> findTestDataListByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
+        return TestDataDAO.findTestDataListByCriteria(start, amount, column, dir, searchTerm, individualSearch);
     }
     
 }

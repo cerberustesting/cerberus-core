@@ -20,6 +20,7 @@
 package org.cerberus.serviceEmail;
 
 import java.sql.Connection;
+import org.cerberus.entity.User;
 
 /**
  *
@@ -32,4 +33,6 @@ public interface IEmailGeneration {
     public String EmailGenerationDisableEnv(String system, String country, String env);
 
     public String EmailGenerationNewChain(String system, String country, String env, String build, String revision, String chain);
+
+    public void BuildAndSendAccountCreationEmail(User user);
 }
