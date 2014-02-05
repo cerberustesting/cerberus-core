@@ -678,11 +678,11 @@
                         <td id="wob">
                             <table id="reportingExec" style="text-align: left;border-collapse:collapse;display:table" border="1px" cellpadding="0" cellspacing="1">
                                 <tr id="header">
-                                    <td style="width:10%"><%out.print(dbDocS(conn, "testcase", "test", "Test"));%></td>
+                                    <td style="width:10%"><%out.print(dbDocS(conn, "test", "test", "Test"));%></td>
                                     <td style="width:5%"><%out.print(dbDocS(conn, "testcase", "testcase", "TestCase"));%></td>
-                                    <td style="width:5%"><%out.print(dbDocS(conn, "testcase", "application", "Aplication"));%></td>
+                                    <td style="width:5%"><%out.print(dbDocS(conn, "application", "application", "Aplication"));%></td>
                                     <td style="width:20%"><%out.print(dbDocS(conn, "testcase", "description", "Description"));%></td>
-                                    <td style="width:2%"><%out.print(dbDocS(conn, "testcase", "priority", "Priority"));%></td>
+                                    <td style="width:2%"><%out.print(dbDocS(conn, "invariant", "PRIORITY", "Priority"));%></td>
                                     <td style="width:5%"><%out.print(dbDocS(conn, "testcase", "status", "Status"));%></td>
                                     <%
                                         //rs_testcasecountrygeneral.first();								
