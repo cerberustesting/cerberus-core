@@ -202,7 +202,7 @@ public class TestDataDAO implements ITestDataDAO {
     public List<TestData> findTestDataListByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
         List<TestData> testDataList = new ArrayList<TestData>();
         StringBuilder gSearch = new StringBuilder();
-        String searchSQL = "";
+        StringBuilder searchSQL = new StringBuilder();
 
         StringBuilder query = new StringBuilder();
         query.append("SELECT * FROM testdata ");
@@ -215,11 +215,15 @@ public class TestDataDAO implements ITestDataDAO {
         gSearch.append("%')");
 
         if (!searchTerm.equals("") && !individualSearch.equals("")) {
-            searchSQL = gSearch.toString() + " and " + individualSearch;
+            searchSQL.append(gSearch.toString());
+            searchSQL.append(" and ");
+            searchSQL.append(individualSearch);
         } else if (!individualSearch.equals("")) {
-            searchSQL = " where `" + individualSearch + "`";
+            searchSQL.append(" where `");
+            searchSQL.append(individualSearch);
+            searchSQL.append("`");
         } else if (!searchTerm.equals("")) {
-            searchSQL = gSearch.toString();
+            searchSQL.append(gSearch.toString());
         }
 
         query.append(searchSQL);
