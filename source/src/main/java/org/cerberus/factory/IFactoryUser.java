@@ -36,8 +36,9 @@ public interface IFactoryUser {
      * @param reportingFavorite Default parameters for reporting.
      * @param defaultIP         Default IP used for Selenium sApplicationerver.
      * @param defaultSystem     Default System of the user.
+     * @param email             email of the user
      * @return A User.
      */
-    User create(int userID, String login, String password, String request, String name, String team, String reportingFavorite, String defaultIP, String defaultSystem);
+    User create(int userID, String login, String password, String request, String name, String team, String reportingFavorite, String defaultIP, String defaultSystem, String email);
 
 }

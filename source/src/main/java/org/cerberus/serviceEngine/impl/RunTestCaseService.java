@@ -137,8 +137,6 @@ public class RunTestCaseService implements IRunTestCaseService {
     @Autowired
     private IFactoryTestCaseExecutionSysVer factoryTestCaseExecutionSysVer;
     @Autowired
-    private IFactoryCountryEnvLink factoryCountryEnvLink;
-    @Autowired
     private IFactoryCountryEnvironmentApplication factorycountryEnvironmentApplication;
     @Autowired
     private IInvariantService invariantService;

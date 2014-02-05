@@ -25,6 +25,7 @@ import java.util.logging.Logger;
 
 import org.cerberus.entity.BatchInvariant;
 import org.cerberus.entity.CountryEnvParam;
+import org.cerberus.entity.User;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.service.IBatchInvariantService;
 import org.cerberus.service.ICountryEnvParamService;
@@ -60,10 +61,10 @@ public class EmailGeneration implements IEmailGeneration {
             myCountryEnvParam = countryEnvParamService.findCountryEnvParamByKey(system, country, env);
 
             /* Pick the datas from the database */
-            String to = parameterService.findParameterByKey("integration_notification_newbuildrevision_to",system).getValue();
-            String cc = parameterService.findParameterByKey("integration_notification_newbuildrevision_cc",system).getValue();
-            String subject = parameterService.findParameterByKey("integration_notification_newbuildrevision_subject",system).getValue();
-            String body = parameterService.findParameterByKey("integration_notification_newbuildrevision_body",system).getValue();
+            String to = parameterService.findParameterByKey("integration_notification_newbuildrevision_to", system).getValue();
+            String cc = parameterService.findParameterByKey("integration_notification_newbuildrevision_cc", system).getValue();
+            String subject = parameterService.findParameterByKey("integration_notification_newbuildrevision_subject", system).getValue();
+            String body = parameterService.findParameterByKey("integration_notification_newbuildrevision_body", system).getValue();
 
             if (!StringUtil.isNullOrEmptyOrNull(myCountryEnvParam.geteMailBodyRevision())) {
                 body = myCountryEnvParam.geteMailBodyRevision();
@@ -118,10 +119,10 @@ public class EmailGeneration implements IEmailGeneration {
             CountryEnvParam myCountryEnvParam;
             myCountryEnvParam = countryEnvParamService.findCountryEnvParamByKey(system, country, env);
 
-            String to = parameterService.findParameterByKey("integration_notification_disableenvironment_to",system).getValue();
-            String cc = parameterService.findParameterByKey("integration_notification_disableenvironment_cc",system).getValue();
-            String subject = parameterService.findParameterByKey("integration_notification_disableenvironment_subject",system).getValue();
-            String body = parameterService.findParameterByKey("integration_notification_disableenvironment_body",system).getValue();
+            String to = parameterService.findParameterByKey("integration_notification_disableenvironment_to", system).getValue();
+            String cc = parameterService.findParameterByKey("integration_notification_disableenvironment_cc", system).getValue();
+            String subject = parameterService.findParameterByKey("integration_notification_disableenvironment_subject", system).getValue();
+            String body = parameterService.findParameterByKey("integration_notification_disableenvironment_body", system).getValue();
 
             if (!StringUtil.isNullOrEmptyOrNull(myCountryEnvParam.geteMailBodyDisableEnvironment())) {
                 body = myCountryEnvParam.geteMailBodyDisableEnvironment();
@@ -144,7 +145,7 @@ public class EmailGeneration implements IEmailGeneration {
             body = body.replaceAll("%REVISION%", myCountryEnvParam.getRevision());
 
             result = to + "///" + cc + "///" + subject + "///" + body;
-            
+
         } catch (CerberusException e) {
             Logger.getLogger(EmailGeneration.class.getName()).log(Level.SEVERE, Version.PROJECT_NAME_VERSION + " - Exception catched.", e);
         }
@@ -166,10 +167,10 @@ public class EmailGeneration implements IEmailGeneration {
             myBatchInvariant = batchInvariantService.findBatchInvariantByKey(chain);
             String lastchain = myBatchInvariant.getBatch() + " (" + myBatchInvariant.getDescription() + ")";
 
-            String to = parameterService.findParameterByKey("integration_notification_newchain_to",system).getValue();
-            String cc = parameterService.findParameterByKey("integration_notification_newchain_cc",system).getValue();
-            String subject = parameterService.findParameterByKey("integration_notification_newchain_subject",system).getValue();
-            String body = parameterService.findParameterByKey("integration_notification_newchain_body",system).getValue();
+            String to = parameterService.findParameterByKey("integration_notification_newchain_to", system).getValue();
+            String cc = parameterService.findParameterByKey("integration_notification_newchain_cc", system).getValue();
+            String subject = parameterService.findParameterByKey("integration_notification_newchain_subject", system).getValue();
+            String body = parameterService.findParameterByKey("integration_notification_newchain_body", system).getValue();
 
             if (!StringUtil.isNullOrEmptyOrNull(myCountryEnvParam.geteMailBodyChain())) {
                 body = myCountryEnvParam.geteMailBodyChain();
@@ -198,6 +199,40 @@ public class EmailGeneration implements IEmailGeneration {
             Logger.getLogger(EmailGeneration.class.getName()).log(Level.SEVERE, Version.PROJECT_NAME_VERSION + " - Exception catched.", e);
         }
         return result;
+
+    }
+
+    @Override
+    public void BuildAndSendAccountCreationEmail(User user) {
+        String system = "";
+        String to;
+        String from;
+        String host;
+        int port;
+        String cc;
+        String subject;
+        String body;
+
+        try {
+
+            to = user.getEmail();
+            from = parameterService.findParameterByKey("cerberus_notification_accountcreation_from", system).getValue();
+            host = parameterService.findParameterByKey("integration_smtp_host", system).getValue();
+            port = Integer.valueOf(parameterService.findParameterByKey("integration_smtp_port", system).getValue());
+            cc = parameterService.findParameterByKey("cerberus_notification_accountcreation_cc", system).getValue();
+            subject = parameterService.findParameterByKey("cerberus_notification_accountcreation_subject", system).getValue();
+            body = parameterService.findParameterByKey("cerberus_notification_accountcreation_body", system).getValue();
+            body = body.replaceAll("%NAME%", user.getName());
+            body = body.replaceAll("%LOGIN%", user.getLogin());
+            body = body.replaceAll("%DEFAULT_PASSWORD%", parameterService.findParameterByKey("cerberus_notification_accountcreation_defaultPassword", system).getValue());
+            
+            sendMail.sendHtmlMail(host, port, body, subject, from, to, cc);
+            
+        } catch (CerberusException ex) {
+            Logger.getLogger(EmailGeneration.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (Exception ex) {
+            Logger.getLogger(EmailGeneration.class.getName()).log(Level.SEVERE, null, ex);
+        }
 
     }
 }

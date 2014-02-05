@@ -53,8 +53,9 @@ public class UpdateTestData extends HttpServlet {
         
         TestData testData = factoryTestData.create(key,value);
         testDataService.updateTestData(testData);
+        String result = testDataService.findTestDataByKey(key).getValue();
            
-        out.print(value);
+        out.print(result);
         } finally {
             out.close();
         }

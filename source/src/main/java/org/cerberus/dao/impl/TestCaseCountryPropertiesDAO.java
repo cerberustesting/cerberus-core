@@ -73,6 +73,9 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
             try {
+                preStat.setString(1, test);
+                preStat.setString(2, testcase);
+                
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     list = new ArrayList<TestCaseCountryProperties>();
@@ -327,5 +330,54 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
             throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
         }
         return result;
+    }
+
+    @Override
+    public void insertTestCaseCountryProperties(TestCaseCountryProperties testCaseCountryProperties) throws CerberusException {
+        boolean throwExcep = false;
+        StringBuilder query = new StringBuilder();
+        query.append("INSERT INTO testcasecountryproperties (`Test`,`TestCase`,`Country`,`Property` ,`Type`");
+        query.append(",`Database`,`Value`,`Length`,`RowLimit`,`Nature`) ");
+        query.append("VALUES (?,?,?,?,?,?,?,?,?,?)");
+        
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query.toString());
+            try {
+                preStat.setString(1, testCaseCountryProperties.getTest());
+                preStat.setString(2, testCaseCountryProperties.getTestCase());
+                preStat.setString(3, testCaseCountryProperties.getCountry());
+                preStat.setString(4, testCaseCountryProperties.getProperty());
+                preStat.setString(5, testCaseCountryProperties.getType());
+                preStat.setString(6, testCaseCountryProperties.getDatabase());
+                preStat.setString(7, testCaseCountryProperties.getValue());
+                preStat.setInt(8, testCaseCountryProperties.getLength());
+                preStat.setInt(9, testCaseCountryProperties.getRowLimit());
+                preStat.setString(10, testCaseCountryProperties.getNature());
+                
+
+                preStat.executeUpdate();
+                throwExcep = false;
+                
+                
+            } catch (SQLException exception) {
+                MyLogger.log(TestCaseStepDAO.class.getName(), Level.ERROR, exception.toString());
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(TestCaseStepDAO.class.getName(), Level.ERROR, exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(TestCaseStepDAO.class.getName(), Level.WARN, e.toString());
+            }
+        }
+        if (throwExcep) {
+            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.CANNOT_UPDATE_TABLE));
+        }
     }
 }

@@ -66,4 +66,10 @@ public interface ITestDataService {
      * @return
      */
     List<TestData> findTestDataListByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch);
+    /**
+     * 
+     * @param key Key(String) of the table
+     * @return 
+     */
+    TestData findTestDataByKey(String key) throws CerberusException;
 }

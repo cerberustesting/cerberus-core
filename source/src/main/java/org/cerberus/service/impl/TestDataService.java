@@ -60,5 +60,10 @@ public class TestDataService implements ITestDataService {
     public List<TestData> findTestDataListByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
         return TestDataDAO.findTestDataListByCriteria(start, amount, column, dir, searchTerm, individualSearch);
     }
+
+    @Override
+    public TestData findTestDataByKey(String key)  throws CerberusException {
+        return TestDataDAO.findTestDataByKey(key);
+    }
     
 }

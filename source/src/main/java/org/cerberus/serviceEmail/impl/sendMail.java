@@ -41,18 +41,32 @@ public class sendMail {
         String[] destinataire = to.split(";");
 
         for (int i = 0; i < destinataire.length; i++) {
+            String name;
+            String emailaddress;
+            if (destinataire[i].contains("<")){
             String[] destinatairedata = destinataire[i].split("<");
-            String name = destinatairedata[0].trim();
-            String emailaddress = destinatairedata[1].replace(">", "").trim();
+            name = destinatairedata[0].trim();
+            emailaddress = destinatairedata[1].replace(">", "").trim();}
+            else {
+            name = "";
+            emailaddress = destinataire[i];
+            }
             email.addTo(emailaddress, name);
         }
 
         String[] copy = cc.split(";");
 
         for (int i = 0; i < copy.length; i++) {
+            String namecc;
+            String emailaddresscc;
+            if (copy[i].contains("<")){
             String[] copydata = copy[i].split("<");
-            String namecc = copydata[0].trim();
-            String emailaddresscc = copydata[1].replace(">", "").trim();
+            namecc = copydata[0].trim();
+            emailaddresscc = copydata[1].replace(">", "").trim();
+            } else {
+            namecc = "";
+            emailaddresscc = copy[i];
+            }
             email.addCc(emailaddresscc, namecc);
         }
 

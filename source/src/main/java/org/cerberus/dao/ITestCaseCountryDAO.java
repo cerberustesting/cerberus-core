@@ -34,4 +34,6 @@ public interface ITestCaseCountryDAO {
     TestCaseCountry findTestCaseCountryByKey(String test, String testcase, String country) throws CerberusException;
     
     List<TestCaseCountry> findTestCaseCountryByTestTestCase(String test, String testcase);
+    
+    void insertTestCaseCountry(TestCaseCountry testCaseCountry) throws CerberusException;
 }

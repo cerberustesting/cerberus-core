@@ -41,6 +41,7 @@ import org.cerberus.service.ICountryEnvironmentDatabaseService;
 import org.cerberus.service.ISqlLibraryService;
 import org.cerberus.service.ITestCaseExecutionDataService;
 import org.cerberus.service.ITestCaseExecutionService;
+import org.cerberus.service.ITestDataService;
 import org.cerberus.serviceEngine.IConnectionPoolDAO;
 import org.cerberus.serviceEngine.IPropertyService;
 import org.cerberus.serviceEngine.ISeleniumService;
@@ -71,9 +72,9 @@ public class PropertyService implements IPropertyService {
     @Autowired
     private ITestCaseExecutionDataDAO testCaseExecutionDataDAO;
     @Autowired
-    private ITestCaseExecutionDataService testCaseExecutionDataService;
-    @Autowired
     private ITestCaseExecutionService testCaseExecutionService;
+    @Autowired
+    private ITestDataService testDataService;
 
     @Override
     public TestCaseExecutionData calculateProperty(TestCaseExecutionData testCaseExecutionData, TestCaseStepActionExecution testCaseStepActionExecution, TestCaseCountryProperties testCaseCountryProperty) {
@@ -178,6 +179,23 @@ public class PropertyService implements IPropertyService {
                 MyLogger.log(PropertyService.class.getName(), Level.ERROR, exception.toString());
                 res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_HTML_ELEMENTDONOTEXIST);
                 res.setDescription(res.getDescription().replaceAll("%ELEMENT%", testCaseCountryProperty.getValue()));
+                testCaseExecutionData.setPropertyResultMessage(res);
+            }
+        }else if (testCaseCountryProperty.getType().equals("getFromTestData")) {
+            try {
+                String propertyValue = testCaseCountryProperty.getValue();
+                String valueFromTestData = testDataService.findTestDataByKey(propertyValue).getValue();
+                if (valueFromTestData != null) {
+                    testCaseExecutionData.setValue(valueFromTestData);
+                    res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_TESTDATA);
+                    res.setDescription(res.getDescription().replaceAll("%PROPERTY%", propertyValue));
+                    res.setDescription(res.getDescription().replaceAll("%VALUE%", valueFromTestData));
+                    testCaseExecutionData.setPropertyResultMessage(res);
+                }
+            } catch (CerberusException exception) {
+                MyLogger.log(PropertyService.class.getName(), Level.ERROR, exception.toString());
+                res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_TESTDATA_PROPERTYDONOTEXIST);
+                res.setDescription(res.getDescription().replaceAll("%PROPERTY%", testCaseCountryProperty.getValue()));
                 testCaseExecutionData.setPropertyResultMessage(res);
             }
         } else {

@@ -136,7 +136,7 @@ public class UserDAO implements IUserDAO {
     @Override
     public boolean insertUser(User user) {
         boolean bool = false;
-        final String query = "INSERT INTO user (Login, Password, Name, Request, ReportingFavorite, DefaultIP, DefaultSystem, Team) VALUES (?, SHA(?), ?, ?, ?, ?, ?, ?)";
+        final String query = "INSERT INTO user (Login, Password, Name, Request, ReportingFavorite, DefaultIP, DefaultSystem, Team, Email) VALUES (?, SHA(?), ?, ?, ?, ?, ?, ?, ?)";
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -150,6 +150,7 @@ public class UserDAO implements IUserDAO {
                 preStat.setString(6, user.getDefaultIP());
                 preStat.setString(7, user.getDefaultSystem());
                 preStat.setString(8, user.getTeam());
+                preStat.setString(9, user.getEmail());
 
                 preStat.executeUpdate();
                 ResultSet resultSet = preStat.getGeneratedKeys();
@@ -216,7 +217,7 @@ public class UserDAO implements IUserDAO {
     @Override
     public boolean updateUser(User user) {
         boolean bool = false;
-        final String query = "UPDATE user SET Login = ?, Name = ?, Request = ?, ReportingFavorite = ?, DefaultIP = ?, Team = ?, DefaultSystem = ?  WHERE userid = ?";
+        final String query = "UPDATE user SET Login = ?, Name = ?, Request = ?, ReportingFavorite = ?, DefaultIP = ?, Team = ?, DefaultSystem = ?, Email= ?  WHERE userid = ?";
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -229,7 +230,8 @@ public class UserDAO implements IUserDAO {
                 preStat.setString(5, user.getDefaultIP());
                 preStat.setString(6, user.getTeam());
                 preStat.setString(7, user.getDefaultSystem());
-                preStat.setInt(8, user.getUserID());
+                preStat.setString(8, user.getEmail());
+                preStat.setInt(9, user.getUserID());
 
                 bool = preStat.executeUpdate() > 0;
             } catch (SQLException exception) {
@@ -341,9 +343,10 @@ public class UserDAO implements IUserDAO {
         String reportingFavorite = ParameterParserUtil.parseStringParam(rs.getString("reportingFavorite"), "");
         String defaultIP = ParameterParserUtil.parseStringParam(rs.getString("defaultIP"), "");
         String defaultSystem = ParameterParserUtil.parseStringParam(rs.getString("defaultSystem"), "");
-
+        //String email = ParameterParserUtil.parseStringParam(rs.getString("email"), "");
+        String email = "";
         //TODO remove when working in test with mockito and autowired
         factoryUser = new FactoryUser();
-        return factoryUser.create(userID, login, password, request, name, team, reportingFavorite, defaultIP, defaultSystem);
+        return factoryUser.create(userID, login, password, request, name, team, reportingFavorite, defaultIP, defaultSystem, email);
     }
 }

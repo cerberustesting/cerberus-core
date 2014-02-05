@@ -63,25 +63,31 @@ public class TestcaseListGrid extends HttpServlet {
         Connection conn = db.connect();
         try {
 
-            String whereclauses = "";
+            StringBuilder whereclauses = new StringBuilder();
 
             String application = "";
             if (request.getParameter("application") != null && !(request.getParameter("application").equals("all"))) {
                 application = request.getParameter("application");
-                whereclauses = whereclauses + " and a.application = '" + application + "'";
+                whereclauses.append(" and a.application = '");
+                whereclauses.append(application);
+                whereclauses.append("'");
             }
 
             String test = "";
             if (request.getParameter("test") != null && !(request.getParameter("test").equals("all"))) {
                 test = request.getParameter("test");
-                whereclauses = whereclauses + " and a.test = '" + test + "'";
+                whereclauses.append(" and a.test = '");
+                whereclauses.append(test);
+                whereclauses.append("'");
             }
 
             String testcase = "";
             if (request.getParameter("testcase") != null
                     && !(request.getParameter("testcase").equals("all"))) {
                 testcase = request.getParameter("testcase");
-                whereclauses = whereclauses + " and a.testcase = '" + testcase + "'";
+                whereclauses.append(" and a.testcase = '");
+                whereclauses.append(testcase);
+                whereclauses.append("'");
             }
 
             int repeat = 0;
@@ -99,7 +105,8 @@ public class TestcaseListGrid extends HttpServlet {
                     strb.append(countries[x]);
                     strb.append("'");
                 }
-                whereclauses = strb.toString();
+                whereclauses = new StringBuilder();
+                whereclauses.append(strb.toString());
             }
             
             if (request.getParameter("status") != null) {
@@ -110,7 +117,8 @@ public class TestcaseListGrid extends HttpServlet {
                     strb.append(status[x]);
                     strb.append("'");
                 }
-                whereclauses = strb.toString();
+                whereclauses = new StringBuilder();
+                whereclauses.append(strb.toString());
             }
 
             int number = 1;

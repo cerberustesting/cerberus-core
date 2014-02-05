@@ -1,3 +1,6 @@
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+    "http://www.w3.org/TR/html4/loose.dtd">
 <%--
   ~ Cerberus  Copyright (C) 2013  vertigo17
   ~ DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
@@ -30,9 +33,6 @@
 <%@page import="java.util.ArrayList"%>
 <%@page import="java.util.List"%>
 <%@page import="java.util.Set"%>
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-    "http://www.w3.org/TR/html4/loose.dtd">
 <% Date DatePageStart = new Date();%>
 
 <html>
@@ -201,13 +201,26 @@
                     build = new String("%%");
                 }
 
-                String project;
-                if (request.getParameter("Project") != null && request.getParameter("Project").compareTo("All") != 0) {
-                    project = request.getParameter("Project");
-                    tcclauses = tcclauses + " AND Project = '" + request.getParameter("Project") + "'";
-                    URL = URL + "&Project=" + project;
+                String[] projects;
+                String project="";
+                if (request.getParameterValues("Project") != null && (request.getParameterValues("Project")[0]).compareTo("All") != 0) {
+                    projects = request.getParameterValues("Project");
+                    if(projects != null && projects.length > 0) {
+                        tcclauses += " AND (";
+                        for (int index=0; index<projects.length; index++) {
+                            tcclauses += " Project = '" + projects[index] + "' ";
+                            URL += "&Project=" + projects[index];
+                            project += projects[index]+",";
+
+                            if(index < (projects.length-1)) {
+                                tcclauses += " OR ";
+                            }
+                        }
+                        tcclauses += ") ";
+                    }
                 } else {
-                    project = new String("%%");
+                    projects = new String[1];
+                    projects[0] = new String("%%");
                 }
 
                 String app;
@@ -391,10 +404,31 @@
                                         </select>
                                     </td>
                                     <td id="wob">
-                                        <% out.print(ComboProject(conn, "Project", "width: 70px", "project", "", project, "", true, "All", "-- ALL --"));%>
+                                        <select multiple  size="3" id="project" style="width: 170px" name="Project">
+                                            <option value="All">-- ALL --</option>
+                                            <% 
+                                            String sq = "SELECT idproject, VCCode, Description, active FROM project ORDER BY idproject";
+                                            ResultSet q = stmt.executeQuery(sq);
+                                            String ret = "";
+                                            while (q.next()) {
+                                                ret = ret + " <option value=\"" + q.getString("idproject") + "\"";
+                                                ret = ret + " style=\"width: 200px;";
+                                                if (q.getString("active").equalsIgnoreCase("Y")) {
+                                                    ret = ret + "font-weight:bold;";
+                                                }
+                                                ret = ret + "\"";
+                                                
+                                                if ((project != null) && (project.indexOf(q.getString("idproject")+",") >= 0)) {
+                                                    ret = ret + " SELECTED ";
+                                                }
+                                                ret = ret + ">" + q.getString("idproject") + " " + q.getString("Description");
+                                                ret = ret + "</option>";
+                                            }%>
+                                            <%=ret%>
+                                        </select>
                                     </td>
                                     <td id="wob">
-                                        <select id="system" style="width: 50px"  name="System">
+                                        <select id="system" style="width: 50px" name="System">
                                             <option value="All">-- ALL --</option><%
                                                 ResultSet rsSys = stmt.executeQuery("SELECT DISTINCT System FROM application Order by System asc");
                                                 while (rsSys.next()) {%>
@@ -629,11 +663,11 @@
                                         <input id="ShowD" type="button" value="Show Details" onclick="javascript:setVisibleRep();" style="display:none">
                                     </td>
                                     <td id="wob">Legend : </td>
-                                    <td id="wob" class="OK" title="OK : Test was fully executed and no bug are to be reported."><a class="OKF">OK</a></td>
-                                    <td id="wob" class="KO" title="KO : Test was executed and bug have been detected."><a class="KOF">KO</a></td>
-                                    <td id="wob" class="NA" title="NA : Test could not be executed because some test data are not available."><a class="NAF">NA</a></td>
-                                    <td id="wob" class="FA" title="FA : Test could not be executed because there is a bug on the test."><a class="FAF">FA</a></td>
-                                    <td id="wob" class="PE" title="PE : Test execution is still running..."><a class="PEF">PE</a></td>
+                                    <td id="wob" class="OK" title="OK : Test was fully executed and no bug are to be reported."><input checked type="checkbox" name="displayOK" id="displayOK"><a class="OKF">OK</a></td>
+                                    <td id="wob" class="KO" title="KO : Test was executed and bug have been detected."><input checked type="checkbox" name="displayKO" id="displayKO"><a class="KOF">KO</a></td>
+                                    <td id="wob" class="NA" title="NA : Test could not be executed because some test data are not available."><input checked type="checkbox" name="displayNA" id="displayNA"><a class="NAF">NA</a></td>
+                                    <td id="wob" class="FA" title="FA : Test could not be executed because there is a bug on the test."><input checked type="checkbox" name="displayFA" id="displayFA"><a class="FAF">FA</a></td>
+                                    <td id="wob" class="PE" title="PE : Test execution is still running..."><input checked type="checkbox" name="displayPE" id="displayPE"><a class="PEF">PE</a></td>
                                     <td id="wob" class="NotExecuted" title="Test Case has not been executed for that country."><a class="NotExecutedF">XX</a></td>
                                     <td id="wob" class="NOINF" title="Test Case not available for the country XX."><a class="NOINFF">XX</a></td>
                                 </tr>
@@ -644,30 +678,30 @@
                         <td id="wob">
                             <table id="reportingExec" style="text-align: left;border-collapse:collapse;display:table" border="1px" cellpadding="0" cellspacing="1">
                                 <tr id="header">
-                                    <td style="width: 30px"><%out.print(dbDocS(conn, "testcase", "test", "Test"));%></td>
-                                    <td style="width: 30px"><%out.print(dbDocS(conn, "testcase", "testcase", "TestCase"));%></td>
-                                    <td style="width: 30px"><%out.print(dbDocS(conn, "application", "application", "Application"));%></td>
-                                    <td style="width: 30px"><%out.print(dbDocS(conn, "testcase", "description", "Description"));%></td>
-                                    <td style="width: 30px"><%out.print(dbDocS(conn, "invariant", "PRIORITY", "Priority"));%></td>
-                                    <td style="width: 30px"><%out.print(dbDocS(conn, "testcase", "status", "Status"));%></td>
+                                    <td style="width:10%"><%out.print(dbDocS(conn, "testcase", "test", "Test"));%></td>
+                                    <td style="width:5%"><%out.print(dbDocS(conn, "testcase", "testcase", "TestCase"));%></td>
+                                    <td style="width:5%"><%out.print(dbDocS(conn, "testcase", "application", "Aplication"));%></td>
+                                    <td style="width:20%"><%out.print(dbDocS(conn, "testcase", "description", "Description"));%></td>
+                                    <td style="width:2%"><%out.print(dbDocS(conn, "testcase", "priority", "Priority"));%></td>
+                                    <td style="width:5%"><%out.print(dbDocS(conn, "testcase", "status", "Status"));%></td>
                                     <%
                                         //rs_testcasecountrygeneral.first();								
                                         //do {
                                         for (int i = 0; i < country_list.length; i++) {
                                     %> 
-                                    <td class="header"> 
+                                    <td style="width:2%" class="header"> 
                                         <%=country_list[i]%> </td>
-                                    <td class="header" style="font-size : x-small ;">Reporting Execution</td>
+                                    <td style="width:7%" class="header" style="font-size : x-small ;">Reporting Execution</td>
                                     <%
                                         }
                                         // } while (rs_testcasecountrygeneral.next());
 
                                     %>
-                                    <td style="width: 30px"><%out.print(dbDocS(conn, "testcase", "comment", "Comment"));%></td> 
-                                    <td style="width: 30px"><%out.print(dbDocS(conn, "testcase", "bugID", "BugID"));%></td>
+                                    <td><%out.print(dbDocS(conn, "testcase", "comment", "Comment"));%></td> 
+                                    <td style="width:5%" ><%out.print(dbDocS(conn, "testcase", "bugID", "BugID"));%></td>
                                 </tr>
                                 <%
-                                    //out.println(tcclauses);
+                                    // out.println(tcclauses);
                                     // out.println(avgclauses);
                                     //out.println(execclauses);
                                     int j = 0;
@@ -743,12 +777,12 @@
                                     String toto = "" + rs_time.getString("tc.behaviororvalueexpected");
                                 %>
                                 <tr>
-                                    <td class="INF" style="width: 30px"><%=rs_time.getString("tc.test")%></td>
-                                    <td class="INF" style="width: 30px"><a href="TestCase.jsp?Load=Load&Test=<%=rs_time.getString("tc.test")%>&TestCase=<%=rs_time.getString("tc.testcase")%>"> <%=rs_time.getString("tc.testcase")%></a></td>
-                                    <td class="INF" style="width: 30px"><%=rs_time.getString("tc.application")%></td>
-                                    <td class="INF" style="width: 30px" title="<%=toto%>"><%=rs_time.getString("tc.description")%></td>
-                                    <td class="INF" style="width: 30px"><%=rs_time.getString("tc.Priority")%></td>
-                                    <td class="INF" style="width: 30px"><%=rs_time.getString("tc.Status")%></td>
+                                    <td class="INF"><%=rs_time.getString("tc.test")%></td>
+                                    <td class="INF"><a href="TestCase.jsp?Load=Load&Test=<%=rs_time.getString("tc.test")%>&TestCase=<%=rs_time.getString("tc.testcase")%>"> <%=rs_time.getString("tc.testcase")%></a></td>
+                                    <td class="INF"><%=rs_time.getString("tc.application")%></td>
+                                    <td class="INF" title="<%=toto%>"><%=rs_time.getString("tc.description")%></td>
+                                    <td class="INF"><%=rs_time.getString("tc.Priority")%></td>
+                                    <td class="INF"><%=rs_time.getString("tc.Status")%></td>
                                     <%
 
                                         rs_testcasecountrygeneral.first();
@@ -859,9 +893,9 @@
                                     <%   }// }   
                                         }
                                     %>
-                                        <td class="INF" style="width: 30px"><%
+                                        <td class="INF"><%
                                             if (rs_time.getString("tc.Comment") != null) {%><%=rs_time.getString("tc.Comment")%><%}%></td>
-                                        <td class="INF" style="width: 30px"><%
+                                        <td class="INF"><%
                                             if (SitdmossBugtrackingURL_tc.equalsIgnoreCase("") == false) {%><a href="<%=SitdmossBugtrackingURL_tc%>" target="_blank"><%=rs_time.getString("tc.BugID")%></a><%
                                                     }
                                                     if ((rs_time.getString("tc.TargetBuild") != null) && (rs_time.getString("tc.TargetBuild").equalsIgnoreCase("") == false)) {
@@ -877,9 +911,9 @@
                                 <td class="NOINF"></td><td class="NOINF"></td>
                                 <%                                                              }
                                 %>
-                                <td class="INF" style="width: 30px"><%
+                                <td class="INF"><%
                                     if (rs_time.getString("tc.Comment") != null) {%><%=rs_time.getString("tc.Comment")%><%}%></td>
-                                <td class="INF" style="width: 30px"><%
+                                <td class="INF"><%
                                     if (SitdmossBugtrackingURL_tc.equalsIgnoreCase("") == false) {%><a href="<%=SitdmossBugtrackingURL_tc%>" target="_blank"><%=rs_time.getString("tc.BugID")%></a><%
                                         }
                                         if ((rs_time.getString("tc.TargetBuild") != null) && (rs_time.getString("tc.TargetBuild").equalsIgnoreCase("") == false)) {
@@ -909,9 +943,9 @@
                                     <%
                                         for (int i = 0; i < country_list.length; i++) {
                                     %>
-                                    <td id="repsynthesis1" align="center" style="width: 20px ;color : green">OK</td>
-                                    <td id="repsynthesis2" align="center" style="width: 20px ;color : red">KO</td>
-                                    <td id="repsynthesis3" align="center" style="width: 20px ;color : #999999">NE</td>
+                                    <td id="repsynthesis1" align="center" style="color : green">OK</td>
+                                    <td id="repsynthesis2" align="center" style="color : red">KO</td>
+                                    <td id="repsynthesis3" align="center" style="color : #999999">NE</td>
                                     <%                                                              }
                                     %>
                                 </tr>
@@ -1070,13 +1104,13 @@
 
                                             }
 
-                                    %>                          <td id="repsynthesis1" class="INF" align="center" style="font : bold  ; width : 20px 
+                                    %>                          <td id="repsynthesis1" class="INF" align="center" style="font : bold  ;
                                         ; background-color: <%=cssGen%>; border-top-color: <%=cssleftTOP%> ; border-right-color: <%=cssleftRIG%>  ">
                                         <%=listCTOK.size() != 0 ? listCTOK.size() : ""%> 
-                                    <td id="repsynthesis2" class="INF" align="center" style="font : bold; width : 20px 
+                                    <td id="repsynthesis2" class="INF" align="center" style="font : bold; 
                                         ; background-color: <%=cssGen%>; border-top-color: <%=cssleftTOP%> ; border-right-color: <%=cssleftRIG%> ;border-left-color: <%=cssleftRIG%>  ">
                                         <%=listCTKO.size() != 0 ? listCTKO.size() : ""%> 
-                                    <td id="repsynthesis3" class="INF" align="center" style="font : bold ; width : 20px 
+                                    <td id="repsynthesis3" class="INF" align="center" style="font : bold ; 
                                         ; background-color: <%=cssGen%>; border-top-color: <%=cssleftTOP%> ; border-left-color: <%=cssleftRIG%>  ">
                                         <%=listCTNE.size() != 0 ? listCTNE.size() : ""%></td>
                                         <%
@@ -1124,9 +1158,9 @@
 
 
                                     %>
-                                    <td align="center" style="width: 20px ;color : green"><%=listCTTOTOK.size()%></td>
-                                    <td align="center" style="width: 20px ;color : red"><%=listCTTOTKO.size()%></td>
-                                    <td align="center" style="width: 20px ;color : #999999"><%=listCTTOTNE.size()%></td>
+                                    <td align="center" style="color : green"><%=listCTTOTOK.size()%></td>
+                                    <td align="center" style="color : red"><%=listCTTOTKO.size()%></td>
+                                    <td align="center" style="color : #999999"><%=listCTTOTNE.size()%></td>
                                     <%                                                              }
                                     %>
                                 </tr>

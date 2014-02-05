@@ -17,11 +17,11 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.cerberus.servlet.testCase;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -34,11 +34,15 @@ import javax.servlet.http.HttpServletResponse;
 import org.cerberus.dao.impl.TestCaseStepDAO;
 
 import org.cerberus.database.DatabaseSpring;
+import org.cerberus.entity.TestCaseCountry;
+import org.cerberus.entity.TestCaseCountryProperties;
 import org.cerberus.entity.TestCaseStep;
 import org.cerberus.entity.TestCaseStepAction;
 import org.cerberus.entity.TestCaseStepActionControl;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.log.MyLogger;
+import org.cerberus.service.ITestCaseCountryPropertiesService;
+import org.cerberus.service.ITestCaseCountryService;
 import org.cerberus.service.ITestCaseStepActionControlService;
 import org.cerberus.service.ITestCaseStepActionService;
 import org.cerberus.service.ITestCaseStepService;
@@ -57,24 +61,22 @@ public class ImportTestCaseStep extends HttpServlet {
 
     @Autowired
     private DatabaseSpring database;
-    
+
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, CerberusException {
         response.setContentType("text/html;charset=UTF-8");
-        
+
         appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         ITestCaseStepService testCaseStepService = appContext.getBean(ITestCaseStepService.class);
         ITestCaseStepActionService testCaseStepActionService = appContext.getBean(ITestCaseStepActionService.class);
         ITestCaseStepActionControlService testCaseStepActionControlService = appContext.getBean(ITestCaseStepActionControlService.class);
+        ITestCaseCountryService testCaseCountry = appContext.getBean(ITestCaseCountryService.class);
+        ITestCaseCountryPropertiesService testCaseCountryProperties = appContext.getBean(ITestCaseCountryPropertiesService.class);
         this.database = appContext.getBean(DatabaseSpring.class);
 
         /**
-         * Get Parameters
-         * Test : Target Test
-         * TestCase : Target TestCase
-         * Step : Target Step
-         * fromTest : from Test
-         * fromTestCase : from TestCase
+         * Get Parameters Test : Target Test TestCase : Target TestCase Step :
+         * Target Step fromTest : from Test fromTestCase : from TestCase
          * fromStep : from Step
          */
         String test = request.getParameter("Test");
@@ -83,50 +85,93 @@ public class ImportTestCaseStep extends HttpServlet {
         String fromTest = request.getParameter("FromTest");
         String fromTestCase = request.getParameter("FromTestCase");
         Integer fromStep = Integer.valueOf(request.getParameter("FromStep"));
-        
+        String importProperty = "N";
+        if (request.getParameter("ImportProperty") != null) {
+            MyLogger.log(ImportTestCaseStep.class.getName(), org.apache.log4j.Level.DEBUG, request.getParameter("ImportProperty"));
+            importProperty = request.getParameter("ImportProperty");
+        }
+
         /**
-         * Get TestCaseStep, List of TestCaseStepAction and List of TestCaseStepActionControl from Test, Testcase, Step
+         * Get TestCaseStep, List of TestCaseStepAction and List of
+         * TestCaseStepActionControl from Test, Testcase, Step
          */
         TestCaseStep fromTcs = testCaseStepService.findTestCaseStep(fromTest, fromTestCase, fromStep);
         List<TestCaseStepAction> fromTcsa = testCaseStepActionService.getListOfAction(fromTest, fromTestCase, fromStep);
         List<TestCaseStepActionControl> fromTcsac = testCaseStepActionControlService.findControlByTestTestCaseStep(fromTest, fromTestCase, fromStep);
-        
+
         /**
-         * Modify the object with the target test, testcase, step
+         * Get List of Country of the origin testcase and the destination
+         * Testcase
          */
-        MyLogger.log(ImportTestCaseStep.class.getName(), org.apache.log4j.Level.INFO, "Rewrite TestCaseStep");
+        List<String> tccListString = null;
+        List<String> tccFromListString = null;
+        List<TestCaseCountryProperties> tccpList = null;
+        if (importProperty.equalsIgnoreCase("Y")) {
+            tccListString = testCaseCountry.findListOfCountryByTestTestCase(test, testCase);
+            tccFromListString = testCaseCountry.findListOfCountryByTestTestCase(test, testCase);
+        }
+        /**
+         * Modify the object with the target test, testcase, step, country
+         */
+        MyLogger.log(ImportTestCaseStep.class.getName(), org.apache.log4j.Level.DEBUG, "Rewrite TestCaseStep");
         fromTcs.setTest(test);
         fromTcs.setTestCase(testCase);
         fromTcs.setStep(step);
-        
-        MyLogger.log(ImportTestCaseStep.class.getName(), org.apache.log4j.Level.INFO, "Rewrite TestCaseStepAction");
+
+        MyLogger.log(ImportTestCaseStep.class.getName(), org.apache.log4j.Level.DEBUG, "Rewrite TestCaseStepAction");
         List<TestCaseStepAction> tcsaToImport = new ArrayList();
-        for (TestCaseStepAction tcsa : fromTcsa){
-        tcsa.setTest(test);
-        tcsa.setTestCase(testCase);
-        tcsa.setStep(step);
-        tcsaToImport.add(tcsa);
+        for (TestCaseStepAction tcsa : fromTcsa) {
+            tcsa.setTest(test);
+            tcsa.setTestCase(testCase);
+            tcsa.setStep(step);
+            tcsaToImport.add(tcsa);
         }
-        
-        MyLogger.log(ImportTestCaseStep.class.getName(), org.apache.log4j.Level.INFO, "Rewrite TestCaseStepActionControl");
+
+        MyLogger.log(ImportTestCaseStep.class.getName(), org.apache.log4j.Level.DEBUG, "Rewrite TestCaseStepActionControl");
         List<TestCaseStepActionControl> tcsacToImport = new ArrayList();
-        for (TestCaseStepActionControl tcsac : fromTcsac){
-        tcsac.setTest(test);
-        tcsac.setTestCase(testCase);
-        tcsac.setStep(step);
-        tcsacToImport.add(tcsac);
+        for (TestCaseStepActionControl tcsac : fromTcsac) {
+            tcsac.setTest(test);
+            tcsac.setTestCase(testCase);
+            tcsac.setStep(step);
+            tcsacToImport.add(tcsac);
         }
-        
+
         /**
-         * Import Step, List of testcasestepaction, List of testcasestepactioncontrol
+         * For the country defined in the destination testcase, insert the
+         * properties of the origine testcase
          */
-        MyLogger.log(ImportTestCaseStep.class.getName(), org.apache.log4j.Level.INFO, "Import Step");
+        List<TestCaseCountryProperties> tccpToImport = new ArrayList();
+        if (importProperty.equalsIgnoreCase("Y")) {
+            MyLogger.log(ImportTestCaseStep.class.getName(), org.apache.log4j.Level.DEBUG, "Rewrite TestCaseCountryProperties");
+            if (tccListString != null) {
+                tccListString.retainAll(tccFromListString);
+                if (!tccListString.isEmpty()) {
+                    for (String country : tccListString) {
+                        tccpList = testCaseCountryProperties.findListOfPropertyPerTestTestCaseCountry(fromTest, fromTestCase, country);
+                        for (TestCaseCountryProperties tccp : tccpList) {
+                            tccp.setTest(test);
+                            tccp.setTestCase(testCase);
+                            tccpToImport.add(tccp);
+                        }
+                    }
+                }
+            }
+        }
+        /**
+         * Import Step, List of testcasestepaction, List of
+         * testcasestepactioncontrol
+         */
+        MyLogger.log(ImportTestCaseStep.class.getName(), org.apache.log4j.Level.DEBUG, "Import Step");
         testCaseStepService.insertTestCaseStep(fromTcs);
         testCaseStepActionService.insertListTestCaseStepAction(tcsaToImport);
         testCaseStepActionControlService.insertListTestCaseStepActionControl(tcsacToImport);
-        
-        response.sendRedirect("TestCase.jsp?Load=Load&Test="+test+"&TestCase="+testCase);
-        
+        if (importProperty.equalsIgnoreCase("Y")) {
+//        testCaseCountry.insertListTestCaseCountry(tccToImport);
+            testCaseCountryProperties.insertListTestCaseCountryProperties(tccpToImport);
+        }
+
+        response.sendRedirect("TestCase.jsp?Load=Load&Test=" + test + "&TestCase=" + testCase);
+
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

@@ -88,5 +88,9 @@
         </form>
             <p>Below is part to test Attribute data-cerberus</p>
             <input data-cerberus="index1_input" value="Test Value">
+            
+            <br>
+            <a href="#" id="openPopup" data-cerberus="openPopup" onclick="javascript:window.open('./index2.jsp', 'popup',
+			'width=500,height=400,scrollbars=yes,menubar=false,location=false');return false;">Open Popup</a>
     </body>
 </html>

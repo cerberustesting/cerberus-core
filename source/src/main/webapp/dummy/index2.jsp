@@ -22,11 +22,12 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>JSP Page</title>
+        <title>Index 2 dummy page</title>
     </head>
     <body>
         <h1>Hello World!</h1>
-
+        <h2 data-cerberus="secondIndexPageOfTest">Second page of test index</h2>
         <iframe src="frame.html"></iframe>
+        <button data-cerberus="closePopupWindow" onclick="javascript:window.close();">Close Popup Window</button>
     </body>
 </html>

@@ -202,7 +202,7 @@ public class TestDataDAO implements ITestDataDAO {
     public List<TestData> findTestDataListByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
         List<TestData> testDataList = new ArrayList<TestData>();
         StringBuilder gSearch = new StringBuilder();
-        String searchSQL = "";
+        StringBuilder searchSQL = new StringBuilder();
 
         StringBuilder query = new StringBuilder();
         query.append("SELECT * FROM testdata ");
@@ -215,11 +215,15 @@ public class TestDataDAO implements ITestDataDAO {
         gSearch.append("%')");
 
         if (!searchTerm.equals("") && !individualSearch.equals("")) {
-            searchSQL = gSearch.toString() + " and " + individualSearch;
+            searchSQL.append(gSearch.toString());
+            searchSQL.append(" and ");
+            searchSQL.append(individualSearch);
         } else if (!individualSearch.equals("")) {
-            searchSQL = " where `" + individualSearch + "`";
+            searchSQL.append(" where `");
+            searchSQL.append(individualSearch);
+            searchSQL.append("`");
         } else if (!searchTerm.equals("")) {
-            searchSQL = gSearch.toString();
+            searchSQL.append(gSearch.toString());
         }
 
         query.append(searchSQL);
@@ -277,5 +281,46 @@ public class TestDataDAO implements ITestDataDAO {
         String value = resultSet.getString("value");
 
         return factoryTestData.create(key, value);
+    }
+
+    @Override
+    public TestData findTestDataByKey(String key)  throws CerberusException {
+        TestData result = null;
+        final String query = "SELECT * FROM testdata where `key`=?";
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            preStat.setString(1, key);
+            try {
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+                    if (resultSet.first()) {
+                        result = this.loadTestDataFromResultSet(resultSet);
+                    }else {
+                        throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
+                    }
+                } catch (SQLException exception) {
+                    MyLogger.log(TestDataDAO.class.getName(), Level.ERROR, exception.toString());
+                } finally {
+                    resultSet.close();
+                }
+            } catch (SQLException exception) {
+                MyLogger.log(TestDataDAO.class.getName(), Level.ERROR, exception.toString());
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(TestDataDAO.class.getName(), Level.ERROR, exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(TestDataDAO.class.getName(), Level.WARN, e.toString());
+            }
+        }
+        return result;
     }
 }
