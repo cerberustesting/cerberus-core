@@ -906,14 +906,20 @@ private WebElement getSeleniumElement(String input, boolean visible) {
     private MessageEvent doActionType(String html, String property, String propertyName) {
         MessageEvent message;
         try {
-            if (!StringUtil.isNull(html) && !StringUtil.isNull(property)) {
+            if (!StringUtil.isNull(html)) {
                 try {
                     WebElement webElement = this.getSeleniumElement(html, true);
                     webElement.clear();
-                    webElement.sendKeys(property);
+                    if(!StringUtil.isNull(property)) {
+                        webElement.sendKeys(property);
+                    }
                     message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_TYPE);
                     message.setDescription(message.getDescription().replaceAll("%ELEMENT%", html));
-                    message.setDescription(message.getDescription().replaceAll("%DATA%", ParameterParserUtil.securePassword(property, propertyName)));
+                    if(!StringUtil.isNull(property)) {
+                        message.setDescription(message.getDescription().replaceAll("%DATA%", ParameterParserUtil.securePassword(property, propertyName)));
+                    } else {
+                        message.setDescription(message.getDescription().replaceAll("%DATA%", "No property"));
+                    }
                     return message;
                 } catch (NoSuchElementException exception) {
                     message = new MessageEvent(MessageEventEnum.ACTION_FAILED_TYPE_NO_SUCH_ELEMENT);
