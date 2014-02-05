@@ -62,7 +62,7 @@ public class TestDataService implements ITestDataService {
     }
 
     @Override
-    public TestData findTestDataByKey(String key) {
+    public TestData findTestDataByKey(String key)  throws CerberusException {
         return TestDataDAO.findTestDataByKey(key);
     }
     

@@ -71,5 +71,5 @@ public interface ITestDataService {
      * @param key Key(String) of the table
      * @return 
      */
-    TestData findTestDataByKey(String key);
+    TestData findTestDataByKey(String key) throws CerberusException;
 }

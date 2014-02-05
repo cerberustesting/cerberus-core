@@ -284,7 +284,7 @@ public class TestDataDAO implements ITestDataDAO {
     }
 
     @Override
-    public TestData findTestDataByKey(String key) {
+    public TestData findTestDataByKey(String key)  throws CerberusException {
         TestData result = null;
         final String query = "SELECT * FROM testdata where `key`=?";
 
@@ -295,8 +295,10 @@ public class TestDataDAO implements ITestDataDAO {
             try {
                 ResultSet resultSet = preStat.executeQuery();
                 try {
-                    if (resultSet.next()) {
+                    if (resultSet.first()) {
                         result = this.loadTestDataFromResultSet(resultSet);
+                    }else {
+                        throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
                     }
                 } catch (SQLException exception) {
                     MyLogger.log(TestDataDAO.class.getName(), Level.ERROR, exception.toString());
