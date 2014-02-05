@@ -2634,12 +2634,12 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
 //Add parameters for the cerberus acount creation emailing
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) VALUES ");
-        SQLS.append("('', 'cerberus_notification_accountcreation_defaultPassword', 'Cerberus2014', 'Default Password when creating an account')");
-        SQLS.append(",('', 'cerberus_notification_accountcreation_cc', 'Cerberus <no.reply@redoute.pt>', 'Copy List for used for Cerberus creation emailing')");
-        SQLS.append(",('', 'cerberus_notification_accountcreation_subject', '[Cerberus] Welcome, your account has been created', 'Subject of account creation emailing')");
-        SQLS.append(",('', 'cerberus_notification_accountcreation_body', 'Hello %NAME%<br><br>Your Cerberus account has been created<br><br>To connect Cerberus, please click <a href=\"http://192.168.134.35/Cerberus\">here</a> and use this credential : <br><br>login : %LOGIN%<br>password : %DEFAULT_PASSWORD%<br><br>At your first connection, you will be invited to modify your password<br><br>Enjoy the tool<br><br>','Cerberus creation emailing body')");
-        SQLS.append(",('', 'cerberus_notification_accountcreation_from','Cerberus <no.reply@redoute.pt>', 'Cerberus email creation from')");
-        SQLS.append(",('', 'cerberus_notification_accountcreation_activateNotification','N', 'Activation boolean for activating to send automatic email on account creation')");
+        SQLS.append("('', 'cerberus_accountcreation_defaultpassword', 'Cerberus2014', 'Default Password when creating an account.')");
+        SQLS.append(",('', 'cerberus_notification_accountcreation_cc', 'Cerberus <no.reply@cerberus-testing.org>', 'Copy List used for Cerberus account creation notification email.')");
+        SQLS.append(",('', 'cerberus_notification_accountcreation_subject', '[Cerberus] Welcome, your account has been created', 'Subject of Cerberus account creation notification email.')");
+        SQLS.append(",('', 'cerberus_notification_accountcreation_body', 'Hello %NAME%<br><br>Your Cerberus account has been created<br><br>To connect Cerberus, please click <a href=\"http://cerberus_server/Cerberus\">here</a> and use this credential : <br><br>login : %LOGIN%<br>password : %DEFAULT_PASSWORD%<br><br>At your first connection, you will be invited to modify your password<br><br>Enjoy the tool<br><br>','Cerberus account creation notification email body. %LOGIN%, %NAME% and %DEFAULT_PASSWORD% can be used as variables.')");
+        SQLS.append(",('', 'cerberus_notification_accountcreation_from','Cerberus <no.reply@cerberus-testing.org>', 'From field of Cerberus account creation notification email.')");
+        SQLS.append(",('', 'cerberus_notification_accountcreation_activatenotification','N', 'Activation boolean for sending automatic email on account creation. Y value will activate the notifications. Any other value will not.')");
         SQLInstruction.add(SQLS.toString());
         
 //Add email column in user table
