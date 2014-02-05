@@ -427,7 +427,7 @@
                                                 <td class="wob" style="width: 100px"><%out.print(dbDocS(conn, "testcase", "Creator", "creator"));%></td>
                                                 <td class="wob" style="width: 100px"><%out.print(dbDocS(conn, "testcase", "Implementer", "implementer"));%></td>
                                                 <td class="wob" style="width: 100px"><%out.print(dbDocS(conn, "testcase", "LastModifier", "lastModifier"));%></td>
-                                                <td class="wob" style="width: 100px"><%out.print(dbDocS(conn, "testcase", "project", "Project"));%></td>
+                                                <td class="wob" style="width: 100px"><%out.print(dbDocS(conn, "project", "idproject", "Project"));%></td>
                                                 <td class="wob" style="width: 100px"><%out.print(dbDocS(conn, "testcase", "ticket", "Ticket"));%></td>
 
                                             </tr>
@@ -523,11 +523,11 @@
                                         <table class="wob" style="text-align: left; border-collapse: collapse" border="0px" cellpadding="0px" cellspacing="0px">
                                             <tr><td class="wob"><h4 style="color : blue">TestCase Parameters</h4></td></tr>
                                             <tr id="header">
-                                                <td class="wob" style="width: 150px"><%out.print(dbDocS(conn, "testcase", "application", "Application"));%></td>
-                                                <td class="wob" style="width: 90px"><%out.print(dbDocS(conn, "testcase", "runqa", "RunQA"));%></td>
-                                                <td class="wob" style="width: 90px"><%out.print(dbDocS(conn, "testcase", "runuat", "RunUAT"));%></td>
-                                                <td class="wob" style="width: 90px"><%out.print(dbDocS(conn, "testcase", "runprod", "RunPROD"));%></td>
-                                                <td class="wob" style="width: 90px"><%out.print(dbDocS(conn, "testcase", "priority", "Priority"));%></td>
+                                                <td class="wob" style="width: 150px"><%out.print(dbDocS(conn, "application", "application", "Application"));%></td>
+                                                <td class="wob" style="width: 90px"><%out.print(dbDocS(conn, "testcase", "ActiveQA", "RunQA"));%></td>
+                                                <td class="wob" style="width: 90px"><%out.print(dbDocS(conn, "testcase", "ActiveUAT", "RunUAT"));%></td>
+                                                <td class="wob" style="width: 90px"><%out.print(dbDocS(conn, "testcase", "ActivePROD", "RunPROD"));%></td>
+                                                <td class="wob" style="width: 90px"><%out.print(dbDocS(conn, "invariant", "PRIORITY", "Priority"));%></td>
                                                 <td class="wob" style="width: 150px"><%out.print(dbDocS(conn, "testcase", "group", "Group"));%></td>
                                                 <td class="wob" style="width: 150px"><%out.print(dbDocS(conn, "testcase", "status", "Status"));%></td>
                                                 <%
@@ -602,7 +602,7 @@
                                     <td class="wob" style="text-align: left; vertical-align : top ; border-collapse: collapse">
                                         <table>   
                                             <tr id="header">
-                                                <td class="wob" style="width: 600px"><%out.print(dbDocS(conn, "testcase", "ValueExpected", "Value Expected"));%></td>
+                                                <td class="wob" style="width: 600px"><%out.print(dbDocS(conn, "testcase", "BehaviorOrValueExpected", "Value Expected"));%></td>
                                                 <td class="wob" style="width: 600px"><%out.print(dbDocS(conn, "testcase", "HowTo", "HowTo"));%></td>
                                             </tr>
                                             <tr>
@@ -655,7 +655,7 @@
                                 && (rs_testcase_general_info.getString("tc.BugID").compareToIgnoreCase("") != 0)
                                 && (rs_testcase_general_info.getString("tc.BugID").compareToIgnoreCase("null") != 0)) {
                             SitdmossBugtrackingURL = myApplicationService.findApplicationByKey(rs_testcase_general_info.getString("tc.Application")).getBugTrackerUrl();
-                            SitdmossBugtrackingURL = SitdmossBugtrackingURL.replaceAll("%bugid%", rs_testcase_general_info.getString("tc.BugID"));
+                            SitdmossBugtrackingURL = SitdmossBugtrackingURL.replaceAll("%BUGID%", rs_testcase_general_info.getString("tc.BugID"));
                         }
                     %>
                     <tr>
@@ -917,9 +917,9 @@
                                             <table id="testcaseproperties_table" style="text-align: left; border-collapse: collapse"
                                                    border="0">
                                                 <tr id="header">
-                                                    <td style="width: 30px"><%out.print(dbDocS(conn, "testcasecountryproperties", "delete", "Delete"));%></td>
+                                                    <td style="width: 30px"><%out.print(dbDocS(conn, "page_testcase", "delete", "Delete"));%></td>
                                                     <td style="width: 100px"><%out.print(dbDocS(conn, "testcasecountryproperties", "property", "Property"));%></td>
-                                                    <td style="width: <%=size%>px"><%out.print(dbDocS(conn, "testcasecountryproperties", "country", "Country"));%></td>
+                                                    <td style="width: <%=size%>px"><%out.print(dbDocS(conn, "invariant", "country", "Country"));%></td>
                                                     <td style="width: 120px"><%out.print(dbDocS(conn, "testcasecountryproperties", "type", "Type"));%></td>
                                                     <td style="width: 40px"><%out.print(dbDocS(conn, "testcasecountryproperties", "database", "Database"));%></td>
                                                     <td style="width: <%=size2%>px"><%out.print(dbDocS(conn, "testcasecountryproperties", "value", "Value"));%>
@@ -1297,7 +1297,7 @@
                                                             %>
                                                             <table id="Action<%=rs_step.getString("step")%>" style="text-align: left; border-collapse: collapse">
                                                                 <tr id="header">
-                                                                    <td style="width: 30px"><%out.print(dbDocS(conn, "testcasecountryproperties", "delete", "Delete"));%></td>
+                                                                    <td style="width: 30px"><%out.print(dbDocS(conn, "page_testcase", "delete", "Delete"));%></td>
                                                                     <td style="width: 60px"><%out.print(dbDocS(conn, "testcasestepaction", "sequence", "Sequence"));%></td>
                                                                     <td style="width: 136px"><%out.print(dbDocS(conn, "testcasestepaction", "action", "Action"));%></td>
                                                                     <td class="technical_part" style="width: 350px"><%out.print(dbDocS(conn, "testcasestepaction", "object", "Object"));%></td>
@@ -1392,7 +1392,7 @@
                                         <table id="control_table<%=rs_step.getString("step")%>" style="text-align: left; border-collapse: collapse">
                                             <tbody>
                                                 <tr id="header">
-                                                    <td style="width: 30px"><%out.print(dbDocS(conn, "testcasecountryproperties", "delete", "Delete"));%></td>
+                                                    <td style="width: 30px"><%out.print(dbDocS(conn, "page_testcase", "delete", "Delete"));%></td>
                                                     <td style="width: 60px"><%out.print(dbDocS(conn, "testcasestepactioncontrol", "sequence", "Sequence"));%></td>
                                                     <td style="width: 60px"><%out.print(dbDocS(conn, "testcasestepactioncontrol", "control", "Control"));%></td>
                                                     <td style="width: 150px"><%out.print(dbDocS(conn, "testcasestepactioncontrol", "type", "Type"));%></td>

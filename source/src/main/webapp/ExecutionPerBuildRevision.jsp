@@ -58,17 +58,17 @@
         %>
 
         <%
-            String title1 = dbDocS(conn, "homepage", "RegressionExecutionStatus", "");
+            String title1 = dbDocS(conn, "page_exeperbuildrevision", "RegressionExecutionStatus", "");
             String build = dbDocS(conn, "testcaseexecution", "Build", "Build");
             String revision = dbDocS(conn, "testcaseexecution", "Revision", "Revision");
-            String nbExecution = dbDocS(conn, "homepage", "NbExecution", "NbExecution");
-            String nbOK = dbDocS(conn, "homepage", "NbOK", "NbOK");
-            String okPercentage = dbDocS(conn, "homepage", "OK_percentage", "%OK");
-            String nbTC = dbDocS(conn, "homepage", "NbTC", "NbTC");
-            String nbExePerTc = dbDocS(conn, "homepage", "nb_exe_per_tc", "nb_exe_per_tc");
-            String days = dbDocS(conn, "homepage", "Days", "Days");
-            String nbTcPerDay = dbDocS(conn, "homepage", "nb_tc_per_day", "nb_tc_per_day");
-            String nbApp = dbDocS(conn, "homepage", "NbAPP", "NbAPP");
+            String nbExecution = dbDocS(conn, "page_exeperbuildrevision", "NbExecution", "NbExecution");
+            String nbOK = dbDocS(conn, "page_exeperbuildrevision", "NbOK", "NbOK");
+            String okPercentage = dbDocS(conn, "page_exeperbuildrevision", "OK_percentage", "%OK");
+            String nbTC = dbDocS(conn, "page_exeperbuildrevision", "NbTC", "NbTC");
+            String nbExePerTc = dbDocS(conn, "page_exeperbuildrevision", "nb_exe_per_tc", "nb_exe_per_tc");
+            String days = dbDocS(conn, "page_exeperbuildrevision", "Days", "Days");
+            String nbTcPerDay = dbDocS(conn, "page_exeperbuildrevision", "nb_tc_per_day", "nb_tc_per_day");
+            String nbApp = dbDocS(conn, "page_exeperbuildrevision", "NbAPP", "NbAPP");
         %>
 
         <div class="divBorder">
@@ -198,7 +198,7 @@
         </div>
 
         <%
-            title1 = dbDocS(conn, "homepage", "RegressionExecutionStatus1", "");
+            title1 = dbDocS(conn, "page_exeperbuildrevision", "RegressionExecutionStatus1", "");
 
             arrayExecution = (ArrayList<ArrayList<String>>) request.getAttribute("arrayExecutionExternal");
             arrayExecutionEnv = (ArrayList<ArrayList<ArrayList<String>>>) request.getAttribute("arrayExecutionEnvExternal");

@@ -143,7 +143,7 @@
 
         %><table class="tablef"> <tr> <td> 
                     <form method="GET" name="environment" id="environment">
-                        <ftxt><%=dbDocS(conn, "testcase", "country", "")%></ftxt> <select id="country" name="country" style="width: 100px" OnChange ="document.environment.submit()">
+                        <ftxt><%=dbDocS(conn, "invariant", "country", "")%></ftxt> <select id="country" name="country" style="width: 100px" OnChange ="document.environment.submit()">
                             <option style="width: 400px" value="ALL">-- ALL --</option>
                             <%ResultSet rsCountry = stmtCountry.executeQuery("SELECT value, description "
                                         + "FROM invariant "
@@ -173,7 +173,7 @@
                             %><option style="width: 200px" value="<%= rsEnvgp.getString(1)%>" <%=envgp.compareTo(rsEnvgp.getString(1)) == 0 ? " SELECTED " : ""%>><%= rsEnvgp.getString(1)%></option>
                             <% }
                             %></select>
-                        <ftxt><%=dbDocS(conn, "invariant", "build", "")%></ftxt> <select id="build" name="build" style="width: 80px" OnChange ="document.environment.submit()">
+                        <ftxt><%=dbDocS(conn, "buildrevisioninvariant", "versionname01", "")%></ftxt> <select id="build" name="build" style="width: 80px" OnChange ="document.environment.submit()">
                             <option style="width: 200px" value="ALL">-- ALL --</option>
                             <%
                                 List<BuildRevisionInvariant> listBuildRev = buildRevisionInvariantService.findAllBuildRevisionInvariantBySystemLevel(MySystem, 1);
@@ -181,7 +181,7 @@
                             %><option style="width: 200px" value="<%= myBR.getVersionName()%>" <%=build.compareTo(myBR.getVersionName()) == 0 ? " SELECTED " : ""%>><%= myBR.getVersionName()%></option>
                             <% }
                             %></select>
-                        <ftxt><%=dbDocS(conn, "invariant", "revision", "")%></ftxt> <select id="revision" name="revision" style="width: 80px" OnChange ="document.environment.submit()">
+                        <ftxt><%=dbDocS(conn, "buildrevisioninvariant", "versionname02", "")%></ftxt> <select id="revision" name="revision" style="width: 80px" OnChange ="document.environment.submit()">
                             <option style="width: 200px" value="ALL">-- ALL --</option>
                             <%
                                 listBuildRev = buildRevisionInvariantService.findAllBuildRevisionInvariantBySystemLevel(MySystem, 2);
@@ -321,10 +321,10 @@
                     <table style="text-align: left; border-collapse: collapse">
                         <tr id="header">
                             <td><%=dbDocS(conn, "application", "system", "")%></td>
-                            <td><%=dbDocS(conn, "testcase", "country", "")%></td>
+                            <td><%=dbDocS(conn, "invariant", "country", "")%></td>
                             <td><%=dbDocS(conn, "invariant", "environment", "")%></td>
-                            <td><%=dbDocS(conn, "invariant", "build", "")%></td>
-                            <td><%=dbDocS(conn, "invariant", "revision", "")%></td>
+                            <td><%=dbDocS(conn, "buildrevisioninvariant", "versionname01", "")%></td>
+                            <td><%=dbDocS(conn, "buildrevisioninvariant", "versionname02", "")%></td>
                             <td><%=dbDocS(conn, "countryenvparam", "chain", "")%></td>
                             <td><%=dbDocS(conn, "countryenvparam", "active", "")%></td>
                             <td><%=dbDocS(conn, "countryenvparam", "type", "")%></td>

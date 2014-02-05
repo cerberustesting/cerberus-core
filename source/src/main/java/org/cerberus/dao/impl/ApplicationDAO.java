@@ -242,24 +242,23 @@ public class ApplicationDAO implements IApplicationDAO {
     @Override
     public boolean updateApplication(Application application) throws CerberusException {
         boolean bool = false;
-        final String query = "UPDATE application SET description = ?, internal = ?, sort = ?, `type` = ?, `system` = ?, SubSystem = ?, svnurl = ?, BugTrackerUrl = ?, BugTrackerNewUrl = ?, deploytype = ?, mavengroupid = ?  WHERE Application = ?";
+        final String query = "UPDATE application SET description = ?, sort = ?, `type` = ?, `system` = ?, SubSystem = ?, svnurl = ?, BugTrackerUrl = ?, BugTrackerNewUrl = ?, deploytype = ?, mavengroupid = ?  WHERE Application = ?";
 
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
             try {
                 preStat.setString(1, application.getDescription());
-                preStat.setString(2, application.getInternal());
-                preStat.setInt(3, application.getSort());
-                preStat.setString(4, application.getType());
-                preStat.setString(5, application.getSystem());
-                preStat.setString(6, application.getSubsystem());
-                preStat.setString(7, application.getSvnurl());
-                preStat.setString(8, application.getBugTrackerUrl());
-                preStat.setString(9, application.getBugTrackerNewUrl());
-                preStat.setString(10, application.getDeploytype());
-                preStat.setString(11, application.getMavengroupid());
-                preStat.setString(12, application.getApplication());
+                preStat.setInt(2, application.getSort());
+                preStat.setString(3, application.getType());
+                preStat.setString(4, application.getSystem());
+                preStat.setString(5, application.getSubsystem());
+                preStat.setString(6, application.getSvnurl());
+                preStat.setString(7, application.getBugTrackerUrl());
+                preStat.setString(8, application.getBugTrackerNewUrl());
+                preStat.setString(9, application.getDeploytype());
+                preStat.setString(10, application.getMavengroupid());
+                preStat.setString(11, application.getApplication());
 
                 int res = preStat.executeUpdate();
                 bool = res > 0;
@@ -339,7 +338,6 @@ public class ApplicationDAO implements IApplicationDAO {
     private Application loadApplicationFromResultSet(ResultSet rs) throws SQLException {
         String application = ParameterParserUtil.parseStringParam(rs.getString("application"), "");
         String description = ParameterParserUtil.parseStringParam(rs.getString("description"), "");
-        String internal = ParameterParserUtil.parseStringParam(rs.getString("internal"), "");
         int sort = ParameterParserUtil.parseIntegerParam(rs.getString("sort"), 0);
         String type = ParameterParserUtil.parseStringParam(rs.getString("type"), "");
         String system = ParameterParserUtil.parseStringParam(rs.getString("system"), "");
@@ -352,7 +350,7 @@ public class ApplicationDAO implements IApplicationDAO {
 
         //TODO remove when working in test with mockito and autowired
         factoryApplication = new FactoryApplication();
-        return factoryApplication.create(application, description, internal, sort, type, system
+        return factoryApplication.create(application, description, sort, type, system
                 , subsystem, svnUrl, deployType, mavenGroupId, bugTrackerUrl, bugTrackerNewUrl);
     }
 }

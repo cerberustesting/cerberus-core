@@ -76,7 +76,6 @@ public class GetApplication extends HttpServlet {
                     row.put(myApplication.getSystem());
                     row.put(myApplication.getSubsystem());
                     row.put(myApplication.getDescription());
-                    row.put(myApplication.getInternal());
                     row.put(myApplication.getType());
                     row.put(myApplication.getMavengroupid());
                     row.put(myApplication.getDeploytype());

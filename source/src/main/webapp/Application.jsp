@@ -64,7 +64,6 @@
                         {"sName": "System"},
                         {"sName": "SubSystem"},
                         {"sName": "Description"},
-                        {"sName": "Internal"},
                         {"sName": "Type"},
                         {"sName": "Maven Group ID"},
                         {"sName": "Deploy Type"},
@@ -92,13 +91,6 @@
                             submit:'Save changes'
                         },
                         {
-                            submit:'Save changes'
-                        },
-                        {
-                            loadtext: 'loading...',
-                            type: 'select',
-                            onblur: 'submit',
-                            data: "{'Y':'Y','N':'N'}",
                             submit:'Save changes'
                         },
                         {
@@ -145,7 +137,6 @@
                         <th><%=dbDocS("Application","system","")%></th>
                         <th><%=dbDocS("Application","subsystem","")%></th>
                         <th><%=dbDocS("Application","description","")%></th>
-                        <th><%=dbDocS("Application","internal","")%></th>
                         <th><%=dbDocS("Application","type","")%></th>
                         <th><%=dbDocS("Application","mavengroupid","")%></th>
                         <th><%=dbDocS("Application","deploytype","")%></th>

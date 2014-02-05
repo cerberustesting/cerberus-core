@@ -360,13 +360,12 @@
                     <tr><td id="arrond"><h3 style="color:blue">Filters</h3>
                             <table border="0px">
                                 <tr>
-                                    <td id="wob" style="width: 110px"><%out.print(dbDocS(conn, "runnerpage", "Test", "Test"));%></td>
-                                    <td id="wob" style="width: 70px"><%out.print(dbDocS(conn, "runnerpage", "Project", "Project"));%></td>
+                                    <td id="wob" style="width: 110px"><%out.print(dbDocS(conn, "test", "Test", "Test"));%></td>
+                                    <td id="wob" style="width: 70px"><%out.print(dbDocS(conn, "project", "idproject", "Project"));%></td>
                                     <td id="wob" style="width: 60px"><%out.print(dbDocS(conn, "application", "System", "System"));%></td>
-                                    <td id="wob" style="width: 100px"><%out.print(dbDocS(conn, "runnerpage", "Application", "Application"));%></td>
-                                    <td id="wob" style="width: 70px"><%out.print(dbDocS(conn, "runnerpage", "Read Only", "Read Only"));%></td>
-                                    <td id="wob" style="width: 70px"><%out.print(dbDocS(conn, "runnerpage", "TestCaseActive", "TestCase Active"));%></td>
-                                    <td id="wob" style="width: 70px"><%out.print(dbDocS(conn, "runnerpage", "Priority", "Priority"));%></td>
+                                    <td id="wob" style="width: 100px"><%out.print(dbDocS(conn, "application", "Application", "Application"));%></td>
+                                    <td id="wob" style="width: 70px"><%out.print(dbDocS(conn, "testcase", "tcactive", "TestCase Active"));%></td>
+                                    <td id="wob" style="width: 70px"><%out.print(dbDocS(conn, "invariant", "PRIORITY", "Priority"));%></td>
                                     <td id="wob" style="width: 110px"><%out.print(dbDocS(conn, "testcase", "Status", "Status"));%></td>
                                     <td id="wob" style="width: 110px"><%out.print(dbDocS(conn, "testcase", "Group", "Group"));%></td>
                                     <td id="wob" style="width: 110px"><%out.print(dbDocS(conn, "testcase", "targetBuild", "targetBuild"));%></td>                        
@@ -410,13 +409,6 @@
                                                 while (rsApp.next()) {%>
                                             <option value="<%= rsApp.getString("Application")%>" <%=app.compareTo(rsApp.getString("Application")) == 0 ? " SELECTED " : ""%>><%= rsApp.getString("Application")%> [<%= rsApp.getString("System")%>]</option><%
                                                 }%>
-                                        </select>
-                                    </td>
-                                    <td id="wob">
-                                        <select style="width: 70px" id="readonly" name="ReadOnly">
-                                            <option value="A" <%=readOnly.compareTo("A") == 0 ? " SELECTED " : ""%>>-- ALL --</option>
-                                            <option value="Y" <%=readOnly.compareTo("Y") == 0 ? " SELECTED " : ""%>>Y</option>
-                                            <option value="N" <%=readOnly.compareTo("N") == 0 ? " SELECTED " : ""%>>N</option>
                                         </select>
                                     </td>
                                     <td id="wob">
@@ -497,13 +489,13 @@
                             <table border="0px">
                                 <tr><td colspan="7" class="wob"></td></tr>
                                 <tr>
-                                    <td id="wob" style="width: 130px"><%out.print(dbDocS(conn, "runnerpage", "Environment", "Environment"));%></td>
+                                    <td id="wob" style="width: 130px"><%out.print(dbDocS(conn, "invariant", "Environment", "Environment"));%></td>
                                     <td id="wob" style="width: 70px"><%out.print(dbDocS(conn, "application", "system", "System"));%></td>
-                                    <td id="wob" style="width: 130px"><%out.print(dbDocS(conn, "runnerpage", "Build", "Build"));%></td>
-                                    <td id="wob" style="width: 130px"><%out.print(dbDocS(conn, "runnerpage", "Revision", "Revision"));%></td>
+                                    <td id="wob" style="width: 130px"><%out.print(dbDocS(conn, "buildrevisioninvariant", "versionname01", "Build"));%></td>
+                                    <td id="wob" style="width: 130px"><%out.print(dbDocS(conn, "buildrevisioninvariant", "versionname02", "Revision"));%></td>
                                     <td id="wob" style="width: 130px"><%out.print(dbDocS(conn, "testcaseexecution", "IP", "Ip"));%></td>
                                     <td id="wob" style="width: 130px"><%out.print(dbDocS(conn, "testcaseexecution", "Port", "Port"));%></td>
-                                    <td id="wob" style="width: 130px"><%out.print(dbDocS(conn, "runnerpage", "Tag", "Tag"));%></td>
+                                    <td id="wob" style="width: 130px"><%out.print(dbDocS(conn, "testcaseexecution", "tag", "Tag"));%></td>
                                 </tr>
 
                                 <tr>
@@ -654,9 +646,9 @@
                                 <tr id="header">
                                     <td style="width: 30px"><%out.print(dbDocS(conn, "testcase", "test", "Test"));%></td>
                                     <td style="width: 30px"><%out.print(dbDocS(conn, "testcase", "testcase", "TestCase"));%></td>
-                                    <td style="width: 30px"><%out.print(dbDocS(conn, "testcase", "application", "Aplication"));%></td>
+                                    <td style="width: 30px"><%out.print(dbDocS(conn, "application", "application", "Application"));%></td>
                                     <td style="width: 30px"><%out.print(dbDocS(conn, "testcase", "description", "Description"));%></td>
-                                    <td style="width: 30px"><%out.print(dbDocS(conn, "testcase", "priority", "Priority"));%></td>
+                                    <td style="width: 30px"><%out.print(dbDocS(conn, "invariant", "PRIORITY", "Priority"));%></td>
                                     <td style="width: 30px"><%out.print(dbDocS(conn, "testcase", "status", "Status"));%></td>
                                     <%
                                         //rs_testcasecountrygeneral.first();								
@@ -829,7 +821,7 @@
                                                                     && (rs_time.getString("tc.BugID").compareToIgnoreCase("") != 0)
                                                                     && (rs_time.getString("tc.BugID").compareToIgnoreCase("null") != 0)) {
                                                                 SitdmossBugtrackingURL = myApplicationService.findApplicationByKey(rs_exec.getString("application")).getBugTrackerUrl();
-                                                                SitdmossBugtrackingURL_tc = SitdmossBugtrackingURL.replaceAll("%bugid%", rs_time.getString("tc.BugID"));
+                                                                SitdmossBugtrackingURL_tc = SitdmossBugtrackingURL.replaceAll("%BUGID%", rs_time.getString("tc.BugID"));
                                                             } else {
                                                                 SitdmossBugtrackingURL_tc = "";
                                                             }

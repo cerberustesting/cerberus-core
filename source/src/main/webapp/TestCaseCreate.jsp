@@ -128,7 +128,7 @@
                                                 <td class="wob" style="width: 100px"><%out.print(dbDocS(conn, "testcase", "Origine", "Origin"));%></td>
                                                 <td class="wob" style="width: 100px"><%out.print(dbDocS(conn, "testcase", "RefOrigine", "RefOrigine"));%></td>
                                                 <td class="wob" style="width: 100px; visibility:hidden"><%out.print(dbDocS(conn, "testcase", "Creator", "creator"));%></td>
-                                                <td class="wob" style="width: 100px"><%out.print(dbDocS(conn, "testcase", "project", "Project"));%></td>
+                                                <td class="wob" style="width: 100px"><%out.print(dbDocS(conn, "project", "idproject", "Project"));%></td>
                                                 <td class="wob" style="width: 100px"><%out.print(dbDocS(conn, "testcase", "ticket", "Ticket"));%></td>
                                                 <td class="wob" style="width: 70px"><%out.print(dbDocS(conn, "testcase", "BugID", "BugID"));%></td>
                                             </tr>
@@ -205,11 +205,11 @@
                                                     <table class="wob" style="text-align: left; border-collapse: collapse" border="0px" cellpadding="0px" cellspacing="0px">
                                                         <tr><td class="wob"><h4 style="color : blue">TestCase Parameters</h4></td></tr>
                                                         <tr id="header">
-                                                            <td class="wob" style="width: 150px"><%out.print(dbDocS(conn, "testcase", "application", "Application"));%></td>
-                                                            <td class="wob" style="width: 90px"><%out.print(dbDocS(conn, "testcase", "runqa", "RunQA"));%></td>
-                                                            <td class="wob" style="width: 90px"><%out.print(dbDocS(conn, "testcase", "runuat", "RunUAT"));%></td>
-                                                            <td class="wob" style="width: 90px"><%out.print(dbDocS(conn, "testcase", "runprod", "RunPROD"));%></td>
-                                                            <td class="wob" style="width: 90px"><%out.print(dbDocS(conn, "testcase", "priority", "Priority"));%></td>
+                                                            <td class="wob" style="width: 150px"><%out.print(dbDocS(conn, "application", "application", "Application"));%></td>
+                                                            <td class="wob" style="width: 90px"><%out.print(dbDocS(conn, "testcase", "ActiveQA", "RunQA"));%></td>
+                                                            <td class="wob" style="width: 90px"><%out.print(dbDocS(conn, "testcase", "ActiveUAT", "RunUAT"));%></td>
+                                                            <td class="wob" style="width: 90px"><%out.print(dbDocS(conn, "testcase", "ActivePROD", "RunPROD"));%></td>
+                                                            <td class="wob" style="width: 90px"><%out.print(dbDocS(conn, "invariant", "PRIORITY", "Priority"));%></td>
                                                             <td class="wob" style="width: 150px"><%out.print(dbDocS(conn, "testcase", "group", "Group"));%></td>
                                                             <td class="wob" style="width: 150px"><%out.print(dbDocS(conn, "testcase", "status", "Status"));%></td>
                                                             <%
@@ -261,7 +261,7 @@
                                                 <td class="wob" style="text-align: left; vertical-align : top ; border-collapse: collapse">
                                                     <table>   
                                                         <tr id="header">
-                                                            <td class="wob" style="width: 600px"><%out.print(dbDocS(conn, "testcase", "ValueExpected", "Value Expected"));%></td>
+                                                            <td class="wob" style="width: 600px"><%out.print(dbDocS(conn, "testcase", "BehaviorOrValueExpected", "Value Expected"));%></td>
                                                             <td class="wob" style="width: 600px"><%out.print(dbDocS(conn, "testcase", "HowTo", "HowTo"));%></td>
                                                         </tr>
                                                         <tr>

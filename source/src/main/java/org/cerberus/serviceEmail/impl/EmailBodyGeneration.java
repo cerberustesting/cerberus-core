@@ -157,7 +157,7 @@ public class EmailBodyGeneration implements IEmailBodyGeneration {
                         + contentAppli + "</td><td>"
                         + subject + "</td><td>"
                         + ProjectVC + "</td><td>"
-                        + "<a href=\"" + contentBugURL.replace("%bugid%", BugIDFixed) + "\">" + BugIDFixed + "</a></td><td>"
+                        + "<a href=\"" + contentBugURL.replace("%BUGID%", BugIDFixed) + "\">" + BugIDFixed + "</a></td><td>"
                         + TicketIDFixed + "</td><td>"
                         + releaseOwner + "</td><td>"
                         + release + "</td></tr>";

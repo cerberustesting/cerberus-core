@@ -97,7 +97,7 @@
                     <td><a href="?build=NONE&revision=NONE">Pending Release</a></td>
                     <td><a href="BuildContent.jsp">Latest Release</a></td>
                     <td> 
-                <ftxt><%=dbDocS(conn, "invariant", "build", "")%></ftxt> 
+                <ftxt><%=dbDocS(conn, "buildrevisioninvariant", "versionname01", "")%></ftxt> 
                 <select id="build" name="build" style="width: 100px" OnChange ="document.buildcontent.submit()">
                     <option style="width: 100px" value="NONE" <%=build.compareTo("NONE") == 0 ? " SELECTED " : ""%>>-- NONE --</option>
                     <%
@@ -106,7 +106,7 @@
                     %><option style="width: 100px" value="<%= myBR.getVersionName()%>" <%=build.compareTo(myBR.getVersionName()) == 0 ? " SELECTED " : ""%>><%= myBR.getVersionName()%></option>
                     <% }
                     %></select>
-                <ftxt><%=dbDocS(conn, "invariant", "revision", "")%></ftxt> 
+                <ftxt><%=dbDocS(conn, "buildrevisioninvariant", "versionname02", "")%></ftxt> 
                 <select id="revision" name="revision" style="width: 100px" OnChange ="document.buildcontent.submit()">
                     <option style="width: 100px" value="ALL" <%=revision.compareTo("ALL") == 0 ? " SELECTED " : ""%>>-- ALL --</option>
                     <option style="width: 100px" value="NONE" <%=revision.compareTo("NONE") == 0 ? " SELECTED " : ""%>>-- NONE --</option>
@@ -149,8 +149,8 @@
             <table  id="buildcontenttable"  style="text-align: left; border-collapse:collapse ; border-color: gainsboro" border="1">
                 <tr id="header">
                     <td><%=dbDocS(conn, "page_buildcontent", "delete", "")%></td>
-                    <td><%=dbDocS(conn, "invariant", "build", "")%></td>
-                    <td><%=dbDocS(conn, "invariant", "revision", "")%></td>
+                    <td><%=dbDocS(conn, "buildrevisioninvariant", "versionname01", "")%></td>
+                    <td><%=dbDocS(conn, "buildrevisioninvariant", "versionname02", "")%></td>
                     <td><%=dbDocS(conn, "application", "Application", "")%></td>
                     <td><%=dbDocS(conn, "buildrevisionparameters", "Release", "")%></td>
                     <td></img>Project</td>

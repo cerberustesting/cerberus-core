@@ -189,12 +189,12 @@
                                     + "order by c.Build asc, c.Revision asc";%>
                         <table  style="text-align: left; border-collapse:collapse ; border-color: gainsboro" border="1">
                             <tr id="header">
-                                <td><b><%=dbDocS(conn, "invariant", "Build", "")%></b></td>
-                                <td><b><%=dbDocS(conn, "invariant", "Revision", "")%></b></td>
-                                <td><%=dbDocS(conn, "page_integrationhomepage", "DEV", "")%></td>
-                                <td><%=dbDocS(conn, "page_integrationhomepage", "QA", "")%></td>
-                                <td><%=dbDocS(conn, "page_integrationhomepage", "UAT", "")%></td>
-                                <td><%=dbDocS(conn, "page_integrationhomepage", "PROD", "")%></td>
+                                <td><b><%=dbDocS(conn, "buildrevisioninvariant", "versionname01", "")%></b></td>
+                                <td><b><%=dbDocS(conn, "buildrevisioninvariant", "versionname02", "")%></b></td>
+                                <td><%=dbDocS(conn, "page_integrationstatus", "DEV", "")%></td>
+                                <td><%=dbDocS(conn, "page_integrationstatus", "QA", "")%></td>
+                                <td><%=dbDocS(conn, "page_integrationstatus", "UAT", "")%></td>
+                                <td><%=dbDocS(conn, "page_integrationstatus", "PROD", "")%></td>
                             </tr><%
 
 

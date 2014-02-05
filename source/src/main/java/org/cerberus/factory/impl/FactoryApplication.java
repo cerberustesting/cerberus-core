@@ -30,7 +30,7 @@ import org.springframework.stereotype.Service;
 public class FactoryApplication implements IFactoryApplication {
 
     @Override
-    public Application create(String application, String description, String internal
+    public Application create(String application, String description
             , int sort, String type, String system, String subsystem
             , String svnurl, String deploytype, String mavengroupid
             , String bugTrackerUrl, String bugTrackerNewUrl) {
@@ -38,7 +38,6 @@ public class FactoryApplication implements IFactoryApplication {
         newApplication.setApplication(application);
         newApplication.setDeploytype(deploytype);
         newApplication.setDescription(description);
-        newApplication.setInternal(internal);
         newApplication.setMavengroupid(mavengroupid);
         newApplication.setSort(sort);
         newApplication.setSubsystem(subsystem);

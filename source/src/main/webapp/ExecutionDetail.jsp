@@ -166,8 +166,8 @@
                         <td style="font-weight: bold; width: 140px"><%out.print(dbDocS(conn, "testcaseexecution", "id", "ID"));%></td>
                         <td style="font-weight: bold; width: 140px"><%out.print(dbDocS(conn, "test", "test", "Test"));%></td>
                         <td style="font-weight: bold; width: 140px"><%out.print(dbDocS(conn, "testcase", "testcase", "TestCase"));%></td>
-                        <td style="font-weight: bold; width: 140px"><%out.print(dbDocS(conn, "testcase", "country", "Country"));%></td>
-                        <td style="font-weight: bold; width: 140px"><%out.print(dbDocS(conn, "runnerpage", "environment", "Environment"));%></td>
+                        <td style="font-weight: bold; width: 140px"><%out.print(dbDocS(conn, "invariant", "country", "Country"));%></td>
+                        <td style="font-weight: bold; width: 140px"><%out.print(dbDocS(conn, "invariant", "environment", "Environment"));%></td>
                         <td style="font-weight: bold; width: 140px"><%out.print(dbDocS(conn, "page_executiondetail", "buildrevision", ""));%></td>
                         <td style="font-weight: bold; width: 140px"><%out.print(dbDocS(conn, "page_executiondetail", "buildrevisionlink", ""));%></td>
                         <td style="font-weight: bold; width: 140px"><%out.print(dbDocS(conn, "application", "Application", "Application"));%></td>

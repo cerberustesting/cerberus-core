@@ -226,7 +226,7 @@
                                 <table id="testcasetable" class="tableau"  style="text-align: left; border-collapse: collapse" border="0px" cellpadding="0px" cellspacing="0px">
                                     <!--					<tr id="header" style="position:relative;top:expression(this.offsetParent.scrollTop-2);">-->
                                     <tr id="header">   
-                                        <td style="width: 10px"><%out.print(dbDocS(conn, "test", "delete", "Delete"));%></td>
+                                        <td style="width: 10px"><%out.print(dbDocS(conn, "page_test", "delete", "Delete"));%></td>
                                         <td style="width: 200px" colspan="2">Testcase Information</td>
                                         <td style="width: 800px" colspan="2">Testcase Parameters</td>
                                         <td style="width: 100px">Activation Criterias</td>
