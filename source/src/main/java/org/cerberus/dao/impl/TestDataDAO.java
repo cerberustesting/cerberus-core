@@ -282,4 +282,43 @@ public class TestDataDAO implements ITestDataDAO {
 
         return factoryTestData.create(key, value);
     }
+
+    @Override
+    public TestData findTestDataByKey(String key) {
+        TestData result = null;
+        final String query = "SELECT * FROM testdata where `key`=?";
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            preStat.setString(1, key);
+            try {
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+                    if (resultSet.next()) {
+                        result = this.loadTestDataFromResultSet(resultSet);
+                    }
+                } catch (SQLException exception) {
+                    MyLogger.log(TestDataDAO.class.getName(), Level.ERROR, exception.toString());
+                } finally {
+                    resultSet.close();
+                }
+            } catch (SQLException exception) {
+                MyLogger.log(TestDataDAO.class.getName(), Level.ERROR, exception.toString());
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(TestDataDAO.class.getName(), Level.ERROR, exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(TestDataDAO.class.getName(), Level.WARN, e.toString());
+            }
+        }
+        return result;
+    }
 }
