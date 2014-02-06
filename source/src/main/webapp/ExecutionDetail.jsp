@@ -53,6 +53,7 @@
         <link rel="stylesheet" type="text/css" href="js/jqplot/jquery.jqplot.min.css" >
         <link type="text/css" rel="stylesheet" href="js/jqplot/syntaxhighlighter/styles/shCoreDefault.min.css" >
         <link type="text/css" rel="stylesheet" href="js/jqplot/syntaxhighlighter/styles/shThemejqPlot.min.css" >
+        <link type="text/css" rel="stylesheet" href="js/zoombox/zoombox.css" >
 
         <title>Execution Detail</title>
 
@@ -74,7 +75,7 @@
         <script type="text/javascript" src="js/jqplot/plugins/jqplot.canvasAxisLabelRenderer.min.js"></script>
         <script type="text/javascript" src="js/jqplot/plugins/jqplot.canvasAxisTickRenderer.min.js"></script>
         <script type="text/javascript" src="js/jqplot/plugins/jqplot.barRenderer.min.js"></script>
-
+        <script type="text/javascript" src="js/zoombox/zoombox.js"></script>
 
         <div id="body">
             <%
@@ -407,7 +408,7 @@
                                         <td class="<%=myActionData.getReturnCode()%>"><span class="<%=myActionData.getReturnCode()%>F" id="ACTSTS-<%=myStep + "-" + myActionData.getSequence()%>"><%=myActionData.getReturnCode()%></span></td>
                                         <td><i><span id="ACTMES-<%=myStep + "-" + myActionData.getSequence()%>"><%=myActionData.getReturnMessage()%></span></i></td>
                                         <td><%if (myActionData.getScreenshotFilename() != null) {%>
-                                            <a href="<%=PictureURL%><%=myActionData.getScreenshotFilename()%>" id="ACTIMG-<%=myStep + "-" + myActionData.getSequence()%>">img</a>
+                                            <a href="<%=PictureURL%><%=myActionData.getScreenshotFilename().replaceAll("\\\\","/")%>" id="ACTIMG-<%=myStep + "-" + myActionData.getSequence()%>" class="zoombox  zgallery1">img</a>
                                             <%}%>
                                         </td>
                                     </tr>
@@ -435,7 +436,7 @@
                                                     <td class="<%=myControlData.getReturnCode()%>"><span class="<%=myControlData.getReturnCode()%>F" id="CTLSTS-<%=myAction + "-" + myControlData.getControl()%>"><%=myControlData.getReturnCode()%></span></td>
                                                     <td><i><span id="CTLMES-<%=myAction + "-" + myControlData.getControl()%>"><%=myControlData.getReturnMessage()%></span></i></td>
                                                     <td><%if (myControlData.getScreenshotFilename() != null) {%>
-                                                        <a href="<%=PictureURL%><%=myControlData.getScreenshotFilename()%>">img</a>
+                                                        <a href="<%=PictureURL%><%=myControlData.getScreenshotFilename().replaceAll("\\\\","/")%>" class="zoombox  zgallery1">img</a>
                                                         <%}%>
                                                     </td>
                                                 </tr>
@@ -703,6 +704,25 @@
                 %>
 
             </div>
+            <script>
+                /**
+                * Or You can also use specific options
+                */
+                $('a.zoombox').zoombox({
+                    theme       : 'zoombox',        //available themes : zoombox,lightbox, prettyphoto, darkprettyphoto, simple
+                    opacity     : 0.8,              // Black overlay opacity
+                    duration    : 800,              // Animation duration
+                    animation   : false,             // Do we have to animate the box ?
+                    width       : 600,              // Default width
+                    height      : 400,              // Default height
+                    gallery     : true,             // Allow gallery thumb view
+                    overflow     : true,             // Allow gallery thumb view
+                    autoplay : false                // Autoplay for video
+                });
+
+                // Image links displayed as a group
+                //$('a.zoombox').zoombox();
+            </script>
             <br><% out.print(display_footer(DatePageStart));%>
             </body>
             </html>
