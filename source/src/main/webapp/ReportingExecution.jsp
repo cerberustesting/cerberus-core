@@ -241,13 +241,27 @@
                     system = new String("%%");
                 }
 
-                String status;
-                if (request.getParameter("Status") != null && request.getParameter("Status").compareTo("All") != 0) {
-                    status = request.getParameter("Status");
-                    tcclauses = tcclauses + " AND Status = '" + request.getParameter("Status") + "'";
-                    URL = URL + "&Status=" + status;
+                
+                String[] allstatus;
+                String status="";
+                if (request.getParameterValues("Status") != null && (request.getParameterValues("Status")[0]).compareTo("All") != 0) {
+                    allstatus = request.getParameterValues("Status");
+                    if(allstatus != null && allstatus.length > 0) {
+                        tcclauses += " AND (";
+                        for (int index=0; index<allstatus.length; index++) {
+                            tcclauses += " Status = '" + allstatus[index] + "' ";
+                            URL += "&Status=" + allstatus[index];
+                            status += allstatus[index]+",";
+
+                            if(index < (allstatus.length-1)) {
+                                tcclauses += " OR ";
+                            }
+                        }
+                        tcclauses += ") ";
+                    }
                 } else {
-                    status = new String("%%");
+                    allstatus = new String[1];
+                    allstatus[0] = new String("%%");
                 }
 
                 String targetBuild = "";
@@ -462,11 +476,11 @@
                                         </select>
                                     </td>
                                     <td id="wob">
-                                        <select style="width: 110px" id="status" name="Status">
+                                        <select  multiple style="width: 110px" id="status" name="Status">
                                             <option value="All">-- ALL --</option><%
                                                 ResultSet rsStatus = stmt.executeQuery("SELECT value from invariant where id = 1 order by sort asc");
                                                 while (rsStatus.next()) {%>
-                                            <option value="<%= rsStatus.getString(1)%>" <%=status.compareTo(rsStatus.getString(1)) == 0 ? " SELECTED " : ""%>><%= rsStatus.getString(1)%></option><%
+                                                <option value="<%= rsStatus.getString(1)%>" <%=status.indexOf(rsStatus.getString(1)) >= 0 ? " SELECTED " : ""%>><%= rsStatus.getString(1)%></option><%
                                                 }%>
                                         </select>
                                     </td>
