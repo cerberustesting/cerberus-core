@@ -33,6 +33,7 @@
 <%@page import="java.util.ArrayList"%>
 <%@page import="java.util.List"%>
 <%@page import="java.util.Set"%>
+<%@page import="java.util.HashMap"%>
 <% Date DatePageStart = new Date();%>
 
 <html>
@@ -47,6 +48,10 @@
         <%@ include file="include/header.jsp" %>
         <div id="body">
             <%
+
+                HashMap<String,Integer> statsStatusForTest = new HashMap<String,Integer>();
+                List<String> listStatus = new ArrayList<String>();
+
                 String tcclauses = " WHERE 1=1 ";
                 String execclauses = " 1=1 ";
                 String URL = "Apply=Apply";
@@ -677,11 +682,11 @@
                                         <input id="ShowD" type="button" value="Show Details" onclick="javascript:setVisibleRep();" style="display:none">
                                     </td>
                                     <td id="wob">Legend : </td>
-                                    <td id="wob" class="OK" title="OK : Test was fully executed and no bug are to be reported."><input checked type="checkbox" name="displayOK" id="displayOK"><a class="OKF">OK</a></td>
-                                    <td id="wob" class="KO" title="KO : Test was executed and bug have been detected."><input checked type="checkbox" name="displayKO" id="displayKO"><a class="KOF">KO</a></td>
-                                    <td id="wob" class="NA" title="NA : Test could not be executed because some test data are not available."><input checked type="checkbox" name="displayNA" id="displayNA"><a class="NAF">NA</a></td>
-                                    <td id="wob" class="FA" title="FA : Test could not be executed because there is a bug on the test."><input checked type="checkbox" name="displayFA" id="displayFA"><a class="FAF">FA</a></td>
-                                    <td id="wob" class="PE" title="PE : Test execution is still running..."><input checked type="checkbox" name="displayPE" id="displayPE"><a class="PEF">PE</a></td>
+                                    <td id="wob" class="OK" title="OK : Test was fully executed and no bug are to be reported."><a class="OKF">OK</a></td>
+                                    <td id="wob" class="KO" title="KO : Test was executed and bug have been detected."><a class="KOF">KO</a></td>
+                                    <td id="wob" class="NA" title="NA : Test could not be executed because some test data are not available."><a class="NAF">NA</a></td>
+                                    <td id="wob" class="FA" title="FA : Test could not be executed because there is a bug on the test."><a class="FAF">FA</a></td>
+                                    <td id="wob" class="PE" title="PE : Test execution is still running..."><a class="PEF">PE</a></td>
                                     <td id="wob" class="NotExecuted" title="Test Case has not been executed for that country."><a class="NotExecutedF">XX</a></td>
                                     <td id="wob" class="NOINF" title="Test Case not available for the country XX."><a class="NOINFF">XX</a></td>
                                 </tr>
@@ -798,7 +803,15 @@
                                     <td class="INF"><%=rs_time.getString("tc.Priority")%></td>
                                     <td class="INF"><%=rs_time.getString("tc.Status")%></td>
                                     <%
-
+                                        if(!listStatus.contains(rs_time.getString("tc.Status"))) {
+                                            listStatus.add(rs_time.getString("tc.Status"));
+                                        }
+                                        if(statsStatusForTest.containsKey(rs_time.getString("tc.test")+rs_time.getString("tc.Status"))) {
+                                            statsStatusForTest.put(rs_time.getString("tc.test")+rs_time.getString("tc.Status"), statsStatusForTest.get(rs_time.getString("tc.test")+rs_time.getString("tc.Status")) +1);
+                                        } else {
+                                            statsStatusForTest.put(rs_time.getString("tc.test")+rs_time.getString("tc.Status"), 1);
+                                        }
+                                    
                                         rs_testcasecountrygeneral.first();
                                         String cssStatus = "";
                                         String color = "black";
@@ -1178,6 +1191,38 @@
                                     <%                                                              }
                                     %>
                                 </tr>
+                            </table>
+                                <br>
+                            <table id="statusReporting" style="display: none" border="0px" cellpadding="0" cellspacing="0">
+                                <tr id="header">
+                                    <td>Tests</td>
+                                    <%
+                                        for (int i = 0; i < listStatus.size(); i++) {
+                                    %>
+                                    <td id="status<%=i%>" align="center" ><%=listStatus.get(i)%></td>
+                                    <%
+                                        }
+                                    %>
+                                    <td>TOTAL</td>
+                                </tr>
+                                <%
+                                        
+                                        for(int index = 0; index < distinctList.size(); index++) {
+                                            int totalTest = 0;
+                                            %><tr><td><%=distinctList.get(index)%></td><%
+                                            
+                                            for (int i = 0; i < listStatus.size(); i++) {
+                                                if(statsStatusForTest.containsKey(distinctList.get(index)+listStatus.get(i))) {
+                                                    totalTest += statsStatusForTest.get(distinctList.get(index)+listStatus.get(i));
+                                                %><td><%=statsStatusForTest.get(distinctList.get(index)+listStatus.get(i))%></td><%
+                                                } else {
+                                                    %><td>0</td><%
+                                                }
+                                            }
+                                            
+                                            %><td><%=totalTest%></td></tr><%
+                                        }
+                                %>
                             </table>
                         </td>
                     </tr>
