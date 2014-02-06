@@ -767,6 +767,7 @@
             <url-pattern>/importFile</url-pattern>
             <url-pattern>/NewRelease</url-pattern>
             <url-pattern>/TestcaseListGrid</url-pattern>
+            <url-pattern>/ChangeUserPassword</url-pattern>
         </web-resource-collection>
     </security-constraint>
     <security-constraint>
