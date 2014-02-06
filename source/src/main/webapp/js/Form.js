@@ -888,12 +888,14 @@ function setInvisibleP() {
 }
 function setVisibleRep() {
 	document.getElementById('reportingExec').style.display = "table";
+	document.getElementById('statusReporting').style.display = "none";
 	document.getElementById('execReporting').style.display = "none";
         document.getElementById('ShowS').style.display = "table";
         document.getElementById('ShowD').style.display = "none";
 }
 function setInvisibleRep() {
 	document.getElementById('reportingExec').style.display = "none";
+	document.getElementById('statusReporting').style.display = "table";
 	document.getElementById('execReporting').style.display = "table";
         document.getElementById('ShowS').style.display = "none";
         document.getElementById('ShowD').style.display = "table";
