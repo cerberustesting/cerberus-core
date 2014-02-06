@@ -29,7 +29,6 @@ public interface IFactoryApplication {
     /**
      * @param application  ID of the application.
      * @param description  Description of the Application.
-     * @param internal
      * @param sort
      * @param type
      * @param system
@@ -39,7 +38,7 @@ public interface IFactoryApplication {
      * @param mavengroupid
      * @return
      */
-    Application create(String application, String description, String internal
+    Application create(String application, String description
             , int sort, String type, String system, String subsystem
             , String svnurl, String deploytype, String mavengroupid
             , String bugtrackerurl, String bugtrackernewurl);

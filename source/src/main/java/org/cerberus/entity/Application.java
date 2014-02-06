@@ -24,7 +24,6 @@ public class Application {
 
     private String application;
     private String description;
-    private String internal;
     private int sort;
     private String type;
     private String system;
@@ -65,14 +64,6 @@ public class Application {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public String getInternal() {
-        return internal;
-    }
-
-    public void setInternal(String internal) {
-        this.internal = internal;
     }
 
     public int getSort() {

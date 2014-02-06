@@ -215,7 +215,7 @@
 
                             <table border="0px">
                                 <tr>                                         
-                                    <td id="wob" style="font-weight: bold; width: 150px"><% out.print(dbDocS(conn, "runnerpage", "SeleniumServerIP", "Selenium Server IP "));%></td>
+                                    <td id="wob" style="font-weight: bold; width: 150px"><% out.print(dbDocS(conn, "page_runtests", "SeleniumServerIP", "Selenium Server IP "));%></td>
                                     <td id="wob">
                                         <input type="text" name="ss_ip" value="<%= ssIP%>" />
                                         <input id="button" type="submit" <%=enable%> name="DefaultIP" value="Set As My Default IP" >
@@ -228,7 +228,7 @@
 
                                 </tr>
                                 <tr>
-                                    <td id="wob" style="font-weight: bold; width: 150px"><% out.print(dbDocS(conn, "runnerpage", "SeleniumServerPort", "Selenium Server Port "));%></td>
+                                    <td id="wob" style="font-weight: bold; width: 150px"><% out.print(dbDocS(conn, "page_runtests", "SeleniumServerPort", "Selenium Server Port "));%></td>
                                     <td id="wob">
                                         <input type="text" name="ss_p" value="<%= ssPort%>" />
                                     </td>
@@ -239,7 +239,7 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td id="wob" style="font-weight: bold; width: 150px"><% out.print(dbDocS(conn, "runnerpage", "BrowserPath", "Browser Path"));%></td>
+                                    <td id="wob" style="font-weight: bold; width: 150px"><% out.print(dbDocS(conn, "page_runtests", "Browser", "Browser"));%></td>
                                     <td id="wob">
                                         <%=ComboInvariant(conn, "browser", "width: 90px", "browser", "browser", "37", browser, "", null)%>
                                     </td>
@@ -264,7 +264,7 @@
                                 <tr>
                                     <td id="wob" style="font-weight: bold; width: 100px"><% out.print(dbDocS(conn, "test", "Test", "Test"));%></td>
                                     <td id="wob" style="font-weight: bold; width: 100px"><% out.print(dbDocS(conn, "testcase", "TestCase", "Test Case"));%></td>
-                                    <td id="wob" style="font-weight: bold; width: 100px"><% out.print(dbDocS(conn, "testcasecountryproperties", "Country", "Country"));%></td>
+                                    <td id="wob" style="font-weight: bold; width: 100px"><% out.print(dbDocS(conn, "invariant", "Country", "Country"));%></td>
                                 </tr>
                                 <tr>
                                     <td id="wob"><select size="16" id="test" name="Test"
@@ -311,7 +311,7 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td id="wob" style="font-weight: bold; width: 150px"><% out.print(dbDocS(conn, "countryenvparam", "Environment", "Environment"));%></td>
+                                    <td id="wob" style="font-weight: bold; width: 150px"><% out.print(dbDocS(conn, "invariant", "Environment", "Environment"));%></td>
                                 </tr>
                                 <tr>
                                     <td colspan="3">
@@ -402,21 +402,21 @@
                             <h3 style="color: blue">Execution Parameters</h3>
                             <table>
                                 <tr>
-                                    <td id="wob" style="font-weight: bold; width: 100px"><% out.print(dbDocS(conn, "runnerpage", "Tag", "Tag"));%></td>
+                                    <td id="wob" style="font-weight: bold; width: 100px"><% out.print(dbDocS(conn, "testcaseexecution", "tag", "Tag"));%></td>
                                     <td class="wob" colspan="4">
                                         <input id="tag" name="Tag" style="width: 200px">
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td id="wob" style="font-weight: bold; width: 100px"><% out.print(dbDocS(conn, "runnerpage", "outputformat", ""));%></td>
+                                    <td id="wob" style="font-weight: bold; width: 100px"><% out.print(dbDocS(conn, "page_runtests", "outputformat", ""));%></td>
                                     <td class="wob">
                                         <%=ComboInvariant(conn, "outputformat", "width: 90px", "Format", "Format", "24", "gui", "", null)%>
                                     </td>
-                                    <td id="wob" style="font-weight: bold; width: 100px"><% out.print(dbDocS(conn, "runnerpage", "verbose", ""));%></td>
+                                    <td id="wob" style="font-weight: bold; width: 100px"><% out.print(dbDocS(conn, "testcaseexecution", "verbose", ""));%></td>
                                     <td class="wob">
                                         <%=ComboInvariant(conn, "verbose", "width: 90px", "Verbose", "Verbose", "25", "0", "", null)%>
                                     </td>
-                                    <td id="wob" style="font-weight: bold; width: 100px"><% out.print(dbDocS(conn, "runnerpage", "screenshot", ""));%></td>
+                                    <td id="wob" style="font-weight: bold; width: 100px"><% out.print(dbDocS(conn, "page_runtests", "screenshot", ""));%></td>
                                     <td class="wob">
                                         <%=ComboInvariant(conn, "screenshot", "width: 90px", "Screenshot", "Screenshot", "39", "1", "", null)%>
                                     </td>

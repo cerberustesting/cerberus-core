@@ -263,23 +263,23 @@
                             <!--         <form method="post" name="ToolParameters" action="ToolParameters" >-->
                             <table border="0px">
                                 <tr>                                         
-                                    <td id="wob" style="font-weight: bold; width: 150px"><% out.print(dbDocS(conn, "runnerpage", "SeleniumServerIP", "Selenium Server IP "));%></td>
+                                    <td id="wob" style="font-weight: bold; width: 150px"><% out.print(dbDocS(conn, "page_runtests", "SeleniumServerIP", "Selenium Server IP "));%></td>
                                     <td id="wob"><input type="text" name="ss_ip" value="<%= ssIP%>" />
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td id="wob" style="font-weight: bold; width: 150px"><% out.print(dbDocS(conn, "runnerpage", "SeleniumServerPort", "Selenium Server Port "));%></td>
+                                    <td id="wob" style="font-weight: bold; width: 150px"><% out.print(dbDocS(conn, "page_runtests", "SeleniumServerPort", "Selenium Server Port "));%></td>
                                     <td id="wob"><input type="text" name="ss_p" value="<%= ssPort%>" />
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td id="wob" style="font-weight: bold; width: 150px"><% out.print(dbDocS(conn, "runnerpage", "BrowserPath", "Browser Path"));%></td>
+                                    <td id="wob" style="font-weight: bold; width: 150px"><% out.print(dbDocS(conn, "page_runtests", "Browser", "Browser"));%></td>
                                     <td id="wob"><input type="text" name="browser" value="<%= browser%>"
                                                         style="width: 450px" />
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td id="wob" style="font-weight: bold; width: 150px"><% out.print(dbDocS(conn, "runnerpage", "LogPath", "Log Path"));%></td>
+                                    <td id="wob" style="font-weight: bold; width: 150px">Log Path</td>
                                     <td id="wob"><input
                                             type="text" name="logpath" value="<%= logpath%>"
                                             style="width: 450px" />

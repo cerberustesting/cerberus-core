@@ -93,7 +93,7 @@ public class AddUser extends HttpServlet {
             login = login.substring(0, 10);
         }
         String name = ParameterParserUtil.parseStringParam(request.getParameter("name"), "");
-        String password = parameterService.findParameterByKey("cerberus_notification_accountcreation_defaultPassword", system).getValue();
+        String password = parameterService.findParameterByKey("cerberus_accountcreation_defaultpassword", system).getValue();
         String newPassword = ParameterParserUtil.parseStringParam(request.getParameter("newPassword"),"Y");
         String team = ParameterParserUtil.parseStringParam(request.getParameter("team"),"");
         String defaultSystem = ParameterParserUtil.parseStringParam(request.getParameter("defaultSystem"),"");
@@ -116,7 +116,7 @@ public class AddUser extends HttpServlet {
             /**
              * Send Email to explain how to connect Cerberus if activateNotification is set to Y
              */
-            String sendNotification = parameterService.findParameterByKey("cerberus_notification_accountcreation_activateNotification", system).getValue();
+            String sendNotification = parameterService.findParameterByKey("cerberus_notification_accountcreation_activatenotification", system).getValue();
         
             if (sendNotification.equalsIgnoreCase("Y")){
             generateEmailService.BuildAndSendAccountCreationEmail(myUser);

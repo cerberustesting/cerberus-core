@@ -68,7 +68,6 @@ public class ApplicationDAOTest {
     public void testFindAllApplicationReturnOneApplication() throws SQLException, CerberusException {
         String application = "Cerberus";
         String description = "Testing Interface new";
-        String internal = "N";
         //sort is converted to int
         String sort = "4500";
         String type = "GUI";
@@ -85,7 +84,6 @@ public class ApplicationDAOTest {
         when(resultSet.next()).thenReturn(true).thenReturn(false);
         when(resultSet.getString("application")).thenReturn(application);
         when(resultSet.getString("description")).thenReturn(description);
-        when(resultSet.getString("internal")).thenReturn(internal);
         when(resultSet.getString("sort")).thenReturn(sort);
         when(resultSet.getString("type")).thenReturn(type);
         when(resultSet.getString("system")).thenReturn(system);
@@ -101,7 +99,6 @@ public class ApplicationDAOTest {
         Application app = list.get(0);
         Assert.assertEquals(application, app.getApplication());
         Assert.assertEquals(description, app.getDescription());
-        Assert.assertEquals(internal, app.getInternal());
         Assert.assertEquals(4500, app.getSort());
         Assert.assertEquals(type, app.getType());
         Assert.assertEquals(system, app.getSystem());

@@ -16,7 +16,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
-  --%>
+--%>
 <%@page import="org.cerberus.entity.CountryEnvParam"%>
 <%@page import="org.cerberus.service.ICountryEnvParamService"%>
 <%@page import="org.cerberus.entity.CountryEnvLink"%>
@@ -113,7 +113,8 @@
                 // Enrironment country Detail Page
 
                 PCE = "SELECT DISTINCT c.system, c.Country, c.Environment, c.Build, c.Revision, c.Chain, c.Active, c.Type, "
-                        + "c.DistribList, c.EMailBodyRevision, c.EmailBodyChain, c.EmailBodyDisableEnvironment "
+                        + "c.DistribList, c.EMailBodyRevision, c.EmailBodyChain, c.EmailBodyDisableEnvironment, "
+                        + "c.maintenanceact, c.maintenancestr, c.maintenanceend "
                         + "FROM `countryenvparam` c "
                         + "WHERE 1=1 "
                         + " and System='" + MySystem + "' "
@@ -149,10 +150,10 @@
                     <table border>
                         <tr id="header">
                             <td><%=dbDocS(conn, "application", "system", "")%></td>
-                            <td><%=dbDocS(conn, "testcase", "country", "")%></td>
+                            <td><%=dbDocS(conn, "invariant", "country", "")%></td>
                             <td><%=dbDocS(conn, "invariant", "environment", "")%></td>
-                            <td><%=dbDocS(conn, "invariant", "build", "")%></td>
-                            <td><%=dbDocS(conn, "invariant", "revision", "")%></td>
+                            <td><%=dbDocS(conn, "buildrevisioninvariant", "versionname01", "")%></td>
+                            <td><%=dbDocS(conn, "buildrevisioninvariant", "versionname02", "")%></td>
                             <td><%=dbDocS(conn, "countryenvparam", "chain", "")%></td>
                             <td><%=dbDocS(conn, "countryenvparam", "active", "")%></td>
                             <td><%=dbDocS(conn, "countryenvparam", "Type", "")%></td>
@@ -185,10 +186,10 @@
                         </tr>
                         <tr id="header">
                             <td><%=dbDocS(conn, "application", "system", "")%></td>
-                            <td><%=dbDocS(conn, "testcase", "country", "")%></td>
+                            <td><%=dbDocS(conn, "invariant", "country", "")%></td>
                             <td><%=dbDocS(conn, "invariant", "environment", "")%></td>
-                            <td><%=dbDocS(conn, "invariant", "build", "")%></td>
-                            <td><%=dbDocS(conn, "invariant", "revision", "")%></td>
+                            <td><%=dbDocS(conn, "buildrevisioninvariant", "versionname01", "")%></td>
+                            <td><%=dbDocS(conn, "buildrevisioninvariant", "versionname02", "")%></td>
                             <td><%=dbDocS(conn, "countryenvparam", "chain", "")%></td>
                             <td><%=dbDocS(conn, "countryenvparam", "active", "")%></td>
                             <td><%=dbDocS(conn, "countryenvparam", "Type", "")%></td>
@@ -220,7 +221,7 @@
         <table>  
             <tr>
                 <td style="background-color:lightgrey">Application list and corresponding connectivity parameters</td>
-                <td style="background-color:lightgrey">Connectivity parameters for internal applications</td>
+                <td style="background-color:lightgrey">Connectivity parameters for all applications</td>
                 <td style="background-color:lightgrey">Database parameters for Cerberus SQL Execution</td>
             </tr>
             <tr>
@@ -236,7 +237,7 @@
                         </tr>
                         <%
                             Statement stmtCEP = conn.createStatement();
-                            String CEP = "SELECT DISTINCT c.Application, c.IP, c.URL, c.URLLOGIN, a.internal "
+                            String CEP = "SELECT DISTINCT c.Application, c.IP, c.URL, c.URLLOGIN "
                                     + "FROM `countryenvironmentparameters` c "
                                     + "JOIN application a ON a.application = c.application "
                                     + "WHERE 1=1 "
@@ -248,14 +249,9 @@
                             while (rsCEP.next()) {
                         %>          <tr>
 
-                            <% if (rsCEP.getString("internal").equalsIgnoreCase("Y")) {
-                            %><td><b><%=rsCEP.getString("Application")%></b></td>
-                            <td><i><%=rsCEP.getString("IP")%></i></td><%
-                            } else {
-                            %><td><%=rsCEP.getString("Application")%></td>
-                            <td><%=rsCEP.getString("IP")%></td><%
-                                }
-                            %>
+                            <td><%=rsCEP.getString("Application")%></td>
+                            <td><%=rsCEP.getString("IP")%></td>
+
                             <td><%=rsCEP.getString("URL")%></td>
                             <td><%=rsCEP.getString("URLLOGIN")%></td>
                         </tr>
@@ -458,8 +454,8 @@
                                     <tr id="header" style="height:15px">
                                         <td><%=dbDocS(conn, "countryenvparam_log", "datecre", "")%></td>
                                         <td><%=dbDocS(conn, "countryenvparam_log", "Description", "")%></td>
-                                        <td><%=dbDocS(conn, "invariant", "build", "")%></td>
-                                        <td><%=dbDocS(conn, "invariant", "revision", "")%></td>
+                                        <td><%=dbDocS(conn, "buildrevisioninvariant", "versionname01", "")%></td>
+                                        <td><%=dbDocS(conn, "buildrevisioninvariant", "versionname02", "")%></td>
                                     </tr>
                                     <%
                                         Statement stmtCEL = conn.createStatement();
@@ -485,7 +481,7 @@
                                 <table border>
                                     <tr id="header" style="height:15px" valign="top">
                                         <td><%=dbDocS(conn, "countryenvparam_log", "datecre", "")%></td>
-                                        <td><%=dbDocS(conn, "testcasestep", "chain", "")%></td>
+                                        <td><%=dbDocS(conn, "countryenvparam", "chain", "")%></td>
                                     </tr>
                                     <%
                                         Statement stmtBAT = conn.createStatement();
@@ -572,6 +568,30 @@
                 </td>
                 <td>
                     <textarea id="bodychain" name="bodychain" cols="80" rows="10"><%=rsPCE.getString("c.EMailBodyChain") == null ? "" : rsPCE.getString("c.EMailBodyChain")%></textarea><br>
+                </td>
+                </tr>
+                <tr>
+                    <td>
+                <ftxt><%=dbDocS(conn, "countryenvparam", "maintenanceact", "")%></ftxt> 
+                </td>
+                <td>
+                    <%=rsPCE.getString("c.maintenanceact") == null ? "" : rsPCE.getString("c.maintenanceact")%>
+                </td>
+                </tr>
+                <tr>
+                    <td>
+                <ftxt><%=dbDocS(conn, "countryenvparam", "maintenancestr", "")%></ftxt> 
+                </td>
+                <td>
+                    <%=rsPCE.getString("c.maintenancestr") == null ? "" : rsPCE.getString("c.maintenancestr")%>
+                </td>
+                </tr>
+                <tr>
+                    <td>
+                <ftxt><%=dbDocS(conn, "countryenvparam", "maintenanceend", "")%></ftxt> 
+                </td>
+                <td>
+                    <%=rsPCE.getString("c.maintenanceend") == null ? "" : rsPCE.getString("c.maintenanceend")%>
                 </td>
                 </tr>
                 <tr>

@@ -16,7 +16,8 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
-  --%>
+--%>
+<%@page import="org.cerberus.util.StringUtil"%>
 <%@page import="org.cerberus.entity.TestCaseExecutionSysVer"%>
 <%@page import="org.cerberus.service.ITestCaseExecutionSysVerService"%>
 <%@page import="org.cerberus.service.IApplicationService"%>
@@ -91,7 +92,7 @@
 
                     String PictureURL;
                     String MyPictureURL;
-                    PictureURL = myParameterService.findParameterByKey("cerberus_picture_url","").getValue();
+                    PictureURL = myParameterService.findParameterByKey("cerberus_picture_url", "").getValue();
 
                     /*
                      * Manage Filters
@@ -165,8 +166,8 @@
                         <td style="font-weight: bold; width: 140px"><%out.print(dbDocS(conn, "testcaseexecution", "id", "ID"));%></td>
                         <td style="font-weight: bold; width: 140px"><%out.print(dbDocS(conn, "test", "test", "Test"));%></td>
                         <td style="font-weight: bold; width: 140px"><%out.print(dbDocS(conn, "testcase", "testcase", "TestCase"));%></td>
-                        <td style="font-weight: bold; width: 140px"><%out.print(dbDocS(conn, "testcase", "country", "Country"));%></td>
-                        <td style="font-weight: bold; width: 140px"><%out.print(dbDocS(conn, "runnerpage", "environment", "Environment"));%></td>
+                        <td style="font-weight: bold; width: 140px"><%out.print(dbDocS(conn, "invariant", "country", "Country"));%></td>
+                        <td style="font-weight: bold; width: 140px"><%out.print(dbDocS(conn, "invariant", "environment", "Environment"));%></td>
                         <td style="font-weight: bold; width: 140px"><%out.print(dbDocS(conn, "page_executiondetail", "buildrevision", ""));%></td>
                         <td style="font-weight: bold; width: 140px"><%out.print(dbDocS(conn, "page_executiondetail", "buildrevisionlink", ""));%></td>
                         <td style="font-weight: bold; width: 140px"><%out.print(dbDocS(conn, "application", "Application", "Application"));%></td>
@@ -662,17 +663,22 @@
                         <td>
                             <%
                                 String newBugURL = myApplicationService.findApplicationByKey(myApplication).getBugTrackerNewUrl();
-                                newBugURL = newBugURL.replaceAll("%EXEID%", id_filter);
-                                newBugURL = newBugURL.replaceAll("%TEST%", test);
-                                newBugURL = newBugURL.replaceAll("%TESTCASE%", testCase);
-                                newBugURL = newBugURL.replaceAll("%TESTCASEDESC%", testCaseDesc);
-                                newBugURL = newBugURL.replaceAll("%COUNTRY%", country);
-                                newBugURL = newBugURL.replaceAll("%ENV%", environment);
-                                newBugURL = newBugURL.replaceAll("%BUILD%", build);
-                                newBugURL = newBugURL.replaceAll("%REV%", revision);
+                                if (StringUtil.isNullOrEmpty(newBugURL))  {
+  %>
+                            <a href="javascript:void(0)" title="Define the New Bug URL at the application level in order to open a bug from here.">Open a bug.</a> 
+<%                              } else {
+                                    newBugURL = newBugURL.replaceAll("%EXEID%", id_filter);
+                                    newBugURL = newBugURL.replaceAll("%TEST%", test);
+                                    newBugURL = newBugURL.replaceAll("%TESTCASE%", testCase);
+                                    newBugURL = newBugURL.replaceAll("%TESTCASEDESC%", testCaseDesc);
+                                    newBugURL = newBugURL.replaceAll("%COUNTRY%", country);
+                                    newBugURL = newBugURL.replaceAll("%ENV%", environment);
+                                    newBugURL = newBugURL.replaceAll("%BUILD%", build);
+                                    newBugURL = newBugURL.replaceAll("%REV%", revision);%>
+                            <a href="<%= newBugURL%>" target='_blank' title="title">Open a bug.</a> 
+<%                                }
 
                             %>
-                            <a href="<%= newBugURL%>" target='_blank'>Open a bug.</a> 
                         </td>
                     </tr>
                 </table>

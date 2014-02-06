@@ -307,14 +307,14 @@
                                                         <tr id="header">
                                                             <td class="wob" style="width: 100px"><%out.print(dbDocS(conn, "test", "test", "Test"));%></td>
                                                             <td class="wob" style="width: 60px"><%out.print(dbDocS(conn, "testcase", "testcase", "Testcase"));%></td>
-                                                            <td class="wob" style="width: 100px"><%out.print(dbDocS(conn, "testcase", "project", "Project"));%></td>
+                                                            <td class="wob" style="width: 100px"><%out.print(dbDocS(conn, "project", "idproject", "Project"));%></td>
                                                             <td class="wob" style="width: 100px"><%out.print(dbDocS(conn, "testcase", "ticket", "Ticket"));%></td>
                                                             <td class="wob" style="width: 70px"><%out.print(dbDocS(conn, "testcase", "BugID", ""));%></td>
                                                             <td class="wob" style="width: 100px"><%out.print(dbDocS(conn, "testcase", "origine", "Origine"));%></td>
                                                             <td class="wob" style="width: 100px"><%out.print(dbDocS(conn, "testcase", "creator", "Creator"));%></td>
                                                             <td class="wob" style="width: 150px"><%out.print(dbDocS(conn, "application", "system", "System"));%></td>
-                                                            <td class="wob" style="width: 150px"><%out.print(dbDocS(conn, "testcase", "application", "Application"));%></td>
-                                                            <td class="wob" style="width: 150px"><%out.print(dbDocS(conn, "testcase", "priority", ""));%></td>
+                                                            <td class="wob" style="width: 150px"><%out.print(dbDocS(conn, "application", "application", "Application"));%></td>
+                                                            <td class="wob" style="width: 150px"><%out.print(dbDocS(conn, "invariant", "PRIORITY", ""));%></td>
                                                             <td class="wob" style="width: 150px"><%out.print(dbDocS(conn, "testcase", "status", ""));%></td>
                                                         </tr>
                                                         <tr>

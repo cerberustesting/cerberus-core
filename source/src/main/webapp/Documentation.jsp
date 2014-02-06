@@ -16,7 +16,11 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
-  --%>
+--%>
+<%@page import="org.cerberus.util.StringUtil"%>
+<%@page import="java.util.ArrayList"%>
+<%@page import="java.util.List"%>
+<%@page import="org.cerberus.util.ParameterParserUtil"%>
 <%@ page import="java.sql.Connection"%>
 <%@ page import="java.sql.ResultSet"%>
 <%@ page import="java.sql.Statement"%>
@@ -29,138 +33,158 @@
 <!DOCTYPE html>
 <html>
     <%
-        String DocTable;
-        if (request.getParameter("DocTable") != null) {
-            DocTable = request.getParameter("DocTable");
-        } else {
-            DocTable = new String("empty");
-        }
-        String DocField;
-        if (request.getParameter("DocField") != null) {
-            DocField = request.getParameter("DocField");
-        } else {
-            DocField = new String("empty");
-        }
-        String DocValue;
-        boolean DocValue_isdefined;
-        DocValue_isdefined = true;
-        if (request.getParameter("DocValue") != null) {
-            DocValue = request.getParameter("DocValue");
-        } else {
-            DocValue = new String("empty");
+        String DocTable = ParameterParserUtil.parseStringParam(request.getParameter("DocTable"), "empty");
+        String DocField = ParameterParserUtil.parseStringParam(request.getParameter("DocField"), "empty");
+        String DocValue = ParameterParserUtil.parseStringParam(request.getParameter("DocValue"), "empty");
+        boolean DocValue_isdefined = true;
+        if (DocValue.equalsIgnoreCase("empty")) {
             DocValue_isdefined = false;
         }
 
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         DatabaseSpring db = appContext.getBean(DatabaseSpring.class);
 
+        String Title = "";
+        List<String> TitleList;
+        TitleList = new ArrayList<String>();
+        String Doc = "";
+        List<String> DocList;
+        DocList = new ArrayList<String>();
+
         Connection conn = db.connect();
+
         try {
 
             if (DocValue_isdefined == false) {
 
-
                 Statement stmtQuery = conn.createStatement();
-                String sq = "SELECT DocLabel, DocDesc FROM documentation where DocTable = '" + DocTable + "' and docfield = '" + DocField + "' and length(docvalue)=0 and length(docdesc) > 1";
-                ResultSet q = stmtQuery.executeQuery(sq);
-                if (q.first()) {
-
-    %>
-
-    <head>
-        <title><%= q.getString("DocLabel")%></title>
-        <link rel="stylesheet" href="css/crb_style.css">
-        <link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico" />
-    </head>
-
-    <body>
-<table class="doctb">
-    <tr id="header" class="doctl"><td><%= q.getString("DocLabel")%></td></tr>
-       
-            <tr>
-                <td style="width: 100%;">
-
-                    <%
-                        out.print(q.getString("DocDesc"));
-                    %>
-
-                    <%
-                        Statement stmtQuerydet = conn.createStatement();
-                        String sqDet = "SELECT DocValue, DocDesc FROM documentation where DocTable = '" + DocTable + "' and docfield = '" + DocField + "' and docValue IS NOT NULL AND length (docdesc) > 1";
-                        ResultSet qDet = stmtQuery.executeQuery(sqDet);
-                        while (qDet.next()) {
-                    %>
-                    <a href="?DocTable=<%=DocTable%>&DocField=<%=DocField%>&DocValue=<%=qDet.getString("DocValue")%>"><%=qDet.getString("DocValue")%></a><br>                                                         
-                    <%
+                Statement stmtQuerydet = conn.createStatement();
+                String sqDet = "";
+                String sq = "";
+                if (DocTable.equalsIgnoreCase("all")) { // All the documentation displayed inside a single page.
+                    sq = "SELECT DocTable, DocField, DocValue, DocLabel, DocDesc, DocLabel FROM documentation";
+                    ResultSet q = stmtQuery.executeQuery(sq);
+                    while (q.next()) {
+                        Doc = q.getString("DocDesc");
+                        if (StringUtil.isNullOrEmpty(q.getString("DocValue"))) {
+                            if (StringUtil.isNullOrEmpty(request.getParameter("HideKey"))) {
+                                Title = "[" + q.getString("DocTable") + " - " + q.getString("DocField") + "] - " + q.getString("DocLabel");
+                            } else {
+                                Title = q.getString("DocLabel");
+                            }
+                            sqDet = "SELECT DocValue, DocDesc, DocLabel FROM documentation where DocTable = '" + q.getString("DocTable") + "' and docfield = '" + q.getString("DocField") + "' and docValue IS NOT NULL and length(docValue) > 1 AND length(docdesc) > 1";
+                            ResultSet qDet = stmtQuerydet.executeQuery(sqDet);
+                            if (qDet.first()) {
+                                Doc = Doc + "<table>";
+                                do {
+                                    Doc = Doc + "<tr><td><a href=\"?DocTable=" + q.getString("DocTable");
+                                    Doc = Doc + "&amp;DocField=" + q.getString("DocField") + "&amp;DocValue=" + qDet.getString("DocValue") + "\">";
+                                    Doc = Doc + qDet.getString("DocValue") + "</a></td><td>" + qDet.getString("DocLabel") + "</td></tr>";
+                                } while (qDet.next());
+                                Doc = Doc + "</table>";
+                            }
+                        } else {
+                            if (StringUtil.isNullOrEmpty(request.getParameter("HideKey"))) {
+                                Title = "[" + q.getString("DocTable") + " - " + q.getString("DocField") + " - " + q.getString("DocValue") + "] - " + q.getString("DocLabel");
+                            } else {
+                                Title = q.getString("DocLabel");
+                            }
                         }
-                    %>
-                </td>
-            </tr>
-        </table>
+                        TitleList.add(Title);
+                        DocList.add(Doc);
+                    }
+                } else { // Documentation of a normal field. The field could potencially have occurences at Value level that will be displayed.
+                    sq = "SELECT DocLabel, DocDesc FROM documentation where DocTable = '" + DocTable + "' and docfield = '" + DocField + "' and length(docvalue)=0 and length(docdesc) > 1";
+                    ResultSet q = stmtQuery.executeQuery(sq);
+                    if (q.first()) {
+                        Title = q.getString("DocLabel");
+                        Doc = q.getString("DocDesc");
+                        sqDet = "SELECT DocValue, DocDesc, DocLabel FROM documentation where DocTable = '" + DocTable + "' and docfield = '" + DocField + "' and docValue IS NOT NULL and length(docValue) > 1  AND length(docdesc) > 1";
+                        ResultSet qDet = stmtQuery.executeQuery(sqDet);
+                        if (qDet.first()) {
+                            Doc = Doc + "<table>";
+                            do {
+                                Doc = Doc + "<tr><td><a href=\"?DocTable=" + DocTable;
+                                Doc = Doc + "&amp;DocField=" + DocField + "&amp;DocValue=" + qDet.getString("DocValue") + "\">";
+                                Doc = Doc + qDet.getString("DocValue") + "</a></td><td>" + qDet.getString("DocLabel") + "</td></tr>";
+                            } while (qDet.next());
+                            Doc = Doc + "</table>";
+                        }
+                        TitleList.add(Title);
+                        DocList.add(Doc);
+                    } else {
+                        Title = "No Documentation Found !";
+                        Doc = "";
+                        TitleList.add(Title);
+                        DocList.add(Doc);
+                    }
+                }
 
-        <%
-        } else {
-        %>
-    <head>
-        <title>No Documentation Found !</title>
-        <link rel="stylesheet" href="css/crb_style.css">
-    </head>
+            } else { // Documentation of the detail of a field + value.
 
-    <body>
-        <a class="doctl">No Documentation Found !</a>
-        <%    }
-        } else {
                 Statement stmtQuery1 = conn.createStatement();
                 String sq1 = "SELECT DocLabel FROM documentation where DocTable = '" + DocTable + "' and docfield = '" + DocField + "' and length(docvalue)=0 and length(docdesc) > 1";
                 ResultSet q1 = stmtQuery1.executeQuery(sq1);
                 String nav;
                 nav = "";
-                               if (q1.first()) {
-                                   nav = "<a href=\"?DocTable=" + DocTable + "&DocField=" + DocField + "\">" + q1.getString("DocLabel") + "</a> -- ";
-                                   }
-                           Statement stmtQueryVal = conn.createStatement();
-            String sqVal = "SELECT DocDesc FROM documentation where DocTable = '" + DocTable + "' and docfield = '" + DocField + "' and docvalue = '" + DocValue + "' and length(docdesc) > 1";
-            ResultSet qVal = stmtQueryVal.executeQuery(sqVal);
-            if (qVal.first()) {
-        %>
+                if (q1.first()) {
+                    nav = "<a href=\"?DocTable=" + DocTable + "&amp;DocField=" + DocField + "\">" + q1.getString("DocLabel") + "</a>";
+                }
+                Statement stmtQueryVal = conn.createStatement();
+                String sqVal = "SELECT DocDesc FROM documentation where DocTable = '" + DocTable + "' and docfield = '" + DocField + "' and docvalue = '" + DocValue + "' and length(docdesc) > 1";
+                ResultSet qVal = stmtQueryVal.executeQuery(sqVal);
+                if (qVal.first()) {
+                    Title = nav + " >> " + DocValue;
+                    Doc = qVal.getString("DocDesc");
+                    Doc = Doc + "<br><br>Back to " + nav;
+                    TitleList.add(Title);
+                    DocList.add(Doc);
+                } else {
+                    Title = "No Documentation Found !";
+                    Doc = "";
+                    TitleList.add(Title);
+                    DocList.add(Doc);
+                }
+
+            }
+
+            if (TitleList.size() > 1) {
+                Title = "Full Documentation";
+            }
+
+    %>
+
 
     <head>
-        <title><%= DocValue%></title>
-        <link rel="stylesheet" href="css/crb_style.css">
+        <title><%= Title%></title>
+        <link rel="stylesheet" href="css/crb_style_doc.css">
+        <link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico" />
     </head>
 
     <body>
-        <a class="doctl"><%= nav%><%= DocValue%></a>
+        <%
+            Integer i = 0;
+            for (String tcs : TitleList) {
+                if (i > 0) {
+                    out.print("<br>");
+                }
+        %>      
         <table class="doctb">
+            <tr id="header" class="doctl"><td><%= tcs%></td></tr>
             <tr>
                 <td style="width: 100%;">
-                    <%
-                        out.print(qVal.getString("DocDesc"));
-                    %>
-
+                    <%= DocList.get(i)%>
                 </td>
             </tr>
         </table>
-
         <%
-
-        } else {
-        %>
-    <head>
-        <title>No Documentation Found !</title>
-        <link rel="stylesheet" href="css/crb_style.css">
-    </head>
-
-    <body>
-        <a class="doctl">No Documentation Found !</a>
-        <%            }
-
+                    i++;
                 }
             } catch (Exception e) {
                 out.println("<br> error message : " + e.getMessage() + " "
                         + e.toString() + "<br>");
-            } finally{
-                if(conn != null){
+            } finally {
+                if (conn != null) {
                     try {
                         conn.close();
                     } catch (SQLException e) {
@@ -169,11 +193,10 @@
                 }
             }
         %>
-
         <br>
-    <z class="close"><a href="javascript:self.close()">Close</a> the popup.</z>
-    <br>
-    <a class="footer">DocTable:<%= DocTable%> | DocField:<%= DocField%> | DocValue:<%= DocValue%></a>
-</body>
+        <span class="close"><a href="javascript:self.close()">Close</a> the popup.</span>
+        <br>
+        <span class="footer">DocTable:<%= DocTable%> | DocField:<%= DocField%> | DocValue:<%= DocValue%></span>
+    </body>
 </html>
 

@@ -1,0 +1,111 @@
+body {
+    font-size: 80%;
+    font-family: helvetica;
+}
+
+/* Main documentation table */
+table.doctb {
+    border-style:solid;
+    border-width:1px;
+}
+tr#header {
+    background-color:#cad3f1; 
+    font-weight:bold;   
+}
+
+
+/* Variables ex : %SYS-DATE% */
+.doc-variable {
+    font-size: 100%;
+    font-family: helvetica;
+    border-width: solid 1px;
+    color: red;
+}
+
+/* Cerberus Vocabulary ex : appplication, system, test, testcase, property, action, control,...  */
+.doc-crbvvoca {
+    font-style: italic;
+    font-weight: bold;
+    border-bottom: solid 1px;
+}
+
+/* Cerberus Parameter ex : jenkins_deploy_url  */
+.doc-parameter {
+    color: blue;
+}
+
+/* SQL instruction examples. ex : SELECT * FROM TOTO; */
+.doc-sql { 
+    font-family:"Fix",Fix,courier;
+    text-transform:uppercase;
+    letter-spacing:0px;
+}
+
+/* SQL instruction examples. ex : SELECT * FROM TOTO; */
+.doc-fixed { 
+    font-family:"Fix",Fix,courier;
+    letter-spacing:0px;
+}
+
+/* URL. ex : http://host:80/login.jsp */
+.doc-url { 
+    font-family:"Fix",Fix,courier;
+    text-transform:uppercase;
+    letter-spacing:1px;
+    color: green;
+}
+
+/* URL. ex : http://host:80/login.jsp */
+.doc-action { 
+    font-family:"Fix",Fix,courier;
+    text-transform:uppercase;
+    letter-spacing:1px;
+    color: green;
+}
+
+/* URL. ex : http://host:80/login.jsp */
+.doc-control { 
+    font-family:"Fix",Fix,courier;
+    text-transform:uppercase;
+    letter-spacing:1px;
+    color: green;
+}
+
+/* URL. ex : http://host:80/login.jsp */
+.doc-property { 
+    font-family:"Fix",Fix,courier;
+    text-transform:uppercase;
+    letter-spacing:1px;
+    color: green;
+}
+
+/* Cerberus Vocabulary ex : appplication, system, test, testcase, property, action, control,...  */
+doc.examples {
+    background: none repeat scroll 0% 0% rgb(238, 238, 238);
+    color: black;
+    display: block;
+    font-size: 100%;
+    padding: 2px;
+}
+
+/* Table inside examples  */
+th.ex {
+    border: solid 1px;
+}
+
+td.ex {
+    border: solid 1px;
+}
+
+/* Close link */
+.close {
+    font-size:70%;
+}
+
+/* Footer info */
+.footer {
+    font-size:60%;
+}
+
+
+

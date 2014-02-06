@@ -138,19 +138,19 @@
                 <td colspan="2" style="background-color: lightyellow; text-align: center">EMail Notification Preview</td>
             </tr>
             <tr>
-                <td><%=dbDocS(conn, "page_Notification", "To", "")%></td>
+                <td><%=dbDocS(conn, "page_notification", "To", "")%></td>
                 <td><table border><tr><td><%=to%></td></tr></table></td>
             </tr> 
             <tr>
-                <td><%=dbDocS(conn, "page_Notification", "Cc", "")%></td>
+                <td><%=dbDocS(conn, "page_notification", "Cc", "")%></td>
                 <td><table border><tr><td><%=cc%></td></tr></table></td>
             </tr> 
             <tr>
-                <td><%=dbDocS(conn, "page_Notification", "Subject", "")%></td>
+                <td><%=dbDocS(conn, "page_notification", "Subject", "")%></td>
                 <td><table border><tr><td><%=subject%></td></tr></table></td>
             </tr>
             <tr>
-                <td><%=dbDocS(conn, "page_Notification", "Body", "")%></td>
+                <td><%=dbDocS(conn, "page_notification", "Body", "")%></td>
                 <td><table border><tr><td><%=body%></td></tr></table></td>
             </tr>
         </table>

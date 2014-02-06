@@ -67,12 +67,12 @@
                                 Connection conn = db.connect();
                                 try {
                                     String test = (dbDocS(conn, "test", "Test", "Test"));
-                                    String nbtest = (dbDocS(conn, "homepage", "NbTest", "NbTest")).split(" ")[0];
-                                    String standby = (dbDocS(conn, "homepage", "Standby", "Standy")).split(" ")[0];
-                                    String tbi = (dbDocS(conn, "homepage", "tbi", "TBI")).split(" ")[0];
-                                    String inp = (dbDocS(conn, "homepage", "InProgress", "InProgress")).split(" ")[0];
-                                    String tbv = (dbDocS(conn, "homepage", "tbv", "TBV")).split(" ")[0];
-                                    String wor = (dbDocS(conn, "homepage", "Working", "Working")).split(" ")[0];
+                                    String nbtest = (dbDocS(conn, "page_homepage", "NbTest", "NbTest")).split(" ")[0];
+                                    String standby = (dbDocS(conn, "page_homepage", "Standby", "Standy")).split(" ")[0];
+                                    String tbi = (dbDocS(conn, "page_homepage", "tbi", "TBI")).split(" ")[0];
+                                    String inp = (dbDocS(conn, "page_homepage", "InProgress", "InProgress")).split(" ")[0];
+                                    String tbv = (dbDocS(conn, "page_homepage", "tbv", "TBV")).split(" ")[0];
+                                    String wor = (dbDocS(conn, "page_homepage", "Working", "Working")).split(" ")[0];
                             %>
                             <tr id="header">
                                 <th style="width: 145px; text-align: left"><%=test%>&nbsp;</th>

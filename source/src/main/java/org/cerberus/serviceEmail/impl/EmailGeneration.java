@@ -224,7 +224,7 @@ public class EmailGeneration implements IEmailGeneration {
             body = parameterService.findParameterByKey("cerberus_notification_accountcreation_body", system).getValue();
             body = body.replaceAll("%NAME%", user.getName());
             body = body.replaceAll("%LOGIN%", user.getLogin());
-            body = body.replaceAll("%DEFAULT_PASSWORD%", parameterService.findParameterByKey("cerberus_notification_accountcreation_defaultPassword", system).getValue());
+            body = body.replaceAll("%DEFAULT_PASSWORD%", parameterService.findParameterByKey("cerberus_accountcreation_defaultpassword", system).getValue());
             
             sendMail.sendHtmlMail(host, port, body, subject, from, to, cc);
             

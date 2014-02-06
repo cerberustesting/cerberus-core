@@ -83,31 +83,28 @@ public class UpdateApplication extends HttpServlet {
                     myApplication.setDescription(value);
                     break;
                 case 4:
-                    myApplication.setInternal(value);
-                    break;
-                case 5:
                     myApplication.setType(value);
                     break;
-                case 6:
+                case 5:
                     myApplication.setMavengroupid(value);
                     break;
-                case 7:
+                case 6:
                     myApplication.setDeploytype(value);
                     break;
-                case 8:
+                case 7:
                     try {
                         myApplication.setSort(Integer.valueOf(value));
                     } catch (Exception ex) {
                         response.getWriter().print(ex.getMessage());
                     }
                     break;
-                case 9:
+                case 8:
                     myApplication.setSvnurl(value);
                     break;
-                case 10:
+                case 9:
                     myApplication.setBugTrackerUrl(value);
                     break;
-                case 11:
+                case 10:
                     myApplication.setBugTrackerNewUrl(value);
                     break;
             }
