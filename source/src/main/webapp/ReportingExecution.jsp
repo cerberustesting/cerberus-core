@@ -52,6 +52,9 @@
                 HashMap<String,Integer> statsStatusForTest = new HashMap<String,Integer>();
                 List<String> listStatus = new ArrayList<String>();
 
+                HashMap<String,Integer> statsGroupForTest = new HashMap<String,Integer>();
+                List<String> listGroup = new ArrayList<String>();
+                
                 String tcclauses = " WHERE 1=1 ";
                 String execclauses = " 1=1 ";
                 String URL = "Apply=Apply";
@@ -399,7 +402,7 @@
                                     <td id="wob" style="width: 70px"><%out.print(dbDocS(conn, "testcase", "tcactive", "TestCase Active"));%></td>
                                     <td id="wob" style="width: 70px"><%out.print(dbDocS(conn, "invariant", "PRIORITY", "Priority"));%></td>
                                     <td id="wob" style="width: 110px"><%out.print(dbDocS(conn, "testcase", "Status", "Status"));%></td>
-                                    <td id="wob" style="width: 110px"><%out.print(dbDocS(conn, "testcase", "Group", "Group"));%></td>
+                                    <td id="wob" style="width: 110px"><%out.print(dbDocS(conn, "invariant", "GROUP", "Group"));%></td>
                                     <td id="wob" style="width: 110px"><%out.print(dbDocS(conn, "testcase", "targetBuild", "targetBuild"));%></td>                        
                                     <td id="wob" style="width: 110px"><%out.print(dbDocS(conn, "testcase", "targetRev", "targetRev"));%></td>                        
                                     <td id="wob" style="width: 100px"><%out.print(dbDocS(conn, "testcase", "creator", "Creator"));%></td>
@@ -731,7 +734,7 @@
                                     Statement stmt2 = conn.createStatement();
                                     ResultSet rs_time = stmt2.executeQuery("select tc.test, tc.testcase, "
                                             + " tc.application, tc.description, tc.behaviororvalueexpected, tc.Status, "
-                                            + " tc.priority, tc.comment, tc.bugID, tc.TargetBuild, tc.TargetRev "
+                                            + " tc.priority, tc.comment, tc.bugID, tc.TargetBuild, tc.TargetRev, tc.group "
                                             + " from testcase tc "
                                             + " join application a on a.application = tc.application "
                                             + tcclauses
@@ -803,6 +806,7 @@
                                     <td class="INF"><%=rs_time.getString("tc.Priority")%></td>
                                     <td class="INF"><%=rs_time.getString("tc.Status")%></td>
                                     <%
+                                        // Collecting status stats for current test. 
                                         if(!listStatus.contains(rs_time.getString("tc.Status"))) {
                                             listStatus.add(rs_time.getString("tc.Status"));
                                         }
@@ -810,6 +814,16 @@
                                             statsStatusForTest.put(rs_time.getString("tc.test")+rs_time.getString("tc.Status"), statsStatusForTest.get(rs_time.getString("tc.test")+rs_time.getString("tc.Status")) +1);
                                         } else {
                                             statsStatusForTest.put(rs_time.getString("tc.test")+rs_time.getString("tc.Status"), 1);
+                                        }
+                                    
+                                        // Collecting group stats for current test. 
+                                        if(!listGroup.contains(rs_time.getString("tc.Group"))) {
+                                            listGroup.add(rs_time.getString("tc.Group"));
+                                        }
+                                        if(statsGroupForTest.containsKey(rs_time.getString("tc.test")+rs_time.getString("tc.Group"))) {
+                                            statsGroupForTest.put(rs_time.getString("tc.test")+rs_time.getString("tc.Group"), statsGroupForTest.get(rs_time.getString("tc.test")+rs_time.getString("tc.Group")) +1);
+                                        } else {
+                                            statsGroupForTest.put(rs_time.getString("tc.test")+rs_time.getString("tc.Group"), 1);
                                         }
                                     
                                         rs_testcasecountrygeneral.first();
@@ -1193,13 +1207,13 @@
                                 </tr>
                             </table>
                                 <br>
-                            <table id="statusReporting" style="display: none" border="0px" cellpadding="0" cellspacing="0">
+                            <table id="groupReporting" style="display: none" border="0px" cellpadding="0" cellspacing="0">
                                 <tr id="header">
-                                    <td>Tests</td>
+                                    <td>Number of test case</td>
                                     <%
-                                        for (int i = 0; i < listStatus.size(); i++) {
+                                        for (int i = 0; i < listGroup.size(); i++) {
                                     %>
-                                    <td id="status<%=i%>" align="center" ><%=listStatus.get(i)%></td>
+                                    <td id="status<%=i%>" align="center" ><%=listGroup.get(i)%></td>
                                     <%
                                         }
                                     %>
@@ -1211,16 +1225,63 @@
                                             int totalTest = 0;
                                             %><tr><td><%=distinctList.get(index)%></td><%
                                             
-                                            for (int i = 0; i < listStatus.size(); i++) {
-                                                if(statsStatusForTest.containsKey(distinctList.get(index)+listStatus.get(i))) {
-                                                    totalTest += statsStatusForTest.get(distinctList.get(index)+listStatus.get(i));
-                                                %><td><%=statsStatusForTest.get(distinctList.get(index)+listStatus.get(i))%></td><%
+                                            for (int i = 0; i < listGroup.size(); i++) {
+                                                if(statsGroupForTest.containsKey(distinctList.get(index)+listGroup.get(i))) {
+                                                    totalTest += statsGroupForTest.get(distinctList.get(index)+listGroup.get(i));
+                                                %><td align="center"><%=statsGroupForTest.get(distinctList.get(index)+listGroup.get(i))%></td><%
                                                 } else {
-                                                    %><td>0</td><%
+                                                    %><td></td><%
                                                 }
                                             }
                                             
-                                            %><td><%=totalTest%></td></tr><%
+                                            %><td align="center"><%=totalTest%></td></tr><%
+                                        }
+                                %>
+                            </table>
+                            <br>
+                            <table id="statusReporting" style="display: none" border="0px" cellpadding="0" cellspacing="0">
+                                <tr id="header">
+                                    <td>Number of test case</td>
+                                    <%
+                                        // Loading list of Status invariant sorted in the proper way.
+                                        IInvariantService myInvariantService = appContext.getBean(IInvariantService.class);
+                                        List<Invariant> myInv =  myInvariantService.findListOfInvariantById("TCSTATUS");
+
+                                        // Display all status in the proper order.
+                                        for (int i = 0; i < myInv.size(); i++) {
+                                    %>
+                                    <td id="status<%=i%>" align="center" ><%=myInv.get(i).getValue()%></td>
+                                    <%
+                                        }
+                                    %>
+                                    <td>TOTAL</td>
+                                </tr>
+                                <%
+                                        
+                                        for(int index = 0; index < distinctList.size(); index++) {
+                                            int totalTest = 0;
+                                            %><tr><td><%=distinctList.get(index)%></td><%
+                                            
+                                            for (int i = 0; i < myInv.size(); i++) {
+                                                
+                                                // finding the real list of status from the page data inside the current complete status
+                                                int mj=0;
+                                                while ( (mj< listStatus.size()) && !(listStatus.get(mj).equals(myInv.get(i).getValue()))) {
+                                                    mj ++;
+                                                }
+                                                if (mj>=listStatus.size()) { // Current status was not in the test data
+                                                    %><td></td><%
+                                                } else {
+                                                    if(statsStatusForTest.containsKey(distinctList.get(index)+listStatus.get(mj))) {
+                                                        totalTest += statsStatusForTest.get(distinctList.get(index)+listStatus.get(mj));
+                                          %><td align="center"><%=statsStatusForTest.get(distinctList.get(index)+listStatus.get(mj))%></td><%
+                                                    } else {
+                                                    %><td></td><%
+                                                    }
+                                                    
+                                                }
+                                            }
+                                            %><td align="center"><%=totalTest%></td></tr><%
                                         }
                                 %>
                             </table>

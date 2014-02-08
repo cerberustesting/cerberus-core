@@ -403,7 +403,7 @@
                                                     </table>
                                                     <table>
                                                         <tr id="header">
-                                                            <td class="wob" style="width: 150px"><%out.print(dbDocS(conn, "testcase", "group", ""));%></td>
+                                                            <td class="wob" style="width: 150px"><%out.print(dbDocS(conn, "invariant", "GROUP", ""));%></td>
                                                             <td class="wob" style="width: 150px"><%out.print(dbDocS(conn, "testcase", "activePROD", ""));%></td>
                                                             <td class="wob" style="width: 150px"><%out.print(dbDocS(conn, "testcase", "activeQA", ""));%></td>
                                                             <td class="wob" style="width: 150px"><%out.print(dbDocS(conn, "testcase", "activeUAT", ""));%></td>
