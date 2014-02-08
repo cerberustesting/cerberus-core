@@ -1,0 +1,12 @@
+
+Change the source code on the following files :
+ source/src/main/java/version/Version.java
+ source/pom.xml 
+ source/src/main/webapp/WEB-INF/glassfish-web.xml
+ source/src/main/webapp/WEB-INF/sun-web.xml
+ 
+Change the name of the war file inside the installation scripts :
+  bin/02DeployApp.bat
+  bin/02DeployApp.sh
+  
+  
