@@ -17,7 +17,6 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.cerberus.servlet.manualTestCase;
 
 import java.io.IOException;
@@ -97,7 +96,7 @@ public class SaveManualExecution extends HttpServlet {
             long now = new Date().getTime();
             String version = Version.VERSION;
 
-            TCExecution execution = factoryTCExecution.create(0, test, testCase, build, revision, env, country, "", now, now,
+            TCExecution execution = factoryTCExecution.create(0, test, testCase, build, revision, env, country, "", "", now, now,
                     controlStatus, controlMessage, application, "", "", "", tag, "Y", 0, 0, "", tCase.getStatus(), version,
                     null, null, null, false, "", "", "", "", "", "", null, null);
 

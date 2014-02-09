@@ -56,6 +56,7 @@ import org.cerberus.serviceEngine.ISeleniumService;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
 import org.openqa.selenium.By;
+import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.NoSuchElementException;
@@ -110,7 +111,7 @@ public class SeleniumService implements ISeleniumService {
             boolean record = (verbose > 0);
             long defaultWait;
             try {
-                Parameter param = parameterService.findParameterByKey("selenium_defaultWait","");
+                Parameter param = parameterService.findParameterByKey("selenium_defaultWait", "");
                 defaultWait = Long.parseLong(param.getValue());
             } catch (CerberusException ex) {
                 MyLogger.log(Selenium.class.getName(), Level.WARN, "Parameter (selenium_defaultWait) not in Parameter table, default wait set to 90 seconds");
@@ -119,25 +120,24 @@ public class SeleniumService implements ISeleniumService {
 
             this.selenium = factorySelenium.create(host, port, browser, login, ip, null, defaultWait);
             Logger.getLogger(SeleniumService.class.getName()).log(java.util.logging.Level.WARNING, null, browser);
-            
-                try {
-                    
-                    if (this.invariantService.isInvariantExist("BROWSER", browser)){
+
+            try {
+
+                if (this.invariantService.isInvariantExist("BROWSER", browser)) {
                     startSeleniumBrowser(runId, record, country, browser);
-                    }
-                    else {
+                } else {
                     MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_SELENIUM);
                     mes.setDescription(mes.getDescription().replaceAll("%MES%", "Browser " + browser + " is not supported."));
                     return mes;
-                    }
-                    
-                    this.selenium.getDriver().manage().window().maximize();
-                    this.started = true;
-                    return new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_CHECKINGPARAMETERS);
-                } catch (CerberusException ex) {
-                    Logger.getLogger(SeleniumService.class.getName()).log(java.util.logging.Level.WARNING, null, ex.getMessage());
-                    return ex.getMessageError();
                 }
+
+                this.selenium.getDriver().manage().window().maximize();
+                this.started = true;
+                return new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_CHECKINGPARAMETERS);
+            } catch (CerberusException ex) {
+                Logger.getLogger(SeleniumService.class.getName()).log(java.util.logging.Level.WARNING, null, ex.getMessage());
+                return ex.getMessageError();
+            }
         }
         return new MessageGeneral(MessageGeneralEnum.EXECUTION_FA);
     }
@@ -147,9 +147,9 @@ public class SeleniumService implements ISeleniumService {
         try {
             TelnetClient tc = new TelnetClient();
             tc.connect(host, Integer.valueOf(port));
-                if (tc.isConnected()) {
-                    tc.disconnect();
-                    return true;
+            if (tc.isConnected()) {
+                tc.disconnect();
+                return true;
             }
         } catch (MalformedURLException exception) {
             MyLogger.log(SeleniumService.class.getName(), Level.WARN, exception.toString());
@@ -161,9 +161,8 @@ public class SeleniumService implements ISeleniumService {
         return false;
     }
 
-    
     @Override
-    public FirefoxProfile setFirefoxProfile(long runId, boolean record, String country) throws CerberusException{
+    public FirefoxProfile setFirefoxProfile(long runId, boolean record, String country) throws CerberusException {
         FirefoxProfile profile = new FirefoxProfile();
         profile.setEnableNativeEvents(true);
         profile.setAcceptUntrustedCertificates(true);
@@ -183,8 +182,8 @@ public class SeleniumService implements ISeleniumService {
         }
 
         if (record) {
-            String firebugPath = parameterService.findParameterByKey("cerberus_selenium_firefoxextension_firebug","").getValue();
-            String netexportPath = parameterService.findParameterByKey("cerberus_selenium_firefoxextension_netexport","").getValue();
+            String firebugPath = parameterService.findParameterByKey("cerberus_selenium_firefoxextension_firebug", "").getValue();
+            String netexportPath = parameterService.findParameterByKey("cerberus_selenium_firefoxextension_netexport", "").getValue();
             if (StringUtil.isNullOrEmpty(firebugPath)) {
                 MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_SELENIUM);
                 mes.setDescription(mes.getDescription().replaceAll("%MES%", "Mandatory parameter for network traffic 'cerberus_selenium_firefoxextension_firebug' not defined."));
@@ -231,7 +230,7 @@ public class SeleniumService implements ISeleniumService {
                 throw new CerberusException(mes);
             }
 
-            String cerberusUrl = parameterService.findParameterByKey("cerberus_url","").getValue();
+            String cerberusUrl = parameterService.findParameterByKey("cerberus_url", "").getValue();
             if (StringUtil.isNullOrEmpty(cerberusUrl)) {
                 MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_SELENIUM);
                 mes.setDescription(mes.getDescription().replaceAll("%MES%", "Mandatory parameter for network traffic 'cerberus_url' not defined."));
@@ -270,27 +269,25 @@ public class SeleniumService implements ISeleniumService {
 
         return profile;
     }
-    
+
     @Override
     public boolean startSeleniumBrowser(long runId, boolean record, String country, String browser) throws CerberusException {
 
-        MyLogger.log(SeleniumService.class.getName(), Level.DEBUG, "Starting "+browser);
+        MyLogger.log(SeleniumService.class.getName(), Level.DEBUG, "Starting " + browser);
 
         DesiredCapabilities capabilities = null;
-        
-        if (browser.equalsIgnoreCase("firefox")){
+
+        if (browser.equalsIgnoreCase("firefox")) {
             capabilities = DesiredCapabilities.firefox();
-            FirefoxProfile profile = setFirefoxProfile(runId,record, country);
+            FirefoxProfile profile = setFirefoxProfile(runId, record, country);
             capabilities.setCapability(FirefoxDriver.PROFILE, profile);
-        }
-        else if (browser.equalsIgnoreCase("iexplorer")){
+        } else if (browser.equalsIgnoreCase("iexplorer")) {
             capabilities = DesiredCapabilities.internetExplorer();
-        }
-        else if (browser.equalsIgnoreCase("chrome")){
+        } else if (browser.equalsIgnoreCase("chrome")) {
             capabilities = DesiredCapabilities.chrome();
         }
-        
-        
+
+
         try {
             MyLogger.log(SeleniumService.class.getName(), Level.DEBUG, "Set Driver");
             WebDriver driver = new RemoteWebDriver(new URL("http://" + selenium.getHost() + ":" + selenium.getPort() + "/wd/hub"), capabilities);
@@ -340,14 +337,14 @@ public class SeleniumService implements ISeleniumService {
             return By.linkText(locator);
 
         } else if (identifier.equalsIgnoreCase("data-cerberus")) {
-            return By.xpath("//*[@data-cerberus='"+locator+"']");
+            return By.xpath("//*[@data-cerberus='" + locator + "']");
 
         } else {
             throw new NoSuchElementException(identifier);
         }
     }
 
-private WebElement getSeleniumElement(String input, boolean visible) {
+    private WebElement getSeleniumElement(String input, boolean visible) {
         By locator = this.getIdentifier(input);
         MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Waiting for Element : " + input);
         try {
@@ -424,17 +421,17 @@ private WebElement getSeleniumElement(String input, boolean visible) {
     }
 
     @Override
-    public String getValueFromJS (String script){
-        JavascriptExecutor js = (JavascriptExecutor)selenium.getDriver();
+    public String getValueFromJS(String script) {
+        JavascriptExecutor js = (JavascriptExecutor) selenium.getDriver();
         Object response = js.executeScript(script);
 
-        if(response == null) {
+        if (response == null) {
             return "";
         }
 
         return String.valueOf(response);
     }
-    
+
     @Override
     public boolean isElementPresent(String locator) {
         try {
@@ -469,8 +466,8 @@ private WebElement getSeleniumElement(String input, boolean visible) {
      * Return the current URL from Selenium.
      *
      * @return current URL without HTTP://IP:PORT/CONTEXTROOT/
-     * @throws CerberusEventException Cannot find application host (from Database)
-     *                                inside current URL (from Selenium)
+     * @throws CerberusEventException Cannot find application host (from
+     * Database) inside current URL (from Selenium)
      */
     @Override
     public String getCurrentUrl() throws CerberusEventException {
@@ -493,6 +490,16 @@ private WebElement getSeleniumElement(String input, boolean visible) {
     }
 
     @Override
+    public String getFullBrowserVersion() {
+
+        Capabilities caps = ((RemoteWebDriver) this.selenium.getDriver()).getCapabilities();
+        String VerPlatform = caps.getBrowserName() + " " + caps.getVersion() + " " + caps.getPlatform().toString();
+        MyLogger.log(SeleniumService.class.getName(), Level.DEBUG, "Browser & Platform version : " + VerPlatform);
+
+        return VerPlatform;
+    }
+
+    @Override
     public void doScreenShot(String runId, String name) {
         try {
             WebDriver augmentedDriver = new Augmenter().augment(this.selenium.getDriver());
@@ -501,7 +508,7 @@ private WebElement getSeleniumElement(String input, boolean visible) {
 
             String imgPath;
             try {
-                imgPath = parameterService.findParameterByKey("cerberus_picture_path","").getValue();
+                imgPath = parameterService.findParameterByKey("cerberus_picture_path", "").getValue();
                 File dir = new File(imgPath + runId);
                 dir.mkdirs();
 
@@ -664,7 +671,7 @@ private WebElement getSeleniumElement(String input, boolean visible) {
         }
         return new MessageEvent(MessageEventEnum.ACTION_FAILED_NO_ELEMENT_TO_CLICK);
     }
-    
+
     private MessageEvent doActionMouseDown(String string1, String string2) {
         MessageEvent message;
         try {
@@ -705,7 +712,7 @@ private WebElement getSeleniumElement(String input, boolean visible) {
         return new MessageEvent(MessageEventEnum.ACTION_FAILED_NO_ELEMENT_TO_CLICK);
     }
 
-       private MessageEvent doActionMouseUp(String string1, String string2) {
+    private MessageEvent doActionMouseUp(String string1, String string2) {
         MessageEvent message;
         try {
             if (!StringUtil.isNull(string1)) {
@@ -745,11 +752,11 @@ private WebElement getSeleniumElement(String input, boolean visible) {
         return new MessageEvent(MessageEventEnum.ACTION_FAILED_NO_ELEMENT_TO_CLICK);
     }
 
-       private MessageEvent doActionSwitchToWindow(String string1, String string2) {
+    private MessageEvent doActionSwitchToWindow(String string1, String string2) {
         MessageEvent message;
         String windowTitle;
         try {
-            if(!StringUtil.isNullOrEmpty(string1)) {
+            if (!StringUtil.isNullOrEmpty(string1)) {
                 windowTitle = string1;
             } else if (!StringUtil.isNull(string2)) {
                 windowTitle = string2;
@@ -772,14 +779,13 @@ private WebElement getSeleniumElement(String input, boolean visible) {
 
                 try {
                     // Get serials handles list of all browser windows
-                    Set<String> handles =  this.selenium.getDriver().getWindowHandles();
-                    
+                    Set<String> handles = this.selenium.getDriver().getWindowHandles();
+
                     // Loop into each of them
-                    for(String windowHandle  : handles)
-                    {
-                        if(!windowHandle.equals(currentHandle)) {
+                    for (String windowHandle : handles) {
+                        if (!windowHandle.equals(currentHandle)) {
                             this.selenium.getDriver().switchTo().window(windowHandle);
-                            if(windowTitle.equals(this.selenium.getDriver().getTitle())) {
+                            if (windowTitle.equals(this.selenium.getDriver().getTitle())) {
                                 message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_SWITCHTOWINDOW);
                                 message.setDescription(message.getDescription().replaceAll("%WINDOW%", windowTitle));
                                 return message;
@@ -801,7 +807,6 @@ private WebElement getSeleniumElement(String input, boolean visible) {
         return message;
     }
 
-       
     private MessageEvent doActionClickWait(String actionObject, String actionProperty) {
         MessageEvent message;
         try {
@@ -910,12 +915,12 @@ private WebElement getSeleniumElement(String input, boolean visible) {
                 try {
                     WebElement webElement = this.getSeleniumElement(html, true);
                     webElement.clear();
-                    if(!StringUtil.isNull(property)) {
+                    if (!StringUtil.isNull(property)) {
                         webElement.sendKeys(property);
                     }
                     message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_TYPE);
                     message.setDescription(message.getDescription().replaceAll("%ELEMENT%", html));
-                    if(!StringUtil.isNull(property)) {
+                    if (!StringUtil.isNull(property)) {
                         message.setDescription(message.getDescription().replaceAll("%DATA%", ParameterParserUtil.securePassword(property, propertyName)));
                     } else {
                         message.setDescription(message.getDescription().replaceAll("%DATA%", "No property"));
@@ -1162,10 +1167,10 @@ private WebElement getSeleniumElement(String input, boolean visible) {
         MessageEvent message;
         String identifier;
         String value = "";
-        
+
         try {
             if (!StringUtil.isNull(html) && !StringUtil.isNull(property)) {
-                
+
                 String[] strings = property.split("=");
                 if (strings.length == 1) {
                     identifier = "value";
@@ -1202,16 +1207,16 @@ private WebElement getSeleniumElement(String input, boolean visible) {
                     message.setDescription(message.getDescription().replaceAll("%ELEMENT%", html));
                     message.setDescription(message.getDescription().replaceAll("%DATA%", property));
                     return message;
-                } else if (identifier.equalsIgnoreCase("regexValue") || identifier.equalsIgnoreCase("regexIndex") || 
-                        identifier.equalsIgnoreCase("regexLabel")) {
+                } else if (identifier.equalsIgnoreCase("regexValue") || identifier.equalsIgnoreCase("regexIndex")
+                        || identifier.equalsIgnoreCase("regexLabel")) {
                     java.util.List<WebElement> list = select.getOptions();
-                            
+
                     if (identifier.equalsIgnoreCase("regexValue")) {
                         for (WebElement option : list) {
                             String optionValue = option.getAttribute("value");
                             Pattern pattern = Pattern.compile(value);
                             Matcher matcher = pattern.matcher(optionValue);
-                                
+
                             if (matcher.find()) {
                                 select.selectByValue(optionValue);
                                 message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_SELECT);
@@ -1220,37 +1225,37 @@ private WebElement getSeleniumElement(String input, boolean visible) {
                                 return message;
                             }
                         }
-                      } else if (identifier.equalsIgnoreCase("regexLabel")) {
-                          for (WebElement option : list) {
+                    } else if (identifier.equalsIgnoreCase("regexLabel")) {
+                        for (WebElement option : list) {
                             String optionLabel = option.getText();
                             Pattern pattern = Pattern.compile(value);
                             Matcher matcher = pattern.matcher(optionLabel);
-                                
+
                             if (matcher.find()) {
-                                  select.selectByVisibleText(optionLabel);
-                                  message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_SELECT);
-                                  message.setDescription(message.getDescription().replaceAll("%ELEMENT%", html));
-                                  message.setDescription(message.getDescription().replaceAll("%DATA%", property));
-                                  return message;
-                            }
-                          }
-                        } else if (identifier.equalsIgnoreCase("regexIndex") && StringUtil.isNumeric(value)) {
-                            for (WebElement option : list) {
-                                Integer id = 0;
-                                Pattern pattern = Pattern.compile(value);
-                                Matcher matcher = pattern.matcher(id.toString());
-                                
-                                if (matcher.find()) {
-                                    select.selectByIndex(Integer.parseInt(value));
-                                    message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_SELECT);
-                                    message.setDescription(message.getDescription().replaceAll("%ELEMENT%", html));
-                                    message.setDescription(message.getDescription().replaceAll("%DATA%", property));
-                                    return message;
-                                }
-                                id++;
+                                select.selectByVisibleText(optionLabel);
+                                message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_SELECT);
+                                message.setDescription(message.getDescription().replaceAll("%ELEMENT%", html));
+                                message.setDescription(message.getDescription().replaceAll("%DATA%", property));
+                                return message;
                             }
                         }
-               } else {
+                    } else if (identifier.equalsIgnoreCase("regexIndex") && StringUtil.isNumeric(value)) {
+                        for (WebElement option : list) {
+                            Integer id = 0;
+                            Pattern pattern = Pattern.compile(value);
+                            Matcher matcher = pattern.matcher(id.toString());
+
+                            if (matcher.find()) {
+                                select.selectByIndex(Integer.parseInt(value));
+                                message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_SELECT);
+                                message.setDescription(message.getDescription().replaceAll("%ELEMENT%", html));
+                                message.setDescription(message.getDescription().replaceAll("%DATA%", property));
+                                return message;
+                            }
+                            id++;
+                        }
+                    }
+                } else {
                     message = new MessageEvent(MessageEventEnum.ACTION_FAILED_SELECT_NO_IDENTIFIER);
                     message.setDescription(message.getDescription().replaceAll("%IDENTIFIER%", html));
                     return message;
@@ -1270,7 +1275,7 @@ private WebElement getSeleniumElement(String input, boolean visible) {
             message.setDescription(message.getDescription().replaceAll("%PATERN%", value));
             message.setDescription(message.getDescription().replaceAll("%ERROR%", e.getMessage()));
             return message;
-                }
+        }
         return new MessageEvent(MessageEventEnum.ACTION_FAILED_SELECT);
     }
 

@@ -397,7 +397,7 @@ public class RunTestCaseService implements IRunTestCaseService {
                 tCExecution.getResultMessage().setDescription(tCExecution.getResultMessage().getDescription().replaceAll("%PORT%", tCExecution.getPort()));
                 return tCExecution;
             }
-            
+
             MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Application is GUI. Trying to reach selenium server.");
             if (!this.seleniumService.isSeleniumServerReachable(tCExecution.getIp(), tCExecution.getPort())) {
                 tCExecution.setResultMessage(new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_SELENIUM_COULDNOTCONNECT));
@@ -461,7 +461,7 @@ public class RunTestCaseService implements IRunTestCaseService {
          */
         if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")) {
             String url = ParameterParserUtil.parseStringParam(tCExecution.getCountryEnvironmentApplication().getIp() + tCExecution.getCountryEnvironmentApplication().getUrl(), "");
-            String login = ParameterParserUtil.parseStringParam(tCExecution.getCountryEnvironmentApplication().getUrlLogin(),"");
+            String login = ParameterParserUtil.parseStringParam(tCExecution.getCountryEnvironmentApplication().getUrlLogin(), "");
             MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, runID + " - Starting Selenium Server.");
             tCExecution.setResultMessage(new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_SELENIUMSTARTING));
             try {
@@ -481,7 +481,14 @@ public class RunTestCaseService implements IRunTestCaseService {
                     Logger.getLogger(RunTestCaseService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
                 }
                 return tCExecution;
+            } else {
+                tCExecution.setBrowserFullVersion(this.seleniumService.getFullBrowserVersion());
             }
+        } else {
+            // If Selenium is not needed, the selenium and browser info is set to empty.
+            tCExecution.setSeleniumIP("");
+            tCExecution.setSeleniumPort("");
+            tCExecution.setBrowser("");
         }
 
 

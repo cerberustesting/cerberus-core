@@ -40,15 +40,15 @@ public interface ISeleniumService {
 
     boolean stopSeleniumServer();
 
-    FirefoxProfile setFirefoxProfile(long runId, boolean record, String country) throws CerberusException;;
-    
+    FirefoxProfile setFirefoxProfile(long runId, boolean record, String country) throws CerberusException;
+
     boolean startSeleniumBrowser(long runId, boolean record, String country, String browser) throws CerberusException;
 
     String getValueFromHTMLVisible(String locator);
-    
+
     String getValueFromHTML(String locator);
-    
-    String getValueFromJS (String script);
+
+    String getValueFromJS(String script);
 
     boolean isElementPresent(String locator);
 
@@ -58,15 +58,18 @@ public interface ISeleniumService {
 
     String getTitle();
 
-     /**
-     * @return Method return a string with the right part of the URL in order to be agnostic of the environment.
-     * ex : http://redoute.com/mypathlevel1/mypathlevel2/file.aspx
-     * will return /mypathlevel1/mypathlevel2/file.aspx
-     * @throws CerberusException 
-     *      in case the URL does not contain the host of the application beeing tested.
-     *      That could happen if the application redirect to a different host during the testcase execution.
+    /**
+     * @return Method return a string with the right part of the URL in order to
+     * be agnostic of the environment. ex :
+     * http://redoute.com/mypathlevel1/mypathlevel2/file.aspx will return
+     * /mypathlevel1/mypathlevel2/file.aspx
+     * @throws CerberusException in case the URL does not contain the host of
+     * the application beeing tested. That could happen if the application
+     * redirect to a different host during the testcase execution.
      */
     String getCurrentUrl() throws CerberusEventException;
+
+    String getFullBrowserVersion();
 
     void doScreenShot(String runId, String path);
 

@@ -32,6 +32,7 @@ public class TCExecution {
     private String environment;
     private String country;
     private String browser;
+    private String browserFullVersion;
     private long start;
     private long end;
     private String controlStatus;
@@ -213,6 +214,14 @@ public class TCExecution {
 
     public void setBrowser(String browser) {
         this.browser = browser;
+    }
+
+    public String getBrowserFullVersion() {
+        return browserFullVersion;
+    }
+
+    public void setBrowserFullVersion(String browserFullVersion) {
+        this.browserFullVersion = browserFullVersion;
     }
 
     public String getBuild() {
