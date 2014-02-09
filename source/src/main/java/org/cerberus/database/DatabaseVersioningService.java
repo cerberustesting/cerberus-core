@@ -2951,6 +2951,12 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLInstruction.add(SQLS.toString());
 
 
+// URL to download drivers.
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `parameter` (`param`, `value`) VALUES ('selenium_chromedriver_download_url', 'http://chromedriver.storage.googleapis.com/index.html') ");
+        SQLS.append(",('selenium_iedriver_download_url', 'http://code.google.com/p/selenium/downloads/list');");
+        SQLInstruction.add(SQLS.toString());
+
 
         return SQLInstruction;
     }

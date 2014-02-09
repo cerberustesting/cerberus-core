@@ -298,6 +298,11 @@ public class SeleniumService implements ISeleniumService {
         } catch (UnreachableBrowserException exception) {
             MyLogger.log(Selenium.class.getName(), Level.WARN, exception.toString());
             return false;
+        } catch (Exception exception) {
+            MyLogger.log(Selenium.class.getName(), Level.WARN, exception.toString());
+            MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_SELENIUM);
+            mes.setDescription(mes.getDescription().replaceAll("%MES%", "Selenium error : " + exception.getMessage().split("\n")[0]));
+            throw new CerberusException(mes);
         }
 
         return true;

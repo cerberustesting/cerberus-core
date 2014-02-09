@@ -206,6 +206,18 @@
                         } catch (Exception ex) {
                             MyLogger.log("RunTests.jsp", Level.FATAL, " Exception catched : " + ex);
                         }
+                        String seleniumChromeUrl = "";
+                        try {
+                            seleniumChromeUrl = myParameterService.findParameterByKey("selenium_chromedriver_download_url","").getValue();
+                        } catch (Exception ex) {
+                            MyLogger.log("RunTests.jsp", Level.FATAL, " Exception catched : " + ex);
+                        }
+                        String seleniumIEUrl = "";
+                        try {
+                            seleniumIEUrl = myParameterService.findParameterByKey("selenium_iedriver_download_url","").getValue();
+                        } catch (Exception ex) {
+                            MyLogger.log("RunTests.jsp", Level.FATAL, " Exception catched : " + ex);
+                        }
 
                 %>
 
@@ -235,7 +247,7 @@
                                     <td id="wob" style="width: 20px">
                                     </td>
                                     <td>
-                                        Download the compatible version of Selenium <a href="<%=seleniumUrl%>">here</a>.
+                                        Download the compatible version of Selenium <a href="<%=seleniumUrl%>">here</a>. Drivers : <a href="<%=seleniumIEUrl%>">IE</a> <a href="<%=seleniumChromeUrl%>">Chrome</a>
                                     </td>
                                 </tr>
                                 <tr>

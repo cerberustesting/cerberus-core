@@ -3,6 +3,7 @@
 :This is a sample script to start a selenium server.
 
 SET JAVA_HOME=D:\jdk1.6.0_38\
+SET CD_PATH=D:\SeleniumDriver\
 
 :Start Selenium.
 %JAVA_HOME%\bin\java -jar selenium-server-standalone-2.35.0.jar -port 5555 
@@ -14,7 +15,6 @@ SET JAVA_HOME=D:\jdk1.6.0_38\
 
 
 :Start Selenium with chromedriver and IEDriver
-SET CD_PATH=D:\TestingTool\
-%JAVA_HOME%\bin\java -jar selenium-server-standalone-2.35.0.jar -port 5555 -Dwebdriver.chrome.driver=%CD_PATH%chromedriver.exe -Dwebdriver.ie.driver=%CD_PATH%IEDriverServer.exe
+:%JAVA_HOME%\bin\java -jar selenium-server-standalone-2.35.0.jar -port 5555 -Dwebdriver.chrome.driver=%CD_PATH%chromedriver.exe -Dwebdriver.ie.driver=%CD_PATH%IEDriverServer.exe
 
 pause

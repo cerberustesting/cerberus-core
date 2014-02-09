@@ -3,6 +3,7 @@
 # This is a sample script to start a selenium server.
 
 JAVA_HOME=/home/user/local/jdk1.6.0_38/
+CD_PATH=/home/user/local/seleniumdriver/
 
 # Start Selenium.
 $JAVA_HOME/bin/java -jar `dirname $0`/selenium-server-standalone-2.35.0.jar -port 5555
@@ -13,5 +14,4 @@ $JAVA_HOME/bin/java -jar `dirname $0`/selenium-server-standalone-2.35.0.jar -por
 
 
 # Start Selenium with chromedriver.
-CD_PATH=D:/TestingTool/
-$JAVA_HOME/bin/java -jar selenium-server-standalone-2.35.0.jar -port 5555 -Dwebdriver.chrome.driver=$CD_PATH/chromedriver.sh
+#$JAVA_HOME/bin/java -jar selenium-server-standalone-2.35.0.jar -port 5555 -Dwebdriver.chrome.driver=$CD_PATH/chromedriver
