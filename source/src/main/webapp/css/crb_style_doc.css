@@ -41,7 +41,7 @@ tr#header {
     letter-spacing:0px;
 }
 
-/* SQL instruction examples. ex : SELECT * FROM TOTO; */
+/* Fixed typo. */
 .doc-fixed { 
     font-family:"Fix",Fix,courier;
     letter-spacing:0px;
@@ -55,7 +55,7 @@ tr#header {
     color: green;
 }
 
-/* URL. ex : http://host:80/login.jsp */
+/* Actions. ex : click */
 .doc-action { 
     font-family:"Fix",Fix,courier;
     text-transform:uppercase;
@@ -63,7 +63,7 @@ tr#header {
     color: green;
 }
 
-/* URL. ex : http://host:80/login.jsp */
+/* Control. ex : verifyStringEqual */
 .doc-control { 
     font-family:"Fix",Fix,courier;
     text-transform:uppercase;
@@ -71,7 +71,7 @@ tr#header {
     color: green;
 }
 
-/* URL. ex : http://host:80/login.jsp */
+/* Properties. */
 .doc-property { 
     font-family:"Fix",Fix,courier;
     text-transform:uppercase;
@@ -79,7 +79,16 @@ tr#header {
     color: green;
 }
 
-/* Cerberus Vocabulary ex : appplication, system, test, testcase, property, action, control,...  */
+/* Cerberus Usage table. For every property, action and control, this is the table that explain the parameter values.  */
+doc.usage {
+    background: none repeat scroll 0% 0% rgb(220, 220, 220);
+    color: black;
+    display: block;
+    font-size: 100%;
+    padding: 2px;
+}
+
+/* Cerberus examples table. */
 doc.examples {
     background: none repeat scroll 0% 0% rgb(238, 238, 238);
     color: black;
