@@ -27,6 +27,7 @@
     <body>
         <h1>Hello World!</h1>
         <h2 data-cerberus="secondIndexPageOfTest">Second page of test index</h2>
+        <span data-cerberus="notVisibleElement" style="display: none;">Element not visible on page</span>
         <iframe src="frame.html"></iframe>
         <button data-cerberus="closePopupWindow" onclick="javascript:window.close();">Close Popup Window</button>
     </body>

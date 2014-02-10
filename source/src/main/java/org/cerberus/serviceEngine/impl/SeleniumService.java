@@ -458,6 +458,16 @@ public class SeleniumService implements ISeleniumService {
     }
 
     @Override
+    public boolean isElementNotVisible(String locator) {
+        try {
+            WebElement webElement = this.getSeleniumElement(locator, false);
+            return webElement != null && !webElement.isDisplayed();
+        } catch (NoSuchElementException exception) {
+            return false;
+        }
+    }
+
+    @Override
     public String getPageSource() {
         return this.selenium.getDriver().getPageSource();
     }
