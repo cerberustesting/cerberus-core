@@ -121,6 +121,24 @@ public class TestcaseListGrid extends HttpServlet {
                 whereclauses.append(strb.toString());
             }
 
+            if (request.getParameter("projet") != null) {
+                String[] projets = request.getParameterValues("projet");
+                StringBuilder strb = new StringBuilder(whereclauses);
+                strb.append(" AND ( ");
+                for (int x = 0; x < projets.length; x++) {
+                    if(x>0) {
+                        strb.append(" OR ");
+                    }
+
+                    strb.append(" a.projet = '");
+                    strb.append(projets[x]);
+                    strb.append("'");
+                }
+                strb.append(" ) ");
+                whereclauses = new StringBuilder();
+                whereclauses.append(strb.toString());
+            }
+
             int number = 1;
             if (request.getParameter("number") != null) {
                 number = Integer.valueOf(request.getParameter("number"));
