@@ -772,6 +772,16 @@ public class SeleniumService implements ISeleniumService {
             }
 
             if (!StringUtil.isNullOrEmpty(windowTitle)) {
+                String[] strings = windowTitle.split("=");
+                String identifier,value;
+                if (strings.length == 1) {
+                    identifier = "value";
+                    value = strings[0];
+                } else {
+                    identifier = strings[0];
+                    value = strings[1];
+                }
+                
                 String currentHandle;
                 try {
                     // Current serial handle of the window.
@@ -790,7 +800,8 @@ public class SeleniumService implements ISeleniumService {
                     for (String windowHandle : handles) {
                         if (!windowHandle.equals(currentHandle)) {
                             this.selenium.getDriver().switchTo().window(windowHandle);
-                            if (windowTitle.equals(this.selenium.getDriver().getTitle())) {
+                            if ("value".equals(identifier) && value.equals(this.selenium.getDriver().getTitle())
+                                    || "contains".equals(identifier) && value.indexOf(this.selenium.getDriver().getTitle())>=0) {
                                 message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_SWITCHTOWINDOW);
                                 message.setDescription(message.getDescription().replaceAll("%WINDOW%", windowTitle));
                                 return message;
