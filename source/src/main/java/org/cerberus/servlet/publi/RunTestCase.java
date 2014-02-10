@@ -96,7 +96,7 @@ public class RunTestCase extends HttpServlet {
 
         TCase tCase = factoryTCase.create(test, testCase);
 
-        TCExecution tCExecution = factoryTCExecution.create(0, test, testCase, null, null, environment, country, browser,
+        TCExecution tCExecution = factoryTCExecution.create(0, test, testCase, null, null, environment, country, browser, "",
                 0, 0, "", "", null, seleniumIP, null, seleniumPort, tag, "N", verbose, screenshot, outputFormat, null,
                 Version.PROJECT_NAME_VERSION, tCase, null, null, manualURL, myHost, myContextRoot, myLoginRelativeURL, myEnvData, seleniumIP, seleniumPort, null, new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_TESTSTARTED));
 

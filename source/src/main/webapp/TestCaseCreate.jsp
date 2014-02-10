@@ -210,7 +210,7 @@
                                                             <td class="wob" style="width: 90px"><%out.print(dbDocS(conn, "testcase", "ActiveUAT", "RunUAT"));%></td>
                                                             <td class="wob" style="width: 90px"><%out.print(dbDocS(conn, "testcase", "ActivePROD", "RunPROD"));%></td>
                                                             <td class="wob" style="width: 90px"><%out.print(dbDocS(conn, "invariant", "PRIORITY", "Priority"));%></td>
-                                                            <td class="wob" style="width: 150px"><%out.print(dbDocS(conn, "testcase", "group", "Group"));%></td>
+                                                            <td class="wob" style="width: 150px"><%out.print(dbDocS(conn, "invariant", "GROUP", "Group"));%></td>
                                                             <td class="wob" style="width: 150px"><%out.print(dbDocS(conn, "testcase", "status", "Status"));%></td>
                                                             <%
                                                                 rs_tccountgen.first();

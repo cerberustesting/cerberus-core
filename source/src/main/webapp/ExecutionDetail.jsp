@@ -131,7 +131,7 @@
                  * Get Execution Information
                  */
                 ResultSet rs_inf = stmt0.executeQuery("SELECT tce.Id, tce.Test, tce.TestCase, tc.Description, "
-                        + "tce.Build, tce.Revision, tce.Environment, tce.Country, tce.Browser, "
+                        + "tce.Build, tce.Revision, tce.Environment, tce.Country, tce.Browser, tce.BrowserFullVersion, "
                         + "tce.Start, tce.End, tce.ControlStatus, tce.Application, "
                         + "tce.Ip, tce.URL, UNIX_TIMESTAMP(tce.End)-UNIX_TIMESTAMP(tce.Start) time_elapsed, "
                         + "tce.port, tce.tag, tce.verbose, tce.controlmessage, tce.status, tce.CrbVersion "
@@ -174,9 +174,11 @@
                         <td style="font-weight: bold; width: 140px"><%out.print(dbDocS(conn, "application", "Application", "Application"));%></td>
                         <td style="font-weight: bold; width: 140px"><%out.print(dbDocS(conn, "testcaseexecution", "URL", "URL"));%></td>
                         <td style="font-weight: bold; width: 140px"><%out.print(dbDocS(conn, "testcaseexecution", "IP", "Ip"));
-                            out.print(" / ");
+                            out.print("<br>");
                             out.print(dbDocS(conn, "testcaseexecution", "port", "Port"));%></td>
-                        <td style="font-weight: bold; width: 140px"><%out.print(dbDocS(conn, "testcaseexecution", "browser", "Browser"));%></td>
+                        <td style="font-weight: bold; width: 140px"><%out.print(dbDocS(conn, "testcaseexecution", "browser", "Browser"));
+                            out.print("<br>[");
+                            out.print(dbDocS(conn, "testcaseexecution", "browserFullVersion", ""));%>]</td>
                         <td style="font-weight: bold; width: 140px"><%out.print(dbDocS(conn, "testcaseexecution", "start", "Start"));%></td>
                         <td style="font-weight: bold; width: 140px"><%out.print(dbDocS(conn, "testcaseexecution", "end", "End"));%></td>
                         <td style="font-weight: bold; width: 140px"><%out.print(dbDocS(conn, "testcaseexecution", "controlstatus", "ControlStatus"));%></td>
@@ -210,8 +212,8 @@
                         </td>
                         <td><%= rs_inf.getString("Application")%></td>
                         <td><%= rs_inf.getString("URL")%></td>
-                        <td><span id="exeip"><%= rs_inf.getString("Ip")%></span> / <span id="exeport"><%= rs_inf.getString("port")%></span></td>
-                        <td><%= rs_inf.getString("Browser")%></td>
+                        <td><span id="exeip"><%= rs_inf.getString("Ip")%></span><br><span id="exeport"><%= rs_inf.getString("port")%></span></td>
+                        <td><span id="exebrowser"><%= rs_inf.getString("Browser")%></span><br>[<span id="exebrowserver"><%= rs_inf.getString("BrowserFullVersion")%></span>]</td>
                         <td><%= rs_inf.getString("Start")%></td>
                         <%
                             // If status is pending, there will be no end timestamp feeded 

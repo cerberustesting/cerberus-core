@@ -314,7 +314,7 @@
                                                 <td id="wob" style="width: 110px"><%out.print(dbDocS(conn, "testcase", "tcactive", "TestCase Active"));%></td>
                                                 <td id="wob" style="width: 70px"><%out.print(dbDocS(conn, "invariant", "PRIORITY", "Priority"));%></td>
                                                 <td id="wob" style="width: 110px"><%out.print(dbDocS(conn, "testcase", "Status", "Status"));%></td>
-                                                <td id="wob" style="width: 110px"><%out.print(dbDocS(conn, "testcase", "Group", "Group"));%></td>
+                                                <td id="wob" style="width: 110px"><%out.print(dbDocS(conn, "invariant", "GROUP", "Group"));%></td>
                                             </tr>
                                             <tr>                        
                                                 <td id="wob">
