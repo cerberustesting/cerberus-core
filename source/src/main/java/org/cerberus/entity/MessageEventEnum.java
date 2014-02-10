@@ -158,7 +158,7 @@ public enum MessageEventEnum {
     CONTROL_FAILED_VISIBLE(365, "KO", "Element '%STRING1%' not visible on the page.", true, true, MessageGeneralEnum.EXECUTION_KO),
     CONTROL_FAILED_NOTVISIBLE(365, "KO", "Element '%STRING1%' is visible on the page.", true, true, MessageGeneralEnum.EXECUTION_KO),
     CONTROL_FAILED_VISIBLE_NULL(366, "KO", "Object is 'null'. This is mandatory in order to perform the control verify element visible", true, false, MessageGeneralEnum.EXECUTION_KO),
-    CONTROL_FAILED_NOTVISIBLE_NULL(366, "KO", "Object is 'null'. This is mandatory in order to perform the control verify element visible", true, false, MessageGeneralEnum.EXECUTION_KO),
+    CONTROL_FAILED_NOTVISIBLE_NULL(366, "KO", "Object is 'null'. This is mandatory in order to perform the control verify element not visible", true, false, MessageGeneralEnum.EXECUTION_KO),
     CONTROL_FAILED_TEXTINELEMENT(367, "KO", "Element '%STRING1%' with value '%STRING2%' is not equal to '%STRING3%'.", true, true, MessageGeneralEnum.EXECUTION_KO),
     CONTROL_FAILED_TEXTINELEMENT_NULL(368, "KO", "Found Element '%STRING1%' but can not find text or value.", true, true, MessageGeneralEnum.EXECUTION_KO),
     CONTROL_FAILED_TEXTINELEMENT_NO_SUCH_ELEMENT(369, "KO", "Failed to verifyText because could not find element '%ELEMENT%'", true, true, MessageGeneralEnum.EXECUTION_KO),

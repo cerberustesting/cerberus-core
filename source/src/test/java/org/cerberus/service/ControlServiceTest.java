@@ -430,4 +430,88 @@ public class ControlServiceTest {
         Assert.assertEquals("CA", tcsace.getReturnCode());
         Assert.assertEquals("Y", tcsace.getFatal());
     }
+
+
+    @Test
+    public void testDoControlElementNotVisibleWhenSuccess() {
+        String property = "id=test";
+        String value = "null";
+        String msg = "Element '"+property+"' is present and not visible on the page.";
+
+        TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
+        tcsace.setControlType("verifyElementNotVisible");
+        tcsace.setControlProperty(property);
+        tcsace.setControlValue(value);
+        tcsace.setFatal("Y");
+        
+        when(seleniumService.isElementPresent(anyString())).thenReturn(true);
+        when(seleniumService.isElementNotVisible(anyString())).thenReturn(true);
+
+        this.controlService.doControl(tcsace);
+
+        Assert.assertEquals(msg, tcsace.getControlResultMessage().getDescription());
+        Assert.assertEquals("OK", tcsace.getReturnCode());
+    }
+
+    @Test
+    public void testDoControlElementNotVisibleWhenFail() {
+        String property = "id=test";
+        String value = "null";
+        String msg = "Element '" + property + "' is visible on the page.";
+
+        TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
+        tcsace.setControlType("verifyElementNotVisible");
+        tcsace.setControlProperty(property);
+        tcsace.setControlValue(value);
+        tcsace.setFatal("Y");
+
+        when(seleniumService.isElementPresent(anyString())).thenReturn(true);
+        when(seleniumService.isElementNotVisible(anyString())).thenReturn(false);
+
+        this.controlService.doControl(tcsace);
+
+        Assert.assertEquals(msg, tcsace.getControlResultMessage().getDescription());
+        Assert.assertEquals("KO", tcsace.getReturnCode());
+        Assert.assertEquals("Y", tcsace.getFatal());
+    }
+
+    @Test
+    public void testDoControlElementNotVisibleWhenPropertyNull() {
+        String property = "null";
+        String value = "id=test";
+        String msg = "Object is 'null'. This is mandatory in order to perform the control verify element not visible";
+
+        TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
+        tcsace.setControlType("verifyElementNotVisible");
+        tcsace.setControlProperty(property);
+        tcsace.setControlValue(value);
+        tcsace.setFatal("Y");
+
+        this.controlService.doControl(tcsace);
+
+        Assert.assertEquals(msg, tcsace.getControlResultMessage().getDescription());
+        Assert.assertEquals("KO", tcsace.getReturnCode());
+        Assert.assertEquals("Y", tcsace.getFatal());
+    }
+
+    @Test
+    public void testDoControlElementNotVisibleWhenWebDriverException() {
+        String property = "id=test";
+        String value = "null";
+        String msg = "The test case is canceled due to lost connection to Selenium Server! Detailed error : .*";
+
+        TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
+        tcsace.setControlType("verifyElementNotVisible");
+        tcsace.setControlProperty(property);
+        tcsace.setControlValue(value);
+        tcsace.setFatal("Y");
+
+        when(seleniumService.isElementPresent(anyString())).thenThrow(new WebDriverException());
+
+        this.controlService.doControl(tcsace);
+
+        Assert.assertTrue( tcsace.getControlResultMessage().getDescription().matches(msg));
+        Assert.assertEquals("CA", tcsace.getReturnCode());
+        Assert.assertEquals("Y", tcsace.getFatal());
+    }
 }
