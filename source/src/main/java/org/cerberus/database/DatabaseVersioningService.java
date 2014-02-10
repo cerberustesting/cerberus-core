@@ -2953,10 +2953,20 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
 
 // URL to download drivers.
         SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `parameter` (`param`, `value`) VALUES ('selenium_chromedriver_download_url', 'http://chromedriver.storage.googleapis.com/index.html') ");
-        SQLS.append(",('selenium_iedriver_download_url', 'http://code.google.com/p/selenium/downloads/list');");
+        SQLS.append("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) VALUES ('', 'selenium_chromedriver_download_url', 'http://chromedriver.storage.googleapis.com/index.html', 'Download URL for Selenium Chrome webdrivers.') ");
+        SQLS.append(",('', 'selenium_iedriver_download_url', 'http://code.google.com/p/selenium/downloads/list','Download URL for Internet Explorer webdrivers.');");
         SQLInstruction.add(SQLS.toString());
 
+// Add verifyElementNotVisible to control
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `id`, `description`, `gp1`, `gp2`, `gp3`) ");
+        SQLS.append("VALUES ('CONTROL', 'verifyElementNotVisible', 31, 13, 'verifyElementNotVisible', NULL, NULL, NULL);");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `DocLabel`, `DocDesc`) ");
+        SQLS.append("VALUES ('testcasestepactioncontrol', 'Type', 'verifyElementNotVisible', 'True if element is present but not visible on the current page.', ");
+        SQLS.append("'<b>verifyElementNotVisible</b><br><br>Verify if the HTML element specified exists, is not visible and has text on it');");
+        SQLInstruction.add(SQLS.toString());
 
         return SQLInstruction;
     }
