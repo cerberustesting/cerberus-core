@@ -1,4 +1,6 @@
-/* DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+/*
+ * Cerberus  Copyright (C) 2013  vertigo17
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This file is part of Cerberus.
  *
@@ -15,21 +17,20 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.dao;
+package org.cerberus.access;
 
 import java.util.List;
 import org.cerberus.entity.Test;
 
 /**
- * {Insert class description here}
  *
- * @author Tiago Bernardes
- * @version 1.0, 19/Dez/2012
- * @since 2.0.0
+ * @author memiks
  */
-public interface ITestDAO {
+public interface ITestAccess {
 
     List<Test> findAllTest();
 
     List<Test> findTestByCriteria(Test test);
+
+    
 }

@@ -1,4 +1,6 @@
-/* DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+/*
+ * Cerberus  Copyright (C) 2013  vertigo17
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This file is part of Cerberus.
  *
@@ -15,21 +17,33 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.dao;
+package org.cerberus.access.impl;
 
 import java.util.List;
+import org.cerberus.access.ITestAccess;
+import org.cerberus.dao.ITestDAO;
 import org.cerberus.entity.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 /**
- * {Insert class description here}
  *
- * @author Tiago Bernardes
- * @version 1.0, 19/Dez/2012
- * @since 2.0.0
+ * @author memiks
  */
-public interface ITestDAO {
+@Service
+public class TestAccess implements ITestAccess {
 
-    List<Test> findAllTest();
+    @Autowired
+    private ITestDAO testDAO;
 
-    List<Test> findTestByCriteria(Test test);
+    @Override
+    public List<Test> findAllTest() {
+        return this.testDAO.findAllTest();
+    }
+
+    @Override
+    public List<Test> findTestByCriteria(Test test) {
+        return this.testDAO.findTestByCriteria(test);
+    }
+
 }
