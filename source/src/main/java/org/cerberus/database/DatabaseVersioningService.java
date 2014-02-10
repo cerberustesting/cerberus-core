@@ -2963,6 +2963,9 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("VALUES ('CONTROL', 'verifyElementNotVisible', 31, 13, 'verifyElementNotVisible', NULL, NULL, NULL);");
         SQLInstruction.add(SQLS.toString());
         SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `documentation` CHANGE COLUMN `DocLabel` `DocLabel` VARCHAR(100) NULL DEFAULT NULL  , CHANGE COLUMN `DocDesc` `DocDesc` TEXT NULL DEFAULT NULL  ;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `DocLabel`, `DocDesc`) ");
         SQLS.append("VALUES ('testcasestepactioncontrol', 'Type', 'verifyElementNotVisible', 'True if element is present but not visible on the current page.', ");
         SQLS.append("'<b>verifyElementNotVisible</b><br><br>Verify if the HTML element specified exists, is not visible and has text on it');");
