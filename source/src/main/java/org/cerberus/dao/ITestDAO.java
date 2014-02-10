@@ -18,6 +18,7 @@
 package org.cerberus.dao;
 
 import java.util.List;
+
 import org.cerberus.entity.Test;
 
 /**
@@ -30,6 +31,4 @@ import org.cerberus.entity.Test;
 public interface ITestDAO {
 
     List<Test> findAllTest();
-
-    List<Test> findTestByCriteria(Test test);
 }
