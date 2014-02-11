@@ -17,42 +17,45 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.access.impl;
+package org.cerberus.service;
 
-import java.util.List;
-import org.cerberus.access.ITestAccess;
-import org.cerberus.dao.ITestDAO;
-import org.cerberus.entity.Test;
+import junit.framework.Assert;
+import org.cerberus.factory.IFactoryTest;
+import org.junit.Ignore;
+import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 /**
  *
  * @author memiks
  */
-@Service
-public class TestAccess implements ITestAccess {
+public class TestServiceTest {
 
     @Autowired
-    private ITestDAO testDAO;
+    private IFactoryTest factoryTest;
 
-    @Override
-    public List<Test> findAllTest() {
-        return this.testDAO.findAllTest();
+    @Autowired
+    private ITestService testService;
+
+    @Ignore
+    @Test
+    public void testCreateTestInDatabase() {
+        boolean result;
+        boolean expected = true;
+
+        result = testService.createTest(factoryTest.create("TestServiceTest", "TestDescription", "Y", "Y", null));
+
+        Assert.assertEquals(expected, result);
     }
 
-    @Override
-    public List<Test> findTestByCriteria(Test test) {
-        return this.testDAO.findTestByCriteria(test);
-    }
+    @Ignore
+    @Test
+    public void testDeleteTestInDatabase() {
+        boolean result;
+        boolean expected = true;
 
-    @Override
-    public boolean createTest(Test test) {
-        return this.testDAO.createTest(test);
-    }
+        result = testService.deleteTest(factoryTest.create("TestServiceTest", "TestDescription", "Y", "Y", null));
 
-    @Override
-    public boolean deleteTest(Test test) {
-        return this.testDAO.deleteTest(test);
+        Assert.assertEquals(expected, result);
     }
 }

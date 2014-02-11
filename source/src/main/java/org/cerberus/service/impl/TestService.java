@@ -58,5 +58,14 @@ public class TestService implements ITestService {
         return testAccess.findAllTest();
     }
 
+    @Override
+    public boolean createTest(Test test) {
+        return testAccess.createTest(test);
+    }
+
+    @Override
+    public boolean deleteTest(Test test) {
+        return testAccess.deleteTest(test);
+    }
 
 }

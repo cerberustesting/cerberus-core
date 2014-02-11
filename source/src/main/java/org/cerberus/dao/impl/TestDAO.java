@@ -23,7 +23,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.apache.log4j.Level;
 import org.cerberus.dao.ITestDAO;
 import org.cerberus.database.DatabaseSpring;
@@ -146,7 +145,75 @@ public class TestDAO implements ITestDAO {
         }
         return result;    
     }
-    
+
+    @Override
+    public boolean createTest(Test test) {
+        boolean res = false;
+        final String sql = "INSERT INTO test (Test, Description, Active, Automated) VALUES (?, ?, ?, ?)";
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(sql);
+            try {
+                preStat.setString(1, test.getTest());
+                preStat.setString(2, test.getDescription());
+                preStat.setString(3, test.getActive());
+                preStat.setString(4, test.getAutomated());
+                //preStat.setString(5, test.gettDateCrea());
+
+                res = preStat.executeUpdate() > 0;
+            } catch (SQLException exception) {
+                MyLogger.log(TestDAO.class.getName(), Level.ERROR, exception.toString());
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(TestDAO.class.getName(), Level.ERROR, exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(TestDAO.class.getName(), Level.WARN, e.toString());
+            }
+        }
+
+        return res;
+    }
+
+    @Override
+    public boolean deleteTest(Test test) {
+        boolean res = false;
+        final String sql = "DELETE FROM test where Test = ?";
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(sql);
+            try {
+                preStat.setString(1, test.getTest());
+
+                res = preStat.executeUpdate() > 0;
+            } catch (SQLException exception) {
+                MyLogger.log(TestDAO.class.getName(), Level.ERROR, exception.toString());
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(TestDAO.class.getName(), Level.ERROR, exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(TestDAO.class.getName(), Level.WARN, e.toString());
+            }
+        }
+
+        return res;
+    }
+
     private Test loadTestFromResultSet(ResultSet resultSet) throws SQLException {
         String test = resultSet.getString("Test");
         String description = resultSet.getString("Description");

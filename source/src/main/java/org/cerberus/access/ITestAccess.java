@@ -28,9 +28,30 @@ import org.cerberus.entity.Test;
  */
 public interface ITestAccess {
 
+    /**
+     *
+     * @return All tests found in database
+     */
     List<Test> findAllTest();
 
+    /**
+     *
+     * @param test use to filter search in database
+     * @return List of Tests found in database
+     */
     List<Test> findTestByCriteria(Test test);
 
-    
+    /**
+     *
+     * @param test need to be created in database
+     * @return TRUE if test is inserted in database
+     */
+    boolean createTest(Test test);
+
+    /**
+     *
+     * @param test need to be deleted in database
+     * @return TRUE if test is deleted in database
+     */
+    boolean deleteTest(Test test);
 }

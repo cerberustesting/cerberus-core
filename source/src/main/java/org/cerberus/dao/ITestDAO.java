@@ -32,4 +32,8 @@ public interface ITestDAO {
     List<Test> findAllTest();
 
     List<Test> findTestByCriteria(Test test);
+
+    boolean createTest(Test test);
+
+    boolean deleteTest(Test test);
 }
