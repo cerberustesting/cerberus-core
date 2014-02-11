@@ -306,7 +306,61 @@ public class TestCaseDAO implements ITestCaseDAO {
 
     @Override
     public boolean createTestCase(TestCase testCase) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        boolean res = false;
+        final String sql = "UPDATE testcase tc SET tc.Application = ?, tc.Project = ?, tc.BehaviorOrValueExpected = ?, tc.activeQA = ?, tc.activeUAT = ?, tc.activePROD = ?, "
+                + "tc.Priority = ?, tc.Status = ?, tc.TcActive = ?, tc.Description = ?, tc.Group = ?, tc.HowTo = ?, tc.Comment = ?, tc.Ticket = ?, tc.FromBuild = ?, "
+                + "tc.FromRev = ?, tc.ToBuild = ?, tc.ToRev = ?, tc.BugID = ?, tc.TargetBuild = ?, tc.Implementer = ?, tc.LastModifier = ?, tc.TargetRev = ? "
+                + "WHERE tc.Test = ? AND tc.Testcase = ?";
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(sql);
+            try {
+                preStat.setString(1, testCase.getApplication());
+                preStat.setString(2, testCase.getProject());
+                preStat.setString(3, testCase.getDescription());
+                preStat.setString(4, testCase.isRunQA() ? "Y" : "N");
+                preStat.setString(5, testCase.isRunUAT() ? "Y" : "N");
+                preStat.setString(6, testCase.isRunPROD() ? "Y" : "N");
+                preStat.setString(7, Integer.toString(testCase.getPriority()));
+                preStat.setString(8, testCase.getStatus());
+                preStat.setString(9, testCase.isActive() ? "Y" : "N");
+                preStat.setString(10, testCase.getShortDescription());
+                preStat.setString(11, testCase.getGroup());
+                preStat.setString(12, testCase.getHowTo());
+                preStat.setString(13, testCase.getComment());
+                preStat.setString(14, testCase.getTicket());
+                preStat.setString(15, testCase.getFromSprint());
+                preStat.setString(16, testCase.getFromRevision());
+                preStat.setString(17, testCase.getToSprint());
+                preStat.setString(18, testCase.getToRevision());
+                preStat.setString(19, testCase.getBugID());
+                preStat.setString(20, testCase.getTargetSprint());
+                preStat.setString(21, testCase.getImplementer());
+                preStat.setString(22, testCase.getLastModifier());
+                preStat.setString(23, testCase.getTargetRevision());
+                preStat.setString(24, testCase.getTest());
+                preStat.setString(25, testCase.getTestCase());
+
+                res = preStat.executeUpdate() > 0;
+            } catch (SQLException exception) {
+                MyLogger.log(TestCaseDAO.class.getName(), Level.ERROR, exception.toString());
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(TestCaseDAO.class.getName(), Level.ERROR, exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(TestCaseDAO.class.getName(), Level.WARN, e.toString());
+            }
+        }
+
+        return res;
     }
 
     @Override
