@@ -104,8 +104,7 @@
 </tr>
 <tr>
     <td  class="wob">
-        <p>import Properties</p>
-        <input id="ImportProperty" name="ImportProperty" type="checkbox" value="Y"> 
+        import Properties <input id="ImportProperty" name="ImportProperty" type="checkbox" value="Y">
     </td>
 </tr>
 
