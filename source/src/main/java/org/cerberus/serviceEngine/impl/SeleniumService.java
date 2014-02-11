@@ -32,9 +32,7 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
-
 import javax.imageio.ImageIO;
-
 import org.apache.commons.net.telnet.TelnetClient;
 import org.apache.log4j.Level;
 import org.cerberus.entity.Invariant;
@@ -783,9 +781,10 @@ public class SeleniumService implements ISeleniumService {
 
             if (!StringUtil.isNullOrEmpty(windowTitle)) {
                 String[] strings = windowTitle.split("=");
-                String identifier,value;
+                String identifier, value;
+
                 if (strings.length == 1) {
-                    identifier = "value";
+                    identifier = "title";
                     value = strings[0];
                 } else {
                     identifier = strings[0];
@@ -810,8 +809,7 @@ public class SeleniumService implements ISeleniumService {
                     for (String windowHandle : handles) {
                         if (!windowHandle.equals(currentHandle)) {
                             this.selenium.getDriver().switchTo().window(windowHandle);
-                            if ("value".equals(identifier) && value.equals(this.selenium.getDriver().getTitle())
-                                    || "contains".equals(identifier) && value.indexOf(this.selenium.getDriver().getTitle())>=0) {
+                            if (testTitleOfWindow(this.selenium.getDriver().getTitle(), identifier, value)) {
                                 message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_SWITCHTOWINDOW);
                                 message.setDescription(message.getDescription().replaceAll("%WINDOW%", windowTitle));
                                 return message;
@@ -831,6 +829,22 @@ public class SeleniumService implements ISeleniumService {
         message = new MessageEvent(MessageEventEnum.ACTION_FAILED_SWITCHTOWINDOW_NO_SUCH_ELEMENT);
         message.setDescription(message.getDescription().replaceAll("%WINDOW%", windowTitle));
         return message;
+    }
+
+    private boolean testTitleOfWindow(String title, String identifier, String value) {
+        if (value != null && title != null) {
+            if ("title".equals(identifier) && value.equals(title)) {
+                return true;
+            }
+
+            if ("regexTitle".equals(identifier)) {
+                Pattern pattern = Pattern.compile(value);
+                Matcher matcher = pattern.matcher(this.selenium.getDriver().getTitle());
+
+                return matcher.find();
+            }
+        }
+        return false;
     }
 
     private MessageEvent doActionClickWait(String actionObject, String actionProperty) {
