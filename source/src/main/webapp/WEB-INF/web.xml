@@ -732,7 +732,6 @@
             <url-pattern>/AddUser</url-pattern>
             <url-pattern>/UpdateUser</url-pattern>
             <url-pattern>/DeleteUser</url-pattern>
-            <url-pattern>/ChangeUserPassword</url-pattern>
             <url-pattern>/GetLogEvent</url-pattern>
         </web-resource-collection>
         <auth-constraint>
@@ -745,7 +744,6 @@
         <web-resource-collection>
             <web-resource-name>jsp</web-resource-name>
             <description>jsp</description>
-            <url-pattern>/ChangePassword.jsp</url-pattern>
             <url-pattern>/DatabaseMaintenance.jsp</url-pattern>
             <url-pattern>/Documentation.jsp</url-pattern>
             <url-pattern>/Login.jsp</url-pattern>
@@ -767,7 +765,6 @@
             <url-pattern>/importFile</url-pattern>
             <url-pattern>/NewRelease</url-pattern>
             <url-pattern>/TestcaseListGrid</url-pattern>
-            <url-pattern>/ChangeUserPassword</url-pattern>
         </web-resource-collection>
     </security-constraint>
     <security-constraint>
@@ -776,11 +773,13 @@
             <web-resource-name>jsp</web-resource-name>
             <description>jsp</description>
             <url-pattern>/Homepage.jsp</url-pattern>
+            <url-pattern>/ChangePassword.jsp</url-pattern>
         </web-resource-collection>
         <web-resource-collection>
             <web-resource-name>servlet</web-resource-name>
             <description>servlet</description>
             <url-pattern>/Homepage</url-pattern>
+            <url-pattern>/ChangeUserPassword</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <description/>
