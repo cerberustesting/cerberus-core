@@ -2971,6 +2971,15 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("'<b>verifyElementNotVisible</b><br><br>Verify if the HTML element specified exists, is not visible and has text on it');");
         SQLInstruction.add(SQLS.toString());
 
+// Reordering status.
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `invariant` SET `sort`='31' WHERE `id`='1' and`sort`='20';");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `invariant` SET `sort`='21' WHERE `id`='1' and`sort`='30';");
+        SQLInstruction.add(SQLS.toString());
+        
+        
         return SQLInstruction;
     }
 }
