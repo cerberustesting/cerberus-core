@@ -1186,7 +1186,7 @@ public class SeleniumService implements ISeleniumService {
 
     private MessageEvent doActionOpenURLWithBase(String value, String property) {
         MessageEvent message;
-        String url = null;
+        String url = "null";
         try {
             if (!StringUtil.isNull(value)) {
                 url = value;

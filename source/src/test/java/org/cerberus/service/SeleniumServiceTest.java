@@ -378,4 +378,59 @@ public class SeleniumServiceTest {
         Assert.assertEquals(msg, tcsae.getActionResultMessage().getDescription());
     }
 
+
+    @Test
+    public void testDoActionOpenURLWithBaseObjectNotNull() {
+        String object = "/test";
+        String property = "null";
+        String msg = "Opened URL '" + object + "'.";
+
+        TestCaseStepActionExecution tcsae = new TestCaseStepActionExecution();
+        tcsae.setAction("openUrlWithBase");
+        tcsae.setObject(object);
+        tcsae.setProperty(property);
+
+        when(selenium.getDriver()).thenReturn(driver);
+
+        this.seleniumService.doAction(tcsae);
+
+        Assert.assertEquals(msg, tcsae.getActionResultMessage().getDescription());
+    }
+
+    @Test
+    public void testDoActionOpenURLWithBaseObjectNullAndPropertyNotNull() {
+        String object = "null";
+        String property = "/test";
+        String msg = "Opened URL '" + property + "'.";
+
+        TestCaseStepActionExecution tcsae = new TestCaseStepActionExecution();
+        tcsae.setAction("openUrlWithBase");
+        tcsae.setObject(object);
+        tcsae.setProperty(property);
+
+        when(selenium.getDriver()).thenReturn(driver);
+
+        this.seleniumService.doAction(tcsae);
+
+        Assert.assertEquals(msg, tcsae.getActionResultMessage().getDescription());
+    }
+
+    @Test
+    public void testDoActionOpenURLWithBaseObjectNullAndPropertyNull() {
+        String object = "null";
+        String property = "null";
+        String msg = "Failed to open '" + object + "'.";
+
+        TestCaseStepActionExecution tcsae = new TestCaseStepActionExecution();
+        tcsae.setAction("openUrlWithBase");
+        tcsae.setObject(object);
+        tcsae.setProperty(property);
+
+        when(selenium.getDriver()).thenReturn(driver);
+
+        this.seleniumService.doAction(tcsae);
+
+        Assert.assertEquals(msg, tcsae.getActionResultMessage().getDescription());
+    }
+        
 }

@@ -74,7 +74,7 @@ public final class StringUtil {
      * @return true if the parameter is a "null"
      */
     public static boolean isNull(String str) {
-        return (str.equalsIgnoreCase(NULL) || str.equalsIgnoreCase(""));
+        return (str == null || NULL.equalsIgnoreCase(str) || "".equalsIgnoreCase(str));
     }
 
     /**
