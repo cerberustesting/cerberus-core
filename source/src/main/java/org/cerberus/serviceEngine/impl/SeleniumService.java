@@ -587,7 +587,7 @@ public class SeleniumService implements ISeleniumService {
             res = this.doActionMouseOverAndWait(object, property);
 
         } else if (testCaseStepActionExecution.getAction().equals("openUrlWithBase")) {
-            res = this.doActionOpenURLWithBase(object);
+            res = this.doActionOpenURLWithBase(object, property);
 
         } else if (testCaseStepActionExecution.getAction().equals("openUrlLogin")) {
             testCaseStepActionExecution.setObject(this.selenium.getLogin());
@@ -1184,9 +1184,15 @@ public class SeleniumService implements ISeleniumService {
         return new MessageEvent(MessageEventEnum.ACTION_FAILED_KEYPRESS);
     }
 
-    private MessageEvent doActionOpenURLWithBase(String url) {
+    private MessageEvent doActionOpenURLWithBase(String value, String property) {
         MessageEvent message;
+        String url = null;
         try {
+            if (!StringUtil.isNull(value)) {
+                url = value;
+            } else if (!StringUtil.isNull(property)) {
+                url = property;
+            }
             if (!StringUtil.isNull(url)) {
                 this.selenium.getDriver().get("http://" + this.selenium.getIp() + url);
                 message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_OPENURL);
