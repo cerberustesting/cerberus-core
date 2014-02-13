@@ -78,6 +78,15 @@
                     tag = new String("");
                 }
 
+                String browserFullVersion;
+                if (request.getParameter("BrowserFullVersion") != null && request.getParameter("BrowserFullVersion").compareTo("") != 0) {
+                    browserFullVersion = request.getParameter("BrowserFullVersion");
+                    URL = URL + "&BrowserFullVersion=" + browserFullVersion;
+                    execclauses = execclauses + " AND tce.BrowserFullVersion = '" + browserFullVersion + "'";
+                } else {
+                    browserFullVersion = new String("");
+                }
+
                 String systemExe;
                 String systemBR; // Used for filtering Build and Revision.
                 if (request.getParameter("SystemExe") != null && request.getParameter("SystemExe").compareTo("All") != 0) {
@@ -270,6 +279,28 @@
                 } else {
                     allstatus = new String[1];
                     allstatus[0] = new String("%%");
+                }
+
+                String[] allExeStatus;
+                String exeStatus = "";
+                if (request.getParameterValues("ExeStatus") != null && (request.getParameterValues("ExeStatus")[0]).compareTo("All") != 0) {
+                    allExeStatus = request.getParameterValues("ExeStatus");
+                    if (allExeStatus != null && allExeStatus.length > 0) {
+                        execclauses += " AND (";
+                        for (int index = 0; index < allExeStatus.length; index++) {
+                            execclauses += " Status = '" + allExeStatus[index] + "' ";
+                            URL += "&ExeStatus=" + allExeStatus[index];
+                            exeStatus += allExeStatus[index] + ",";
+
+                            if (index < (allExeStatus.length - 1)) {
+                                execclauses += " OR ";
+                            }
+                        }
+                        execclauses += ") ";
+                    }
+                } else {
+                    allExeStatus = new String[1];
+                    allExeStatus[0] = new String("%%");
                 }
 
                 String targetBuild = "";
@@ -552,6 +583,8 @@
                                     <td id="wob" style="width: 130px"><%out.print(dbDocS(conn, "testcaseexecution", "IP", "Ip"));%></td>
                                     <td id="wob" style="width: 130px"><%out.print(dbDocS(conn, "testcaseexecution", "Port", "Port"));%></td>
                                     <td id="wob" style="width: 130px"><%out.print(dbDocS(conn, "testcaseexecution", "tag", "Tag"));%></td>
+                                    <td id="wob" style="width: 130px"><%out.print(dbDocS(conn, "testcaseexecution", "browserfullversion", ""));%></td>
+                                    <td id="wob" style="width: 130px"><%out.print(dbDocS(conn, "testcaseexecution", "status", ""));%></td>
                                 </tr>
 
                                 <tr>
@@ -597,6 +630,28 @@
                                     <td id="wob"><input style="font-weight: bold; width: 130px" name="Ip" id="Ip" value="<%=ip%>"></td>
                                     <td id="wob"><input style="font-weight: bold; width: 60px" name="Port" id="Port" value="<%=port%>"></td>
                                     <td id="wob"><input style="font-weight: bold; width: 130px" name="Tag" id="Tag" value="<%=tag%>"></td>
+                                    <td id="wob"><input style="font-weight: bold; width: 130px" name="BrowserFullVersion" id="Tag" value="<%=browserFullVersion%>"></td>
+                                    <td id="wob">
+                                        <select multiple  size="3" id="exestatus" style="width: 170px" name="ExeStatus">
+                                            <option value="All">-- ALL --</option>
+                                            <%
+                                                sq = "SELECT value FROM cerberus.invariant where idname='TCSTATUS' order by sort;";
+                                                q = stmt.executeQuery(sq);
+                                                ret = "";
+                                                while (q.next()) {
+                                                    ret = ret + " <option value=\"" + q.getString("value") + "\"";
+                                                    ret = ret + " style=\"width: 200px;";
+                                                    ret = ret + "\"";
+
+                                                    if ((exeStatus != null) && (exeStatus.indexOf(q.getString("value") + ",") >= 0)) {
+                                                        ret = ret + " SELECTED ";
+                                                    }
+                                                    ret = ret + ">" + q.getString("value") ;
+                                                    ret = ret + "</option>";
+                                                }%>
+                                            <%=ret%>
+                                        </select>
+                                    </td>
                                 </tr>
                             </table>
                             <%
