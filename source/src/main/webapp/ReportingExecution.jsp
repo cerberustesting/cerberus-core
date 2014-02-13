@@ -635,7 +635,7 @@
                                         <select multiple  size="3" id="exestatus" style="width: 170px" name="ExeStatus">
                                             <option value="All">-- ALL --</option>
                                             <%
-                                                sq = "SELECT value FROM cerberus.invariant where idname='TCSTATUS' order by sort;";
+                                                sq = "SELECT value FROM invariant WHERE idname='TCSTATUS' ORDER BY sort;";
                                                 q = stmt.executeQuery(sq);
                                                 ret = "";
                                                 while (q.next()) {
