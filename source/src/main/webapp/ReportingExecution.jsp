@@ -814,6 +814,11 @@
                                         } else {
                                             statsStatusForTest.put(rs_time.getString("tc.test") + rs_time.getString("tc.Status"), 1);
                                         }
+                                        if (statsStatusForTest.containsKey("TOTAL" + rs_time.getString("tc.Status"))) {
+                                            statsStatusForTest.put("TOTAL" + rs_time.getString("tc.Status"), statsStatusForTest.get("TOTAL" + rs_time.getString("tc.Status")) + 1);
+                                        } else {
+                                            statsStatusForTest.put("TOTAL" + rs_time.getString("tc.Status"), 1);
+                                        }
 
                                         // Collecting group stats for current test. 
                                         if (!listGroup.contains(rs_time.getString("tc.Group"))) {
@@ -823,6 +828,11 @@
                                             statsGroupForTest.put(rs_time.getString("tc.test") + rs_time.getString("tc.Group"), statsGroupForTest.get(rs_time.getString("tc.test") + rs_time.getString("tc.Group")) + 1);
                                         } else {
                                             statsGroupForTest.put(rs_time.getString("tc.test") + rs_time.getString("tc.Group"), 1);
+                                        }
+                                        if (statsGroupForTest.containsKey("TOTAL" + rs_time.getString("tc.Group"))) {
+                                            statsGroupForTest.put("TOTAL" + rs_time.getString("tc.Group"), statsGroupForTest.get("TOTAL" + rs_time.getString("tc.Group")) + 1);
+                                        } else {
+                                            statsGroupForTest.put("TOTAL" + rs_time.getString("tc.Group"), 1);
                                         }
 
                                         rs_testcasecountrygeneral.first();
@@ -926,7 +936,7 @@
                                         }
                                     %>
                                         <td class="INF"><%
-                                        if (rs_time.getString("tc.Comment") != null) {%><%=rs_time.getString("tc.Comment")%><%}%></td>
+                                            if (rs_time.getString("tc.Comment") != null) {%><%=rs_time.getString("tc.Comment")%><%}%></td>
                                     <td class="INF"><%
                                         if ((rs_time.getString("tc.BugID") != null)
                                                 && (rs_time.getString("tc.BugID").compareToIgnoreCase("") != 0)
@@ -954,14 +964,14 @@
                                 <td class="INF"><%
                                     if (rs_time.getString("tc.Comment") != null) {%><%=rs_time.getString("tc.Comment")%><%}%></td>
                                 <td class="INF"><%
-                                        if ((rs_time.getString("tc.BugID") != null)
-                                                && (rs_time.getString("tc.BugID").compareToIgnoreCase("") != 0)
-                                                && (rs_time.getString("tc.BugID").compareToIgnoreCase("null") != 0)) {
-                                            SitdmossBugtrackingURL = myApplicationService.findApplicationByKey(rs_time.getString("application")).getBugTrackerUrl();
-                                            SitdmossBugtrackingURL_tc = SitdmossBugtrackingURL.replaceAll("%BUGID%", rs_time.getString("tc.BugID"));
-                                        } else {
-                                            SitdmossBugtrackingURL_tc = "";
-                                        }
+                                    if ((rs_time.getString("tc.BugID") != null)
+                                            && (rs_time.getString("tc.BugID").compareToIgnoreCase("") != 0)
+                                            && (rs_time.getString("tc.BugID").compareToIgnoreCase("null") != 0)) {
+                                        SitdmossBugtrackingURL = myApplicationService.findApplicationByKey(rs_time.getString("application")).getBugTrackerUrl();
+                                        SitdmossBugtrackingURL_tc = SitdmossBugtrackingURL.replaceAll("%BUGID%", rs_time.getString("tc.BugID"));
+                                    } else {
+                                        SitdmossBugtrackingURL_tc = "";
+                                    }
                                     if (SitdmossBugtrackingURL_tc.equalsIgnoreCase("") == false) {%><a href="<%=SitdmossBugtrackingURL_tc%>" target="_blank"><%=rs_time.getString("tc.BugID")%></a><%
                                         }
                                         if ((rs_time.getString("tc.TargetBuild") != null) && (rs_time.getString("tc.TargetBuild").equalsIgnoreCase("") == false)) {
@@ -1243,7 +1253,17 @@
                                     %><td align="center"><%=totalTest%></td></tr><%
                                         }
                                     %>
-                            </table>
+                            <tr id="header"><td>TOTAL</td><%
+                                    int totalTest = 0;
+                                    for (int i = 0; i < listGroup.size(); i++) {
+                                        if (statsGroupForTest.containsKey("TOTAL" + listGroup.get(i))) {
+                                            totalTest += statsGroupForTest.get("TOTAL" + listGroup.get(i));
+                                    %><td align="center"><%=statsGroupForTest.get("TOTAL" + listGroup.get(i))%></td><%
+                                    } else {
+                                    %><td></td><%                                                            }
+                                        }
+
+                                    %><td align="center"><%=totalTest%></td></tr></table>
                             <br>
                             <table id="statusReporting" style="display: none" border="0px" cellpadding="0" cellspacing="0">
                                 <tr id="header">
@@ -1265,7 +1285,7 @@
                                 <%
 
                                     for (int index = 0; index < distinctList.size(); index++) {
-                                        int totalTest = 0;
+                                        totalTest = 0;
                                 %><tr><td><%=distinctList.get(index)%></td><%
 
                                     for (int i = 0; i < myInv.size(); i++) {
@@ -1276,9 +1296,9 @@
                                             mj++;
                                         }
                                         if (mj >= listStatus.size()) { // Current status was not in the test data
-                                    %><td></td><%                                                    } else {
-    if (statsStatusForTest.containsKey(distinctList.get(index) + listStatus.get(mj))) {
-        totalTest += statsStatusForTest.get(distinctList.get(index) + listStatus.get(mj));
+%><td></td><%                                                    } else {
+                                        if (statsStatusForTest.containsKey(distinctList.get(index) + listStatus.get(mj))) {
+                                            totalTest += statsStatusForTest.get(distinctList.get(index) + listStatus.get(mj));
                                     %><td align="center"><%=statsStatusForTest.get(distinctList.get(index) + listStatus.get(mj))%></td><%
                                     } else {
                                     %><td></td><%                                                                }
@@ -1288,7 +1308,26 @@
                                     %><td align="center"><%=totalTest%></td></tr><%
                                         }
                                     %>
-                            </table>
+                            <tr id="header"><td>TOTAL</td><%
+totalTest = 0;
+                                    for (int i = 0; i < myInv.size(); i++) {
+
+                                        // finding the real list of status from the page data inside the current complete status
+                                        int mj = 0;
+                                        while ((mj < listStatus.size()) && !(listStatus.get(mj).equals(myInv.get(i).getValue()))) {
+                                            mj++;
+                                        }
+                                        if (mj >= listStatus.size()) { // Current status was not in the test data
+%><td></td><%                                                    } else {
+                                        if (statsStatusForTest.containsKey("TOTAL" + listStatus.get(mj))) {
+                                            totalTest += statsStatusForTest.get("TOTAL" + listStatus.get(mj));
+                                    %><td align="center"><%=statsStatusForTest.get("TOTAL" + listStatus.get(mj))%></td><%
+                                    } else {
+                                    %><td></td><%                                                                }
+
+                                            }
+                                        }
+                                    %><td align="center"><%=totalTest%></td></tr></table>
                         </td>
                     </tr>
                 </table>
