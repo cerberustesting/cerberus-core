@@ -2953,11 +2953,37 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
 
 // URL to download drivers.
         SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `parameter` (`param`, `value`) VALUES ('selenium_chromedriver_download_url', 'http://chromedriver.storage.googleapis.com/index.html') ");
-        SQLS.append(",('selenium_iedriver_download_url', 'http://code.google.com/p/selenium/downloads/list');");
+        SQLS.append("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) VALUES ('', 'selenium_chromedriver_download_url', 'http://chromedriver.storage.googleapis.com/index.html', 'Download URL for Selenium Chrome webdrivers.') ");
+        SQLS.append(",('', 'selenium_iedriver_download_url', 'http://code.google.com/p/selenium/downloads/list','Download URL for Internet Explorer webdrivers.');");
         SQLInstruction.add(SQLS.toString());
 
+// Add verifyElementNotVisible to control
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `id`, `description`, `gp1`, `gp2`, `gp3`) ");
+        SQLS.append("VALUES ('CONTROL', 'verifyElementNotVisible', 31, 13, 'verifyElementNotVisible', NULL, NULL, NULL);");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `documentation` CHANGE COLUMN `DocLabel` `DocLabel` VARCHAR(100) NULL DEFAULT NULL  , CHANGE COLUMN `DocDesc` `DocDesc` TEXT NULL DEFAULT NULL  ;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `DocLabel`, `DocDesc`) ");
+        SQLS.append("VALUES ('testcasestepactioncontrol', 'Type', 'verifyElementNotVisible', 'True if element is present but not visible on the current page.', ");
+        SQLS.append("'<b>verifyElementNotVisible</b><br><br>Verify if the HTML element specified exists, is not visible and has text on it');");
+        SQLInstruction.add(SQLS.toString());
 
+// Reordering status.
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `invariant` SET `sort`='31' WHERE `id`='1' and`sort`='20';");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `invariant` SET `sort`='21' WHERE `id`='1' and`sort`='30';");
+        SQLInstruction.add(SQLS.toString());
+        
+// Documentation update on new variable of New bug URL.
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `documentation` SET `DocDesc`='This correspond to the URL that points to the page where a new bug can be created on the Bug system of the <code class=\\'doc-crbvvoca\\'>application</code>.<br><br><table cellspacing=0 cellpadding=3><th class=\\'ex\\' colspan=\\'2\\'>The following variables can be used inside the URL</th><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%TEST%</code></td><td class=\\'ex\\'>Test</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%TESTCASE%</code></td><td class=\\'ex\\'>Test case reference</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%TESTCASEDESC%</code></td><td class=\\'ex\\'>Description of the test case</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%EXEID%</code></td><td class=\\'ex\\'>Execution ID</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%ENV%</code></td><td class=\\'ex\\'>Environment</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%COUNTRY%</code></td><td class=\\'ex\\'>Country</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%BUILD%</code></td><td class=\\'ex\\'>Build</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%REV%</code></td><td class=\\'ex\\'>Revision</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%BROWSER%</code></td><td class=\\'ex\\'>Browser used during the <code class=\\'doc-crbvvoca\\'>test case</code> execution</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%BROWSERFULLVERSION%</code></td><td class=\\'ex\\'>Full Version of the Browser used during the <code class=\\'doc-crbvvoca\\'>test case</code> execution</td></tr></table>' WHERE `DocTable`='application' and`DocField`='bugtrackernewurl' and`DocValue`='';");
+        SQLInstruction.add(SQLS.toString());
+        
         return SQLInstruction;
     }
 }

@@ -1,4 +1,6 @@
-/* DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+/*
+ * Cerberus  Copyright (C) 2013  vertigo17
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This file is part of Cerberus.
  *
@@ -15,25 +17,41 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.dao;
+package org.cerberus.access;
 
 import java.util.List;
 import org.cerberus.entity.Test;
 
 /**
- * {Insert class description here}
  *
- * @author Tiago Bernardes
- * @version 1.0, 19/Dez/2012
- * @since 2.0.0
+ * @author memiks
  */
-public interface ITestDAO {
+public interface ITestAccess {
 
+    /**
+     *
+     * @return All tests found in database
+     */
     List<Test> findAllTest();
 
+    /**
+     *
+     * @param test use to filter search in database
+     * @return List of Tests found in database
+     */
     List<Test> findTestByCriteria(Test test);
 
+    /**
+     *
+     * @param test need to be created in database
+     * @return TRUE if test is inserted in database
+     */
     boolean createTest(Test test);
 
+    /**
+     *
+     * @param test need to be deleted in database
+     * @return TRUE if test is deleted in database
+     */
     boolean deleteTest(Test test);
 }

@@ -17,55 +17,42 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.service.impl;
+package org.cerberus.access.impl;
 
-import java.util.ArrayList;
 import java.util.List;
 import org.cerberus.access.ITestAccess;
+import org.cerberus.dao.ITestDAO;
 import org.cerberus.entity.Test;
-import org.cerberus.service.ITestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
- * {Insert class description here}
  *
- * @author Tiago Bernardes
- * @version 1.0, 07/01/2013
- * @since 0.9.0
+ * @author memiks
  */
 @Service
-public class TestService implements ITestService {
+public class TestAccess implements ITestAccess {
 
     @Autowired
-    private ITestAccess testAccess;
+    private ITestDAO testDAO;
 
     @Override
-    public List<String> getListOfTests() {
-        List<String> result = new ArrayList<String>();
-
-        List<Test> listOfTests = this.testAccess.findAllTest();
-
-        for (Test lot : listOfTests) {
-            result.add(lot.getTest());
-        }
-
-        return result;
+    public List<Test> findAllTest() {
+        return this.testDAO.findAllTest();
     }
 
     @Override
-    public List<Test> getListOfTest() {
-        return testAccess.findAllTest();
+    public List<Test> findTestByCriteria(Test test) {
+        return this.testDAO.findTestByCriteria(test);
     }
 
     @Override
     public boolean createTest(Test test) {
-        return testAccess.createTest(test);
+        return this.testDAO.createTest(test);
     }
 
     @Override
     public boolean deleteTest(Test test) {
-        return testAccess.deleteTest(test);
+        return this.testDAO.deleteTest(test);
     }
-
 }

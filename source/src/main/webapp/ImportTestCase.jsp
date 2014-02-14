@@ -1,3 +1,4 @@
+<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%--
   ~ Cerberus  Copyright (C) 2013  vertigo17
   ~ DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
@@ -29,9 +30,6 @@
 <%@page import="java.sql.Statement"%>
 <%@page import="java.net.URLEncoder"%>
 
-<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-    "http://www.w3.org/TR/html4/loose.dtd">
 <%--
     Document   : ImportTestCase
     Created on : 17 janv. 2014, 14:44:47
@@ -63,47 +61,50 @@
     Statement stQueryTestCaseStep = conn.createStatement();
 
 %>
-<td class="wob" style="width: 70px; font-weight: bold;"><%out.print(dbDocS(conn, "testcase", "testcase", "OriginTestCase"));%></td>
-<td  class="wob">
-    <select id="fromTestCase" name="FromTestCase" style="width: 200px" onchange="getTestCasesForImportStep()">
-        <%
-            if (test.compareTo("%%") == 0) {
-                %><option style="width: 200px" value="All">-- Choose Test First --</option><%
-            } else {
-                String sql = "SELECT TestCase, Application,  Description, tcactive FROM testcase where TestCase IS NOT NULL and test like '" + test + "'Order by TestCase asc";
-                ResultSet rsTestCase = stQueryTestCase.executeQuery(sql);
-                while (rsTestCase.next()) {
-                    if (rsTestCase.getString("tcactive").equalsIgnoreCase("Y")) {
-                        optstyle = "font-weight:bold;";
-                    } else {
-                        optstyle = "font-weight:lighter;";
+<tr>
+    <td class="wob"><span style="font-weight: bold"><%out.print(dbDocS(conn, "testcase", "testcase", "OriginTestCase"));%></span>
+        <select id="fromTestCase" name="FromTestCase" onchange="getTestCasesForImportStep()">
+            <%
+                if (test.compareTo("%%") == 0) {
+                    %><option value="All">-- Choose Test First --</option><%
+                } else {
+                    String sql = "SELECT TestCase, Application,  Description, tcactive FROM testcase where TestCase IS NOT NULL and test like '" + test + "'Order by TestCase asc";
+                    ResultSet rsTestCase = stQueryTestCase.executeQuery(sql);
+                    while (rsTestCase.next()) {
+                        if (rsTestCase.getString("tcactive").equalsIgnoreCase("Y")) {
+                            optstyle = "font-weight:bold;";
+                        } else {
+                            optstyle = "font-weight:lighter;";
+                        }
+                        %><option style="<%=optstyle%>" value="<%=rsTestCase.getString("TestCase")%>" <%=testcase.compareTo(rsTestCase.getString("TestCase")) == 0 ? " SELECTED " : ""%>><%=rsTestCase.getString("TestCase")%>  [<%=rsTestCase.getString("Application")%>]  : <%=rsTestCase.getString("Description")%></option><%
                     }
-                    %><option style="width: 200px;<%=optstyle%>" value="<%=rsTestCase.getString("TestCase")%>" <%=testcase.compareTo(rsTestCase.getString("TestCase")) == 0 ? " SELECTED " : ""%>><%=rsTestCase.getString("TestCase")%>  [<%=rsTestCase.getString("Application")%>]  : <%=rsTestCase.getString("Description")%></option><%
                 }
-            }
-        %>
-    </select>
-</td>
-<td  class="wob">
-        <select id="fromStep" name="FromStep" style="width: 200px">
-        <%
-            if (testcase.compareTo("%%") == 0) {
-                %><option style="width: 200px" value="All">-- Choose Test Case First --</option><%
-            } else {
-
-                String sql = "SELECT Step, Description FROM testcasestep WHERE Test like '"+test+"' and TestCase like '"+testcase+"' Order by Step asc";
-                //String sql = "SELECT TestCase, Application,  Description, tcactive FROM testcase where TestCase IS NOT NULL and test like '" + test + "'Order by TestCase asc";
-                
-                ResultSet rsTestCaseStep = stQueryTestCaseStep.executeQuery(sql);
-                while (rsTestCaseStep.next()) {
-                    %><option style="width: 200px;" value="<%=rsTestCaseStep.getString("Step")%>" <%=step.compareTo(rsTestCaseStep.getString("Step")) == 0 ? " SELECTED " : ""%>>[<%=rsTestCaseStep.getString("Step")%>] <%=rsTestCaseStep.getString("Description")%></option><%
-                }
-            }
-        %>
+            %>
         </select>
-</td>
-<td  class="wob">
-    <p>import Properties</p>
-    <input id="ImportProperty" name="ImportProperty" type="checkbox" value="Y"> 
-</td>
+</tr>
+<tr>
+    <td  class="wob">
+            <select id="fromStep" name="FromStep">
+            <%
+                if (testcase.compareTo("%%") == 0) {
+                    %><option value="All">-- Choose Test Case First --</option><%
+                } else {
+
+                    String sql = "SELECT Step, Description FROM testcasestep WHERE Test like '"+test+"' and TestCase like '"+testcase+"' Order by Step asc";
+                    //String sql = "SELECT TestCase, Application,  Description, tcactive FROM testcase where TestCase IS NOT NULL and test like '" + test + "'Order by TestCase asc";
+
+                    ResultSet rsTestCaseStep = stQueryTestCaseStep.executeQuery(sql);
+                    while (rsTestCaseStep.next()) {
+                        %><option value="<%=rsTestCaseStep.getString("Step")%>" <%=step.compareTo(rsTestCaseStep.getString("Step")) == 0 ? " SELECTED " : ""%>>[<%=rsTestCaseStep.getString("Step")%>] <%=rsTestCaseStep.getString("Description")%></option><%
+                    }
+                }
+            %>
+            </select>
+    </td>
+</tr>
+<tr>
+    <td  class="wob">
+        import Properties <input id="ImportProperty" name="ImportProperty" type="checkbox" value="Y">
+    </td>
+</tr>
 

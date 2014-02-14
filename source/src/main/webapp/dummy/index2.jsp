@@ -22,11 +22,12 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Index 2 dummy page</title>
+        <title>Sélecteur: Businessobject</title>
     </head>
     <body>
         <h1>Hello World!</h1>
         <h2 data-cerberus="secondIndexPageOfTest">Second page of test index</h2>
+        <span data-cerberus="notVisibleElement" style="display: none;">Element not visible on page</span>
         <iframe src="frame.html"></iframe>
         <button data-cerberus="closePopupWindow" onclick="javascript:window.close();">Close Popup Window</button>
     </body>

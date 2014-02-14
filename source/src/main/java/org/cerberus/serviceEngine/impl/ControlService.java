@@ -109,6 +109,10 @@ public class ControlService implements IControlService {
                 //TODO validate properties
                 res = this.verifyElementVisible(testCaseStepActionControlExecution.getControlProperty());
 
+            } else if (testCaseStepActionControlExecution.getControlType().equals("verifyElementNotVisible")) {
+                //TODO validate properties
+                res = this.verifyElementNotVisible(testCaseStepActionControlExecution.getControlProperty());
+
             } else if (testCaseStepActionControlExecution.getControlType().equals("verifyTextInElement")) {
                 res = this.VerifyTextInElement(testCaseStepActionControlExecution.getControlProperty(), testCaseStepActionControlExecution.getControlValue());
 
@@ -321,6 +325,34 @@ public class ControlService implements IControlService {
             }
         } else {
             return new MessageEvent(MessageEventEnum.CONTROL_FAILED_VISIBLE_NULL);
+        }
+    }
+
+    private MessageEvent verifyElementNotVisible(String html) {
+        MyLogger.log(ControlService.class.getName(), Level.DEBUG, "Control : verifyElementNotVisible on : " + html);
+        MessageEvent mes;
+        if (!StringUtil.isNull(html)) {
+            try {
+                if (this.seleniumService.isElementPresent(html)) {
+                    if(this.seleniumService.isElementNotVisible(html)) {
+                        mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_NOTVISIBLE);
+                        mes.setDescription(mes.getDescription().replaceAll("%STRING1%", html));
+                        return mes;
+                    } else {
+                        mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_NOTVISIBLE);
+                        mes.setDescription(mes.getDescription().replaceAll("%STRING1%", html));
+                        return mes;
+                    }
+                } else {
+                    mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_PRESENT);
+                    mes.setDescription(mes.getDescription().replaceAll("%STRING1%", html));
+                    return mes;
+                }
+            } catch (WebDriverException exception) {
+                return parseWebDriverException(exception);
+            }
+        } else {
+            return new MessageEvent(MessageEventEnum.CONTROL_FAILED_NOTVISIBLE_NULL);
         }
     }
 

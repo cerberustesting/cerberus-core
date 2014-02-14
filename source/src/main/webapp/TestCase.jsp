@@ -1486,22 +1486,21 @@
                                                                 </td></tr></table>
                                     <%  if (canEdit) {%>
                                     <div id="hide_div"></div>
-                                    <table><tr><td id="wob"><input type="button" value="Add Step" id="AddStepButton" style="display:inline"
+                                    <table style="width: 100%"><tr><td id="wob"><input type="button" value="Add Step" id="AddStepButton" style="display:inline"
                                                                    onclick="addStep('hide_div', <%=testcase_step_maxlength_desc%>) ; enableField('submitButtonAction'); hidebutton('AddStepButton')">
 
-                                            </td><td id="wob"><input type="button" value="Import Step" id="ImportStepButton" style="display:inline"
+                                            <input type="button" value="Import Step" id="ImportStepButton" style="display:inline"
                                                                      onclick="displayImportStep()">
 
 
                                             </td></tr>
-                                        <tr><td colspan="2">
-                                        <table border="0px" id="ImportStepTable" style="display: none;">
+                                        <tr><td>
+                                        <table border="0px" id="ImportStepTable" style="display: none; width: 100%">
                                             <tr>
-                                                <td id="wob" style="font-weight: bold;">From :</td>
-                                                <td  class="wob">
-                                                    <select id="fromTest" name="FromTest" style="width: 200px" onChange="getTestCasesForImportStep()">
+                                                <td id="wob" style="font-weight: bold;">From :
+                                                    <select id="fromTest" name="FromTest" onChange="getTestCasesForImportStep()">
                                                         <%
-                                                            %><option style="width: 200px" value="All">-- Choose Test --</option><%                                                            
+                                                            %><option value="All">-- Choose Test --</option><%                                                            
                                                             rsTest.first();
                                                             while (rsTest.next()) {
                                                                 if (rsTest.getString("active").equalsIgnoreCase("Y")) {
@@ -1509,17 +1508,22 @@
                                                                 } else {
                                                                     optstyle = "font-weight:lighter;";
                                                                 }
-                                                                %><option style="width: 200px;<%=optstyle%>" value="<%=rsTest.getString("Test")%>" ><%=rsTest.getString("Test")%></option><%
+                                                                %><option style="<%=optstyle%>" value="<%=rsTest.getString("Test")%>" ><%=rsTest.getString("Test")%></option><%
                                                             }
                                                         %>
                                                     </select>
                                                 </td>
                                             </tr>
-                                            <tr id="trImportTestCase" style="display: none;">
+                                            <tr>
+                                                <td>
+                                                    <table id="trImportTestCase" style="display: none; width: 100%"></table>
+                                                </td>
                                             </tr>
                                             <tr>
                                                 <td id="wob" style="font-weight: bold;">To Step : <input type="text" class="wob" style="width: 60px; font-weight: bold;font-style: italic; color: #FF0000;" value="" name="import_step" id="import_step" ></td>
-                                                <td  class="wob" colspan="4"><input id="importbutton" class="button" type="button" name="Import" value="Import" onclick="importStep();"></td>
+                                            </tr>
+                                            <tr>
+                                                <td  class="wob" ><input id="importbutton" class="button" type="button" name="Import" value="Import" onclick="importStep();"></td>
                                             </tr>
                                         </table>
                                             </td>

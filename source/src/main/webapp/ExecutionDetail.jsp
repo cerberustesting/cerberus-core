@@ -109,6 +109,8 @@
                     String country = "";
                     String build = "";
                     String revision = "";
+                    String browser = "";
+                    String browserFullVersion = "";
 
             %>
             <table id="arrond">
@@ -132,7 +134,7 @@
                  */
                 ResultSet rs_inf = stmt0.executeQuery("SELECT tce.Id, tce.Test, tce.TestCase, tc.Description, "
                         + "tce.Build, tce.Revision, tce.Environment, tce.Country, tce.Browser, tce.BrowserFullVersion, "
-                        + "tce.Start, tce.End, tce.ControlStatus, tce.Application, "
+                        + "tce.Start, tce.End, tce.ControlStatus, tce.Application, tce.browser, tce.browserfullversion, "
                         + "tce.Ip, tce.URL, UNIX_TIMESTAMP(tce.End)-UNIX_TIMESTAMP(tce.Start) time_elapsed, "
                         + "tce.port, tce.tag, tce.verbose, tce.controlmessage, tce.status, tce.CrbVersion "
                         + " FROM testcaseexecution tce "
@@ -156,6 +158,8 @@
                     environment = rs_inf.getString("Environment");
                     build = rs_inf.getString("Build");
                     revision = rs_inf.getString("Revision");
+                    browser = rs_inf.getString("Browser");
+                    browserFullVersion = rs_inf.getString("BrowserFullVersion");
                     IApplicationService applicationService = appContext.getBean(IApplicationService.class);
                     String appSystem = applicationService.findApplicationByKey(myApplication).getSystem();
             %>
@@ -677,7 +681,9 @@
                                     newBugURL = newBugURL.replaceAll("%COUNTRY%", country);
                                     newBugURL = newBugURL.replaceAll("%ENV%", environment);
                                     newBugURL = newBugURL.replaceAll("%BUILD%", build);
-                                    newBugURL = newBugURL.replaceAll("%REV%", revision);%>
+                                    newBugURL = newBugURL.replaceAll("%REV%", revision);
+                                    newBugURL = newBugURL.replaceAll("%BROWSER%", browser);
+                                    newBugURL = newBugURL.replaceAll("%BROWSERFULLVERSION%", browserFullVersion);%>
                             <a href="<%= newBugURL%>" target='_blank' title="title">Open a bug.</a> 
 <%                                }
 

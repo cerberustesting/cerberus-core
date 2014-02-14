@@ -49,12 +49,12 @@
         <div id="body">
             <%
 
-                HashMap<String,Integer> statsStatusForTest = new HashMap<String,Integer>();
+                HashMap<String, Integer> statsStatusForTest = new HashMap<String, Integer>();
                 List<String> listStatus = new ArrayList<String>();
 
-                HashMap<String,Integer> statsGroupForTest = new HashMap<String,Integer>();
+                HashMap<String, Integer> statsGroupForTest = new HashMap<String, Integer>();
                 List<String> listGroup = new ArrayList<String>();
-                
+
                 String tcclauses = " WHERE 1=1 ";
                 String execclauses = " 1=1 ";
                 String URL = "Apply=Apply";
@@ -76,6 +76,15 @@
                     execclauses = execclauses + " AND tce.Tag = '" + tag + "'";
                 } else {
                     tag = new String("");
+                }
+
+                String browserFullVersion;
+                if (request.getParameter("BrowserFullVersion") != null && request.getParameter("BrowserFullVersion").compareTo("") != 0) {
+                    browserFullVersion = request.getParameter("BrowserFullVersion");
+                    URL = URL + "&BrowserFullVersion=" + browserFullVersion;
+                    execclauses = execclauses + " AND tce.BrowserFullVersion = '" + browserFullVersion + "'";
+                } else {
+                    browserFullVersion = new String("");
                 }
 
                 String systemExe;
@@ -210,17 +219,17 @@
                 }
 
                 String[] projects;
-                String project="";
+                String project = "";
                 if (request.getParameterValues("Project") != null && (request.getParameterValues("Project")[0]).compareTo("All") != 0) {
                     projects = request.getParameterValues("Project");
-                    if(projects != null && projects.length > 0) {
+                    if (projects != null && projects.length > 0) {
                         tcclauses += " AND (";
-                        for (int index=0; index<projects.length; index++) {
+                        for (int index = 0; index < projects.length; index++) {
                             tcclauses += " Project = '" + projects[index] + "' ";
                             URL += "&Project=" + projects[index];
-                            project += projects[index]+",";
+                            project += projects[index] + ",";
 
-                            if(index < (projects.length-1)) {
+                            if (index < (projects.length - 1)) {
                                 tcclauses += " OR ";
                             }
                         }
@@ -249,19 +258,19 @@
                     system = new String("%%");
                 }
 
-                
+
                 String[] allstatus;
-                String status="";
+                String status = "";
                 if (request.getParameterValues("Status") != null && (request.getParameterValues("Status")[0]).compareTo("All") != 0) {
                     allstatus = request.getParameterValues("Status");
-                    if(allstatus != null && allstatus.length > 0) {
+                    if (allstatus != null && allstatus.length > 0) {
                         tcclauses += " AND (";
-                        for (int index=0; index<allstatus.length; index++) {
+                        for (int index = 0; index < allstatus.length; index++) {
                             tcclauses += " Status = '" + allstatus[index] + "' ";
                             URL += "&Status=" + allstatus[index];
-                            status += allstatus[index]+",";
+                            status += allstatus[index] + ",";
 
-                            if(index < (allstatus.length-1)) {
+                            if (index < (allstatus.length - 1)) {
                                 tcclauses += " OR ";
                             }
                         }
@@ -270,6 +279,28 @@
                 } else {
                     allstatus = new String[1];
                     allstatus[0] = new String("%%");
+                }
+
+                String[] allExeStatus;
+                String exeStatus = "";
+                if (request.getParameterValues("ExeStatus") != null && (request.getParameterValues("ExeStatus")[0]).compareTo("All") != 0) {
+                    allExeStatus = request.getParameterValues("ExeStatus");
+                    if (allExeStatus != null && allExeStatus.length > 0) {
+                        execclauses += " AND (";
+                        for (int index = 0; index < allExeStatus.length; index++) {
+                            execclauses += " Status = '" + allExeStatus[index] + "' ";
+                            URL += "&ExeStatus=" + allExeStatus[index];
+                            exeStatus += allExeStatus[index] + ",";
+
+                            if (index < (allExeStatus.length - 1)) {
+                                execclauses += " OR ";
+                            }
+                        }
+                        execclauses += ") ";
+                    }
+                } else {
+                    allExeStatus = new String[1];
+                    allExeStatus[0] = new String("%%");
                 }
 
                 String targetBuild = "";
@@ -428,24 +459,24 @@
                                     <td id="wob">
                                         <select multiple  size="3" id="project" style="width: 170px" name="Project">
                                             <option value="All">-- ALL --</option>
-                                            <% 
-                                            String sq = "SELECT idproject, VCCode, Description, active FROM project ORDER BY idproject";
-                                            ResultSet q = stmt.executeQuery(sq);
-                                            String ret = "";
-                                            while (q.next()) {
-                                                ret = ret + " <option value=\"" + q.getString("idproject") + "\"";
-                                                ret = ret + " style=\"width: 200px;";
-                                                if (q.getString("active").equalsIgnoreCase("Y")) {
-                                                    ret = ret + "font-weight:bold;";
-                                                }
-                                                ret = ret + "\"";
-                                                
-                                                if ((project != null) && (project.indexOf(q.getString("idproject")+",") >= 0)) {
-                                                    ret = ret + " SELECTED ";
-                                                }
-                                                ret = ret + ">" + q.getString("idproject") + " " + q.getString("Description");
-                                                ret = ret + "</option>";
-                                            }%>
+                                            <%
+                                                String sq = "SELECT idproject, VCCode, Description, active FROM project ORDER BY idproject";
+                                                ResultSet q = stmt.executeQuery(sq);
+                                                String ret = "";
+                                                while (q.next()) {
+                                                    ret = ret + " <option value=\"" + q.getString("idproject") + "\"";
+                                                    ret = ret + " style=\"width: 200px;";
+                                                    if (q.getString("active").equalsIgnoreCase("Y")) {
+                                                        ret = ret + "font-weight:bold;";
+                                                    }
+                                                    ret = ret + "\"";
+
+                                                    if ((project != null) && (project.indexOf(q.getString("idproject") + ",") >= 0)) {
+                                                        ret = ret + " SELECTED ";
+                                                    }
+                                                    ret = ret + ">" + q.getString("idproject") + " " + q.getString("Description");
+                                                    ret = ret + "</option>";
+                                                }%>
                                             <%=ret%>
                                         </select>
                                     </td>
@@ -488,7 +519,7 @@
                                             <option value="All">-- ALL --</option><%
                                                 ResultSet rsStatus = stmt.executeQuery("SELECT value from invariant where id = 1 order by sort asc");
                                                 while (rsStatus.next()) {%>
-                                                <option value="<%= rsStatus.getString(1)%>" <%=status.indexOf(rsStatus.getString(1)) >= 0 ? " SELECTED " : ""%>><%= rsStatus.getString(1)%></option><%
+                                            <option value="<%= rsStatus.getString(1)%>" <%=status.indexOf(rsStatus.getString(1)) >= 0 ? " SELECTED " : ""%>><%= rsStatus.getString(1)%></option><%
                                                 }%>
                                         </select>
                                     </td>
@@ -552,6 +583,8 @@
                                     <td id="wob" style="width: 130px"><%out.print(dbDocS(conn, "testcaseexecution", "IP", "Ip"));%></td>
                                     <td id="wob" style="width: 130px"><%out.print(dbDocS(conn, "testcaseexecution", "Port", "Port"));%></td>
                                     <td id="wob" style="width: 130px"><%out.print(dbDocS(conn, "testcaseexecution", "tag", "Tag"));%></td>
+                                    <td id="wob" style="width: 130px"><%out.print(dbDocS(conn, "testcaseexecution", "browserfullversion", ""));%></td>
+                                    <td id="wob" style="width: 130px"><%out.print(dbDocS(conn, "testcaseexecution", "status", ""));%></td>
                                 </tr>
 
                                 <tr>
@@ -597,6 +630,28 @@
                                     <td id="wob"><input style="font-weight: bold; width: 130px" name="Ip" id="Ip" value="<%=ip%>"></td>
                                     <td id="wob"><input style="font-weight: bold; width: 60px" name="Port" id="Port" value="<%=port%>"></td>
                                     <td id="wob"><input style="font-weight: bold; width: 130px" name="Tag" id="Tag" value="<%=tag%>"></td>
+                                    <td id="wob"><input style="font-weight: bold; width: 130px" name="BrowserFullVersion" id="Tag" value="<%=browserFullVersion%>"></td>
+                                    <td id="wob">
+                                        <select multiple  size="3" id="exestatus" style="width: 170px" name="ExeStatus">
+                                            <option value="All">-- ALL --</option>
+                                            <%
+                                                sq = "SELECT value FROM invariant WHERE idname='TCSTATUS' ORDER BY sort;";
+                                                q = stmt.executeQuery(sq);
+                                                ret = "";
+                                                while (q.next()) {
+                                                    ret = ret + " <option value=\"" + q.getString("value") + "\"";
+                                                    ret = ret + " style=\"width: 200px;";
+                                                    ret = ret + "\"";
+
+                                                    if ((exeStatus != null) && (exeStatus.indexOf(q.getString("value") + ",") >= 0)) {
+                                                        ret = ret + " SELECTED ";
+                                                    }
+                                                    ret = ret + ">" + q.getString("value") ;
+                                                    ret = ret + "</option>";
+                                                }%>
+                                            <%=ret%>
+                                        </select>
+                                    </td>
                                 </tr>
                             </table>
                             <%
@@ -623,7 +678,7 @@
                                                     for (int i = 0; i < country_list.length; i++) {
                                                         if (country_list[i].equals(rs_testcasecountrygeneral.getString("value"))) {%> CHECKED <%}
                                                             }%> name="Country" ></td><%
-                                                                                                               } while (rs_testcasecountrygeneral.next());
+                                                                           } while (rs_testcasecountrygeneral.next());
                                                     %>
                                                 <td id="wob"><input id="button" type="button" value="All" onclick="selectAll('country',true)"><input id="button" type="button" value="None" onclick="selectAll('country',false)"></td>
                                             </tr>
@@ -806,25 +861,35 @@
                                     <td class="INF"><%=rs_time.getString("tc.Status")%></td>
                                     <%
                                         // Collecting status stats for current test. 
-                                        if(!listStatus.contains(rs_time.getString("tc.Status"))) {
+                                        if (!listStatus.contains(rs_time.getString("tc.Status"))) {
                                             listStatus.add(rs_time.getString("tc.Status"));
                                         }
-                                        if(statsStatusForTest.containsKey(rs_time.getString("tc.test")+rs_time.getString("tc.Status"))) {
-                                            statsStatusForTest.put(rs_time.getString("tc.test")+rs_time.getString("tc.Status"), statsStatusForTest.get(rs_time.getString("tc.test")+rs_time.getString("tc.Status")) +1);
+                                        if (statsStatusForTest.containsKey(rs_time.getString("tc.test") + rs_time.getString("tc.Status"))) {
+                                            statsStatusForTest.put(rs_time.getString("tc.test") + rs_time.getString("tc.Status"), statsStatusForTest.get(rs_time.getString("tc.test") + rs_time.getString("tc.Status")) + 1);
                                         } else {
-                                            statsStatusForTest.put(rs_time.getString("tc.test")+rs_time.getString("tc.Status"), 1);
+                                            statsStatusForTest.put(rs_time.getString("tc.test") + rs_time.getString("tc.Status"), 1);
                                         }
-                                    
+                                        if (statsStatusForTest.containsKey("TOTAL" + rs_time.getString("tc.Status"))) {
+                                            statsStatusForTest.put("TOTAL" + rs_time.getString("tc.Status"), statsStatusForTest.get("TOTAL" + rs_time.getString("tc.Status")) + 1);
+                                        } else {
+                                            statsStatusForTest.put("TOTAL" + rs_time.getString("tc.Status"), 1);
+                                        }
+
                                         // Collecting group stats for current test. 
-                                        if(!listGroup.contains(rs_time.getString("tc.Group"))) {
+                                        if (!listGroup.contains(rs_time.getString("tc.Group"))) {
                                             listGroup.add(rs_time.getString("tc.Group"));
                                         }
-                                        if(statsGroupForTest.containsKey(rs_time.getString("tc.test")+rs_time.getString("tc.Group"))) {
-                                            statsGroupForTest.put(rs_time.getString("tc.test")+rs_time.getString("tc.Group"), statsGroupForTest.get(rs_time.getString("tc.test")+rs_time.getString("tc.Group")) +1);
+                                        if (statsGroupForTest.containsKey(rs_time.getString("tc.test") + rs_time.getString("tc.Group"))) {
+                                            statsGroupForTest.put(rs_time.getString("tc.test") + rs_time.getString("tc.Group"), statsGroupForTest.get(rs_time.getString("tc.test") + rs_time.getString("tc.Group")) + 1);
                                         } else {
-                                            statsGroupForTest.put(rs_time.getString("tc.test")+rs_time.getString("tc.Group"), 1);
+                                            statsGroupForTest.put(rs_time.getString("tc.test") + rs_time.getString("tc.Group"), 1);
                                         }
-                                    
+                                        if (statsGroupForTest.containsKey("TOTAL" + rs_time.getString("tc.Group"))) {
+                                            statsGroupForTest.put("TOTAL" + rs_time.getString("tc.Group"), statsGroupForTest.get("TOTAL" + rs_time.getString("tc.Group")) + 1);
+                                        } else {
+                                            statsGroupForTest.put("TOTAL" + rs_time.getString("tc.Group"), 1);
+                                        }
+
                                         rs_testcasecountrygeneral.first();
                                         String cssStatus = "";
                                         String color = "black";
@@ -891,14 +956,6 @@
                                                                 color = "darkblue";
                                                             }
 
-                                                            if ((rs_time.getString("tc.BugID") != null)
-                                                                    && (rs_time.getString("tc.BugID").compareToIgnoreCase("") != 0)
-                                                                    && (rs_time.getString("tc.BugID").compareToIgnoreCase("null") != 0)) {
-                                                                SitdmossBugtrackingURL = myApplicationService.findApplicationByKey(rs_exec.getString("application")).getBugTrackerUrl();
-                                                                SitdmossBugtrackingURL_tc = SitdmossBugtrackingURL.replaceAll("%BUGID%", rs_time.getString("tc.BugID"));
-                                                            } else {
-                                                                SitdmossBugtrackingURL_tc = "";
-                                                            }
                                                             testlist = rs_time.getString("tc.test");
                                                             countrylist = country_list[i];
                                                             statuslist = rs_exec.getString("ControlStatus");
@@ -935,10 +992,18 @@
                                     %>
                                         <td class="INF"><%
                                             if (rs_time.getString("tc.Comment") != null) {%><%=rs_time.getString("tc.Comment")%><%}%></td>
-                                        <td class="INF"><%
-                                            if (SitdmossBugtrackingURL_tc.equalsIgnoreCase("") == false) {%><a href="<%=SitdmossBugtrackingURL_tc%>" target="_blank"><%=rs_time.getString("tc.BugID")%></a><%
-                                                    }
-                                                    if ((rs_time.getString("tc.TargetBuild") != null) && (rs_time.getString("tc.TargetBuild").equalsIgnoreCase("") == false)) {
+                                    <td class="INF"><%
+                                        if ((rs_time.getString("tc.BugID") != null)
+                                                && (rs_time.getString("tc.BugID").compareToIgnoreCase("") != 0)
+                                                && (rs_time.getString("tc.BugID").compareToIgnoreCase("null") != 0)) {
+                                            SitdmossBugtrackingURL = myApplicationService.findApplicationByKey(rs_time.getString("application")).getBugTrackerUrl();
+                                            SitdmossBugtrackingURL_tc = SitdmossBugtrackingURL.replaceAll("%BUGID%", rs_time.getString("tc.BugID"));
+                                        } else {
+                                            SitdmossBugtrackingURL_tc = "";
+                                        }
+                                        if (SitdmossBugtrackingURL_tc.equalsIgnoreCase("") == false) {%><a href="<%=SitdmossBugtrackingURL_tc%>" target="_blank"><%=rs_time.getString("tc.BugID")%></a><%
+                                            }
+                                            if ((rs_time.getString("tc.TargetBuild") != null) && (rs_time.getString("tc.TargetBuild").equalsIgnoreCase("") == false)) {
                                         %> for <%=rs_time.getString("tc.TargetBuild")%>/<%=rs_time.getString("tc.TargetRev")%><%
                                             }%></td>   
                                 </tr>
@@ -954,6 +1019,14 @@
                                 <td class="INF"><%
                                     if (rs_time.getString("tc.Comment") != null) {%><%=rs_time.getString("tc.Comment")%><%}%></td>
                                 <td class="INF"><%
+                                    if ((rs_time.getString("tc.BugID") != null)
+                                            && (rs_time.getString("tc.BugID").compareToIgnoreCase("") != 0)
+                                            && (rs_time.getString("tc.BugID").compareToIgnoreCase("null") != 0)) {
+                                        SitdmossBugtrackingURL = myApplicationService.findApplicationByKey(rs_time.getString("application")).getBugTrackerUrl();
+                                        SitdmossBugtrackingURL_tc = SitdmossBugtrackingURL.replaceAll("%BUGID%", rs_time.getString("tc.BugID"));
+                                    } else {
+                                        SitdmossBugtrackingURL_tc = "";
+                                    }
                                     if (SitdmossBugtrackingURL_tc.equalsIgnoreCase("") == false) {%><a href="<%=SitdmossBugtrackingURL_tc%>" target="_blank"><%=rs_time.getString("tc.BugID")%></a><%
                                         }
                                         if ((rs_time.getString("tc.TargetBuild") != null) && (rs_time.getString("tc.TargetBuild").equalsIgnoreCase("") == false)) {
@@ -1205,7 +1278,7 @@
                                     %>
                                 </tr>
                             </table>
-                                <br>
+                            <br>
                             <table id="groupReporting" style="display: none" border="0px" cellpadding="0" cellspacing="0">
                                 <tr id="header">
                                     <td>Number of test case</td>
@@ -1219,24 +1292,33 @@
                                     <td>TOTAL</td>
                                 </tr>
                                 <%
-                                        
-                                        for(int index = 0; index < distinctList.size(); index++) {
-                                            int totalTest = 0;
-                                            %><tr><td><%=distinctList.get(index)%></td><%
-                                            
-                                            for (int i = 0; i < listGroup.size(); i++) {
-                                                if(statsGroupForTest.containsKey(distinctList.get(index)+listGroup.get(i))) {
-                                                    totalTest += statsGroupForTest.get(distinctList.get(index)+listGroup.get(i));
-                                                %><td align="center"><%=statsGroupForTest.get(distinctList.get(index)+listGroup.get(i))%></td><%
-                                                } else {
-                                                    %><td></td><%
-                                                }
-                                            }
-                                            
-                                            %><td align="center"><%=totalTest%></td></tr><%
+
+                                    for (int index = 0; index < distinctList.size(); index++) {
+                                        int totalTest = 0;
+                                %><tr><td><%=distinctList.get(index)%></td><%
+
+                                    for (int i = 0; i < listGroup.size(); i++) {
+                                        if (statsGroupForTest.containsKey(distinctList.get(index) + listGroup.get(i))) {
+                                            totalTest += statsGroupForTest.get(distinctList.get(index) + listGroup.get(i));
+                                    %><td align="center"><%=statsGroupForTest.get(distinctList.get(index) + listGroup.get(i))%></td><%
+                                    } else {
+                                    %><td></td><%                                                            }
                                         }
-                                %>
-                            </table>
+
+                                    %><td align="center"><%=totalTest%></td></tr><%
+                                        }
+                                    %>
+                            <tr id="header"><td>TOTAL</td><%
+                                    int totalTest = 0;
+                                    for (int i = 0; i < listGroup.size(); i++) {
+                                        if (statsGroupForTest.containsKey("TOTAL" + listGroup.get(i))) {
+                                            totalTest += statsGroupForTest.get("TOTAL" + listGroup.get(i));
+                                    %><td align="center"><%=statsGroupForTest.get("TOTAL" + listGroup.get(i))%></td><%
+                                    } else {
+                                    %><td></td><%                                                            }
+                                        }
+
+                                    %><td align="center"><%=totalTest%></td></tr></table>
                             <br>
                             <table id="statusReporting" style="display: none" border="0px" cellpadding="0" cellspacing="0">
                                 <tr id="header">
@@ -1244,7 +1326,7 @@
                                     <%
                                         // Loading list of Status invariant sorted in the proper way.
                                         IInvariantService myInvariantService = appContext.getBean(IInvariantService.class);
-                                        List<Invariant> myInv =  myInvariantService.findListOfInvariantById("TCSTATUS");
+                                        List<Invariant> myInv = myInvariantService.findListOfInvariantById("TCSTATUS");
 
                                         // Display all status in the proper order.
                                         for (int i = 0; i < myInv.size(); i++) {
@@ -1256,34 +1338,51 @@
                                     <td>TOTAL</td>
                                 </tr>
                                 <%
-                                        
-                                        for(int index = 0; index < distinctList.size(); index++) {
-                                            int totalTest = 0;
-                                            %><tr><td><%=distinctList.get(index)%></td><%
-                                            
-                                            for (int i = 0; i < myInv.size(); i++) {
-                                                
-                                                // finding the real list of status from the page data inside the current complete status
-                                                int mj=0;
-                                                while ( (mj< listStatus.size()) && !(listStatus.get(mj).equals(myInv.get(i).getValue()))) {
-                                                    mj ++;
-                                                }
-                                                if (mj>=listStatus.size()) { // Current status was not in the test data
-                                                    %><td></td><%
-                                                } else {
-                                                    if(statsStatusForTest.containsKey(distinctList.get(index)+listStatus.get(mj))) {
-                                                        totalTest += statsStatusForTest.get(distinctList.get(index)+listStatus.get(mj));
-                                          %><td align="center"><%=statsStatusForTest.get(distinctList.get(index)+listStatus.get(mj))%></td><%
-                                                    } else {
-                                                    %><td></td><%
-                                                    }
-                                                    
-                                                }
-                                            }
-                                            %><td align="center"><%=totalTest%></td></tr><%
+
+                                    for (int index = 0; index < distinctList.size(); index++) {
+                                        totalTest = 0;
+                                %><tr><td><%=distinctList.get(index)%></td><%
+
+                                    for (int i = 0; i < myInv.size(); i++) {
+
+                                        // finding the real list of status from the page data inside the current complete status
+                                        int mj = 0;
+                                        while ((mj < listStatus.size()) && !(listStatus.get(mj).equals(myInv.get(i).getValue()))) {
+                                            mj++;
                                         }
-                                %>
-                            </table>
+                                        if (mj >= listStatus.size()) { // Current status was not in the test data
+%><td></td><%                                                    } else {
+                                        if (statsStatusForTest.containsKey(distinctList.get(index) + listStatus.get(mj))) {
+                                            totalTest += statsStatusForTest.get(distinctList.get(index) + listStatus.get(mj));
+                                    %><td align="center"><%=statsStatusForTest.get(distinctList.get(index) + listStatus.get(mj))%></td><%
+                                    } else {
+                                    %><td></td><%                                                                }
+
+                                            }
+                                        }
+                                    %><td align="center"><%=totalTest%></td></tr><%
+                                        }
+                                    %>
+                            <tr id="header"><td>TOTAL</td><%
+totalTest = 0;
+                                    for (int i = 0; i < myInv.size(); i++) {
+
+                                        // finding the real list of status from the page data inside the current complete status
+                                        int mj = 0;
+                                        while ((mj < listStatus.size()) && !(listStatus.get(mj).equals(myInv.get(i).getValue()))) {
+                                            mj++;
+                                        }
+                                        if (mj >= listStatus.size()) { // Current status was not in the test data
+%><td></td><%                                                    } else {
+                                        if (statsStatusForTest.containsKey("TOTAL" + listStatus.get(mj))) {
+                                            totalTest += statsStatusForTest.get("TOTAL" + listStatus.get(mj));
+                                    %><td align="center"><%=statsStatusForTest.get("TOTAL" + listStatus.get(mj))%></td><%
+                                    } else {
+                                    %><td></td><%                                                                }
+
+                                            }
+                                        }
+                                    %><td align="center"><%=totalTest%></td></tr></table>
                         </td>
                     </tr>
                 </table>

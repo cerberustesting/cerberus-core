@@ -54,6 +54,8 @@ public interface ISeleniumService {
 
     boolean isElementVisible(String locator);
 
+    boolean isElementNotVisible(String locator);
+
     String getPageSource();
 
     String getTitle();

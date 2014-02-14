@@ -20,7 +20,6 @@
 package org.cerberus.service;
 
 import java.util.List;
-
 import org.cerberus.entity.Test;
 
 /**
@@ -34,13 +33,26 @@ public interface ITestService {
 
 
     /**
-     * @return
+     * @return List of Tests name
      */
     List<String> getListOfTests();
 
     /**
-     * @return
+     * @return List of Test
      */
     List<Test> getListOfTest();
 
+    /**
+     *
+     * @param test need to be created in database
+     * @return TRUE if test have been inserted successfully
+     */
+    boolean createTest(Test test);
+
+    /**
+     *
+     * @param test need to be deleted in database
+     * @return TRUE if test have been deleted successfully
+     */
+    boolean deleteTest(Test test);
 }

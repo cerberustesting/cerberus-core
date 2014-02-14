@@ -32,9 +32,7 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
-
 import javax.imageio.ImageIO;
-
 import org.apache.commons.net.telnet.TelnetClient;
 import org.apache.log4j.Level;
 import org.cerberus.entity.Invariant;
@@ -458,6 +456,16 @@ public class SeleniumService implements ISeleniumService {
     }
 
     @Override
+    public boolean isElementNotVisible(String locator) {
+        try {
+            WebElement webElement = this.getSeleniumElement(locator, false);
+            return webElement != null && !webElement.isDisplayed();
+        } catch (NoSuchElementException exception) {
+            return false;
+        }
+    }
+
+    @Override
     public String getPageSource() {
         return this.selenium.getDriver().getPageSource();
     }
@@ -579,7 +587,7 @@ public class SeleniumService implements ISeleniumService {
             res = this.doActionMouseOverAndWait(object, property);
 
         } else if (testCaseStepActionExecution.getAction().equals("openUrlWithBase")) {
-            res = this.doActionOpenURLWithBase(object);
+            res = this.doActionOpenURLWithBase(object, property);
 
         } else if (testCaseStepActionExecution.getAction().equals("openUrlLogin")) {
             testCaseStepActionExecution.setObject(this.selenium.getLogin());
@@ -772,6 +780,17 @@ public class SeleniumService implements ISeleniumService {
             }
 
             if (!StringUtil.isNullOrEmpty(windowTitle)) {
+                String[] strings = windowTitle.split("=");
+                String identifier, value;
+
+                if (strings.length == 1) {
+                    identifier = "title";
+                    value = strings[0];
+                } else {
+                    identifier = strings[0];
+                    value = strings[1];
+                }
+                
                 String currentHandle;
                 try {
                     // Current serial handle of the window.
@@ -790,7 +809,7 @@ public class SeleniumService implements ISeleniumService {
                     for (String windowHandle : handles) {
                         if (!windowHandle.equals(currentHandle)) {
                             this.selenium.getDriver().switchTo().window(windowHandle);
-                            if (windowTitle.equals(this.selenium.getDriver().getTitle())) {
+                            if (testTitleOfWindow(this.selenium.getDriver().getTitle(), identifier, value)) {
                                 message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_SWITCHTOWINDOW);
                                 message.setDescription(message.getDescription().replaceAll("%WINDOW%", windowTitle));
                                 return message;
@@ -810,6 +829,22 @@ public class SeleniumService implements ISeleniumService {
         message = new MessageEvent(MessageEventEnum.ACTION_FAILED_SWITCHTOWINDOW_NO_SUCH_ELEMENT);
         message.setDescription(message.getDescription().replaceAll("%WINDOW%", windowTitle));
         return message;
+    }
+
+    private boolean testTitleOfWindow(String title, String identifier, String value) {
+        if (value != null && title != null) {
+            if ("title".equals(identifier) && value.equals(title)) {
+                return true;
+            }
+
+            if ("regexTitle".equals(identifier)) {
+                Pattern pattern = Pattern.compile(value);
+                Matcher matcher = pattern.matcher(this.selenium.getDriver().getTitle());
+
+                return matcher.find();
+            }
+        }
+        return false;
     }
 
     private MessageEvent doActionClickWait(String actionObject, String actionProperty) {
@@ -1149,9 +1184,15 @@ public class SeleniumService implements ISeleniumService {
         return new MessageEvent(MessageEventEnum.ACTION_FAILED_KEYPRESS);
     }
 
-    private MessageEvent doActionOpenURLWithBase(String url) {
+    private MessageEvent doActionOpenURLWithBase(String value, String property) {
         MessageEvent message;
+        String url = "null";
         try {
+            if (!StringUtil.isNull(value)) {
+                url = value;
+            } else if (!StringUtil.isNull(property)) {
+                url = property;
+            }
             if (!StringUtil.isNull(url)) {
                 this.selenium.getDriver().get("http://" + this.selenium.getIp() + url);
                 message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_OPENURL);
