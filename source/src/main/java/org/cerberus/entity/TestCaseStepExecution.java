@@ -39,7 +39,7 @@ public class TestCaseStepExecution {
      * From here are data outside database model.
      */
     private TestCaseStep testCaseStep;
-    private TCExecution tCExecution;
+    private TestCaseExecution tCExecution;
     private List<TestCaseExecutionData> testCaseExecutionDataList; // Host the list of data calculated during the step execution.
     private MessageEvent stepResultMessage;
     private MessageGeneral executionResultMessage;
@@ -80,11 +80,11 @@ public class TestCaseStepExecution {
         this.stopExecution = stopExecution;
     }
 
-    public TCExecution gettCExecution() {
+    public TestCaseExecution gettCExecution() {
         return tCExecution;
     }
 
-    public void settCExecution(TCExecution tCExecution) {
+    public void settCExecution(TestCaseExecution tCExecution) {
         this.tCExecution = tCExecution;
     }
 

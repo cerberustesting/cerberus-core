@@ -20,15 +20,14 @@
 package org.cerberus.factory.impl;
 
 import java.util.List;
-import java.util.Map;
 
-import org.cerberus.entity.Country;
-import org.cerberus.entity.Environment;
+import org.cerberus.entity.Application;
+import org.cerberus.entity.CountryEnvParam;
+import org.cerberus.entity.CountryEnvironmentApplication;
 import org.cerberus.entity.MessageGeneral;
-import org.cerberus.entity.Property;
-import org.cerberus.entity.Step;
-import org.cerberus.entity.TestCase;
 import org.cerberus.entity.TestCaseExecution;
+import org.cerberus.entity.TCase;
+import org.cerberus.entity.TestCaseStepExecution;
 import org.cerberus.factory.IFactoryTestCaseExecution;
 import org.springframework.stereotype.Service;
 
@@ -39,25 +38,47 @@ import org.springframework.stereotype.Service;
 public class FactoryTestCaseExecution implements IFactoryTestCaseExecution {
 
     @Override
-    public TestCaseExecution create(String environmentRun, String tag, String output, int verbose,
-                                    long runID, Country countryExecute, TestCase testCase, List<Property> properties, List<Step> steps,
-                                    MessageGeneral result, long start, long end, Environment environmentTest, Map<String, String> devEnvironment) {
+    public TestCaseExecution create(long id, String test, String testCase, String build, String revision, String environment, String country, String browser, String browserFullVersion, long start, long end, String controlStatus, String controlMessage, Application application, String ip, String url, String port, String tag, String finished, int verbose, int screenshot, String outputFormat, String status, String crbVersion, TCase tCase, CountryEnvParam countryEnvParam,
+                              CountryEnvironmentApplication countryEnvironmentApplication, boolean manualURL, String myHost, String myContextRoot, String myLoginRelativeURL, String myEnvData,
+                              String seleniumIP, String seleniumPort, List<TestCaseStepExecution> testCaseStepExecution,
+                              MessageGeneral resultMessage) {
         TestCaseExecution newTce = new TestCaseExecution();
-        newTce.setEnvironmentRun(environmentRun);
-        newTce.setTag(tag);
-        newTce.setOutput(output);
-        newTce.setVerbose(verbose);
-        newTce.setRunID(runID);
-        newTce.setCountryExecute(countryExecute);
-        newTce.setTestCase(testCase);
-        newTce.setProperties(properties);
-        newTce.setSteps(steps);
-        newTce.setResult(result);
-        newTce.setStart(start);
+        newTce.setApplication(application);
+        newTce.setBrowser(browser);
+        newTce.setBrowserFullVersion(browserFullVersion);
+        newTce.setBuild(build);
+        newTce.setControlMessage(controlMessage);
+        newTce.setControlStatus(controlStatus);
+        newTce.setCountry(country);
+        newTce.setCrbVersion(crbVersion);
         newTce.setEnd(end);
-        newTce.setEnvironmentTest(environmentTest);
-        newTce.setDevEnvironment(devEnvironment);
-
+        newTce.setEnvironment(environment);
+        newTce.setFinished(finished);
+        newTce.setId(id);
+        newTce.setIp(ip);
+        newTce.setPort(port);
+        newTce.setRevision(revision);
+        newTce.setStart(start);
+        newTce.setStatus(status);
+        newTce.setTag(tag);
+        newTce.setTest(test);
+        newTce.setTestCase(testCase);
+        newTce.setUrl(url);
+        newTce.setVerbose(verbose);
+        newTce.setScreenshot(screenshot);
+        newTce.settCase(tCase);
+        newTce.setCountryEnvParam(countryEnvParam);
+        newTce.setCountryEnvironmentApplication(countryEnvironmentApplication);
+        newTce.setManualURL(manualURL);
+        newTce.setMyHost(myHost);
+        newTce.setMyContextRoot(myContextRoot);
+        newTce.setMyLoginRelativeURL(myLoginRelativeURL);
+        newTce.setEnvironmentData(myEnvData);
+        newTce.setSeleniumIP(seleniumIP);
+        newTce.setSeleniumPort(seleniumPort);
+        newTce.setTestCaseStepExecutionList(testCaseStepExecution);
+        newTce.setResultMessage(resultMessage);
+        newTce.setOutputFormat(outputFormat);
         return newTce;
     }
 
