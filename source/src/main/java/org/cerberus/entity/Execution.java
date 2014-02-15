@@ -24,7 +24,7 @@ package org.cerberus.entity;
 public class Execution {
 
     private TCase testCase;
-    private TCExecution testCaseExecution;
+    private TestCaseExecution testCaseExecution;
     private String country;
 
     public String getCountry() {
@@ -43,11 +43,11 @@ public class Execution {
         this.testCase = testCase;
     }
 
-    public TCExecution getTestCaseExecution() {
+    public TestCaseExecution getTestCaseExecution() {
         return testCaseExecution;
     }
 
-    public void setTestCaseExecution(TCExecution testCaseExecution) {
+    public void setTestCaseExecution(TestCaseExecution testCaseExecution) {
         this.testCaseExecution = testCaseExecution;
     }
 }

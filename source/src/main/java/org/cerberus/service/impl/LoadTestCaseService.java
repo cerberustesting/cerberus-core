@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Level;
-import org.cerberus.entity.TCExecution;
+import org.cerberus.entity.TestCaseExecution;
 import org.cerberus.entity.TCase;
 import org.cerberus.entity.TestCaseCountry;
 import org.cerberus.entity.TestCaseCountryProperties;
@@ -62,7 +62,7 @@ public class LoadTestCaseService implements ILoadTestCaseService {
     private IFactoryTCase factoryTCase;
 
     @Override
-    public void loadTestCase(TCExecution tCExecution) {
+    public void loadTestCase(TestCaseExecution tCExecution) {
 
         TCase testCase = tCExecution.gettCase();
 

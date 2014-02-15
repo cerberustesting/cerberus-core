@@ -28,7 +28,7 @@ import org.apache.log4j.Level;
 import org.cerberus.entity.CountryEnvParam;
 import org.cerberus.entity.MessageGeneral;
 import org.cerberus.entity.MessageGeneralEnum;
-import org.cerberus.entity.TCExecution;
+import org.cerberus.entity.TestCaseExecution;
 import org.cerberus.entity.TCase;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.log.MyLogger;
@@ -58,7 +58,7 @@ public class ExecutionCheckService implements IExecutionCheckService {
     private MessageGeneral message;
 
     @Override
-    public MessageGeneral checkTestCaseExecution(TCExecution tCExecution) {
+    public MessageGeneral checkTestCaseExecution(TestCaseExecution tCExecution) {
         if (tCExecution.isManualURL()) {
             /**
              * Manual application connectivity parameter
@@ -106,7 +106,7 @@ public class ExecutionCheckService implements IExecutionCheckService {
         return false;
     }
 
-    private boolean checkTypeEnvironment(TCExecution tCExecution) {
+    private boolean checkTypeEnvironment(TestCaseExecution tCExecution) {
         MyLogger.log(ExecutionCheckService.class.getName(), Level.DEBUG, "Checking if application environment type is compatible with environment type");
         try {
             if (applicationService.findApplicationByKey(tCExecution.gettCase().getApplication()).getType().equalsIgnoreCase("COMPARISON")) {
@@ -121,7 +121,7 @@ public class ExecutionCheckService implements IExecutionCheckService {
         return true;
     }
 
-    private boolean checkRangeBuildRevision(TCExecution tCExecution) {
+    private boolean checkRangeBuildRevision(TestCaseExecution tCExecution) {
         MyLogger.log(ExecutionCheckService.class.getName(), Level.DEBUG, "Checking if test can be executed in this build and revision");
         TCase tc = tCExecution.gettCase();
         CountryEnvParam env = tCExecution.getCountryEnvParam();
@@ -175,7 +175,7 @@ public class ExecutionCheckService implements IExecutionCheckService {
         return true;
     }
 
-    private boolean checkTargetBuildRevision(TCExecution tCExecution) {
+    private boolean checkTargetBuildRevision(TestCaseExecution tCExecution) {
         MyLogger.log(ExecutionCheckService.class.getName(), Level.DEBUG, "Checking target build");
         TCase tc = tCExecution.gettCase();
         CountryEnvParam env = tCExecution.getCountryEnvParam();
@@ -206,7 +206,7 @@ public class ExecutionCheckService implements IExecutionCheckService {
         return true;
     }
 
-    private boolean checkActiveEnvironmentGroup(TCExecution tCExecution) {
+    private boolean checkActiveEnvironmentGroup(TestCaseExecution tCExecution) {
         MyLogger.log(ExecutionCheckService.class.getName(), Level.DEBUG, "Checking environment " + tCExecution.getCountryEnvParam().getEnvironment());
         TCase tc = tCExecution.gettCase();
         if (tCExecution.getEnvironmentDataObj().getGp1().equalsIgnoreCase("QA")) {
@@ -251,7 +251,7 @@ public class ExecutionCheckService implements IExecutionCheckService {
         return false;
     }
 
-    private boolean checkCountry(TCExecution tCExecution) {
+    private boolean checkCountry(TestCaseExecution tCExecution) {
         MyLogger.log(ExecutionCheckService.class.getName(), Level.DEBUG, "Checking if country is setup for this testcase. " + tCExecution.getTest() + "-" + tCExecution.getTestCase() + "-" + tCExecution.getCountry());
         try {
             testCaseCountryService.findTestCaseCountryByKey(tCExecution.getTest(), tCExecution.getTestCase(), tCExecution.getCountry());
@@ -310,7 +310,7 @@ public class ExecutionCheckService implements IExecutionCheckService {
         throw new NumberFormatException();
     }
 
-    private boolean checkMaintenanceTime(TCExecution tCExecution) {
+    private boolean checkMaintenanceTime(TestCaseExecution tCExecution) {
         if (tCExecution.getCountryEnvParam().isMaintenanceAct()) {
             SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
             String nowDate = sdf.format(new Date());
@@ -333,7 +333,7 @@ public class ExecutionCheckService implements IExecutionCheckService {
         return true;
     }
     
-    private boolean checkVerboseIsNotZeroForFirefoxOnly(TCExecution tCExecution){
+    private boolean checkVerboseIsNotZeroForFirefoxOnly(TestCaseExecution tCExecution){
         if (!tCExecution.getBrowser().equalsIgnoreCase("firefox")) {
             if(tCExecution.getVerbose() > 0){
             message = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_VERBOSE_USED_WITH_INCORRECT_BROWSER);

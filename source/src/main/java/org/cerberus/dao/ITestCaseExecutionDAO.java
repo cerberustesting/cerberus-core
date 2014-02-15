@@ -19,7 +19,7 @@ package org.cerberus.dao;
 
 import java.util.List;
 
-import org.cerberus.entity.TCExecution;
+import org.cerberus.entity.TestCaseExecution;
 import org.cerberus.exception.CerberusException;
 
 /**
@@ -32,11 +32,11 @@ import org.cerberus.exception.CerberusException;
 public interface ITestCaseExecutionDAO {
 
     /**
-     * @param tCExecution TCExecution Object to insert in TestcaseExecution table
+     * @param tCExecution TestCaseExecution Object to insert in TestcaseExecution table
      */
-    void insertTCExecution(TCExecution tCExecution) throws CerberusException;
+    void insertTCExecution(TestCaseExecution tCExecution) throws CerberusException;
 
-    void updateTCExecution(TCExecution tCExecution) throws CerberusException;
+    void updateTCExecution(TestCaseExecution tCExecution) throws CerberusException;
 
     List<String> getIDListOfLastExecutions(String test, String testcase, String country);
 
@@ -48,9 +48,9 @@ public interface ITestCaseExecutionDAO {
      * @param country Country Criteria
      * @param build
      * @param revision
-     * @return TCExecution Object created only with attributes from database
+     * @return TestCaseExecution Object created only with attributes from database
      */
-    TCExecution findLastTCExecutionByCriteria(String test, String testcase, String environment, String country,
+    TestCaseExecution findLastTCExecutionByCriteria(String test, String testcase, String environment, String country,
                                               String build, String revision) throws CerberusException;
 
     /**
@@ -65,5 +65,5 @@ public interface ITestCaseExecutionDAO {
      * @return a list of testCaseExecution done after the dateLimitFrom parameter and following the other criteria.
      * @throws CerberusException when no executions can be found.
      */
-    List<TCExecution> findExecutionbyCriteria1(String dateLimitFrom, String test, String testCase, String application, String country, String environment, String controlStatus, String status) throws CerberusException;
+    List<TestCaseExecution> findExecutionbyCriteria1(String dateLimitFrom, String test, String testCase, String application, String country, String environment, String controlStatus, String status) throws CerberusException;
 }

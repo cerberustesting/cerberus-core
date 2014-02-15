@@ -19,7 +19,7 @@
  */
 package org.cerberus.serviceEngine;
 
-import org.cerberus.entity.TCExecution;
+import org.cerberus.entity.TestCaseExecution;
 
 /**
  * {Insert class description here}
@@ -35,5 +35,5 @@ public interface IRunTestCaseService {
      * @param tCExecution
      * @return
      */
-    TCExecution runTestCase(TCExecution tCExecution);
+    TestCaseExecution runTestCase(TestCaseExecution tCExecution);
 }

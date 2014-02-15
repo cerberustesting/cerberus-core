@@ -20,7 +20,7 @@
 package org.cerberus.serviceEngine;
 
 import org.cerberus.entity.MessageGeneral;
-import org.cerberus.entity.TCExecution;
+import org.cerberus.entity.TestCaseExecution;
 
 /**
  * {Insert class description here}
@@ -31,5 +31,5 @@ import org.cerberus.entity.TCExecution;
  */
 public interface IExecutionCheckService {
 
-    MessageGeneral checkTestCaseExecution(TCExecution tCExecution);
+    MessageGeneral checkTestCaseExecution(TestCaseExecution tCExecution);
 }

@@ -21,7 +21,7 @@ package org.cerberus.service;
 
 import java.util.List;
 
-import org.cerberus.entity.TCExecution;
+import org.cerberus.entity.TestCaseExecution;
 import org.cerberus.entity.TCase;
 import org.cerberus.entity.TestCaseStep;
 
@@ -30,7 +30,7 @@ import org.cerberus.entity.TestCaseStep;
  */
 public interface ILoadTestCaseService {
 
-    void loadTestCase(TCExecution tCExecution);
+    void loadTestCase(TestCaseExecution tCExecution);
 
     List<TestCaseStep> loadTestCaseStep(TCase testCase);
         

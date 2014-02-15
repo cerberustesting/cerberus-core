@@ -20,7 +20,7 @@
 package org.cerberus.factory.impl;
 
 import org.cerberus.entity.MessageEvent;
-import org.cerberus.entity.TCExecution;
+import org.cerberus.entity.TestCaseExecution;
 import org.cerberus.entity.TestCaseStep;
 import org.cerberus.entity.TestCaseStepExecution;
 import org.cerberus.factory.IFactoryTestCaseStepExecution;
@@ -33,7 +33,7 @@ import org.springframework.stereotype.Service;
 public class FactoryTestCaseStepExecution implements IFactoryTestCaseStepExecution {
 
     @Override
-    public TestCaseStepExecution create(long id, String test, String testCase, int step, String batNumExe, long start, long end, long fullStart, long fullEnd, long timeElapsed, String returnCode, MessageEvent stepResultMessage, TestCaseStep testCaseStep, TCExecution tCExecution) {
+    public TestCaseStepExecution create(long id, String test, String testCase, int step, String batNumExe, long start, long end, long fullStart, long fullEnd, long timeElapsed, String returnCode, MessageEvent stepResultMessage, TestCaseStep testCaseStep, TestCaseExecution tCExecution) {
         TestCaseStepExecution testCaseStepExecution = new TestCaseStepExecution();
         testCaseStepExecution.setBatNumExe(batNumExe);
         testCaseStepExecution.setEnd(end);

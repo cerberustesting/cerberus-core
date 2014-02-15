@@ -31,9 +31,9 @@ import org.cerberus.dao.ITestCaseExecutionDAO;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.entity.MessageGeneral;
 import org.cerberus.entity.MessageGeneralEnum;
-import org.cerberus.entity.TCExecution;
+import org.cerberus.entity.TestCaseExecution;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.factory.IFactoryTCExecution;
+import org.cerberus.factory.IFactoryTestCaseExecution;
 import org.cerberus.log.MyLogger;
 import org.cerberus.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,10 +55,10 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
     @Autowired
     private DatabaseSpring databaseSpring;
     @Autowired
-    private IFactoryTCExecution factoryTCExecution;
+    private IFactoryTestCaseExecution factoryTCExecution;
 
     @Override
-    public void insertTCExecution(TCExecution tCExecution) throws CerberusException {
+    public void insertTCExecution(TestCaseExecution tCExecution) throws CerberusException {
         boolean throwEx = false;
         final String query = "INSERT INTO testcaseexecution(test, testcase, build, revision, environment, country, browser, application, ip, "
                 + "url, port, tag, verbose, status, start, end, controlstatus, controlMessage, crbversion, finished, browserFullVersion) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
@@ -133,7 +133,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
     }
 
     @Override
-    public void updateTCExecution(TCExecution tCExecution) throws CerberusException {
+    public void updateTCExecution(TestCaseExecution tCExecution) throws CerberusException {
         boolean throwEx = false;
         final String query = "UPDATE testcaseexecution SET test = ?, testcase = ?, build = ?, revision = ?, environment = ?, country = ?"
                 + ", browser = ?, application = ?, ip = ?, url = ?, port = ?, tag = ?, verbose = ?, status = ?"
@@ -243,9 +243,9 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
     }
 
     @Override
-    public TCExecution findLastTCExecutionByCriteria(String test, String testcase, String environment, String country,
+    public TestCaseExecution findLastTCExecutionByCriteria(String test, String testcase, String environment, String country,
                                                      String build, String revision) throws CerberusException {
-        TCExecution result = null;
+        TestCaseExecution result = null;
         final String query = "SELECT * FROM testcaseexecution WHERE test = ? AND testcase = ? AND environment = ? AND " +
                 "country = ? AND build = ? AND revision = ? ORDER BY id DESC";
 
@@ -292,9 +292,9 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
     }
 
     @Override
-    public List<TCExecution> findExecutionbyCriteria1(String dateLimit, String test, String testCase, String application, String country, String environment, String controlStatus, String status) throws CerberusException {
-        List<TCExecution> myTestCaseExecutions = null;
-        TCExecution Execution;
+    public List<TestCaseExecution> findExecutionbyCriteria1(String dateLimit, String test, String testCase, String application, String country, String environment, String controlStatus, String status) throws CerberusException {
+        List<TestCaseExecution> myTestCaseExecutions = null;
+        TestCaseExecution Execution;
         boolean throwException = false;
         final String query = "SELECT * FROM testcaseexecution WHERE start > ? AND test LIKE ? AND testcase LIKE ? AND environment LIKE ? AND country LIKE ? "
                 + " AND application LIKE ? AND controlstatus LIKE ? AND status LIKE ? ";
@@ -317,7 +317,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                     if (!(resultSet.first())) {
                         throwException = true;
                     } else {
-                        myTestCaseExecutions = new ArrayList<TCExecution>();
+                        myTestCaseExecutions = new ArrayList<TestCaseExecution>();
                         do {
                             Execution = this.loadFromResultSet(resultSet);
 
@@ -354,7 +354,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         return myTestCaseExecutions;
     }
 
-    private TCExecution loadFromResultSet(ResultSet resultSet) throws SQLException{
+    private TestCaseExecution loadFromResultSet(ResultSet resultSet) throws SQLException{
         long id = resultSet.getLong("ID");
         String test = resultSet.getString("test");
         String testcase = resultSet.getString("testcase");

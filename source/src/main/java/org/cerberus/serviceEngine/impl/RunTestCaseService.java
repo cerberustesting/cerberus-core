@@ -34,7 +34,7 @@ import org.cerberus.entity.MessageEvent;
 import org.cerberus.entity.MessageEventEnum;
 import org.cerberus.entity.MessageGeneral;
 import org.cerberus.entity.MessageGeneralEnum;
-import org.cerberus.entity.TCExecution;
+import org.cerberus.entity.TestCaseExecution;
 import org.cerberus.entity.TCase;
 import org.cerberus.entity.TestCaseCountryProperties;
 import org.cerberus.entity.TestCaseExecutionData;
@@ -142,7 +142,7 @@ public class RunTestCaseService implements IRunTestCaseService {
     private IInvariantService invariantService;
 
     @Override
-    public TCExecution runTestCase(TCExecution tCExecution) {
+    public TestCaseExecution runTestCase(TestCaseExecution tCExecution) {
 
         /**
          * Start timestamp.
@@ -186,7 +186,7 @@ public class RunTestCaseService implements IRunTestCaseService {
         }
 
         /**
-         * Load TestCase information and set TCase to the TCExecution object.
+         * Load TestCase information and set TCase to the TestCaseExecution object.
          */
         tCExecution.setResultMessage(new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_LOADINGDATA));
         MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Loading Test Case Information. " + tCExecution.getTest() + "-" + tCExecution.getTestCase());
@@ -212,7 +212,7 @@ public class RunTestCaseService implements IRunTestCaseService {
 
 
         /**
-         * Load Application information and Set Application to the TCExecution
+         * Load Application information and Set Application to the TestCaseExecution
          * object.
          */
         MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Loading Application Information");
@@ -229,7 +229,7 @@ public class RunTestCaseService implements IRunTestCaseService {
 
 
         /**
-         * Load Country information and Set it to the TCExecution object.
+         * Load Country information and Set it to the TestCaseExecution object.
          */
         MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Loading Country Information");
         try {
@@ -282,7 +282,7 @@ public class RunTestCaseService implements IRunTestCaseService {
             MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Execution will be done with automatic application connectivity setting.");
             /**
              * Load Country/Environment/Application information and set them to
-             * the TCExecution object
+             * the TestCaseExecution object
              */
             MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Loading Country/Environment/Application Information. " + tCExecution.getCountry() + "-" + tCExecution.getEnvironment() + "-" + tCExecution.getApplication().getApplication());
             CountryEnvironmentApplication cea;
@@ -331,7 +331,7 @@ public class RunTestCaseService implements IRunTestCaseService {
 
 
         /**
-         * Load Country/Environment information and set them to the TCExecution
+         * Load Country/Environment information and set them to the TestCaseExecution
          * object. Environment considered here is the data environment.
          */
         MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Loading Country/Environment Information. " + tCExecution.getCountry() + "-" + tCExecution.getEnvironmentData());
@@ -493,7 +493,7 @@ public class RunTestCaseService implements IRunTestCaseService {
 
 
         /**
-         * Load PreTestCase information and set PreTCase to the TCExecution
+         * Load PreTestCase information and set PreTCase to the TestCaseExecution
          * object
          */
         tCExecution.setResultMessage(new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_LOADINGDETAILEDDATA));
@@ -543,7 +543,7 @@ public class RunTestCaseService implements IRunTestCaseService {
         mainExecutionTestCaseStepList.addAll(testCaseStepList);
 
         /**
-         * Initialise the global TCExecution Data List.
+         * Initialise the global TestCaseExecution Data List.
          */
         // 
         tCExecution.setResultMessage(new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_TESTEXECUTING));
@@ -615,7 +615,7 @@ public class RunTestCaseService implements IRunTestCaseService {
         this.collectExecutionStats(tCExecution);
 
         /**
-         * Saving TCExecution object.
+         * Saving TestCaseExecution object.
          */
         tCExecution.setEnd(new Date().getTime());
         /**
@@ -869,7 +869,7 @@ public class RunTestCaseService implements IRunTestCaseService {
 
         testCaseStepActionControlExecution = this.controlService.doControl(testCaseStepActionControlExecution);
 
-        TCExecution myExecution = testCaseStepActionControlExecution.getTestCaseStepActionExecution().getTestCaseStepExecution().gettCExecution();
+        TestCaseExecution myExecution = testCaseStepActionControlExecution.getTestCaseStepActionExecution().getTestCaseStepExecution().gettCExecution();
 
         /**
          * Screenshot only done when : screenshot parameter is eq to 2 or
@@ -901,7 +901,7 @@ public class RunTestCaseService implements IRunTestCaseService {
         return testCaseStepActionControlExecution;
     }
 
-    private TCExecution stopRunTestCase(TCExecution tCExecution) {
+    private TestCaseExecution stopRunTestCase(TestCaseExecution tCExecution) {
         if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")) {
             try {
                 this.seleniumService.stopSeleniumServer();
@@ -912,7 +912,7 @@ public class RunTestCaseService implements IRunTestCaseService {
         return tCExecution;
     }
 
-    private TCExecution collectExecutionStats(TCExecution tCExecution) {
+    private TestCaseExecution collectExecutionStats(TestCaseExecution tCExecution) {
         if (tCExecution.getVerbose() > 0) {
             this.testCaseExecutionWWWService.registerSummary(tCExecution.getId());
         }
