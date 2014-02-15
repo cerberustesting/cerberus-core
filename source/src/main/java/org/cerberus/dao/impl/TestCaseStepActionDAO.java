@@ -65,6 +65,63 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
      * @return Description text text text.
      */
     @Override
+    public TestCaseStepAction findTestCaseStepActionbyKey(String test, String testCase, int step, int sequence) {
+        TestCaseStepAction testCaseStepAction = null;
+        final String query = "SELECT * FROM testcasestepaction WHERE test = ? AND testcase = ? AND step = ? AND sequence = ? ORDER BY step, sequence";
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            try {
+                preStat.setString(1, test);
+                preStat.setString(2, testCase);
+                preStat.setInt(3, step);
+                preStat.setInt(4, sequence);
+
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+                    if (resultSet.first()) {
+                        String action = resultSet.getString("Action");
+                        String object = resultSet.getString("Object");
+                        String property = resultSet.getString("Property");
+                        String description = resultSet.getString("Description");
+                        testCaseStepAction = factoryTestCaseStepAction.create(test, testCase, step, sequence, action, object, property, description);
+                    }
+                } catch (SQLException exception) {
+                    MyLogger.log(TestCaseStepActionDAO.class.getName(), Level.ERROR, exception.toString());
+                } finally {
+                    resultSet.close();
+                }
+            } catch (SQLException exception) {
+                MyLogger.log(TestCaseStepActionDAO.class.getName(), Level.ERROR, exception.toString());
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(TestCaseStepActionDAO.class.getName(), Level.ERROR, exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(TestCaseStepActionControlDAO.class.getName(), Level.WARN, e.toString());
+            }
+        }
+        return testCaseStepAction;
+    }
+
+    /**
+     * Short one line description.
+     * <p/>
+     * Longer description. If there were any, it would be here. <p> And even
+     * more explanations to follow in consecutive paragraphs separated by HTML
+     * paragraph breaks.
+     *
+     * @param variable Description text text text.
+     * @return Description text text text.
+     */
+    @Override
     public List<TestCaseStepAction> findActionByTestTestCaseStep(String test, String testcase, int stepNumber) {
         List<TestCaseStepAction> list = null;
         final String query = "SELECT * FROM testcasestepaction WHERE test = ? AND testcase = ? AND step = ? ORDER BY step, sequence";

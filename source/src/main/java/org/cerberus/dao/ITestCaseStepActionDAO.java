@@ -31,7 +31,10 @@ import org.cerberus.exception.CerberusException;
  */
 public interface ITestCaseStepActionDAO {
 
+    TestCaseStepAction findTestCaseStepActionbyKey(String test, String testCase, int step, int sequence);
+    
     List<TestCaseStepAction> findActionByTestTestCaseStep(String test, String testcase, int stepNumber);
 
     void insertTestCaseStepAction(TestCaseStepAction testCaseStepAction) throws CerberusException;
+
 }

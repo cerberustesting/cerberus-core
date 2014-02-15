@@ -41,6 +41,11 @@ public class TestCaseStepActionService implements ITestCaseStepActionService {
     private ITestCaseStepActionDAO testCaseStepActionDAO;
 
     @Override
+    public TestCaseStepAction findTestCaseStepActionbyKey (String test, String testCase, int step, int sequence){
+        return testCaseStepActionDAO.findTestCaseStepActionbyKey(test, testCase, step, sequence);
+    }
+    
+    @Override
     public List<TestCaseStepAction> getListOfAction(String test, String testcase, int step) {
         return testCaseStepActionDAO.findActionByTestTestCaseStep(test, testcase, step);
     }

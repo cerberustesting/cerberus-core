@@ -18,6 +18,7 @@
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
 <%@page import="org.cerberus.entity.BuildRevisionInvariant"%>
+<%@page import="org.cerberus.entity.Application"%>
 <%@page import="org.cerberus.service.impl.BuildRevisionInvariantService"%>
 <%@page import="org.cerberus.service.IBuildRevisionInvariantService"%>
 <%@page import="org.cerberus.service.IApplicationService"%>
@@ -167,6 +168,7 @@
 
                     String SitdmossBugtrackingURL;
                     SitdmossBugtrackingURL = "";
+                    String appSystem = "";
 
                     /*
                      * Filter requests
@@ -353,6 +355,9 @@
                     testcase = rs_testcase_general_info.getString("TestCase");
                     group = rs_testcase_general_info.getString("Group");
                     status = rs_testcase_general_info.getString("Status");
+                    Application myApplication;
+                    myApplication= myApplicationService.findApplicationByKey(rs_testcase_general_info.getString("tc.Application"));
+                    appSystem = myApplication.getSystem();
 
                     /**
                      * We can edit the testcase only if User role is TestAdmin
@@ -654,7 +659,7 @@
                         if ((rs_testcase_general_info.getString("tc.BugID") != null)
                                 && (rs_testcase_general_info.getString("tc.BugID").compareToIgnoreCase("") != 0)
                                 && (rs_testcase_general_info.getString("tc.BugID").compareToIgnoreCase("null") != 0)) {
-                            SitdmossBugtrackingURL = myApplicationService.findApplicationByKey(rs_testcase_general_info.getString("tc.Application")).getBugTrackerUrl();
+                            SitdmossBugtrackingURL = myApplication.getBugTrackerUrl();
                             SitdmossBugtrackingURL = SitdmossBugtrackingURL.replaceAll("%BUGID%", rs_testcase_general_info.getString("tc.BugID"));
                         }
                     %>
@@ -1562,11 +1567,14 @@
         <table id="arrond" style="text-align: left" border="1" >
             <tr><td colspan="2"><h4>Contextual Actions</h4></td></tr>
             <tr>
+                
+                    <% if (rs_testcase_general_info.getString("Group").equalsIgnoreCase("AUTOMATED")) { %>
+                    <td><a href="RunTests.jsp?Test=<%=rs_testcase_general_info.getString("Test")%>&TestCase=<%=rs_testcase_general_info.getString("TestCase")%>&MySystem=<%=appSystem%>">Run this Test Case.</a></td>
+<%        } else if (rs_testcase_general_info.getString("Group").equalsIgnoreCase("MANUAL")) {%>
+                    <td><a href="RunManualTestCase.jsp?Test=<%=rs_testcase_general_info.getString("Test")%>&TestCase=<%=rs_testcase_general_info.getString("TestCase")%>&MySystem=<%=appSystem%>">Run this Test Case.</a></td>
+<%        }%>    
                 <td>
-                    <a href="RunTests.jsp?Test=<%=rs_testcase_general_info.getString("Test")%>&TestCase=<%=rs_testcase_general_info.getString("TestCase")%>">Run this TestCase.</a>
-                </td>
-                <td>
-                    <a href="ExecutionDetailList.jsp?test=<%=rs_testcase_general_info.getString("Test")%>&testcase=<%=rs_testcase_general_info.getString("TestCase")%>">See Last Executions..</a>
+                    <a href="ExecutionDetailList.jsp?test=<%=rs_testcase_general_info.getString("Test")%>&testcase=<%=rs_testcase_general_info.getString("TestCase")%>&MySystem=<%=appSystem%>">See Last Executions..</a>
                 </td>
             </tr>
         </table>

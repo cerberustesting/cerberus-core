@@ -636,7 +636,7 @@
         <web-resource-collection>
             <web-resource-name>jsp</web-resource-name>
             <description>jsp</description>
-            <url-pattern>/ManualTestCase.jsp</url-pattern>
+            <url-pattern>/RunManualTestCase.jsp</url-pattern>
             <url-pattern>/ResumeTests.jsp</url-pattern>
             <url-pattern>/RunTests.jsp</url-pattern>
             <url-pattern>/V2_RunTests.jsp</url-pattern>

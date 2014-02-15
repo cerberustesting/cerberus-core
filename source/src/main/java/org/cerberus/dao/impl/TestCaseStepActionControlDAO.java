@@ -65,6 +65,66 @@ public class TestCaseStepActionControlDAO implements ITestCaseStepActionControlD
      * @return Description text text text.
      */
     @Override
+    public TestCaseStepActionControl findTestCaseStepActionControlByKey(String test, String testcase, int stepNumber, int sequence, int control) {
+        TestCaseStepActionControl actionControl = null;
+        final String query = "SELECT * FROM testcasestepactioncontrol WHERE test = ? AND testcase = ? AND step = ? AND sequence = ? AND control = ? ORDER BY control";
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            try {
+                preStat.setString(1, test);
+                preStat.setString(2, testcase);
+                preStat.setInt(3, stepNumber);
+                preStat.setInt(4, sequence);
+                preStat.setInt(5, control);
+
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+
+                    if (resultSet.first()) {
+                        String type = resultSet.getString("Type");
+                        String object = resultSet.getString("ControlValue");
+                        String property = resultSet.getString("ControlProperty");
+                        String fatal = resultSet.getString("Fatal");
+                        String description = resultSet.getString("ControlDescription");
+                        actionControl = factoryTestCaseStepActionControl.create(test, testcase, stepNumber, sequence, control, type, object, property, fatal, description);
+                    }
+                } catch (SQLException exception) {
+                    MyLogger.log(TestCaseStepActionControlDAO.class.getName(), Level.ERROR, exception.toString());
+                } finally {
+                    resultSet.close();
+                }
+            } catch (SQLException exception) {
+                MyLogger.log(TestCaseStepActionControlDAO.class.getName(), Level.ERROR, exception.toString());
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(TestCaseStepActionControlDAO.class.getName(), Level.ERROR, exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(TestCaseStepActionControlDAO.class.getName(), Level.WARN, e.toString());
+            }
+        }
+        return actionControl;
+    }
+
+    /**
+     * Short one line description.
+     * <p/>
+     * Longer description. If there were any, it would be here. <p> And even
+     * more explanations to follow in consecutive paragraphs separated by HTML
+     * paragraph breaks.
+     *
+     * @param variable Description text text text.
+     * @return Description text text text.
+     */
+    @Override
     public List<TestCaseStepActionControl> findControlByTestTestCaseStepSequence(String test, String testcase, int stepNumber, int sequence) {
         List<TestCaseStepActionControl> list = null;
         final String query = "SELECT * FROM testcasestepactioncontrol WHERE test = ? AND testcase = ? AND step = ? AND sequence = ? ORDER BY control";

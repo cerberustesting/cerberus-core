@@ -29,6 +29,8 @@ import org.cerberus.exception.CerberusException;
  * @author bcivel
  */
 public interface ITestCaseStepActionService {
+    
+    TestCaseStepAction findTestCaseStepActionbyKey (String test, String testCase, int step, int sequence);
 
     List<TestCaseStepAction> getListOfAction(String test, String testcase, int step);
     
