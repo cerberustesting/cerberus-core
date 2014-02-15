@@ -399,6 +399,10 @@
                                 myKey++;
                                 TestCaseStep myTCS;
                                 myTCS = testCaseStepService.findTestCaseStep(myStepData.getTest(), myStepData.getTestCase(), myStepData.getStep());
+                                String myTCSDesc = "";
+                                if (!(myTCS==null)) {
+                                    myTCSDesc = myTCS.getDescription();
+                                }
                                 String styleMainTestCase1 = "";
                                 String styleMainTestCase2 = "";
                                 if ((myStepData.getTest().equals(test)) && (myStepData.getTestCase().equals(testCase))) {
@@ -412,7 +416,7 @@
                             <td><%=styleMainTestCase1%><%=myStepData.getTest()%><%=styleMainTestCase2%></td>
                             <td><%=styleMainTestCase1%><%=myStepData.getTestCase()%><%=styleMainTestCase2%></td>
                             <td><%=styleMainTestCase1%><%=myStepData.getStep()%><%=styleMainTestCase2%></td>
-                            <td><%=styleMainTestCase1%><%=myTCS.getDescription()%><%=styleMainTestCase2%></td>
+                            <td><%=styleMainTestCase1%><%=myTCSDesc%><%=styleMainTestCase2%></td>
                             <td class="<%=myStepData.getReturnCode()%>"><a class="<%=myStepData.getReturnCode()%>F"><%=myStepData.getReturnCode()%></a></td>
                             <td><%=myStepData.getTimeElapsed()%> s</td>
                         </tr>
