@@ -23,7 +23,7 @@ import java.util.List;
 
 import org.apache.log4j.Level;
 import org.cerberus.dao.ITestCaseExecutionDAO;
-import org.cerberus.entity.TCExecution;
+import org.cerberus.entity.TestCaseExecution;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.log.MyLogger;
 import org.cerberus.service.ITestCaseExecutionService;
@@ -41,23 +41,23 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
     ITestCaseExecutionDAO testCaseExecutionDao;
 
     @Override
-    public void insertTCExecution(TCExecution tCExecution) throws CerberusException {
+    public void insertTCExecution(TestCaseExecution tCExecution) throws CerberusException {
         testCaseExecutionDao.insertTCExecution(tCExecution);
     }
 
     @Override
-    public void updateTCExecution(TCExecution tCExecution) throws CerberusException {
+    public void updateTCExecution(TestCaseExecution tCExecution) throws CerberusException {
         testCaseExecutionDao.updateTCExecution(tCExecution);
     }
 
     @Override
-    public TCExecution findLastTCExecutionByCriteria(String test, String testCase, String environment, String country,
+    public TestCaseExecution findLastTCExecutionByCriteria(String test, String testCase, String environment, String country,
                                                      String build, String revision) throws CerberusException {
         return testCaseExecutionDao.findLastTCExecutionByCriteria(test, testCase, environment, country, build, revision);
     }
 
     @Override
-    public List<TCExecution> findTCExecutionbyCriteria1(String dateLimitFrom, String test, String testCase, String application, String country, String environment, String controlStatus, String status) throws CerberusException {
+    public List<TestCaseExecution> findTCExecutionbyCriteria1(String dateLimitFrom, String test, String testCase, String application, String country, String environment, String controlStatus, String status) throws CerberusException {
         // Transform empty parameter in % in order to remove from SQL filter (thanks to the like operator).
         test = ParameterParserUtil.wildcardIfEmpty(test);
         testCase = ParameterParserUtil.wildcardIfEmpty(testCase);
@@ -70,7 +70,7 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
     }
 
     @Override
-    public long registerRunID(TCExecution tCExecution) {
+    public long registerRunID(TestCaseExecution tCExecution) {
 
         /**
          * Insert TestCaseExecution

@@ -384,6 +384,10 @@
                         })
                     });
                     loader.remove();
+                    $("#test").val("<%= request.getParameter("Test") == null ? "" : request.getParameter("Test") %>");
+                    $("#testCase").val("<%= request.getParameter("TestCase") == null ? "" : request.getParameter("TestCase") %>");
+                    $("#executionCountry").val("<%= request.getParameter("Country") == null ? "" : request.getParameter("Country") %>");
+                    $("#executionEnv").val("<%= request.getParameter("Env") == null ? "" : request.getParameter("Env") %>");
                 });
 
                 var docData = [

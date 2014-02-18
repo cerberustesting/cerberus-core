@@ -77,7 +77,7 @@
                             <ul class="subnav" id="subnavlist">
                                 <li id="subactive"><a name="menu" id="menuRunTestCase" href="RunTests.jsp" style="width:130px">Run Tests</a></li>
                                 <%--                              <li><a name="menu" id="menuResumeTestCase" href="ResumeTests.jsp" style="width:130px">Resume Tests</a></li> --%>
-                                <li id="subactive"><a name="menu" id="menuRunManualTestCase" href="ManualTestCase.jsp" style="width:130px">Run Manual Tests</a></li>
+                                <li id="subactive"><a name="menu" id="menuRunManualTestCase" href="RunManualTestCase.jsp" style="width:130px">Run Manual Tests</a></li>
                             </ul>
                         </li>
                         <% }%>

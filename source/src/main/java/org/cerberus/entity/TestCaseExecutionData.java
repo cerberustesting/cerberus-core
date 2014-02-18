@@ -37,7 +37,7 @@ public class TestCaseExecutionData {
     /**
      *
      */
-    private TCExecution tCExecution;
+    private TestCaseExecution tCExecution;
     private MessageEvent propertyResultMessage;
     private MessageGeneral executionResultMessage;
     private boolean stopExecution;
@@ -80,11 +80,11 @@ public class TestCaseExecutionData {
         this.stopExecution = stopExecution;
     }
 
-    public TCExecution gettCExecution() {
+    public TestCaseExecution gettCExecution() {
         return tCExecution;
     }
 
-    public void settCExecution(TCExecution tCExecution) {
+    public void settCExecution(TestCaseExecution tCExecution) {
         this.tCExecution = tCExecution;
     }
 

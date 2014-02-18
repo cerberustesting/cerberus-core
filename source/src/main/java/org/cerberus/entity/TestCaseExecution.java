@@ -18,169 +18,378 @@
 package org.cerberus.entity;
 
 import java.util.List;
-import java.util.Map;
 
 /**
- * {Insert class description here}
- *
- * @author Tiago Bernardes
- * @version 1.0, 18/Dez/2012
- * @since 2.0.0
+ * @author bcivel
  */
 public class TestCaseExecution {
-    private String environmentRun;
-    private String tag;
-    private String output;
-    private int verbose;
-    private long runID;
-    private Country countryExecute;
-    private TestCase testCase;
-    private List<Property> properties;
-    private List<TestCaseCountryProperties> prop;
-    private List<Step> steps;
-    private MessageGeneral result;
+
+    private long id;
+    private String test;
+    private String testCase;
+    private String build;
+    private String revision;
+    private String environment;
+    private String country;
+    private String browser;
+    private String browserFullVersion;
     private long start;
     private long end;
-    private Environment environmentTest;
-    private Map<String, String> devEnvironment;
+    private String controlStatus;
+    private String controlMessage;
+    private Application application;
+    private String ip; // Host the Selenium IP
+    private String url;
+    private String port; // host the Selenium Port
+    private String tag;
+    private String finished;
+    private int verbose;
+    private String status;
+    private String crbVersion;
+    /**
+     * From here are data outside database model.
+     */
+    private String environmentData;
+    private Invariant environmentDataObj;
+    private Invariant CountryObj;
+    private int screenshot;
+    private String outputFormat;
+    private TCase tCase;
+    private List<TCase> PreTCase;
+    private CountryEnvParam countryEnvParam;
+    private CountryEnvironmentApplication countryEnvironmentApplication;
+    private boolean manualURL;
+    private String myHost;
+    private String myContextRoot;
+    private String myLoginRelativeURL;
+    private String seleniumIP;
+    private String seleniumPort;
+    private List<TestCaseStepExecution> testCaseStepExecutionList; // Host the list of Steps that will be executed (both pre tests and main test)
+    private List<TestCaseExecutionData> testCaseExecutionDataList; // Host the full list of data calculated during the execution.
+    private MessageGeneral resultMessage;
 
-    public String getEnvironmentRun() {
-        return this.environmentRun;
+    public Invariant getCountryObj() {
+        return CountryObj;
     }
 
-    public void setEnvironmentRun(String tempEnvironmentRun) {
-        this.environmentRun = tempEnvironmentRun;
+    public void setCountryObj(Invariant CountryObj) {
+        this.CountryObj = CountryObj;
     }
 
-    public String getTag() {
-        return this.tag;
+    public Invariant getEnvironmentDataObj() {
+        return environmentDataObj;
     }
 
-    public void setTag(String tempTag) {
-        this.tag = tempTag;
+    public void setEnvironmentDataObj(Invariant environmentDataObj) {
+        this.environmentDataObj = environmentDataObj;
+    }
+    
+    public String getEnvironmentData() {
+        return environmentData;
     }
 
-    public String getOutput() {
-        return this.output;
+    public void setEnvironmentData(String environmentData) {
+        this.environmentData = environmentData;
     }
 
-    public void setOutput(String tempOutput) {
-        this.output = tempOutput;
+    public boolean isManualURL() {
+        return manualURL;
     }
 
-    public int getVerbose() {
-        return this.verbose;
+    public void setManualURL(boolean manualURL) {
+        this.manualURL = manualURL;
     }
 
-    public void setVerbose(int tempVerbose) {
-        this.verbose = tempVerbose;
+    public String getMyHost() {
+        return myHost;
     }
 
-    public long getRunID() {
-        return this.runID;
+    public void setMyHost(String myHost) {
+        this.myHost = myHost;
     }
 
-    public void setRunID(long tempRunID) {
-        this.runID = tempRunID;
+    public String getMyContextRoot() {
+        return myContextRoot;
     }
 
-    public Country getCountryExecute() {
-        return this.countryExecute;
+    public void setMyContextRoot(String myContextRoot) {
+        this.myContextRoot = myContextRoot;
     }
 
-    public void setCountryExecute(Country tempCountryExecute) {
-        this.countryExecute = tempCountryExecute;
+    public String getMyLoginRelativeURL() {
+        return myLoginRelativeURL;
     }
 
-    public TestCase getTestCase() {
-        return this.testCase;
+    public void setMyLoginRelativeURL(String myLoginRelativeURL) {
+        this.myLoginRelativeURL = myLoginRelativeURL;
     }
 
-    public void setTestCase(TestCase tempTestCase) {
-        this.testCase = tempTestCase;
+    public String getOutputFormat() {
+        return outputFormat;
     }
 
-    public List<Property> getProperties() {
-        return this.properties;
+    public void setOutputFormat(String outputFormat) {
+        this.outputFormat = outputFormat;
     }
 
-    public void setProperties(List<Property> tempProperties) {
-        this.properties = tempProperties;
+    public int getScreenshot() {
+        return screenshot;
     }
 
-    public List<Step> getSteps() {
-        return this.steps;
+    public void setScreenshot(int screenshot) {
+        this.screenshot = screenshot;
     }
 
-    public void setSteps(List<Step> tempSteps) {
-        this.steps = tempSteps;
+    public MessageGeneral getResultMessage() {
+        return resultMessage;
     }
 
-    public MessageGeneral getResult() {
-        return this.result;
+    public void setResultMessage(MessageGeneral resultMessage) {
+        this.resultMessage = resultMessage;
+        if (resultMessage != null) {
+            this.setControlMessage(resultMessage.getDescription());
+            this.setControlStatus(resultMessage.getCodeString());
+        }
     }
 
-    public void setResult(MessageGeneral result) {
-        this.result = result;
+    public List<TestCaseStepExecution> getTestCaseStepExecutionList() {
+        return testCaseStepExecutionList;
     }
 
-    public long getStart() {
-        return this.start;
+    public void setTestCaseStepExecutionList(List<TestCaseStepExecution> testCaseStepExecutionList) {
+        this.testCaseStepExecutionList = testCaseStepExecutionList;
     }
 
-    public void setStart(long tempStart) {
-        this.start = tempStart;
+    public String getSeleniumIP() {
+        return seleniumIP;
+    }
+
+    public void setSeleniumIP(String seleniumIP) {
+        this.seleniumIP = seleniumIP;
+    }
+
+    public String getSeleniumPort() {
+        return seleniumPort;
+    }
+
+    public void setSeleniumPort(String seleniumPort) {
+        this.seleniumPort = seleniumPort;
+    }
+
+    public CountryEnvParam getCountryEnvParam() {
+        return countryEnvParam;
+    }
+
+    public void setCountryEnvParam(CountryEnvParam countryEnvParam) {
+        this.countryEnvParam = countryEnvParam;
+    }
+
+    public CountryEnvironmentApplication getCountryEnvironmentApplication() {
+        return countryEnvironmentApplication;
+    }
+
+    public void setCountryEnvironmentApplication(CountryEnvironmentApplication countryEnvironmentApplication) {
+        this.countryEnvironmentApplication = countryEnvironmentApplication;
+    }
+
+    public TCase gettCase() {
+        return tCase;
+    }
+
+    public void settCase(TCase tCase) {
+        this.tCase = tCase;
+    }
+
+    public Application getApplication() {
+        return application;
+    }
+
+    public void setApplication(Application application) {
+        this.application = application;
+    }
+
+    public String getBrowser() {
+        return browser;
+    }
+
+    public void setBrowser(String browser) {
+        this.browser = browser;
+    }
+
+    public String getBrowserFullVersion() {
+        return browserFullVersion;
+    }
+
+    public void setBrowserFullVersion(String browserFullVersion) {
+        this.browserFullVersion = browserFullVersion;
+    }
+
+    public String getBuild() {
+        return build;
+    }
+
+    public void setBuild(String build) {
+        this.build = build;
+    }
+
+    public String getControlMessage() {
+        return controlMessage;
+    }
+
+    public void setControlMessage(String controlMessage) {
+        this.controlMessage = controlMessage;
+    }
+
+    public String getControlStatus() {
+        return controlStatus;
+    }
+
+    public void setControlStatus(String controlStatus) {
+        this.controlStatus = controlStatus;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
+    }
+
+    public String getCrbVersion() {
+        return crbVersion;
+    }
+
+    public void setCrbVersion(String crbVersion) {
+        this.crbVersion = crbVersion;
     }
 
     public long getEnd() {
-        return this.end;
+        return end;
     }
 
-    public void setEnd(long tempEnd) {
-        this.end = tempEnd;
+    public void setEnd(long end) {
+        this.end = end;
     }
 
-    public Environment getEnvironmentTest() {
-        return this.environmentTest;
+    public String getEnvironment() {
+        return environment;
     }
 
-    public void setEnvironmentTest(Environment tempEnvironmentTest) {
-        this.environmentTest = tempEnvironmentTest;
+    public void setEnvironment(String environment) {
+        this.environment = environment;
     }
 
-    public Map<String, String> getDevEnvironment() {
-        return this.devEnvironment;
+    public String getFinished() {
+        return finished;
     }
 
-    public void setDevEnvironment(Map<String, String> devEnvironment) {
-        this.devEnvironment = devEnvironment;
+    public void setFinished(String finished) {
+        this.finished = finished;
     }
 
-    public Property getPropertyOfSequence(String propertyName) {
-        for (Property property : this.properties) {
-            if (property.getName().equalsIgnoreCase(propertyName)) {
-                return property;
-            }
-        }
-        return null;
-    }
-    
-    public TestCaseCountryProperties getProperty(String propertyName){
-        for (TestCaseCountryProperties property : this.prop) {
-            if (property.getProperty().equalsIgnoreCase(propertyName)) {
-                return property;
-            }
-        }
-        return null;
+    public long getId() {
+        return id;
     }
 
-    public List<TestCaseCountryProperties> getProp() {
-        return prop;
+    public void setId(long id) {
+        this.id = id;
     }
 
-    public void setProp(List<TestCaseCountryProperties> prop) {
-        this.prop = prop;
+    public String getIp() {
+        return ip;
     }
-    
-    
+
+    public void setIp(String ip) {
+        this.ip = ip;
+    }
+
+    public String getPort() {
+        return port;
+    }
+
+    public void setPort(String port) {
+        this.port = port;
+    }
+
+    public String getRevision() {
+        return revision;
+    }
+
+    public void setRevision(String revision) {
+        this.revision = revision;
+    }
+
+    public long getStart() {
+        return start;
+    }
+
+    public void setStart(long start) {
+        this.start = start;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getTag() {
+        return tag;
+    }
+
+    public void setTag(String tag) {
+        this.tag = tag;
+    }
+
+    public String getTest() {
+        return test;
+    }
+
+    public void setTest(String test) {
+        this.test = test;
+    }
+
+    public String getTestCase() {
+        return testCase;
+    }
+
+    public void setTestCase(String testCase) {
+        this.testCase = testCase;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public int getVerbose() {
+        return verbose;
+    }
+
+    public void setVerbose(int verbose) {
+        this.verbose = verbose;
+    }
+
+    public List<TCase> getPreTCase() {
+        return PreTCase;
+    }
+
+    public void setPreTCase(List<TCase> PreTCase) {
+        this.PreTCase = PreTCase;
+    }
+
+    public List<TestCaseExecutionData> getTestCaseExecutionDataList() {
+        return testCaseExecutionDataList;
+    }
+
+    public void setTestCaseExecutionDataList(List<TestCaseExecutionData> testCaseExecutionDataList) {
+        this.testCaseExecutionDataList = testCaseExecutionDataList;
+    }
+
 }

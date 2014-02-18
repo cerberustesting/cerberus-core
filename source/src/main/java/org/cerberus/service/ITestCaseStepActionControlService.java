@@ -29,13 +29,14 @@ import org.cerberus.exception.CerberusException;
  * @author bcivel
  */
 public interface ITestCaseStepActionControlService {
-    
+
+    TestCaseStepActionControl findTestCaseStepActionControlByKey(String test, String testcase, int stepNumber, int sequence, int control);
+
     List<TestCaseStepActionControl> findControlByTestTestCaseStepSequence(String test, String testcase, int stepNumber, int sequence);
 
-    void insertTestCaseStepActionControl(TestCaseStepActionControl testCaseStepActionControl) throws CerberusException ;
-    
+    void insertTestCaseStepActionControl(TestCaseStepActionControl testCaseStepActionControl) throws CerberusException;
+
     boolean insertListTestCaseStepActionControl(List<TestCaseStepActionControl> testCaseStepActionControlList);
 
     List<TestCaseStepActionControl> findControlByTestTestCaseStep(String test, String testcase, int step);
-
-    }
+}

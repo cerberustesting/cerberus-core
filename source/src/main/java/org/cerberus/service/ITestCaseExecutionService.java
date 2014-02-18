@@ -21,7 +21,7 @@ package org.cerberus.service;
 
 import java.util.List;
 
-import org.cerberus.entity.TCExecution;
+import org.cerberus.entity.TestCaseExecution;
 import org.cerberus.exception.CerberusException;
 
 /**
@@ -29,11 +29,11 @@ import org.cerberus.exception.CerberusException;
  */
 public interface ITestCaseExecutionService {
 
-    void insertTCExecution(TCExecution tCExecution) throws CerberusException;
+    void insertTCExecution(TestCaseExecution tCExecution) throws CerberusException;
 
-    void updateTCExecution(TCExecution tCExecution) throws CerberusException;
+    void updateTCExecution(TestCaseExecution tCExecution) throws CerberusException;
 
-    TCExecution findLastTCExecutionByCriteria(String test, String testCase, String environment, String country,
+    TestCaseExecution findLastTCExecutionByCriteria(String test, String testCase, String environment, String country,
                                               String build, String revision) throws CerberusException;
 
     /**
@@ -51,7 +51,7 @@ public interface ITestCaseExecutionService {
      *         parameter and that match the other criteria.
      * @throws CerberusException when no Execution match the criteria.
      */
-    List<TCExecution> findTCExecutionbyCriteria1(String dateLimitFrom, String test, String testCase, String application, String country, String environment, String controlStatus, String status) throws CerberusException;
+    List<TestCaseExecution> findTCExecutionbyCriteria1(String dateLimitFrom, String test, String testCase, String application, String country, String environment, String controlStatus, String status) throws CerberusException;
 
-    long registerRunID(TCExecution tCExecution);
+    long registerRunID(TestCaseExecution tCExecution);
 }

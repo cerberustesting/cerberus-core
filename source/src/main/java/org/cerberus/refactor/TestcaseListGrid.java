@@ -112,11 +112,18 @@ public class TestcaseListGrid extends HttpServlet {
             if (request.getParameter("status") != null) {
                 String[] status = request.getParameterValues("status");
                 StringBuilder strb = new StringBuilder(whereclauses);
+                strb.append(" AND ( ");
                 for (int x = 0; x < status.length; x++) {
-                    strb.append(" and b.status = '");
+                    if(x>0) {
+                        strb.append(" OR ");
+                    }
+
+                    strb.append(" a.status = '");
                     strb.append(status[x]);
                     strb.append("'");
                 }
+                strb.append(" ) ");
+
                 whereclauses = new StringBuilder();
                 whereclauses.append(strb.toString());
             }
