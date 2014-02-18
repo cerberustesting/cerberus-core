@@ -31,7 +31,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.cerberus.entity.TCExecution;
+import org.cerberus.entity.TestCaseExecution;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.service.IApplicationService;
 import org.cerberus.service.IInvariantService;
@@ -129,7 +129,7 @@ public class GetNumberOfExecutions extends HttpServlet {
                 String dateLimitFrom = DateUtil.getMySQLTimestampTodayDeltaMinutes(-NbMinutes);
 
                 ITestCaseExecutionService MyTestExecutionService = appContext.getBean(TestCaseExecutionService.class);
-                List<TCExecution> myList;
+                List<TestCaseExecution> myList;
 
                 // Getting the lists of test cases the follow the criterias.
                 try {

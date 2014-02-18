@@ -30,7 +30,7 @@ import org.cerberus.entity.CountryEnvironmentDatabase;
 import org.cerberus.entity.MessageEvent;
 import org.cerberus.entity.MessageEventEnum;
 import org.cerberus.entity.Property;
-import org.cerberus.entity.TCExecution;
+import org.cerberus.entity.TestCaseExecution;
 import org.cerberus.entity.TestCaseCountryProperties;
 import org.cerberus.entity.TestCaseExecutionData;
 import org.cerberus.entity.TestCaseStepActionExecution;
@@ -81,7 +81,7 @@ public class PropertyService implements IPropertyService {
         testCaseExecutionData.setStart(new Date().getTime());
         MessageEvent res;
 
-        TCExecution tCExecution = testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution();
+        TestCaseExecution tCExecution = testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution();
 
         if (testCaseCountryProperty.getValue().contains("%")) {
             String decodedValue = this.decodeValue(testCaseCountryProperty.getValue(), testCaseStepActionExecution.getTestCaseExecutionDataList(), tCExecution);
@@ -208,7 +208,7 @@ public class PropertyService implements IPropertyService {
     }
 
     @Override
-    public String decodeValue(String myString, List<TestCaseExecutionData> properties, TCExecution tCExecution) {
+    public String decodeValue(String myString, List<TestCaseExecutionData> properties, TestCaseExecution tCExecution) {
 
         /**
          * Trying to replace by system environment variables .
@@ -251,7 +251,7 @@ public class PropertyService implements IPropertyService {
         return myString;
     }
 
-    private TestCaseExecutionData calculateOnDatabase(TestCaseExecutionData testCaseExecutionData, TestCaseCountryProperties testCaseProperties, TCExecution tCExecution) {
+    private TestCaseExecutionData calculateOnDatabase(TestCaseExecutionData testCaseExecutionData, TestCaseCountryProperties testCaseProperties, TestCaseExecution tCExecution) {
         String sql = testCaseProperties.getValue();
         String db = testCaseProperties.getDatabase();
 
@@ -350,7 +350,7 @@ public class PropertyService implements IPropertyService {
         return null;
     }
 
-    private String calculateNatureRandomNew(List<String> list, String propName, TCExecution tCExecution) {
+    private String calculateNatureRandomNew(List<String> list, String propName, TestCaseExecution tCExecution) {
         //TODO clean code
         List<String> pastValues = this.testCaseExecutionDataDAO.getPastValuesOfProperty(propName, tCExecution.getTest(),
                 tCExecution.getTestCase(), tCExecution.getCountryEnvParam().getBuild(), tCExecution.getEnvironmentData(),
@@ -368,7 +368,7 @@ public class PropertyService implements IPropertyService {
         return null;
     }
 
-    private String calculateNatureNotInUse(List<String> list, String propName, TCExecution tCExecution) {
+    private String calculateNatureNotInUse(List<String> list, String propName, TestCaseExecution tCExecution) {
         try {
 //            List<TCExecution> exelist = this.testCaseExecutionService.findTCExecutionbyCriteria1(DateUtil.getMySQLTimestampTodayDeltaMinutes(10), "%", "%", "%", "%", "%", "PE", "%");
             this.testCaseExecutionService.findTCExecutionbyCriteria1(DateUtil.getMySQLTimestampTodayDeltaMinutes(10), "%", "%", "%", "%", "%", "PE", "%");

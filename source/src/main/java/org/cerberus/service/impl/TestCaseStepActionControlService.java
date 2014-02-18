@@ -35,11 +35,16 @@ import org.springframework.stereotype.Service;
  * @author bcivel
  */
 @Service
-public class TestCaseStepActionControlService implements ITestCaseStepActionControlService{
+public class TestCaseStepActionControlService implements ITestCaseStepActionControlService {
 
     @Autowired
     private ITestCaseStepActionControlDAO testCaseStepActionControlDao;
-    
+
+    @Override
+    public TestCaseStepActionControl findTestCaseStepActionControlByKey(String test, String testcase, int stepNumber, int sequence, int control) {
+        return testCaseStepActionControlDao.findTestCaseStepActionControlByKey(test, testcase, stepNumber, sequence, control);
+    }
+
     @Override
     public List<TestCaseStepActionControl> findControlByTestTestCaseStepSequence(String test, String testcase, int stepNumber, int sequence) {
         return testCaseStepActionControlDao.findControlByTestTestCaseStepSequence(test, testcase, stepNumber, sequence);
@@ -52,7 +57,7 @@ public class TestCaseStepActionControlService implements ITestCaseStepActionCont
 
     @Override
     public boolean insertListTestCaseStepActionControl(List<TestCaseStepActionControl> testCaseStepActionControlList) {
-        for (TestCaseStepActionControl tcs : testCaseStepActionControlList){
+        for (TestCaseStepActionControl tcs : testCaseStepActionControlList) {
             try {
                 insertTestCaseStepActionControl(tcs);
             } catch (CerberusException ex) {

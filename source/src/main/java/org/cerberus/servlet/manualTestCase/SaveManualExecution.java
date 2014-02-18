@@ -33,11 +33,11 @@ import org.cerberus.entity.Application;
 import org.cerberus.entity.CountryEnvParam;
 import org.cerberus.entity.MessageGeneral;
 import org.cerberus.entity.MessageGeneralEnum;
-import org.cerberus.entity.TCExecution;
+import org.cerberus.entity.TestCaseExecution;
 import org.cerberus.entity.TCase;
 import org.cerberus.entity.TestCaseExecutionSysVer;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.factory.IFactoryTCExecution;
+import org.cerberus.factory.IFactoryTestCaseExecution;
 import org.cerberus.factory.IFactoryTestCaseExecutionSysVer;
 import org.cerberus.log.MyLogger;
 import org.cerberus.service.IApplicationService;
@@ -76,7 +76,7 @@ public class SaveManualExecution extends HttpServlet {
         ITestCaseExecutionSysVerService testCaseExecutionSysVerService = appContext.getBean(ITestCaseExecutionSysVerService.class);
         ICountryEnvParamService countryEnvParamService = appContext.getBean(ICountryEnvParamService.class);
 
-        IFactoryTCExecution factoryTCExecution = appContext.getBean(IFactoryTCExecution.class);
+        IFactoryTestCaseExecution factoryTCExecution = appContext.getBean(IFactoryTestCaseExecution.class);
         IFactoryTestCaseExecutionSysVer factoryTestCaseExecutionSysVer = appContext.getBean(IFactoryTestCaseExecutionSysVer.class);
 
         try {
@@ -96,7 +96,7 @@ public class SaveManualExecution extends HttpServlet {
             long now = new Date().getTime();
             String version = Version.VERSION;
 
-            TCExecution execution = factoryTCExecution.create(0, test, testCase, build, revision, env, country, "", "", now, now,
+            TestCaseExecution execution = factoryTCExecution.create(0, test, testCase, build, revision, env, country, "", "", now, now,
                     controlStatus, controlMessage, application, "", "", "", tag, "Y", 0, 0, "", tCase.getStatus(), version,
                     null, null, null, false, "", "", "", "", "", "", null, null);
 

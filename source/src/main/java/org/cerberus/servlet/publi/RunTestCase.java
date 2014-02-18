@@ -34,9 +34,9 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Level;
 import org.cerberus.entity.MessageGeneral;
 import org.cerberus.entity.MessageGeneralEnum;
-import org.cerberus.entity.TCExecution;
+import org.cerberus.entity.TestCaseExecution;
 import org.cerberus.entity.TCase;
-import org.cerberus.factory.IFactoryTCExecution;
+import org.cerberus.factory.IFactoryTestCaseExecution;
 import org.cerberus.factory.IFactoryTCase;
 import org.cerberus.log.MyLogger;
 import org.cerberus.serviceEngine.IRunTestCaseService;
@@ -92,11 +92,11 @@ public class RunTestCase extends HttpServlet {
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         IRunTestCaseService runTestCaseService = appContext.getBean(RunTestCaseService.class);
         IFactoryTCase factoryTCase = appContext.getBean(IFactoryTCase.class);
-        IFactoryTCExecution factoryTCExecution = appContext.getBean(IFactoryTCExecution.class);
+        IFactoryTestCaseExecution factoryTCExecution = appContext.getBean(IFactoryTestCaseExecution.class);
 
         TCase tCase = factoryTCase.create(test, testCase);
 
-        TCExecution tCExecution = factoryTCExecution.create(0, test, testCase, null, null, environment, country, browser, "",
+        TestCaseExecution tCExecution = factoryTCExecution.create(0, test, testCase, null, null, environment, country, browser, "",
                 0, 0, "", "", null, seleniumIP, null, seleniumPort, tag, "N", verbose, screenshot, outputFormat, null,
                 Version.PROJECT_NAME_VERSION, tCase, null, null, manualURL, myHost, myContextRoot, myLoginRelativeURL, myEnvData, seleniumIP, seleniumPort, null, new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_TESTSTARTED));
 

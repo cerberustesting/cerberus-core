@@ -17,6 +17,15 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
+<%@page import="org.cerberus.entity.TestCaseStepActionControl"%>
+<%@page import="org.cerberus.service.ITestCaseStepActionControlService"%>
+<%@page import="org.cerberus.entity.TestCaseStepAction"%>
+<%@page import="org.cerberus.service.ITestCaseStepActionService"%>
+<%@page import="org.cerberus.service.ITestCaseStepService"%>
+<%@page import="org.cerberus.entity.TestCaseStep"%>
+<%@page import="org.cerberus.entity.TCase"%>
+<%@page import="org.cerberus.entity.TestCase"%>
+<%@page import="org.cerberus.service.ITestCaseService"%>
 <%@page import="org.cerberus.util.StringUtil"%>
 <%@page import="org.cerberus.entity.TestCaseExecutionSysVer"%>
 <%@page import="org.cerberus.service.ITestCaseExecutionSysVerService"%>
@@ -90,6 +99,7 @@
 
                     IParameterService myParameterService = appContext.getBean(IParameterService.class);
                     IApplicationService myApplicationService = appContext.getBean(IApplicationService.class);
+                    ITestCaseService testCaseService = appContext.getBean(ITestCaseService.class);
 
                     String PictureURL;
                     String MyPictureURL;
@@ -111,7 +121,7 @@
                     String revision = "";
                     String browser = "";
                     String browserFullVersion = "";
-
+                    String appSystem = "";
             %>
             <table id="arrond">
                 <tr>
@@ -146,12 +156,13 @@
                 String data = "";
                 String myApplication = "";
                 String environment = "";
-
+                String tcGroup = "";
 
                 if (rs_inf.first()) {
 
                     max_id = rs_inf.getString("Id");
                     myApplication = rs_inf.getString("Application");
+                    test = rs_inf.getString("Test");
                     testCase = rs_inf.getString("TestCase");
                     testCaseDesc = rs_inf.getString("Description");
                     country = rs_inf.getString("Country");
@@ -161,7 +172,9 @@
                     browser = rs_inf.getString("Browser");
                     browserFullVersion = rs_inf.getString("BrowserFullVersion");
                     IApplicationService applicationService = appContext.getBean(IApplicationService.class);
-                    String appSystem = applicationService.findApplicationByKey(myApplication).getSystem();
+                    appSystem = applicationService.findApplicationByKey(myApplication).getSystem();
+                    TCase myTestCase = testCaseService.findTestCaseByKey(test, testCase);
+                    tcGroup = myTestCase.getGroup();
             %>
             <br>
             <div id="table">
@@ -377,44 +390,66 @@
                     <%
 
                         ITestCaseStepExecutionService testCaseStepExecutionService = appContext.getBean(ITestCaseStepExecutionService.class);
+                        ITestCaseStepService testCaseStepService = appContext.getBean(ITestCaseStepService.class);
 
                         List<TestCaseStepExecution> stepList = testCaseStepExecutionService.findTestCaseStepExecutionById(iD);%>
                     <table id="stepTable" class="arrondTable">
                         <%
                             for (TestCaseStepExecution myStepData : stepList) {
                                 myKey++;
+                                TestCaseStep myTCS;
+                                myTCS = testCaseStepService.findTestCaseStep(myStepData.getTest(), myStepData.getTestCase(), myStepData.getStep());
+                                String myTCSDesc = "";
+                                if (!(myTCS==null)) {
+                                    myTCSDesc = myTCS.getDescription();
+                                }
+                                String styleMainTestCase1 = "";
+                                String styleMainTestCase2 = "";
+                                if ((myStepData.getTest().equals(test)) && (myStepData.getTestCase().equals(testCase))) {
+                                    styleMainTestCase1 = "<b>";
+                                    styleMainTestCase2 = "</b>";
+                                }
                         %>
                         <tr>
                             <td><%=DateUtil.getFormatedDate(myStepData.getFullStart())%></td>
                             <td><%=DateUtil.getFormatedDate(myStepData.getFullEnd())%></td>
-                            <td><%=myStepData.getTest()%></td>
-                            <td><%=myStepData.getTestCase()%></td>
-                            <td><%=myStepData.getStep()%></td>
+                            <td><%=styleMainTestCase1%><%=myStepData.getTest()%><%=styleMainTestCase2%></td>
+                            <td><%=styleMainTestCase1%><%=myStepData.getTestCase()%><%=styleMainTestCase2%></td>
+                            <td><%=styleMainTestCase1%><%=myStepData.getStep()%><%=styleMainTestCase2%></td>
+                            <td><%=styleMainTestCase1%><%=myTCSDesc%><%=styleMainTestCase2%></td>
                             <td class="<%=myStepData.getReturnCode()%>"><a class="<%=myStepData.getReturnCode()%>F"><%=myStepData.getReturnCode()%></a></td>
                             <td><%=myStepData.getTimeElapsed()%> s</td>
                         </tr>
                         <tr>
-                            <td colspan="8">
+                            <td colspan="9">
                                 <%
                                     ITestCaseStepActionExecutionService testCaseStepActionExecutionService = appContext.getBean(ITestCaseStepActionExecutionService.class);
+                                    ITestCaseStepActionService testCaseStepActionService = appContext.getBean(ITestCaseStepActionService.class);
 
                                     List<TestCaseStepActionExecution> actionList = testCaseStepActionExecutionService.findTestCaseStepActionExecutionByCriteria(iD, myStepData.getTest(), myStepData.getTestCase(), myStepData.getStep());%>
                                 <table id="actionTable" >
                                     <%
                                         myStep = String.valueOf(myKey);
-                                        for (TestCaseStepActionExecution myActionData : actionList) {%>
+                                        for (TestCaseStepActionExecution myActionData : actionList) {
+                                            TestCaseStepAction myTCSA;
+                                            myTCSA = testCaseStepActionService.findTestCaseStepActionbyKey(myStepData.getTest(), myStepData.getTestCase(), myStepData.getStep(), myActionData.getSequence());
+                                            String actionDesc = "";
+                                            if ((myTCSA != null) && !(myTCSA.getDescription().trim().equalsIgnoreCase(""))) {
+                                                actionDesc = " title='" + myTCSA.getDescription() + "'";
+                                            }
+                                    %>
                                     <tr>
                                         <td>&nbsp;&nbsp;&nbsp;&nbsp;</td>
                                         <td><%=DateUtil.getFormatedDate(myActionData.getStartLong())%></td>
                                         <td><%=DateUtil.getFormatedElapsed(myActionData.getStartLong(), myActionData.getEndLong())%></td>
                                         <td><%=myActionData.getSequence()%></td>
-                                        <td><b><%=myActionData.getAction()%></b></td>
+                                        <td<%=actionDesc%>><b><%=myActionData.getAction()%></b></td>
                                         <td><%=myActionData.getObject()%></td>
                                         <td><%=myActionData.getProperty()%></td>
                                         <td class="<%=myActionData.getReturnCode()%>"><span class="<%=myActionData.getReturnCode()%>F" id="ACTSTS-<%=myStep + "-" + myActionData.getSequence()%>"><%=myActionData.getReturnCode()%></span></td>
                                         <td><i><span id="ACTMES-<%=myStep + "-" + myActionData.getSequence()%>"><%=myActionData.getReturnMessage()%></span></i></td>
                                         <td><%if (myActionData.getScreenshotFilename() != null) {%>
-                                            <a href="<%=PictureURL%><%=myActionData.getScreenshotFilename().replaceAll("\\\\","/")%>" id="ACTIMG-<%=myStep + "-" + myActionData.getSequence()%>" class="zoombox  zgallery1">img</a>
+                                            <a href="<%=PictureURL%><%=myActionData.getScreenshotFilename().replaceAll("\\\\", "/")%>" id="ACTIMG-<%=myStep + "-" + myActionData.getSequence()%>" class="zoombox  zgallery1">img</a>
                                             <%}%>
                                         </td>
                                     </tr>
@@ -423,26 +458,35 @@
                                             <%
 
                                                 ITestCaseStepActionControlExecutionService testCaseStepActionControlExecutionService = appContext.getBean(ITestCaseStepActionControlExecutionService.class);
+                                                ITestCaseStepActionControlService testCaseStepActionControlService = appContext.getBean(ITestCaseStepActionControlService.class);
 
                                                 List<TestCaseStepActionControlExecution> controlList = testCaseStepActionControlExecutionService.findTestCaseStepActionControlExecutionByCriteria(iD, myActionData.getTest(), myActionData.getTestCase(), myActionData.getStep(), myActionData.getSequence());%>
                                             <table id="controlTable" >
                                                 <%
                                                     myAction = myStep + "-" + myActionData.getSequence();
 
-                                                    for (TestCaseStepActionControlExecution myControlData : controlList) {%>
+                                                    for (TestCaseStepActionControlExecution myControlData : controlList) {
+                                                        TestCaseStepActionControl myTCSAC;
+                                                        myTCSAC = testCaseStepActionControlService.findTestCaseStepActionControlByKey(myStepData.getTest(), myStepData.getTestCase(), myStepData.getStep(), myActionData.getSequence(), myControlData.getControl());
+                                                        String controlDesc = "";
+                                                        if ((myTCSAC != null) && !(myTCSAC.getDescription().trim().equalsIgnoreCase(""))) {
+                                                            controlDesc = " title='" + myTCSAC.getDescription() + "'";
+                                                        }
+
+                                                %>
                                                 <tr>
                                                     <td>&nbsp;&nbsp;&nbsp;&nbsp;</td>
                                                     <td><%=DateUtil.getFormatedDate(myControlData.getStartLong())%></td>
                                                     <td><%=DateUtil.getFormatedElapsed(myControlData.getStartLong(), myControlData.getEndLong())%></td>
                                                     <td><%=myControlData.getControl()%></td>
-                                                    <td><b><%=myControlData.getControlType()%></b></td>
+                                                    <td<%=controlDesc%>><b><%=myControlData.getControlType()%></b></td>
                                                     <td><%=myControlData.getControlProperty()%></td>
                                                     <td><%=myControlData.getControlValue()%></td>
                                                     <td><%=myControlData.getFatal()%></td>
                                                     <td class="<%=myControlData.getReturnCode()%>"><span class="<%=myControlData.getReturnCode()%>F" id="CTLSTS-<%=myAction + "-" + myControlData.getControl()%>"><%=myControlData.getReturnCode()%></span></td>
                                                     <td><i><span id="CTLMES-<%=myAction + "-" + myControlData.getControl()%>"><%=myControlData.getReturnMessage()%></span></i></td>
                                                     <td><%if (myControlData.getScreenshotFilename() != null) {%>
-                                                        <a href="<%=PictureURL%><%=myControlData.getScreenshotFilename().replaceAll("\\\\","/")%>" class="zoombox  zgallery1">img</a>
+                                                        <a href="<%=PictureURL%><%=myControlData.getScreenshotFilename().replaceAll("\\\\", "/")%>" class="zoombox  zgallery1">img</a>
                                                         <%}%>
                                                     </td>
                                                 </tr>
@@ -661,31 +705,33 @@
                 <h4>Contextual Actions</h4>
                 <table id="arrond" style="text-align: left" border="1" >
                     <tr>
-                        <td>
-                            <a href="RunTests.jsp?Test=<%=test%>&TestCase=<%=testCase%>&Country=<%=country%>">Run the same Test Case again.</a>
-                        </td>
+                        <% if (tcGroup.equalsIgnoreCase("AUTOMATED")) {%>
+                        <td><a href="RunTests.jsp?Test=<%=test%>&TestCase=<%=testCase%>&MySystem=<%=appSystem%>&Country=<%=country%>&Env=<%=environment%>">Run the same Test Case again.</a></td>
+                        <%        } else if (tcGroup.equalsIgnoreCase("MANUAL")) {%>
+                        <td><a href="RunManualTestCase.jsp?Test=<%=test%>&TestCase=<%=testCase%>&MySystem=<%=appSystem%>&Country=<%=country%>&Env=<%=environment%>">Run the same Test Case again.</a></td>
+                        <%        }%>    
                         <td>
                             <a href="TestCase.jsp?Test=<%=test%>&TestCase=<%=testCase%>&Load=Load">Modify the Test Case.</a>
                         </td>
                         <td>
                             <%
                                 String newBugURL = myApplicationService.findApplicationByKey(myApplication).getBugTrackerNewUrl();
-                                if (StringUtil.isNullOrEmpty(newBugURL))  {
-  %>
+                                if (StringUtil.isNullOrEmpty(newBugURL)) {
+                            %>
                             <a href="javascript:void(0)" title="Define the New Bug URL at the application level in order to open a bug from here.">Open a bug.</a> 
-<%                              } else {
-                                    newBugURL = newBugURL.replaceAll("%EXEID%", id_filter);
-                                    newBugURL = newBugURL.replaceAll("%TEST%", test);
-                                    newBugURL = newBugURL.replaceAll("%TESTCASE%", testCase);
-                                    newBugURL = newBugURL.replaceAll("%TESTCASEDESC%", testCaseDesc);
-                                    newBugURL = newBugURL.replaceAll("%COUNTRY%", country);
-                                    newBugURL = newBugURL.replaceAll("%ENV%", environment);
-                                    newBugURL = newBugURL.replaceAll("%BUILD%", build);
-                                    newBugURL = newBugURL.replaceAll("%REV%", revision);
-                                    newBugURL = newBugURL.replaceAll("%BROWSER%", browser);
-                                    newBugURL = newBugURL.replaceAll("%BROWSERFULLVERSION%", browserFullVersion);%>
+                            <%                              } else {
+                                newBugURL = newBugURL.replaceAll("%EXEID%", id_filter);
+                                newBugURL = newBugURL.replaceAll("%TEST%", test);
+                                newBugURL = newBugURL.replaceAll("%TESTCASE%", testCase);
+                                newBugURL = newBugURL.replaceAll("%TESTCASEDESC%", testCaseDesc);
+                                newBugURL = newBugURL.replaceAll("%COUNTRY%", country);
+                                newBugURL = newBugURL.replaceAll("%ENV%", environment);
+                                newBugURL = newBugURL.replaceAll("%BUILD%", build);
+                                newBugURL = newBugURL.replaceAll("%REV%", revision);
+                                newBugURL = newBugURL.replaceAll("%BROWSER%", browser);
+                                newBugURL = newBugURL.replaceAll("%BROWSERFULLVERSION%", browserFullVersion);%>
                             <a href="<%= newBugURL%>" target='_blank' title="title">Open a bug.</a> 
-<%                                }
+                            <%                                }
 
                             %>
                         </td>
@@ -714,8 +760,8 @@
             </div>
             <script>
                 /**
-                * Or You can also use specific options
-                */
+                 * Or You can also use specific options
+                 */
                 $('a.zoombox').zoombox({
                     theme       : 'zoombox',        //available themes : zoombox,lightbox, prettyphoto, darkprettyphoto, simple
                     opacity     : 0.8,              // Black overlay opacity

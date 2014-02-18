@@ -78,6 +78,15 @@
                     tag = new String("");
                 }
 
+                String browserFullVersion;
+                if (request.getParameter("BrowserFullVersion") != null && request.getParameter("BrowserFullVersion").compareTo("") != 0) {
+                    browserFullVersion = request.getParameter("BrowserFullVersion");
+                    URL = URL + "&BrowserFullVersion=" + browserFullVersion;
+                    execclauses = execclauses + " AND tce.BrowserFullVersion = '" + browserFullVersion + "'";
+                } else {
+                    browserFullVersion = new String("");
+                }
+
                 String systemExe;
                 String systemBR; // Used for filtering Build and Revision.
                 if (request.getParameter("SystemExe") != null && request.getParameter("SystemExe").compareTo("All") != 0) {
@@ -270,6 +279,28 @@
                 } else {
                     allstatus = new String[1];
                     allstatus[0] = new String("%%");
+                }
+
+                String[] allExeStatus;
+                String exeStatus = "";
+                if (request.getParameterValues("ExeStatus") != null && (request.getParameterValues("ExeStatus")[0]).compareTo("All") != 0) {
+                    allExeStatus = request.getParameterValues("ExeStatus");
+                    if (allExeStatus != null && allExeStatus.length > 0) {
+                        execclauses += " AND (";
+                        for (int index = 0; index < allExeStatus.length; index++) {
+                            execclauses += " Status = '" + allExeStatus[index] + "' ";
+                            URL += "&ExeStatus=" + allExeStatus[index];
+                            exeStatus += allExeStatus[index] + ",";
+
+                            if (index < (allExeStatus.length - 1)) {
+                                execclauses += " OR ";
+                            }
+                        }
+                        execclauses += ") ";
+                    }
+                } else {
+                    allExeStatus = new String[1];
+                    allExeStatus[0] = new String("%%");
                 }
 
                 String targetBuild = "";
@@ -552,6 +583,8 @@
                                     <td id="wob" style="width: 130px"><%out.print(dbDocS(conn, "testcaseexecution", "IP", "Ip"));%></td>
                                     <td id="wob" style="width: 130px"><%out.print(dbDocS(conn, "testcaseexecution", "Port", "Port"));%></td>
                                     <td id="wob" style="width: 130px"><%out.print(dbDocS(conn, "testcaseexecution", "tag", "Tag"));%></td>
+                                    <td id="wob" style="width: 130px"><%out.print(dbDocS(conn, "testcaseexecution", "browserfullversion", ""));%></td>
+                                    <td id="wob" style="width: 130px"><%out.print(dbDocS(conn, "testcaseexecution", "status", ""));%></td>
                                 </tr>
 
                                 <tr>
@@ -597,6 +630,28 @@
                                     <td id="wob"><input style="font-weight: bold; width: 130px" name="Ip" id="Ip" value="<%=ip%>"></td>
                                     <td id="wob"><input style="font-weight: bold; width: 60px" name="Port" id="Port" value="<%=port%>"></td>
                                     <td id="wob"><input style="font-weight: bold; width: 130px" name="Tag" id="Tag" value="<%=tag%>"></td>
+                                    <td id="wob"><input style="font-weight: bold; width: 130px" name="BrowserFullVersion" id="Tag" value="<%=browserFullVersion%>"></td>
+                                    <td id="wob">
+                                        <select multiple  size="3" id="exestatus" style="width: 170px" name="ExeStatus">
+                                            <option value="All">-- ALL --</option>
+                                            <%
+                                                sq = "SELECT value FROM invariant WHERE idname='TCSTATUS' ORDER BY sort;";
+                                                q = stmt.executeQuery(sq);
+                                                ret = "";
+                                                while (q.next()) {
+                                                    ret = ret + " <option value=\"" + q.getString("value") + "\"";
+                                                    ret = ret + " style=\"width: 200px;";
+                                                    ret = ret + "\"";
+
+                                                    if ((exeStatus != null) && (exeStatus.indexOf(q.getString("value") + ",") >= 0)) {
+                                                        ret = ret + " SELECTED ";
+                                                    }
+                                                    ret = ret + ">" + q.getString("value") ;
+                                                    ret = ret + "</option>";
+                                                }%>
+                                            <%=ret%>
+                                        </select>
+                                    </td>
                                 </tr>
                             </table>
                             <%
@@ -814,6 +869,11 @@
                                         } else {
                                             statsStatusForTest.put(rs_time.getString("tc.test") + rs_time.getString("tc.Status"), 1);
                                         }
+                                        if (statsStatusForTest.containsKey("TOTAL" + rs_time.getString("tc.Status"))) {
+                                            statsStatusForTest.put("TOTAL" + rs_time.getString("tc.Status"), statsStatusForTest.get("TOTAL" + rs_time.getString("tc.Status")) + 1);
+                                        } else {
+                                            statsStatusForTest.put("TOTAL" + rs_time.getString("tc.Status"), 1);
+                                        }
 
                                         // Collecting group stats for current test. 
                                         if (!listGroup.contains(rs_time.getString("tc.Group"))) {
@@ -823,6 +883,11 @@
                                             statsGroupForTest.put(rs_time.getString("tc.test") + rs_time.getString("tc.Group"), statsGroupForTest.get(rs_time.getString("tc.test") + rs_time.getString("tc.Group")) + 1);
                                         } else {
                                             statsGroupForTest.put(rs_time.getString("tc.test") + rs_time.getString("tc.Group"), 1);
+                                        }
+                                        if (statsGroupForTest.containsKey("TOTAL" + rs_time.getString("tc.Group"))) {
+                                            statsGroupForTest.put("TOTAL" + rs_time.getString("tc.Group"), statsGroupForTest.get("TOTAL" + rs_time.getString("tc.Group")) + 1);
+                                        } else {
+                                            statsGroupForTest.put("TOTAL" + rs_time.getString("tc.Group"), 1);
                                         }
 
                                         rs_testcasecountrygeneral.first();
@@ -926,7 +991,7 @@
                                         }
                                     %>
                                         <td class="INF"><%
-                                        if (rs_time.getString("tc.Comment") != null) {%><%=rs_time.getString("tc.Comment")%><%}%></td>
+                                            if (rs_time.getString("tc.Comment") != null) {%><%=rs_time.getString("tc.Comment")%><%}%></td>
                                     <td class="INF"><%
                                         if ((rs_time.getString("tc.BugID") != null)
                                                 && (rs_time.getString("tc.BugID").compareToIgnoreCase("") != 0)
@@ -954,14 +1019,14 @@
                                 <td class="INF"><%
                                     if (rs_time.getString("tc.Comment") != null) {%><%=rs_time.getString("tc.Comment")%><%}%></td>
                                 <td class="INF"><%
-                                        if ((rs_time.getString("tc.BugID") != null)
-                                                && (rs_time.getString("tc.BugID").compareToIgnoreCase("") != 0)
-                                                && (rs_time.getString("tc.BugID").compareToIgnoreCase("null") != 0)) {
-                                            SitdmossBugtrackingURL = myApplicationService.findApplicationByKey(rs_time.getString("application")).getBugTrackerUrl();
-                                            SitdmossBugtrackingURL_tc = SitdmossBugtrackingURL.replaceAll("%BUGID%", rs_time.getString("tc.BugID"));
-                                        } else {
-                                            SitdmossBugtrackingURL_tc = "";
-                                        }
+                                    if ((rs_time.getString("tc.BugID") != null)
+                                            && (rs_time.getString("tc.BugID").compareToIgnoreCase("") != 0)
+                                            && (rs_time.getString("tc.BugID").compareToIgnoreCase("null") != 0)) {
+                                        SitdmossBugtrackingURL = myApplicationService.findApplicationByKey(rs_time.getString("application")).getBugTrackerUrl();
+                                        SitdmossBugtrackingURL_tc = SitdmossBugtrackingURL.replaceAll("%BUGID%", rs_time.getString("tc.BugID"));
+                                    } else {
+                                        SitdmossBugtrackingURL_tc = "";
+                                    }
                                     if (SitdmossBugtrackingURL_tc.equalsIgnoreCase("") == false) {%><a href="<%=SitdmossBugtrackingURL_tc%>" target="_blank"><%=rs_time.getString("tc.BugID")%></a><%
                                         }
                                         if ((rs_time.getString("tc.TargetBuild") != null) && (rs_time.getString("tc.TargetBuild").equalsIgnoreCase("") == false)) {
@@ -1243,7 +1308,17 @@
                                     %><td align="center"><%=totalTest%></td></tr><%
                                         }
                                     %>
-                            </table>
+                            <tr id="header"><td>TOTAL</td><%
+                                    int totalTest = 0;
+                                    for (int i = 0; i < listGroup.size(); i++) {
+                                        if (statsGroupForTest.containsKey("TOTAL" + listGroup.get(i))) {
+                                            totalTest += statsGroupForTest.get("TOTAL" + listGroup.get(i));
+                                    %><td align="center"><%=statsGroupForTest.get("TOTAL" + listGroup.get(i))%></td><%
+                                    } else {
+                                    %><td></td><%                                                            }
+                                        }
+
+                                    %><td align="center"><%=totalTest%></td></tr></table>
                             <br>
                             <table id="statusReporting" style="display: none" border="0px" cellpadding="0" cellspacing="0">
                                 <tr id="header">
@@ -1265,7 +1340,7 @@
                                 <%
 
                                     for (int index = 0; index < distinctList.size(); index++) {
-                                        int totalTest = 0;
+                                        totalTest = 0;
                                 %><tr><td><%=distinctList.get(index)%></td><%
 
                                     for (int i = 0; i < myInv.size(); i++) {
@@ -1276,9 +1351,9 @@
                                             mj++;
                                         }
                                         if (mj >= listStatus.size()) { // Current status was not in the test data
-                                    %><td></td><%                                                    } else {
-    if (statsStatusForTest.containsKey(distinctList.get(index) + listStatus.get(mj))) {
-        totalTest += statsStatusForTest.get(distinctList.get(index) + listStatus.get(mj));
+%><td></td><%                                                    } else {
+                                        if (statsStatusForTest.containsKey(distinctList.get(index) + listStatus.get(mj))) {
+                                            totalTest += statsStatusForTest.get(distinctList.get(index) + listStatus.get(mj));
                                     %><td align="center"><%=statsStatusForTest.get(distinctList.get(index) + listStatus.get(mj))%></td><%
                                     } else {
                                     %><td></td><%                                                                }
@@ -1288,7 +1363,26 @@
                                     %><td align="center"><%=totalTest%></td></tr><%
                                         }
                                     %>
-                            </table>
+                            <tr id="header"><td>TOTAL</td><%
+totalTest = 0;
+                                    for (int i = 0; i < myInv.size(); i++) {
+
+                                        // finding the real list of status from the page data inside the current complete status
+                                        int mj = 0;
+                                        while ((mj < listStatus.size()) && !(listStatus.get(mj).equals(myInv.get(i).getValue()))) {
+                                            mj++;
+                                        }
+                                        if (mj >= listStatus.size()) { // Current status was not in the test data
+%><td></td><%                                                    } else {
+                                        if (statsStatusForTest.containsKey("TOTAL" + listStatus.get(mj))) {
+                                            totalTest += statsStatusForTest.get("TOTAL" + listStatus.get(mj));
+                                    %><td align="center"><%=statsStatusForTest.get("TOTAL" + listStatus.get(mj))%></td><%
+                                    } else {
+                                    %><td></td><%                                                                }
+
+                                            }
+                                        }
+                                    %><td align="center"><%=totalTest%></td></tr></table>
                         </td>
                     </tr>
                 </table>
