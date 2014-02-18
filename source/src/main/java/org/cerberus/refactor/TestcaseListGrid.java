@@ -121,6 +121,7 @@ public class TestcaseListGrid extends HttpServlet {
                     strb.append(" a.status = '");
                     strb.append(status[x]);
                     strb.append("'");
+                    
                 }
                 strb.append(" ) ");
 
