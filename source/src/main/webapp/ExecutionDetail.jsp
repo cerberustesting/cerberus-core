@@ -121,6 +121,7 @@
                     String revision = "";
                     String browser = "";
                     String browserFullVersion = "";
+                    String exedate = "";
                     String appSystem = "";
             %>
             <table id="arrond">
@@ -170,6 +171,7 @@
                     build = rs_inf.getString("Build");
                     revision = rs_inf.getString("Revision");
                     browser = rs_inf.getString("Browser");
+                    exedate = rs_inf.getString("start");
                     browserFullVersion = rs_inf.getString("BrowserFullVersion");
                     IApplicationService applicationService = appContext.getBean(IApplicationService.class);
                     appSystem = applicationService.findApplicationByKey(myApplication).getSystem();
@@ -721,6 +723,7 @@
                             <a href="javascript:void(0)" title="Define the New Bug URL at the application level in order to open a bug from here.">Open a bug.</a> 
                             <%                              } else {
                                 newBugURL = newBugURL.replaceAll("%EXEID%", id_filter);
+                                newBugURL = newBugURL.replaceAll("%EXEDATE%", exedate);
                                 newBugURL = newBugURL.replaceAll("%TEST%", test);
                                 newBugURL = newBugURL.replaceAll("%TESTCASE%", testCase);
                                 newBugURL = newBugURL.replaceAll("%TESTCASEDESC%", testCaseDesc);
