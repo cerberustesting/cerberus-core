@@ -261,6 +261,10 @@
         <servlet-name>FindAllTestData</servlet-name>
         <servlet-class>org.cerberus.servlet.testdata.FindAllTestData</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>SaveManualExecutionPicture</servlet-name>
+        <servlet-class>org.cerberus.servlet.manualTestCase.SaveManualExecutionPicture</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>RunTestCase</servlet-name>
         <url-pattern>/RunTestCase</url-pattern>
@@ -504,6 +508,10 @@
     <servlet-mapping>
         <servlet-name>FindAllTestData</servlet-name>
         <url-pattern>/FindAllTestData</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>SaveManualExecutionPicture</servlet-name>
+        <url-pattern>/SaveManualExecutionPicture</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>
@@ -759,6 +767,7 @@
             <url-pattern>/ResultCI</url-pattern>
             <url-pattern>/GetConnectionPoolName</url-pattern>
             <url-pattern>/SaveManualExecution</url-pattern>
+            <url-pattern>/SaveManualExecutionPicture</url-pattern>
             <url-pattern>/DocumentationField</url-pattern>
             <url-pattern>/GetInvariantList</url-pattern>
             <url-pattern>/importXML</url-pattern>
