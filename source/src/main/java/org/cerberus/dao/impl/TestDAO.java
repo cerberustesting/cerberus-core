@@ -29,6 +29,7 @@ import org.cerberus.database.DatabaseSpring;
 import org.cerberus.entity.Test;
 import org.cerberus.factory.IFactoryTest;
 import org.cerberus.log.MyLogger;
+import org.cerberus.util.DateUtil;
 import org.cerberus.util.ParameterParserUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -104,7 +105,7 @@ public class TestDAO implements ITestDAO {
                 query.append(whereClause);
             }
 
-            MyLogger.log(TestDAO.class.getName(), Level.ERROR, "Query : Test.findTestByCriteria : " + query.toString());
+            MyLogger.log(TestDAO.class.getName(), Level.DEBUG, "Query : Test.findTestByCriteria : " + query.toString());
             PreparedStatement preStat = connection.prepareStatement(query.toString());
             if(parameters.size() > 0) {
                 int index = 0;
@@ -115,6 +116,132 @@ public class TestDAO implements ITestDAO {
             }
             try {
                 
+                ResultSet resultSet = preStat.executeQuery();
+                result = new ArrayList<Test>();
+                try {
+                    while (resultSet.next()) {
+                        if(resultSet != null) {
+                            result.add(this.loadTestFromResultSet(resultSet));
+                        }
+                    }
+                } catch (SQLException exception) {
+                    MyLogger.log(TestDAO.class.getName(), Level.ERROR, exception.toString());
+                } finally {
+                    resultSet.close();
+                }
+            } catch (SQLException exception) {
+                MyLogger.log(TestDAO.class.getName(), Level.ERROR, exception.toString());
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(TestDAO.class.getName(), Level.ERROR, exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(TestDAO.class.getName(), Level.WARN, e.toString());
+            }
+        }
+        return result;    
+    }
+    /*
+     public List<Test> findTestByCriteria(Test testSelect, Test testCriteria, String whereClause, String orderClause) {
+        StringBuilder stringBuilderQuery = new StringBuilder("SELECT ");
+        boolean notFirst = false;
+        if (testSelect == null) {
+            stringBuilderQuery.append("* ");
+        } else {
+            if (testSelect.getTest() != null) {
+                stringBuilderQuery.append("Test ");
+                notFirst = true;
+            }
+
+            if (testSelect.getDescription() != null) {
+                if (notFirst) {
+                    stringBuilderQuery.append(", ");
+                }
+                stringBuilderQuery.append("Description ");
+                notFirst = true;
+            }
+
+            if (testSelect.getActive() != null) {
+                if (notFirst) {
+                    stringBuilderQuery.append(", ");
+                }
+                stringBuilderQuery.append("Active ");
+                notFirst = true;
+            }
+
+            if (testSelect.getAutomated() != null) {
+                if (notFirst) {
+                    stringBuilderQuery.append(", ");
+                }
+                stringBuilderQuery.append("Automated ");
+                notFirst = true;
+            }
+
+            if (testSelect.gettDateCrea() != null) {
+                if (notFirst) {
+                    stringBuilderQuery.append(", ");
+                }
+                stringBuilderQuery.append("TDateCrea ");
+                notFirst = true;
+            }
+        }
+
+        stringBuilderQuery.append(" FROM Test ");
+
+        StringBuilder whereClauseCriteria = new StringBuilder("WHERE 1=1 ");
+
+        List<String> parameters = new ArrayList<String>();
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            if (testCriteria.getTest() != null && !"".equals(testCriteria.getTest().trim())) {
+                whereClauseCriteria.append("AND Test LIKE ? ");
+                parameters.add(testCriteria.getTest());
+            }
+
+            if (testCriteria.getDescription() != null && !"".equals(testCriteria.getDescription().trim())) {
+                whereClauseCriteria.append("AND Description LIKE ? ");
+                parameters.add(testCriteria.getDescription());
+            }
+
+            if (testCriteria.getActive() != null && !"".equals(testCriteria.getActive().trim())) {
+                whereClauseCriteria.append("AND Active LIKE ? ");
+                parameters.add(testCriteria.getActive());
+            }
+
+            if (testCriteria.getAutomated() != null && !"".equals(testCriteria.getAutomated().trim())) {
+                whereClauseCriteria.append("AND Automated LIKE ? ");
+                parameters.add(testCriteria.getAutomated());
+            }
+
+            if (testCriteria.gettDateCrea() != null && !"".equals(testCriteria.gettDateCrea().trim())) {
+                whereClauseCriteria.append("AND TDateCrea LIKE ? ");
+                parameters.add(testCriteria.gettDateCrea());
+            }
+            if (parameters.size() > 0) {
+                stringBuilderQuery.append(whereClauseCriteria);
+            }
+
+            if (whereClause != null && !whereClause.isEmpty()) {
+                stringBuilderQuery.append(whereClause);
+            }
+
+            MyLogger.log(TestDAO.class.getName(), Level.ERROR, "Query : Test.findTestByCriteria : " + query.toString());
+            PreparedStatement preStat = connection.prepareStatement(query.toString());
+            if (parameters.size() > 0) {
+                int index = 0;
+                for (String parameter : parameters) {
+                    index++;
+                    preStat.setString(index, ParameterParserUtil.wildcardIfEmpty(parameter));
+                }
+            }
+            try {
 
                 ResultSet resultSet = preStat.executeQuery();
                 result = new ArrayList<Test>();
@@ -143,13 +270,15 @@ public class TestDAO implements ITestDAO {
                 MyLogger.log(TestDAO.class.getName(), Level.WARN, e.toString());
             }
         }
-        return result;    
-    }
+        return result;
 
+
+    }
+*/
     @Override
     public boolean createTest(Test test) {
         boolean res = false;
-        final String sql = "INSERT INTO test (Test, Description, Active, Automated) VALUES (?, ?, ?, ?)";
+        final String sql = "INSERT INTO test (Test, Description, Active, Automated, TDateCrea) VALUES (?, ?, ?, ?, ?)";
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -159,7 +288,7 @@ public class TestDAO implements ITestDAO {
                 preStat.setString(2, test.getDescription());
                 preStat.setString(3, test.getActive());
                 preStat.setString(4, test.getAutomated());
-                //preStat.setString(5, test.gettDateCrea());
+                preStat.setString(5, DateUtil.getMySQLTimestampTodayDeltaMinutes(0));
 
                 res = preStat.executeUpdate() > 0;
             } catch (SQLException exception) {
@@ -215,11 +344,17 @@ public class TestDAO implements ITestDAO {
     }
 
     private Test loadTestFromResultSet(ResultSet resultSet) throws SQLException {
-        String test = resultSet.getString("Test");
-        String description = resultSet.getString("Description");
-        String active = resultSet.getString("Active");
-        String automated = resultSet.getString("Automated");
-        String tcactive = resultSet.getString("TDateCrea");
+        if(resultSet == null) {
+            return null;
+        }
+        
+        String test = resultSet.getString("test") == null ? "" : resultSet.getString("test");
+        String description = resultSet.getString("description") == null ? "" : resultSet.getString("description");
+        String active = resultSet.getString("active") == null ? "" : resultSet.getString("active");
+        String automated = resultSet.getString("automated") == null ? "" : resultSet.getString("automated");
+
+//      String tcactive = resultSet.getString("tdatecrea") == null ? "" : resultSet.getString("tdatecrea");
+        String tcactive = "";
 
         return factoryTest.create(test, description, active, automated, tcactive);
     }
