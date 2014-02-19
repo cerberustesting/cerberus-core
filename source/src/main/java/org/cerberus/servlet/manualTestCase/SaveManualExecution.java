@@ -94,7 +94,7 @@ public class SaveManualExecution extends HttpServlet {
             String build = countryEnvParam.getBuild();
             String revision = countryEnvParam.getRevision();
             long now = new Date().getTime();
-            String version = Version.VERSION;
+            String version = "Cerberus-"+Version.VERSION;
 
             TestCaseExecution execution = factoryTCExecution.create(0, test, testCase, build, revision, env, country, "", "", now, now,
                     controlStatus, controlMessage, application, "", "", "", tag, "Y", 0, 0, "", tCase.getStatus(), version,
@@ -104,6 +104,8 @@ public class SaveManualExecution extends HttpServlet {
 
             TestCaseExecutionSysVer testCaseExecutionSysVer = factoryTestCaseExecutionSysVer.create(execution.getId(), application.getSystem(), build, revision);
             testCaseExecutionSysVerService.insertTestCaseExecutionSysVer(testCaseExecutionSysVer);
+
+            resp.getWriter().print(execution.getId());
 
         } catch (CerberusException e) {
             MyLogger.log(SaveManualExecution.class.getName(), Level.FATAL, "" + e.getMessageError().getDescription());
