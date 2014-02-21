@@ -80,6 +80,11 @@
                      * Test : Test, Description, Active
                      */
                     List<Test> tests = testService.getListOfTest();
+
+                    boolean canEdit = false;
+                    if (request.getUserPrincipal() != null && request.isUserInRole("TestAdmin")) {
+                        canEdit = true;
+                    }
             %>
             <!-- Select List -->
             <div id="select">
@@ -162,8 +167,8 @@
                         test_automated__man = "N";
                     }
             %>
-
-            <form method="post" name="DeleteTest"> 
+            <% if(canEdit){ %>
+            <form method="post" name="DeleteTest">
                 <table  id="generalparameter" class ="arrond" style="text-align: left; display:none" border="0" cellpadding="2" cellspacing="2" >
                     <tr>
                         <td class="wob">
@@ -205,6 +210,7 @@
                                     <td class="wob"><input id="savetestbutton" class="button" name="save_test" value="Save Test Modification" type="submit" onclick="redirectionTestCase(0, '<%=test_test%>')"></td>
 
                                 </tr></table></td></tr></table></form>
+            <% } %>
             <table  id="parametergeneral" class="arrond" style="text-align: left; display:table" border="0" cellpadding="2" cellspacing="2" >
                 <tr><td class="wob">
                         <table>
@@ -214,7 +220,9 @@
                                 <td class="wob" id="active" style="width: 40px;" name="active"><%=test_active%> //</td>
                                 <td id="wob" style="font-weight: bold; width: 80px">\\ Automated: </td>
                                 <td class="wob" id="automated" style="width: 40px;" name="automated"><%=test_automated%> //</td>
+                            <% if(canEdit){ %>
                                 <td class="wob"><input id="button1" type="button" value="+" onclick="javascript:setVisible();"></td>	</tr>
+                            <% } %>
                         </table></td></tr></table>   
 
             <form method="post" name="DeleteTestCase" action="DeleteTestCase">               
@@ -323,7 +331,7 @@
 
                                             <table><tr>
                                                     <td>
-                                                        <%if (request.isUserInRole("TestAdmin")) {%>
+                                                        <%if (canEdit) {%>
                                                         <input id="test_testcase_delete" name="test_testcase_delete" type="checkbox" value="<%=rs_testcase.getString("t1.Test")%> - <%=rs_testcase.getString("testcase")%>">
                                                         <%}%>
                                                     </td>
@@ -448,10 +456,10 @@
                                     stmt22.close();
                                     stmt_testcase.close();
                                 %>
-                                <br> 
-                                                        <%if (request.isUserInRole("TestAdmin")) {%>
+                                <br>
+                            <% if(canEdit){ %>
                                 <input class="button" name="submit_changes" id="submit_changes" value="Delete TestCase" type="submit"> 
-                                                        <%}%>
+                            <%}%>
                             </div></td></tr></table>
             </form>
             <%
