@@ -64,6 +64,7 @@ public class ExecutionCheckService implements IExecutionCheckService {
              * Manual application connectivity parameter
              */
             if (this.checkTestCaseActive(tCExecution.gettCase())
+                    && this.checkTestCaseNotManual(tCExecution.gettCase())
                     && this.checkTypeEnvironment(tCExecution)
                     && this.checkCountry(tCExecution)
                     && this.checkMaintenanceTime(tCExecution)) {
@@ -74,6 +75,7 @@ public class ExecutionCheckService implements IExecutionCheckService {
              * Automatic application connectivity parameter (from database)
              */
             if (this.checkEnvironmentActive(tCExecution.getCountryEnvParam())
+                    && this.checkTestCaseNotManual(tCExecution.gettCase())
                     && this.checkRangeBuildRevision(tCExecution)
                     && this.checkTargetBuildRevision(tCExecution)
                     && this.checkActiveEnvironmentGroup(tCExecution)
@@ -81,7 +83,7 @@ public class ExecutionCheckService implements IExecutionCheckService {
                     && this.checkTypeEnvironment(tCExecution)
                     && this.checkCountry(tCExecution)
                     && this.checkMaintenanceTime(tCExecution)
-                    && this.checkVerboseIsNotZeroForFirefoxOnly(tCExecution)){
+                    && this.checkVerboseIsNotZeroForFirefoxOnly(tCExecution)) {
                 return new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_CHECKINGPARAMETERS);
             }
         }
@@ -106,6 +108,15 @@ public class ExecutionCheckService implements IExecutionCheckService {
         return false;
     }
 
+    private boolean checkTestCaseNotManual(TCase testCase) {
+        MyLogger.log(ExecutionCheckService.class.getName(), Level.DEBUG, "Checking if testcase is not MANUAL");
+        if (!(testCase.getGroup().equals("MANUAL"))) {
+            return true;
+        }
+        message = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_TESTCASE_ISMANUAL);
+        return false;
+    }
+
     private boolean checkTypeEnvironment(TestCaseExecution tCExecution) {
         MyLogger.log(ExecutionCheckService.class.getName(), Level.DEBUG, "Checking if application environment type is compatible with environment type");
         try {
@@ -125,12 +136,12 @@ public class ExecutionCheckService implements IExecutionCheckService {
         MyLogger.log(ExecutionCheckService.class.getName(), Level.DEBUG, "Checking if test can be executed in this build and revision");
         TCase tc = tCExecution.gettCase();
         CountryEnvParam env = tCExecution.getCountryEnvParam();
-        String tcFromSprint = ParameterParserUtil.parseStringParam(tc.getFromSprint(),"");
-        String tcToSprint = ParameterParserUtil.parseStringParam(tc.getToSprint(),"");
-        String tcFromRevision = ParameterParserUtil.parseStringParam(tc.getFromRevision(),"");
-        String tcToRevision = ParameterParserUtil.parseStringParam(tc.getToRevision(),"");
-        String sprint = ParameterParserUtil.parseStringParam(env.getBuild(),"");
-        String revision = ParameterParserUtil.parseStringParam(env.getRevision(),"");
+        String tcFromSprint = ParameterParserUtil.parseStringParam(tc.getFromSprint(), "");
+        String tcToSprint = ParameterParserUtil.parseStringParam(tc.getToSprint(), "");
+        String tcFromRevision = ParameterParserUtil.parseStringParam(tc.getFromRevision(), "");
+        String tcToRevision = ParameterParserUtil.parseStringParam(tc.getToRevision(), "");
+        String sprint = ParameterParserUtil.parseStringParam(env.getBuild(), "");
+        String revision = ParameterParserUtil.parseStringParam(env.getRevision(), "");
 
         if (!tcFromSprint.isEmpty() && sprint != null) {
             try {
@@ -179,10 +190,10 @@ public class ExecutionCheckService implements IExecutionCheckService {
         MyLogger.log(ExecutionCheckService.class.getName(), Level.DEBUG, "Checking target build");
         TCase tc = tCExecution.gettCase();
         CountryEnvParam env = tCExecution.getCountryEnvParam();
-        String tcSprint = ParameterParserUtil.parseStringParam(tc.getTargetSprint(),"");
-        String tcRevision = ParameterParserUtil.parseStringParam(tc.getTargetRevision(),"");
-        String sprint = ParameterParserUtil.parseStringParam(env.getBuild(),"");
-        String revision = ParameterParserUtil.parseStringParam(env.getRevision(),"");
+        String tcSprint = ParameterParserUtil.parseStringParam(tc.getTargetSprint(), "");
+        String tcRevision = ParameterParserUtil.parseStringParam(tc.getTargetRevision(), "");
+        String sprint = ParameterParserUtil.parseStringParam(env.getBuild(), "");
+        String revision = ParameterParserUtil.parseStringParam(env.getRevision(), "");
 
         if (!tcSprint.isEmpty() && sprint != null) {
             try {
@@ -332,12 +343,12 @@ public class ExecutionCheckService implements IExecutionCheckService {
         }
         return true;
     }
-    
-    private boolean checkVerboseIsNotZeroForFirefoxOnly(TestCaseExecution tCExecution){
+
+    private boolean checkVerboseIsNotZeroForFirefoxOnly(TestCaseExecution tCExecution) {
         if (!tCExecution.getBrowser().equalsIgnoreCase("firefox")) {
-            if(tCExecution.getVerbose() > 0){
-            message = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_VERBOSE_USED_WITH_INCORRECT_BROWSER);
-            return false;
+            if (tCExecution.getVerbose() > 0) {
+                message = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_VERBOSE_USED_WITH_INCORRECT_BROWSER);
+                return false;
             }
         }
         return true;
