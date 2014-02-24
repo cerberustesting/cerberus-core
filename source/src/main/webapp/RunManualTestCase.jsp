@@ -227,9 +227,6 @@
                     <input type="text" id="executionTag" name="executionTag" style="width: 500px"/>
                 </div>
             </div>
-            <div id="divResultMessage" class="field" style="width: 650px; text-align: center">
-                <span id="resultMessage" style="color: green; font-size: large; font-weight: 600;"></span>
-            </div>
             <div style="width: 90%; font: 90% sans-serif">
                 <table id="testCaseTable" class="display">
                     <thead>
@@ -295,11 +292,13 @@
 
                     var d = {test: test, testCase: testCase, env: env, country: country, controlStatus: res, controlMessage: message, tag: tag};
 
-                    $.post("SaveManualExecution", d,function () {
+                    $.post("SaveManualExecution", d,function (run) {
                         $("#resultMessage").html("Manual Execution of Test Case <i>" + test + " - " + testCase + "</i> created");
-                        $("#divResultMessage").slideDown("slow");
                         data.hidden = true;
-                        window.setTimeout(showMessage, 7000);
+                        $("#runId").val(run);
+                        $("#picTest").val(test);
+                        $("#picTestCase").val(testCase);
+                        $( "#divPictureSave" ).dialog( "open" );
                     }).fail(function (error) {
                         alert(error.responseText);
                     });
@@ -384,7 +383,7 @@
                         })
                     });
                     loader.remove();
-                    $("#test").val("<%= request.getParameter("Test") == null ? "" : request.getParameter("Test") %>");
+                    $("#test").val("<%= request.getParameter("Test") == null ? "All" : request.getParameter("Test") %>");
                     $("#testCase").val("<%= request.getParameter("TestCase") == null ? "" : request.getParameter("TestCase") %>");
                     $("#executionCountry").val("<%= request.getParameter("Country") == null ? "" : request.getParameter("Country") %>");
                     $("#executionEnv").val("<%= request.getParameter("Env") == null ? "" : request.getParameter("Env") %>");
@@ -422,9 +421,60 @@
                         loadTestCases();
                     }
                 });
+
+                $( "#divPictureSave" ).dialog({
+                    autoOpen: false,
+                    modal: true,
+                    buttons: {
+                        "Import": function(){
+                                var formObj = $("#formPictureSave");
+                                var formURL = formObj.attr("action");
+                                var formData = new FormData(formObj[0]);
+                                $.ajax({
+                                    url: formURL,
+                                    type: 'POST',
+                                    data:  formData,
+                                    mimeType:"multipart/form-data",
+                                    async: false,
+                                    cache: false,
+                                    contentType: false,
+                                    processData: false,
+                                    success: function(data, textStatus, jqXHR){
+                                        $("#divPictureSave").dialog("close");
+                                    },
+                                    error: function(jqXHR, textStatus, errorThrown){
+                                        alert(errorThrown);
+                                    }
+                                });
+                        },
+                        "Close": function() {
+                            $(this).dialog("close");
+                        }
+                    },
+                    close: function() {
+                        $("#runId").val("0");
+                    }
+                });
             });
         </script>
         <br/>
+        <div id="divPictureSave">
+            <div style="text-align: center">
+                <span id="resultMessage" style="color: green; font-size: large; font-weight: 600;"></span>
+            </div>
+            <br/>
+            <div>
+                <span>
+                    You can upload screenshots of the execution <b>(only JPG files)</b>
+                </span>
+                <form id="formPictureSave" action="SaveManualExecutionPicture" method="post" enctype="multipart/form-data">
+                    <input id="fileupload" type="file" name="files[]" data-url="SaveManualExecutionPicture" multiple/>
+                    <input id="runId" name="runId" type="hidden" value="0"/>
+                    <input id="picTest" name="picTest" type="hidden" value=""/>
+                    <input id="picTestCase" name="picTestCase" type="hidden" value=""/>
+                </form>
+            </div>
+        </div>
         <div style="float: left">
             <%=display_footer(start)%>
         </div>
