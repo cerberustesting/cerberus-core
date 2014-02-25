@@ -23,7 +23,6 @@ import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
-
 import org.apache.log4j.Level;
 import org.cerberus.entity.MessageEvent;
 import org.cerberus.entity.MessageEventEnum;
@@ -130,6 +129,9 @@ public class ControlService implements IControlService {
 
             } else if (testCaseStepActionControlExecution.getControlType().equals("verifyUrl")) {
                 res = this.verifyUrl(testCaseStepActionControlExecution.getControlProperty());
+            } else if (testCaseStepActionControlExecution.getControlType().equals("verifyStringContains")) {
+                res = this.verifyStringContains(testCaseStepActionControlExecution.getControlProperty(),
+                        testCaseStepActionControlExecution.getControlValue());
             } else {
                 res = new MessageEvent(MessageEventEnum.CONTROL_FAILED_UNKNOWNCONTROL);
                 res.setDescription(res.getDescription().replaceAll("%CONTROL%", testCaseStepActionControlExecution.getControlType()));
@@ -188,6 +190,21 @@ public class ControlService implements IControlService {
         mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_EQUAL);
         mes.setDescription(mes.getDescription().replaceAll("%STRING1%", object));
         mes.setDescription(mes.getDescription().replaceAll("%STRING2%", property));
+        return mes;
+
+    }
+
+    private MessageEvent verifyStringContains(String property, String value) {
+        MessageEvent mes;
+        if (property.indexOf(value) >= 0) {
+            mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_CONTAINS);
+            mes.setDescription(mes.getDescription().replaceAll("%STRING1%", property));
+            mes.setDescription(mes.getDescription().replaceAll("%STRING2%", value));
+            return mes;
+        }
+        mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_CONTAINS);
+        mes.setDescription(mes.getDescription().replaceAll("%STRING1%", property));
+        mes.setDescription(mes.getDescription().replaceAll("%STRING2%", value));
         return mes;
 
     }
