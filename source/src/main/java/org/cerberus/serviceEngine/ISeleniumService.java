@@ -48,6 +48,8 @@ public interface ISeleniumService {
 
     String getValueFromHTML(String locator);
 
+    String getAlertText();
+
     String getValueFromJS(String script);
     
     boolean isElementPresent(String locator);
