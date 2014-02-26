@@ -41,15 +41,17 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.cerberus.database.DatabaseSpring;
+import org.cerberus.entity.TestCaseCountryProperties;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.factory.IFactoryLogEvent;
+import org.cerberus.factory.IFactoryTestCaseCountryProperties;
 import org.cerberus.factory.impl.FactoryLogEvent;
 import org.cerberus.log.MyLogger;
-import org.cerberus.refactor.TestCaseCountryProperties;
 import org.cerberus.refactor.TestCaseStepAction;
 import org.cerberus.refactor.TestCaseStepActionControl;
 import org.cerberus.service.ILogEventService;
 import org.cerberus.service.impl.LogEventService;
+import org.cerberus.service.ITestCaseCountryPropertiesService;
 import org.cerberus.service.impl.UserService;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
@@ -78,15 +80,23 @@ public class UpdateTestCaseDetail extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request,
                          HttpServletResponse response) throws ServletException, IOException {
-        // response.setContentType("text/html;charset=UTF-8");
-        this.processRequest(request, response);
+        try {
+            // response.setContentType("text/html;charset=UTF-8");
+            this.processRequest(request, response);
+        } catch (CerberusException ex) {
+            java.util.logging.Logger.getLogger(UpdateTestCaseDetail.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
     }
 
     @Override
     protected void doPost(HttpServletRequest request,
                           HttpServletResponse response) throws ServletException, IOException {
-        // response.setContentType("text/html;charset=UTF-8");
-        this.processRequest(request, response);
+        try {
+            // response.setContentType("text/html;charset=UTF-8");
+            this.processRequest(request, response);
+        } catch (CerberusException ex) {
+            java.util.logging.Logger.getLogger(UpdateTestCaseDetail.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
     }
 
     public boolean formIsFill(String s) {
@@ -153,17 +163,20 @@ public class UpdateTestCaseDetail extends HttpServlet {
     }
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+            throws ServletException, IOException, CerberusException {
         response.setContentType("text/html;charset=UTF-8");
         PrintWriter out = response.getWriter();
 
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         DatabaseSpring database = appContext.getBean(DatabaseSpring.class);
-
+        ITestCaseCountryPropertiesService propertiesService = appContext.getBean(ITestCaseCountryPropertiesService.class);
+        IFactoryTestCaseCountryProperties propertiesFactory = appContext.getBean(IFactoryTestCaseCountryProperties.class);
+                
         Connection connection = database.connect();
         try {
             Statement stmt4 = connection.createStatement();
             try {
+                                                                                
             /*
              * PROPERTIES
              */
@@ -198,6 +211,8 @@ public class UpdateTestCaseDetail extends HttpServlet {
                         "properties_type", request);
                 String[] testcase_properties_value = this.getStringTable(
                         "properties_value", request);
+                String[] testcase_properties_value2 = this.getStringTable(
+                        "properties_value2", request);
                 //String[] testcase_properties_value =
                 //         request.getParameterValues("properties_type");
 
@@ -228,6 +243,7 @@ public class UpdateTestCaseDetail extends HttpServlet {
                 testcase_properties_info.add(testcase_properties_property);
                 testcase_properties_info.add(testcase_properties_type);
                 testcase_properties_info.add(testcase_properties_value);
+                testcase_properties_info.add(testcase_properties_value2);
                 testcase_properties_info.add(testcase_properties_length);
                 testcase_properties_info.add(testcase_properties_rowlimit);
                 testcase_properties_info.add(testcase_properties_nature);
@@ -353,19 +369,21 @@ public class UpdateTestCaseDetail extends HttpServlet {
                                             // update
                                             if (rs_numberOfTestCasesCountryProperties.first()) {
 
-                                                TestCaseCountryProperties properties = appContext.getBean(TestCaseCountryProperties.class);
-                                                properties.setTest(test_testcase_format_prop[0]);
-                                                properties.setTestcase(test_testcase_format_prop[1]);
-                                                properties.setCountry(testcase_country[1]);
-                                                properties.setProperty(testcase_properties_property[i]);
-                                                properties.setNature(testcase_properties_nature[i]);
-                                                properties.setRowlimit(Integer.parseInt(testcase_properties_rowlimit[i]));
-                                                properties.setLength(Integer.parseInt(testcase_properties_length[i]));
-                                                properties.setValue(URLEncoder.encode(testcase_properties_value[i], "UTF-8"));
-                                                properties.setType(testcase_properties_type[i]);
-                                                properties.setDatabase(testcase_properties_database[i]);
+                                                String test = test_testcase_format_prop[0];
+                                                String testcase = test_testcase_format_prop[1];
+                                                String country = testcase_country[1];
+                                                String property = testcase_properties_property[i];
+                                                String nature = testcase_properties_nature[i];
+                                                int rowlimit = Integer.parseInt(testcase_properties_rowlimit[i]);
+                                                int length = Integer.parseInt(testcase_properties_length[i]);
+                                                String value1 = testcase_properties_value[i];
+                                                String value2 = testcase_properties_value2[i];
+                                                String type = testcase_properties_type[i];
+                                                String dtb = testcase_properties_database[i];
+                                                
+                                                TestCaseCountryProperties tccp = propertiesFactory.create(test, testcase, country, property, type, dtb, value1, value2, length, rowlimit, nature);
 
-                                                properties.update();
+                                                propertiesService.updateTestCaseCountryProperties(tccp);
 
                                             } else // the country property does'nt extist, make an
                                             // insert :
@@ -373,18 +391,21 @@ public class UpdateTestCaseDetail extends HttpServlet {
                                                 * Insert new rows
                                                 */
 
-                                                TestCaseCountryProperties properties = appContext.getBean(TestCaseCountryProperties.class);
-                                                properties.setTest(test_testcase_format_prop[0]);
-                                                properties.setTestcase(test_testcase_format_prop[1]);
-                                                properties.setCountry(testcase_country[1]);
-                                                properties.setProperty(testcase_properties_property[i]);
-                                                properties.setNature(testcase_properties_nature[i]);
-                                                properties.setRowlimit(Integer.parseInt(testcase_properties_rowlimit[i]));
-                                                properties.setLength(Integer.parseInt(testcase_properties_length[i]));
-                                                properties.setValue(testcase_properties_value[i]);
-                                                properties.setType(testcase_properties_type[i]);
-                                                properties.setDatabase(testcase_properties_database[i]);
-                                                properties.insert();
+                                                String test = test_testcase_format_prop[0];
+                                                String testcase = test_testcase_format_prop[1];
+                                                String country = testcase_country[1];
+                                                String property = testcase_properties_property[i];
+                                                String nature = testcase_properties_nature[i];
+                                                int rowlimit = Integer.parseInt(testcase_properties_rowlimit[i]);
+                                                int length = Integer.parseInt(testcase_properties_length[i]);
+                                                String value1 = testcase_properties_value[i];
+                                                String value2 = testcase_properties_value2[i];
+                                                String type = testcase_properties_type[i];
+                                                String dtb = testcase_properties_database[i];
+                                                
+                                                TestCaseCountryProperties tccp = propertiesFactory.create(test, testcase, country, property, type, dtb, value1, value2, length, rowlimit, nature);
+
+                                                propertiesService.insertTestCaseCountryProperties(tccp);
 
                                             }// end of the else loop
                                         } finally {
@@ -410,18 +431,21 @@ public class UpdateTestCaseDetail extends HttpServlet {
                                 // if the number of the line is the same for the country
                                 // and the property:
                                 if (testcase_properties_propertyrow[i].equals(testcase_country[0])) {
-                                    TestCaseCountryProperties properties = appContext.getBean(TestCaseCountryProperties.class);
-                                    properties.setTest(test_testcase_format_prop[0]);
-                                    properties.setTestcase(test_testcase_format_prop[1]);
-                                    properties.setCountry(testcase_country[1]);
-                                    properties.setProperty(testcase_properties_property[i]);
-                                    properties.setNature(testcase_properties_nature[i]);
-                                    properties.setRowlimit(Integer.parseInt(testcase_properties_rowlimit[i]));
-                                    properties.setLength(Integer.parseInt(testcase_properties_length[i]));
-                                    properties.setValue(testcase_properties_value[i]);
-                                    properties.setType(testcase_properties_type[i]);
-                                    properties.setDatabase(testcase_properties_database[i]);
-                                    properties.insert();
+                                    String test = test_testcase_format_prop[0];
+                                                String testcase = test_testcase_format_prop[1];
+                                                String country = testcase_country[1];
+                                                String property = testcase_properties_property[i];
+                                                String nature = testcase_properties_nature[i];
+                                                int rowlimit = Integer.parseInt(testcase_properties_rowlimit[i]);
+                                                int length = Integer.parseInt(testcase_properties_length[i]);
+                                                String value1 = testcase_properties_value[i];
+                                                String value2 = testcase_properties_value2[i];
+                                                String type = testcase_properties_type[i];
+                                                String dtb = testcase_properties_database[i];
+                                                
+                                                TestCaseCountryProperties tccp = propertiesFactory.create(test, testcase, country, property, type, dtb, value1, value2, length, rowlimit, nature);
+
+                                                propertiesService.insertTestCaseCountryProperties(tccp);
                                 } // Close the condition on the row number
                             } // Close the loop for (country)
                         } // Close the else condition

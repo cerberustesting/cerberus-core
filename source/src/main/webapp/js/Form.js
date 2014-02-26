@@ -403,6 +403,7 @@ function addTestCaseProperties(tableau,  max_tcp_country,
                 form4.setAttribute('id', 'typenew_properties_value');
 		form4.setAttribute('style', 'width: 120px');
                 form4.setAttribute('onchange', 'activateDatabaseBox(this.value, \'properties_dtb_typeID\' , \'properties_dtb_type_ID\')');
+                form4.setAttribute('onchange', 'activateValue2(this.value, \'tdValue2_new\', \'new_properties_value\',\'new_properties_value2\',\''+size2+'\')');
                 form4.setAttribute('class', 'wob');
 		form4.innerHTML = (form4.innerHTML + document
 				.getElementById('new_properties_type_new_properties_value').innerHTML);
@@ -442,7 +443,6 @@ function addTestCaseProperties(tableau,  max_tcp_country,
 	/* Value */
 	var form5 = document.createElement('textarea');
 	form5.setAttribute('name', 'properties_value');
-	form5.setAttribute('size', '100%');
         form5.setAttribute('class', 'wob');
         form5.setAttribute('id', 'new_properties_value');
 	form5.setAttribute('style', 'width: ' + size2 + 'px');
@@ -455,6 +455,19 @@ function addTestCaseProperties(tableau,  max_tcp_country,
 	TD51.appendChild(form5);
         TD51.setAttribute('class', 'wob');
         TR51.appendChild(TD51);
+        
+        var form54 = document.createElement('textarea');
+	form54.setAttribute('name', 'properties_value2');
+        form54.setAttribute('placeholder' , 'Attribute');
+        form54.setAttribute('class', 'wob');
+        form54.setAttribute('id', 'new_properties_value2');
+	form54.setAttribute('maxlength', max_tcp_value);
+        var TD52 = document.createElement('td');
+        TD52.setAttribute('style', 'background-color:white; display:none');
+        TD52.setAttribute('id', 'tdValue2_new');
+        TD52.appendChild(form54);
+        TD52.setAttribute('class', 'wob');
+        TR51.appendChild(TD52);
         
         var form52 = document.createElement('input'); 
         form52.setAttribute('style', 'display:inline; height:20px; width:20px; background-color: white; color:blue; font-weight:bolder');
@@ -1069,6 +1082,20 @@ function activateDatabaseBox(value, fieldOneId, fieldTwoId) {
         document.getElementById(fieldOneId).value = "";
         document.getElementById(fieldOneId).style.display = "none";
         document.getElementById(fieldTwoId).style.display = "inline";      
+          }
+ }
+ 
+ function activateValue2(value, fieldOneId, fieldTwoId,fieldThreeId, size2) {
+    if (value == "getAttributeFromHTMLElement"){
+        var size3 = 1*size2/3;
+        var size4 = (2*size2/3)-5;
+	document.getElementById(fieldOneId).style.display = "inline";
+        document.getElementById(fieldThreeId).style.width = size3+"px";
+        document.getElementById(fieldTwoId).style.width = size4+"px";
+        } else
+          {
+        document.getElementById(fieldOneId).style.display = "none";
+        document.getElementById(fieldTwoId).style.width = size2+"px";
           }
  }
 //End of function for SQL Library

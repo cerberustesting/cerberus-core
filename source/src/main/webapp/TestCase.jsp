@@ -845,7 +845,9 @@
                             rs_testcasecountry.last();
                             int size = rs_testcasecountry.getRow() * 16 + 30;
                             int size2 = 570 + 80 - size;
-
+                            int size3 = 0;
+                            int size4 = size2;
+                            
                             // Define the list of country available for this test
                             rs_testcasecountry.first();
                             String tc_countries = "";
@@ -955,7 +957,7 @@
                                                             + rs_testcase_general_info.getString("tc.testcase") + "'"
                                                             + " group by Country");
                                                     if (rs_property.first()) {
-                                                        String coun = "SELECT a.Test, a.Testcase, a.Property, a.Type, a.Database,  a.Value, a.Length, a.RowLimit, a.Nature";
+                                                        String coun = "SELECT a.Test, a.Testcase, a.Property, a.Type, a.Database,  a.Value1, a.Value2, a.Length, a.RowLimit, a.Nature";
                                                         do {
                                                             coun = coun + ", " + rs_property.getString("Country");
                                                         } while (rs_property.next());
@@ -965,10 +967,11 @@
                                                         coun = coun + " FROM testcasecountryproperties a ";
 
                                                         do {
-                                                            coun = coun + "left outer join (SELECT z"
+                                                            coun = coun + " left outer join (SELECT z"
                                                                     + j + ".Property, z"
                                                                     + j + ".Type, z"
-                                                                    + j + ".Value, z"
+                                                                    + j + ".Value1, z"
+                                                                    + j + ".Value2, z"
                                                                     + j + ".Country as "
                                                                     + rs_property.getString("Country")
                                                                     + " from testcasecountryproperties z"
@@ -979,8 +982,9 @@
                                                                     + rs_property.getString("Country") + "')b"
                                                                     + j + " on a.Property=b"
                                                                     + j + ".Property and a.Type=b"
-                                                                    + j + ".Type and a.Value=b"
-                                                                    + j + ".Value ";
+                                                                    + j + ".Type and a.Value1=b"
+                                                                    + j + ".Value1 and a.Value2=b"
+                                                                    + j + ".Value2 ";
                                                             j++;
                                                         } while (rs_property.next());
 
@@ -988,7 +992,8 @@
 
                                                         coun = coun + " WHERE Test='" + rs_property.getString("Test")
                                                                 + "' and TestCase='"
-                                                                + rs_property.getString("TestCase") + "' group by Property, Type, Value";
+                                                                + rs_property.getString("TestCase") + "' group by Property, Type, Value1, Value2 ";
+                                                        //out.print(coun);
                                                         ResultSet rs_properties = stmt7.executeQuery(coun);
 
 
@@ -1026,7 +1031,7 @@
                                                                 if (rs_properties.getString("a.Type").equals("executeSqlFromLib")) {
 
                                                                     String sqlLib = (" SELECT Script from sqllibrary where name = '"
-                                                                            + rs_properties.getString("a.Value") + "'");
+                                                                            + rs_properties.getString("a.Value1") + "'");
 
                                                                     ResultSet rs_sqllib = stmt80.executeQuery(sqlLib);
                                                                     if (rs_sqllib.first()) {
@@ -1042,6 +1047,19 @@
                                                                     properties_dtb_display = "inline";
 
                                                                 }
+                                                                
+                                                                size3 = 0;
+                                                                size4 = size2;
+                                                                String styleValue2 = "none";
+                                                                if (rs_properties.getString("a.Type").equals("getAttributeFromHTMLElement")){
+                                                                size3 = 1*size2/3;
+                                                                size4 = (2*size2/3)-5;
+                                                                styleValue2 = "inline";
+                                                                }
+                                                                    
+                                                                    
+                                                                    
+                                                                    
 
                                                                 rs_tccountry.first();
                                                                 String delete_value = rs_properties.getString("a.Property");
@@ -1051,7 +1069,7 @@
                                                                     }
                                                                 } while (rs_tccountry.next());
 
-                                                                int nbline = rs_properties.getString("a.Value").split("\n").length;
+                                                                int nbline = rs_properties.getString("a.Value1").split("\n").length;
                                                                 String valueID = rowNumber + "-" + rs_properties.getString("a.Property");
                                                                 String typeID = "type" + valueID;
 
@@ -1108,17 +1126,21 @@
                                                                         rs_tccountry.first();
                                                                     %>
                                                             </tr></table></td>
-                                                    <td><%=ComboInvariant(conn, "properties_type", "width: 120px; background-color:" + color, typeID, "wob", "19", rs_properties.getString("a.Type"), "activateDatabaseBox(this.value, '" + properties_dtbID + "' , '" + properties_dtb_ID + "' )", null)%></td>
+                                                    <td><%=ComboInvariant(conn, "properties_type", "width: 120px; background-color:" + color, typeID, "wob", "19", rs_properties.getString("a.Type"), "activateDatabaseBox(this.value, '" + properties_dtbID + "' ,'" + properties_dtb_ID + "' );activateValue2(this.value, 'tdValue2_" +rowNumber+"', '" +valueID+"','" +valueID+ "_2','"+size2+"')", null)%></td>
                                                     <td><%=ComboInvariant(conn, "properties_dtb", "width: 40px; display: " + properties_dtbdisplay + " ; background-color:" + color, properties_dtbID, "wob", "22", rs_properties.getString("a.Database"), "", null)%>
                                                         <input id="<%=properties_dtb_ID%>" style="display:<%=properties_dtb_display%>;  width:39px; background-color: <%=color%>;text-align:center; color: green; font-weight:bolder" class="wob"  value="---">
                                                     </td>
 
-                                                    <td><table><tr><td class="wob" rowspan="2"><textarea id="<%=valueID%>" rows="2" class="wob" style="width: <%=size2%>px; background-color : <%=color%>; " name="properties_value"
-                                                                                                         value="<%=rs_properties.getString("a.Value")%>"><%=rs_properties.getString("a.Value")%></textarea>
+                                                    <td><table><tr><td class="wob" rowspan="2"><textarea id="<%=valueID%>" rows="2" class="wob" style="width: <%=size4%>px; background-color : <%=color%>; " name="properties_value"
+                                                                                                         value="<%=rs_properties.getString("a.Value1")%>"><%=rs_properties.getString("a.Value1")%></textarea>
                                                                     <% if (rs_properties.getString("a.Type").equals("executeSqlFromLib")) {%>
-                                                                    <textarea id="<%=sqlDetails%>" rows="5" class="wob" style="display:none ; width: <%=size2%>px; background-color : <%=color%>; color:grey" 
+                                                                    <textarea id="<%=valueID%>" rows="5" class="wob" style="display:none ; width: <%=size4%>px; background-color : <%=color%>; color:grey" 
                                                                               readonly="readonly" value="<%=sqlDesc%>"><%=sqlDesc%></textarea>
                                                                     <%}%>
+                                                                </td>
+                                                                <td class="wob" id="tdValue2_<%=rowNumber%>" rowspan="2" style="display:<%=styleValue2%>"><textarea id="<%=valueID%>_2" rows="2" class="wob" style="width: <%=size3%>px; background-color : <%=color%>;>" name="properties_value2"
+                                                                                                         value="<%=rs_properties.getString("a.Value2")%>"><%=rs_properties.getString("a.Value2")%></textarea>
+                                                                    
                                                                 </td>
                                                                 <td class="wob"><input style="display:inline; height:20px; width:20px; background-color: <%=color%>; color:blue; font-weight:bolder" title="Open SQL Library" class="smallbutton" type="button" value="L" onclick="openSqlLibraryPopup('SqlLib.jsp?Lign=', '<%=valueID%>');">
                                                                 </td>

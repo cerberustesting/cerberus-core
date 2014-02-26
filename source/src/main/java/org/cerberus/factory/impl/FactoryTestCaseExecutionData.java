@@ -31,14 +31,15 @@ import org.springframework.stereotype.Service;
 public class FactoryTestCaseExecutionData implements IFactoryTestCaseExecutionData {
 
     @Override
-    public TestCaseExecutionData create(long id, String property, String value, String type, String object,
+    public TestCaseExecutionData create(long id, String property, String value, String type, String value1,String value2,
                                         String returnCode,String rMessage, long start, long end, long startLong, long endLong, MessageEvent message) {
         TestCaseExecutionData testCaseExecutionData = new TestCaseExecutionData();
         testCaseExecutionData.setId(id);
         testCaseExecutionData.setProperty(property);
         testCaseExecutionData.setValue(value);
         testCaseExecutionData.setType(type);
-        testCaseExecutionData.setObject(object);
+        testCaseExecutionData.setValue1(value1);
+        testCaseExecutionData.setValue2(value2);
         testCaseExecutionData.setRC(returnCode);
         testCaseExecutionData.setrMessage(rMessage);
         testCaseExecutionData.setStart(start);

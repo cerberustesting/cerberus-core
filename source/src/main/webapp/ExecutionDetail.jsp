@@ -377,7 +377,7 @@
                             <td><b><span id="PROP-<%=myData.getProperty()%>"><%=myData.getProperty()%></span></b></td>
                             <td><b><i><span id="PROPVAL-<%=myData.getProperty()%>"><%=myData.getValue()%></span></i></b></td>
                             <td style="font-size: x-small"><%=myData.getType()%></td>
-                            <td style="font-size: x-small"><%=myData.getObject()%></td>
+                            <td style="font-size: x-small"><%=myData.getValue1()%> / <%=myData.getValue2()%></td>
                             <td class="<%=myData.getRC()%>"><span class="<%=myData.getRC()%>F" id="PROPSTS-<%=myData.getProperty()%>"><%=myData.getRC()%></span></td>
                             <td><span id="PROPMES-<%=myData.getProperty()%>"><%=myData.getrMessage()%></span></td>
                         </tr>

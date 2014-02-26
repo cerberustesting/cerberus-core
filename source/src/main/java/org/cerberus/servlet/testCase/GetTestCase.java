@@ -124,7 +124,8 @@ public class GetTestCase extends HttpServlet {
                     property.put("property", prop.getProperty());
                     property.put("type", prop.getType());
                     property.put("database", prop.getDatabase());
-                    property.put("value", prop.getValue());
+                    property.put("value1", prop.getValue1());
+                    property.put("value2", prop.getValue2());
                     property.put("length", prop.getLength());
                     property.put("rowLimit", prop.getRowLimit());
                     property.put("nature", prop.getNature());

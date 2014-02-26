@@ -77,14 +77,15 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
                     if (resultSet.first()) {
                         String value = resultSet.getString("value");
                         String type = resultSet.getString("type");
-                        String object = resultSet.getString("object");
+                        String value1 = resultSet.getString("value1");
+                        String value2 = resultSet.getString("value2");
                         String returnCode = resultSet.getString("rc");
                         String returnMessage = resultSet.getString("rmessage");
                         long start = resultSet.getLong("start");
                         long end = resultSet.getLong("end");
                         long startLong = resultSet.getLong("startlong");
                         long endLong = resultSet.getLong("endlong");
-                        result = factoryTestCaseExecutionData.create(id, property, value, type, object, returnCode, returnMessage,
+                        result = factoryTestCaseExecutionData.create(id, property, value, type, value1,value2,returnCode, returnMessage,
                                 start, end, startLong, endLong, null);
                     }
                 } catch (SQLException exception) {
@@ -114,8 +115,8 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
     @Override
     public void insertTestCaseExecutionData(TestCaseExecutionData testCaseExecutionData) throws CerberusException {
         boolean throwException = true;
-        final String query = "INSERT INTO testcaseexecutiondata(id, property, VALUE, TYPE, object, rc, rmessage, start, END, startlong, endlong) "
-                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        final String query = "INSERT INTO testcaseexecutiondata(id, property, VALUE, TYPE, VALUE1,VALUE2, rc, rmessage, start, END, startlong, endlong) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -126,13 +127,14 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
                 preStat.setString(2, testCaseExecutionData.getProperty());
                 preStat.setString(3, ParameterParserUtil.securePassword(StringUtil.getLeftString(testCaseExecutionData.getValue(), 3000), testCaseExecutionData.getProperty()));
                 preStat.setString(4, testCaseExecutionData.getType());
-                preStat.setString(5, ParameterParserUtil.securePassword(StringUtil.getLeftString(testCaseExecutionData.getObject(), 2500), testCaseExecutionData.getProperty()));
-                preStat.setString(6, testCaseExecutionData.getRC());
-                preStat.setString(7, StringUtil.getLeftString(testCaseExecutionData.getrMessage(), 3000));
-                preStat.setTimestamp(8, new Timestamp(testCaseExecutionData.getStart()));
-                preStat.setTimestamp(9, new Timestamp(testCaseExecutionData.getEnd()));
-                preStat.setString(10, df.format(testCaseExecutionData.getStart()));
-                preStat.setString(11, df.format(testCaseExecutionData.getEnd()));
+                preStat.setString(5, ParameterParserUtil.securePassword(StringUtil.getLeftString(testCaseExecutionData.getValue1(), 3000), testCaseExecutionData.getProperty()));
+                preStat.setString(6, ParameterParserUtil.securePassword(StringUtil.getLeftString(testCaseExecutionData.getValue2(), 2500), testCaseExecutionData.getProperty()));
+                preStat.setString(7, testCaseExecutionData.getRC());
+                preStat.setString(8, StringUtil.getLeftString(testCaseExecutionData.getrMessage(), 3000));
+                preStat.setTimestamp(9, new Timestamp(testCaseExecutionData.getStart()));
+                preStat.setTimestamp(10, new Timestamp(testCaseExecutionData.getEnd()));
+                preStat.setString(11, df.format(testCaseExecutionData.getStart()));
+                preStat.setString(12, df.format(testCaseExecutionData.getEnd()));
 
                 preStat.executeUpdate();
                 throwException = false;
@@ -160,7 +162,7 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
     @Override
     public void updateTestCaseExecutionData(TestCaseExecutionData testCaseExecutionData) throws CerberusException {
         boolean throwException = true;
-        final String query = "UPDATE testcaseexecutiondata SET VALUE = ?, TYPE = ?, object = ?, rc = ?, rmessage = ?, start = ?, END = ?, startlong = ?, endlong = ? "
+        final String query = "UPDATE testcaseexecutiondata SET VALUE = ?, TYPE = ?, VALUE1 = ?, VALUE2 = ?, rc = ?, rmessage = ?, start = ?, END = ?, startlong = ?, endlong = ? "
                 + "WHERE id = ? AND property = ?";
 
         Connection connection = this.databaseSpring.connect();
@@ -170,15 +172,16 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
                 DateFormat df = new SimpleDateFormat(DateUtil.DATE_FORMAT_TIMESTAMP);
                 preStat.setString(1, ParameterParserUtil.securePassword(StringUtil.getLeftString(testCaseExecutionData.getValue(), 3000), testCaseExecutionData.getProperty()));
                 preStat.setString(2, testCaseExecutionData.getType());
-                preStat.setString(3, StringUtil.getLeftString(testCaseExecutionData.getObject(), 2500));
-                preStat.setString(4, testCaseExecutionData.getRC());
-                preStat.setString(5, StringUtil.getLeftString(testCaseExecutionData.getrMessage(), 3000));
-                preStat.setTimestamp(6, new Timestamp(testCaseExecutionData.getStart()));
-                preStat.setTimestamp(7, new Timestamp(testCaseExecutionData.getEnd()));
-                preStat.setString(8, df.format(testCaseExecutionData.getStart()));
-                preStat.setString(9, df.format(testCaseExecutionData.getEnd()));
-                preStat.setLong(10, testCaseExecutionData.getId());
-                preStat.setString(11, testCaseExecutionData.getProperty());
+                preStat.setString(3, ParameterParserUtil.securePassword(StringUtil.getLeftString(testCaseExecutionData.getValue1(), 3000), testCaseExecutionData.getProperty()));
+                preStat.setString(4, StringUtil.getLeftString(testCaseExecutionData.getValue2(), 2500));
+                preStat.setString(5, testCaseExecutionData.getRC());
+                preStat.setString(6, StringUtil.getLeftString(testCaseExecutionData.getrMessage(), 3000));
+                preStat.setTimestamp(7, new Timestamp(testCaseExecutionData.getStart()));
+                preStat.setTimestamp(8, new Timestamp(testCaseExecutionData.getEnd()));
+                preStat.setString(9, df.format(testCaseExecutionData.getStart()));
+                preStat.setString(10, df.format(testCaseExecutionData.getEnd()));
+                preStat.setLong(11, testCaseExecutionData.getId());
+                preStat.setString(12, testCaseExecutionData.getProperty());
 
                 preStat.executeUpdate();
                 throwException = false;
@@ -281,14 +284,15 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
                         String value = resultSet.getString("value");
                         String property = resultSet.getString("property");
                         String type = resultSet.getString("type");
-                        String object = resultSet.getString("object");
+                        String value1 = resultSet.getString("value1");
+                        String value2 = resultSet.getString("value2");
                         String returnCode = resultSet.getString("rc");
                         String returnMessage = resultSet.getString("rmessage");
                         long start = resultSet.getLong("start");
                         long end = resultSet.getLong("end");
                         long startLong = resultSet.getLong("startlong");
                         long endLong = resultSet.getLong("endlong");
-                        resultData = factoryTestCaseExecutionData.create(id, property, value, type, object, returnCode, returnMessage,
+                        resultData = factoryTestCaseExecutionData.create(id, property, value, type, value1, value2, returnCode, returnMessage,
                                 start, end, startLong, endLong, null);
                         result.add(resultData);
                     }

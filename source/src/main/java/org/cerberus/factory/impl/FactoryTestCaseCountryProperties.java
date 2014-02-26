@@ -30,7 +30,7 @@ import org.springframework.stereotype.Service;
 public class FactoryTestCaseCountryProperties implements IFactoryTestCaseCountryProperties {
 
     @Override
-    public TestCaseCountryProperties create(String test, String testCase, String country, String property, String type, String database, String value, int length, int rowLimit, String nature) {
+    public TestCaseCountryProperties create(String test, String testCase, String country, String property, String type, String database, String value1, String value2, int length, int rowLimit, String nature) {
         TestCaseCountryProperties testCaseCountryProperties = new TestCaseCountryProperties();
         testCaseCountryProperties.setTest(test);
         testCaseCountryProperties.setTestCase(testCase);
@@ -38,7 +38,8 @@ public class FactoryTestCaseCountryProperties implements IFactoryTestCaseCountry
         testCaseCountryProperties.setProperty(property);
         testCaseCountryProperties.setType(type);
         testCaseCountryProperties.setDatabase(database);
-        testCaseCountryProperties.setValue(value);
+        testCaseCountryProperties.setValue1(value1);
+        testCaseCountryProperties.setValue2(value2);
         testCaseCountryProperties.setLength(length);
         testCaseCountryProperties.setRowLimit(rowLimit);
         testCaseCountryProperties.setNature(nature);
