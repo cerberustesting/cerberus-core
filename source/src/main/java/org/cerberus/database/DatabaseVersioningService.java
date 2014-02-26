@@ -3007,6 +3007,24 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLInstruction.add(SQLS.toString());
 
         
+// Add manageDialog to action and verifyTextInDialog to control and verifyStringContains to control.
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `id`, `description`, `gp1`, `gp2`, `gp3`) ");
+        SQLS.append("VALUES ('ACTION','manageDialog',200,12,'manageDialog',NULL,NULL,NULL), ");
+        SQLS.append(" ('CONTROL', 'verifyTextInDialog', 80, 13, 'verifyTextInDialog', NULL, NULL, NULL), ");
+        SQLS.append(" ('CONTROL', 'verifyStringContains', 14, 13, 'verifyStringContains', NULL, NULL, NULL);");
+        SQLInstruction.add(SQLS.toString());
+
+// Renamed value to value1 and added value2 in testcasecountryproperties and testcaseexecutiondata tables      
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasecountryproperties` CHANGE COLUMN `Value` `Value1` VARCHAR(2500) NULL DEFAULT '' ,");
+        SQLS.append("ADD COLUMN `Value2` VARCHAR(2500) NULL DEFAULT '' AFTER `Value1`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcaseexecutiondata` CHANGE COLUMN `Object` `Value1` VARCHAR(3000) NULL DEFAULT NULL ,");
+        SQLS.append("ADD COLUMN `Value2` VARCHAR(3000) NULL DEFAULT NULL AFTER `Value1`");
+        SQLInstruction.add(SQLS.toString());        
+        
         return SQLInstruction;
     }
 }
