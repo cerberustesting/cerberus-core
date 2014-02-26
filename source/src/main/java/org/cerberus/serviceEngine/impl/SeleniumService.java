@@ -53,6 +53,7 @@ import org.cerberus.serviceEngine.IPropertyService;
 import org.cerberus.serviceEngine.ISeleniumService;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
+import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.JavascriptExecutor;
@@ -424,6 +425,16 @@ public class SeleniumService implements ISeleniumService {
     }
 
     @Override
+    public String getAlertText() {
+        Alert alert = this.selenium.getDriver().switchTo().alert();
+        if(alert != null) {
+            return alert.getText();
+        }
+        
+        return null;
+    }
+
+    @Override
     public String getValueFromJS(String script) {
         JavascriptExecutor js = (JavascriptExecutor) selenium.getDriver();
         Object response = js.executeScript(script);
@@ -621,6 +632,9 @@ public class SeleniumService implements ISeleniumService {
         } else if (testCaseStepActionExecution.getAction().equals("switchToWindow")) {
             res = this.doActionSwitchToWindow(object, property);
 
+        } else if (testCaseStepActionExecution.getAction().equals("manageDialog")) {
+            res = this.doActionManageDialog(object, property);
+
         } else if (testCaseStepActionExecution.getAction().equals("calculateProperty")) {
             res = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_PROPERTYCALCULATED);
             res.setDescription(res.getDescription().replaceAll("%PROP%", testCaseStepActionExecution.getPropertyName()));
@@ -692,7 +706,7 @@ public class SeleniumService implements ISeleniumService {
                 try {
                     Actions actions = new Actions(this.selenium.getDriver());
                     actions.clickAndHold(this.getSeleniumElement(string1, true));
-                    actions.perform();
+                    actions.build().perform();
                     message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_MOUSEDOWN);
                     message.setDescription(message.getDescription().replaceAll("%ELEMENT%", string1));
                     return message;
@@ -706,7 +720,7 @@ public class SeleniumService implements ISeleniumService {
                 try {
                     Actions actions = new Actions(this.selenium.getDriver());
                     actions.clickAndHold(this.getSeleniumElement(string2, true));
-                    actions.perform();
+                    actions.build().perform();
                     message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_MOUSEDOWN);
                     message.setDescription(message.getDescription().replaceAll("%ELEMENT%", string2));
                     return message;
@@ -732,7 +746,7 @@ public class SeleniumService implements ISeleniumService {
                 try {
                     Actions actions = new Actions(this.selenium.getDriver());
                     actions.release(this.getSeleniumElement(string1, true));
-                    actions.perform();
+                    actions.build().perform();
                     message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_MOUSEUP);
                     message.setDescription(message.getDescription().replaceAll("%ELEMENT%", string1));
                     return message;
@@ -746,7 +760,7 @@ public class SeleniumService implements ISeleniumService {
                 try {
                     Actions actions = new Actions(this.selenium.getDriver());
                     actions.release(this.getSeleniumElement(string2, true));
-                    actions.perform();
+                    actions.build().perform();
                     message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_MOUSEUP);
                     message.setDescription(message.getDescription().replaceAll("%ELEMENT%", string2));
                     return message;
@@ -829,6 +843,30 @@ public class SeleniumService implements ISeleniumService {
         message = new MessageEvent(MessageEventEnum.ACTION_FAILED_SWITCHTOWINDOW_NO_SUCH_ELEMENT);
         message.setDescription(message.getDescription().replaceAll("%WINDOW%", windowTitle));
         return message;
+    }
+
+    private MessageEvent doActionManageDialog(String object, String property) {
+        try {
+            String value = object;
+            if (value == null || value.trim().length() == 0) {
+                value = property;
+            }
+            if ("ok".equalsIgnoreCase(value)) {
+                // Accept javascript popup dialog.
+                this.selenium.getDriver().switchTo().alert().accept();
+                return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CLOSE_ALERT);
+            } else if ("cancel".equalsIgnoreCase(value)) {
+                // Dismiss javascript popup dialog.
+                this.selenium.getDriver().switchTo().alert().dismiss();
+                return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CLOSE_ALERT);
+            }
+
+        } catch (NoSuchWindowException exception) {
+            // Add try catch to handle not exist anymore alert popup (like when popup is closed).
+            MyLogger.log(SeleniumService.class.getName(), Level.DEBUG, "Alert popup is closed ? " + exception.toString());
+        } catch (WebDriverException exception) {
+        }
+        return new MessageEvent(MessageEventEnum.ACTION_FAILED_CLOSE_ALERT);
     }
 
     private boolean testTitleOfWindow(String title, String identifier, String value) {
@@ -989,7 +1027,7 @@ public class SeleniumService implements ISeleniumService {
                     Actions actions = new Actions(this.selenium.getDriver());
                     WebElement menuHoverLink = this.getSeleniumElement(html, true);
                     actions.moveToElement(menuHoverLink);
-                    actions.perform();
+                    actions.build().perform();
                     message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_MOUSEOVER);
                     message.setDescription(message.getDescription().replaceAll("%ELEMENT%", html));
                     return message;
@@ -1004,7 +1042,7 @@ public class SeleniumService implements ISeleniumService {
                     Actions actions = new Actions(this.selenium.getDriver());
                     WebElement menuHoverLink = this.getSeleniumElement(property, true);
                     actions.moveToElement(menuHoverLink);
-                    actions.perform();
+                    actions.build().perform();
                     message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_MOUSEOVER);
                     message.setDescription(message.getDescription().replaceAll("%ELEMENT%", property));
                     return message;
@@ -1032,7 +1070,7 @@ public class SeleniumService implements ISeleniumService {
                         Actions actions = new Actions(this.selenium.getDriver());
                         WebElement menuHoverLink = this.getSeleniumElement(actionObject, true);
                         actions.moveToElement(menuHoverLink);
-                        actions.perform();
+                        actions.build().perform();
                         int sleep = Integer.parseInt(actionProperty);
                         try {
                             Thread.sleep(sleep);
@@ -1062,7 +1100,7 @@ public class SeleniumService implements ISeleniumService {
                     Actions actions = new Actions(this.selenium.getDriver());
                     WebElement menuHoverLink = this.getSeleniumElement(actionObject, true);
                     actions.moveToElement(menuHoverLink);
-                    actions.perform();
+                    actions.build().perform();
                 } catch (NoSuchElementException exception) {
                     message = new MessageEvent(MessageEventEnum.ACTION_FAILED_MOUSEOVER_NO_SUCH_ELEMENT);
                     message.setDescription(message.getDescription().replaceAll("%ELEMENT%", actionObject));

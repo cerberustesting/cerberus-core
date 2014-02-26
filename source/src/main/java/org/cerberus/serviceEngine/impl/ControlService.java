@@ -115,6 +115,9 @@ public class ControlService implements IControlService {
             } else if (testCaseStepActionControlExecution.getControlType().equals("verifyTextInElement")) {
                 res = this.VerifyTextInElement(testCaseStepActionControlExecution.getControlProperty(), testCaseStepActionControlExecution.getControlValue());
 
+            } else if (testCaseStepActionControlExecution.getControlType().equals("verifyTextInDialog")) {
+                res = this.verifyTextInDialog(testCaseStepActionControlExecution.getControlProperty(), testCaseStepActionControlExecution.getControlValue());
+
             } else if (testCaseStepActionControlExecution.getControlType().equals("verifyRegexInElement")) {
                 res = this.VerifyRegexInElement(testCaseStepActionControlExecution.getControlProperty(), testCaseStepActionControlExecution.getControlValue());
 
@@ -351,7 +354,7 @@ public class ControlService implements IControlService {
         if (!StringUtil.isNull(html)) {
             try {
                 if (this.seleniumService.isElementPresent(html)) {
-                    if(this.seleniumService.isElementNotVisible(html)) {
+                    if (this.seleniumService.isElementNotVisible(html)) {
                         mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_NOTVISIBLE);
                         mes.setDescription(mes.getDescription().replaceAll("%STRING1%", html));
                         return mes;
@@ -403,6 +406,38 @@ public class ControlService implements IControlService {
             mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_TEXTINELEMENT_NO_SUCH_ELEMENT);
             mes.setDescription(mes.getDescription().replaceAll("%ELEMENT%", html));
             return mes;
+        } catch (WebDriverException exception) {
+            return parseWebDriverException(exception);
+        }
+    }
+
+    private MessageEvent verifyTextInDialog(String property, String value) {
+        MyLogger.log(ControlService.class.getName(), Level.DEBUG, "Control : verifyTextInAlertPopup against value : " + value);
+        MessageEvent mes;
+        try {
+            String str = this.seleniumService.getAlertText();
+            MyLogger.log(ControlService.class.getName(), Level.DEBUG, "Control : verifyTextInAlertPopup has value : " + str);
+            if (str != null) {
+                String valueToTest = property;
+                if (valueToTest == null || "".equals(valueToTest.trim())) {
+                    valueToTest = value;
+                }
+
+                if (str.trim().equalsIgnoreCase(valueToTest)) {
+                    mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_TEXTINALERT);
+                    mes.setDescription(mes.getDescription().replaceAll("%STRING1%", str));
+                    mes.setDescription(mes.getDescription().replaceAll("%STRING2%", valueToTest));
+                    return mes;
+                } else {
+                    mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_TEXTINALERT);
+                    mes.setDescription(mes.getDescription().replaceAll("%STRING1%", str));
+                    mes.setDescription(mes.getDescription().replaceAll("%STRING2%", valueToTest));
+                    return mes;
+                }
+            } else {
+                mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_TEXTINALERT_NULL);
+                return mes;
+            }
         } catch (WebDriverException exception) {
             return parseWebDriverException(exception);
         }
@@ -553,7 +588,7 @@ public class ControlService implements IControlService {
             return parseWebDriverException(exception);
         }
     }
-    
+
     /**
      * @author memiks
      * @param exception the exception need to be parsed by Cerberus
