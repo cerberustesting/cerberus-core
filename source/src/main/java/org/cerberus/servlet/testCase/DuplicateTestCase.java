@@ -24,6 +24,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -34,6 +35,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.cerberus.database.DatabaseSpring;
+import org.cerberus.entity.Invariant;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.factory.IFactoryLogEvent;
 import org.cerberus.factory.impl.FactoryLogEvent;
@@ -41,6 +43,7 @@ import org.cerberus.log.MyLogger;
 import org.cerberus.refactor.TestCaseCountryProperties;
 import org.cerberus.refactor.TestCaseStepAction;
 import org.cerberus.refactor.TestCaseStepActionControl;
+import org.cerberus.service.IInvariantService;
 import org.cerberus.service.ILogEventService;
 import org.cerberus.service.ITestCaseService;
 import org.cerberus.service.impl.LogEventService;
@@ -57,7 +60,6 @@ public class DuplicateTestCase extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
     private ApplicationContext appContext;
-
     @Autowired
     private DatabaseSpring database;
 
@@ -420,6 +422,16 @@ public class DuplicateTestCase extends HttpServlet {
 
     private Boolean duplicateTestCase(String creator, String test, String testCase, String newTest, String newTestCase) {
 
+        String defaultStatus = "";
+        ApplicationContext myAppContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+        IInvariantService invariantService = myAppContext.getBean(IInvariantService.class);
+        try {
+            List<Invariant> myInvariant = invariantService.findListOfInvariantById("TCSTATUS");
+            defaultStatus = myInvariant.get(0).getValue();
+        } catch (CerberusException ex) {
+            MyLogger.log(DuplicateTestCase.class.getName(), Level.ERROR, ex.toString());
+        }
+
         Connection connection = this.database.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement("SELECT * FROM testcase WHERE test LIKE ? AND testcase LIKE ?");
@@ -430,8 +442,8 @@ public class DuplicateTestCase extends HttpServlet {
                 ResultSet rs = preStat.executeQuery();
                 try {
                     while (rs.next()) {
-                        PreparedStatement preStat2 = connection.prepareStatement("INSERT INTO testcase (`Test`,`Testcase`,`Application`,`Project`,`Description`,`BehaviorOrValueExpected`," +
-                                "`activeQA`,`activeUAT`,`activePROD`,`Priority`,`Status`,`TcActive`,`Group`,`Origine`,`RefOrigine`,`HowTo`, `Creator`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                        PreparedStatement preStat2 = connection.prepareStatement("INSERT INTO testcase (`Test`,`Testcase`,`Application`,`Project`,`Description`,`BehaviorOrValueExpected`,"
+                                + "`activeQA`,`activeUAT`,`activePROD`,`Priority`,`Status`,`TcActive`,`Group`,`Origine`,`RefOrigine`,`HowTo`, `Creator`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
                         try {
                             preStat2.setString(1, newTest);
                             preStat2.setString(2, newTestCase);
@@ -443,7 +455,7 @@ public class DuplicateTestCase extends HttpServlet {
                             preStat2.setString(8, rs.getString("activeUAT"));
                             preStat2.setString(9, rs.getString("activePROD"));
                             preStat2.setString(10, rs.getString("Priority"));
-                            preStat2.setString(11, "STANDBY");
+                            preStat2.setString(11, defaultStatus);
                             preStat2.setString(12, rs.getString("TcActive"));
                             preStat2.setString(13, rs.getString("Group"));
                             preStat2.setString(14, rs.getString("Origine"));
@@ -519,10 +531,10 @@ public class DuplicateTestCase extends HttpServlet {
      * Handles the HTTP
      * <code>GET</code> method.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -534,10 +546,10 @@ public class DuplicateTestCase extends HttpServlet {
      * Handles the HTTP
      * <code>POST</code> method.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)

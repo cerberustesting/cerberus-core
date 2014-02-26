@@ -27,6 +27,7 @@ public class Invariant {
     private int sort;
     private int id;
     private String description;
+    private String veryShortDesc;
     private String gp1;
     private String gp2;
     private String gp3;
@@ -37,6 +38,14 @@ public class Invariant {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getVeryShortDesc() {
+        return veryShortDesc;
+    }
+
+    public void setVeryShortDesc(String veryShortDesc) {
+        this.veryShortDesc = veryShortDesc;
     }
 
     public String getGp1() {
