@@ -87,5 +87,10 @@ public class TestCaseCountryPropertiesService implements ITestCaseCountryPropert
         }
         return true;
     }
+    
+    @Override
+    public void updateTestCaseCountryProperties(TestCaseCountryProperties testCaseCountryProperties) throws CerberusException {
+        testCaseCountryPropertiesDAO.updateTestCaseCountryProperties(testCaseCountryProperties);
+    }
    
 }

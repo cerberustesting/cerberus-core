@@ -434,6 +434,19 @@ public class SeleniumService implements ISeleniumService {
 
         return String.valueOf(response);
     }
+    
+    
+    @Override
+    public String getAttributeFromHTMLElement(String locator, String attribute) {
+        String result = null;
+        try {
+        WebElement webElement = this.getSeleniumElement(locator, true);
+        result = webElement.getAttribute(attribute);
+        } catch (WebDriverException exception) {
+            MyLogger.log(SeleniumService.class.getName(), Level.FATAL, exception.toString());
+        }
+        return result;
+    }
 
     @Override
     public boolean isElementPresent(String locator) {

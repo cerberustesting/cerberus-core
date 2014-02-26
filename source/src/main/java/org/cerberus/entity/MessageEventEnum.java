@@ -50,6 +50,7 @@ public enum MessageEventEnum {
     PROPERTY_SUCCESS_RANDOM(100, "OK", "Random property calculated with '%VALUE%'.", false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     PROPERTY_SUCCESS_TEXT(100, "OK", "Text property calculated with '%VALUE%'.", false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     PROPERTY_SUCCESS_RANDOM_NEW(100, "OK", "Random New property calculated with '%VALUE%'.", false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
+    PROPERTY_SUCCESS_GETATTRIBUTEFROMHTML(100, "OK", "Attribute '%ATTRIBUTE%' has returned '%VALUE%' for element '%ELEMENT%'.", false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     PROPERTY_SUCCESS_TESTDATA(100, "OK", "TestData %PROPERTY% correctly returned '%VALUE%'.", false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     PROPERTY_FAILED(150, "KO", "PROPERTY_ERROR Generic error on getting the property.", true, false, MessageGeneralEnum.EXECUTION_NA),
     PROPERTY_FAILED_NO_PROPERTY_DEFINITION(151, "", "Warning, Property not defined for %PROP% and country %COUNTRY%.", false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),

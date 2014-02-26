@@ -28,6 +28,6 @@ import org.cerberus.entity.TestCaseExecutionData;
  */
 public interface IFactoryTestCaseExecutionData {
     
-    TestCaseExecutionData create(long id,String property,String value,String type,String object,
+    TestCaseExecutionData create(long id,String property,String value,String type,String value1,String value2,
             String returnCode, String rMessage, long start,long end,long startLong,long endLong, MessageEvent message);
 }

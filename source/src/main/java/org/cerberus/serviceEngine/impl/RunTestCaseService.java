@@ -939,7 +939,7 @@ public class RunTestCaseService implements IRunTestCaseService {
          */
         MessageEvent msg = new MessageEvent(MessageEventEnum.PROPERTY_PENDING);
         long now = new Date().getTime();
-        TestCaseExecutionData testCaseExecutionData = factoryTestCaseExecutionData.create(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getId(), propertyName, null, null, null, null, null, now, now, now, now, msg);
+        TestCaseExecutionData testCaseExecutionData = factoryTestCaseExecutionData.create(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getId(), propertyName, null, null, null, null,null, null, now, now, now, now, msg);
 
         /**
          * Find TestCaseCountryProperty from database.
@@ -952,7 +952,8 @@ public class RunTestCaseService implements IRunTestCaseService {
              * Feed TestCaseExecutionData object
              */
             testCaseExecutionData.setType(testCaseCountryProperty.getType());
-            testCaseExecutionData.setObject(testCaseCountryProperty.getValue());
+            testCaseExecutionData.setValue1(testCaseCountryProperty.getValue1());
+            testCaseExecutionData.setValue2(testCaseCountryProperty.getValue2());
             MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Calculating property : " + testCaseCountryProperty.getProperty());
             testCaseExecutionData = this.propertyService.calculateProperty(testCaseExecutionData, testCaseStepActionExecution, testCaseCountryProperty);
             try {

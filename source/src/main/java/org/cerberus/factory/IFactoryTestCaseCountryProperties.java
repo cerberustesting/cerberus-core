@@ -27,5 +27,5 @@ import org.cerberus.entity.TestCaseCountryProperties;
 public interface IFactoryTestCaseCountryProperties {
 
     TestCaseCountryProperties create(String test, String testCase, String country, String property,
-                                     String type, String database, String value, int length, int rowLimit, String nature);
+                                     String type, String database, String value1, String value2, int length, int rowLimit, String nature);
 }

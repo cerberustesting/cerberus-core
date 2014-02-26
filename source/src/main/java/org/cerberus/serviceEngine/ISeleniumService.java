@@ -49,7 +49,7 @@ public interface ISeleniumService {
     String getValueFromHTML(String locator);
 
     String getValueFromJS(String script);
-
+    
     boolean isElementPresent(String locator);
 
     boolean isElementVisible(String locator);
@@ -72,6 +72,8 @@ public interface ISeleniumService {
     String getCurrentUrl() throws CerberusEventException;
 
     String getFullBrowserVersion();
+    
+    String getAttributeFromHTMLElement(String locator, String attribute);
 
     void doScreenShot(String runId, String path);
 
