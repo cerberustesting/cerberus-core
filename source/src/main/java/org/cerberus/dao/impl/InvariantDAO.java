@@ -83,10 +83,11 @@ public class InvariantDAO implements IInvariantDAO {
                         int sort = resultSet.getInt("sort");
                         int id = resultSet.getInt("id");
                         String description = resultSet.getString("Description");
+                        String veryShortDesc = resultSet.getString("veryShortDesc");
                         String gp1 = resultSet.getString("gp1");
                         String gp2 = resultSet.getString("gp2");
                         String gp3 = resultSet.getString("gp3");
-                        result = factoryInvariant.create(idName, value, sort, id, description, gp1, gp2, gp3);
+                        result = factoryInvariant.create(idName, value, sort, id, description, veryShortDesc, gp1, gp2, gp3);
                     }
                 } catch (SQLException exception) {
                     MyLogger.log(InvariantDAO.class.getName(), Level.ERROR, exception.toString());
@@ -142,11 +143,12 @@ public class InvariantDAO implements IInvariantDAO {
                         int sort = resultSet.getInt("sort");
                         int id = resultSet.getInt("id");
                         String description = resultSet.getString("Description");
+                        String veryShortDesc = resultSet.getString("VeryShortDesc");
                         String gp1 = resultSet.getString("gp1");
                         String gp2 = resultSet.getString("gp2");
                         String gp3 = resultSet.getString("gp3");
                         String value = resultSet.getString("value");
-                        result.add(factoryInvariant.create(idName, value, sort, id, description, gp1, gp2, gp3));
+                        result.add(factoryInvariant.create(idName, value, sort, id, description, veryShortDesc, gp1, gp2, gp3));
                     }
                 } catch (SQLException exception) {
                     MyLogger.log(InvariantDAO.class.getName(), Level.ERROR, exception.toString());
@@ -197,11 +199,12 @@ public class InvariantDAO implements IInvariantDAO {
                         int sort = resultSet.getInt("sort");
                         int id = resultSet.getInt("id");
                         String description = resultSet.getString("Description");
+                        String veryShortDesc = resultSet.getString("VeryShortDesc");
                         String gp1 = resultSet.getString("gp1");
                         String gp2 = resultSet.getString("gp2");
                         String gp3 = resultSet.getString("gp3");
                         String value = resultSet.getString("value");
-                        result.add(factoryInvariant.create(idName, value, sort, id, description, gp1, gp2, gp3));
+                        result.add(factoryInvariant.create(idName, value, sort, id, description, veryShortDesc, gp1, gp2, gp3));
                     }
                 } catch (SQLException exception) {
                     MyLogger.log(InvariantDAO.class.getName(), Level.ERROR, exception.toString());

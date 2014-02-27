@@ -18,7 +18,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
-  --%>
+--%>
 
 <html>
     <head>
@@ -57,6 +57,9 @@
                 if (!(DatabaseVersioningService.isDatabaseUptodate())) {
                     out.print("<b>WARNING : Database Not Uptodate</b>");
                 }
+                IInvariantService invariantService = appContext.getBean(IInvariantService.class);
+                List<Invariant> myInvariants = invariantService.findInvariantByIdGp1("TCSTATUS", "Y");
+
             %>
             <h3 style="color: blue">Tests Status</h3>
             <table valign="top">
@@ -67,24 +70,20 @@
                                 Connection conn = db.connect();
                                 try {
                                     String test = (dbDocS(conn, "test", "Test", "Test"));
-                                    String nbtest = (dbDocS(conn, "page_homepage", "NbTest", "NbTest")).split(" ")[0];
-                                    String standby = (dbDocS(conn, "page_homepage", "Standby", "Standy")).split(" ")[0];
-                                    String tbi = (dbDocS(conn, "page_homepage", "tbi", "TBI")).split(" ")[0];
-                                    String inp = (dbDocS(conn, "page_homepage", "InProgress", "InProgress")).split(" ")[0];
-                                    String tbv = (dbDocS(conn, "page_homepage", "tbv", "TBV")).split(" ")[0];
-                                    String wor = (dbDocS(conn, "page_homepage", "Working", "Working")).split(" ")[0];
+                                    String nbtest = "TOT";
                             %>
                             <tr id="header">
                                 <th style="width: 145px; text-align: left"><%=test%>&nbsp;</th>
                                 <th class="verticalText"><%=nbtest%>&nbsp;</th>
-                                <th class="verticalText"><%=standby%>&nbsp;</th>
-                                <th class="verticalText"><%=tbi%>&nbsp;</th>
-                                <th class="verticalText"><%=inp%>&nbsp;</th>
-                                <th class="verticalText"><%=tbv%>&nbsp;</th>
-                                <th class="verticalText"><%=wor%>&nbsp;</th>
+                                <%
+                                    for (Invariant i1 : myInvariants) {
+                                %><th title="<%=i1.getValue()%>" class="verticalText"><%=i1.getVeryShortDesc()%>&nbsp;</th><%
+                                    }
+                                %>
                             </tr>
                             <%
                                 ArrayList<ArrayList<String>> arrayTest = (ArrayList<ArrayList<String>>) request.getAttribute("arrayTest");
+                                int j = 0;
                                 for (int i = 0; i < arrayTest.size(); i++) {
                                     ArrayList<String> array = arrayTest.get(i);
 
@@ -94,11 +93,11 @@
                             <tr id="header">
                                 <th style="width: 145px; text-align: left"><%=test%>&nbsp;</th>
                                 <th class="verticalText"><%=nbtest%>&nbsp;</th>
-                                <th class="verticalText"><%=standby%>&nbsp;</th>
-                                <th class="verticalText"><%=tbi%>&nbsp;</th>
-                                <th class="verticalText"><%=inp%>&nbsp;</th>
-                                <th class="verticalText"><%=tbv%>&nbsp;</th>
-                                <th class="verticalText"><%=wor%>&nbsp;</th>
+                                <%
+                                    for (Invariant i1 : myInvariants) {
+                                %><th title="<%=i1.getValue()%>" class="verticalText"><%=i1.getVeryShortDesc()%>&nbsp;</th><%
+                                    }
+                                %>
                             </tr>
                             <% }%>
                             <tr>
@@ -110,11 +109,13 @@
                                     <% }%>
                                 </td>
                                 <td id="nbtest" name="NbTest" style="background-color: white;"><%=array.get(1)%>&nbsp;</td>
-                                <td name="StandBy" style="background-color: white;"><%=array.get(2)%>&nbsp;</td>
-                                <td name="TBI" style="background-color: white;"><%=array.get(3)%>&nbsp;</td>
-                                <td name="InProgress" style="background-color: white;"><%=array.get(4)%>&nbsp;</td>
-                                <td name="TBV" style="background-color: white;"><%=array.get(5)%>&nbsp;</td>
-                                <td name="Working" style="background-color: white;"><%=array.get(6)%>&nbsp;</td>
+                                <%
+                                    j = 2;
+                                    for (Invariant i1 : myInvariants) {
+                                %><td name="<%=i1.getValue()%>" style="background-color: white;"><%=array.get(j)%>&nbsp;</td><%
+                                        j++;
+                                    }
+                                %>
                             </tr>
                             <% }%>
                         </table>

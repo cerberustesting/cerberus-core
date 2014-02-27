@@ -37,11 +37,14 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Level;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.entity.Application;
+import org.cerberus.entity.Invariant;
 import org.cerberus.entity.User;
 import org.cerberus.log.MyLogger;
 import org.cerberus.service.IApplicationService;
+import org.cerberus.service.IInvariantService;
 import org.cerberus.service.IUserService;
 import org.cerberus.service.impl.ApplicationService;
+import org.cerberus.service.impl.InvariantService;
 import org.cerberus.service.impl.UserService;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
@@ -101,50 +104,35 @@ public class Homepage extends HttpServlet {
                     inSQL = " and application in ('') ";
                 }
 
+                IInvariantService invariantService = appContext.getBean(InvariantService.class);
+                List<Invariant> myInvariants = invariantService.findInvariantByIdGp1("TCSTATUS", "Y");
                 StringBuilder SQL = new StringBuilder();
-                SQL.append("SELECT t.Test, count(*) as TOTAL,STANDBY, TBI, INPROGRESS , TBV , WORKING, TBD "
-                        + "FROM testcase t "
-                        + "left join "
-                        + "(SELECT g.test, count(*) as TBI from testcase g "
-                        + "where Status = 'TO BE IMPLEMENTED' ");
-                SQL.append(inSQL);
-                SQL.append(" GROUP BY Test) s "
-                        + "on s.test=t.test "
-                        + "left join "
-                        + "(SELECT h.test, count(*) as WORKING from testcase h "
-                        + "where Status = 'WORKING' ");
-                SQL.append(inSQL);
-                SQL.append(" GROUP BY Test) u "
-                        + "on u.test=t.test "
-                        + "left join "
-                        + "(SELECT a.test, count(*) as STANDBY from testcase a "
-                        + "where Status = 'Standby' ");
-                SQL.append(inSQL);
-                SQL.append(" GROUP BY Test) v "
-                        + "on v.test=t.test "
-                        + "left join "
-                        + "(SELECT b.test, count(*) as INPROGRESS from testcase b "
-                        + "where Status = 'IN PROGRESS' ");
-                SQL.append(inSQL);
-                SQL.append(" GROUP BY Test) w "
-                        + "on w.test=t.test "
-                        + "left join "
-                        + "(SELECT i.test, count(*) as TBV from testcase i "
-                        + "where Status = 'TO BE VALIDATED' ");
-                SQL.append(inSQL);
-                SQL.append(" GROUP BY Test) x "
-                        + "on x.test=t.test "
-                        + "left join "
-                        + "(SELECT j.test, count(*) as TBD from testcase j "
-                        + "where Status = 'TO BE DELETED' ");
-                SQL.append(inSQL);
-                SQL.append(" GROUP BY Test) y "
-                        + "on y.test=t.test "
-                        + "WHERE 1=1  ");
-                SQL.append(inSQL);
-                SQL.append(" GROUP BY test;");
-
-                MyLogger.log(Homepage.class.getName(), Level.DEBUG, " SQL : " + SQL.toString());
+                StringBuilder SQLa = new StringBuilder();
+                StringBuilder SQLb = new StringBuilder();
+                SQLa.append("SELECT t.Test, count(*) as TOTAL ");
+                SQLb.append(" FROM testcase t ");
+                for (Invariant i : myInvariants) {
+                    i.getSort();
+                    SQLa.append(", Col");
+                    SQLa.append(String.valueOf(i.getSort()));
+                    SQLb.append(" LEFT JOIN (SELECT g.test, count(*) as Col");
+                    SQLb.append(String.valueOf(i.getSort()));
+                    SQLb.append(" FROM testcase g WHERE Status = '");
+                    SQLb.append(i.getValue());
+                    SQLb.append("' ");
+                    SQLb.append(inSQL);
+                    SQLb.append(" GROUP BY Test) Tab");
+                    SQLb.append(String.valueOf(i.getSort()));
+                    SQLb.append(" ON Tab");
+                    SQLb.append(String.valueOf(i.getSort()));
+                    SQLb.append(".test=t.test ");
+                }
+                SQLb.append(" WHERE 1=1  ");
+                SQLb.append(inSQL);
+                SQLb.append(" GROUP BY test;");
+                SQL.append(SQLa);
+                SQL.append(SQLb);
+                MyLogger.log(Homepage.class.getName(), Level.DEBUG, " SQL1 : " + SQL.toString());
 
                 PreparedStatement stmt_teststatus = connection.prepareStatement(SQL.toString());
 //                stmt_teststatus.setString(1, inSQL);
@@ -161,40 +149,44 @@ public class Homepage extends HttpServlet {
                     ResultSet rs_teststatus = stmt_teststatus.executeQuery();
 
                     Integer tot = 0;
-                    Integer sb = 0;
-                    Integer tbi = 0;
-                    Integer ip = 0;
-                    Integer tbv = 0;
-                    Integer working = 0;
+                    ArrayList<Integer> totLine;
+                    totLine = new ArrayList<Integer>();
+                    for (Invariant i : myInvariants) {
+                        totLine.add(0);
+                    }
+
+                    Integer j = 0;
+
+                    String colName;
                     try {
                         while (rs_teststatus.next()) {
                             al = new ArrayList<String>();
                             al.add(rs_teststatus.getString("t.test"));
                             al.add(rs_teststatus.getInt("TOTAL") != 0 ? rs_teststatus.getString("TOTAL") : "");
                             tot += rs_teststatus.getInt("TOTAL");
-                            al.add(rs_teststatus.getInt("STANDBY") != 0 ? rs_teststatus.getString("STANDBY") : "");
-                            sb += rs_teststatus.getInt("STANDBY");
-                            al.add(rs_teststatus.getInt("TBI") != 0 ? rs_teststatus.getString("TBI") : "");
-                            tbi += rs_teststatus.getInt("TBI");
-                            al.add(rs_teststatus.getInt("INPROGRESS") != 0 ? rs_teststatus.getString("INPROGRESS") : "");
-                            ip += rs_teststatus.getInt("INPROGRESS");
-                            al.add(rs_teststatus.getInt("TBV") != 0 ? rs_teststatus.getString("TBV") : "");
-                            tbv += rs_teststatus.getInt("TBV");
-                            al.add(rs_teststatus.getInt("WORKING") != 0 ? rs_teststatus.getString("WORKING") : "");
-                            working += rs_teststatus.getInt("WORKING");
+                            j = 0;
+                            for (Invariant i : myInvariants) {
+                                colName = "Col" + String.valueOf(i.getSort());
+                                al.add(rs_teststatus.getInt(colName) != 0 ? rs_teststatus.getString(colName) : "");
+                                totLine.set(j, totLine.get(j) + rs_teststatus.getInt(colName));
+                                j++;
+                            }
                             arrayTest.add(al);
                         }
                     } finally {
                         rs_teststatus.close();
                     }
                     al = new ArrayList<String>();
+
                     al.add("-- GRAN TOTAL --");
                     al.add(tot.toString());
-                    al.add(sb.toString());
-                    al.add(tbi.toString());
-                    al.add(ip.toString());
-                    al.add(tbv.toString());
-                    al.add(working.toString());
+
+                    j = 0;
+                    for (Invariant i : myInvariants) {
+                        al.add(totLine.get(j).toString());
+                        j++;
+                    }
+
                     arrayTest.add(al);
 
                 } finally {
