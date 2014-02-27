@@ -23,15 +23,14 @@ import java.util.Date;
 import java.util.List;
 import java.util.Random;
 import java.util.logging.Logger;
-
 import org.apache.log4j.Level;
 import org.cerberus.dao.ITestCaseExecutionDataDAO;
 import org.cerberus.entity.CountryEnvironmentDatabase;
 import org.cerberus.entity.MessageEvent;
 import org.cerberus.entity.MessageEventEnum;
 import org.cerberus.entity.Property;
-import org.cerberus.entity.TestCaseExecution;
 import org.cerberus.entity.TestCaseCountryProperties;
+import org.cerberus.entity.TestCaseExecution;
 import org.cerberus.entity.TestCaseExecutionData;
 import org.cerberus.entity.TestCaseStepActionExecution;
 import org.cerberus.exception.CerberusEventException;
@@ -39,7 +38,6 @@ import org.cerberus.exception.CerberusException;
 import org.cerberus.log.MyLogger;
 import org.cerberus.service.ICountryEnvironmentDatabaseService;
 import org.cerberus.service.ISqlLibraryService;
-import org.cerberus.service.ITestCaseExecutionDataService;
 import org.cerberus.service.ITestCaseExecutionService;
 import org.cerberus.service.ITestDataService;
 import org.cerberus.serviceEngine.IConnectionPoolDAO;
@@ -113,7 +111,12 @@ public class PropertyService implements IPropertyService {
                     res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_TEXTRANDOMLENGHT0);
                     testCaseExecutionData.setPropertyResultMessage(res);
                 } else {
-                    String charset = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+                    String charset;
+                    if (testCaseCountryProperty.getValue1() != null && !"".equals(testCaseCountryProperty.getValue1().trim())) {
+                        charset = testCaseCountryProperty.getValue1();
+                    } else {
+                        charset = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+                    }
                     String value = StringUtil.getRandomString(testCaseCountryProperty.getLength(), charset);
                     testCaseExecutionData.setValue(value);
                     res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_RANDOM);
