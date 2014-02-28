@@ -94,5 +94,11 @@
             <br>
             <a href="#" id="openPopup" data-cerberus="openPopup" onclick="javascript:window.open('./index2.jsp', 'popup',
 			'width=500,height=400,scrollbars=yes,menubar=false,location=false');return false;">Open Popup</a>
+            <br>
+            <br>
+            <a href="#" id="alertPopup" data-cerberus="alertPopup" onclick="javascript:alert('ceci est une popup d\'alert')">Open Alert</a>
+            <br>
+            <br>
+            <a href="#" id="confirmPopup" data-cerberus="confirmPopup" onclick="javascript:confirm('ceci est une popup de confirmation')">Open Confirm</a>
     </body>
 </html>
