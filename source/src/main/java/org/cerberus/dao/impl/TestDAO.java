@@ -347,14 +347,19 @@ public class TestDAO implements ITestDAO {
         if(resultSet == null) {
             return null;
         }
-        
+
         String test = resultSet.getString("test") == null ? "" : resultSet.getString("test");
         String description = resultSet.getString("description") == null ? "" : resultSet.getString("description");
         String active = resultSet.getString("active") == null ? "" : resultSet.getString("active");
         String automated = resultSet.getString("automated") == null ? "" : resultSet.getString("automated");
 
-//      String tcactive = resultSet.getString("tdatecrea") == null ? "" : resultSet.getString("tdatecrea");
-        String tcactive = "";
+        String tcactive;
+        try {
+            tcactive = resultSet.getString("tdatecrea") == null ? "" : resultSet.getString("tdatecrea");
+        } catch (java.sql.SQLException e) {
+            MyLogger.log(TestDAO.class.getName(), Level.WARN, e.toString());
+            tcactive = DateUtil.getMySQLTimestampTodayDeltaMinutes(0);
+        }
 
         return factoryTest.create(test, description, active, automated, tcactive);
     }
