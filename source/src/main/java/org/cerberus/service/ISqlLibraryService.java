@@ -19,6 +19,7 @@
  */
 package org.cerberus.service;
 
+import java.util.List;
 import org.cerberus.entity.SqlLibrary;
 import org.cerberus.exception.CerberusException;
 
@@ -29,4 +30,61 @@ import org.cerberus.exception.CerberusException;
 public interface ISqlLibraryService {
 
     SqlLibrary findSqlLibraryByKey(String name) throws CerberusException;
+    
+    /**
+     *
+     * @param sqlLibrary sqlLibrary to insert
+     * @throws CerberusException
+     */
+    void createSqlLibrary(SqlLibrary sqlLibrary) throws CerberusException;
+
+    /**
+     *
+     * @param sqlLibrary sqlLibrary to update using the key
+     * @throws CerberusException
+     */
+    void updateSqlLibrary(SqlLibrary sqlLibrary) throws CerberusException;
+
+    /**
+     *
+     * @param sqlLibrary sqlLibrary to delete
+     * @throws CerberusException
+     */
+    void deleteSqlLibrary(SqlLibrary sqlLibrary) throws CerberusException;
+
+    /**
+     *
+     * @return All SqlLibrary
+     */
+    List<SqlLibrary> findAllSqlLibrary();
+
+    /**
+     *
+     * @param start first row of the resultSet
+     * @param amount number of row of the resultSet
+     * @param column order the resultSet by this column
+     * @param dir Asc or desc, information for the order by command
+     * @param searchTerm search term on all the column of the resultSet
+     * @param individualSearch search term on a dedicated column of the
+     * resultSet
+     * @return
+     */
+    List<SqlLibrary> findSqlLibraryListByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch);
+    
+    /**
+     * 
+     * @param name Key of the table
+     * @param columnName Name of the column
+     * @param value New value of the columnName
+     * @throws CerberusException 
+     */
+    void updateSqlLibrary(String name, String columnName, String value) throws CerberusException;
+    
+    /**
+     * 
+     * @param searchTerm words to be searched in every column (Exemple : article)
+     * @param inds part of the script to add to where clause (Exemple : `type` = 'Article')
+     * @return The number of records for these criterias
+     */
+    Integer getNumberOfSqlLibraryPerCrtiteria(String searchTerm, String inds);
 }

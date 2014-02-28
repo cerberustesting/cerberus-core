@@ -19,6 +19,7 @@
  */
 package org.cerberus.service.impl;
 
+import java.util.List;
 import org.cerberus.dao.impl.SqlLibraryDAO;
 import org.cerberus.entity.SqlLibrary;
 import org.cerberus.exception.CerberusException;
@@ -39,5 +40,40 @@ public class SqlLibraryService implements ISqlLibraryService {
     @Override
     public SqlLibrary findSqlLibraryByKey(String name) throws CerberusException {
         return sqlLibraryDao.findSqlLibraryByKey(name);
+    }
+
+    @Override
+    public void createSqlLibrary(SqlLibrary sqlLibrary) throws CerberusException {
+        sqlLibraryDao.createSqlLibrary(sqlLibrary);
+    }
+
+    @Override
+    public void updateSqlLibrary(SqlLibrary sqlLibrary) throws CerberusException {
+        sqlLibraryDao.updateSqlLibrary(sqlLibrary);
+    }
+
+    @Override
+    public void deleteSqlLibrary(SqlLibrary sqlLibrary) throws CerberusException {
+        sqlLibraryDao.deleteSqlLibrary(sqlLibrary);
+    }
+
+    @Override
+    public List<SqlLibrary> findAllSqlLibrary() {
+        return sqlLibraryDao.findAllSqlLibrary();
+    }
+
+    @Override
+    public List<SqlLibrary> findSqlLibraryListByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
+        return sqlLibraryDao.findSqlLibraryListByCriteria(start, amount, column, dir, searchTerm, individualSearch);
+    }
+
+    @Override
+    public void updateSqlLibrary(String name, String columnName, String value) throws CerberusException {
+        sqlLibraryDao.updateSqlLibrary(name, columnName, value);
+    }
+
+    @Override
+    public Integer getNumberOfSqlLibraryPerCrtiteria(String searchTerm, String inds) {
+        return sqlLibraryDao.getNumberOfSqlLibraryPerCrtiteria(searchTerm, inds);
     }
 }

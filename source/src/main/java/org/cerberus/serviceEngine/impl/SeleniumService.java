@@ -70,6 +70,7 @@ import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.remote.Augmenter;
+import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.remote.UnreachableBrowserException;
@@ -280,8 +281,15 @@ public class SeleniumService implements ISeleniumService {
             capabilities = DesiredCapabilities.firefox();
             FirefoxProfile profile = setFirefoxProfile(runId, record, country);
             capabilities.setCapability(FirefoxDriver.PROFILE, profile);
-        } else if (browser.equalsIgnoreCase("iexplorer")) {
+        } else if (browser.equalsIgnoreCase("IE9")) {
             capabilities = DesiredCapabilities.internetExplorer();
+            capabilities.setCapability(CapabilityType.VERSION, "9");
+        } else if (browser.equalsIgnoreCase("IE10")) {
+            capabilities = DesiredCapabilities.internetExplorer();
+            capabilities.setCapability(CapabilityType.VERSION, "10");
+        } else if (browser.equalsIgnoreCase("IE11")) {
+            capabilities = DesiredCapabilities.internetExplorer();
+            capabilities.setCapability(CapabilityType.VERSION, "11");
         } else if (browser.equalsIgnoreCase("chrome")) {
             capabilities = DesiredCapabilities.chrome();
         }

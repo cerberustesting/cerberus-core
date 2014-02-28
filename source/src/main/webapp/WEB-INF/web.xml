@@ -265,6 +265,22 @@
         <servlet-name>SaveManualExecutionPicture</servlet-name>
         <servlet-class>org.cerberus.servlet.manualTestCase.SaveManualExecutionPicture</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>CreateSqlLibrary</servlet-name>
+        <servlet-class>org.cerberus.servlet.sqllibrary.CreateSqlLibrary</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>DeleteSqlLibrary</servlet-name>
+        <servlet-class>org.cerberus.servlet.sqllibrary.DeleteSqlLibrary</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>FindAllSqlLibrary</servlet-name>
+        <servlet-class>org.cerberus.servlet.sqllibrary.FindAllSqlLibrary</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>UpdateSqlLibrary</servlet-name>
+        <servlet-class>org.cerberus.servlet.sqllibrary.UpdateSqlLibrary</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>RunTestCase</servlet-name>
         <url-pattern>/RunTestCase</url-pattern>
@@ -513,6 +529,22 @@
         <servlet-name>SaveManualExecutionPicture</servlet-name>
         <url-pattern>/SaveManualExecutionPicture</url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>CreateSqlLibrary</servlet-name>
+        <url-pattern>/CreateSqlLibrary</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DeleteSqlLibrary</servlet-name>
+        <url-pattern>/DeleteSqlLibrary</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>FindAllSqlLibrary</servlet-name>
+        <url-pattern>/FindAllSqlLibrary</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>UpdateSqlLibrary</servlet-name>
+        <url-pattern>/UpdateSqlLibrary</url-pattern>
+    </servlet-mapping>
     <session-config>
         <session-timeout>
             60
@@ -601,6 +633,7 @@
             <url-pattern>/ImportHTML.jsp</url-pattern>
             <url-pattern>/ImportTestCase.jsp</url-pattern>
             <url-pattern>/TestData.jsp</url-pattern>
+            <url-pattern>/SqlLibrary.jsp</url-pattern>
         </web-resource-collection>
         <web-resource-collection>
             <web-resource-name>servlet</web-resource-name>
@@ -620,6 +653,7 @@
             <url-pattern>/DeleteTestData</url-pattern>
             <url-pattern>/UpdateTestData</url-pattern>
             <url-pattern>/FindAllTestData</url-pattern>
+            <url-pattern>/FindAllSqlLibrary</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <description>Test</description>
@@ -633,6 +667,9 @@
             <description>servlet</description>
             <url-pattern>/DeleteTest</url-pattern>
             <url-pattern>/DeleteTestCase</url-pattern>
+            <url-pattern>/CreateSqlLibrary</url-pattern>
+            <url-pattern>/DeleteSqlLibrary</url-pattern>
+            <url-pattern>/UpdateSqlLibrary</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <description>TestAdmin</description>
