@@ -2992,12 +2992,12 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS = new StringBuilder();
         SQLS.append("UPDATE `documentation` SET `DocDesc`='This correspond to the URL that points to the page where a new bug can be created on the Bug system of the <code class=\\'doc-crbvvoca\\'>application</code>.<br><br><table cellspacing=0 cellpadding=3><th class=\\'ex\\' colspan=\\'2\\'>The following variables can be used inside the URL</th><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%TEST%</code></td><td class=\\'ex\\'>Test</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%TESTCASE%</code></td><td class=\\'ex\\'>Test case reference</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%TESTCASEDESC%</code></td><td class=\\'ex\\'>Description of the test case</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%EXEID%</code></td><td class=\\'ex\\'>Execution ID</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%EXEDATE%</code></td><td class=\\'ex\\'>Start date and time of the execution.</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%ENV%</code></td><td class=\\'ex\\'>Environment</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%COUNTRY%</code></td><td class=\\'ex\\'>Country</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%BUILD%</code></td><td class=\\'ex\\'>Build</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%REV%</code></td><td class=\\'ex\\'>Revision</td></tr></table>' WHERE `DocTable`='application' and`DocField`='bugtrackernewurl' and`DocValue`='';");
         SQLInstruction.add(SQLS.toString());
-        
+
 // Adding a very short description in invariant table.
         SQLS = new StringBuilder();
         SQLS.append("ALTER TABLE `invariant` ADD COLUMN `VeryShortDesc` VARCHAR(45) NULL DEFAULT '' AFTER `description` ");
         SQLInstruction.add(SQLS.toString());
-        
+
 // Initialise gp1 and VeryShortDesc for TCStatus.
         SQLS = new StringBuilder();
         SQLS.append("UPDATE `invariant` SET `VeryShortDesc`=description WHERE `id`='1' ;");
@@ -3006,7 +3006,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("UPDATE `invariant` SET `gp1`='Y' WHERE `id`='1' ;");
         SQLInstruction.add(SQLS.toString());
 
-        
+
 // Add manageDialog to action and verifyTextInDialog to control and verifyStringContains to control.
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `id`, `description`, `gp1`, `gp2`, `gp3`) ");
@@ -3023,8 +3023,26 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS = new StringBuilder();
         SQLS.append("ALTER TABLE `testcaseexecutiondata` CHANGE COLUMN `Object` `Value1` VARCHAR(3000) NULL DEFAULT NULL ,");
         SQLS.append("ADD COLUMN `Value2` VARCHAR(3000) NULL DEFAULT NULL AFTER `Value1`");
-        SQLInstruction.add(SQLS.toString());        
-        
+        SQLInstruction.add(SQLS.toString());
+
+// Split IE browsers to IE9/IE10/IE11
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `invariant` SET `sort`='10' WHERE `id`='37' and`sort`='1';");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `invariant` SET `sort`='20' WHERE `id`='37' and`sort`='3';");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `id`, `description`, `VeryShortDesc`) ");
+        SQLS.append(" VALUES ('BROWSER', 'IE9', '30', '37', 'Internet Explorer 9 Browser', ''),");
+        SQLS.append("        ('BROWSER', 'IE10', '40', '37', 'Internet Explorer 10 Browser', ''),");
+        SQLS.append("        ('BROWSER', 'IE11', '50', '37', 'Internet Explorer 11 Browser', '');");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("DELETE FROM `invariant` WHERE `id`='37' and`sort`='2';");
+        SQLInstruction.add(SQLS.toString());
+
+
         return SQLInstruction;
     }
 }
