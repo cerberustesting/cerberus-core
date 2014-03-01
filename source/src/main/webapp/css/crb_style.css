@@ -715,15 +715,15 @@ table.doctb {
     padding: 0;
     border: 0;
     position: absolute;
-    left: 130px;
-    top: 50px;
+    left: 120px;
+    top: 30px;
     z-index: 999;
 }
 
 #navlist li
 {
     float: left;
-    width: 145px;
+    width: 115px;
     height: 22px;
     margin: 0;
     padding: 0;
@@ -734,7 +734,7 @@ table.doctb {
 {
     display: block;
     width: 145px;
-    height: 14px;
+    height: 30px;
     -moz-border-radius: 5px;
     -moz-box-shadow: -1px -1px 5px #d0d0d0;
     -webkit-box-shadow: -1px -1px 5px #d0d0d0;
@@ -774,6 +774,7 @@ table.doctb {
 #navlist .subnav li a:link, #navlist .subnav li a:visited
 {
     display: block;
+    height: 14px;
     font-weight: bold;
     margin: 0;
     border: 0;
