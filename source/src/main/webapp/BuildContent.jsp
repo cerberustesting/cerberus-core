@@ -244,7 +244,7 @@
                     <td class="wob" style="background-color:<%=backColor%>">
                         <select class="wob" name="ubcReleaseOwner" style="width: 100px; background-color:<%=backColor%>; font-size:x-small">
                             <option value="" ></option><%
-                                ResultSet rsOwner = stmtProj.executeQuery(" SELECT Login, Name FROM user where defaultsystem like '" + MySystem + "';");
+                                ResultSet rsOwner = stmtProj.executeQuery(" SELECT Login, Name FROM user where defaultsystem like '" + MySystem + "' or login = '" + rsBR.getString("b.ReleaseOwner") + "';");
                                 while (rsOwner.next()) {
                             %><option value="<%=rsOwner.getString("Login")%>"<%=rsBR.getString("b.ReleaseOwner").compareTo(rsOwner.getString("Login")) == 0 ? " SELECTED " : ""%>><%=rsOwner.getString("Name")%></option><%
                                 }
