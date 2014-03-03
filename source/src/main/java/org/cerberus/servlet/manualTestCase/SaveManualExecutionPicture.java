@@ -65,7 +65,7 @@ public class SaveManualExecutionPicture extends HttpServlet {
 
                     InputStream inputStream = p.getInputStream();
                     String name = test + "-" + testCase + "-St1Sq" + seq + ".jpg";
-                    OutputStream outputStream = new FileOutputStream(new File(imgPath + runId + name));
+                    OutputStream outputStream = new FileOutputStream(new File(this.buildScreenshotPath(imgPath, runId, name)));
 
                     int read;
                     byte[] bytes = new byte[1024];
@@ -101,5 +101,9 @@ public class SaveManualExecutionPicture extends HttpServlet {
         } catch (CerberusException e) {
             MyLogger.log(SaveManualExecutionPicture.class.getName(), Level.ERROR, e.toString());
         }
+    }
+
+    private String buildScreenshotPath(String folder, String runId, String name){
+        return folder + runId + "/" + name;
     }
 }
