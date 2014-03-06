@@ -369,14 +369,18 @@
                         canEdit = true;
                     }
 
+                    boolean canDuplicate = false;
+                    if (request.getUserPrincipal() != null && request.isUserInRole("Test")) {
+                        canDuplicate = true;
+                    }
 
             %>
 
-            <table id="generalparameter" class="arrond"
+            <table id="generalparameter" class="arrond">
                    <%if (tinf == false) {%> style="display : none" <%} else {%>style="display : table"<%}%> >
                 <tr>
                     <td class="separation">
-                        <%  if (canEdit) {%>
+                        <%  if (canDuplicate) {%>
                         <form method="post" name="DuplicateTestCase" action="DuplicateTestCase">
                             <% }%>
                             <table  class="wob" style="text-align: left; border-collapse: collapse" border="0px" cellpadding="0px" cellspacing="0px">
@@ -400,14 +404,14 @@
                                     <td class="wob"><input id="editDescription" style="width: 950px; background-color: #DCDCDC" name="editDescription" readonly="readonly"
                                                            value="<%=rs_testcase_general_info.getString("Description")%>"></td>
                                     <td class="wob">
-                                        <%  if (canEdit) {%>
+                                        <%  if (canDuplicate) {%>
                                         <input rowspan="2" style=" valign: center" class="_Duplicate" type="submit" name="submitDuplicate"
                                                value="Duplicate" id="submitButtonDuplicate" disabled="disabled">
                                         <% }%>
                                     </td>
                                 </tr>
                             </table><br>
-                            <%  if (canEdit) {%>
+                            <%  if (canDuplicate) {%>
                             <input type="hidden" id="Test" name="Test" value="<%=test%>"> <input type="hidden" id="TestCase" name="TestCase"
                                                                                                  value="<%=testcase%>">
                         </form>
