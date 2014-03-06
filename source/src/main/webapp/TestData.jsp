@@ -19,9 +19,10 @@
 --%>
 
 <!DOCTYPE html>
+<% Date DatePageStart = new Date() ; %>
 <html>
     <head>
-        <title>TestData</title>
+        <title>Test Data</title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <link rel="stylesheet" type="text/css" href="css/crb_style.css">
         <style media="screen" type="text/css">
@@ -131,7 +132,8 @@
                 <button id="btnAddNewRowCancel">Cancel</button>
             </form>
         </div>
-
-
+        <br><%
+            out.print(display_footer(DatePageStart));
+        %>
     </body>
 </html>
