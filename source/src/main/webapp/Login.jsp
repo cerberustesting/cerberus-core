@@ -78,7 +78,7 @@
 </html>
 <%
     } catch (Exception ex) {
-        request.getRequestDispatcher("/DatabaseMaintenance.jsp?GO=Y").forward(request, response);
+        request.getRequestDispatcher("/DatabaseMaintenance.jsp").forward(request, response);
         MyLogger.log("Login_jsp", Level.FATAL, " Exception catched : " + ex);
     }
 %>
