@@ -1046,7 +1046,7 @@
                                     <%
                                         for (int i = 0; i < country_list.length; i++) {
                                     %>
-                                    <td colspan="3" align="center" style="width: 60px ;"><%=country_list[i]%></td>
+                                    <td colspan="6" align="center" style="width: 60px ;"><%=country_list[i]%></td>
                                     <%
                                         }
                                     %>
@@ -1058,7 +1058,10 @@
                                     %>
                                     <td id="repsynthesis1" align="center" style="color : green">OK</td>
                                     <td id="repsynthesis2" align="center" style="color : red">KO</td>
-                                    <td id="repsynthesis3" align="center" style="color : #999999">NE</td>
+                                    <td id="repsynthesis3" align="center" style="color : darkmagenta">FA</td>
+                                    <td id="repsynthesis4" align="center" style="color : blue">PE</td>
+                                    <td id="repsynthesis5" align="center" style="color : #999999">NE</td>
+                                    <td id="repsynthesis6" align="center" style="color : black">TOTAL</td>
                                     <%                                                              }
                                     %>
                                 </tr>
@@ -1067,6 +1070,8 @@
                                     for (int k = 0; k < country_list.length; k++) {
                                         String OK = "OK" + country_list[k];
                                         String KO = "KO" + country_list[k];
+                                        String FA = "FA" + country_list[k];
+                                        String PE = "PE" + country_list[k];
                                         String NE = "NE" + country_list[k];
                                         String NT = "NT" + country_list[k];
                                     }
@@ -1087,12 +1092,16 @@
 
                                     List<String> listTOTOK = new ArrayList<String>();
                                     List<String> listTOTKO = new ArrayList<String>();
+                                    List<String> listTOTFA = new ArrayList<String>();
+                                    List<String> listTOTPE = new ArrayList<String>();
                                     List<String> listTOTNE = new ArrayList<String>();
                                     List<String> listTOTNT = new ArrayList<String>();
 
                                     for (int l = 0; l < distinctList.size(); l++) {
                                         List<String> listOK = new ArrayList<String>();
                                         List<String> listKO = new ArrayList<String>();
+                                        List<String> listFA = new ArrayList<String>();
+                                        List<String> listPE = new ArrayList<String>();
                                         List<String> listNE = new ArrayList<String>();
                                         List<String> listNT = new ArrayList<String>();
                                         for (int i = 0; i < statistiques.size(); i++) {
@@ -1107,6 +1116,14 @@
                                                 if (statsdetails[2].equals("KO")) {
                                                     listKO.add(countrystatus);
                                                     listTOTKO.add(countrystatus);
+                                                }
+                                                if (statsdetails[2].equals("FA")) {
+                                                    listFA.add(countrystatus);
+                                                    listTOTFA.add(countrystatus);
+                                                }
+                                                if (statsdetails[2].equals("PE")) {
+                                                    listPE.add(countrystatus);
+                                                    listTOTPE.add(countrystatus);
                                                 }
                                                 if (statsdetails[2].equals("NE")) {
                                                     listNE.add(countrystatus);
@@ -1127,6 +1144,8 @@
                                         for (int b = 0; b < country_list.length; b++) {
                                             List<String> listCTOK = new ArrayList<String>();
                                             List<String> listCTKO = new ArrayList<String>();
+                                            List<String> listCTFA = new ArrayList<String>();
+                                            List<String> listCTPE = new ArrayList<String>();
                                             List<String> listCTNE = new ArrayList<String>();
                                             List<String> listCTNT = new ArrayList<String>();
 
@@ -1144,6 +1163,24 @@
                                                 if (country_list[b].equals(CTKOdetails[0])) {
                                                     if (CTKOdetails[1].equals("KO")) {
                                                         listCTKO.add(CTKOdetails[1]);
+                                                    }
+                                                }
+                                            }
+
+                                            for (int a = 0; a < listFA.size(); a++) {
+                                                String[] CTFAdetails = listFA.get(a).split("-");
+                                                if (country_list[b].equals(CTFAdetails[0])) {
+                                                    if (CTFAdetails[1].equals("FA")) {
+                                                        listCTFA.add(CTFAdetails[1]);
+                                                    }
+                                                }
+                                            }
+
+                                            for (int a = 0; a < listPE.size(); a++) {
+                                                String[] CTPEdetails = listPE.get(a).split("-");
+                                                if (country_list[b].equals(CTPEdetails[0])) {
+                                                    if (CTPEdetails[1].equals("PE")) {
+                                                        listCTPE.add(CTPEdetails[1]);
                                                     }
                                                 }
                                             }
@@ -1217,15 +1254,25 @@
 
                                             }
 
-                                    %>                          <td id="repsynthesis1" class="INF" align="center" style="font : bold  ;
-                                        ; background-color: <%=cssGen%>; border-top-color: <%=cssleftTOP%> ; border-right-color: <%=cssleftRIG%>  ">
-                                        <%=listCTOK.size() != 0 ? listCTOK.size() : ""%> 
+                                            int total = 0+listCTOK.size()+listCTKO.size()+listCTFA.size()+listCTPE.size()+listCTNE.size();
+                                    %><td id="repsynthesis1" class="INF" align="center" style="font : bold  ;
+                                        ; color: green; border-top-color: <%=cssleftTOP%> ; border-right-color: <%=cssleftRIG%>  ">
+                                        <%=listCTOK.size() != 0 ? listCTOK.size() : "0"%> 
                                     <td id="repsynthesis2" class="INF" align="center" style="font : bold; 
-                                        ; background-color: <%=cssGen%>; border-top-color: <%=cssleftTOP%> ; border-right-color: <%=cssleftRIG%> ;border-left-color: <%=cssleftRIG%>  ">
-                                        <%=listCTKO.size() != 0 ? listCTKO.size() : ""%> 
+                                        ; color: red; border-top-color: <%=cssleftTOP%> ; border-right-color: <%=cssleftRIG%> ;border-left-color: <%=cssleftRIG%>  ">
+                                        <%=listCTKO.size() != 0 ? listCTKO.size() : "0"%> 
                                     <td id="repsynthesis3" class="INF" align="center" style="font : bold ; 
-                                        ; background-color: <%=cssGen%>; border-top-color: <%=cssleftTOP%> ; border-left-color: <%=cssleftRIG%>  ">
-                                        <%=listCTNE.size() != 0 ? listCTNE.size() : ""%></td>
+                                        ; color: darkmagenta; border-top-color: <%=cssleftTOP%> ; border-left-color: <%=cssleftRIG%>  ">
+                                        <%=listCTFA.size() != 0 ? listCTFA.size() : "0"%></td>
+                                    <td id="repsynthesis4" class="INF" align="center" style="font : bold ; 
+                                        ; color: blue; border-top-color: <%=cssleftTOP%> ; border-left-color: <%=cssleftRIG%>  ">
+                                        <%=listCTPE.size() != 0 ? listCTPE.size() : "0"%></td>
+                                    <td id="repsynthesis5" class="INF" align="center" style="font : bold ; 
+                                        ; color: #999; border-top-color: <%=cssleftTOP%> ; border-left-color: <%=cssleftRIG%>  ">
+                                        <%=listCTNE.size() != 0 ? listCTNE.size() : "0"%></td>
+                                    <td id="repsynthesis5" class="INF" align="center" style="font : bold ; 
+                                        ; color: black; border-top-color: <%=cssleftTOP%> ; border-left-color: <%=cssleftRIG%>  ">
+                                        <%=total != 0 ? total : "0"%></td>
                                         <%
                                             }
                                         %>
@@ -1239,6 +1286,8 @@
                                         for (int i = 0; i < country_list.length; i++) {
                                             List<String> listCTTOTOK = new ArrayList<String>();
                                             List<String> listCTTOTKO = new ArrayList<String>();
+                                            List<String> listCTTOTFA = new ArrayList<String>();
+                                            List<String> listCTTOTPE = new ArrayList<String>();
                                             List<String> listCTTOTNE = new ArrayList<String>();
                                             List<String> listCTTOTNT = new ArrayList<String>();
 
@@ -1260,6 +1309,24 @@
                                                 }
                                             }
 
+                                            for (int a = 0; a < listTOTFA.size(); a++) {
+                                                String[] CTFAdetails = listTOTFA.get(a).split("-");
+                                                if (country_list[i].equals(CTFAdetails[0])) {
+                                                    if (CTFAdetails[1].equals("FA")) {
+                                                        listCTTOTFA.add(CTFAdetails[1]);
+                                                    }
+                                                }
+                                            }
+
+                                            for (int a = 0; a < listTOTPE.size(); a++) {
+                                                String[] CTPEdetails = listTOTPE.get(a).split("-");
+                                                if (country_list[i].equals(CTPEdetails[0])) {
+                                                    if (CTPEdetails[1].equals("PE")) {
+                                                        listCTTOTPE.add(CTPEdetails[1]);
+                                                    }
+                                                }
+                                            }
+
                                             for (int a = 0; a < listTOTNE.size(); a++) {
                                                 String[] CTNEdetails = listTOTNE.get(a).split("-");
                                                 if (country_list[i].equals(CTNEdetails[0])) {
@@ -1269,11 +1336,15 @@
                                                 }
                                             }
 
+                                            int total = 0 + listCTTOTOK.size()+ listCTTOTKO.size() +listCTTOTFA.size()+listCTTOTPE.size()+listCTTOTNE.size();
 
                                     %>
                                     <td align="center" style="color : green"><%=listCTTOTOK.size()%></td>
                                     <td align="center" style="color : red"><%=listCTTOTKO.size()%></td>
-                                    <td align="center" style="color : #999999"><%=listCTTOTNE.size()%></td>
+                                    <td align="center" style="color : darkmagenta"><%=listCTTOTFA.size()%></td>
+                                    <td align="center" style="color : blue"><%=listCTTOTPE.size()%></td>
+                                    <td align="center" style="color : #999"><%=listCTTOTNE.size()%></td>
+                                    <td align="center" style="color : black"><%=total%></td>
                                     <%                                                              }
                                     %>
                                 </tr>
