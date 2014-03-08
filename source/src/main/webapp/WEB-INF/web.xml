@@ -281,6 +281,14 @@
         <servlet-name>UpdateSqlLibrary</servlet-name>
         <servlet-class>org.cerberus.servlet.sqllibrary.UpdateSqlLibrary</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>FindAllInvariantPublic</servlet-name>
+        <servlet-class>org.cerberus.servlet.invariant.FindAllInvariantPublic</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>FindAllInvariantPrivate</servlet-name>
+        <servlet-class>org.cerberus.servlet.invariant.FindAllInvariantPrivate</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>RunTestCase</servlet-name>
         <url-pattern>/RunTestCase</url-pattern>
@@ -545,6 +553,14 @@
         <servlet-name>UpdateSqlLibrary</servlet-name>
         <url-pattern>/UpdateSqlLibrary</url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>FindAllInvariantPublic</servlet-name>
+        <url-pattern>/FindAllInvariantPublic</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>FindAllInvariantPrivate</servlet-name>
+        <url-pattern>/FindAllInvariantPrivate</url-pattern>
+    </servlet-mapping>
     <session-config>
         <session-timeout>
             60
@@ -766,6 +782,8 @@
             <url-pattern>/LogViewer.jsp</url-pattern>
             <url-pattern>/Parameter.jsp</url-pattern>
             <url-pattern>/UserManager.jsp</url-pattern>
+            <url-pattern>/InvariantPublic.jsp</url-pattern>
+            <url-pattern>/InvariantPrivate.jsp</url-pattern>
         </web-resource-collection>
         <web-resource-collection>
             <web-resource-name>servlet</web-resource-name>
@@ -778,6 +796,8 @@
             <url-pattern>/UpdateUser</url-pattern>
             <url-pattern>/DeleteUser</url-pattern>
             <url-pattern>/GetLogEvent</url-pattern>
+            <url-pattern>/FindAllInvariantPublic</url-pattern>
+            <url-pattern>/FindAllInvariantPrivate</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <description>Administrator</description>

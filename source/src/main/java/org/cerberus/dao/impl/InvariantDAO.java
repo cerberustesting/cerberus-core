@@ -80,14 +80,7 @@ public class InvariantDAO implements IInvariantDAO {
                 try {
                     while (resultSet.next()) {
                         throwException = false;
-                        int sort = resultSet.getInt("sort");
-                        int id = resultSet.getInt("id");
-                        String description = resultSet.getString("Description");
-                        String veryShortDesc = resultSet.getString("veryShortDesc");
-                        String gp1 = resultSet.getString("gp1");
-                        String gp2 = resultSet.getString("gp2");
-                        String gp3 = resultSet.getString("gp3");
-                        result = factoryInvariant.create(idName, value, sort, id, description, veryShortDesc, gp1, gp2, gp3);
+                        result = this.loadInvariantFromResultSet(resultSet);
                     }
                 } catch (SQLException exception) {
                     MyLogger.log(InvariantDAO.class.getName(), Level.ERROR, exception.toString());
@@ -140,15 +133,7 @@ public class InvariantDAO implements IInvariantDAO {
 
                     while (resultSet.next()) {
                         throwException = false;
-                        int sort = resultSet.getInt("sort");
-                        int id = resultSet.getInt("id");
-                        String description = resultSet.getString("Description");
-                        String veryShortDesc = resultSet.getString("VeryShortDesc");
-                        String gp1 = resultSet.getString("gp1");
-                        String gp2 = resultSet.getString("gp2");
-                        String gp3 = resultSet.getString("gp3");
-                        String value = resultSet.getString("value");
-                        result.add(factoryInvariant.create(idName, value, sort, id, description, veryShortDesc, gp1, gp2, gp3));
+                        result.add(this.loadInvariantFromResultSet(resultSet));
                     }
                 } catch (SQLException exception) {
                     MyLogger.log(InvariantDAO.class.getName(), Level.ERROR, exception.toString());
@@ -196,15 +181,7 @@ public class InvariantDAO implements IInvariantDAO {
 
                     while (resultSet.next()) {
                         throwException = false;
-                        int sort = resultSet.getInt("sort");
-                        int id = resultSet.getInt("id");
-                        String description = resultSet.getString("Description");
-                        String veryShortDesc = resultSet.getString("VeryShortDesc");
-                        String gp1 = resultSet.getString("gp1");
-                        String gp2 = resultSet.getString("gp2");
-                        String gp3 = resultSet.getString("gp3");
-                        String value = resultSet.getString("value");
-                        result.add(factoryInvariant.create(idName, value, sort, id, description, veryShortDesc, gp1, gp2, gp3));
+                        result.add(this.loadInvariantFromResultSet(resultSet));
                     }
                 } catch (SQLException exception) {
                     MyLogger.log(InvariantDAO.class.getName(), Level.ERROR, exception.toString());
@@ -231,5 +208,173 @@ public class InvariantDAO implements IInvariantDAO {
             throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
         }
         return result;
+    }
+
+    @Override
+    public List<Invariant> findInvariantListByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch, String PublicPrivateFilter) {
+        List<Invariant> invariantList = new ArrayList<Invariant>();
+        StringBuilder gSearch = new StringBuilder();
+        StringBuilder searchSQL = new StringBuilder();
+        searchSQL.append(" where 1=1 ");
+
+        StringBuilder query = new StringBuilder();
+        query.append("SELECT * FROM invariant ");
+
+        gSearch.append(" and (`idname` like '%");
+        gSearch.append(searchTerm);
+        gSearch.append("%'");
+        gSearch.append(" or `value` like '%");
+        gSearch.append(searchTerm);
+        gSearch.append("%'");
+        gSearch.append(" or `sort` like '%");
+        gSearch.append(searchTerm);
+        gSearch.append("%'");
+        gSearch.append(" or `description` like '%");
+        gSearch.append(searchTerm);
+        gSearch.append("%'");
+        gSearch.append(" or `veryshortdesc` like '%");
+        gSearch.append(searchTerm);
+        gSearch.append("%'");
+        gSearch.append(" or `gp1` like '%");
+        gSearch.append(searchTerm);
+        gSearch.append("%'");
+        gSearch.append(" or `gp2` like '%");
+        gSearch.append(searchTerm);
+        gSearch.append("%'");
+        gSearch.append(" or `gp3` like '%");
+        gSearch.append(searchTerm);
+        gSearch.append("%')");
+
+        if (!searchTerm.equals("") && !individualSearch.equals("")) {
+            searchSQL.append(gSearch.toString());
+            searchSQL.append(" and ");
+            searchSQL.append(individualSearch);
+        } else if (!individualSearch.equals("")) {
+            searchSQL.append(" and `");
+            searchSQL.append(individualSearch);
+            searchSQL.append("`");
+        } else if (!searchTerm.equals("")) {
+            searchSQL.append(gSearch.toString());
+        }
+        if (!(PublicPrivateFilter.equalsIgnoreCase(""))) {
+            searchSQL.append(" and ");
+            searchSQL.append(PublicPrivateFilter);
+        }
+
+        query.append(searchSQL);
+        query.append(" order by `");
+        query.append(column);
+        query.append("` ");
+        query.append(dir);
+        if (amount > 0) {
+            query.append(" limit ");
+            query.append(start);
+            query.append(" , ");
+            query.append(amount);
+        }
+
+        Invariant invariantData;
+
+        MyLogger.log(InvariantDAO.class.getName(), Level.DEBUG, query.toString());
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query.toString());
+            try {
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+
+                    while (resultSet.next()) {
+                        invariantList.add(this.loadInvariantFromResultSet(resultSet));
+                    }
+
+                } catch (SQLException exception) {
+                    MyLogger.log(InvariantDAO.class.getName(), Level.ERROR, exception.toString());
+                } finally {
+                    resultSet.close();
+                }
+
+            } catch (SQLException exception) {
+                MyLogger.log(InvariantDAO.class.getName(), Level.ERROR, exception.toString());
+            } finally {
+                preStat.close();
+            }
+
+        } catch (SQLException exception) {
+            MyLogger.log(InvariantDAO.class.getName(), Level.ERROR, exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(InvariantDAO.class.getName(), Level.ERROR, e.toString());
+            }
+        }
+
+        return invariantList;
+    }
+
+    @Override
+    public Integer getNumberOfInvariant(String searchSQL) throws CerberusException {
+        boolean throwException = true;
+        Integer result = 0;
+        final String query = "SELECT count(*) FROM invariant i  WHERE " + searchSQL;
+        MyLogger.log(InvariantDAO.class.getName(), Level.DEBUG, query.toString());
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            try {
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+                    if (resultSet.first()) {
+                        throwException = false;
+                        result = resultSet.getInt(1);
+                    }
+                } catch (SQLException exception) {
+                    MyLogger.log(InvariantDAO.class.getName(), Level.ERROR, exception.toString());
+                } catch (NullPointerException ex) {
+                    MyLogger.log(InvariantDAO.class.getName(), Level.FATAL, "InvariantDAO - NullPointerException Resultset");
+                } finally {
+                    resultSet.close();
+                }
+            } catch (SQLException exception) {
+                MyLogger.log(InvariantDAO.class.getName(), Level.ERROR, exception.toString());
+            } catch (NullPointerException ex) {
+                MyLogger.log(InvariantDAO.class.getName(), Level.FATAL, "InvariantDAO - NullPointerException Statement");
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(InvariantDAO.class.getName(), Level.ERROR, exception.toString());
+        } catch (NullPointerException ex) {
+            MyLogger.log(InvariantDAO.class.getName(), Level.FATAL, "InvariantDAO - NullPointerException Connection");
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(InvariantDAO.class.getName(), Level.WARN, "Connection already closed!");
+            }
+        }
+        if (throwException) {
+            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
+        }
+        return result;
+    }
+
+    private Invariant loadInvariantFromResultSet(ResultSet resultSet) throws SQLException {
+        String idName = resultSet.getString("idName");
+        int sort = resultSet.getInt("sort");
+        int id = resultSet.getInt("id");
+        String description = resultSet.getString("Description");
+        String veryShortDesc = resultSet.getString("VeryShortDesc");
+        String gp1 = resultSet.getString("gp1");
+        String gp2 = resultSet.getString("gp2");
+        String gp3 = resultSet.getString("gp3");
+        String value = resultSet.getString("value");
+        return factoryInvariant.create(idName, value, sort, id, description, veryShortDesc, gp1, gp2, gp3);
     }
 }

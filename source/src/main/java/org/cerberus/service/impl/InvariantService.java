@@ -19,12 +19,16 @@
  */
 package org.cerberus.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.cerberus.dao.IInvariantDAO;
 import org.cerberus.entity.Invariant;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.service.IInvariantService;
+import org.cerberus.util.SqlUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -53,7 +57,45 @@ public class InvariantService implements IInvariantService {
         return invariantDao.findInvariantByIdGp1(idName, gp);
     }
 
-    @Override 
+    @Override
+    public List<Invariant> findInvariantPublicListByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
+        // We first get the list of all Public invariant from the invariant table.
+        String searchSQL = this.getPublicPrivateFilter("INVARIANTPUBLIC");
+        // Then, we build the list of invariant entry based on the filter.
+        return invariantDao.findInvariantListByCriteria(start, amount, column, dir, searchTerm, individualSearch, searchSQL);
+    }
+
+    @Override
+    public List<Invariant> findInvariantPrivateListByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
+        // We first get the list of all Private invariant from the invariant table.
+        String searchSQL = this.getPublicPrivateFilter("INVARIANTPRIVATE");
+        // Then, we build the list of invariant entry based on the filter.
+        return invariantDao.findInvariantListByCriteria(start, amount, column, dir, searchTerm, individualSearch, searchSQL);
+    }
+
+    @Override
+    public Integer getNumberOfPublicInvariant() {
+        String searchSQL = this.getPublicPrivateFilter("INVARIANTPUBLIC");
+        try {
+            return invariantDao.getNumberOfInvariant(searchSQL);
+        } catch (CerberusException ex) {
+            Logger.getLogger(InvariantService.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return 0;
+    }
+
+    @Override
+    public Integer getNumberOfPrivateInvariant() {
+        String searchSQL = this.getPublicPrivateFilter("INVARIANTPRIVATE");
+        try {
+            return invariantDao.getNumberOfInvariant(searchSQL);
+        } catch (CerberusException ex) {
+            Logger.getLogger(InvariantService.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return 0;
+    }
+    
+    @Override
     public boolean isInvariantExist(String idName, String value) {
         try {
             findInvariantByIdValue(idName, value);
@@ -62,4 +104,22 @@ public class InvariantService implements IInvariantService {
             return false;
         }
     }
+    
+    @Override
+    public String getPublicPrivateFilter(String filter) {
+        String searchSQL = " 1=0 ";
+        try {
+            List<Invariant> invPrivate = this.findListOfInvariantById(filter);
+            List<String> idnameList = null;
+            idnameList = new ArrayList<String>();
+            for (Invariant toto : invPrivate) {
+                idnameList.add(toto.getValue());
+            }
+            searchSQL = SqlUtil.createWhereInClause("idname", idnameList, true);
+        } catch (CerberusException ex) {
+            Logger.getLogger(InvariantService.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return searchSQL;
+    }
+
 }

@@ -3043,6 +3043,49 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLInstruction.add(SQLS.toString());
 
 
+// Adding invariant for Public and private invariant.
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `id`, `description`, `VeryShortDesc`) ");
+        SQLS.append(" VALUES ('INVARIANTPRIVATE', 'ACTION', '10', '44', '', ''),");
+        SQLS.append("        ('INVARIANTPRIVATE', 'APPLITYPE', '20', '44', '', ''),");
+        SQLS.append("        ('INVARIANTPRIVATE', 'BROWSER', '30', '44', '', ''),");
+        SQLS.append("        ('INVARIANTPRIVATE', 'CHAIN', '40', '44', '', ''),");
+        SQLS.append("        ('INVARIANTPRIVATE', 'CONTROL', '50', '44', '', ''),");
+        SQLS.append("        ('INVARIANTPRIVATE', 'CTRLFATAL', '70', '44', '', ''),");
+        SQLS.append("        ('INVARIANTPRIVATE', 'ENVACTIVE', '80', '44', '', ''),");
+        SQLS.append("        ('INVARIANTPRIVATE', 'ENVTYPE', '100', '44', '', ''),");
+        SQLS.append("        ('INVARIANTPRIVATE', 'GROUP', '130', '44', '', ''),");
+        SQLS.append("        ('INVARIANTPRIVATE', 'OUTPUTFORMAT', '170', '44', '', ''),");
+        SQLS.append("        ('INVARIANTPRIVATE', 'PROPERTYNATURE', '220', '44', '', ''),");
+        SQLS.append("        ('INVARIANTPRIVATE', 'PROPERTYTYPE', '230', '44', '', ''),");
+        SQLS.append("        ('INVARIANTPRIVATE', 'RUNPROD', '260', '44', '', ''),");
+        SQLS.append("        ('INVARIANTPRIVATE', 'RUNQA', '270', '44', '', ''),");
+        SQLS.append("        ('INVARIANTPRIVATE', 'RUNUAT', '280', '44', '', ''),");
+        SQLS.append("        ('INVARIANTPRIVATE', 'SCREENSHOT', '290', '44', '', ''),");
+        SQLS.append("        ('INVARIANTPRIVATE', 'SERVER', '300', '44', '', ''),");
+        SQLS.append("        ('INVARIANTPRIVATE', 'SESSION', '310', '44', '', ''),");
+        SQLS.append("        ('INVARIANTPRIVATE', 'TCACTIVE', '340', '44', '', ''),");
+        SQLS.append("        ('INVARIANTPRIVATE', 'TCESTATUS', '350', '44', '', ''),");
+        SQLS.append("        ('INVARIANTPRIVATE', 'TCREADONLY', '360', '44', '', ''),");
+        SQLS.append("        ('INVARIANTPRIVATE', 'USERGROUP', '390', '44', '', ''),");
+        SQLS.append("        ('INVARIANTPRIVATE', 'VERBOSE', '400', '44', '', ''),");
+        SQLS.append("        ('INVARIANTPRIVATE', 'INVARIANTPRIVATE', '410', '44', '', ''),");
+        SQLS.append("        ('INVARIANTPRIVATE', 'INVARIANTPUBLIC', '420', '44', '', ''),");
+        SQLS.append("        ('INVARIANTPUBLIC', 'COUNTRY', '60', '45', '', ''),");
+        SQLS.append("        ('INVARIANTPUBLIC', 'ENVIRONMENT', '90', '45', '', ''),");
+        SQLS.append("        ('INVARIANTPUBLIC', 'EXECNBMIN', '110', '45', '', ''),");
+        SQLS.append("        ('INVARIANTPUBLIC', 'FILTERNBDAYS', '120', '45', '', ''),");
+        SQLS.append("        ('INVARIANTPUBLIC', 'MAXEXEC', '140', '45', '', ''),");
+        SQLS.append("        ('INVARIANTPUBLIC', 'ORIGIN', '160', '45', '', ''),");
+        SQLS.append("        ('INVARIANTPUBLIC', 'PRIORITY', '180', '45', '', ''),");
+        SQLS.append("        ('INVARIANTPUBLIC', 'PROPERTYDATABASE', '210', '45', '', ''),");
+        SQLS.append("        ('INVARIANTPUBLIC', 'SYSTEM', '330', '45', '', ''),");
+        SQLS.append("        ('INVARIANTPUBLIC', 'TCSTATUS', '370', '45', '', ''),");
+        SQLS.append("        ('INVARIANTPUBLIC', 'TEAM', '380', '45', '', '');");
+        SQLInstruction.add(SQLS.toString());
+
+
+
         return SQLInstruction;
     }
 }

@@ -29,12 +29,22 @@ import org.cerberus.exception.CerberusException;
  * @author bcivel
  */
 public interface IInvariantService {
-    
-    Invariant findInvariantByIdValue(String idName, String value) throws CerberusException;
-    
-    List<Invariant> findListOfInvariantById(String idName) throws CerberusException;
 
-    List<Invariant> findInvariantByIdGp1(String idName, String gp) throws CerberusException;
+    public Invariant findInvariantByIdValue(String idName, String value) throws CerberusException;
+
+    public List<Invariant> findListOfInvariantById(String idName) throws CerberusException;
+
+    public List<Invariant> findInvariantByIdGp1(String idName, String gp) throws CerberusException;
+
+    public List<Invariant> findInvariantPublicListByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch);
+
+    public List<Invariant> findInvariantPrivateListByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch);
+
+    public Integer getNumberOfPrivateInvariant();
     
-    boolean isInvariantExist(String idName, String value);
+    public Integer getNumberOfPublicInvariant();
+    
+    public boolean isInvariantExist(String idName, String value);
+    
+    String getPublicPrivateFilter(String filter);
 }

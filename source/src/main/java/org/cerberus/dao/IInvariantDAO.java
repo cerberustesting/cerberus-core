@@ -37,4 +37,7 @@ public interface IInvariantDAO {
 
     List<Invariant> findInvariantByIdGp1(String idName, String gp) throws CerberusException;
 
+    public List<Invariant> findInvariantListByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch, String PublicPrivateFilter);
+    
+    public Integer getNumberOfInvariant (String searchSQL)  throws CerberusException;
 }
