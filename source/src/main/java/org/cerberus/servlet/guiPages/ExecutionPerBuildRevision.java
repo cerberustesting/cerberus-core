@@ -258,7 +258,7 @@ public class ExecutionPerBuildRevision extends HttpServlet {
                 request.getRequestDispatcher("/ExecutionPerBuildRevision.jsp").forward(request, response);
             }
         } catch (Exception ex) {
-            request.getRequestDispatcher("/DatabaseMaintenance.jsp?GO=Y").forward(request, response);
+            request.getRequestDispatcher("/DatabaseMaintenance.jsp").forward(request, response);
             MyLogger.log(ExecutionPerBuildRevision.class.getName(), Level.FATAL, " Exception catched : " + ex);
         } finally {
             try {

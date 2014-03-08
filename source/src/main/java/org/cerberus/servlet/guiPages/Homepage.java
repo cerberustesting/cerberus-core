@@ -198,7 +198,7 @@ public class Homepage extends HttpServlet {
                 request.getRequestDispatcher("/Homepage.jsp").forward(request, response);
             }
         } catch (Exception ex) {
-            request.getRequestDispatcher("/DatabaseMaintenance.jsp?GO=Y").forward(request, response);
+            request.getRequestDispatcher("/DatabaseMaintenance.jsp").forward(request, response);
             MyLogger.log(Homepage.class.getName(), Level.FATAL, " Exception catched : " + ex);
         } finally {
             try {
