@@ -123,7 +123,7 @@
                                     ResultSet rsClogd;
                                     Statement stmtClogd = conn.createStatement();
                                     ClogSQL = "SELECT distinct cl.country FROM countryenvparam_log cl ";
-                                    ClogSQL += "JOIN invariant i on i.value=cl.country and i.id=4 "
+                                    ClogSQL += "JOIN invariant i on i.value=cl.country and i.idname='COUNTRY' "
                                             + " where TO_DAYS(NOW()) - TO_DAYS(cl.datecre) <= " + NBDAYS
                                             + " and build != '' and `System`='" + MySystem + "'"
                                             + " order by i.sort ";
@@ -134,7 +134,7 @@
                                     <%
                                         ClogdSQL = "SELECT date_format(cl.datecre,'%d/%m') d, cl.Environment, cl.Description, cl.Build, cl.Revision, cl.chain "
                                                 + "FROM countryenvparam_log cl "
-                                                + "JOIN invariant i on i.value=cl.Environment and i.id=5 ";
+                                                + "JOIN invariant i on i.value=cl.Environment and i.idname='ENVIRONMENT' ";
 
                                         ClogdSQL += " WHERE cl.country = '" + rsClog.getString("cl.country") + "' "
                                                 + " AND TO_DAYS(NOW()) - TO_DAYS(cl.datecre) <= " + NBDAYS
@@ -163,25 +163,25 @@
                                     + "FROM `countryenvparam` c "
                                     + "left outer join ( "
                                     + "select Build, Revision, count(*) cnt from countryenvparam "
-                                    + "JOIN invariant i ON i.value=Environment and i.id=5 "
+                                    + "JOIN invariant i ON i.value=Environment and i.idname='ENVIRONMENT' "
                                     + "where gp1='PROD' and build is not null and build<>'' and Active='Y' and `System`='" + MySystem + "' "
                                     + "GROUP BY Build, Revision) as PROD "
                                     + "on PROD.Build=c.Build and PROD.Revision=c.Revision "
                                     + "left outer join ( "
                                     + "select Build, Revision, count(*) cnt from countryenvparam "
-                                    + "JOIN invariant i ON i.value=Environment and i.id=5 "
+                                    + "JOIN invariant i ON i.value=Environment and i.idname='ENVIRONMENT' "
                                     + "where gp1='UAT' and build is not null and build<>'' and Active='Y' and `System`='" + MySystem + "' "
                                     + "GROUP BY Build, Revision) as UAT "
                                     + "on UAT.Build=c.Build and UAT.Revision=c.Revision "
                                     + "left outer join ( "
                                     + "select Build, Revision, count(*) cnt from countryenvparam "
-                                    + "JOIN invariant i ON i.value=Environment and i.id=5 "
+                                    + "JOIN invariant i ON i.value=Environment and i.idname='ENVIRONMENT' "
                                     + "where gp1='QA' and build is not null and build<>'' and Active='Y' and `System`='" + MySystem + "' "
                                     + "GROUP BY Build, Revision) as QA "
                                     + "on QA.Build=c.Build and QA.Revision=c.Revision "
                                     + "left outer join ( "
                                     + "select Build, Revision, count(*) cnt from countryenvparam "
-                                    + "JOIN invariant i ON i.value=Environment and i.id=5 "
+                                    + "JOIN invariant i ON i.value=Environment and i.idname='ENVIRONMENT' "
                                     + "where gp1='DEV' and build is not null and build<>'' and Active='Y' and `System`='" + MySystem + "' "
                                     + "GROUP BY Build, Revision) as DEV "
                                     + "on DEV.Build=c.Build and DEV.Revision=c.Revision "

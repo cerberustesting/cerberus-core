@@ -387,14 +387,14 @@
                                                                     %></select></td>
                                                             <td class="wob"><select id="ScPriority" name="ScPriority" style="width: 60px">
                                                                     <option value="All">-- ALL --</option><%
-                                                                        ResultSet rsPrio = stmt70.executeQuery(" SELECT value, description from invariant where id=15 order by sort ");
+                                                                        ResultSet rsPrio = stmt70.executeQuery(" SELECT value, description from invariant where idname='PRIORITY' order by sort ");
                                                                         while (rsPrio.next()) {
                                                                     %><option value="<%=rsPrio.getString("value")%>"<%=scPriority.compareTo(rsPrio.getString("value")) == 0 ? " SELECTED " : ""%>><%=rsPrio.getString("value")%> - <%=rsPrio.getString("description")%></option><%
                                                                         }
                                                                     %></select></td>
                                                             <td class="wob"><select id="ScStatus" name="ScStatus" style="width: 140px">
                                                                     <option value="All">-- ALL --</option><%
-                                                                        ResultSet rsStat = stmt70.executeQuery(" SELECT value, description from invariant where id=1 order by sort ");
+                                                                        ResultSet rsStat = stmt70.executeQuery(" SELECT value, description from invariant where idname='TCSTATUS' order by sort ");
                                                                         while (rsStat.next()) {
                                                                     %><option value="<%=rsStat.getString("value")%>"<%=scStatus.compareTo(rsStat.getString("value")) == 0 ? " SELECTED " : ""%>><%=rsStat.getString("value")%> - <%=rsStat.getString("description")%></option><%
                                                                         }
@@ -412,28 +412,28 @@
                                                         <tr>
                                                             <td class="wob"><select id="ScGroup" name="ScGroup" style="width: 140px">
                                                                     <option value="All">-- ALL --</option><%
-                                                                        ResultSet rsGroup = stmt70.executeQuery(" SELECT value, description from invariant where id=2 order by sort ");
+                                                                        ResultSet rsGroup = stmt70.executeQuery(" SELECT value, description from invariant where idname='GROUP' order by sort ");
                                                                         while (rsGroup.next()) {
                                                                     %><option value="<%=rsGroup.getString("value")%>"<%=scGroup.compareTo(rsGroup.getString("value")) == 0 ? " SELECTED " : ""%>><%=rsGroup.getString("value")%> - <%=rsGroup.getString("description")%></option><%
                                                                         }
                                                                     %></select></td>
                                                             <td class="wob"><select id="ScPROD" name="ScPROD" style="width: 90px">
                                                                     <option value="All">-- ALL --</option><%
-                                                                        ResultSet rsPROD = stmt70.executeQuery(" SELECT value, description from invariant where id=28 order by sort ");
+                                                                        ResultSet rsPROD = stmt70.executeQuery(" SELECT value, description from invariant where idname='RUNPROD' order by sort ");
                                                                         while (rsPROD.next()) {
                                                                     %><option value="<%=rsPROD.getString("value")%>"<%=scPROD.compareTo(rsPROD.getString("value")) == 0 ? " SELECTED " : ""%>><%=rsPROD.getString("value")%> - <%=rsPROD.getString("description")%></option><%
                                                                         }
                                                                     %></select></td>
                                                             <td class="wob"><select id="ScQA" name="ScQA" style="width: 90px">
                                                                     <option value="All">-- ALL --</option><%
-                                                                        ResultSet rsQA = stmt70.executeQuery(" SELECT value, description from invariant where id=26 order by sort ");
+                                                                        ResultSet rsQA = stmt70.executeQuery(" SELECT value, description from invariant where idname='RUNQA' order by sort ");
                                                                         while (rsQA.next()) {
                                                                     %><option value="<%=rsQA.getString("value")%>"<%=scQA.compareTo(rsQA.getString("value")) == 0 ? " SELECTED " : ""%>><%=rsQA.getString("value")%> - <%=rsQA.getString("description")%></option><%
                                                                         }
                                                                     %></select></td>
                                                             <td class="wob"><select id="ScUAT" name="ScUAT" style="width: 90px">
                                                                     <option value="All">-- ALL --</option><%
-                                                                        ResultSet rsUAT = stmt70.executeQuery(" SELECT value, description from invariant where id=27 order by sort ");
+                                                                        ResultSet rsUAT = stmt70.executeQuery(" SELECT value, description from invariant where idname='RUNUAT' order by sort ");
                                                                         while (rsUAT.next()) {
                                                                     %><option value="<%=rsUAT.getString("value")%>"<%=scUAT.compareTo(rsUAT.getString("value")) == 0 ? " SELECTED " : ""%>><%=rsUAT.getString("value")%> - <%=rsUAT.getString("description")%></option><%
                                                                         }
@@ -455,7 +455,7 @@
                                                         <tr>
                                                             <td class="wob"><select id="ScActive" name="ScActive" style="width: 140px">
                                                                     <option value="All">-- ALL --</option><%
-                                                                        ResultSet rsActive = stmt70.executeQuery(" SELECT value, description from invariant where id=16 order by sort ");
+                                                                        ResultSet rsActive = stmt70.executeQuery(" SELECT value, description from invariant where idname='TCACTIVE' order by sort ");
                                                                         while (rsActive.next()) {
                                                                     %><option value="<%=rsActive.getString("value")%>"<%=scActive.compareTo(rsActive.getString("value")) == 0 ? " SELECTED " : ""%>><%=rsActive.getString("value")%> - <%=rsActive.getString("description")%></option><%
                                                                         }

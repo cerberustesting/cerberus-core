@@ -277,7 +277,7 @@
                             Statement stmtH = conn.createStatement();
                             String H = "SELECT DISTINCT Server, Session, host, port, secure, active "
                                     + "FROM `host` c "
-                                    + "JOIN invariant i ON i.value = c.server and i.id=6 "
+                                    + "JOIN invariant i ON i.value = c.server and i.idname='SERVER' "
                                     + "WHERE 1=1 "
                                     + " and c.System='" + MySystem + "' "
                                     + " and c.Country='" + country + "' "

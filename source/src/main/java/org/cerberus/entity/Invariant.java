@@ -25,7 +25,6 @@ public class Invariant {
     private String idName;
     private String value;
     private int sort;
-    private int id;
     private String description;
     private String veryShortDesc;
     private String gp1;
@@ -70,14 +69,6 @@ public class Invariant {
 
     public void setGp3(String gp3) {
         this.gp3 = gp3;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public String getIdName() {

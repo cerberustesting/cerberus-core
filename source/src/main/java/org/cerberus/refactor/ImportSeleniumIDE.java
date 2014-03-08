@@ -111,7 +111,7 @@ public class ImportSeleniumIDE extends HttpServlet {
 
             // SELECT THE LIST OF CONTROL
 
-            String selectControl = "SELECT value FROM invariant WHERE id ='13'";
+            String selectControl = "SELECT value FROM invariant WHERE idname ='CONTROL'";
             rs_control = stmt.executeQuery(selectControl);
 
             if (rs_control.first()) {

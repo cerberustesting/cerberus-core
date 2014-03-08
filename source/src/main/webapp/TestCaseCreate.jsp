@@ -226,12 +226,12 @@
                                                                     %><option value="<%=rsApp.getString("application")%>"><%=rsApp.getString("application")%></option><%
                                                                         }
                                                                     %></select></td>
-                                                            <td class="wob"><%=ComboInvariant(conn, "createRunQA", "width: 75px", "createRunQA", "runqa", "26", "", "", null)%></td>
-                                                            <td class="wob"><%=ComboInvariant(conn, "createRunUAT", "width: 75px", "createRunUAT", "runuat", "27", "", "", null)%></td>
-                                                            <td class="wob"><%=ComboInvariant(conn, "createRunPROD", "width: 75px", "createRunPROD", "runprod", "28", "", "", null)%></td>
-                                                            <td class="wob"><%=ComboInvariant(conn, "createPriority", "width: 90px", "createPriority", "priority", "15", "", "", null)%></td>
-                                                            <td class="wob"><%=ComboInvariant(conn, "createGroup", "width: 140px", "createGroup", "editgroup", "2", "", "", null)%></td>
-                                                            <td class="wob"><%=ComboInvariant(conn, "createStatus", "width: 140px", "createStatus", "editStatus", "1", "", "", null)%></td>
+                                                            <td class="wob"><%=ComboInvariant(conn, "createRunQA", "width: 75px", "createRunQA", "runqa", "RUNQA", "", "", null)%></td>
+                                                            <td class="wob"><%=ComboInvariant(conn, "createRunUAT", "width: 75px", "createRunUAT", "runuat", "RUNUAT", "", "", null)%></td>
+                                                            <td class="wob"><%=ComboInvariant(conn, "createRunPROD", "width: 75px", "createRunPROD", "runprod", "RUNPROD", "", "", null)%></td>
+                                                            <td class="wob"><%=ComboInvariant(conn, "createPriority", "width: 90px", "createPriority", "priority", "PRIORITY", "", "", null)%></td>
+                                                            <td class="wob"><%=ComboInvariant(conn, "createGroup", "width: 140px", "createGroup", "editgroup", "GROUP", "", "", null)%></td>
+                                                            <td class="wob"><%=ComboInvariant(conn, "createStatus", "width: 140px", "createStatus", "editStatus", "TCSTATUS", "", "", null)%></td>
                                                             <%
                                                                 rs_tccountgen.first();
                                                                 do {

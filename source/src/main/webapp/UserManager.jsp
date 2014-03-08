@@ -222,10 +222,10 @@
                 <input type="text" name="email" id="email" maxlength="100" rel="5" />
                 <br /><br />
                 <label for="team">Team</label>
-                <%=ComboInvariantAjax(conn, "team", "", "team", "3", "40", "", "", false)%>
+                <%=ComboInvariantAjax(conn, "team", "", "team", "3", "TEAM", "", "", false)%>
                 <br /><br />
                 <label for="defaultSystem">Default System</label>
-                <%=ComboInvariantAjax(conn, "defaultSystem", "", "defaultSystem", "4", "41", "", "", false)%>
+                <%=ComboInvariantAjax(conn, "defaultSystem", "", "defaultSystem", "4", "SYSTEM", "", "", false)%>
                 <br /><br />
                 <label for="newPassword">Request New Password ?</label>
                 <select name="newPassword" id="newPassword" rel="5">
@@ -234,7 +234,7 @@
                 </select>
                 <br /><br />
                 <label for="groups">User Group</label>
-                <%=ComboInvariantMultipleAjax(conn, "groups", "", "groups", "0", "42", "", "", false)%>
+                <%=ComboInvariantMultipleAjax(conn, "groups", "", "groups", "0", "USERGROUP", "", "", false)%>
                 <br /><br />
                 <button id="btnAddNewRowOk">Add</button>
                 <button id="btnAddNewRowCancel">Cancel</button>

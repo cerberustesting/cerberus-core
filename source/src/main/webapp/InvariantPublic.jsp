@@ -44,7 +44,7 @@
 
             $(document).ready(function() {
                 var oTable = $('#invariantPublicList').dataTable({
-                    "aaSorting": [[1, "asc"]],
+                    "aaSorting": [[0, "asc"]],
                     "bServerSide": true,
                     "sAjaxSource": "FindAllInvariantPublic",
                     "bJQueryUI": true,
@@ -60,11 +60,10 @@
                     ], 
                     "iDisplayLength": 25,
                     "aoColumns": [
-                        {"sName": "ID", "sWidth": "5%"},
                         {"sName": "IdName", "sWidth": "10%"},
                         {"sName": "sort", "sWidth": "5%"},
                         {"sName": "value", "sWidth": "10%"},
-                        {"sName": "description", "sWidth": "25%"},
+                        {"sName": "description", "sWidth": "30%"},
                         {"sName": "veryShortdesc", "sWidth": "15%"},
                         {"sName": "gp1", "sWidth": "10%"},
                         {"sName": "gp2", "sWidth": "10%"},
@@ -92,13 +91,12 @@
                         $(".dataTables_processing").css('visibility', 'hidden');
                     },
                     oAddNewRowFormOptions: {
-                        title: 'Add Incariant Entry',
+                        title: 'Add Invariant Entry',
                         show: "blind",
                         hide: "explode",
                         width: "1000px"
                     },
                     "aoColumns": [
-                        null,
                         null,
                         null,
                         {onblur: 'submit',
@@ -131,7 +129,6 @@
             <table id="invariantPublicList" class="display">
                 <thead>
                     <tr>
-                        <th>ID</th>
                         <th>ID Name</th>
                         <th>Sort</th>
                         <th>Value</th>
@@ -148,51 +145,46 @@
         </div>
         <div>
             <form id="formAddNewRow" action="#" title="Add Public Invariant" style="width:350px" method="post">
-                <div style="width: 150px; float:left">
-                    <label for="ID" style="font-weight:bold">ID</label>
-                    <input id="ID" name="ID" style="width:50px;" 
-                           class="ncdetailstext" rel="0" >
-                </div>
                 <div style="width: 200px; float:left">
                     <label for="IDName" style="font-weight:bold">ID Name</label>
                     <input id="IDName" name="IDName" style="width:100px;" 
-                           class="ncdetailstext" rel="1" >
+                           class="ncdetailstext" rel="0" >
                 </div>
                 <div style="width: 150px; float:left">
                     <label for="Sort" style="font-weight:bold">Sort</label>
                     <input id="Sort" name="Sort" style="width:50px;" 
-                           class="ncdetailstext" rel="2" ><br>
+                           class="ncdetailstext" rel="1" ><br>
                 </div>
                  <div style="width: 250px; float:left">
                     <label for="Value" style="font-weight:bold">Value</label>
                     <input id="Value" name="Value" style="width:150px;" 
-                           class="ncdetailstext" rel="3" >
+                           class="ncdetailstext" rel="2" >
                 </div>
                 <div style="width: 300px; float:left">
                     <label for="Description" style="font-weight:bold">Description</label>
                     <input id="Description" name="Description" style="width:200px;" 
-                           class="ncdetailstext" rel="4" >
+                           class="ncdetailstext" rel="3" >
                 </div>
                 <div style="width: 150px; float:left">
                     <label for="VeryShortDesc" style="font-weight:bold">Very Short Desc.</label>
                     <input id="VeryShortDesc" name="VeryShortDesc" style="width:100px;" 
-                           class="ncdetailstext" rel="5" >
+                           class="ncdetailstext" rel="4" >
                 </div>
                 <br><br>
                 <div style="width: 150px; float:left">
                     <label for="gp1" style="font-weight:bold">Group 1</label>
                     <input id="gp1" name="gp1" style="width:50px;" 
-                           class="ncdetailstext" rel="6" >
+                           class="ncdetailstext" rel="5" >
                 </div>
                 <div style="width: 150px; float:left">
                     <label for="gp2" style="font-weight:bold">Group 2</label>
                     <input id="gp2" name="gp2" style="width:50px;" 
-                           class="ncdetailstext" rel="7" >
+                           class="ncdetailstext" rel="6" >
                 </div>
                 <div style="width: 150px; float:left">
                     <label for="gp3" style="font-weight:bold">Group 3</label>
                     <input id="gp3" name="gp3" style="width:50px;" 
-                           class="ncdetailstext" rel="8" >
+                           class="ncdetailstext" rel="7" >
                 </div>
                 <br />
                 <button id="btnAddNewRowOk">Add</button>

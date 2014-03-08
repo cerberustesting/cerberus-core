@@ -262,9 +262,9 @@
                                         </select>&nbsp;&nbsp;&nbsp;
 
                                         Country&nbsp;&nbsp;&nbsp;
-                                        <%=ComboInvariant(conn, "country", "width: 50px", "Country", "Country", "4", country, "document.ExecFilters.submit()", "")%>&nbsp;&nbsp;&nbsp;
+                                        <%=ComboInvariant(conn, "country", "width: 50px", "Country", "Country", "COUNTRY", country, "document.ExecFilters.submit()", "")%>&nbsp;&nbsp;&nbsp;
                                         Environment&nbsp;&nbsp;&nbsp;
-                                        <%=ComboInvariant(conn, "environment", "width: 60px", "Environment", "Environment", "5", environment, "document.ExecFilters.submit()", "")%>&nbsp;&nbsp;&nbsp;
+                                        <%=ComboInvariant(conn, "environment", "width: 60px", "Environment", "Environment", "ENVIRONMENT", environment, "document.ExecFilters.submit()", "")%>&nbsp;&nbsp;&nbsp;
                                         BAM Test Excluded&nbsp;:&nbsp;
                                         <% if (BAMExcluded.equalsIgnoreCase("1")) {%>
                                         <input type="checkbox" name="BAMExcluded" value="1" OnChange ="document.ExecFilters.submit()" checked><% } else {%>
@@ -294,9 +294,9 @@
                                             <% }
                                             %></select>&nbsp;&nbsp;&nbsp;
                                         Status&nbsp;&nbsp;&nbsp;
-                                        <%=ComboInvariant(conn, "controlStatus", "width: 50px", "ControlStatus", "ControlStatus", "35", controlStatus, "document.ExecFilters.submit()", "")%>&nbsp;&nbsp;&nbsp;
+                                        <%=ComboInvariant(conn, "controlStatus", "width: 50px", "ControlStatus", "ControlStatus", "TCESTATUS", controlStatus, "document.ExecFilters.submit()", "")%>&nbsp;&nbsp;&nbsp;
                                         System&nbsp;&nbsp;&nbsp;
-                                        <%=ComboInvariant(conn, "systemFlt", "width: 80px", "SystemFlt", "SystemFlt", "41", systemFlt, "document.ExecFilters.submit()", "")%>&nbsp;&nbsp;&nbsp;
+                                        <%=ComboInvariant(conn, "systemFlt", "width: 80px", "SystemFlt", "SystemFlt", "SYSTEM", systemFlt, "document.ExecFilters.submit()", "")%>&nbsp;&nbsp;&nbsp;
                                         Application&nbsp;&nbsp;&nbsp;
                                         <select name="application" id="application" style="width: 200px" OnChange ="document.ExecFilters.submit()">
                                             <option style="width: 500px" value="">-- Choose Application --</option>
@@ -314,15 +314,15 @@
                                             %>
                                         </select>&nbsp;&nbsp;&nbsp;
                                         Test Case Status on Execution&nbsp;&nbsp;&nbsp;
-                                        <%=ComboInvariant(conn, "tcstatus", "width: 100px", "tcstatus", "tcstatus", "1", tcstatus, "document.ExecFilters.submit()", "")%>&nbsp;&nbsp;&nbsp;
+                                        <%=ComboInvariant(conn, "tcstatus", "width: 100px", "tcstatus", "tcstatus", "TCSTATUS", tcstatus, "document.ExecFilters.submit()", "")%>&nbsp;&nbsp;&nbsp;
                                         <br>
                                         IP&nbsp;&nbsp;&nbsp;<input style="font-weight: bold; width: 200px" name="IP" id="IP" value="<%=IP%>">
                                         port&nbsp;&nbsp;&nbsp;<input style="font-weight: bold; width: 200px" name="port" id="port" value="<%=port%>">
                                         Tag&nbsp;&nbsp;&nbsp;<input style="font-weight: bold; width: 200px" name="tag" id="tag" value="<%=tag%>">
                                         See exec from the last minutes&nbsp;&nbsp;&nbsp;
-                                        <%=ComboInvariant(conn, "minutemax", "width: 50px", "minutemax", "minutemax", "38", String.valueOf(minutemax), "document.ExecFilters.submit()", null)%>&nbsp;&nbsp;&nbsp;
+                                        <%=ComboInvariant(conn, "minutemax", "width: 50px", "minutemax", "minutemax", "EXECNBMIN", String.valueOf(minutemax), "document.ExecFilters.submit()", null)%>&nbsp;&nbsp;&nbsp;
                                         Max Nb of Exec returned&nbsp;&nbsp;&nbsp;
-                                        <%=ComboInvariant(conn, "execmax", "width: 50px", "execmax", "execmax", "36", String.valueOf(execmax), "document.ExecFilters.submit()", null)%>&nbsp;&nbsp;&nbsp;
+                                        <%=ComboInvariant(conn, "execmax", "width: 50px", "execmax", "execmax", "MAXEXEC", String.valueOf(execmax), "document.ExecFilters.submit()", null)%>&nbsp;&nbsp;&nbsp;
                                     </td>
                                     <td>
                                         <input type="submit" value="Apply">&nbsp;&nbsp;

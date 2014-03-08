@@ -26,6 +26,6 @@ import org.cerberus.entity.Invariant;
  */
 public interface IFactoryInvariant {
 
-    Invariant create(String idName, String value, int sort, int id, String description,
+    Invariant create(String idName, String value, int sort, String description,
                      String veryShortDesc, String gp1, String gp2, String gp3);
 }

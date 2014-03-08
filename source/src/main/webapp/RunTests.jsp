@@ -253,7 +253,7 @@
                                 <tr>
                                     <td id="wob" style="font-weight: bold; width: 150px"><% out.print(dbDocS(conn, "page_runtests", "Browser", "Browser"));%></td>
                                     <td id="wob">
-                                        <%=ComboInvariant(conn, "browser", "width: 90px", "browser", "browser", "37", browser, "", null)%>
+                                        <%=ComboInvariant(conn, "browser", "width: 90px", "browser", "browser", "BROWSER", browser, "", null)%>
                                     </td>
                                     <td id="wob"></td>
                                     <td>
@@ -312,7 +312,7 @@
                                                          name="Country" style="width: 50px"
                                                          onchange="document.RunTest.submit()">
                                             <% ResultSet rsCountry = stmt.executeQuery("SELECT DISTINCT c.Country FROM testcasecountry c "
-                                                        + " join invariant i on i.value=c.country and i.id=4 "
+                                                        + " join invariant i on i.value=c.country and i.idname='COUNTRY' "
                                                         + " WHERE c.test = '" + test + "' AND c.testcase = '" + testcase + "'"
                                                         + " order by sort;");
                                                 while (rsCountry.next()) {%>
@@ -352,7 +352,7 @@
                                                                         sql.append("'");
                                                                         sql.append("    AND ce.active='Y' ");
                                                                         sql.append("    AND ce.system='" + MySystem + "' ");
-                                                                        sql.append("    AND i.id = 5 AND i.Value = ce.Environment ");
+                                                                        sql.append("    AND i.idname = 'ENVIRONMENT' AND i.Value = ce.Environment ");
                                                                         sql.append("ORDER BY i.sort ");
 
                                                                         if (!(testcaseApplication == null) && !(country.isEmpty()) && !(country.equalsIgnoreCase("%%"))) {
@@ -422,15 +422,15 @@
                                 <tr>
                                     <td id="wob" style="font-weight: bold; width: 100px"><% out.print(dbDocS(conn, "page_runtests", "outputformat", ""));%></td>
                                     <td class="wob">
-                                        <%=ComboInvariant(conn, "outputformat", "width: 90px", "Format", "Format", "24", "gui", "", null)%>
+                                        <%=ComboInvariant(conn, "outputformat", "width: 90px", "Format", "Format", "OUTPUTFORMAT", "gui", "", null)%>
                                     </td>
                                     <td id="wob" style="font-weight: bold; width: 100px"><% out.print(dbDocS(conn, "testcaseexecution", "verbose", ""));%></td>
                                     <td class="wob">
-                                        <%=ComboInvariant(conn, "verbose", "width: 90px", "Verbose", "Verbose", "25", "0", "", null)%>
+                                        <%=ComboInvariant(conn, "verbose", "width: 90px", "Verbose", "Verbose", "VERBOSE", "0", "", null)%>
                                     </td>
                                     <td id="wob" style="font-weight: bold; width: 100px"><% out.print(dbDocS(conn, "page_runtests", "screenshot", ""));%></td>
                                     <td class="wob">
-                                        <%=ComboInvariant(conn, "screenshot", "width: 90px", "Screenshot", "Screenshot", "39", "1", "", null)%>
+                                        <%=ComboInvariant(conn, "screenshot", "width: 90px", "Screenshot", "Screenshot", "SCREENSHOT", "1", "", null)%>
                                     </td>
                                     <td class="wob" id="button"><input type="submit" id="buttonRun" style="font-size: large" name="statusPage" value="Run"></td>
                                 </tr>

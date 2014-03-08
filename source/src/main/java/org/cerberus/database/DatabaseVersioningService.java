@@ -3084,6 +3084,11 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("        ('INVARIANTPUBLIC', 'TEAM', '380', '45', '', '');");
         SQLInstruction.add(SQLS.toString());
 
+// Removing id column to invariant table.
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `invariant` DROP PRIMARY KEY , DROP COLUMN `id` , CHANGE COLUMN `sort` `sort` INT(10) NOT NULL DEFAULT 0 ");
+        SQLS.append(" , ADD PRIMARY KEY (`idname`, `value`) , ADD INDEX `IX_invariant_01` (`idname` ASC, `sort` ASC) ;");
+        SQLInstruction.add(SQLS.toString());
 
 
         return SQLInstruction;

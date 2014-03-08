@@ -44,7 +44,7 @@
 
             $(document).ready(function() {
                 var oTable = $('#invariantPrivateList').dataTable({
-                    "aaSorting": [[1, "asc"]],
+                    "aaSorting": [[0, "asc"]],
                     "bServerSide": true,
                     "sAjaxSource": "FindAllInvariantPrivate",
                     "bJQueryUI": true,
@@ -60,11 +60,10 @@
                     ], 
                     "iDisplayLength": 25,
                     "aoColumns": [
-                        {"sName": "ID", "sWidth": "5%"},
                         {"sName": "IdName", "sWidth": "10%"},
                         {"sName": "sort", "sWidth": "5%"},
                         {"sName": "value", "sWidth": "10%"},
-                        {"sName": "description", "sWidth": "25%"},
+                        {"sName": "description", "sWidth": "30%"},
                         {"sName": "veryShortdesc", "sWidth": "15%"},
                         {"sName": "gp1", "sWidth": "10%"},
                         {"sName": "gp2", "sWidth": "10%"},
@@ -74,7 +73,6 @@
                 }
                 ).makeEditable({
                     "aoColumns": [
-                        null,
                         null,
                         null,
                         null,
@@ -101,7 +99,6 @@
             <table id="invariantPrivateList" class="display">
                 <thead>
                     <tr>
-                        <th>ID</th>
                         <th>ID Name</th>
                         <th>Sort</th>
                         <th>Value</th>

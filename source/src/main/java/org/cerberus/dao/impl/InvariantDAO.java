@@ -368,13 +368,12 @@ public class InvariantDAO implements IInvariantDAO {
     private Invariant loadInvariantFromResultSet(ResultSet resultSet) throws SQLException {
         String idName = resultSet.getString("idName");
         int sort = resultSet.getInt("sort");
-        int id = resultSet.getInt("id");
         String description = resultSet.getString("Description");
         String veryShortDesc = resultSet.getString("VeryShortDesc");
         String gp1 = resultSet.getString("gp1");
         String gp2 = resultSet.getString("gp2");
         String gp3 = resultSet.getString("gp3");
         String value = resultSet.getString("value");
-        return factoryInvariant.create(idName, value, sort, id, description, veryShortDesc, gp1, gp2, gp3);
+        return factoryInvariant.create(idName, value, sort, description, veryShortDesc, gp1, gp2, gp3);
     }
 }

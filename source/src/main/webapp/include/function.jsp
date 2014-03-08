@@ -105,7 +105,7 @@
         try {
             Statement stmtQuery = conn.createStatement();
             try {
-                String sq = "SELECT value from invariant where id = '" + combonumber + "' order by sort";
+                String sq = "SELECT value from invariant where idname = '" + combonumber + "' order by sort";
                 ResultSet q = stmtQuery.executeQuery(sq);
                 try {
                     String ret = "<select id=\"" + HTMLId + "\" class=\"" + HTMLClass + "\" style=\"" + HTMLComboStyle + "\" name=\"" + HTMLComboName + "\"";
@@ -142,7 +142,7 @@
         try {
             Statement stmtQuery = conn.createStatement();
             try {
-                String sq = "SELECT value from invariant where id = '" + combonumber + "' order by sort";
+                String sq = "SELECT value from invariant where idname = '" + combonumber + "' order by sort";
                 ResultSet q = stmtQuery.executeQuery(sq);
                 try {
                     String ret = "<select id=\"" + HTMLId + "\" rel=\"" + HTMLrel + "\" style=\"" + HTMLComboStyle + "\" name=\"" + HTMLComboName + "\"";
@@ -178,7 +178,7 @@
         try {
             Statement stmtQuery = conn.createStatement();
             try {
-                String sq = "SELECT value from invariant where id = '" + combonumber + "' order by sort";
+                String sq = "SELECT value from invariant where idname = '" + combonumber + "' order by sort";
                 ResultSet q = stmtQuery.executeQuery(sq);
                 try {
                     String ret = "<select id=\"" + HTMLId + "\" rel=\"" + HTMLrel + "\" style=\"" + HTMLComboStyle + "\" name=\"" + HTMLComboName + "\"";

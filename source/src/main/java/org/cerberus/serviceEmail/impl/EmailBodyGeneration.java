@@ -192,11 +192,11 @@ public class EmailBodyGeneration implements IEmailBodyGeneration {
             String contentSQL = "SELECT i.gp1, count(*) nb_exe, OK.c nb_exe_OK, format(OK.c/count(*)*100,0)  per_OK"
                     + "     , DTC.c nb_dtc, DAPP.c nb_dapp"
                     + " FROM testcaseexecution t"
-                    + " JOIN invariant i on i.value=t.Environment and i.id=5"
+                    + " JOIN invariant i on i.value=t.Environment and i.idname='ENVIRONMENT'"
                     + " LEFT OUTER JOIN ( "
                     + " SELECT i.gp1 gp1, count(*) c"
                     + " FROM testcaseexecution t1 "
-                    + " JOIN invariant i on i.value=t1.Environment and i.id=5"
+                    + " JOIN invariant i on i.value=t1.Environment and i.idname='ENVIRONMENT'"
                     + " WHERE t1.ControlStatus= 'OK' and t1.Build='" + build + "' and t1.Revision='" + revision + "'";
             if (country.equalsIgnoreCase("ALL") == false) {
                 contentSQL = contentSQL + " and t1.country='" + country + "'";
@@ -211,7 +211,7 @@ public class EmailBodyGeneration implements IEmailBodyGeneration {
                     + " select toto.gp1 gp1, count(*) c from "
                     + " (SELECT i.gp1 gp1,t1.test, t1.testcase "
                     + " FROM testcaseexecution t1 "
-                    + " JOIN invariant i on i.value=t1.Environment and i.id=5"
+                    + " JOIN invariant i on i.value=t1.Environment and i.idname='ENVIRONMENT'"
                     + " WHERE t1.ControlStatus in ('OK','KO') and t1.Build='" + build + "' and t1.Revision='" + revision + "'";
             if (country.equalsIgnoreCase("ALL") == false) {
                 contentSQL = contentSQL + " and t1.country='" + country + "'";
@@ -227,7 +227,7 @@ public class EmailBodyGeneration implements IEmailBodyGeneration {
                     + " select toto.gp1 gp1, count(*) c from "
                     + " (SELECT i.gp1 gp1,t1.application "
                     + " FROM testcaseexecution t1 "
-                    + " JOIN invariant i on i.value=t1.Environment and i.id=5"
+                    + " JOIN invariant i on i.value=t1.Environment and i.idname='ENVIRONMENT'"
                     + " WHERE t1.ControlStatus in ('OK','KO') and t1.Build='" + build + "' and t1.Revision='" + revision + "'";
             if (country.equalsIgnoreCase("ALL") == false) {
                 contentSQL = contentSQL + " and t1.country='" + country + "'";
@@ -259,7 +259,7 @@ public class EmailBodyGeneration implements IEmailBodyGeneration {
             Cerberus_URL = Cerberus_URL.replaceAll("%build%", build);
             Cerberus_URL = Cerberus_URL.replaceAll("%rev%", revision);
 
-            String CountryListSQL = "SELECT value from invariant where id=4;";
+            String CountryListSQL = "SELECT value from invariant where idname='COUNTRY';";
             ResultSet rsCountry = stmtCountryList.executeQuery(CountryListSQL);
             StringBuilder CountryList = new StringBuilder();
             while (rsCountry.next()) {

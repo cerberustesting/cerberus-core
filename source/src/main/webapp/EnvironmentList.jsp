@@ -240,12 +240,12 @@
             PCE = "SELECT DISTINCT c.system, c.Country, c.Environment, c.Build, c.Revision, c.Chain, c.Active, c.Type, "
                     + "c.DistribList, c.EMailBodyRevision, c.EmailBodyChain, i.gp1 "
                     + "FROM `countryenvparam` c "
-                    + "left outer join invariant i  on Environment=i.value and i.id=5 "
-                    + "left outer join invariant i1 on Country=i1.value    and i1.id=4 "
+                    + "left outer join invariant i  on Environment=i.value and i.idname='ENVIRONMENT' "
+                    + "left outer join invariant i1 on Country=i1.value    and i1.idname='COUNTRY' "
                     + "WHERE 1=1 ";
             PCE_cnt = "SELECT count(*) cnt "
                     + "FROM `countryenvparam` c "
-                    + "left outer join invariant i on Environment=value and id=5 "
+                    + "left outer join invariant i on Environment=value and idname='ENVIRONMENT' "
                     + "WHERE 1=1 ";
             PCE += " and `System`='" + MySystem + "' ";
             PCE_cnt += " and `System`='" + MySystem + "' ";

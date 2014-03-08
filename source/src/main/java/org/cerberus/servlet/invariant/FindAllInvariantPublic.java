@@ -55,7 +55,7 @@ public class FindAllInvariantPublic extends HttpServlet {
             String sCol = request.getParameter("iSortCol_0");
             String sdir = request.getParameter("sSortDir_0");
             String dir = "asc";
-            String[] cols = {"id", "idname", "sort", "value", "description", "VeryShortDesc", "gp1", "gp2", "gp3"};
+            String[] cols = {"idname", "sort", "value", "description", "VeryShortDesc", "gp1", "gp2", "gp3"};
 
             JSONObject result = new JSONObject();
             JSONArray array = new JSONArray();
@@ -131,8 +131,7 @@ public class FindAllInvariantPublic extends HttpServlet {
 
             for (Invariant InvariantData : invariantList) {
                 JSONArray row = new JSONArray();
-                row.put(InvariantData.getId())
-                        .put(InvariantData.getIdName())
+                row.put(InvariantData.getIdName())
                         .put(InvariantData.getSort())
                         .put(InvariantData.getValue())
                         .put(InvariantData.getDescription())

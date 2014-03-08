@@ -126,7 +126,7 @@ public class CountryEnvironmentParametersDAO implements ICountryEnvironmentParam
                 + "FROM countryenvironmentparameters cea, countryenvparam ce, invariant i "
                 + "WHERE ce.system = cea.system AND ce.country = cea.country AND ce.environment = cea.environment "
                 + "AND cea.Application = ? AND cea.country= ? "
-                + "AND ce.active='Y' AND i.id = 5 AND i.Value = ce.Environment "
+                + "AND ce.active='Y' AND i.idname = 'ENVIRONMENT' AND i.Value = ce.Environment "
                 + "ORDER BY i.sort";
 
         Connection connection = this.databaseSpring.connect();
