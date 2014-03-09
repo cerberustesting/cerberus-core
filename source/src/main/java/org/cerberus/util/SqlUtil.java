@@ -27,6 +27,31 @@ import java.util.List;
  */
 public class SqlUtil {
 
+    /**
+     *
+     * @param obj List of generic object that have a toString Method
+     * implementation
+     * @return a String that has all obj.toString values separated by , and
+     * surounded by '
+     */
+    public static String getInSQLClause(List<?> obj) {
+        if (obj == null) {
+            return "";
+        }
+        if (obj.isEmpty()) {
+            return "";
+        }
+        StringBuilder result = new StringBuilder();
+        result.append("in (");
+        for (Object myObj : obj) {
+            result.append("'");
+            result.append(myObj.toString());
+            result.append("',");
+        }
+        String res = result.toString().substring(0, (result.length() - 1));
+        return res + ")";
+    }
+
     public static String createWhereInClause(String field, List<String> values, boolean isString) {
 
         if (field == null || field.isEmpty() || values == null || values.isEmpty()) {

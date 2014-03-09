@@ -30,7 +30,7 @@ import org.cerberus.entity.Application;
 import org.cerberus.service.IApplicationService;
 import org.cerberus.service.IParameterService;
 import org.cerberus.serviceEmail.IEmailBodyGeneration;
-import org.cerberus.util.StringUtil;
+import org.cerberus.util.SqlUtil;
 import org.cerberus.version.Version;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -59,7 +59,7 @@ public class EmailBodyGeneration implements IEmailBodyGeneration {
             String bugURL = "";
 
             List<Application> appliList = applicationService.findApplicationBySystem(system);
-            String inSQL = StringUtil.getInSQLClause(appliList);
+            String inSQL = SqlUtil.getInSQLClause(appliList);
 
             buildContentTable = "Here are the last modifications since last change (" + lastBuild + "/" + lastRevision + ") :";
             buildContentTable = buildContentTable + "<table>";
@@ -187,7 +187,7 @@ public class EmailBodyGeneration implements IEmailBodyGeneration {
             Statement stmtCountryList = conn.createStatement();
 
             List<Application> appliList = applicationService.findApplicationBySystem(system);
-            String inSQL = StringUtil.getInSQLClause(appliList);
+            String inSQL = SqlUtil.getInSQLClause(appliList);
 
             String contentSQL = "SELECT i.gp1, count(*) nb_exe, OK.c nb_exe_OK, format(OK.c/count(*)*100,0)  per_OK"
                     + "     , DTC.c nb_dtc, DAPP.c nb_dapp"

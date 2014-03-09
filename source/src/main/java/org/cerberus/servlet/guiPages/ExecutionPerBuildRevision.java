@@ -48,7 +48,7 @@ import org.cerberus.service.impl.UserService;
 import org.cerberus.statistics.BuildRevisionStatistics;
 import org.cerberus.statistics.TestCaseExecutionStatisticsServiceImpl;
 import org.cerberus.util.ParameterParserUtil;
-import org.cerberus.util.StringUtil;
+import org.cerberus.util.SqlUtil;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -97,7 +97,7 @@ public class ExecutionPerBuildRevision extends HttpServlet {
 
                 IApplicationService applicationService = appContext.getBean(ApplicationService.class);
                 List<Application> appliList = applicationService.findApplicationBySystem(MySystem);
-                String inSQL = StringUtil.getInSQLClause(appliList);
+                String inSQL = SqlUtil.getInSQLClause(appliList);
 
                 if (!(inSQL.equalsIgnoreCase(""))) {
                     inSQL = " and application " + inSQL + " ";

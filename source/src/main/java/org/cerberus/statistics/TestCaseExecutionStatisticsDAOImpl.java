@@ -35,6 +35,7 @@ import org.cerberus.exception.CerberusException;
 import org.cerberus.log.MyLogger;
 import org.cerberus.service.IApplicationService;
 import org.cerberus.service.IInvariantService;
+import org.cerberus.util.SqlUtil;
 import org.cerberus.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -58,7 +59,7 @@ public class TestCaseExecutionStatisticsDAOImpl implements ITestCaseExecutionSta
         String appliSQL = "";
         try {
             List<Application> appliList = applicationService.findApplicationBySystem(MySystem);
-            appliSQL = StringUtil.getInSQLClause(appliList);
+            appliSQL = SqlUtil.getInSQLClause(appliList);
         } catch (CerberusException ex) {
             Logger.getLogger(TestCaseExecutionStatisticsDAOImpl.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
@@ -197,7 +198,7 @@ public class TestCaseExecutionStatisticsDAOImpl implements ITestCaseExecutionSta
         String appliSQL = "";
         try {
             List<Application> appliList = applicationService.findApplicationBySystem(MySystem);
-            appliSQL = StringUtil.getInSQLClause(appliList);
+            appliSQL = SqlUtil.getInSQLClause(appliList);
         } catch (CerberusException ex) {
             Logger.getLogger(TestCaseExecutionStatisticsDAOImpl.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
@@ -354,7 +355,7 @@ public class TestCaseExecutionStatisticsDAOImpl implements ITestCaseExecutionSta
         String appliSQL = "";
         try {
             List<Application> appliList = applicationService.findApplicationBySystem(MySystem);
-            appliSQL = StringUtil.getInSQLClause(appliList);
+            appliSQL = SqlUtil.getInSQLClause(appliList);
         } catch (CerberusException ex) {
             Logger.getLogger(TestCaseExecutionStatisticsDAOImpl.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
@@ -415,7 +416,7 @@ public class TestCaseExecutionStatisticsDAOImpl implements ITestCaseExecutionSta
         String appliSQL = "";
         try {
             List<Application> appliList = applicationService.findApplicationBySystem(MySystem);
-            appliSQL = StringUtil.getInSQLClause(appliList);
+            appliSQL = SqlUtil.getInSQLClause(appliList);
         } catch (CerberusException ex) {
             Logger.getLogger(TestCaseExecutionStatisticsDAOImpl.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
