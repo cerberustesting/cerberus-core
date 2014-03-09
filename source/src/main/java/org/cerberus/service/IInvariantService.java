@@ -40,9 +40,9 @@ public interface IInvariantService {
 
     public List<Invariant> findInvariantPrivateListByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch);
 
-    public Integer getNumberOfPrivateInvariant();
+    public Integer getNumberOfPrivateInvariant(String searchTerm);
     
-    public Integer getNumberOfPublicInvariant();
+    public Integer getNumberOfPublicInvariant(String searchTerm);
     
     public boolean isInvariantExist(String idName, String value);
     

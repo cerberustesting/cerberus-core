@@ -34,6 +34,7 @@ import org.cerberus.log.MyLogger;
 import org.cerberus.service.ILogEventService;
 import org.cerberus.service.impl.LogEventService;
 import org.cerberus.servlet.user.GetUsers;
+import org.cerberus.util.ParameterParserUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -96,6 +97,9 @@ public class GetLogEvent extends HttpServlet {
         }
         String colName = cols[col];
 
+        String searchTerm;
+        searchTerm = ParameterParserUtil.parseStringParam(request.getParameter("sSearch"), "");
+
         JSONArray data = new JSONArray(); //data that will be shown in the table
 
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
@@ -103,7 +107,7 @@ public class GetLogEvent extends HttpServlet {
         try {
             JSONObject jsonResponse = new JSONObject();
             try {
-                for (LogEvent myLogEvent : logEventService.findAllLogEvent(start, amount, colName, dir)) {
+                for (LogEvent myLogEvent : logEventService.findAllLogEvent(start, amount, colName, dir, searchTerm)) {
                     JSONObject u = new JSONObject();
                     u.put("login", myLogEvent.getLogin());
                     u.put("time", myLogEvent.getTime());
@@ -112,17 +116,17 @@ public class GetLogEvent extends HttpServlet {
                     u.put("log", myLogEvent.getLog());
                     data.put(u);
                 }
-                Integer nbLog = logEventService.getNumberOfLogEvent();
+                Integer iTotalRecords = logEventService.getNumberOfLogEvent("");
+                Integer iTotalDisplayRecords = logEventService.getNumberOfLogEvent(searchTerm);
                 jsonResponse.put("aaData", data);
                 jsonResponse.put("sEcho", echo);
-                jsonResponse.put("iDisplayLength", data.length());
-                jsonResponse.put("iTotalDisplayRecords", nbLog);
+                jsonResponse.put("iTotalRecords", iTotalRecords);
+                jsonResponse.put("iTotalDisplayRecords", iTotalDisplayRecords);
                 response.setContentType("application/json");
                 response.getWriter().print(jsonResponse.toString());
             } catch (CerberusException ex) {
                 response.setContentType("text/html");
                 response.getWriter().print(ex.getMessageError().getDescription());
-
             }
         } catch (JSONException e) {
             MyLogger.log(GetUsers.class.getName(), Level.FATAL, "" + e);

@@ -38,14 +38,14 @@ public interface ILogEventDAO {
      * @return a list of all LogEvent.
      * @throws CerberusException in case no LogEvent can be found.
      */
-    List<LogEvent> findAllLogEvent(int start, int amount, String colName, String dir) throws CerberusException;
+    List<LogEvent> findAllLogEvent(int start, int amount, String colName, String dir, String searchTerm) throws CerberusException;
 
     /**
      *
      * @return Total number of LogEvent inside the database.
      * @throws CerberusException
      */
-    Integer getNumberOfLogEvent() throws CerberusException;
+    Integer getNumberOfLogEvent(String searchTerm) throws CerberusException;
 
     /**
      * Insert user into the database.

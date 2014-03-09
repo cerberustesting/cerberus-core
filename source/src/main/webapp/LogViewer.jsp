@@ -53,11 +53,11 @@
                     "sPaginationType": "full_numbers",
                     "bSearchable": false, "aTargets": [ 0 ],
                     "aoColumns": [
-                        {"mDataProp": "time", "sName": "Time"},
-                        {"mDataProp": "login", "sName": "Login"},
-                        {"mDataProp": "page", "sName": "Page"},
-                        {"mDataProp": "action", "sName": "Action"},
-                        {"mDataProp": "log", "sName": "Log"}
+                        {"mDataProp": "time", "sName": "Time", "sWidth": "15%"},
+                        {"mDataProp": "login", "sName": "Login", "sWidth": "10%"},
+                        {"mDataProp": "page", "sName": "Page", "sWidth": "15%"},
+                        {"mDataProp": "action", "sName": "Action", "sWidth": "10%"},
+                        {"mDataProp": "log", "sName": "Log", "sWidth": "50%"}
                     ]
                 })
             });

@@ -35,6 +35,7 @@ import org.cerberus.entity.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.factory.IFactoryLogEvent;
 import org.cerberus.log.MyLogger;
+import org.cerberus.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -107,20 +108,33 @@ public class LogEventDAO implements ILogEventDAO {
     }
 
     @Override
-    public List<LogEvent> findAllLogEvent(int start, int amount, String colName, String dir) throws CerberusException {
+    public List<LogEvent> findAllLogEvent(int start, int amount, String colName, String dir, String searchTerm) throws CerberusException {
         List<LogEvent> list = null;
         boolean throwExe = true;
-//        String query = "SELECT * FROM logevent order by " + colName + " " + dir + " limit " + start + " , " + amount;
-        String query = "SELECT * FROM logevent order by ? ? limit ? , ?";
+
+        StringBuilder gSearch = new StringBuilder();
+        if (!(searchTerm.equalsIgnoreCase(""))) {
+            gSearch.append(" WHERE ");
+            gSearch.append(getSearchString(searchTerm));
+        }
+
+        StringBuilder gOrder = new StringBuilder();
+        if (!(colName.equalsIgnoreCase(""))){
+            gOrder.append(" ORDER BY ");
+            gOrder.append(colName);
+            gOrder.append(" ");
+            gOrder.append(dir);
+            gOrder.append(" ");
+        }
+        String query = "SELECT * FROM logevent " + gSearch.toString().replace("?", "") + gOrder.toString() + " LIMIT ? , ? ";
+
         MyLogger.log(LogEventDAO.class.getName(), Level.DEBUG, query);
 
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
-            preStat.setString(1, colName);
-            preStat.setString(2, dir);
-            preStat.setInt(3, start);
-            preStat.setInt(4, amount);
+            preStat.setInt(1, start);
+            preStat.setInt(2, amount);
             try {
                 ResultSet resultSet = preStat.executeQuery();
                 try {
@@ -167,9 +181,16 @@ public class LogEventDAO implements ILogEventDAO {
     }
 
     @Override
-    public Integer getNumberOfLogEvent() throws CerberusException {
+    public Integer getNumberOfLogEvent(String searchTerm) throws CerberusException {
         boolean throwExe = true;
-        final String query = "SELECT count(*) c FROM logevent ; ";
+        
+        StringBuilder gSearch = new StringBuilder();
+        if (!(searchTerm.equalsIgnoreCase(""))) {
+            gSearch.append(" WHERE ");
+            gSearch.append(getSearchString(searchTerm));
+        }
+
+        final String query = "SELECT count(*) c FROM logevent " + gSearch.toString();
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -254,4 +275,27 @@ public class LogEventDAO implements ILogEventDAO {
         }
         return bool;
     }
+    
+    
+    private String getSearchString(String searchTerm) {
+        if (StringUtil.isNullOrEmpty(searchTerm))  {
+            return "";
+        } else {
+            StringBuilder gSearch = new StringBuilder();
+            gSearch.append(" (`login` like '%");
+            gSearch.append(searchTerm.replace("'", "\\'"));
+            gSearch.append("%'");
+            gSearch.append(" or `page` like '%");
+            gSearch.append(searchTerm.replace("'", "\\'"));
+            gSearch.append("%'");
+            gSearch.append(" or `action` like '%");
+            gSearch.append(searchTerm.replace("'", "\\'"));
+            gSearch.append("%'");
+            gSearch.append(" or `log` like '%");
+            gSearch.append(searchTerm.replace("'", "\\'"));
+            gSearch.append("%') ");
+            return gSearch.toString();
+        }
+    }
+    
 }

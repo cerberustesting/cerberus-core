@@ -44,13 +44,13 @@ public class LogEventService implements ILogEventService {
     }
 
     @Override
-    public List<LogEvent> findAllLogEvent(int start, int amount, String colName, String dir) throws CerberusException {
-        return logEventDAO.findAllLogEvent(start, amount, colName, dir);
+    public List<LogEvent> findAllLogEvent(int start, int amount, String colName, String dir, String searchTerm) throws CerberusException {
+        return logEventDAO.findAllLogEvent(start, amount, colName, dir, searchTerm);
     }
 
     @Override
-    public Integer getNumberOfLogEvent() throws CerberusException {
-        return logEventDAO.getNumberOfLogEvent();
+    public Integer getNumberOfLogEvent(String searchTerm) throws CerberusException {
+        return logEventDAO.getNumberOfLogEvent(searchTerm);
     }
 
     

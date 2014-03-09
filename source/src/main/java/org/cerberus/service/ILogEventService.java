@@ -32,9 +32,9 @@ public interface ILogEventService {
 
     public List<LogEvent> findAllLogEvent() throws CerberusException;
 
-    public List<LogEvent> findAllLogEvent(int start, int amount, String colName, String dir) throws CerberusException;
+    public List<LogEvent> findAllLogEvent(int start, int amount, String colName, String dir, String searchTerm) throws CerberusException;
 
-    public Integer getNumberOfLogEvent() throws CerberusException;
+    public Integer getNumberOfLogEvent(String searchTerm) throws CerberusException;
 
     public boolean insertLogEvent(LogEvent logevent) throws CerberusException;
 }

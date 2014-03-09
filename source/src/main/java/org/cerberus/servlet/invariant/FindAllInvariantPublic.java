@@ -5,7 +5,6 @@
  */
 package org.cerberus.servlet.invariant;
 
-import org.cerberus.servlet.testdata.*;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -17,11 +16,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.cerberus.entity.Invariant;
-import org.cerberus.entity.TestData;
 import org.cerberus.service.IInvariantService;
-import org.cerberus.service.ITestDataService;
 import org.cerberus.util.ParameterParserUtil;
-import org.cerberus.util.StringUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -142,19 +138,18 @@ public class FindAllInvariantPublic extends HttpServlet {
 
                 data.put(row);
             }
-            Integer nbLog = invariantService.getNumberOfPublicInvariant();
+            Integer iTotalRecords = invariantService.getNumberOfPublicInvariant("");
+            Integer iTotalDisplayRecords = invariantService.getNumberOfPublicInvariant(searchTerm);
 
             jsonResponse.put("aaData", data);
             jsonResponse.put("sEcho", echo);
-            jsonResponse.put("iTotalRecords", data.length());
-            //numberOfNC.getCount()
-            jsonResponse.put("iDisplayLength", data.length());
-            jsonResponse.put("iTotalDisplayRecords", nbLog);
+            jsonResponse.put("iTotalRecords", iTotalRecords);
+            jsonResponse.put("iTotalDisplayRecords", iTotalDisplayRecords);
 
             response.setContentType("application/json");
             response.getWriter().print(jsonResponse.toString());
         } catch (JSONException ex) {
-            Logger.getLogger(FindAllTestData.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(FindAllInvariantPublic.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
             out.close();
         }

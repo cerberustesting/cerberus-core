@@ -33,6 +33,7 @@ import org.cerberus.entity.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.factory.IFactoryInvariant;
 import org.cerberus.log.MyLogger;
+import org.cerberus.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -213,40 +214,15 @@ public class InvariantDAO implements IInvariantDAO {
     @Override
     public List<Invariant> findInvariantListByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch, String PublicPrivateFilter) {
         List<Invariant> invariantList = new ArrayList<Invariant>();
-        StringBuilder gSearch = new StringBuilder();
         StringBuilder searchSQL = new StringBuilder();
         searchSQL.append(" where 1=1 ");
 
         StringBuilder query = new StringBuilder();
         query.append("SELECT * FROM invariant ");
 
-        gSearch.append(" and (`idname` like '%");
-        gSearch.append(searchTerm);
-        gSearch.append("%'");
-        gSearch.append(" or `value` like '%");
-        gSearch.append(searchTerm);
-        gSearch.append("%'");
-        gSearch.append(" or `sort` like '%");
-        gSearch.append(searchTerm);
-        gSearch.append("%'");
-        gSearch.append(" or `description` like '%");
-        gSearch.append(searchTerm);
-        gSearch.append("%'");
-        gSearch.append(" or `veryshortdesc` like '%");
-        gSearch.append(searchTerm);
-        gSearch.append("%'");
-        gSearch.append(" or `gp1` like '%");
-        gSearch.append(searchTerm);
-        gSearch.append("%'");
-        gSearch.append(" or `gp2` like '%");
-        gSearch.append(searchTerm);
-        gSearch.append("%'");
-        gSearch.append(" or `gp3` like '%");
-        gSearch.append(searchTerm);
-        gSearch.append("%')");
-
         if (!searchTerm.equals("") && !individualSearch.equals("")) {
-            searchSQL.append(gSearch.toString());
+            searchSQL.append(" and ");
+            searchSQL.append(getSearchString(searchTerm));
             searchSQL.append(" and ");
             searchSQL.append(individualSearch);
         } else if (!individualSearch.equals("")) {
@@ -254,7 +230,8 @@ public class InvariantDAO implements IInvariantDAO {
             searchSQL.append(individualSearch);
             searchSQL.append("`");
         } else if (!searchTerm.equals("")) {
-            searchSQL.append(gSearch.toString());
+            searchSQL.append(" and ");
+            searchSQL.append(getSearchString(searchTerm));
         }
         if (!(PublicPrivateFilter.equalsIgnoreCase(""))) {
             searchSQL.append(" and ");
@@ -316,10 +293,22 @@ public class InvariantDAO implements IInvariantDAO {
     }
 
     @Override
-    public Integer getNumberOfInvariant(String searchSQL) throws CerberusException {
+    public Integer getNumberOfInvariant(String searchTerm, String PublicPrivateFilter) throws CerberusException {
         boolean throwException = true;
         Integer result = 0;
-        final String query = "SELECT count(*) FROM invariant i  WHERE " + searchSQL;
+        
+        StringBuilder searchSQL = new StringBuilder();
+        if (!(PublicPrivateFilter.equalsIgnoreCase(""))) {
+            searchSQL.append(" and ");
+            searchSQL.append(PublicPrivateFilter);
+        }
+        if (!(searchTerm.equalsIgnoreCase(""))) {
+            searchSQL.append(" and ");
+            searchSQL.append(getSearchString(searchTerm));
+        }
+        
+        String query = "SELECT count(*) FROM invariant i  WHERE 1=1 " + searchSQL.toString();
+        
         MyLogger.log(InvariantDAO.class.getName(), Level.DEBUG, query.toString());
 
         Connection connection = this.databaseSpring.connect();
@@ -375,5 +364,38 @@ public class InvariantDAO implements IInvariantDAO {
         String gp3 = resultSet.getString("gp3");
         String value = resultSet.getString("value");
         return factoryInvariant.create(idName, value, sort, description, veryShortDesc, gp1, gp2, gp3);
+    }
+
+    private String getSearchString(String searchTerm) {
+        if (StringUtil.isNullOrEmpty(searchTerm))  {
+            return "";
+        } else {
+            StringBuilder gSearch = new StringBuilder();
+            gSearch.append(" (`idname` like '%");
+            gSearch.append(searchTerm);
+            gSearch.append("%'");
+            gSearch.append(" or `value` like '%");
+            gSearch.append(searchTerm);
+            gSearch.append("%'");
+            gSearch.append(" or `sort` like '%");
+            gSearch.append(searchTerm);
+            gSearch.append("%'");
+            gSearch.append(" or `description` like '%");
+            gSearch.append(searchTerm);
+            gSearch.append("%'");
+            gSearch.append(" or `veryshortdesc` like '%");
+            gSearch.append(searchTerm);
+            gSearch.append("%'");
+            gSearch.append(" or `gp1` like '%");
+            gSearch.append(searchTerm);
+            gSearch.append("%'");
+            gSearch.append(" or `gp2` like '%");
+            gSearch.append(searchTerm);
+            gSearch.append("%'");
+            gSearch.append(" or `gp3` like '%");
+            gSearch.append(searchTerm);
+            gSearch.append("%') ");
+            return gSearch.toString();
+        }
     }
 }

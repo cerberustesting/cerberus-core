@@ -74,10 +74,10 @@ public class InvariantService implements IInvariantService {
     }
 
     @Override
-    public Integer getNumberOfPublicInvariant() {
+    public Integer getNumberOfPublicInvariant(String searchTerm) {
         String searchSQL = this.getPublicPrivateFilter("INVARIANTPUBLIC");
         try {
-            return invariantDao.getNumberOfInvariant(searchSQL);
+            return invariantDao.getNumberOfInvariant(searchTerm, searchSQL);
         } catch (CerberusException ex) {
             Logger.getLogger(InvariantService.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -85,16 +85,16 @@ public class InvariantService implements IInvariantService {
     }
 
     @Override
-    public Integer getNumberOfPrivateInvariant() {
+    public Integer getNumberOfPrivateInvariant(String searchTerm) {
         String searchSQL = this.getPublicPrivateFilter("INVARIANTPRIVATE");
         try {
-            return invariantDao.getNumberOfInvariant(searchSQL);
+            return invariantDao.getNumberOfInvariant(searchTerm, searchSQL);
         } catch (CerberusException ex) {
             Logger.getLogger(InvariantService.class.getName()).log(Level.SEVERE, null, ex);
         }
         return 0;
     }
-    
+
     @Override
     public boolean isInvariantExist(String idName, String value) {
         try {
@@ -104,7 +104,7 @@ public class InvariantService implements IInvariantService {
             return false;
         }
     }
-    
+
     @Override
     public String getPublicPrivateFilter(String filter) {
         String searchSQL = " 1=0 ";
@@ -121,5 +121,4 @@ public class InvariantService implements IInvariantService {
         }
         return searchSQL;
     }
-
 }
