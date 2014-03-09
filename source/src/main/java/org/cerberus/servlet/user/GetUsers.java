@@ -72,6 +72,7 @@ public class GetUsers extends HttpServlet {
                     u.put("team", myUser.getTeam());
                     u.put("system", myUser.getDefaultSystem());
                     u.put("request", myUser.getRequest());
+                    u.put("email", myUser.getEmail());
 
                     JSONArray groups = new JSONArray();
                     for (Group group : userGroupService.findGroupByKey(myUser.getLogin())) {

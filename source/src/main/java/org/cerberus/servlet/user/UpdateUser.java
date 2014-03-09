@@ -100,6 +100,9 @@ public class UpdateUser extends HttpServlet {
                 case 5:
                     myUser.setRequest(value);
                     break;
+                case 6:
+                    myUser.setEmail(value);
+                    break;
             }
             try {
                 if (newGroups != null) {

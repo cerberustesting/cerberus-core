@@ -69,7 +69,8 @@
                         {"mDataProp": "name", "sName": "Name"},
                         {"mDataProp": "team", "sName": "Team"},
                         {"mDataProp": "system", "sName": "DefaultSystem"},
-                        {"mDataProp": "request", "sName": "Request_Password"}
+                        {"mDataProp": "request", "sName": "Request_Password"},
+                        {"mDataProp": "email", "sName": "email"}
                     ],
                     "fnCreatedRow": function( nRow, aData, iDisplayIndex ) {
                         $(nRow).attr("id", aData.login);
@@ -118,7 +119,8 @@
                             data: "{'Y':'Y','N':'N'}",
                             submit:'Save changes'
 
-                        }
+                        },
+                        {}
                     ]
                 });
 
@@ -203,6 +205,7 @@
                         <th>Team</th>
                         <th>Default System</th>
                         <th>Request New Password</th>
+                        <th>EMail</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -232,6 +235,9 @@
                     <option value="Y">Y</option>
                     <option value="N">N</option>
                 </select>
+                <br /><br />
+                <label for="name">Email</label>
+                <input type="text" name="email" id="email" maxlength="25" rel="6" />
                 <br /><br />
                 <label for="groups">User Group</label>
                 <%=ComboInvariantMultipleAjax(conn, "groups", "", "groups", "0", "USERGROUP", "", "", false)%>

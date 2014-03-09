@@ -86,42 +86,43 @@ public class AddUser extends HttpServlet {
         IFactoryUser factory = appContext.getBean(FactoryUser.class);
         IParameterService parameterService = appContext.getBean(ParameterService.class);
         String system = "";
-        
-        try {
-        String login = request.getParameter("login").replaceAll("'", "");
-        if (login.length() > 10) {
-            login = login.substring(0, 10);
-        }
-        String name = ParameterParserUtil.parseStringParam(request.getParameter("name"), "");
-        String password = parameterService.findParameterByKey("cerberus_accountcreation_defaultpassword", system).getValue();
-        String newPassword = ParameterParserUtil.parseStringParam(request.getParameter("newPassword"),"Y");
-        String team = ParameterParserUtil.parseStringParam(request.getParameter("team"),"");
-        String defaultSystem = ParameterParserUtil.parseStringParam(request.getParameter("defaultSystem"),"");
-        String email = ParameterParserUtil.parseStringParam(request.getParameter("email"),"");
-        
-        IFactoryGroup factoryGroup = new FactoryGroup();
-        List<Group> groups = new ArrayList<Group>();
-        for (String group : request.getParameterValues("groups")) {
-            groups.add(factoryGroup.create(group));
-        }
 
-        /**
-         * Creating user.
-         */
-        User myUser = factory.create(0, login, password, newPassword, name, team, "", "", defaultSystem, email);
-        
+        try {
+            String login = request.getParameter("login").replaceAll("'", "");
+            if (login.length() > 10) {
+                login = login.substring(0, 10);
+            }
+            String name = ParameterParserUtil.parseStringParam(request.getParameter("name"), "");
+            String password = parameterService.findParameterByKey("cerberus_accountcreation_defaultpassword", system).getValue();
+            String newPassword = ParameterParserUtil.parseStringParam(request.getParameter("newPassword"), "Y");
+            String team = ParameterParserUtil.parseStringParam(request.getParameter("team"), "");
+            String defaultSystem = ParameterParserUtil.parseStringParam(request.getParameter("defaultSystem"), "");
+            String email = ParameterParserUtil.parseStringParam(request.getParameter("email"), "");
+
+            IFactoryGroup factoryGroup = new FactoryGroup();
+            List<Group> groups = new ArrayList<Group>();
+            for (String group : request.getParameterValues("groups")) {
+                groups.add(factoryGroup.create(group));
+            }
+
+            /**
+             * Creating user.
+             */
+            User myUser = factory.create(0, login, password, newPassword, name, team, "", "", defaultSystem, email);
+
             userService.insertUser(myUser);
             userGroupService.updateUserGroups(myUser, groups);
-            
+
             /**
-             * Send Email to explain how to connect Cerberus if activateNotification is set to Y
+             * Send Email to explain how to connect Cerberus if
+             * activateNotification is set to Y
              */
             String sendNotification = parameterService.findParameterByKey("cerberus_notification_accountcreation_activatenotification", system).getValue();
-        
-            if (sendNotification.equalsIgnoreCase("Y")){
-            generateEmailService.BuildAndSendAccountCreationEmail(myUser);
+
+            if (sendNotification.equalsIgnoreCase("Y")) {
+                generateEmailService.BuildAndSendAccountCreationEmail(myUser);
             }
-            
+
             /**
              * Adding Log entry.
              */
@@ -132,7 +133,7 @@ public class AddUser extends HttpServlet {
             } catch (CerberusException ex) {
                 Logger.getLogger(UserService.class.getName()).log(Level.ERROR, null, ex);
             }
-            
+
             response.getWriter().print(myUser.getLogin());
         } catch (CerberusException myexception) {
             response.getWriter().print(myexception.getMessageError().getDescription());

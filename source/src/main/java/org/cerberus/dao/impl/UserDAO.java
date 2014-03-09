@@ -343,8 +343,7 @@ public class UserDAO implements IUserDAO {
         String reportingFavorite = ParameterParserUtil.parseStringParam(rs.getString("reportingFavorite"), "");
         String defaultIP = ParameterParserUtil.parseStringParam(rs.getString("defaultIP"), "");
         String defaultSystem = ParameterParserUtil.parseStringParam(rs.getString("defaultSystem"), "");
-        //String email = ParameterParserUtil.parseStringParam(rs.getString("email"), "");
-        String email = "";
+        String email = ParameterParserUtil.parseStringParam(rs.getString("email"), "");
         //TODO remove when working in test with mockito and autowired
         factoryUser = new FactoryUser();
         return factoryUser.create(userID, login, password, request, name, team, reportingFavorite, defaultIP, defaultSystem, email);
