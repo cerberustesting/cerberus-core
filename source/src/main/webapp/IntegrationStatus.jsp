@@ -86,7 +86,7 @@
                     <option style="width: 200px" value="ALL">-- ALL --</option>
                     <%ResultSet rsEnvgp = stmtEnvgp.executeQuery("SELECT distinct gp1 "
                                 + "FROM invariant "
-                                + "WHERE id = 5 "
+                                + "WHERE idname = 'ENVIRONMENT' "
                                 + "ORDER BY sort ASC");
                         while (rsEnvgp.next()) {
                     %><option style="width: 200px" value="<%= rsEnvgp.getString(1)%>" <%=envgp.compareTo(rsEnvgp.getString(1)) == 0 ? " SELECTED " : ""%>><%= rsEnvgp.getString(1)%></option>
@@ -95,7 +95,7 @@
                 <ftxt><%=dbDocS(conn, "invariant", "FILTERNBDAYS", "")%></ftxt> <select id="nbdays" name="nbdays" style="width: 80px" OnChange ="document.EnvFilters.submit()">
                     <%ResultSet rsNbDays = stmtEnvgp.executeQuery("SELECT value, description "
                                 + "FROM invariant "
-                                + "WHERE id = 29 "
+                                + "WHERE idname = 'FILTERNBDAYS' "
                                 + "ORDER BY sort ASC");
                         while (rsNbDays.next()) {
                     %><option style="width: 200px" value="<%= rsNbDays.getString(1)%>" <%=NBDAYS.compareTo(rsNbDays.getString(1)) == 0 ? " SELECTED " : ""%>><%= rsNbDays.getString(1)%> - <%= rsNbDays.getString(2)%></option>

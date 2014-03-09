@@ -147,7 +147,7 @@
                             <option style="width: 400px" value="ALL">-- ALL --</option>
                             <%ResultSet rsCountry = stmtCountry.executeQuery("SELECT value, description "
                                         + "FROM invariant "
-                                        + "WHERE id = 4 "
+                                        + "WHERE idname = 'COUNTRY' "
                                         + "ORDER BY sort ASC");
                                 while (rsCountry.next()) {
                             %><option style="width: 400px" value="<%= rsCountry.getString(1)%>" <%=country.compareTo(rsCountry.getString(1)) == 0 ? " SELECTED " : ""%>><%= rsCountry.getString(1)%> - <%= rsCountry.getString(2)%></option>
@@ -157,7 +157,7 @@
                             <option style="width: 500px" value="ALL">-- ALL --</option>
                             <%ResultSet rsEnv = stmtEnv.executeQuery("SELECT value, description "
                                         + "FROM invariant "
-                                        + "WHERE id = 5 "
+                                        + "WHERE idname = 'ENVIRONMENT' "
                                         + "ORDER BY sort ASC");
                                 while (rsEnv.next()) {
                             %><option style="width: 500px" value="<%= rsEnv.getString(1)%>" <%=env.compareTo(rsEnv.getString(1)) == 0 ? " SELECTED " : ""%>><%= rsEnv.getString(1)%> - <%= rsEnv.getString(2)%></option>
@@ -167,7 +167,7 @@
                             <option style="width: 200px" value="ALL">-- ALL --</option>
                             <%ResultSet rsEnvgp = stmtEnvgp.executeQuery("SELECT distinct gp1 "
                                         + "FROM invariant "
-                                        + "WHERE id = 5 "
+                                        + "WHERE idname = 'ENVIRONMENT' "
                                         + "ORDER BY sort ASC");
                                 while (rsEnvgp.next()) {
                             %><option style="width: 200px" value="<%= rsEnvgp.getString(1)%>" <%=envgp.compareTo(rsEnvgp.getString(1)) == 0 ? " SELECTED " : ""%>><%= rsEnvgp.getString(1)%></option>
@@ -194,7 +194,7 @@
                             <option style="width: 200px" value="ALL">-- ALL --</option>
                             <%ResultSet rsActive = stmtActive.executeQuery("SELECT value, description "
                                         + "FROM invariant "
-                                        + "WHERE id = 11 "
+                                        + "WHERE idname = 'ENVACTIVE' "
                                         + "ORDER BY sort ASC");
                                 while (rsActive.next()) {
                             %><option style="width: 200px" value="<%= rsActive.getString(1)%>" <%=active.compareTo(rsActive.getString(1)) == 0 ? " SELECTED " : ""%>><%= rsActive.getString(1)%></option>
@@ -204,7 +204,7 @@
                             <option style="width: 200px" value="ALL">-- ALL --</option>
                             <%ResultSet rsType = stmtType.executeQuery("SELECT value, description "
                                         + "FROM invariant "
-                                        + "WHERE id = 10 "
+                                        + "WHERE idname = 'ENVTYPE' "
                                         + "ORDER BY sort ASC");
                                 while (rsType.next()) {
                             %><option style="width: 200px" value="<%= rsType.getString(1)%>" <%=type.compareTo(rsType.getString(1)) == 0 ? " SELECTED " : ""%>><%= rsType.getString(1)%></option>

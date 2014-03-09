@@ -530,7 +530,7 @@
                         <%
                             ResultSet rsType = stmtType.executeQuery("SELECT value, description "
                                     + "FROM invariant "
-                                    + "WHERE id = 10 "
+                                    + "WHERE idname = 'ENVTYPE' "
                                     + "ORDER BY sort ASC");
                             while (rsType.next()) {
                         %><option style="width: 200px" value="<%= rsType.getString(1)%>" <%=Type.compareTo(rsType.getString(1)) == 0 ? " SELECTED " : ""%>><%= rsType.getString(1)%></option>
