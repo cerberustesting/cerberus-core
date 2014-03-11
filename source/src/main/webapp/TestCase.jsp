@@ -376,7 +376,7 @@
 
             %>
 
-            <table id="generalparameter" class="arrond">
+            <table id="generalparameter" class="arrond"
                    <%if (tinf == false) {%> style="display : none" <%} else {%>style="display : table"<%}%> >
                 <tr>
                     <td class="separation">
