@@ -19,24 +19,49 @@
  */
 package org.cerberus.serviceEngine.impl;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Reader;
+import java.io.StringReader;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
 import java.util.logging.Logger;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.soap.MessageFactory;
+import javax.xml.soap.MimeHeaders;
+import javax.xml.soap.SOAPConnection;
+import javax.xml.soap.SOAPConnectionFactory;
+import javax.xml.soap.SOAPException;
+import javax.xml.soap.SOAPMessage;
+import javax.xml.soap.SOAPPart;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
 import org.apache.log4j.Level;
 import org.cerberus.dao.ITestCaseExecutionDataDAO;
 import org.cerberus.entity.CountryEnvironmentDatabase;
 import org.cerberus.entity.MessageEvent;
 import org.cerberus.entity.MessageEventEnum;
+import org.cerberus.entity.MessageGeneral;
+import org.cerberus.entity.MessageGeneralEnum;
 import org.cerberus.entity.Property;
 import org.cerberus.entity.TestCaseCountryProperties;
 import org.cerberus.entity.TestCaseExecution;
 import org.cerberus.entity.TestCaseExecutionData;
 import org.cerberus.entity.TestCaseStepActionExecution;
+import org.cerberus.entity.SoapLibrary;
 import org.cerberus.exception.CerberusEventException;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.log.MyLogger;
 import org.cerberus.service.ICountryEnvironmentDatabaseService;
+import org.cerberus.service.ISoapLibraryService;
 import org.cerberus.service.ISqlLibraryService;
 import org.cerberus.service.ITestCaseExecutionService;
 import org.cerberus.service.ITestDataService;
@@ -49,6 +74,10 @@ import org.cerberus.util.StringUtil;
 import org.openqa.selenium.NoSuchElementException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
 
 /**
  * {Insert class description here}
@@ -63,6 +92,8 @@ public class PropertyService implements IPropertyService {
     private ISeleniumService seleniumService;
     @Autowired
     private ISqlLibraryService sqlLibraryService;
+    @Autowired 
+    private ISoapLibraryService soapLibraryService;
     @Autowired
     private IConnectionPoolDAO connectionPoolDAO;
     @Autowired
@@ -216,6 +247,23 @@ public class PropertyService implements IPropertyService {
                 MyLogger.log(PropertyService.class.getName(), Level.ERROR, exception.toString());
                 res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_HTMLVISIBLE_ELEMENTDONOTEXIST);
                 res.setDescription(res.getDescription().replaceAll("%ELEMENT%", testCaseCountryProperty.getValue1()));
+                testCaseExecutionData.setPropertyResultMessage(res);
+            }
+        } else if ("executeSoapFromLib".equals(testCaseCountryProperty.getType())) {
+            try
+            {
+                SoapLibrary soapLib = this.soapLibraryService.findSoapLibraryByKey(testCaseCountryProperty.getValue1());
+                if (soapLib != null) {
+                     String result = calculatePropertyFromSOAPResponse(soapLib.getEnvelope(), soapLib.getServicePath(), soapLib.getParsingAnswer(), soapLib.getMethod());
+                     if(result != null) {
+                         testCaseExecutionData.setValue(result);
+                         testCaseExecutionData.setPropertyResultMessage(new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_SOAP));
+                     }
+                }
+            } catch (CerberusException exception) {                
+                MyLogger.log(PropertyService.class.getName(), Level.ERROR, exception.toString());
+                res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_TESTDATA_PROPERTYDONOTEXIST);
+                res.setDescription(res.getDescription().replaceAll("%PROPERTY%", testCaseCountryProperty.getValue1()));
                 testCaseExecutionData.setPropertyResultMessage(res);
             }
         }
@@ -407,5 +455,135 @@ public class PropertyService implements IPropertyService {
         }
 
         return null;
+    }
+    
+    /**
+     * Calcule d'une propriété depuis une requête SOAP.
+     */
+    private String calculatePropertyFromSOAPResponse(String envelope, String servicePath, String parsingAnswer, String method) throws CerberusException {
+        String result = null;
+        // Test des inputs nécessaires.
+        if(envelope != null && servicePath != null && parsingAnswer != null && method != null) {
+            SOAPConnectionFactory soapConnectionFactory;
+    
+            SOAPConnection soapConnection;
+            try {
+                soapConnectionFactory = SOAPConnectionFactory
+					.newInstance();
+                soapConnection = soapConnectionFactory.createConnection();
+
+                // Création de la requete SOAP
+                SOAPMessage input = createSOAPRequest(envelope, method);
+
+                // Appel du WS
+                SOAPMessage soapResponse = soapConnection.call(input, servicePath);
+
+                // Traitement de la r the SOAP Response
+                result = parseSOAPResponse(soapResponse, parsingAnswer);
+
+                soapConnection.close();
+            
+            } catch (SOAPException e)
+            {
+                MyLogger.log(PropertyService.class.getName(), Level.ERROR, e.toString());
+                 throw new CerberusException(new MessageGeneral(MessageGeneralEnum.EXECUTION_FA));
+            } catch (IOException e)
+            {
+                MyLogger.log(PropertyService.class.getName(), Level.ERROR, e.toString());
+                throw new CerberusException(new MessageGeneral(MessageGeneralEnum.EXECUTION_FA));
+            }
+        }
+        return result;
+    }
+    
+    /**
+     * Création d'une requête SOAP
+     * @param envelope Envelope complète de la requête SOAP exécutée depuis SOAPUI (table SOAPLIBRARY.ENVELOPE)
+     * @param method Nom de la méthode du WSDL à interroger(table SOAPLIBRARY.METHOD)
+     * @return SOAPMessage
+     * @throws SOAPException
+     * @throws IOException 
+     */
+    private SOAPMessage createSOAPRequest(String envelope, String method) throws SOAPException, IOException {
+
+        MessageFactory messageFactory = MessageFactory.newInstance();
+
+	SOAPMessage soapMessage = messageFactory.createMessage();
+
+	SOAPPart soapPart = soapMessage.getSOAPPart();
+
+	Reader reader = new StringReader(envelope);
+
+	reader.read(envelope.toCharArray(), 0, envelope.length());
+	
+        // CTE à faire pour éviter une SAXParseException premature end of file
+	reader.reset();
+
+	StreamSource prepMsg = new StreamSource(reader);
+        
+        soapPart.setContent(prepMsg);
+
+	MimeHeaders headers = soapMessage.getMimeHeaders();
+
+        // Précise la méthode du WSDL à interroger
+	headers.addHeader("SOAPAction", method);
+        // Encodage UTF-8
+	headers.addHeader("Content-Type", "text/xml;charset=UTF-8");
+
+	soapMessage.saveChanges();
+        
+	return soapMessage;
+    }
+    
+    /**
+     * Parse la réponse de la requête SOAP en fonction de la règle XPATH (rule).
+     * @param soapResponse Réponse de la requête SOAP
+     * @param rule règle de parsing XPATH (table SOAPLIBRARY.PARSINGANSWER)
+     * @return String
+     */
+    private String parseSOAPResponse(SOAPMessage soapResponse, String rule)
+    {
+	String result = null;
+        DocumentBuilderFactory builderFactory = DocumentBuilderFactory
+				.newInstance();
+	DocumentBuilder builder = null;
+	try {
+            builder = builderFactory.newDocumentBuilder();	
+	
+            ByteArrayOutputStream out = new ByteArrayOutputStream(); 
+            soapResponse.writeTo(out); 
+            InputStream is = new ByteArrayInputStream( out.toByteArray() ); 
+            Document xmlDocument = builder.parse( is );
+
+            XPath xPath = XPathFactory.newInstance().newXPath();
+		
+            NodeList nodeList2 = (NodeList) xPath.compile(rule)
+					.evaluate(xmlDocument, XPathConstants.NODESET);
+            
+            StringBuilder s = new StringBuilder();
+            for (int i = 0; i < nodeList2.getLength(); i++) {
+                // On retourne le premier noeud non null trouvé 
+                if(!StringUtil.isNullOrEmpty(nodeList2.item(i).getFirstChild()
+						.getNodeValue())){
+                    s.append(nodeList2.item(i).getFirstChild()
+						.getNodeValue());
+                }
+            }
+            result = s.toString();
+        } catch (SOAPException e){
+            MyLogger.log(PropertyService.class.getName(), Level.ERROR, e.toString());
+        } catch (SAXParseException e) {
+            MyLogger.log(PropertyService.class.getName(), Level.ERROR, e.toString());
+	} catch (SAXException e) {
+            MyLogger.log(PropertyService.class.getName(), Level.ERROR, e.toString());
+	} catch (IOException e) {
+            MyLogger.log(PropertyService.class.getName(), Level.ERROR, e.toString());
+	} catch (XPathExpressionException e) {
+            MyLogger.log(PropertyService.class.getName(), Level.ERROR, e.toString());
+        } catch (ParserConfigurationException e) {
+            MyLogger.log(PropertyService.class.getName(), Level.ERROR, e.toString());
+	}
+		
+        return result;
     }
 }

@@ -289,6 +289,22 @@
         <servlet-name>FindAllInvariantPrivate</servlet-name>
         <servlet-class>org.cerberus.servlet.invariant.FindAllInvariantPrivate</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>CreateSoapLibrary</servlet-name>
+        <servlet-class>org.cerberus.servlet.soaplibrary.CreateSoapLibrary</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>DeleteSoapLibrary</servlet-name>
+        <servlet-class>org.cerberus.servlet.soaplibrary.DeleteSoapLibrary</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>FindAllSoapLibrary</servlet-name>
+        <servlet-class>org.cerberus.servlet.soaplibrary.FindAllSoapLibrary</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>UpdateSoapLibrary</servlet-name>
+        <servlet-class>org.cerberus.servlet.soaplibrary.UpdateSoapLibrary</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>RunTestCase</servlet-name>
         <url-pattern>/RunTestCase</url-pattern>
@@ -560,6 +576,22 @@
     <servlet-mapping>
         <servlet-name>FindAllInvariantPrivate</servlet-name>
         <url-pattern>/FindAllInvariantPrivate</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>CreateSoapLibrary</servlet-name>
+        <url-pattern>/CreateSoapLibrary</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DeleteSoapLibrary</servlet-name>
+        <url-pattern>/DeleteSoapLibrary</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>FindAllSoapLibrary</servlet-name>
+        <url-pattern>/FindAllSoapLibrary</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>UpdateSoapLibrary</servlet-name>
+        <url-pattern>/UpdateSoapLibrary</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>

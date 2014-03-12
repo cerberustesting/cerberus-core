@@ -88,6 +88,8 @@ public enum MessageGeneralEnum {
     SQLLIB_NOT_FOUND(103, "FA", "SQL Library was not found."),
     CANNOT_UPDATE_TABLE(104, "", "Cannot update table."),
     
+    SOAPLIB_NOT_FOUND(105, "FA", "SOAP Library was not found"),
+    
     
     ;
 
