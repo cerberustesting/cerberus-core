@@ -195,6 +195,7 @@
                         }
                         IApplicationService applicationService = appContext.getBean(ApplicationService.class);
                         List<Application> appliList = applicationService.findApplicationBySystem(MySystem);
+                        // Generate "in" where clause from List.
                         String appliInSQL = SqlUtil.getInSQLClause(appliList);
 
                         MyLogger.log("RunTests.jsp", Level.DEBUG, "System : '" + MySystem + "' - Application in clause : '" + appliInSQL + "'");
