@@ -17,11 +17,11 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
+<%@page import="org.cerberus.util.SqlUtil"%>
 <%@page import="org.cerberus.entity.BuildRevisionInvariant"%>
 <%@page import="org.cerberus.service.impl.BuildRevisionInvariantService"%>
 <%@page import="org.cerberus.service.IBuildRevisionInvariantService"%>
 <%@page import="org.cerberus.service.impl.ApplicationService"%>
-<%@page import="org.cerberus.util.StringUtil"%>
 <%@page import="org.cerberus.entity.Application"%>
 <%@page import="org.cerberus.service.IApplicationService"%>
 <%@page import="java.util.logging.Logger"%>
@@ -61,7 +61,7 @@
                     MySystem = request.getParameter("system");
                 }
                 List<Application> appliList = applicationService.findApplicationBySystem(MySystem);
-                String appliInSQL = StringUtil.getInSQLClause(appliList);
+                String appliInSQL = SqlUtil.getInSQLClause(appliList);
 
                 Statement stmtBuild = conn.createStatement();
                 Statement stmtApp = conn.createStatement();

@@ -17,11 +17,11 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
+<%@page import="org.cerberus.util.SqlUtil"%>
 <%@page import="org.cerberus.service.IParameterService"%>
 <%@page import="org.cerberus.log.MyLogger"%>
 <%@page import="org.apache.log4j.Level"%>
 <%@page import="org.cerberus.service.impl.ApplicationService"%>
-<%@page import="org.cerberus.util.StringUtil"%>
 <%@page import="org.cerberus.entity.Application"%>
 <%@page import="org.cerberus.service.IApplicationService"%>
 <%@page import="org.apache.commons.lang3.StringUtils"%>
@@ -195,7 +195,7 @@
                         }
                         IApplicationService applicationService = appContext.getBean(ApplicationService.class);
                         List<Application> appliList = applicationService.findApplicationBySystem(MySystem);
-                        String appliInSQL = StringUtil.getInSQLClause(appliList);
+                        String appliInSQL = SqlUtil.getInSQLClause(appliList);
 
                         MyLogger.log("RunTests.jsp", Level.DEBUG, "System : '" + MySystem + "' - Application in clause : '" + appliInSQL + "'");
 
