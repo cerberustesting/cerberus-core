@@ -33,7 +33,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class TestCaseCountryProperties implements DatabaseCRUD {
 
-    private static final String COLUMNS = "`Test`, `TestCase`, `Country`, `Property`, `Type`, `Database`, `Value`, `Length`, `RowLimit`, `Nature`";
+    private static final String COLUMNS = "`Test`, `TestCase`, `Country`, `Property`, `Type`, `Database`, `Value1`, `Value2`, `Length`, `RowLimit`, `Nature`";
     private static final String TABLE = "testcasecountryproperties";
     private String country;
     private Integer length;
@@ -44,7 +44,9 @@ public class TestCaseCountryProperties implements DatabaseCRUD {
     private String testcase;
     private String type;
     private String database;
-    private String value;
+    private String value1;
+    private String value2;
+
     @Autowired
     private DatabaseSpring databaseSpring;
 
@@ -58,7 +60,8 @@ public class TestCaseCountryProperties implements DatabaseCRUD {
         this.test = new String();
         this.testcase = new String();
         this.type = new String();
-        this.value = new String();
+        this.value1 = new String();
+        this.value2 = new String();
         this.database = new String();
 
     }
@@ -153,14 +156,24 @@ public class TestCaseCountryProperties implements DatabaseCRUD {
         this.database = database;
     }
 
-    public String getValue() {
+    public String getValue1() {
 
-        return this.value;
+        return this.value1;
     }
 
-    public void setValue(String value) {
+    public void setValue1(String value1) {
 
-        this.value = value;
+        this.value1 = value1;
+    }
+
+    public String getValue2() {
+
+        return this.value2;
+    }
+
+    public void setValue2(String value2) {
+
+        this.value2 = value2;
     }
 
     @Override
@@ -171,7 +184,8 @@ public class TestCaseCountryProperties implements DatabaseCRUD {
             this.setTestcase(rs.getString("Testcase"));
             this.setCountry(rs.getString("Country"));
             this.setProperty(rs.getString("Property"));
-            this.setValue(rs.getString("Value"));
+            this.setValue1(rs.getString("Value1"));
+            this.setValue2(rs.getString("Value2"));
             this.setType(rs.getString("Type"));
             this.setRowlimit(rs.getInt("RowLimit"));
             this.setLength(rs.getInt("Length"));
@@ -187,7 +201,7 @@ public class TestCaseCountryProperties implements DatabaseCRUD {
 
         StringBuilder sql = new StringBuilder();
         sql.append("INSERT INTO " + TestCaseCountryProperties.TABLE + " ( " + TestCaseCountryProperties.COLUMNS + ") ");
-        sql.append(" VALUES ( ?,?,?,?,?,?,?,?,?,?) ");
+        sql.append(" VALUES ( ?,?,?,?,?,?,?,?,?,?,?) ");
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -199,10 +213,11 @@ public class TestCaseCountryProperties implements DatabaseCRUD {
                 preStat.setString(4, this.property);
                 preStat.setString(5, this.type);
                 preStat.setString(6, this.database);
-                preStat.setString(7, this.value);
-                preStat.setString(8, this.length.toString());
-                preStat.setString(9, this.rowlimit.toString());
-                preStat.setString(10, this.nature);
+                preStat.setString(7, this.value1);
+                preStat.setString(8, this.value2);
+                preStat.setString(9, this.length.toString());
+                preStat.setString(10, this.rowlimit.toString());
+                preStat.setString(11, this.nature);
 
                 preStat.executeUpdate();
             } catch (SQLException exception) {
@@ -231,7 +246,8 @@ public class TestCaseCountryProperties implements DatabaseCRUD {
 
         sql.append(" Type = ? ,");
         sql.append(" Database = ? ,");
-        sql.append(" Value = ?,");
+        sql.append(" Value1 = ?,");
+        sql.append(" Value2 = ?,");
         sql.append(" Length = ?, ");
         sql.append(" RowLimit = ?, ");
         sql.append(" Nature = ? ");
@@ -244,14 +260,15 @@ public class TestCaseCountryProperties implements DatabaseCRUD {
             try {
                 preStat.setString(1, this.type);
                 preStat.setString(2, this.database);
-                preStat.setString(3, this.value);
-                preStat.setString(4, this.length.toString());
-                preStat.setString(5, this.rowlimit.toString());
-                preStat.setString(6, this.nature);
-                preStat.setString(7, this.test);
-                preStat.setString(8, this.testcase);
-                preStat.setString(9, this.country);
-                preStat.setString(10, this.property);
+                preStat.setString(3, this.value1);
+                preStat.setString(4, this.value2);
+                preStat.setString(5, this.length.toString());
+                preStat.setString(6, this.rowlimit.toString());
+                preStat.setString(7, this.nature);
+                preStat.setString(8, this.test);
+                preStat.setString(9, this.testcase);
+                preStat.setString(10, this.country);
+                preStat.setString(11, this.property);
 
                 preStat.executeUpdate();
             } catch (SQLException exception) {
