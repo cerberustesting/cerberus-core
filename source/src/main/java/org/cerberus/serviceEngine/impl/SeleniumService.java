@@ -886,6 +886,7 @@ public class SeleniumService implements ISeleniumService {
             // Add try catch to handle not exist anymore alert popup (like when popup is closed).
             MyLogger.log(SeleniumService.class.getName(), Level.DEBUG, "Alert popup is closed ? " + exception.toString());
         } catch (WebDriverException exception) {
+            MyLogger.log(SeleniumService.class.getName(), Level.DEBUG, "Alert popup is closed ? " + exception.toString());
         }
         return new MessageEvent(MessageEventEnum.ACTION_FAILED_CLOSE_ALERT);
     }
@@ -1447,5 +1448,14 @@ public class SeleniumService implements ISeleniumService {
         }
 
         return message;
+    }
+
+    @Override
+    public boolean isElementInElement(String element, String childElement) {
+        By elementLocator = this.getIdentifier(element);
+        By childElementLocator = this.getIdentifier(childElement);
+        
+        return (this.selenium.getDriver().findElement(elementLocator) != null 
+            && this.selenium.getDriver().findElement(elementLocator).findElement(childElementLocator) != null);
     }
 }
