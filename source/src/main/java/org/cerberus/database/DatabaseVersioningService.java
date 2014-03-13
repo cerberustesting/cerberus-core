@@ -3090,6 +3090,25 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(" , ADD PRIMARY KEY (`idname`, `value`) , ADD INDEX `IX_invariant_01` (`idname` ASC, `sort` ASC) ;");
         SQLInstruction.add(SQLS.toString());
 
+// Adding getFromSoap property type.
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`) ");
+        SQLS.append(" VALUES ('PROPERTYTYPE', 'executeSoapFromLib', '27', 'Getting from the SOAP request using the query');");
+        SQLInstruction.add(SQLS.toString());
+
+// Adding table to host soaplibrary.
+        SQLS = new StringBuilder();
+        SQLS.append("CREATE TABLE `soaplibrary` (");
+        SQLS.append("  `Name` VARCHAR(45) ,");
+        SQLS.append("  `Type` VARCHAR(45) ,");
+        SQLS.append("  `ServicePath` VARCHAR(250) ,");
+        SQLS.append("  `Method` VARCHAR(45) ,");
+        SQLS.append("  `Envelope` TEXT ,");
+        SQLS.append("  `ParsingAnswer` TEXT ,");
+        SQLS.append("  `Description` VARCHAR(1000) ,");
+        SQLS.append("  PRIMARY KEY (`Name`)");
+        SQLS.append(") ENGINE=InnoDB DEFAULT CHARSET=utf8");
+        SQLInstruction.add(SQLS.toString());
 
         return SQLInstruction;
     }
