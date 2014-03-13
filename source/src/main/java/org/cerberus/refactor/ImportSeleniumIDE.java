@@ -165,7 +165,8 @@ public class ImportSeleniumIDE extends HttpServlet {
                         properties.setNature("STATIC");
                         properties.setRowlimit(0);
                         properties.setLength(0);
-                        properties.setValue(propertyValue[j]);
+                        properties.setValue1(propertyValue[j]);
+                        //properties.setValue2(???);
                         properties.setType("text");
                         properties.setDatabase("");
                         properties.insert();
