@@ -320,7 +320,8 @@ public class UpdateProperties extends HttpServlet {
                                                 properties.setNature(testcase_properties_nature[i]);
                                                 properties.setRowlimit(Integer.parseInt(testcase_properties_rowlimit[i]));
                                                 properties.setLength(Integer.parseInt(testcase_properties_length[i]));
-                                                properties.setValue(testcase_properties_value[i]);
+                                                properties.setValue1(testcase_properties_value[i]);
+                                                //properties.setValue2(???);
                                                 properties.setType(testcase_properties_type[i]);
 
                                                 properties.update();
@@ -339,7 +340,8 @@ public class UpdateProperties extends HttpServlet {
                                                 properties.setNature(testcase_properties_nature[i]);
                                                 properties.setRowlimit(Integer.parseInt(testcase_properties_rowlimit[i]));
                                                 properties.setLength(Integer.parseInt(testcase_properties_length[i]));
-                                                properties.setValue(testcase_properties_value[i]);
+                                                properties.setValue1(testcase_properties_value[i]);
+                                                //properties.setValue2(???);
                                                 properties.setType(testcase_properties_type[i]);
                                                 properties.insert();
 
@@ -375,7 +377,8 @@ public class UpdateProperties extends HttpServlet {
                                     properties.setNature(testcase_properties_nature[i]);
                                     properties.setRowlimit(Integer.parseInt(testcase_properties_rowlimit[i]));
                                     properties.setLength(Integer.parseInt(testcase_properties_length[i]));
-                                    properties.setValue(testcase_properties_value[i]);
+                                    properties.setValue1(testcase_properties_value[i]);
+                                    //properties.setValue2(???);
                                     properties.setType(testcase_properties_type[i]);
 
                                     //TODO remove insert in entity
