@@ -57,6 +57,8 @@ public interface ISeleniumService {
     boolean isElementVisible(String locator);
 
     boolean isElementNotVisible(String locator);
+    
+    boolean isElementInElement(String element, String childElement);
 
     String getPageSource();
 
