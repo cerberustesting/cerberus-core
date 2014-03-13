@@ -51,8 +51,9 @@ public class FindAllTestData extends HttpServlet {
             String dir = "asc";
             String[] cols = {"Key", "Value"};
 
-            JSONObject result = new JSONObject();
-            JSONArray array = new JSONArray();
+/*            JSONObject result = new JSONObject();
+            JSONArray array = new JSONArray();*/
+
             int amount = 10;
             int start = 0;
             int col = 0;
