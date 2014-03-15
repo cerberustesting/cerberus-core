@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package org.cerberus.servlet.testdata;
 
 import java.io.IOException;
@@ -16,9 +15,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.cerberus.entity.TestData;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.factory.IFactoryLogEvent;
 import org.cerberus.factory.IFactoryTestData;
-import org.cerberus.log.MyLogger;
+import org.cerberus.factory.impl.FactoryLogEvent;
+import org.cerberus.service.ILogEventService;
 import org.cerberus.service.ITestDataService;
+import org.cerberus.service.impl.LogEventService;
+import org.cerberus.service.impl.UserService;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -29,8 +32,9 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 public class UpdateTestData extends HttpServlet {
 
     /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
+     * Processes requests for both HTTP
+     * <code>GET</code> and
+     * <code>POST</code> methods.
      *
      * @param request servlet request
      * @param response servlet response
@@ -42,20 +46,31 @@ public class UpdateTestData extends HttpServlet {
         response.setContentType("text/html;charset=UTF-8");
         PrintWriter out = response.getWriter();
         try {
-        //String key = request.getParameter("Key");
-        String key = request.getParameter("id");
-        String value = request.getParameter("value");
+            //String key = request.getParameter("Key");
+            String key = request.getParameter("id");
+            String value = request.getParameter("value");
 
-        MyLogger.log("test", org.apache.log4j.Level.FATAL, key+value);
-        ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-        ITestDataService testDataService = appContext.getBean(ITestDataService.class);
-        IFactoryTestData factoryTestData = appContext.getBean(IFactoryTestData.class);
-        
-        TestData testData = factoryTestData.create(key,value);
-        testDataService.updateTestData(testData);
-        String result = testDataService.findTestDataByKey(key).getValue();
-           
-        out.print(result);
+            ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+            ITestDataService testDataService = appContext.getBean(ITestDataService.class);
+            IFactoryTestData factoryTestData = appContext.getBean(IFactoryTestData.class);
+
+            TestData testData = factoryTestData.create(key, value);
+            testDataService.updateTestData(testData);
+
+            /**
+             * Adding Log entry.
+             */
+            ILogEventService logEventService = appContext.getBean(LogEventService.class);
+            IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
+            try {
+                logEventService.insertLogEvent(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/UpdateTestData", "UPDATE", "Updated TestData : " + key, "", ""));
+            } catch (CerberusException ex) {
+                org.apache.log4j.Logger.getLogger(UserService.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex);
+            }
+
+            String result = testDataService.findTestDataByKey(key).getValue();
+
+            out.print(result);
         } finally {
             out.close();
         }
@@ -63,7 +78,8 @@ public class UpdateTestData extends HttpServlet {
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
-     * Handles the HTTP <code>GET</code> method.
+     * Handles the HTTP
+     * <code>GET</code> method.
      *
      * @param request servlet request
      * @param response servlet response
@@ -81,7 +97,8 @@ public class UpdateTestData extends HttpServlet {
     }
 
     /**
-     * Handles the HTTP <code>POST</code> method.
+     * Handles the HTTP
+     * <code>POST</code> method.
      *
      * @param request servlet request
      * @param response servlet response
@@ -107,5 +124,4 @@ public class UpdateTestData extends HttpServlet {
     public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
-
 }
