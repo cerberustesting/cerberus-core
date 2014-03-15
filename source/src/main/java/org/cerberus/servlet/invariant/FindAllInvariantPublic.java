@@ -59,20 +59,18 @@ public class FindAllInvariantPublic extends HttpServlet {
             int start = 0;
             int col = 0;
 
-            String key = "";
-            String value = "";
+            String sIdname = "";
+            String sValue = "";
 
-            key = ParameterParserUtil.parseStringParam(request.getParameter("sSearch_0"), "");
-            value = ParameterParserUtil.parseStringParam(request.getParameter("sSearch_1"), "");
+            sIdname = ParameterParserUtil.parseStringParam(request.getParameter("sSearch_0"), "");
+            sValue = ParameterParserUtil.parseStringParam(request.getParameter("sSearch_1"), "");
 
             List<String> sArray = new ArrayList<String>();
-            if (!key.equals("")) {
-                String sKey = " `idname` like '%" + key + "%'";
-                sArray.add(sKey);
+            if (!sIdname.equals("")) {
+                sArray.add(" `idname` like '%" + sIdname + "%'");
             }
-            if (!value.equals("")) {
-                String sValue = " value like '%" + value + "%'";
-                sArray.add(sValue);
+            if (!sValue.equals("")) {
+                sArray.add(" value like '%" + sValue + "%'");
             }
 
             StringBuilder individualSearch = new StringBuilder();
