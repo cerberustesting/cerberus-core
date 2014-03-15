@@ -174,13 +174,13 @@ public class FindAllSoapLibrary extends HttpServlet{
                 data.put(row);
             }
             
-            Integer numberOfTotalRows = soapLibService.getNumberOfSoapLibraryPerCrtiteria(searchTerm, inds);
+            Integer iTotalDisplayRecords = soapLibService.getNumberOfSoapLibraryPerCrtiteria(searchTerm, inds);
+            Integer iTotalRecords = soapLibService.getNumberOfSoapLibraryPerCrtiteria("", "");
             
             jsonResponse.put("aaData", data);
             jsonResponse.put("sEcho", echo);
-            jsonResponse.put("iTotalRecords", numberOfTotalRows);
-            jsonResponse.put("iDisplayLength", data.length());
-            jsonResponse.put("iTotalDisplayRecords", numberOfTotalRows);
+            jsonResponse.put("iTotalRecords", iTotalRecords);
+            jsonResponse.put("iTotalDisplayRecords", iTotalDisplayRecords);
             
 
             response.setContentType("application/json");
