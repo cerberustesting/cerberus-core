@@ -471,7 +471,7 @@ public class InvariantDAO implements IInvariantDAO {
                 preStat.setString(1, invariant.getIdName());
                 preStat.setString(2, invariant.getValue());
 
-                throwExcep = preStat.executeUpdate() > 0;
+                throwExcep = preStat.executeUpdate() == 0;
             } catch (SQLException exception) {
                 MyLogger.log(InvariantDAO.class.getName(), Level.ERROR, exception.toString());
             } finally {
