@@ -116,6 +116,67 @@ public class InvariantDAO implements IInvariantDAO {
         return result;
     }
 
+    /**
+     * Short one line description.
+     * <p/>
+     * Longer description. If there were any, it would be here. <p> And even
+     * more explanations to follow in consecutive paragraphs separated by HTML
+     * paragraph breaks.
+     *
+     * @param variable Description text text text.
+     * @return Description text text text.
+     */
+    @Override
+    public Invariant findInvariantByIdSort(String idName, Integer sort) throws CerberusException {
+        boolean throwException = true;
+        Invariant result = null;
+        final String query = "SELECT * FROM invariant i  WHERE i.idname = ? AND i.sort = ?";
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            try {
+                preStat.setString(1, idName);
+                preStat.setInt(2, sort);
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+                    while (resultSet.next()) {
+                        throwException = false;
+                        result = this.loadInvariantFromResultSet(resultSet);
+                    }
+                } catch (SQLException exception) {
+                    MyLogger.log(InvariantDAO.class.getName(), Level.ERROR, exception.toString());
+                } catch (NullPointerException ex) {
+                    MyLogger.log(InvariantDAO.class.getName(), Level.FATAL, "InvariantDAO - NullPointerException Resultset");
+                } finally {
+                    resultSet.close();
+                }
+            } catch (SQLException exception) {
+                MyLogger.log(InvariantDAO.class.getName(), Level.ERROR, exception.toString());
+            } catch (NullPointerException ex) {
+                MyLogger.log(InvariantDAO.class.getName(), Level.FATAL, "InvariantDAO - NullPointerException Statement");
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(InvariantDAO.class.getName(), Level.ERROR, exception.toString());
+        } catch (NullPointerException ex) {
+            MyLogger.log(InvariantDAO.class.getName(), Level.FATAL, "InvariantDAO - NullPointerException Connection");
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(InvariantDAO.class.getName(), Level.WARN, "Connection already closed!");
+            }
+        }
+        if (throwException) {
+            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
+        }
+        return result;
+    }
+
     @Override
     public List<Invariant> findListOfInvariantById(String idName) throws CerberusException {
         boolean throwException = true;
@@ -352,6 +413,123 @@ public class InvariantDAO implements IInvariantDAO {
             throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
         }
         return result;
+    }
+
+    @Override
+    public void createInvariant(Invariant invariant) throws CerberusException {
+        boolean throwExcep = false;
+        StringBuilder query = new StringBuilder();
+        query.append("INSERT INTO invariant (`idname`, `value`, `sort`, `description`, `VeryShortDesc`, `gp1`, `gp2`, `gp3`) ");
+        query.append("VALUES (?,?,?,?,?,?,?,?)");
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query.toString());
+            try {
+                preStat.setString(1, invariant.getIdName());
+                preStat.setString(2, invariant.getValue());
+                preStat.setInt(3, invariant.getSort());
+                preStat.setString(4, invariant.getDescription());
+                preStat.setString(5, invariant.getVeryShortDesc());
+                preStat.setString(6, invariant.getGp1());
+                preStat.setString(7, invariant.getGp2());
+                preStat.setString(8, invariant.getGp3());
+
+                preStat.executeUpdate();
+                throwExcep = false;
+
+            } catch (SQLException exception) {
+                MyLogger.log(InvariantDAO.class.getName(), Level.ERROR, exception.toString());
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(InvariantDAO.class.getName(), Level.ERROR, exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(InvariantDAO.class.getName(), Level.WARN, e.toString());
+            }
+        }
+        if (throwExcep) {
+            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.CANNOT_UPDATE_TABLE));
+        }
+    }
+
+    @Override
+    public void deleteInvariant(Invariant invariant) throws CerberusException {
+        boolean throwExcep = false;
+        final String query = "DELETE FROM invariant WHERE idname = ? and `value` = ?";
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            try {
+                preStat.setString(1, invariant.getIdName());
+                preStat.setString(2, invariant.getValue());
+
+                throwExcep = preStat.executeUpdate() > 0;
+            } catch (SQLException exception) {
+                MyLogger.log(InvariantDAO.class.getName(), Level.ERROR, exception.toString());
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(InvariantDAO.class.getName(), Level.ERROR, exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(InvariantDAO.class.getName(), Level.WARN, e.toString());
+            }
+        }
+        if (throwExcep) {
+            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.CANNOT_UPDATE_TABLE));
+        }
+    }
+    @Override
+    public void updateInvariant(Invariant invariant) throws CerberusException{
+        boolean throwExcep = false;
+        final String query = "UPDATE invariant SET sort = ?, Description = ?, VeryShortDesc = ?, gp1 = ?, gp2 = ?, gp3 = ?  WHERE idname = ? and `value` = ?";
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            try {
+                preStat.setInt(1, invariant.getSort());
+                preStat.setString(2, invariant.getDescription());
+                preStat.setString(3, invariant.getVeryShortDesc());
+                preStat.setString(4, invariant.getGp1());
+                preStat.setString(5, invariant.getGp2());
+                preStat.setString(6, invariant.getGp3());
+                preStat.setString(7, invariant.getIdName());
+                preStat.setString(8, invariant.getValue());
+
+                throwExcep = preStat.executeUpdate() == 0;
+            } catch (SQLException exception) {
+                MyLogger.log(InvariantDAO.class.getName(), Level.ERROR, exception.toString());
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(InvariantDAO.class.getName(), Level.ERROR, exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(InvariantDAO.class.getName(), Level.WARN, e.toString());
+            }
+        }
+        if (throwExcep) {
+            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.CANNOT_UPDATE_TABLE));
+        }
     }
 
     private Invariant loadInvariantFromResultSet(ResultSet resultSet) throws SQLException {

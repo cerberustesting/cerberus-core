@@ -33,11 +33,19 @@ public interface IInvariantDAO {
 
     Invariant findInvariantByIdValue(String idName, String value) throws CerberusException;
 
+    Invariant findInvariantByIdSort(String idName, Integer sort) throws CerberusException;
+
     List<Invariant> findListOfInvariantById(String idName) throws CerberusException;
 
     List<Invariant> findInvariantByIdGp1(String idName, String gp) throws CerberusException;
 
     public List<Invariant> findInvariantListByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch, String PublicPrivateFilter);
-    
-    public Integer getNumberOfInvariant (String searchTerm, String PublicPrivateFilter)  throws CerberusException;
+
+    public Integer getNumberOfInvariant(String searchTerm, String PublicPrivateFilter) throws CerberusException;
+
+    public void createInvariant(Invariant invariant) throws CerberusException;
+
+    public void deleteInvariant(Invariant invariant) throws CerberusException;
+
+    public void updateInvariant(Invariant invariant) throws CerberusException;
 }

@@ -48,6 +48,11 @@ public class InvariantService implements IInvariantService {
     }
 
     @Override
+    public Invariant findInvariantByIdSort(String idName, Integer sort) throws CerberusException {
+        return invariantDao.findInvariantByIdSort(idName, sort);
+    }
+
+    @Override
     public List<Invariant> findListOfInvariantById(String idName) throws CerberusException {
         return invariantDao.findListOfInvariantById(idName);
     }
@@ -103,6 +108,21 @@ public class InvariantService implements IInvariantService {
         } catch (CerberusException e) {
             return false;
         }
+    }
+
+    @Override
+    public void createInvariant(Invariant invariant) throws CerberusException {
+        invariantDao.createInvariant(invariant);
+    }
+
+    @Override
+    public void deleteInvariant(Invariant invariant) throws CerberusException {
+        invariantDao.deleteInvariant(invariant);
+    }
+
+    @Override
+    public void updateInvariant(Invariant invariant) throws CerberusException {
+        invariantDao.updateInvariant(invariant);
     }
 
     @Override

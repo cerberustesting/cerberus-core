@@ -32,6 +32,8 @@ public interface IInvariantService {
 
     public Invariant findInvariantByIdValue(String idName, String value) throws CerberusException;
 
+    public Invariant findInvariantByIdSort(String idName, Integer sort) throws CerberusException;
+
     public List<Invariant> findListOfInvariantById(String idName) throws CerberusException;
 
     public List<Invariant> findInvariantByIdGp1(String idName, String gp) throws CerberusException;
@@ -41,10 +43,16 @@ public interface IInvariantService {
     public List<Invariant> findInvariantPrivateListByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch);
 
     public Integer getNumberOfPrivateInvariant(String searchTerm);
-    
+
     public Integer getNumberOfPublicInvariant(String searchTerm);
-    
+
     public boolean isInvariantExist(String idName, String value);
-    
+
+    public void createInvariant(Invariant invariant) throws CerberusException;
+
+    public void deleteInvariant(Invariant invariant) throws CerberusException;
+
+    public void updateInvariant(Invariant invariant) throws CerberusException;
+
     String getPublicPrivateFilter(String filter);
 }

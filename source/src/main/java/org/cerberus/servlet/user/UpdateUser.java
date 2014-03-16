@@ -116,7 +116,7 @@ public class UpdateUser extends HttpServlet {
                     try {
                         logEventService.insertLogEvent(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/UpdateUserAjax", "UPDATE", "Updated user : " + login, "", ""));
                     } catch (CerberusException ex) {
-                        Logger.getLogger(UserService.class.getName()).log(Level.ERROR, null, ex);
+                        Logger.getLogger(UpdateUser.class.getName()).log(Level.ERROR, null, ex);
                     }
 
                 } else {

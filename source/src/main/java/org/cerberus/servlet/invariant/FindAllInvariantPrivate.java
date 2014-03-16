@@ -126,8 +126,8 @@ public class FindAllInvariantPrivate extends HttpServlet {
             for (Invariant InvariantData : invariantList) {
                 JSONArray row = new JSONArray();
                 row.put(InvariantData.getIdName())
-                        .put(InvariantData.getSort())
                         .put(InvariantData.getValue())
+                        .put(InvariantData.getSort())
                         .put(InvariantData.getDescription())
                         .put(InvariantData.getVeryShortDesc())
                         .put(InvariantData.getGp1())

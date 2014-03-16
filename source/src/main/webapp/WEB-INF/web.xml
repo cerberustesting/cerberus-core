@@ -305,6 +305,18 @@
         <servlet-name>UpdateSoapLibrary</servlet-name>
         <servlet-class>org.cerberus.servlet.soaplibrary.UpdateSoapLibrary</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>CreateInvariant</servlet-name>
+        <servlet-class>org.cerberus.servlet.invariant.CreateInvariant</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>UpdateInvariant</servlet-name>
+        <servlet-class>org.cerberus.servlet.invariant.UpdateInvariant</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>DeleteInvariant</servlet-name>
+        <servlet-class>org.cerberus.servlet.invariant.DeleteInvariant</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>RunTestCase</servlet-name>
         <url-pattern>/RunTestCase</url-pattern>
@@ -593,6 +605,18 @@
         <servlet-name>UpdateSoapLibrary</servlet-name>
         <url-pattern>/UpdateSoapLibrary</url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>CreateInvariant</servlet-name>
+        <url-pattern>/CreateInvariant</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>UpdateInvariant</servlet-name>
+        <url-pattern>/UpdateInvariant</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DeleteInvariant</servlet-name>
+        <url-pattern>/DeleteInvariant</url-pattern>
+    </servlet-mapping>
     <session-config>
         <session-timeout>
             60
@@ -830,6 +854,9 @@
             <url-pattern>/GetLogEvent</url-pattern>
             <url-pattern>/FindAllInvariantPublic</url-pattern>
             <url-pattern>/FindAllInvariantPrivate</url-pattern>
+            <url-pattern>/CreateInvariant</url-pattern>
+            <url-pattern>/UpdateInvariant</url-pattern>
+            <url-pattern>/DeleteInvariant</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <description>Administrator</description>

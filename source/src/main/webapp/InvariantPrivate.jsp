@@ -61,8 +61,8 @@
                     "iDisplayLength": 25,
                     "aoColumns": [
                         {"sName": "IdName", "sWidth": "10%"},
-                        {"sName": "sort", "sWidth": "5%"},
                         {"sName": "value", "sWidth": "10%"},
+                        {"sName": "sort", "sWidth": "5%"},
                         {"sName": "description", "sWidth": "30%"},
                         {"sName": "veryShortdesc", "sWidth": "15%"},
                         {"sName": "gp1", "sWidth": "10%"},
@@ -100,8 +100,8 @@
                 <thead>
                     <tr>
                         <th>ID Name</th>
-                        <th>Sort</th>
                         <th>Value</th>
+                        <th>Sort</th>
                         <th>Description</th>
                         <th>Very Short Desc</th>
                         <th>Group 1</th>

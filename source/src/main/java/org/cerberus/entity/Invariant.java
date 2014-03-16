@@ -24,7 +24,7 @@ public class Invariant {
 
     private String idName;
     private String value;
-    private int sort;
+    private Integer sort;
     private String description;
     private String veryShortDesc;
     private String gp1;
@@ -79,11 +79,11 @@ public class Invariant {
         this.idName = idName;
     }
 
-    public int getSort() {
+    public Integer getSort() {
         return sort;
     }
 
-    public void setSort(int sort) {
+    public void setSort(Integer sort) {
         this.sort = sort;
     }
 
