@@ -49,15 +49,15 @@ public class CreateSoapLibrary extends HttpServlet {
         String envelope = policy.sanitize(request.getParameter("Envelope"));
         String description = policy.sanitize(request.getParameter("Description"));
         String servicePath = policy.sanitize(request.getParameter("ServicePath"));
-        String parsingAnswer = policy.sanitize(request.getParameter("parsingAnswer"));
-        String method = policy.sanitize(request.getParameter("method"));
+        String parsingAnswer = policy.sanitize(request.getParameter("ParsingAnswer"));
+        String method = policy.sanitize(request.getParameter("Method"));
         
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-        ISoapLibraryService sqlLibraryService = appContext.getBean(ISoapLibraryService.class);
+        ISoapLibraryService soapLibraryService = appContext.getBean(ISoapLibraryService.class);
         IFactorySoapLibrary factorySoapLibrary = appContext.getBean(IFactorySoapLibrary.class);
         
         SoapLibrary soapLib = factorySoapLibrary.create(type, name, envelope, description, servicePath, parsingAnswer, method);
-        sqlLibraryService.createSoapLibrary(soapLib);
+        soapLibraryService.createSoapLibrary(soapLib);
             
         response.sendRedirect("SoapLibrary.jsp");
         } finally {

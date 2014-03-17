@@ -95,9 +95,9 @@ public class SoapLibraryDAO implements ISoapLibraryDAO {
     @Override
     public void createSoapLibrary(SoapLibrary soapLibrary) throws CerberusException {
         boolean throwExcep = false;
-        StringBuilder query = new StringBuilder();
-        query.append("INSERT INTO soaplibrary (`type`, `name`, `envelope`, `description`, 'servicePath', 'parsingAnswer', 'method') ");
-        query.append("VALUES (?,?,?,?,?,?,?)");
+        StringBuilder query = new StringBuilder(); 
+        query.append("INSERT INTO soaplibrary (`Type`, `Name`, `Envelope`, `Description`, `ServicePath`, `ParsingAnswer`, `Method`) ");
+        query.append("VALUES (?,?,?,?,?,?,?);");
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -112,8 +112,8 @@ public class SoapLibraryDAO implements ISoapLibraryDAO {
                 preStat.setString(7, soapLibrary.getMethod());
                 
                 preStat.executeUpdate();
-                throwExcep = false;
-
+                throwExcep = false; 
+ 
             } catch (SQLException exception) {
                 MyLogger.log(SoapLibraryDAO.class.getName(), Level.ERROR, exception.toString());
             } finally {

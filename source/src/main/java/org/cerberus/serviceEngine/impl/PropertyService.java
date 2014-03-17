@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringReader;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
@@ -105,6 +106,9 @@ public class PropertyService implements IPropertyService {
     @Autowired
     private ITestDataService testDataService;
 
+    /** Format de date nécessaire pour interroger les Web services REDOUTE - le timeZone +01:00 est en dur car en java 6 le format par défaut est +0100 */
+    private static SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS+01:00");
+    
     @Override
     public TestCaseExecutionData calculateProperty(TestCaseExecutionData testCaseExecutionData, TestCaseStepActionExecution testCaseStepActionExecution, TestCaseCountryProperties testCaseCountryProperty) {
         testCaseExecutionData.setStart(new Date().getTime());
@@ -514,7 +518,21 @@ public class PropertyService implements IPropertyService {
 
 	Reader reader = new StringReader(envelope);
 
-	reader.read(envelope.toCharArray(), 0, envelope.length());
+        String date = format.format(new Date());
+        StringBuilder soapRequest = new StringBuilder();
+        soapRequest.append("<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:ns=\"http://RedouteFrance/Technical/CERBERUS/Technical/2.0/ExecuteSQLRequest/1.0\">"
+                        + "<soapenv:Header/><soapenv:Body><ns:ExecuteSQLRequestRequest_1.0><Header><Application>CERBERUS</Application><Channel>Local</Channel><UserDisplayLanguage>fr</UserDisplayLanguage><UserDisplayCountry>FR</UserDisplayCountry>"
+                        + "<Environment>Development</Environment><Timestamp>"+date+"</Timestamp></Header><Request><SQLRequest><![CDATA[");
+        soapRequest.append(envelope);
+        
+        soapRequest.append("]]></SQLRequest>"
+                        + "</Request>"
+                        + "</ns:ExecuteSQLRequestRequest_1.0>"
+                        + "</soapenv:Body>" + "</soapenv:Envelope>");
+          
+        String tmp = soapRequest.toString();
+        System.out.println(tmp);
+	reader.read(tmp.toCharArray(), 0, tmp.length());
 	
         // CTE à faire pour éviter une SAXParseException premature end of file
 	reader.reset();
@@ -526,7 +544,7 @@ public class PropertyService implements IPropertyService {
 	MimeHeaders headers = soapMessage.getMimeHeaders();
 
         // Précise la méthode du WSDL à interroger
-	headers.addHeader("SOAPAction", method);
+        headers.addHeader("SOAPAction", method);
         // Encodage UTF-8
 	headers.addHeader("Content-Type", "text/xml;charset=UTF-8");
 
