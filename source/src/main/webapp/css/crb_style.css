@@ -799,3 +799,16 @@ table.doctb {
 }
 
 #navlist li:hover > .subnav { display: block; }
+
+
+.notVisible {
+    display: none;
+}
+
+.OKVisible,
+.KOVisible,
+.FAVisible,
+.PEVisible,
+.NAVisible {
+    display: table-row;
+}

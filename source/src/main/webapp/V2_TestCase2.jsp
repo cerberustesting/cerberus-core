@@ -174,17 +174,7 @@
     IInvariantDAO invariantDAO = appContext.getBean(InvariantDAO.class);
     IApplicationDAO applicationDAO = appContext.getBean(ApplicationDAO.class);
     IProjectDAO projectDAO = appContext.getBean(ProjectDAO.class);
-    
-    String runQ = generateOptionsFromInvariantList(getListInvariantsFromName(invariantDAO,"RUNQA"));
-    String runU = generateOptionsFromInvariantList(getListInvariantsFromName(invariantDAO,"RUNUAT"));
-    String runP = generateOptionsFromInvariantList(getListInvariantsFromName(invariantDAO,"RUNPROD"));
-    String priority = generateOptionsFromInvariantList(getListInvariantsFromName(invariantDAO,"PRIORITY"));
-    String group = generateOptionsFromInvariantList(getListInvariantsFromName(invariantDAO,"GROUP"));
-    String status = generateOptionsFromInvariantList(getListInvariantsFromName(invariantDAO,"TCSTATUS"));
-    String active = generateOptionsFromInvariantList(getListInvariantsFromName(invariantDAO,"TCACTIVE"));
-    String builds = generateOptionsFromInvariantList(getListInvariantsFromName(invariantDAO,"BUILD"));
-    String revisions = generateOptionsFromInvariantList(getListInvariantsFromName(invariantDAO,"REVISION"));
-
+ 
     List<Invariant> countries = getListInvariantsFromName(invariantDAO,"COUNTRY");
 %>
 <div id="loadParameters" class="fields">
@@ -299,45 +289,34 @@
             <div class="field">
                 <label for="editRunQA" style="width: 75px">Run QA</label><br/>
                 <select id="editRunQA" name="editRunQA" style="width: 75px">
-                    <%=runQ%>
                 </select>
             </div>
             <div class="field">
                 <label for="editRunUAT" style="width: 75px">Run UAT</label><br/>
                 <select id="editRunUAT" name="editRunUAT" style="width: 75px">
-                    <%=runU%>
                 </select>
             </div>
             <div class="field">
                 <label for="editRunPROD" style="width: 75px">Run PROD</label><br/>
                 <select id="editRunPROD" name="editRunPROD" style="width: 75px">
-                    <%=runP%>
                 </select>
             </div>
             <div class="field">
                 <label for="editPriority" style="width: 75px">Prio</label><br/>
                 <select id="editPriority" name="editPriority" style="width: 75px">
-                    <%=priority%>
                 </select>
             </div>
             <div class="field">
                 <label for="editGroup" style="width: 140px">Group</label><br/>
                 <select id="editGroup" name="editGroup" style="width: 140px">
-                    <%=group%>
                 </select>
             </div>
             <div class="field">
                 <label for="editStatus" style="width: 140px">Status</label><br/>
                 <select id="editStatus" name="editStatus" style="width: 140px">
-                    <%=status%>
                 </select>
             </div>
-            <div class="field" style="padding-bottom: 0px;">
-                <%
-                    for (Invariant country : countries) {
-                        out.println("<div class=\"field_countries\"><label>" + country.getValue() + "</label><br/><input type=\"checkbox\" name=\"testcase_country_general\" value=\"" + country.getValue() + "\"></div>");
-                    }
-                %>
+            <div class="field" style="padding-bottom: 0px;" id="countryFields">
             </div>
         </div>
         <div>
@@ -365,35 +344,26 @@
         <div class="field">
             <label for="editTcActive" style="width: 50px">Act</label><br/>
             <select id="editTcActive" name="editTcActive" style="width: 50px">
-                    <%=active%>
             </select>
         </div>
         <div class="field">
             <label for="editFromBuild" style="width: 90px">From Sprint</label><br/>
-            <select id="editFromBuild" name="editFromBuild" style="width: 90px">
-                    <option value=""></option>
-                    <%=builds%>
+            <select id="editFromBuild" class="editBuild" name="editFromBuild" style="width: 90px">
             </select>
         </div>
         <div class="field">
             <label for="editFromRev" style="width: 100px">From Rev</label><br/>
-            <select id="editFromRev" name="editFromRev" style="width: 100px">
-                    <option value=""></option>
-                    <%=revisions%>
+            <select id="editFromRev" class="editRevision" name="editFromRev" style="width: 100px">
             </select>
         </div>
         <div class="field">
             <label for="editToBuild" style="width: 90px">To Sprint</label><br/>
-            <select id="editToBuild" name="editToBuild" style="width: 90px">
-                    <option value=""></option>
-                    <%=builds%>
+            <select id="editToBuild" class="editBuild" name="editToBuild" style="width: 90px">
             </select>
         </div>
         <div class="field">
             <label for="editToRev" style="width: 100px">To Rev</label><br/>
-            <select id="editToRev" name="editToRev" style="width: 100px">
-                    <option value=""></option>
-                    <%=revisions%>
+            <select id="editToRev" class="editRevision" name="editToRev" style="width: 100px">
             </select>
         </div>
         <div class="field">
@@ -410,16 +380,12 @@
         </div>
         <div class="field">
             <label for="editTargetBuild" style="width: 80px">Target Sprint</label><br/>
-            <select id="editTargetBuild" name="editTargetBuild" style="width: 80px">
-                    <option value=""></option>
-                    <%=builds%>
+            <select id="editTargetBuild" class="editBuild" name="editTargetBuild" style="width: 80px">
             </select>
         </div>
         <div class="field">
             <label for="editTargetRev" style="width: 80px">Target Rev</label><br/>
-            <select id="editTargetRev" name="editTargetRev" style="width: 80px">
-                    <option value=""></option>
-                    <%=revisions%>
+            <select id="editTargetRev" class="editRevision" name="editTargetRev" style="width: 80px">
             </select>
         </div>
         <div class="field" style="clear: left">
@@ -514,12 +480,49 @@
         }
         $("#Test").val("<%=request.getParameter("Test")%>");
         getTestCaseList(false);
-//        load.remove();
     });
 
+    function setOptionsToSelect(select,options) {
+        select.empty();
+        for (var i = 0; i < options.length; i++) {
+            select.append($("<option></option>")
+                    .attr("value", options[i])
+                    .text(options[i]));
+        }
+    }
+
+    
+    $.get('GetInvariantsForTest', function (data) {
+        setOptionsToSelect($('#editRunQA'),data.RUNQA);
+        setOptionsToSelect($('#editRunUAT'),data.RUNUAT);
+        setOptionsToSelect($('#editRunPROD'),data.RUNPROD);
+        setOptionsToSelect($('#editPriority'),data.PRIORITY);
+        setOptionsToSelect($('#editGroup'),data.GROUP);
+        setOptionsToSelect($('#editStatus'),data.TCSTATUS);
+        setOptionsToSelect($('#editTcActive'),data.TCACTIVE);
+    
+    /*
+        $('.editBuild').each(function(){
+            setOptionsToSelect($(this),data.BUILD);
+        });
+
+        $('.editRevision').each(function(){
+            setOptionsToSelect($(this),data.REVISION);
+        });
+*/
+        $('#countryFields').empty();
+        for (var i = 0; i < data.COUNTRY.length; i++) {
+            var input = $('<input type="checkbox" name="testcase_country_general">').attr("value", data.COUNTRY[i]);
+            var div = $("<div class=\"field_countries\">").append(
+                    $('<label>').text(data.COUNTRY[i]).append('<br/>').append(input));
+            $('#countryFields').append(div);
+        }
+    });
+
+    load.remove();
     function getTestCaseList(bool) {
         bool = bool || false;
-//        var load = new ajaxLoader("#loadParameters");
+        var load = new ajaxLoader("#loadParameters");
         $("#TestCase").empty();
         $.get('GetTestCaseForTest', {test: $("#Test").val()}, function (data) {
             for (var i = 0; i < data.testCaseList.length; i++) {
@@ -540,6 +543,8 @@
 
         $.get('GetTestCase', {test: $("#Test").val(), testcase: $("#TestCase").val()}, function (data) {
             $('#divSteps').empty();
+            
+            // warning delete headers !!
             $('#properties').empty();
 
             $("#appValue").text(data.application);
