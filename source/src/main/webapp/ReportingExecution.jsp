@@ -42,6 +42,7 @@
         <title>Execution Reporting : Status</title>
         <link rel="stylesheet" type="text/css" href="css/crb_style.css">
         <link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico" />
+        <script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>
     </head>
     <body>
         <%@ include file="include/function.jsp" %>
@@ -740,11 +741,12 @@
                                         <input id="ShowD" type="button" value="Show Details" onclick="javascript:setVisibleRep();" style="display:none">
                                     </td>
                                     <td id="wob">Legend : </td>
-                                    <td id="wob" class="OK" title="OK : Test was fully executed and no bug are to be reported."><a class="OKF">OK</a></td>
-                                    <td id="wob" class="KO" title="KO : Test was executed and bug have been detected."><a class="KOF">KO</a></td>
-                                    <td id="wob" class="NA" title="NA : Test could not be executed because some test data are not available."><a class="NAF">NA</a></td>
-                                    <td id="wob" class="FA" title="FA : Test could not be executed because there is a bug on the test."><a class="FAF">FA</a></td>
-                                    <td id="wob" class="PE" title="PE : Test execution is still running..."><a class="PEF">PE</a></td>
+                                    <td id="wob" class="FILTER" title="FILTER : Use this checkbox to filter status."><input type="checkbox" name="FILTER" class="filterDisplay" value="FILTER" onchange="filterDisplay($(this).is(':checked'))"><label title="FILTER">FILTER</label></td>
+                                    <td id="wob" class="OK" title="OK : Test was fully executed and no bug are to be reported."><input type="checkbox" id="FOK" name="OK" value="OK" class="filterCheckbox" disabled="disabled" onchange="toogleDisplay(this)"><label class="OKF" title="OK">OK</label></td>
+                                    <td id="wob" class="KO" title="KO : Test was executed and bug have been detected."><input type="checkbox" name="KO" id="FKO" value="KO" class="filterCheckbox" disabled="disabled" onchange="toogleDisplay(this)"><label  class="KOF" title="KO">KO</label></td>
+                                    <td id="wob" class="NA" title="NA : Test could not be executed because some test data are not available."><input type="checkbox" id="FNA" class="filterCheckbox" disabled="disabled" name="NA" value="NA" onchange="toogleDisplay(this)"><label  title="NA" class="NAF">NA</label></td>
+                                    <td id="wob" class="FA" title="FA : Test could not be executed because there is a bug on the test."><input type="checkbox" name="FA"  id="FFA" class="filterCheckbox" disabled="disabled" value="FA" onchange="toogleDisplay(this)"><label  class="FAF">FA</label></td>
+                                    <td id="wob" class="PE" title="PE : Test execution is still running..."><input type="checkbox" name="PE" value="PE" class="filterCheckbox" id="FPE" disabled="disabled" onchange="toogleDisplay(this)"><label class="PEF">PE</label></td>
                                     <td id="wob" class="NotExecuted" title="Test Case has not been executed for that country."><a class="NotExecutedF">XX</a></td>
                                     <td id="wob" class="NOINF" title="Test Case not available for the country XX."><a class="NOINFF">XX</a></td>
                                 </tr>
@@ -754,7 +756,7 @@
                     <tr>
                         <td id="wob">
                             <table id="reportingExec" style="text-align: left;border-collapse:collapse;display:table" border="1px" cellpadding="0" cellspacing="1">
-                                <tr id="header">
+                                <tr id="headerFirst">
                                     <td style="width:10%"><%out.print(dbDocS(conn, "test", "test", "Test"));%></td>
                                     <td style="width:5%"><%out.print(dbDocS(conn, "testcase", "testcase", "TestCase"));%></td>
                                     <td style="width:5%"><%out.print(dbDocS(conn, "application", "application", "Aplication"));%></td>
@@ -830,7 +832,7 @@
                                         rs_test.next();
                                     }
                                     if (j == 12) {%>
-                                <tr style="font-size : x-small ;">
+                                <tr style="font-size : x-small ;" class="reportDelimiter">
                                     <td class="INF"></td>
                                     <td class="INF"></td>
                                     <td class="INF"></td>
@@ -852,7 +854,7 @@
                                         j = 0;
                                     }
                                 %>
-                                <tr>
+                                <tr class="testCaseExecutionResult">
                                     <td class="INF"><%=rs_time.getString("tc.test")%></td>
                                     <td class="INF"><a href="TestCase.jsp?Load=Load&Test=<%=rs_time.getString("tc.test")%>&TestCase=<%=rs_time.getString("tc.testcase")%>"> <%=rs_time.getString("tc.testcase")%></a></td>
                                     <td class="INF"><%=rs_time.getString("tc.application")%></td>
@@ -1481,6 +1483,49 @@ totalTest = 0;
             </form>
         </div>
 
+                <script>
+                    function filterDisplay(checked) {
+                        if(checked) {
+                            $('tr#header').addClass('notVisible');
+                            $('tr.testCaseExecutionResult').addClass('notVisible');
+                            $('tr.reportDelimiter').addClass('notVisible');
+
+                            $('input.filterCheckbox').removeAttr('disabled');
+                            $('input.filterDisplay').attr('checked','checked');
+                        } else {
+                            $('tr#header').removeClass('notVisible');
+                            $('tr.testCaseExecutionResult').removeClass('notVisible');
+                            $('tr.reportDelimiter').removeClass('notVisible');
+
+                            $('input.filterCheckbox').attr('disabled','disabled');
+                            $('input.filterDisplay').removeAttr('checked');
+                        }
+                    };
+                    function toogleDisplay(input) {
+                        input = $(input);
+                        var value = input.val();
+                        if(input.is(':checked')) {
+                            $('tr.testCaseExecutionResult').has('td.'+value).addClass(value+'Visible');
+                        } else {
+                            $('tr.testCaseExecutionResult').has('td.'+value).removeClass(value+'Visible');
+                        }
+                    };
+                    
+                    <%
+                        if(request.getParameter("FILTER")!= null && !"".equals(request.getParameter("FILTER"))) {
+                            out.println("$(document).ready(function(){filterDisplay(true);");
+                            String[] filters = {"OK","KO","NA","FA","PE"};
+                            
+                            for(int i=0;i<filters.length;i++) {
+                                if(request.getParameter(filters[i])!= null && filters[i].equals(request.getParameter(filters[i]))) {
+                                    out.println("$('#F"+filters[i]+"').delay( 300 ).queue(function(){$(this).trigger('click');$(this).dequeue();});");
+                                }
+                            }
+                            out.println("});");
+                        }
+                    %>
+                </script>
+                
         <br><% out.print(display_footer(DatePageStart));%>
     </body>
 </html>
