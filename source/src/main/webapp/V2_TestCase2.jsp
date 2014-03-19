@@ -412,25 +412,19 @@
         <div>
             <table id="properties" class="display" style="font-size: small">
                 <thead>
-                <tr>
-                    <th rowspan="2" style="width: 130px">Property</th>
-                    <th rowspan="1" colspan="<%=countries.size()%>" class="ui-state-default">
-                        <div class="DataTables_sort_wrapper">Country</div>
-                    </th>
-                    <th rowspan="2" style="width: 70px; text-align: center">Type</th>
-                    <th rowspan="2" style="width: 40px; text-align: center">DTB</th>
-                    <th rowspan="2" style="width: 600px">Value</th>
-                    <th rowspan="2" style="width: 30px; text-align: center">Length</th>
-                    <th rowspan="2" style="width: 30px; text-align: center">RowLimit</th>
-                    <th rowspan="2" style="width: 80px; text-align: center">Nature</th>
-                </tr>
-                <tr>
-                    <%--
-                        for (String c : countriesSelected) {
-                            out.println("<th rowspan=\"1\" colspan=\"1\" class=\"country\">" + c + "</th>");
-                        }
-                    --%>
-                </tr>
+                    <tr>
+                        <th rowspan="2" style="width: 130px">Property</th>
+                        <th rowspan="1" colspan="" class="ui-state-default propertiesCountryListCol">
+                            <div class="DataTables_sort_wrapper">Country</div>
+                        </th>
+                        <th rowspan="2" style="width: 70px; text-align: center">Type</th>
+                        <th rowspan="2" style="width: 40px; text-align: center">DTB</th>
+                        <th rowspan="2" style="width: 600px">Value</th>
+                        <th rowspan="2" style="width: 30px; text-align: center">Length</th>
+                        <th rowspan="2" style="width: 30px; text-align: center">RowLimit</th>
+                        <th rowspan="2" style="width: 80px; text-align: center">Nature</th>
+                    </tr>
+                    <tr class="propertiesCountryList"></tr>
                 </thead>
                 <tbody style="font-size: x-small">
                 </tbody>
@@ -438,32 +432,6 @@
         </div>
     </div>
     <div id="divSteps">
-        <h5>Steps</h5>
-        <!--
-     <div id="divStep1">
-         <div>
-             <span>1</span>
-             <input type="text" style="width: 500px"/>
-         </div>
-         <div>
-             <div>
-                 <table id="step1" class="display" style="font-size: small">
-                     <thead>
-                     <tr>
-                         <th style="width: 20px; text-align: center">Seq</th>
-                         <th style="width: 160px">Action</th>
-                         <th style="width: 640px">Object</th>
-                         <th style="width: 210px">Property</th>
-                         <th style="width: 40px">Fatal</th>
-                     </tr>
-                     </thead>
-                     <tbody style="font-size: x-small">
-                     </tbody>
-                     <tfoot></tfoot>
-                 </table>
-             </div>
-         </div>
-     </div>-->
     </div>
 </div>
 </div>
@@ -502,20 +470,32 @@
         setOptionsToSelect($('#editTcActive'),data.TCACTIVE);
     
     /*
-        $('.editBuild').each(function(){
-            setOptionsToSelect($(this),data.BUILD);
-        });
+        if(data['BUILD'] && data['BUILD'].length > 0) {
+            $('.editBuild').each(function(elt){
+                setOptionsToSelect($(elt),data.BUILD);
+            });
+        }
 
-        $('.editRevision').each(function(){
-            setOptionsToSelect($(this),data.REVISION);
-        });
-*/
+        if(data['REVISION'] !== null && data['REVISION'].length > 0) {
+            $('.editRevision').each(function(elt){
+                setOptionsToSelect($(elt),data.REVISION);
+            });
+        }
+        */
+
+        $('.propertiesCountryList').empty();
+        $('.propertiesCountryListCol').attr('colspan',data.COUNTRY.length);
         $('#countryFields').empty();
         for (var i = 0; i < data.COUNTRY.length; i++) {
             var input = $('<input type="checkbox" name="testcase_country_general">').attr("value", data.COUNTRY[i]);
             var div = $("<div class=\"field_countries\">").append(
                     $('<label>').text(data.COUNTRY[i]).append('<br/>').append(input));
             $('#countryFields').append(div);
+            
+            $('.propertiesCountryList').append(
+                    $('<th rowspan="1" colspan="1" class="country"></th>')
+                        .text(data.COUNTRY[i])
+                   );
         }
     });
 
@@ -542,10 +522,10 @@
         //var load = new ajaxLoader("#edit");
 
         $.get('GetTestCase', {test: $("#Test").val(), testcase: $("#TestCase").val()}, function (data) {
-            $('#divSteps').empty();
+            $('#divSteps').empty().append("<h5>Steps</h5>");
             
             // warning delete headers !!
-            $('#properties').empty();
+            //$('#properties').empty();
 
             $("#appValue").text(data.application);
             $("#groupValue").text(data.group);

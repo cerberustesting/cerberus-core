@@ -99,6 +99,7 @@ public class GetInvariantsForTest extends HttpServlet {
 
                 jsonResponse.put(key,jSONArray);
             }
+
             httpServletResponse.setContentType("application/json");
             httpServletResponse.getWriter().print(jsonResponse.toString());
         } catch (JSONException e) {
