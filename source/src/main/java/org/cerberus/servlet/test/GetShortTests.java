@@ -44,7 +44,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  * @version 1.0, 07/02/2013
  * @since 2.0.0
  */
-@WebServlet(value = "/GetShortTests")
+//@WebServlet(value = "/GetShortTests")
 public class GetShortTests extends HttpServlet {
 
     @Override

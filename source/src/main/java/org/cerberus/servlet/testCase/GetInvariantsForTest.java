@@ -50,7 +50,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  * @version 1.0, 19/03/2013
  * @since 2.0.0
  */
-@WebServlet(value = "/GetInvariantsForTest")
+//@WebServlet(value = "/GetInvariantsForTest")
 public class GetInvariantsForTest extends HttpServlet {
 
     @Override
