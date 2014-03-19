@@ -61,7 +61,7 @@ public class SoapLibraryDAO implements ISoapLibraryDAO {
                         String servicePath = resultSet.getString("servicePath");
                         String parsingAnswer = resultSet.getString("parsingAnswer");
                         String method = resultSet.getString("method");
-                        result = factorySoapLib.create(type, name, envelope, description, servicePath, parsingAnswer, method);
+                        result = this.factorySoapLib.create(type, name, envelope, description, servicePath, parsingAnswer, method);
                     } else {
                         throwEx = true;
                     }
@@ -452,6 +452,6 @@ public class SoapLibraryDAO implements ISoapLibraryDAO {
         String servicePath = resultSet.getString("servicePath");
         String parsingAnswer = resultSet.getString("parsingAnswer");
         String method = resultSet.getString("method");
-        return factorySoapLib.create(type, name, envelope, description, servicePath, parsingAnswer, method);
+        return this.factorySoapLib.create(type, name, envelope, description, servicePath, parsingAnswer, method);
     }
 }

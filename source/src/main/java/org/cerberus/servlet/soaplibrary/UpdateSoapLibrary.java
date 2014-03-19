@@ -36,20 +36,23 @@ public class UpdateSoapLibrary extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
+    final void processRequest(final HttpServletRequest request, final HttpServletResponse response)
             throws ServletException, IOException, CerberusException {
         response.setContentType("text/html;charset=UTF-8");
         PrintWriter out = response.getWriter();
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
 
         try {
-            String name = policy.sanitize(request.getParameter("id"));
-            String columnName = policy.sanitize(request.getParameter("columnName"));
-            String value = policy.sanitize(request.getParameter("value"));
-
-        ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-        ISoapLibraryService soapLibService = appContext.getBean(ISoapLibraryService.class);
-        soapLibService.updateSoapLibrary(name, columnName, value);
+            final String name = policy.sanitize(request.getParameter("id"));
+            final String columnName = policy.sanitize(request.getParameter("columnName"));
+            // Valeur à pousser en BDD
+            final String valueBdd = request.getParameter("value");
+            // Valeur à retourner à l'IHM
+            final String value = policy.sanitize(request.getParameter("value"));
+            
+        final ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+        final ISoapLibraryService soapLibService = appContext.getBean(ISoapLibraryService.class);
+        soapLibService.updateSoapLibrary(name, columnName, valueBdd);
            
         out.print(value);
         } finally {

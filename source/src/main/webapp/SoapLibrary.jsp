@@ -39,8 +39,8 @@
         <script type="text/javascript" src="js/jquery.dataTables.min.js"></script>
         <script type="text/javascript" src="js/jquery.dataTables.editable.js"></script>
         <script type="text/javascript" src="js/jquery.validate.min.js"></script>
-                
-          <script type="text/javascript">
+
+        <script type="text/javascript">
 
             $(document).ready(function() {
                 var oTable = $('#soapLibraryList').dataTable({
@@ -105,7 +105,7 @@
                          {onblur: 'submit',
                             placeholder: ''}
                     ]
-                })
+                });
             });
 
 
@@ -134,46 +134,49 @@
             </table>
         </div>
         <div>
-            <form id="formAddNewRow" action="#" title="Add SOAP Data" style="width:350px" method="post">
-                <div style="width: 250px; float:left">
-                    <label for="Name" style="font-weight:bold">Name</label>
+            <form id="formAddNewRow" action="#" title="Add SOAP Data" method="post">
+               
+                    <label for="Name" style="font-weight:bold" >Name</label>
+                    
                     <input id="Name" name="Name" style="width:150px;" 
                            class="ncdetailstext" rel="0" >
-                </div>
-                <div style="width: 310px; float:left">
+                    
+               
                     <label for="Type" style="font-weight:bold">Type</label>
-                    <input id="Type" name="Type" style="width:210px;" 
+                    <input id="Type" name="Type" style="width:150px;" 
                            class="ncdetailstext" rel="1" >
-                </div>
-                 <div style="width: 310px; float:left">
-                    <label for="Envelope" style="font-weight:bold">Envelope</label>
-                    <input id="Envelope" name="Envelope" style="width:210px;" 
-                           class="ncdetailstext" rel="2" >
-                </div>
-                <div style="width: 250px; float:left">
+                   
+               
                     <label for="Description" style="font-weight:bold">Description</label>
-                    <input id="Description" name="Description" style="width:150px;" 
-                           class="ncdetailstext" rel="3" >
-                </div>
-                  <div style="width: 250px; float:left">
+                    <input id="Description" name="Description" style="width:200px;"
+                           class="ncdetailstext" rel="2" >
+                    <br>
+                
                     <label for="ServicePath" style="font-weight:bold">ServicePath</label>
-                    <input id="ServicePath" name="ServicePath" style="width:150px;" 
-                           class="ncdetailstext" rel="4" >
-                </div>
-                <div style="width: 250px; float:left">
+                    <input id="ServicePath" name="ServicePath" style="width:400px;" 
+                           class="ncdetailstext" rel="3" >
+                
+                
                     <label for="Method" style="font-weight:bold">Method</label>
-                    <input id="Method" name="Method" style="width:150px;" 
-                           class="ncdetailstext" rel="5" >
-                </div>
-                <div style="width: 250px; float:left">
+                    <input id="Method" name="Method" style="width:300px;" 
+                           class="ncdetailstext" rel="4" >
+                
+                    <br>
                     <label for="ParsingAnswer" style="font-weight:bold">ParsingAnswer</label>
-                    <input id="ParsingAnswer" name="ParsingAnswer" style="width:150px;" 
+                    <input id="ParsingAnswer" name="ParsingAnswer" style="width:750px;" 
+                           class="ncdetailstext" rel="5" >
+                    <br>
+ 
+                
+                    <label for="Envelope" style="font-weight:bold">Envelope</label>
+                    <input id="Envelope" name="Envelope" style="width:780px;" 
                            class="ncdetailstext" rel="6" >
-                </div>
-
-                <br />
-                <button id="btnAddNewRowOk">Add</button>
-                <button id="btnAddNewRowCancel">Cancel</button>
+                
+                    <br>
+                   <div style="width: 250px; float:right">
+                    <button id="btnAddNewRowOk">Add</button>
+                    <button id="btnAddNewRowCancel">Cancel</button>
+                    </div>
             </form>
         </div>
         <br><%

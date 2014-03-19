@@ -107,8 +107,10 @@ public class PropertyService implements IPropertyService {
     private ITestDataService testDataService;
 
     /** Format de date nécessaire pour interroger les Web services REDOUTE - le timeZone +01:00 est en dur car en java 6 le format par défaut est +0100 */
-    private static SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS+01:00");
+    //private static SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS+01:00");
     
+    private static final String SOAP_TIMESTAMP_PATTERN = "yyyy-MM-dd'T'HH:mm:ss.SSS+01:00";
+
     @Override
     public TestCaseExecutionData calculateProperty(TestCaseExecutionData testCaseExecutionData, TestCaseStepActionExecution testCaseStepActionExecution, TestCaseCountryProperties testCaseCountryProperty) {
         testCaseExecutionData.setStart(new Date().getTime());
@@ -464,7 +466,7 @@ public class PropertyService implements IPropertyService {
     /**
      * Calcule d'une propriété depuis une requête SOAP.
      */
-    private String calculatePropertyFromSOAPResponse(String envelope, String servicePath, String parsingAnswer, String method) throws CerberusException {
+    private String calculatePropertyFromSOAPResponse(final String envelope, final String servicePath, final String parsingAnswer, final String method) throws CerberusException {
         String result = null;
         // Test des inputs nécessaires.
         if(envelope != null && servicePath != null && parsingAnswer != null && method != null) {
@@ -508,7 +510,7 @@ public class PropertyService implements IPropertyService {
      * @throws SOAPException
      * @throws IOException 
      */
-    private SOAPMessage createSOAPRequest(String envelope, String method) throws SOAPException, IOException {
+    private SOAPMessage createSOAPRequest(final String envelope, final String method) throws SOAPException, IOException {
 
         MessageFactory messageFactory = MessageFactory.newInstance();
 
@@ -517,8 +519,10 @@ public class PropertyService implements IPropertyService {
 	SOAPPart soapPart = soapMessage.getSOAPPart();
 
 	Reader reader = new StringReader(envelope);
-
-        String date = format.format(new Date());
+        
+        final SimpleDateFormat format = new SimpleDateFormat(SOAP_TIMESTAMP_PATTERN);
+        final String date = format.format(new Date());
+        
         StringBuilder soapRequest = new StringBuilder();
         soapRequest.append("<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:ns=\"http://RedouteFrance/Technical/CERBERUS/Technical/2.0/ExecuteSQLRequest/1.0\">"
                         + "<soapenv:Header/><soapenv:Body><ns:ExecuteSQLRequestRequest_1.0><Header><Application>CERBERUS</Application><Channel>Local</Channel><UserDisplayLanguage>fr</UserDisplayLanguage><UserDisplayCountry>FR</UserDisplayCountry>"
@@ -559,7 +563,7 @@ public class PropertyService implements IPropertyService {
      * @param rule règle de parsing XPATH (table SOAPLIBRARY.PARSINGANSWER)
      * @return String
      */
-    private String parseSOAPResponse(SOAPMessage soapResponse, String rule)
+    private String parseSOAPResponse(final SOAPMessage soapResponse, final String rule)
     {
 	String result = null;
         DocumentBuilderFactory builderFactory = DocumentBuilderFactory

@@ -41,20 +41,20 @@ public class FindAllSoapLibrary extends HttpServlet{
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
+    final void processRequest(final HttpServletRequest request, final HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        PrintWriter out = response.getWriter();
-        PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
+        final PrintWriter out = response.getWriter();
+        final PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
         
         try {
-            String echo = policy.sanitize(request.getParameter("sEcho"));
-            String sStart = policy.sanitize(request.getParameter("iDisplayStart"));
-            String sAmount = policy.sanitize(request.getParameter("iDisplayLength"));
-            String sCol = policy.sanitize(request.getParameter("iSortCol_0"));
-            String sdir = policy.sanitize(request.getParameter("sSortDir_0"));
+            final String echo = policy.sanitize(request.getParameter("sEcho"));
+            final String sStart = policy.sanitize(request.getParameter("iDisplayStart"));
+            final String sAmount = policy.sanitize(request.getParameter("iDisplayLength"));
+            final String sCol = policy.sanitize(request.getParameter("iSortCol_0"));
+            final String sdir = policy.sanitize(request.getParameter("sSortDir_0"));
             String dir = "asc";
-            String[] cols = { "Name", "Type", "Envelope", "Description", "ServicePath", "Method", "ParsingAnswer}"};
+            final String[] cols = { "Name", "Type", "Envelope", "Description", "ServicePath", "Method", "ParsingAnswer}"};
 
             //JSONObject result = new JSONObject();
             //JSONArray array = new JSONArray();

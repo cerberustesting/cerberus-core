@@ -37,29 +37,31 @@ public class CreateSoapLibrary extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
+    final void processRequest(final HttpServletRequest request, final HttpServletResponse response)
             throws ServletException, IOException, CerberusException {
         response.setContentType("text/html;charset=UTF-8");
-        PrintWriter out = response.getWriter();
-        PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
+        final PrintWriter out = response.getWriter();
+        final PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
         
         try {
-        String type = policy.sanitize(request.getParameter("Type"));
-        String name = policy.sanitize(request.getParameter("Name"));
-        String envelope = policy.sanitize(request.getParameter("Envelope"));
-        String description = policy.sanitize(request.getParameter("Description"));
-        String servicePath = policy.sanitize(request.getParameter("ServicePath"));
-        String parsingAnswer = policy.sanitize(request.getParameter("ParsingAnswer"));
-        String method = policy.sanitize(request.getParameter("Method"));
+            final String type = policy.sanitize(request.getParameter("Type"));
+            final String name = policy.sanitize(request.getParameter("Name"));
+            //String envelope = policy.sanitize(request.getParameter("Envelope"));
+            // Pas d'utilisation du Sanitizers pour ce paramètre là. 
+            final String envelope = request.getParameter("Envelope");
+            final String description = policy.sanitize(request.getParameter("Description"));
+            final String servicePath = policy.sanitize(request.getParameter("ServicePath"));
+            final String parsingAnswer = policy.sanitize(request.getParameter("ParsingAnswer"));
+            final String method = policy.sanitize(request.getParameter("Method"));
         
-        ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-        ISoapLibraryService soapLibraryService = appContext.getBean(ISoapLibraryService.class);
-        IFactorySoapLibrary factorySoapLibrary = appContext.getBean(IFactorySoapLibrary.class);
+            final ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+            final ISoapLibraryService soapLibraryService = appContext.getBean(ISoapLibraryService.class);
+            final IFactorySoapLibrary factorySoapLibrary = appContext.getBean(IFactorySoapLibrary.class);
         
-        SoapLibrary soapLib = factorySoapLibrary.create(type, name, envelope, description, servicePath, parsingAnswer, method);
-        soapLibraryService.createSoapLibrary(soapLib);
+            final SoapLibrary soapLib = factorySoapLibrary.create(type, name, envelope, description, servicePath, parsingAnswer, method);
+            soapLibraryService.createSoapLibrary(soapLib);
             
-        response.sendRedirect("SoapLibrary.jsp");
+            response.sendRedirect("SoapLibrary.jsp");
         } finally {
             out.close();
         }

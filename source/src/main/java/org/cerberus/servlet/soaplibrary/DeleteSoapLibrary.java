@@ -38,20 +38,20 @@ public class DeleteSoapLibrary extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
+    final void processRequest(final HttpServletRequest request, final HttpServletResponse response)
             throws ServletException, IOException, CerberusException {
         response.setContentType("text/html;charset=UTF-8");
-        PrintWriter out = response.getWriter();
-        PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
+        final PrintWriter out = response.getWriter();
+        final PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
 
         try {
-            String name = policy.sanitize(request.getParameter("id"));
+            final String name = policy.sanitize(request.getParameter("id"));
             
-            ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-            ISoapLibraryService soapLibraryService = appContext.getBean(ISoapLibraryService.class);
-            IFactorySoapLibrary factorySoapLibrary = appContext.getBean(IFactorySoapLibrary.class);
+            final ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+            final ISoapLibraryService soapLibraryService = appContext.getBean(ISoapLibraryService.class);
+            final IFactorySoapLibrary factorySoapLibrary = appContext.getBean(IFactorySoapLibrary.class);
 
-            SoapLibrary soapLib = factorySoapLibrary.create(null, name, null,  null, null, null, null);
+            final SoapLibrary soapLib = factorySoapLibrary.create(null, name, null,  null, null, null, null);
             soapLibraryService.deleteSoapLibrary(soapLib);
             
         } finally {
