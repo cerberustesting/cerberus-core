@@ -17,7 +17,12 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
+<%@page import="org.cerberus.entity.Project"%>
+<%@page import="org.apache.log4j.Level"%>
+<%@page import="org.cerberus.log.MyLogger"%>
+<%@page import="org.cerberus.exception.CerberusException"%>
 <%@ page import="org.cerberus.dao.IApplicationDAO" %>
+<%@ page import="org.cerberus.entity.Application" %>
 <%@ page import="org.cerberus.dao.IInvariantDAO" %>
 <%@ page import="org.cerberus.dao.IProjectDAO" %>
 <%@ page import="org.cerberus.dao.impl.ApplicationDAO" %>
@@ -127,63 +132,76 @@
     <script type="text/javascript" src="js/jquery.dataTables.rowReordering.js"></script>
     <script type="text/javascript" src="js/jquery.dataTables.rowGrouping.js"></script>
     <link href="css/ui-lightness/jquery-ui-1.10.2.custom.css" rel="stylesheet">
-    <style media="screen" type="text/css">
-        <%/*
-        @import "css/demo_page.css";
-        @import "css/demo_table.css";
-        @import "css/demo_table_jui.css";
-        @import "css/jquery.dataTables.css";
-        @import "css/jquery.dataTables_themeroller.css";
-        @import "css/smoothness/jquery-ui-1.10.2.custom.min.css";
-        */%>
-    </style>
+    <link href="css/demo_page.css" rel="stylesheet">
+    <link href="css/demo_table.css" rel="stylesheet">
+    <link href="css/demo_table_jui.css" rel="stylesheet">
+    <link href="css/jquery.dataTables.css" rel="stylesheet">
+    <link href="css/jquery.dataTables_themeroller.css" rel="stylesheet">
+    <link href="css/smoothness/jquery-ui-1.10.2.custom.min.css" rel="stylesheet">
 
+        <link rel="stylesheet" type="text/css" href="css/crb_style.css">
+        <link rel="stylesheet" type="text/css" href="css/elrte.min.css">
+        <link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico" />
 </head>
 <body>
-<%@ include file="V2_header.jsp" %>
+<%@ include file="include/header.jsp" %>
 
+<%!
+    List<Invariant> getListInvariantsFromName(IInvariantDAO invariantDAO, String name) {
+        try {
+            return invariantDAO.findListOfInvariantById(name);
+        } catch(CerberusException cerberusException) {
+            MyLogger.log(this.getClass().getName(), Level.ERROR, "Unable to retrieve Invariant "+name);
+        }
+        return new ArrayList<Invariant>();
+    }
+
+    String generateOptionsFromInvariantList(List<Invariant> invariants) {
+        StringBuilder builder = new StringBuilder();
+        for(Invariant invariant: invariants) {
+            builder.append("<option value=\"")
+                    .append(invariant.getValue())
+                    .append("\">")
+                    .append(invariant.getValue())
+                    .append("</option>");
+        }
+        return builder.toString();
+    } 
+%>
+
+<%
+    ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletConfig().getServletContext());
+    IInvariantDAO invariantDAO = appContext.getBean(InvariantDAO.class);
+    IApplicationDAO applicationDAO = appContext.getBean(ApplicationDAO.class);
+    IProjectDAO projectDAO = appContext.getBean(ProjectDAO.class);
+    
+    String runQ = generateOptionsFromInvariantList(getListInvariantsFromName(invariantDAO,"RUNQA"));
+    String runU = generateOptionsFromInvariantList(getListInvariantsFromName(invariantDAO,"RUNUAT"));
+    String runP = generateOptionsFromInvariantList(getListInvariantsFromName(invariantDAO,"RUNPROD"));
+    String priority = generateOptionsFromInvariantList(getListInvariantsFromName(invariantDAO,"PRIORITY"));
+    String group = generateOptionsFromInvariantList(getListInvariantsFromName(invariantDAO,"GROUP"));
+    String status = generateOptionsFromInvariantList(getListInvariantsFromName(invariantDAO,"TCSTATUS"));
+    String active = generateOptionsFromInvariantList(getListInvariantsFromName(invariantDAO,"TCACTIVE"));
+    String builds = generateOptionsFromInvariantList(getListInvariantsFromName(invariantDAO,"BUILD"));
+    String revisions = generateOptionsFromInvariantList(getListInvariantsFromName(invariantDAO,"REVISION"));
+
+    List<Invariant> countries = getListInvariantsFromName(invariantDAO,"COUNTRY");
+%>
 <div id="loadParameters" class="fields">
     <div class="field">
         <label for="Test" style="width: 50px">Test</label>
-        <select id="Test" name="Test" onchange="getTestCaseList();" style="width: 200px"></select>
+        <select id="Test" name="Test" onchange="getTestCaseList(false);" style="width: 200px"></select>
     </div>
     <div class="field">
         <label for="TestCase" style="width: 70px">TestCase</label>
         <select id="TestCase" name="TestCase" style="width: 500px"></select>
     </div>
     <div class="field">
-        <input type="button" onclick="window.location.href='?Test='+$('#Test').val()+'&TestCase='+$('#TestCase').val()"
+        <input type="button" onclick="JavaScript:loadTestCase()"
                value="Load"/>
     </div>
 </div>
 
-<%
-    if (request.getParameter("Test") != null && request.getParameter("TestCase") != null) {
-        List<String> countriesSelected = new ArrayList<String>();
-        countriesSelected.add("RX");
-        countriesSelected.add("BE");
-        countriesSelected.add("PT");
-        List<String> countries = new ArrayList<String>();
-        countries.add("BE");
-        countries.add("CH");
-        countries.add("DE");
-        countries.add("ES");
-        countries.add("IT");
-        countries.add("PT");
-        countries.add("RU");
-        countries.add("UK");
-        countries.add("UA");
-        countries.add("VI");
-        countries.add("AT");
-        countries.add("GR");
-        countries.add("RX");
-        countries.add("FR");
-
-        ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletConfig().getServletContext());
-        IInvariantDAO invariantDAO = appContext.getBean(InvariantDAO.class);
-        IApplicationDAO applicationDAO = appContext.getBean(ApplicationDAO.class);
-        IProjectDAO projectDAO = appContext.getBean(ProjectDAO.class);
-%>
 <br/>
 
 <div id="edit">
@@ -249,8 +267,8 @@
             <label for="project" style="width: 100px">Project</label><br/>
             <select id="project" name="project" style="width: 100px">
                 <%
-                    for (List<String> app : projectDAO.listOfProject()) {
-                        out.println("<option value=\"" + app.get(0) + "\">" + app.get(0) + " [" + app.get(1) + "] " + app.get(2) + "</option>");
+                    for (Project project : projectDAO.findAllProject()) {
+                        out.println("<option value=\"" + project.getIdProject() + "\">[" + project.getIdProject() + "] " + project.getDescription() + "</option>");
                     }
                 %>
             </select>
@@ -272,8 +290,8 @@
                 <label for="application" style="width: 140px">Application</label><br/>
                 <select id="application" name="application" style="width: 140px">
                     <%
-                        for (String app : applicationDAO.listOfApplication()) {
-                            out.println("<option value=\"" + app + "\">" + app + "</option>");
+                        for (Application app : applicationDAO.findAllApplication()) {
+                            out.println("<option value=\"" + app.getApplication() + "\">" + app.getApplication() + "</option>");
                         }
                     %>
                 </select>
@@ -281,67 +299,43 @@
             <div class="field">
                 <label for="editRunQA" style="width: 75px">Run QA</label><br/>
                 <select id="editRunQA" name="editRunQA" style="width: 75px">
-                    <%
-                        for (String runQ : invariantDAO.listOfValue("RUNQA")) {
-                            out.println("<option value=\"" + runQ + "\">" + runQ + "</option>");
-                        }
-                    %>
+                    <%=runQ%>
                 </select>
             </div>
             <div class="field">
                 <label for="editRunUAT" style="width: 75px">Run UAT</label><br/>
                 <select id="editRunUAT" name="editRunUAT" style="width: 75px">
-                    <%
-                        for (String runU : invariantDAO.listOfValue("RUNUAT")) {
-                            out.println("<option value=\"" + runU + "\">" + runU + "</option>");
-                        }
-                    %>
+                    <%=runU%>
                 </select>
             </div>
             <div class="field">
                 <label for="editRunPROD" style="width: 75px">Run PROD</label><br/>
                 <select id="editRunPROD" name="editRunPROD" style="width: 75px">
-                    <%
-                        for (String runP : invariantDAO.listOfValue("RUNPROD")) {
-                            out.println("<option value=\"" + runP + "\">" + runP + "</option>");
-                        }
-                    %>
+                    <%=runP%>
                 </select>
             </div>
             <div class="field">
                 <label for="editPriority" style="width: 75px">Prio</label><br/>
                 <select id="editPriority" name="editPriority" style="width: 75px">
-                    <%
-                        for (String priority : invariantDAO.listOfValue("PRIORITY")) {
-                            out.println("<option value=\"" + priority + "\">" + priority + "</option>");
-                        }
-                    %>
+                    <%=priority%>
                 </select>
             </div>
             <div class="field">
                 <label for="editGroup" style="width: 140px">Group</label><br/>
                 <select id="editGroup" name="editGroup" style="width: 140px">
-                    <%
-                        for (String group : invariantDAO.listOfValue("GROUP")) {
-                            out.println("<option value=\"" + group + "\">" + group + "</option>");
-                        }
-                    %>
+                    <%=group%>
                 </select>
             </div>
             <div class="field">
                 <label for="editStatus" style="width: 140px">Status</label><br/>
                 <select id="editStatus" name="editStatus" style="width: 140px">
-                    <%
-                        for (String status : invariantDAO.listOfValue("STATUS")) {
-                            out.println("<option value=\"" + status + "\">" + status + "</option>");
-                        }
-                    %>
+                    <%=status%>
                 </select>
             </div>
             <div class="field" style="padding-bottom: 0px;">
                 <%
-                    for (String country : invariantDAO.listOfValue("COUNTRY")) {
-                        out.println("<div class=\"field_countries\"><label>" + country + "</label><br/><input type=\"checkbox\" name=\"testcase_country_general\" value=\"" + country + "\"></div>");
+                    for (Invariant country : countries) {
+                        out.println("<div class=\"field_countries\"><label>" + country.getValue() + "</label><br/><input type=\"checkbox\" name=\"testcase_country_general\" value=\"" + country.getValue() + "\"></div>");
                     }
                 %>
             </div>
@@ -371,55 +365,35 @@
         <div class="field">
             <label for="editTcActive" style="width: 50px">Act</label><br/>
             <select id="editTcActive" name="editTcActive" style="width: 50px">
-                <%
-                    for (String active : invariantDAO.listOfValue("TCACTIVE")) {
-                        out.println("<option value=\"" + active + "\">" + active + "</option>");
-                    }
-                %>
+                    <%=active%>
             </select>
         </div>
         <div class="field">
             <label for="editFromBuild" style="width: 90px">From Sprint</label><br/>
             <select id="editFromBuild" name="editFromBuild" style="width: 90px">
-                <%
-                    List<String> builds = invariantDAO.listOfValue("BUILD");
-                    builds.add(0, "");
-                    for (String build : builds) {
-                        out.println("<option value=\"" + build + "\">" + build + "</option>");
-                    }
-                %>
+                    <option value=""></option>
+                    <%=builds%>
             </select>
         </div>
         <div class="field">
             <label for="editFromRev" style="width: 100px">From Rev</label><br/>
             <select id="editFromRev" name="editFromRev" style="width: 100px">
-                <%
-                    List<String> revisions = invariantDAO.listOfValue("REVISION");
-                    revisions.add(0, "");
-                    for (String revision : revisions) {
-                        out.println("<option value=\"" + revision + "\">" + revision + "</option>");
-                    }
-                %>
+                    <option value=""></option>
+                    <%=revisions%>
             </select>
         </div>
         <div class="field">
             <label for="editToBuild" style="width: 90px">To Sprint</label><br/>
             <select id="editToBuild" name="editToBuild" style="width: 90px">
-                <%
-                    for (String build : builds) {
-                        out.println("<option value=\"" + build + "\">" + build + "</option>");
-                    }
-                %>
+                    <option value=""></option>
+                    <%=builds%>
             </select>
         </div>
         <div class="field">
             <label for="editToRev" style="width: 100px">To Rev</label><br/>
             <select id="editToRev" name="editToRev" style="width: 100px">
-                <%
-                    for (String revision : revisions) {
-                        out.println("<option value=\"" + revision + "\">" + revision + "</option>");
-                    }
-                %>
+                    <option value=""></option>
+                    <%=revisions%>
             </select>
         </div>
         <div class="field">
@@ -437,21 +411,15 @@
         <div class="field">
             <label for="editTargetBuild" style="width: 80px">Target Sprint</label><br/>
             <select id="editTargetBuild" name="editTargetBuild" style="width: 80px">
-                <%
-                    for (String build : builds) {
-                        out.println("<option value=\"" + build + "\">" + build + "</option>");
-                    }
-                %>
+                    <option value=""></option>
+                    <%=builds%>
             </select>
         </div>
         <div class="field">
             <label for="editTargetRev" style="width: 80px">Target Rev</label><br/>
             <select id="editTargetRev" name="editTargetRev" style="width: 80px">
-                <%
-                    for (String revision : revisions) {
-                        out.println("<option value=\"" + revision + "\">" + revision + "</option>");
-                    }
-                %>
+                    <option value=""></option>
+                    <%=revisions%>
             </select>
         </div>
         <div class="field" style="clear: left">
@@ -480,7 +448,7 @@
                 <thead>
                 <tr>
                     <th rowspan="2" style="width: 130px">Property</th>
-                    <th rowspan="1" colspan="<%=countriesSelected.size()%>" class="ui-state-default">
+                    <th rowspan="1" colspan="<%=countries.size()%>" class="ui-state-default">
                         <div class="DataTables_sort_wrapper">Country</div>
                     </th>
                     <th rowspan="2" style="width: 70px; text-align: center">Type</th>
@@ -491,11 +459,11 @@
                     <th rowspan="2" style="width: 80px; text-align: center">Nature</th>
                 </tr>
                 <tr>
-                    <%
+                    <%--
                         for (String c : countriesSelected) {
                             out.println("<th rowspan=\"1\" colspan=\"1\" class=\"country\">" + c + "</th>");
                         }
-                    %>
+                    --%>
                 </tr>
                 </thead>
                 <tbody style="font-size: x-small">
@@ -545,7 +513,7 @@
                     .text(data.testsList[i]));
         }
         $("#Test").val("<%=request.getParameter("Test")%>");
-        getTestCaseList(true);
+        getTestCaseList(false);
 //        load.remove();
     });
 
@@ -563,14 +531,16 @@
                 $("#TestCase option[value='<%=request.getParameter("TestCase")%>']").attr("selected", "selected");
             }
             load.remove();
-            loadTestCase();
+            //loadTestCase();
         });
     }
 
     function loadTestCase() {
-        var load = new ajaxLoader("#edit");
+        //var load = new ajaxLoader("#edit");
 
         $.get('GetTestCase', {test: $("#Test").val(), testcase: $("#TestCase").val()}, function (data) {
+            $('#divSteps').empty();
+            $('#properties').empty();
 
             $("#appValue").text(data.application);
             $("#groupValue").text(data.group);
@@ -633,8 +603,8 @@
                 "aoColumns": [
                     { "mDataProp": "property" },
                     <%
-                        for(String country : countriesSelected){
-                            out.println("{ 'mDataProp': '"+country+"' },");
+                        for(Invariant country : countries){
+                            out.println("{ 'mDataProp': '"+country.getValue()+"' },");
                         }
                     %>
                     { "mDataProp": "type", sClass: "tdCenter" },
@@ -647,7 +617,7 @@
                 "bDestroy": true,
                 aoColumnDefs: [
                     <%
-                    for(int i=1; i<=countriesSelected.size(); i++){
+                    for(int i=1; i<=countries.size(); i++){
                         out.println("{aTargets:["+i+"],fnRender: function (o, v) {if(v==true){return '<input type=\"checkbox\" name=\"list_countries\" value=\"' + o.mDataProp + '\" checked=\"' + v + '\">'}else{return '<input type=\"checkbox\" name=\"list_countries\" value=\"' + o.mDataProp + '\">'}}},");
                     }
                     %>
@@ -655,44 +625,42 @@
             });
             $('.country div').removeClass('DataTables_sort_wrapper');
 
-            $('#divSteps').append('<div id="divStep' + data.list[0].number + '"> <div> <span>' + data.list[0].number + '</span> <input type="text" style="width: 500px" value="' + data.list[0].name + '"/> </div> <div> <div> <table id="step' + data.list[0].number + '" class="display" style="font-size: small"> <thead> <tr> <th style="width: 20px; text-align: center">Seq</th> <th style="width: 160px">Action</th> <th style="width: 640px">Object</th> <th style="width: 210px">Property</th> <th style="width: 40px">Fatal</th> </tr> </thead> <tbody style="font-size: x-small"> </tbody> <tfoot></tfoot> </table> </div> </div></div>');
+            for (var i = 0; i < data.list.length; i++) {
+                //alert('<div id="divStep' + data.list[i].number + '"> <div> <span>' + data.list[i].number + '</span> <input type="text" style="width: 500px" value="' + data.list[i].name + '"/> </div> <div> <div> <table id="step' + data.list[i].number + '" class="display" style="font-size: small"> <thead> <tr> <th style="width: 20px; text-align: center">Seq</th> <th style="width: 160px">Action</th> <th style="width: 640px">Object</th> <th style="width: 210px">Property</th> <th style="width: 40px">Fatal</th> </tr> </thead> <tbody style="font-size: x-small"> </tbody> <tfoot></tfoot> </table> </div> </div></div>');
+                $('#divSteps').append('<div id="divStep' + data.list[i].number + '"> <div> <span>' + data.list[i].number + '</span> <input type="text" style="width: 500px" value="' + data.list[i].name + '"/> </div> <div> <div> <table id="step' + data.list[i].number + '" class="display" style="font-size: small"> <thead> <tr> <th style="width: 20px; text-align: center">Seq</th> <th style="width: 160px">Action</th> <th style="width: 640px">Object</th> <th style="width: 210px">Property</th> <th style="width: 40px">Fatal</th> </tr> </thead> <tbody style="font-size: x-small"> </tbody> <tfoot></tfoot> </table> </div> </div></div>');
 
-            $('#step' + data.list[0].number).dataTable({
-                "bJQueryUI": true,
-                "bPaginate": false,
-                "bLengthChange": false,
-                "bFilter": false,
-                "bInfo": false,
-                "bAutoWidth": false,
-                "aaData": data.list[0].sequences,
-                "aoColumns": [
-                    { "mDataProp": "sequence" },
-                    { "mDataProp": "action" },
-                    { "mDataProp": "object" },
-                    { "mDataProp": "property" },
-                    { "mDataProp": "fatal", fnRender: function (o, v) {
-                        if (v === true) {
-                            return "Y";
-                        } else if (v === false) {
-                            return "N";
-                        } else {
-                            return "";
-                        }
-                    } }
-                ],
-                "fnCreatedRow": function (nRow, aData, iDataIndex) {
-                    nRow.id = iDataIndex;
-                },
-                "bDestroy": true
-            }).rowReordering();
-
+                $('#step' + data.list[i].number).dataTable({
+                    "bJQueryUI": true,
+                    "bPaginate": false,
+                    "bLengthChange": false,
+                    "bFilter": false,
+                    "bInfo": false,
+                    "bAutoWidth": false,
+                    "aaData": data.list[i].sequences,
+                    "aoColumns": [
+                        { "mDataProp": "sequence" },
+                        { "mDataProp": "action" },
+                        { "mDataProp": "object" },
+                        { "mDataProp": "property" },
+                        { "mDataProp": "fatal", fnRender: function (o, v) {
+                            if (v === true) {
+                                return "Y";
+                            } else if (v === false) {
+                                return "N";
+                            } else {
+                                return "";
+                            }
+                        } }
+                    ],
+                    "fnCreatedRow": function (nRow, aData, iDataIndex) {
+                        nRow.id = iDataIndex;
+                    },
+                    "bDestroy": true
+                }).rowReordering();
+            }
             load.remove();
         });
     }
 </script>
 
-<style type="text/css">
-
-</style>
-<%}%>
 </html>
