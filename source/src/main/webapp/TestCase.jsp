@@ -908,7 +908,7 @@
 
                 %>                          
                 <%  if (canEdit) {%>
-                <form method="post" name="UpdateTestCaseDetail" action="UpdateTestCaseDetail">
+                <form method="post" name="UpdateTestCaseDetail" id="UpdateTestCaseDetail" action="UpdateTestCaseDetail">
                     <% }%>                                   <%--Countries checkbox for adding property (javascript) --%>
                     <input type="hidden" name="testcase_hidden"
                            value="<%=rs_testcase_general_info.getString("t.Test")
@@ -1146,7 +1146,7 @@
                                                                                                          value="<%=rs_properties.getString("a.Value2")%>"><%=rs_properties.getString("a.Value2")%></textarea>
                                                                     
                                                                 </td>
-                                                                <td class="wob"><input style="display:inline; height:20px; width:20px; background-color: <%=color%>; color:blue; font-weight:bolder" title="Open SQL Library" class="smallbutton" type="button" value="L" onclick="openSqlLibraryPopup('SqlLib.jsp?Lign=', '<%=rowNumber%>-LIST')">
+                                                                <td class="wob"><input style="display:inline; height:20px; width:20px; background-color: <%=color%>; color:blue; font-weight:bolder" title="Open SQL Library" class="smallbutton" type="button" value="L" name="create-user">
                                                                 </td>
 
                                                             </tr><tr>
@@ -1290,6 +1290,7 @@
                                                 <table style="text-align: left; border-collapse: collapse">
                                                     <tr>
                                                         <td id="wob" style="width: 30px; text-align: center; height:20px">
+                                                            <a name="stepAnchor_<%=i1%>"></a>
                                                             <%  if (canEdit) {%>
                                                             <input type="checkbox" name="testcasestep_delete" style="font-weight: bold; width:20px"
                                                                    value="<%=rs_step.getString("step")%>">
@@ -1396,7 +1397,7 @@
                                                             <table><tr><td id="wob"><input type="button" value="Add Action"
                                                                                            onclick="addTestCaseAction('Action<%=rs_step.getString("step")%>','<%=rs_step.getString("step")%>', <%=testcase_stepaction_maxlength_sequence%>, <%=testcase_stepaction_maxlength_action%>, <%=testcase_stepaction_maxlength_object%>, <%=testcase_stepaction_maxlength_property%>, <%=testcase_stepaction_maxlength_description%>) ; enableField('submitButtonAction');">
                                                                     <td id="wob"><input type="button" value="import HTML Scenario" onclick="importer('ImportHTML.jsp?Test=<%=test%>&Testcase=<%=testcase%>&Step=<%=rs_step.getString("step")%>')"></td>
-                                                                </td><td id="wob"><input value="Save Changes" id="submitButtonAction" name="submitChanges"
+                                                                </td><td id="wob"><input value="Save Changes" onclick="document.getElementById('UpdateTestCaseDetail').action = document.getElementById('UpdateTestCaseDetail').action+'#stepAnchor_<%=i1%>'" id="submitButtonAction" name="submitChanges"
                                                                                          type="submit" >
                                                                 <%=ComboInvariant(conn, "actions_action_", "width: 150px;visibility:hidden", "actions_action_", "actions_action_", "ACTION", "", "", null)%></td></tr></table></td></tr>
                                                                 <% }%>
@@ -1496,7 +1497,7 @@
                                         <table><tr><td id="wob"><input type="button"
                                                                        value="Add Control"
                                                                        onclick="addTestCaseControl('control_table<%=rs_step.getString("step")%>',<%=rs_step.getString("step")%>, '10', '10', '10', '100', '250', '250','250') ; enableField('submitButtonChanges');">
-                                                </td><td id="wob"><input	value="Save changes" id="submitButtonChanges" name="submitChanges"
+                                                </td><td id="wob"><input	value="Save changes" onclick="document.getElementById('UpdateTestCaseDetail').action = document.getElementById('UpdateTestCaseDetail').action+'#stepAnchor_<%=i1%>'" id="submitButtonChanges" name="submitChanges"
                                                                          type="submit" ></td></tr></table>
                                                     <% }%>
                                     </td></tr></table>        
