@@ -343,7 +343,7 @@
                         + "tc.Application, tc.TcActive ,tc.Project, tc.group, tc.status, tc.Comment, tc.HowTo, "
                         + "tc.Ticket, tc.Origine, tc.RefOrigine, tc.FromBuild, tc.FromRev, tc.ToBuild, tc.ToRev, "
                         + "tc.BugID, tc.TargetBuild, tc.TargetRev, tc.creator, tc.implementer, tc.lastModifier, "
-                        + "tc.activeQA, tc.activeUAT, tc.activePROD"
+                        + "tc.activeQA, tc.activeUAT, tc.activePROD, tc.tcdatecrea "
                         + " FROM test t, testcase tc"
                         + " WHERE t.test = tc.test"
                         + " AND tc.Test = '" + test + "'"
@@ -433,6 +433,7 @@
                                             <tr id="header">  
                                                 <td class="wob" style="width: 100px"><%out.print(dbDocS(conn, "testcase", "origine", "Origin"));%></td>
                                                 <td class="wob" style="width: 100px"><%out.print(dbDocS(conn, "testcase", "RefOrigine", "RefOrigine"));%></td>
+                                                <td class="wob" style="width: 150px"><%out.print(dbDocS(conn, "testcase", "TCDateCrea", "Creation date"));%></td>
                                                 <td class="wob" style="width: 100px"><%out.print(dbDocS(conn, "testcase", "Creator", "creator"));%></td>
                                                 <td class="wob" style="width: 100px"><%out.print(dbDocS(conn, "testcase", "Implementer", "implementer"));%></td>
                                                 <td class="wob" style="width: 100px"><%out.print(dbDocS(conn, "testcase", "LastModifier", "lastModifier"));%></td>
@@ -443,6 +444,7 @@
                                             <tr>
                                                 <td class="wob"><input readonly="readonly" id="origine" style="width: 90px; background-color: #DCDCDC" name="editOrigine" value="<%=rs_testcase_general_info.getString("Origine")%>"></td>
                                                 <td class="wob"><input readonly="readonly" id="reforigine" style="width: 90px;  background-color: #DCDCDC" name="editRefOrigine" value="<%=rs_testcase_general_info.getString("RefOrigine")%>"></td>
+                                                <td class="wob"><%=rs_testcase_general_info.getString("tcdatecrea")%></td>
                                                 <td class="wob"><input readonly="readonly" id="creator" style="width: 90px; background-color: #DCDCDC" name="editCreator" value="<%=rs_testcase_general_info.getString("tc.creator")%>"></td>
                                                 <td class="wob"><input id="implementer" style="width: 90px;" name="editImplementer" value="<%=rs_testcase_general_info.getString("tc.implementer") == null ? "" : rs_testcase_general_info.getString("tc.implementer")%>"></td>
                                                 <td class="wob"><input readonly="readonly" id="lastModifier" style="width: 90px; background-color: #DCDCDC" name="editLastModifier" value="<%=rs_testcase_general_info.getString("tc.lastModifier")%>"></td>
