@@ -1146,7 +1146,7 @@
                                                                                                          value="<%=rs_properties.getString("a.Value2")%>"><%=rs_properties.getString("a.Value2")%></textarea>
                                                                     
                                                                 </td>
-                                                                <td class="wob"><input style="display:inline; height:20px; width:20px; background-color: <%=color%>; color:blue; font-weight:bolder" title="Open SQL Library" class="smallbutton" type="button" value="L" name="create-user">
+                                                                <td class="wob"><input style="display:inline; height:20px; width:20px; background-color: <%=color%>; color:blue; font-weight:bolder" title="Open SQL Library" class="smallbutton" type="button" value="L" name="opensql-library"  onclick="openSqlLibraryPopup('SqlLib.jsp?Lign=', '<%=valueID%>')">
                                                                 </td>
 
                                                             </tr><tr>
