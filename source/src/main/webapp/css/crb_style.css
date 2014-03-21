@@ -111,10 +111,16 @@ div#menu {
 
 
 /* Table header */
-tr#header {
+tr#header,
+tr.reportDelimiter {
     background-color:#cad3f1; 
     font-weight:bold;   
+}
 
+tr#header td,
+tr.reportDelimiter td {
+    border-left: 1px grey solid;
+    border-right: 1px grey solid;
 }
 
 tr#tableheader {
@@ -811,4 +817,16 @@ table.doctb {
 .PEVisible,
 .NAVisible {
     display: table-row;
+}
+
+.library {
+    display: inline-block;
+    padding: 5px;
+    margin: 5px;
+    
+    border: 1px grey solid;
+    text-align: center;
+    
+    width: 70px;
+    height: 20px;
 }
