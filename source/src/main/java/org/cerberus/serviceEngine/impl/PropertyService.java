@@ -23,8 +23,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Reader;
-import java.io.StringReader;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
@@ -34,12 +32,11 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.soap.MessageFactory;
 import javax.xml.soap.MimeHeaders;
+import javax.xml.soap.SOAPBody;
 import javax.xml.soap.SOAPConnection;
 import javax.xml.soap.SOAPConnectionFactory;
 import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPMessage;
-import javax.xml.soap.SOAPPart;
-import javax.xml.transform.stream.StreamSource;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
@@ -74,6 +71,7 @@ import org.cerberus.util.StringUtil;
 import org.openqa.selenium.NoSuchElementException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.util.HtmlUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
@@ -104,6 +102,11 @@ public class PropertyService implements IPropertyService {
     private ITestCaseExecutionService testCaseExecutionService;
     @Autowired
     private ITestDataService testDataService;
+
+    /** Format de date nécessaire pour interroger les Web services REDOUTE - le timeZone +01:00 est en dur car en java 6 le format par défaut est +0100 */
+    //private static SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS+01:00");
+    
+    private static final String SOAP_TIMESTAMP_PATTERN = "yyyy-MM-dd'T'HH:mm:ss.SSS+01:00";
 
     @Override
     public TestCaseExecutionData calculateProperty(TestCaseExecutionData testCaseExecutionData, TestCaseStepActionExecution testCaseStepActionExecution, TestCaseCountryProperties testCaseCountryProperty) {
@@ -460,7 +463,7 @@ public class PropertyService implements IPropertyService {
     /**
      * Calcule d'une propriété depuis une requête SOAP.
      */
-    private String calculatePropertyFromSOAPResponse(String envelope, String servicePath, String parsingAnswer, String method) throws CerberusException {
+    private String calculatePropertyFromSOAPResponse(final String envelope, final String servicePath, final String parsingAnswer, final String method) throws CerberusException {
         String result = null;
         // Test des inputs nécessaires.
         if(envelope != null && servicePath != null && parsingAnswer != null && method != null) {
@@ -491,48 +494,17 @@ public class PropertyService implements IPropertyService {
             {
                 MyLogger.log(PropertyService.class.getName(), Level.ERROR, e.toString());
                 throw new CerberusException(new MessageGeneral(MessageGeneralEnum.EXECUTION_FA));
+            } catch (SAXException e)
+            {
+                MyLogger.log(PropertyService.class.getName(), Level.ERROR, e.toString());
+                throw new CerberusException(new MessageGeneral(MessageGeneralEnum.EXECUTION_FA));
+            } catch (ParserConfigurationException e)
+            {
+                MyLogger.log(PropertyService.class.getName(), Level.ERROR, e.toString());
+                throw new CerberusException(new MessageGeneral(MessageGeneralEnum.EXECUTION_FA));
             }
         }
         return result;
-    }
-    
-    /**
-     * Création d'une requête SOAP
-     * @param envelope Envelope complète de la requête SOAP exécutée depuis SOAPUI (table SOAPLIBRARY.ENVELOPE)
-     * @param method Nom de la méthode du WSDL à interroger(table SOAPLIBRARY.METHOD)
-     * @return SOAPMessage
-     * @throws SOAPException
-     * @throws IOException 
-     */
-    private SOAPMessage createSOAPRequest(String envelope, String method) throws SOAPException, IOException {
-
-        MessageFactory messageFactory = MessageFactory.newInstance();
-
-	SOAPMessage soapMessage = messageFactory.createMessage();
-
-	SOAPPart soapPart = soapMessage.getSOAPPart();
-
-	Reader reader = new StringReader(envelope);
-
-	reader.read(envelope.toCharArray(), 0, envelope.length());
-	
-        // CTE à faire pour éviter une SAXParseException premature end of file
-	reader.reset();
-
-	StreamSource prepMsg = new StreamSource(reader);
-        
-        soapPart.setContent(prepMsg);
-
-	MimeHeaders headers = soapMessage.getMimeHeaders();
-
-        // Précise la méthode du WSDL à interroger
-	headers.addHeader("SOAPAction", method);
-        // Encodage UTF-8
-	headers.addHeader("Content-Type", "text/xml;charset=UTF-8");
-
-	soapMessage.saveChanges();
-        
-	return soapMessage;
     }
     
     /**
@@ -541,7 +513,7 @@ public class PropertyService implements IPropertyService {
      * @param rule règle de parsing XPATH (table SOAPLIBRARY.PARSINGANSWER)
      * @return String
      */
-    private String parseSOAPResponse(SOAPMessage soapResponse, String rule)
+    private String parseSOAPResponse(final SOAPMessage soapResponse, final String rule)
     {
 	String result = null;
         DocumentBuilderFactory builderFactory = DocumentBuilderFactory
@@ -586,4 +558,50 @@ public class PropertyService implements IPropertyService {
 		
         return result;
     }
+
+    /**
+     * Contruction dynamique de la requête SOAP
+     * @param pBody
+     * @param method
+     * @return SOAPMessage
+     * @throws SOAPException
+     * @throws IOException
+     * @throws SAXException
+     * @throws ParserConfigurationException 
+     */
+    private static  SOAPMessage createSOAPRequest(final String pBody, final String method) throws SOAPException, IOException, SAXException, ParserConfigurationException {
+
+        MessageFactory messageFactory = MessageFactory.newInstance();
+
+	SOAPMessage soapMessage = messageFactory.createMessage();
+
+        MimeHeaders headers = soapMessage.getMimeHeaders();
+
+        // Précise la méthode du WSDL à interroger
+        headers.addHeader("SOAPAction", method);
+        // Encodage UTF-8
+	headers.addHeader("Content-Type", "text/xml;charset=UTF-8");
+        
+        final SOAPBody soapBody = soapMessage.getSOAPBody();
+        
+        // convert String into InputStream
+	InputStream is = new ByteArrayInputStream(HtmlUtils.htmlUnescape(pBody).getBytes());
+        
+        Document document = null;
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        
+        factory.setNamespaceAware(true);
+        
+        DocumentBuilder builder;
+           
+        builder = factory.newDocumentBuilder();
+
+        document = builder.parse(is);
+            
+        soapBody.addDocument(document);
+	
+	soapMessage.saveChanges();
+       
+	return soapMessage;
+    }   
 }

@@ -32,6 +32,8 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  */
 public class FindAllSoapLibrary extends HttpServlet{
     
+    private final static String ASC = "asc";
+    
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -41,20 +43,20 @@ public class FindAllSoapLibrary extends HttpServlet{
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
+    final void processRequest(final HttpServletRequest request, final HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        PrintWriter out = response.getWriter();
-        PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
+        final PrintWriter out = response.getWriter();
+        final PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
         
         try {
-            String echo = policy.sanitize(request.getParameter("sEcho"));
-            String sStart = policy.sanitize(request.getParameter("iDisplayStart"));
-            String sAmount = policy.sanitize(request.getParameter("iDisplayLength"));
-            String sCol = policy.sanitize(request.getParameter("iSortCol_0"));
-            String sdir = policy.sanitize(request.getParameter("sSortDir_0"));
-            String dir = "asc";
-            String[] cols = { "Name", "Type","Envelope", "Description", "ServicePath", "ParsingAnswer", "Method"};
+            final String echo = policy.sanitize(request.getParameter("sEcho"));
+            final String sStart = policy.sanitize(request.getParameter("iDisplayStart"));
+            final String sAmount = policy.sanitize(request.getParameter("iDisplayLength"));
+            final String sCol = policy.sanitize(request.getParameter("iSortCol_0"));
+            final String sdir = policy.sanitize(request.getParameter("sSortDir_0"));
+            String dir = ASC;
+            final String[] cols = { "Name", "Type", "Envelope", "Description", "ServicePath", "Method", "ParsingAnswer}"};
 
             //JSONObject result = new JSONObject();
             //JSONArray array = new JSONArray();
@@ -104,7 +106,7 @@ public class FindAllSoapLibrary extends HttpServlet{
                 sArray.add(sParsingAnswer);
             }
             if (!method.equals("")) {
-                String sMethod = " `parsingAnswer` like '%" + method + "%'";
+                String sMethod = " `method` like '%" + method + "%'";
                 sArray.add(sMethod);
             }
 
@@ -139,7 +141,7 @@ public class FindAllSoapLibrary extends HttpServlet{
                 }
             }
             if (sdir != null) {
-                if (!sdir.equals("asc")) {
+                if (!sdir.equals(ASC)) {
                     dir = "desc";
                 }
             }
@@ -162,14 +164,16 @@ public class FindAllSoapLibrary extends HttpServlet{
             JSONObject jsonResponse = new JSONObject();
 
             for (SoapLibrary soapLib : soapLibList) {
+                //String env1 = soapLib.getEnvelope().replaceAll("<", "$#60;");
+                //String env2 = env1.replaceAll(">", "$#62;");
                 JSONArray row = new JSONArray();
                 row.put(soapLib.getName())
                         .put(soapLib.getType())
                         .put(soapLib.getEnvelope())
                         .put(soapLib.getDescription())
-                        .put(soapLib.getEnvelope())
-                        .put(soapLib.getParsingAnswer())
-                        .put((soapLib.getMethod()));
+                        .put(soapLib.getServicePath())
+                        .put(soapLib.getMethod())
+                        .put((soapLib.getParsingAnswer()));
 
                 data.put(row);
             }
@@ -181,7 +185,7 @@ public class FindAllSoapLibrary extends HttpServlet{
             jsonResponse.put("sEcho", echo);
             jsonResponse.put("iTotalRecords", iTotalRecords);
             jsonResponse.put("iTotalDisplayRecords", iTotalDisplayRecords);
-            
+             
 
             response.setContentType("application/json");
             response.getWriter().print(jsonResponse.toString());
@@ -191,5 +195,43 @@ public class FindAllSoapLibrary extends HttpServlet{
             out.close();
         }
     }
+    
+      // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
+    /**
+     * Handles the HTTP <code>GET</code> method.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        processRequest(request, response);
+    }
 
+    /**
+     * Handles the HTTP <code>POST</code> method.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        processRequest(request, response);
+    }
+
+    /**
+     * Returns a short description of the servlet.
+     *
+     * @return a String containing servlet description
+     */
+    @Override
+    public String getServletInfo() {
+        return "Short description";
+    }// </editor-fold>
 }

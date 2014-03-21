@@ -76,6 +76,7 @@
                         <li id="active"><a id="current" name="menu" href="#" style="width:100px">Data</a>
                             <ul class="subnav" id="subnavlist">
                                 <li id="subactive"><a name="menu" id="menuSqlLibrary" href="SqlLibrary.jsp" style="width:130px">SQL Library</a></li>
+                                <li id="subactive"><a name="menu" id="menuSoapLibrary" href="SoapLibrary.jsp" style="width:130px">SOAP Library</a></li>
                                 <li id="subactive"><a name="menu" id="menuTestData" href="TestData.jsp" style="width:130px">Test Data</a></li>
                             </ul>
                         </li>
