@@ -1371,3 +1371,25 @@ function importStep(){
     
     location.href=urlImportStep;
 }
+
+function openViewPropertyPopin(value) {
+    loadPropertyPopin(value);
+    $('#popin').dialog({hide: { duration: 300 }, height: 600, width: 800, buttons: [ { text: "Ok", click: function() { $( this ).dialog( "close" ); } } ] });
+}
+
+function loadPropertyPopin(value) {
+//    $('#popin').hide().empty();
+    $('#popin').load('viewProperty.jsp?Lign='+value);
+//    $('#popin').show();
+}
+
+function openSqlLibraryPopin(value) {
+    loadPropertyPopin(value);
+    $('#popin').dialog({hide: { duration: 300 }, height: 600, width: 800, buttons: [ { text: "Ok", click: function() { $( this ).dialog( "close" ); } } ] });
+}
+
+function loadSqlLibraryPopin(value) {
+//    $('#popin').hide().empty();
+    $('#popin').load('SqlLib.jsp?Lign='+value);
+//    $('#popin').show();
+}
