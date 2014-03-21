@@ -58,7 +58,7 @@
                     "aoColumns": [
                         {"sName": "Name", "sWidth": "10%"},
                         {"sName": "Type", "sWidth": "10%"},
-                        {"sName": "Envelope", "sWidth": "40%", "format":"text"},
+                        {"sName": "Envelope", "sWidth": "40%"},
                         {"sName": "Description", "sWidth": "40%"},
                         {"sName": "ServicePath", "sWidth": "40%"},
                         {"sName": "Method", "sWidth": "40%"},
@@ -137,7 +137,6 @@
             <form id="formAddNewRow" action="#" title="Add SOAP Data" method="post">
                
                     <label for="Name" style="font-weight:bold" >Name</label>
-                    
                     <input id="Name" name="Name" style="width:150px;" 
                            class="ncdetailstext" rel="0" >
                     
@@ -169,11 +168,11 @@
  
                 
                     <label for="Envelope" style="font-weight:bold">Envelope</label>
-                    <input id="Envelope" name="Envelope" style="width:780px;" 
-                           class="ncdetailstext" rel="6" >
-                
+                    <textarea id="Envelope" name="Envelope" style="width:780px;" rows="5" 
+                           class="ncdetailstext" rel="6"></textarea>
+                          
                     <br>
-                   <div style="width: 250px; float:right">
+                    <div style="width: 250px; float:right">
                     <button id="btnAddNewRowOk">Add</button>
                     <button id="btnAddNewRowCancel">Cancel</button>
                     </div>

@@ -22,6 +22,7 @@ import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
+import org.springframework.web.util.HtmlUtils;
 
 /**
  *
@@ -46,9 +47,9 @@ public class CreateSoapLibrary extends HttpServlet {
         try {
             final String type = policy.sanitize(request.getParameter("Type"));
             final String name = policy.sanitize(request.getParameter("Name"));
-            //String envelope = policy.sanitize(request.getParameter("Envelope"));
-            // Pas d'utilisation du Sanitizers pour ce paramètre là. 
+            // CTE - on utilise la méthode utilitaire pour encoder le xml
             final String envelope = request.getParameter("Envelope");
+            final String envelopeBDD = HtmlUtils.htmlEscape(envelope);
             final String description = policy.sanitize(request.getParameter("Description"));
             final String servicePath = policy.sanitize(request.getParameter("ServicePath"));
             final String parsingAnswer = policy.sanitize(request.getParameter("ParsingAnswer"));
@@ -58,7 +59,7 @@ public class CreateSoapLibrary extends HttpServlet {
             final ISoapLibraryService soapLibraryService = appContext.getBean(ISoapLibraryService.class);
             final IFactorySoapLibrary factorySoapLibrary = appContext.getBean(IFactorySoapLibrary.class);
         
-            final SoapLibrary soapLib = factorySoapLibrary.create(type, name, envelope, description, servicePath, parsingAnswer, method);
+            final SoapLibrary soapLib = factorySoapLibrary.create(type, name, envelopeBDD, description, servicePath, parsingAnswer, method);
             soapLibraryService.createSoapLibrary(soapLib);
             
             response.sendRedirect("SoapLibrary.jsp");

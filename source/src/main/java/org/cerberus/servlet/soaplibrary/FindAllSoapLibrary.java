@@ -32,6 +32,8 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  */
 public class FindAllSoapLibrary extends HttpServlet{
     
+    private final static String ASC = "asc";
+    
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -53,7 +55,7 @@ public class FindAllSoapLibrary extends HttpServlet{
             final String sAmount = policy.sanitize(request.getParameter("iDisplayLength"));
             final String sCol = policy.sanitize(request.getParameter("iSortCol_0"));
             final String sdir = policy.sanitize(request.getParameter("sSortDir_0"));
-            String dir = "asc";
+            String dir = ASC;
             final String[] cols = { "Name", "Type", "Envelope", "Description", "ServicePath", "Method", "ParsingAnswer}"};
 
             //JSONObject result = new JSONObject();
@@ -139,7 +141,7 @@ public class FindAllSoapLibrary extends HttpServlet{
                 }
             }
             if (sdir != null) {
-                if (!sdir.equals("asc")) {
+                if (!sdir.equals(ASC)) {
                     dir = "desc";
                 }
             }
@@ -162,6 +164,8 @@ public class FindAllSoapLibrary extends HttpServlet{
             JSONObject jsonResponse = new JSONObject();
 
             for (SoapLibrary soapLib : soapLibList) {
+                //String env1 = soapLib.getEnvelope().replaceAll("<", "$#60;");
+                //String env2 = env1.replaceAll(">", "$#62;");
                 JSONArray row = new JSONArray();
                 row.put(soapLib.getName())
                         .put(soapLib.getType())
@@ -181,7 +185,7 @@ public class FindAllSoapLibrary extends HttpServlet{
             jsonResponse.put("sEcho", echo);
             jsonResponse.put("iTotalRecords", iTotalRecords);
             jsonResponse.put("iTotalDisplayRecords", iTotalDisplayRecords);
-            
+             
 
             response.setContentType("application/json");
             response.getWriter().print(jsonResponse.toString());

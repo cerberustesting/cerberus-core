@@ -72,7 +72,7 @@ public class DeleteSoapLibrary extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         try {
-            processRequest(request, response);
+            this.processRequest(request, response);
         } catch (CerberusException ex) {
             MyLogger.log(DeleteSoapLibrary.class.getName(), Level.FATAL, ex.toString());
         }
@@ -90,7 +90,7 @@ public class DeleteSoapLibrary extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         try {
-            processRequest(request, response);
+            this.processRequest(request, response);
         } catch (CerberusException ex) {
             MyLogger.log(DeleteSoapLibrary.class.getName(), Level.FATAL, ex.toString());
         }

@@ -3,11 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package org.cerberus.servlet.soaplibrary;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -20,14 +20,15 @@ import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
+import org.springframework.web.util.HtmlUtils;
 
 /**
  *
  * @author cte
  */
 public class UpdateSoapLibrary extends HttpServlet {
-    
-        /**
+
+    /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
      *
@@ -45,21 +46,26 @@ public class UpdateSoapLibrary extends HttpServlet {
         try {
             final String name = policy.sanitize(request.getParameter("id"));
             final String columnName = policy.sanitize(request.getParameter("columnName"));
-            // Valeur à pousser en BDD
-            final String valueBdd = request.getParameter("value");
-            // Valeur à retourner à l'IHM
-            final String value = policy.sanitize(request.getParameter("value"));
-            
-        final ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-        final ISoapLibraryService soapLibService = appContext.getBean(ISoapLibraryService.class);
-        soapLibService.updateSoapLibrary(name, columnName, valueBdd);
-           
-        out.print(value);
+            // CTE Cas particulier pour cette colonne - Le contenu est du xml on remplace les caractères spéciaux pour avoir un affichage correct
+            if ("Envelope".equals(columnName)){
+                final String value = request.getParameter("value");
+                final String valueHTML = HtmlUtils.htmlEscape(value);
+                final ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+                final ISoapLibraryService soapLibService = appContext.getBean(ISoapLibraryService.class);
+                soapLibService.updateSoapLibrary(name, columnName, valueHTML);
+                out.print(valueHTML);
+            } else {
+                final String value = policy.sanitize(request.getParameter("value"));
+                final ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+                final ISoapLibraryService soapLibService = appContext.getBean(ISoapLibraryService.class);
+                soapLibService.updateSoapLibrary(name, columnName, value);
+                out.print(value);
+            }
         } finally {
             out.close();
         }
     }
-    
+
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.
