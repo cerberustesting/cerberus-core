@@ -778,6 +778,7 @@
                                     %>
                                     <td><%out.print(dbDocS(conn, "testcase", "comment", "Comment"));%></td> 
                                     <td style="width:5%" ><%out.print(dbDocS(conn, "testcase", "bugID", "BugID"));%></td>
+                                    <td style="width:5%" ><%out.print(dbDocS(conn, "invariant", "GROUP", "Group"));%></td>
                                 </tr>
                                 <%
                                     // out.println(tcclauses);
@@ -791,7 +792,7 @@
                                     Statement stmt2 = conn.createStatement();
                                     ResultSet rs_time = stmt2.executeQuery("select tc.test, tc.testcase, "
                                             + " tc.application, tc.description, tc.behaviororvalueexpected, tc.Status, "
-                                            + " tc.priority, tc.comment, tc.bugID, tc.TargetBuild, tc.TargetRev, tc.group "
+                                            + " tc.priority, tc.comment, tc.bugID, tc.TargetBuild, tc.TargetRev, tc.Group "
                                             + " from testcase tc "
                                             + " join application a on a.application = tc.application "
                                             + tcclauses
@@ -811,20 +812,14 @@
                                             do {
                                                 if (!rs_test.getString("test").equals(rs_time.getString("tc.test"))) {%>
                                 <tr id="header">
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
+                                    <td colspan="6"></td>
                                     <%
                                         for (int i = 0; i < country_list.length; i++) {
                                     %> 
                                     <td colspan="2" style="text-align: center"> 
                                         <%=country_list[i]%> </td>
                                         <%}%>
-                                    <td></td>
-                                    <td></td>
+                                    <td colspan="3"></td>
                                 </tr>
 
                                 <%
@@ -833,21 +828,15 @@
                                     }
                                     if (j == 12) {%>
                                 <tr style="font-size : x-small ;" class="reportDelimiter">
-                                    <td class="INF"></td>
-                                    <td class="INF"></td>
-                                    <td class="INF"></td>
-                                    <td class="INF"></td>
-                                    <td class="INF"></td>
-                                    <td class="INF"></td>
+                                    <td colspan="6" ></td>
                                     <%
                                         for (int i = 0; i < country_list.length; i++) {
                                     %> 
-                                    <td class="INF" colspan="2" style="text-align: center"> 
+                                    <td colspan="2" style="text-align: center"> 
                                         <%=country_list[i]%> </td>
 
                                     <%}%>
-                                    <td class="INF"></td>
-                                    <td class="INF"></td>
+                                    <td colspan="3" ></td>
                                 </tr>
 
                                 <%
@@ -1007,16 +996,18 @@
                                             }
                                             if ((rs_time.getString("tc.TargetBuild") != null) && (rs_time.getString("tc.TargetBuild").equalsIgnoreCase("") == false)) {
                                         %> for <%=rs_time.getString("tc.TargetBuild")%>/<%=rs_time.getString("tc.TargetRev")%><%
-                                            }%></td>   
+                                            }%></td>
+                                <td class="INF"><%
+                                    if (rs_time.getString("tc.Group") != null) {%><%=rs_time.getString("tc.Group")%><%}%></td>
+
                                 </tr>
 
                                 <%
                                 } else {
                                     // do{
                                     for (int i = 0; i < country_list.length; i++) {
-                                %>
-                                <td class="NOINF"></td><td class="NOINF"></td>
-                                <%                                                              }
+                                        %><td class="NOINF"></td><td class="NOINF"></td><%                                                              
+                                    }
                                 %>
                                 <td class="INF"><%
                                     if (rs_time.getString("tc.Comment") != null) {%><%=rs_time.getString("tc.Comment")%><%}%></td>
@@ -1033,7 +1024,10 @@
                                         }
                                         if ((rs_time.getString("tc.TargetBuild") != null) && (rs_time.getString("tc.TargetBuild").equalsIgnoreCase("") == false)) {
                                     %> for <%=rs_time.getString("tc.TargetBuild")%>/<%=rs_time.getString("tc.TargetRev")%><%
-                                        }%></td>  
+                                        }%></td>
+                                <td class="INF"><%
+                                    if (rs_time.getString("tc.Group") != null) {%><%=rs_time.getString("tc.Group")%><%}%></td>
+
 
                                 <%    }
                                                 j++;
