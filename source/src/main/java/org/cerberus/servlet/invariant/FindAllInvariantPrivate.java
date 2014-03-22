@@ -51,7 +51,7 @@ public class FindAllInvariantPrivate extends HttpServlet {
             String sCol = request.getParameter("iSortCol_0");
             String sdir = request.getParameter("sSortDir_0");
             String dir = "asc";
-            String[] cols = {"idname", "sort", "value", "description", "VeryShortDesc", "gp1", "gp2", "gp3"};
+            String[] cols = {"idname", "value", "sort", "description", "VeryShortDesc", "gp1", "gp2", "gp3"};
 
             JSONObject result = new JSONObject();
             JSONArray array = new JSONArray();
@@ -63,7 +63,7 @@ public class FindAllInvariantPrivate extends HttpServlet {
             String sValue = "";
 
             sIdname = ParameterParserUtil.parseStringParam(request.getParameter("sSearch_0"), "");
-            sValue = ParameterParserUtil.parseStringParam(request.getParameter("sSearch_2"), "");
+            sValue = ParameterParserUtil.parseStringParam(request.getParameter("sSearch_1"), "");
 
             List<String> sArray = new ArrayList<String>();
             if (!sIdname.equals("")) {
@@ -92,7 +92,7 @@ public class FindAllInvariantPrivate extends HttpServlet {
             }
             if (sAmount != null) {
                 amount = Integer.parseInt(sAmount);
-            }else{
+            } else {
                 amount = 10;
             }
 

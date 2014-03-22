@@ -51,7 +51,7 @@ public class FindAllInvariantPublic extends HttpServlet {
             String sCol = request.getParameter("iSortCol_0");
             String sdir = request.getParameter("sSortDir_0");
             String dir = "asc";
-            String[] cols = {"key", "idname", "sort", "value", "description", "VeryShortDesc", "gp1", "gp2", "gp3"};
+            String[] cols = {"key", "idname", "value", "sort", "description", "VeryShortDesc", "gp1", "gp2", "gp3"};
 
             JSONObject result = new JSONObject();
             JSONArray array = new JSONArray();
@@ -62,8 +62,8 @@ public class FindAllInvariantPublic extends HttpServlet {
             String sIdname = "";
             String sValue = "";
 
-            sIdname = ParameterParserUtil.parseStringParam(request.getParameter("sSearch_0"), "");
-            sValue = ParameterParserUtil.parseStringParam(request.getParameter("sSearch_1"), "");
+            sIdname = ParameterParserUtil.parseStringParam(request.getParameter("sSearch_1"), "");
+            sValue = ParameterParserUtil.parseStringParam(request.getParameter("sSearch_2"), "");
 
             List<String> sArray = new ArrayList<String>();
             if (!sIdname.equals("")) {
