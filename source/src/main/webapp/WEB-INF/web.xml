@@ -317,6 +317,22 @@
         <servlet-name>DeleteInvariant</servlet-name>
         <servlet-class>org.cerberus.servlet.invariant.DeleteInvariant</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>GetProject</servlet-name>
+        <servlet-class>org.cerberus.servlet.project.GetProject</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>CreateProject</servlet-name>
+        <servlet-class>org.cerberus.servlet.project.CreateProject</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>DeleteProject</servlet-name>
+        <servlet-class>org.cerberus.servlet.project.DeleteProject</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>UpdateProject</servlet-name>
+        <servlet-class>org.cerberus.servlet.project.UpdateProject</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>RunTestCase</servlet-name>
         <url-pattern>/RunTestCase</url-pattern>
@@ -617,6 +633,22 @@
         <servlet-name>DeleteInvariant</servlet-name>
         <url-pattern>/DeleteInvariant</url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>GetProject</servlet-name>
+        <url-pattern>/GetProject</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>CreateProject</servlet-name>
+        <url-pattern>/CreateProject</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DeleteProject</servlet-name>
+        <url-pattern>/DeleteProject</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>UpdateProject</servlet-name>
+        <url-pattern>/UpdateProject</url-pattern>
+    </servlet-mapping>
     <session-config>
         <session-timeout>
             60
@@ -775,6 +807,7 @@
             <url-pattern>/EnvironmentList.jsp</url-pattern>
             <url-pattern>/IntegrationStatus.jsp</url-pattern>
             <url-pattern>/Notification.jsp</url-pattern>
+            <url-pattern>/Project.jsp</url-pattern>
         </web-resource-collection>
         <web-resource-collection>
             <web-resource-name>servlet</web-resource-name>
@@ -783,6 +816,7 @@
             <url-pattern>/GetApplication</url-pattern>
             <url-pattern>/GetDeployTypeList</url-pattern>
             <url-pattern>/GetBuildRevisionInvariant</url-pattern>
+            <url-pattern>/GetProject</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <description>IntegratorRO</description>
@@ -798,6 +832,9 @@
             <url-pattern>/UpdateBuildRevisionParameter</url-pattern>
             <url-pattern>/UpdateCountryEnv</url-pattern>
             <url-pattern>/DeleteBuildRevisionInvariant</url-pattern>
+            <url-pattern>/CreateProject</url-pattern>
+            <url-pattern>/DeleteProject</url-pattern>
+            <url-pattern>/UpdateProject</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <description>Integrator</description>

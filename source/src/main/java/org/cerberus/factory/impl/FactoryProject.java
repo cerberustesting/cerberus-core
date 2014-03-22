@@ -39,5 +39,4 @@ public class FactoryProject implements IFactoryProject {
         project.setIdProject(idProject);
         return project;
     }
-
 }

@@ -182,7 +182,7 @@
                                                 <td class="wob"><input id="createRefOrigine" style="width: 90px;" name="createRefOrigine"></td>
                                                 <td class="wob" style="visibility:hidden"><input id="createCreator" style="width: 90px;" name="createCreator"></td>
                                                 <td class="wob">
-                                                    <% out.print(ComboProject(conn, "createProject", "width: 90px", "createProject", "", "", "", false, "", ""));%>
+                                                    <% out.print(ComboProject(conn, "createProject", "width: 90px", "createProject", "", "", "", true, "", "No Project Defined."));%>
                                                 </td>
                                                 <td class="wob"><input id="createTicket" style="width: 90px;" name="createTicket"></td>
                                                 <td class="wob"><input id="createBugID" style="width: 70px;" name="createBugID"></td>

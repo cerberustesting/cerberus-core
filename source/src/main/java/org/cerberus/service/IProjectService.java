@@ -20,7 +20,6 @@
 package org.cerberus.service;
 
 import java.util.List;
-
 import org.cerberus.entity.Project;
 import org.cerberus.exception.CerberusException;
 
@@ -29,13 +28,20 @@ import org.cerberus.exception.CerberusException;
  * @author bcivel
  */
 public interface IProjectService {
-  
+
     /**
      * @param project
      * @return the project object
      * @throws CerberusException if not exist.
      */
     Project findProjectByKey(String project) throws CerberusException;
+
+    /**
+     * @param project
+     * @return the project object
+     * @throws CerberusException if not exist.
+     */
+    List<Project> findAllProject() throws CerberusException;
 
     List<String> findListOfProjectDescription();
 
@@ -46,5 +52,10 @@ public interface IProjectService {
      */
     boolean isProjectExist(String project);
     
-    
+    public void createProject(Project project) throws CerberusException;
+
+    public void deleteProject(Project project) throws CerberusException;
+
+    public void updateProject(Project project) throws CerberusException;
+
 }

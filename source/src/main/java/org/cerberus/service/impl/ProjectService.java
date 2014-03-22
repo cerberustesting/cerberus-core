@@ -62,6 +62,11 @@ public class ProjectService implements IProjectService {
     }
 
     @Override
+    public List<Project> findAllProject() throws CerberusException {
+        return projectDao.findAllProject();
+    }
+
+    @Override
     public boolean isProjectExist(String project) {
         try {
             findProjectByKey(project);
@@ -69,6 +74,21 @@ public class ProjectService implements IProjectService {
         } catch (CerberusException e) {
             return false;
         }
+    }
+
+    @Override
+    public void createProject(Project project) throws CerberusException {
+        projectDao.createProject(project);
+    }
+
+    @Override
+    public void deleteProject(Project project) throws CerberusException {
+        projectDao.deleteProject(project);
+    }
+
+    @Override
+    public void updateProject(Project project) throws CerberusException {
+        projectDao.updateProject(project);
     }
 
 }

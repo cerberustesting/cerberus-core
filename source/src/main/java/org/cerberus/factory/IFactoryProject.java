@@ -26,6 +26,6 @@ import org.cerberus.entity.Project;
  * @author bcivel
  */
 public interface IFactoryProject {
-    
-    Project create(String idProject,String code,String description,String active,String dateCreation);
+
+    Project create(String idProject, String code, String description, String active, String dateCreation);
 }

@@ -161,7 +161,7 @@
                            class="ncdetailstext" rel="0" >
                 </div>
                     <label for="IDName" style="font-weight:bold">ID Name</label>
-                    <%=ComboInvariantAjax(conn, "IDName", "", "defaultSystem", "1", "INVARIANTPUBLIC", "", "", false)%>
+                    <%=ComboInvariantAjax(conn, "IDName", "", "IDName", "1", "INVARIANTPUBLIC", "", "", false)%>
                     
                     <label for="Value" style="font-weight:bold">Value</label>
                     <input id="Value" name="Value" style="width:150px;" 

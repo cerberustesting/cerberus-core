@@ -214,7 +214,7 @@
         try {
             Statement stmtQuery = conn.createStatement();
             try {
-                String sq = "SELECT idproject, VCCode, Description, active FROM project ORDER BY idproject";
+                String sq = "SELECT idproject, VCCode, Description, active FROM project WHERE active='Y' or idproject='" + value + "' ORDER BY idproject";
                 ResultSet q = stmtQuery.executeQuery(sq);
                 try {
                     String ret = "<select id=\"" + HTMLId + "\" class=\"" + HTMLClass + "\" style=\"" + HTMLComboStyle + "\" name=\"" + HTMLComboName + "\"";

@@ -42,6 +42,7 @@ import org.cerberus.log.MyLogger;
 import org.cerberus.service.ILogEventService;
 import org.cerberus.service.impl.LogEventService;
 import org.cerberus.service.impl.UserService;
+import org.cerberus.util.StringUtil;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -140,33 +141,47 @@ public class CreateTestCase extends HttpServlet {
                 stmt.setString(2, testcase);
                 ResultSet rs_control = stmt.executeQuery();
                 try {
+                    PreparedStatement stmt2 = null;
                     if (rs_control.first()) {
                         out.print("The testcase number already exists. Please, go back to the previous page and choose another testcase number");
                     } else {
-                        PreparedStatement stmt2 = connection.prepareStatement("INSERT INTO testcase (`Test`,`TestCase`,`Application`,`Project` ,`Ticket`,`Description`,"
+                        StringBuilder SQLStmt2 = new StringBuilder("");
+                        SQLStmt2.append("INSERT INTO testcase (`Test`,`TestCase`,`Application`,`Ticket`,`Description`,"
                                 + " `BehaviorOrValueExpected` ,`activeQA`,`activeUAT`,`activePROD`,`Priority`,`Status`,`TcActive`,`Origine`,"
-                                + " `HowTo`,`BugID`, `RefOrigine`, `group`, `Creator`) " + " VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-                        try {
-                            stmt2.setString(1, test);
-                            stmt2.setString(2, testcase);
-                            stmt2.setString(3, app);
-                            stmt2.setString(4, project);
-                            stmt2.setString(5, ticket);
-                            stmt2.setString(6, description);
-                            stmt2.setString(7, valueExpected);
-                            stmt2.setString(8, runQA);
-                            stmt2.setString(9, runUAT);
-                            stmt2.setString(10, runPROD);
-                            stmt2.setString(11, priority);
-                            stmt2.setString(12, status);
-                            stmt2.setString(13, "N");
-                            stmt2.setString(14, origine);
-                            stmt2.setString(15, howTo);
-                            stmt2.setString(16, bugID);
-                            stmt2.setString(17, refOrigine);
-                            stmt2.setString(18, group);
-                            stmt2.setString(19, request.getUserPrincipal().getName());
+                                + " `HowTo`,`BugID`, `RefOrigine`, `group`, `Creator` ");
+                        if (!(StringUtil.isNullOrEmpty(project))) {
+                            SQLStmt2.append(",`Project` ");
+                        }
+                        SQLStmt2.append(") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?");
+                        if (!(StringUtil.isNullOrEmpty(project))) {
+                            SQLStmt2.append(", ?");
+                        }
+                        SQLStmt2.append(") ");
+                        MyLogger.log(CreateTestCase.class.getName(), Level.DEBUG, SQLStmt2.toString());
+                        stmt2 = connection.prepareStatement(SQLStmt2.toString());
+                        stmt2.setString(1, test);
+                        stmt2.setString(2, testcase);
+                        stmt2.setString(3, app);
+                        stmt2.setString(4, ticket);
+                        stmt2.setString(5, description);
+                        stmt2.setString(6, valueExpected);
+                        stmt2.setString(7, runQA);
+                        stmt2.setString(8, runUAT);
+                        stmt2.setString(9, runPROD);
+                        stmt2.setString(10, priority);
+                        stmt2.setString(11, status);
+                        stmt2.setString(12, "N");
+                        stmt2.setString(13, origine);
+                        stmt2.setString(14, howTo);
+                        stmt2.setString(15, bugID);
+                        stmt2.setString(16, refOrigine);
+                        stmt2.setString(17, group);
+                        stmt2.setString(18, request.getUserPrincipal().getName());
+                        if (!(StringUtil.isNullOrEmpty(project))) {
+                            stmt2.setString(19, project);
+                        }
 
+                        try {
                             stmt2.executeUpdate();
                         } finally {
                             stmt2.close();
@@ -216,21 +231,20 @@ public class CreateTestCase extends HttpServlet {
                     connection.close();
                 }
             } catch (SQLException e) {
-                MyLogger.log(DeleteTestCase.class.getName(), Level.WARN, e.toString());
+                MyLogger.log(CreateTestCase.class.getName(), Level.WARN, e.toString());
             }
         }
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-
     /**
      * Handles the HTTP
      * <code>GET</code> method.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -242,10 +256,10 @@ public class CreateTestCase extends HttpServlet {
      * Handles the HTTP
      * <code>POST</code> method.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)

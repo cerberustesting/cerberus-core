@@ -20,6 +20,7 @@ package org.cerberus.dao;
 import java.util.List;
 
 import org.cerberus.entity.Project;
+import org.cerberus.exception.CerberusException;
 
 /**
  *
@@ -30,4 +31,10 @@ public interface IProjectDAO {
     Project findProjectByKey(String project);
 
     List<Project> findAllProject();
+
+    public void createProject(Project project) throws CerberusException;
+
+    public void deleteProject(Project project) throws CerberusException;
+
+    public void updateProject(Project project) throws CerberusException;
 }
