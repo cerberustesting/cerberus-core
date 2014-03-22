@@ -3138,6 +3138,11 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("ALTER TABLE `testcase` ADD CONSTRAINT `FK_testcase_03` FOREIGN KEY (`Project`) REFERENCES `project` (`idproject`) ON DELETE SET NULL ON UPDATE CASCADE;");
         SQLInstruction.add(SQLS.toString());
 
-        return SQLInstruction;
+// Added Description column in TestData Table
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testdata` ADD COLUMN `Description` VARCHAR(1000) NULL DEFAULT ''  AFTER `value` ;");
+        SQLInstruction.add(SQLS.toString());
+
+return SQLInstruction;
     }
 }

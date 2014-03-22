@@ -48,12 +48,13 @@ public class CreateTestData extends HttpServlet {
         try {
             String key = request.getParameter("Key");
             String value = request.getParameter("Value");
+            String desc = request.getParameter("Description");
 
             ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
             ITestDataService testDataService = appContext.getBean(ITestDataService.class);
             IFactoryTestData factoryTestData = appContext.getBean(IFactoryTestData.class);
 
-            TestData testData = factoryTestData.create(key, value);
+            TestData testData = factoryTestData.create(key, value, desc);
             testDataService.createTestData(testData);
 
             /**

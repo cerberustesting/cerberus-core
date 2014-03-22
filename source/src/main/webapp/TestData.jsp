@@ -19,7 +19,7 @@
 --%>
 
 <!DOCTYPE html>
-<% Date DatePageStart = new Date() ; %>
+<% Date DatePageStart = new Date();%>
 <html>
     <head>
         <title>Test Data</title>
@@ -44,7 +44,7 @@
 
             $(document).ready(function() {
                 var oTable = $('#testDataList').dataTable({
-                    "aaSorting": [[0, "desc"]],
+                    "aaSorting": [[0, "asc"]],
                     "bServerSide": true,
                     "sAjaxSource": "FindAllTestData",
                     "bJQueryUI": true,
@@ -56,11 +56,12 @@
                     "aTargets": [0],
                     "iDisplayLength": 25,
                     "aoColumns": [
-                        {"sName": "Key", "sWidth": "50%"},
-                        {"sName": "Value", "sWidth": "50%", "sClass": "center"}
+                        {"sName": "Key", "sWidth": "20%"},
+                        {"sName": "Value", "sWidth": "30%", "sClass": "center"},
+                        {"sName": "Description", "sWidth": "50%", "sClass": "center"}
                     ]
                 }
-                ).makeEditable({
+            ).makeEditable({
                     sAddURL: "CreateTestData",
                     sAddHttpMethod: "POST",
                     oAddNewRowButtonOptions: {
@@ -83,10 +84,12 @@
                         title: 'Add Data',
                         show: "blind",
                         hide: "explode",
-                        width: "1000px"
+                        width: "950px"
                     },
                     "aoColumns": [
                         null,
+                        {onblur: 'submit',
+                            placeholder: ''},
                         {onblur: 'submit',
                             placeholder: ''}
 
@@ -109,6 +112,7 @@
                     <tr>
                         <th>Key</th>
                         <th>Value</th>
+                        <th>Description</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -117,19 +121,23 @@
         </div>
         <div>
             <form id="formAddNewRow" action="#" title="Add Data" style="width:350px" method="post">
-                <div style="width: 310px; float:left">
-                    <label for="Key" style="font-weight:bold">Key</label>
-                    <input id="Key" name="Key" style="width:210px;" 
-                           class="ncdetailstext" rel="0" >
-                </div>
-                <div style="width: 250px; float:left">
-                    <label for="Value" style="font-weight:bold">Value</label>
-                    <input id="Value" name="Value" style="width:150px;" 
-                           class="ncdetailstext" rel="1" >
-                </div>
+                <label for="Key" style="font-weight:bold">Key</label>
+                <input id="Key" name="Key" style="width:300px;" 
+                       class="ncdetailstext" rel="0" >
+                <label for="Value" style="font-weight:bold">Value</label>
+                <input id="Value" name="Value" style="width:500px;" 
+                       class="ncdetailstext" rel="1" >
                 <br />
-                <button id="btnAddNewRowOk">Add</button>
-                <button id="btnAddNewRowCancel">Cancel</button>
+                <br />
+                <label for="Description" style="font-weight:bold">Description</label>
+                <input id="Description" name="Description" style="width:800px;" 
+                       class="ncdetailstext" rel="2" >
+                <br />
+                <br />
+                <div style="width: 250px; float:right">
+                    <button id="btnAddNewRowOk">Add</button>
+                    <button id="btnAddNewRowCancel">Cancel</button>
+                </div>
             </form>
         </div>
         <br><%

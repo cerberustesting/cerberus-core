@@ -33,5 +33,5 @@ public interface IFactoryTestData {
      * @param value Value related to the key
      * @return a TestData
      */
-    TestData create(String key, String value);
+    TestData create(String key, String value, String description);
 }

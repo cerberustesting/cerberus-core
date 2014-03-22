@@ -44,7 +44,7 @@
 
             $(document).ready(function() {
                 var oTable = $('#soapLibraryList').dataTable({
-                    "aaSorting": [[1, "desc"]],
+                    "aaSorting": [[1, "asc"]],
                     "bServerSide": true,
                     "sAjaxSource": "FindAllSoapLibrary",
                     "bJQueryUI": true,
@@ -88,7 +88,7 @@
                         title: 'Add SOAP Data',
                         show: "blind",
                         hide: "explode",
-                        width: "1000px"
+                        width: "900px"
                     },
                     "aoColumns": [
                         null,
@@ -137,18 +137,20 @@
             <form id="formAddNewRow" action="#" title="Add SOAP Data" method="post">
                
                     <label for="Name" style="font-weight:bold" >Name</label>
-                    <input id="Name" name="Name" style="width:150px;" 
+                    <input id="Name" name="Name" style="width:250px;" 
                            class="ncdetailstext" rel="0" >
-                    
                
                     <label for="Type" style="font-weight:bold">Type</label>
-                    <input id="Type" name="Type" style="width:150px;" 
+                    <input id="Type" name="Type" style="width:250px;" 
                            class="ncdetailstext" rel="1" >
+                    <br>
+                    <br>
                    
                
                     <label for="Description" style="font-weight:bold">Description</label>
-                    <input id="Description" name="Description" style="width:200px;"
+                    <input id="Description" name="Description" style="width:700px;"
                            class="ncdetailstext" rel="2" >
+                    <br>
                     <br>
                 
                     <label for="ServicePath" style="font-weight:bold">ServicePath</label>
@@ -161,9 +163,11 @@
                            class="ncdetailstext" rel="4" >
                 
                     <br>
+                    <br>
                     <label for="ParsingAnswer" style="font-weight:bold">ParsingAnswer</label>
                     <input id="ParsingAnswer" name="ParsingAnswer" style="width:750px;" 
                            class="ncdetailstext" rel="5" >
+                    <br>
                     <br>
  
                 
@@ -171,6 +175,7 @@
                     <textarea id="Envelope" name="Envelope" style="width:780px;" rows="5" 
                            class="ncdetailstext" rel="6"></textarea>
                           
+                    <br>
                     <br>
                     <div style="width: 250px; float:right">
                     <button id="btnAddNewRowOk">Add</button>

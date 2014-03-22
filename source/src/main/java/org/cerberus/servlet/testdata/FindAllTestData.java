@@ -30,8 +30,9 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 public class FindAllTestData extends HttpServlet {
 
     /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
+     * Processes requests for both HTTP
+     * <code>GET</code> and
+     * <code>POST</code> methods.
      *
      * @param request servlet request
      * @param response servlet response
@@ -49,10 +50,10 @@ public class FindAllTestData extends HttpServlet {
             String sCol = request.getParameter("iSortCol_0");
             String sdir = request.getParameter("sSortDir_0");
             String dir = "asc";
-            String[] cols = {"Key", "Value"};
+            String[] cols = {"Key", "Value", "Description"};
 
-/*            JSONObject result = new JSONObject();
-            JSONArray array = new JSONArray();*/
+            /*            JSONObject result = new JSONObject();
+             JSONArray array = new JSONArray();*/
 
             int amount = 10;
             int start = 0;
@@ -130,14 +131,15 @@ public class FindAllTestData extends HttpServlet {
             for (TestData testData : testList) {
                 JSONArray row = new JSONArray();
                 row.put(testData.getKey())
-                        .put(testData.getValue());
+                        .put(testData.getValue())
+                        .put(testData.getDescription());
 
                 data.put(row);
             }
-            
+
             Integer iTotalRecords = testDataService.getNumberOfTestDataPerCriteria("", "");
             Integer iTotalDisplayRecords = testDataService.getNumberOfTestDataPerCriteria(searchTerm, inds);
-            
+
             jsonResponse.put("aaData", data);
             jsonResponse.put("sEcho", echo);
             jsonResponse.put("iTotalRecords", iTotalRecords);
@@ -154,7 +156,8 @@ public class FindAllTestData extends HttpServlet {
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
-     * Handles the HTTP <code>GET</code> method.
+     * Handles the HTTP
+     * <code>GET</code> method.
      *
      * @param request servlet request
      * @param response servlet response
@@ -168,7 +171,8 @@ public class FindAllTestData extends HttpServlet {
     }
 
     /**
-     * Handles the HTTP <code>POST</code> method.
+     * Handles the HTTP
+     * <code>POST</code> method.
      *
      * @param request servlet request
      * @param response servlet response
@@ -190,5 +194,4 @@ public class FindAllTestData extends HttpServlet {
     public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
-
 }

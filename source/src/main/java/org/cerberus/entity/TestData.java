@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package org.cerberus.entity;
 
 /**
@@ -11,9 +10,10 @@ package org.cerberus.entity;
  * @author bcivel
  */
 public class TestData {
-    
+
     private String key;
     private String value;
+    private String description;
 
     public String getKey() {
         return key;
@@ -30,5 +30,12 @@ public class TestData {
     public void setValue(String value) {
         this.value = value;
     }
-    
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
 }

@@ -46,15 +46,27 @@ public class UpdateTestData extends HttpServlet {
         response.setContentType("text/html;charset=UTF-8");
         PrintWriter out = response.getWriter();
         try {
-            //String key = request.getParameter("Key");
             String key = request.getParameter("id");
-            String value = request.getParameter("value");
+            int columnPosition = Integer.parseInt(request.getParameter("columnPosition"));
+            String value = request.getParameter("value").replaceAll("'", "");
 
             ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
             ITestDataService testDataService = appContext.getBean(ITestDataService.class);
             IFactoryTestData factoryTestData = appContext.getBean(IFactoryTestData.class);
 
-            TestData testData = factoryTestData.create(key, value);
+            TestData testData = testDataService.findTestDataByKey(key);
+
+            switch (columnPosition) {
+                case 0:
+                    break;
+                case 1:
+                    testData.setValue(value);
+                    break;
+                case 2:
+                    testData.setDescription(value);
+                    break;
+            }
+
             testDataService.updateTestData(testData);
 
             /**
@@ -68,9 +80,8 @@ public class UpdateTestData extends HttpServlet {
                 org.apache.log4j.Logger.getLogger(UserService.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex);
             }
 
-            String result = testDataService.findTestDataByKey(key).getValue();
 
-            out.print(result);
+            out.print(value);
         } finally {
             out.close();
         }

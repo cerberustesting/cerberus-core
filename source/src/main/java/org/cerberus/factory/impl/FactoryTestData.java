@@ -32,10 +32,11 @@ import org.springframework.stereotype.Service;
 public class FactoryTestData implements IFactoryTestData{
 
     @Override
-    public TestData create(String key, String value) {
+    public TestData create(String key, String value, String description) {
         TestData newData = new TestData();
         newData.setKey(key);
         newData.setValue(value);
+        newData.setDescription(description);
         return newData;
     }
     

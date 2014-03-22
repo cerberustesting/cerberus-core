@@ -19,7 +19,7 @@
 --%>
 
 <!DOCTYPE html>
-<% Date DatePageStart = new Date() ; %>
+<% Date DatePageStart = new Date();%>
 <html>
     <head>
         <title>SQL Library</title>
@@ -44,7 +44,7 @@
 
             $(document).ready(function() {
                 var oTable = $('#sqlLibraryList').dataTable({
-                    "aaSorting": [[1, "desc"]],
+                    "aaSorting": [[1, "asc"]],
                     "bServerSide": true,
                     "sAjaxSource": "FindAllSqlLibrary",
                     "bJQueryUI": true,
@@ -63,7 +63,7 @@
                         
                     ]
                 }
-                ).makeEditable({
+            ).makeEditable({
                     sAddURL: "CreateSqlLibrary",
                     sAddHttpMethod: "POST",
                     oAddNewRowButtonOptions: {
@@ -86,7 +86,7 @@
                         title: 'Add SQL Data',
                         show: "blind",
                         hide: "explode",
-                        width: "1000px"
+                        width: "900px"
                     },
                     "aoColumns": [
                         null,
@@ -126,29 +126,28 @@
         </div>
         <div>
             <form id="formAddNewRow" action="#" title="Add SQL Data" style="width:350px" method="post">
-                <div style="width: 250px; float:left">
-                    <label for="Name" style="font-weight:bold">Name</label>
-                    <input id="Name" name="Name" style="width:150px;" 
-                           class="ncdetailstext" rel="1" >
-                </div>
-                <div style="width: 310px; float:left">
-                    <label for="Type" style="font-weight:bold">Type</label>
-                    <input id="Type" name="Type" style="width:210px;" 
-                           class="ncdetailstext" rel="0" >
-                </div>
-                 <div style="width: 310px; float:left">
-                    <label for="Script" style="font-weight:bold">Script</label>
-                    <input id="Script" name="Script" style="width:210px;" 
-                           class="ncdetailstext" rel="2" >
-                </div>
-                <div style="width: 250px; float:left">
-                    <label for="Description" style="font-weight:bold">Description</label>
-                    <input id="Description" name="Description" style="width:150px;" 
-                           class="ncdetailstext" rel="3" >
-                </div>
+                <label for="Name" style="font-weight:bold">Name</label>
+                <input id="Name" name="Name" style="width:350px;" 
+                       class="ncdetailstext" rel="1" >
+                <label for="Type" style="font-weight:bold">Type</label>
+                <input id="Type" name="Type" style="width:350px;" 
+                       class="ncdetailstext" rel="0" >
                 <br />
-                <button id="btnAddNewRowOk">Add</button>
-                <button id="btnAddNewRowCancel">Cancel</button>
+                <br />
+                <label for="Description" style="font-weight:bold">Description</label>
+                <input id="Description" name="Description" style="width:750px;" 
+                       class="ncdetailstext" rel="3" >
+                <br />
+                <br />
+                <label for="Script" style="font-weight:bold">Script</label>
+                <textarea id="Script" name="Script" style="width:800px;" rows="5" 
+                       class="ncdetailstext" rel="2" ></textarea>
+                <br />
+                <br />
+                <div style="width: 250px; float:right">
+                    <button id="btnAddNewRowOk">Add</button>
+                    <button id="btnAddNewRowCancel">Cancel</button>
+                </div>
             </form>
         </div>
         <br><%

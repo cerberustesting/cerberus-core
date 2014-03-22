@@ -54,7 +54,7 @@ public class DeleteTestData extends HttpServlet {
             ITestDataService testDataService = appContext.getBean(ITestDataService.class);
             IFactoryTestData factoryTestData = appContext.getBean(IFactoryTestData.class);
 
-            TestData testData = factoryTestData.create(key, value);
+            TestData testData = factoryTestData.create(key, value, "");
             testDataService.deleteTestData(testData);
 
             /**

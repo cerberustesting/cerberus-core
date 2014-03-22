@@ -52,8 +52,8 @@ public class TestDataDAO implements ITestDataDAO {
     public void createTestData(TestData testData) throws CerberusException {
         boolean throwExcep = false;
         StringBuilder query = new StringBuilder();
-        query.append("INSERT INTO testdata (`key`, `value`) ");
-        query.append("VALUES (?,?)");
+        query.append("INSERT INTO testdata (`key`, `value`, `description`) ");
+        query.append("VALUES (?,?,?)");
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -61,6 +61,7 @@ public class TestDataDAO implements ITestDataDAO {
             try {
                 preStat.setString(1, testData.getKey());
                 preStat.setString(2, testData.getValue());
+                preStat.setString(3, testData.getDescription());
 
                 preStat.executeUpdate();
                 throwExcep = false;
@@ -90,14 +91,15 @@ public class TestDataDAO implements ITestDataDAO {
     public void updateTestData(TestData testData) throws CerberusException {
         boolean throwExcep = false;
         StringBuilder query = new StringBuilder();
-        query.append("update testdata set `value`=? where `key`=? ");
+        query.append("update testdata set `value`= ?, `description`= ? where `key`= ? ");
 
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
             try {
                 preStat.setString(1, testData.getValue());
-                preStat.setString(2, testData.getKey());
+                preStat.setString(2, testData.getDescription());
+                preStat.setString(3, testData.getKey());
 
                 preStat.executeUpdate();
                 throwExcep = false;
@@ -212,6 +214,9 @@ public class TestDataDAO implements ITestDataDAO {
         gSearch.append("%'");
         gSearch.append(" or `value` like '%");
         gSearch.append(searchTerm);
+        gSearch.append("%'");
+        gSearch.append(" or `description` like '%");
+        gSearch.append(searchTerm);
         gSearch.append("%')");
 
         if (!searchTerm.equals("") && !individualSearch.equals("")) {
@@ -279,8 +284,9 @@ public class TestDataDAO implements ITestDataDAO {
     private TestData loadTestDataFromResultSet(ResultSet resultSet) throws SQLException {
         String key = resultSet.getString("key");
         String value = resultSet.getString("value");
+        String description = resultSet.getString("description");
 
-        return factoryTestData.create(key, value);
+        return factoryTestData.create(key, value, description);
     }
 
     @Override
@@ -337,6 +343,9 @@ public class TestDataDAO implements ITestDataDAO {
         gSearch.append(searchTerm);
         gSearch.append("%'");
         gSearch.append(" or `value` like '%");
+        gSearch.append(searchTerm);
+        gSearch.append("%'");
+        gSearch.append(" or `description` like '%");
         gSearch.append(searchTerm);
         gSearch.append("%')");
 
