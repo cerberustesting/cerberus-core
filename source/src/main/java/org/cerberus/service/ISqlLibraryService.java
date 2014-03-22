@@ -86,5 +86,5 @@ public interface ISqlLibraryService {
      * @param inds part of the script to add to where clause (Exemple : `type` = 'Article')
      * @return The number of records for these criterias
      */
-    Integer getNumberOfSqlLibraryPerCrtiteria(String searchTerm, String inds);
+    Integer getNumberOfSqlLibraryPerCriteria(String searchTerm, String inds);
 }

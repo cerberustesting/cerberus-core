@@ -20,7 +20,7 @@
 package org.cerberus.service.impl;
 
 import java.util.List;
-import org.cerberus.dao.impl.SqlLibraryDAO;
+import org.cerberus.dao.ISqlLibraryDAO;
 import org.cerberus.entity.SqlLibrary;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.service.ISqlLibraryService;
@@ -35,7 +35,7 @@ import org.springframework.stereotype.Service;
 public class SqlLibraryService implements ISqlLibraryService {
 
     @Autowired
-    SqlLibraryDAO sqlLibraryDao;
+    ISqlLibraryDAO sqlLibraryDao;
 
     @Override
     public SqlLibrary findSqlLibraryByKey(String name) throws CerberusException {
@@ -73,7 +73,7 @@ public class SqlLibraryService implements ISqlLibraryService {
     }
 
     @Override
-    public Integer getNumberOfSqlLibraryPerCrtiteria(String searchTerm, String inds) {
-        return sqlLibraryDao.getNumberOfSqlLibraryPerCrtiteria(searchTerm, inds);
+    public Integer getNumberOfSqlLibraryPerCriteria(String searchTerm, String inds) {
+        return sqlLibraryDao.getNumberOfSqlLibraryPerCriteria(searchTerm, inds);
     }
 }

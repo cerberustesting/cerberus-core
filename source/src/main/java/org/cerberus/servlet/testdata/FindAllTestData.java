@@ -134,12 +134,14 @@ public class FindAllTestData extends HttpServlet {
 
                 data.put(row);
             }
+            
+            Integer iTotalRecords = testDataService.getNumberOfTestDataPerCriteria("", "");
+            Integer iTotalDisplayRecords = testDataService.getNumberOfTestDataPerCriteria(searchTerm, inds);
+            
             jsonResponse.put("aaData", data);
             jsonResponse.put("sEcho", echo);
-            jsonResponse.put("iTotalRecords", data.length());
-            //numberOfNC.getCount()
-            jsonResponse.put("iDisplayLength", data.length());
-            jsonResponse.put("iTotalDisplayRecords", data.length());
+            jsonResponse.put("iTotalRecords", iTotalRecords);
+            jsonResponse.put("iTotalDisplayRecords", iTotalDisplayRecords);
 
             response.setContentType("application/json");
             response.getWriter().print(jsonResponse.toString());

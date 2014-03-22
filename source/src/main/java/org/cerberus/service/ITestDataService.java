@@ -72,4 +72,12 @@ public interface ITestDataService {
      * @return 
      */
     TestData findTestDataByKey(String key) throws CerberusException;
+    
+    /**
+     * 
+     * @param searchTerm words to be searched in every column (Exemple : article)
+     * @param inds part of the script to add to where clause (Exemple : `type` = 'Article')
+     * @return The number of records for these criterias
+     */
+    Integer getNumberOfTestDataPerCriteria(String searchTerm, String inds);
 }

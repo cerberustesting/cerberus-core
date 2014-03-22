@@ -154,13 +154,13 @@ public class FindAllSqlLibrary extends HttpServlet {
                 data.put(row);
             }
             
-            Integer numberOfTotalRows = sqlLibService.getNumberOfSqlLibraryPerCrtiteria(searchTerm, inds);
+            Integer iTotalRecords = sqlLibService.getNumberOfSqlLibraryPerCriteria("", "");
+            Integer iTotalDisplayRecords = sqlLibService.getNumberOfSqlLibraryPerCriteria(searchTerm, inds);
             
             jsonResponse.put("aaData", data);
             jsonResponse.put("sEcho", echo);
-            jsonResponse.put("iTotalRecords", numberOfTotalRows);
-            jsonResponse.put("iDisplayLength", data.length());
-            jsonResponse.put("iTotalDisplayRecords", numberOfTotalRows);
+            jsonResponse.put("iTotalRecords", iTotalRecords);
+            jsonResponse.put("iTotalDisplayRecords", iTotalDisplayRecords);
             
 
             response.setContentType("application/json");

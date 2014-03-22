@@ -31,7 +31,7 @@ import org.cerberus.exception.CerberusException;
 public interface ISqlLibraryDAO {
 
     SqlLibrary findSqlLibraryByKey(String name) throws CerberusException;
-    
+
     /**
      *
      * @param sqlLibrary sqlLibrary to insert
@@ -66,25 +66,28 @@ public interface ISqlLibraryDAO {
      * @param column order the resultSet by this column
      * @param dir Asc or desc, information for the order by command
      * @param searchTerm search term on all the column of the resultSet
-     * @param individualSearch search term on a dedicated column of the resultSet
+     * @param individualSearch search term on a dedicated column of the
+     * resultSet
      * @return
      */
     List<SqlLibrary> findSqlLibraryListByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch);
-    
+
     /**
-     * 
+     *
      * @param name Key of the table
      * @param columnName Name of the column to update
-     * @param value New value of the field columnName for the key name 
-     * @throws CerberusException 
+     * @param value New value of the field columnName for the key name
+     * @throws CerberusException
      */
     void updateSqlLibrary(String name, String columnName, String value) throws CerberusException;
-    
+
     /**
-     * 
-     * @param searchTerm words to be searched in every column (Exemple : article)
-     * @param inds part of the script to add to where clause (Exemple : `type` = 'Article')
+     *
+     * @param searchTerm words to be searched in every column (Exemple :
+     * article)
+     * @param inds part of the script to add to where clause (Exemple : `type` =
+     * 'Article')
      * @return The number of records for these criterias
      */
-    Integer getNumberOfSqlLibraryPerCrtiteria(String searchTerm, String inds);
+    Integer getNumberOfSqlLibraryPerCriteria(String searchTerm, String inds);
 }

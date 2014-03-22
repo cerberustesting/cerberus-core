@@ -57,10 +57,9 @@ public class SqlLibraryDAO implements ISqlLibraryDAO {
     /**
      * Short one line description.
      * <p/>
-     * Longer description. If there were any, it would be here.
-     * <p>
-     * And even more explanations to follow in consecutive paragraphs separated
-     * by HTML paragraph breaks.
+     * Longer description. If there were any, it would be here. <p> And even
+     * more explanations to follow in consecutive paragraphs separated by HTML
+     * paragraph breaks.
      *
      * @param variable Description text text text.
      * @return Description text text text.
@@ -401,13 +400,13 @@ public class SqlLibraryDAO implements ISqlLibraryDAO {
     }
 
     @Override
-    public Integer getNumberOfSqlLibraryPerCrtiteria(String searchTerm, String inds) {
+    public Integer getNumberOfSqlLibraryPerCriteria(String searchTerm, String inds) {
         Integer result = 0;
         StringBuilder query = new StringBuilder();
         StringBuilder gSearch = new StringBuilder();
         String searchSQL = "";
 
-        query.append("SELECT count(*) FROM sqlLibrary");
+        query.append("SELECT count(*) FROM sqllibrary");
 
         gSearch.append(" where (`name` like '%");
         gSearch.append(searchTerm);

@@ -284,7 +284,7 @@ public class TestDataDAO implements ITestDataDAO {
     }
 
     @Override
-    public TestData findTestDataByKey(String key)  throws CerberusException {
+    public TestData findTestDataByKey(String key) throws CerberusException {
         TestData result = null;
         final String query = "SELECT * FROM testdata where `key`=?";
 
@@ -297,7 +297,7 @@ public class TestDataDAO implements ITestDataDAO {
                 try {
                     if (resultSet.first()) {
                         result = this.loadTestDataFromResultSet(resultSet);
-                    }else {
+                    } else {
                         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
                     }
                 } catch (SQLException exception) {
@@ -322,5 +322,69 @@ public class TestDataDAO implements ITestDataDAO {
             }
         }
         return result;
+    }
+
+    @Override
+    public Integer getNumberOfTestDataPerCriteria(String searchTerm, String inds) {
+        Integer result = 0;
+        StringBuilder query = new StringBuilder();
+        StringBuilder gSearch = new StringBuilder();
+        String searchSQL = "";
+
+        query.append("SELECT count(*) FROM testdata");
+
+        gSearch.append(" where (`key` like '%");
+        gSearch.append(searchTerm);
+        gSearch.append("%'");
+        gSearch.append(" or `value` like '%");
+        gSearch.append(searchTerm);
+        gSearch.append("%')");
+
+        if (!searchTerm.equals("") && !inds.equals("")) {
+            searchSQL = gSearch.toString() + " and " + inds;
+        } else if (!inds.equals("")) {
+            searchSQL = " where " + inds;
+        } else if (!searchTerm.equals("")) {
+            searchSQL = gSearch.toString();
+        }
+
+        query.append(searchSQL);
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query.toString());
+            try {
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+
+                    if (resultSet.first()) {
+                        result = resultSet.getInt(1);
+                    }
+
+                } catch (SQLException exception) {
+                    MyLogger.log(TestDataDAO.class.getName(), Level.ERROR, exception.toString());
+                } finally {
+                    resultSet.close();
+                }
+
+            } catch (SQLException exception) {
+                MyLogger.log(TestDataDAO.class.getName(), Level.ERROR, exception.toString());
+            } finally {
+                preStat.close();
+            }
+
+        } catch (SQLException exception) {
+            MyLogger.log(TestDataDAO.class.getName(), Level.ERROR, exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(TestDataDAO.class.getName(), Level.ERROR, e.toString());
+            }
+        }
+        return result;
+
     }
 }

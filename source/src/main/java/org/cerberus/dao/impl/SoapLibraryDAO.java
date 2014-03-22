@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package org.cerberus.dao.impl;
 
 import java.sql.Connection;
@@ -42,7 +41,7 @@ public class SoapLibraryDAO implements ISoapLibraryDAO {
 
     @Override
     public SoapLibrary findSoapLibraryByKey(String name) throws CerberusException {
-         boolean throwEx = false;
+        boolean throwEx = false;
         SoapLibrary result = null;
         final String query = "SELECT * FROM soaplibrary  WHERE NAME = ?";
 
@@ -95,7 +94,7 @@ public class SoapLibraryDAO implements ISoapLibraryDAO {
     @Override
     public void createSoapLibrary(SoapLibrary soapLibrary) throws CerberusException {
         boolean throwExcep = false;
-        StringBuilder query = new StringBuilder(); 
+        StringBuilder query = new StringBuilder();
         query.append("INSERT INTO soaplibrary (`Type`, `Name`, `Envelope`, `Description`, `ServicePath`, `ParsingAnswer`, `Method`) ");
         query.append("VALUES (?,?,?,?,?,?,?);");
 
@@ -110,10 +109,10 @@ public class SoapLibraryDAO implements ISoapLibraryDAO {
                 preStat.setString(5, soapLibrary.getServicePath());
                 preStat.setString(6, soapLibrary.getParsingAnswer());
                 preStat.setString(7, soapLibrary.getMethod());
-                
+
                 preStat.executeUpdate();
-                throwExcep = false; 
- 
+                throwExcep = false;
+
             } catch (SQLException exception) {
                 MyLogger.log(SoapLibraryDAO.class.getName(), Level.ERROR, exception.toString());
             } finally {
@@ -137,7 +136,7 @@ public class SoapLibraryDAO implements ISoapLibraryDAO {
 
     @Override
     public void updateSoapLibrary(SoapLibrary soapLibrary) throws CerberusException {
-         boolean throwExcep = false;
+        boolean throwExcep = false;
         StringBuilder query = new StringBuilder();
         query.append("update soaplibrary set `envelope`=?, `description`=?, `type`=?, 'servicePath'=?, 'parsingAnswer'=?, 'method'=?  where `name`=? ");
 
@@ -152,7 +151,7 @@ public class SoapLibraryDAO implements ISoapLibraryDAO {
                 preStat.setString(5, soapLibrary.getServicePath());
                 preStat.setString(6, soapLibrary.getParsingAnswer());
                 preStat.setString(7, soapLibrary.getMethod());
-                
+
                 preStat.executeUpdate();
                 throwExcep = false;
 
@@ -181,7 +180,7 @@ public class SoapLibraryDAO implements ISoapLibraryDAO {
     public void deleteSoapLibrary(SoapLibrary soapLibrary) throws CerberusException {
         boolean throwExcep = false;
         StringBuilder query = new StringBuilder();
-        query.append("delete from soapLibrary where `Name`=? ");
+        query.append("delete from soaplibrary where `Name`=? ");
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -215,7 +214,7 @@ public class SoapLibraryDAO implements ISoapLibraryDAO {
 
     @Override
     public List<SoapLibrary> findAllSoapLibrary() {
-         List<SoapLibrary> list = null;
+        List<SoapLibrary> list = null;
         final String query = "SELECT * FROM SoapLibrary";
 
         Connection connection = this.databaseSpring.connect();
@@ -337,7 +336,7 @@ public class SoapLibraryDAO implements ISoapLibraryDAO {
 
     @Override
     public void updateSoapLibrary(String name, String columnName, String value) throws CerberusException {
-                boolean throwExcep = false;
+        boolean throwExcep = false;
         StringBuilder query = new StringBuilder();
         query.append("update soaplibrary set `");
         query.append(columnName);
@@ -381,7 +380,7 @@ public class SoapLibraryDAO implements ISoapLibraryDAO {
         StringBuilder gSearch = new StringBuilder();
         String searchSQL = "";
 
-        query.append("SELECT count(*) FROM soapLibrary");
+        query.append("SELECT count(*) FROM soaplibrary");
 
         gSearch.append(" where (`name` like '%");
         gSearch.append(searchTerm);
@@ -443,7 +442,7 @@ public class SoapLibraryDAO implements ISoapLibraryDAO {
         return result;
 
     }
-    
+
     private SoapLibrary loadSoapLibraryFromResultSet(ResultSet resultSet) throws SQLException {
         String type = resultSet.getString("type");
         String name = resultSet.getString("name");

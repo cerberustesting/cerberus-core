@@ -61,15 +61,26 @@ public interface ITestDataDAO {
      * @param column order the resultSet by this column
      * @param dir Asc or desc, information for the order by command
      * @param searchTerm search term on all the column of the resultSet
-     * @param individualSearch search term on a dedicated column of the resultSet
+     * @param individualSearch search term on a dedicated column of the
+     * resultSet
      * @return
      */
     List<TestData> findTestDataListByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch);
-    
+
     /**
-     * 
+     *
      * @param key Key (String) of testData
-     * @return 
+     * @return
      */
     TestData findTestDataByKey(String key) throws CerberusException;
+
+    /**
+     *
+     * @param searchTerm words to be searched in every column (Exemple :
+     * article)
+     * @param inds part of the script to add to where clause (Exemple : `type` =
+     * 'Article')
+     * @return The number of records for these criterias
+     */
+    Integer getNumberOfTestDataPerCriteria(String searchTerm, String inds);
 }

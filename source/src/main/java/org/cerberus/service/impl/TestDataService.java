@@ -15,7 +15,6 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.cerberus.service.impl;
 
 import java.util.List;
@@ -35,7 +34,7 @@ public class TestDataService implements ITestDataService {
 
     @Autowired
     ITestDataDAO TestDataDAO;
-    
+
     @Override
     public void createTestData(TestData testData) throws CerberusException {
         TestDataDAO.createTestData(testData);
@@ -62,8 +61,12 @@ public class TestDataService implements ITestDataService {
     }
 
     @Override
-    public TestData findTestDataByKey(String key)  throws CerberusException {
+    public TestData findTestDataByKey(String key) throws CerberusException {
         return TestDataDAO.findTestDataByKey(key);
     }
-    
+
+    @Override
+    public Integer getNumberOfTestDataPerCriteria(String searchTerm, String inds) {
+        return TestDataDAO.getNumberOfTestDataPerCriteria(searchTerm, inds);
+    }
 }
