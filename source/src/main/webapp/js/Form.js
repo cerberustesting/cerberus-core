@@ -402,8 +402,7 @@ function addTestCaseProperties(tableau,  max_tcp_country,
 		form4.setAttribute('name', 'properties_type');
                 form4.setAttribute('id', 'typenew_properties_value');
 		form4.setAttribute('style', 'width: 120px');
-                form4.setAttribute('onchange', 'activateDatabaseBox(this.value, \'properties_dtb_typeID\' , \'properties_dtb_type_ID\')');
-                form4.setAttribute('onchange', 'activateValue2(this.value, \'tdValue2_new\', \'new_properties_value\',\'new_properties_value2\',\''+size2+'\')');
+                form4.setAttribute('onchange', 'activateDatabaseBox(this.value, \'properties_dtb_typeID\' , \'properties_dtb_type_ID\'); activateValue2(this.value, \'tdValue2_new\', \'new_properties_value\',\'new_properties_value2\',\''+size2+'\')');
                 form4.setAttribute('class', 'wob');
 		form4.innerHTML = (form4.innerHTML + document
 				.getElementById('new_properties_type_new_properties_value').innerHTML);
@@ -1371,4 +1370,26 @@ function importStep(){
     urlImportStep += '&ImportProperty='+encodeURI(importProperty);
     
     location.href=urlImportStep;
+}
+
+function openViewPropertyPopin(value) {
+    loadPropertyPopin(value);
+    $('#popin').dialog({hide: { duration: 300 }, height: 600, width: 800, buttons: [ { text: "Ok", click: function() { $( this ).dialog( "close" ); } } ] });
+}
+
+function loadPropertyPopin(value) {
+//    $('#popin').hide().empty();
+    $('#popin').load('viewProperty.jsp?Lign='+value);
+//    $('#popin').show();
+}
+
+function openSqlLibraryPopin(value) {
+    loadPropertyPopin(value);
+    $('#popin').dialog({hide: { duration: 300 }, height: 600, width: 800, buttons: [ { text: "Ok", click: function() { $( this ).dialog( "close" ); } } ] });
+}
+
+function loadSqlLibraryPopin(value) {
+//    $('#popin').hide().empty();
+    $('#popin').load('SqlLib.jsp?Lign='+value);
+//    $('#popin').show();
 }

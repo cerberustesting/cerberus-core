@@ -64,7 +64,7 @@ public class GetTestCaseForTest extends HttpServlet {
             for (TCase list : testService.findTestCaseByTest(testName)) {
                 JSONObject testCase = new JSONObject();
                 testCase.put("testCase", list.getTestCase());
-                testCase.put("description", list.getTestCase().concat(" [").concat(list.getApplication()).concat("] : ").concat(list.getDescription()));
+                testCase.put("description", list.getTestCase().concat(" [").concat(list.getApplication()).concat("] : ").concat(list.getShortDescription()));
                 array.put(testCase);
             }
 //            for (TCase testCaseName : testService.findTestCaseByTest(testName)) {

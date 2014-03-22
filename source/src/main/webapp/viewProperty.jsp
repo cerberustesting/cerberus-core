@@ -66,7 +66,7 @@
 
                     %>
 
-    <h3><a href="#" onclick="loadSqlLibraryPopin('<%=Lign%>');">Root</a> / <%=Type %></h3>
+    <h3><a href="#" onclick="loadPropertyPopin('<%=Lign%>');">Root</a> / <%=Type %></h3>
     <table>
             <% 
             if (qVal.first()) 
@@ -100,22 +100,17 @@
             
         %>
     <h3> SQL Library !</h3>
-        <table>
             <% 
             if (q1.first()) {
                 do {
                 %>
-                <tr>
-                 <td> <a href="#" onclick="loadSqlLibraryPopin('<%=Lign%>&Type=<%=q1.getString("Type")%>');"><%=q1.getString("Type")%></a></td>
-                </tr>
+                <div class="library">
+                 <a href="#" onclick="loadPropertyPopin('<%=Lign%>&Type=<%=q1.getString("Type")%>');"><%=q1.getString("Type")%></a>
+                </div>
             <% }
                 while (q1.next());
                                }
-            %>
-        </table>
-        
-         
-        <%            
+
             }
                 
             } catch (Exception e) {

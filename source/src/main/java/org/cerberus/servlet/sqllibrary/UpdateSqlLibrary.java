@@ -13,12 +13,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Level;
-import org.cerberus.entity.SqlLibrary;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.factory.IFactorySqlLibrary;
 import org.cerberus.log.MyLogger;
 import org.cerberus.service.ISqlLibraryService;
-import org.cerberus.service.ITestDataService;
 import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;
 import org.springframework.context.ApplicationContext;
@@ -41,18 +38,20 @@ public class UpdateSqlLibrary extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, CerberusException {
+        
         response.setContentType("text/html;charset=UTF-8");
         PrintWriter out = response.getWriter();
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
-
         try {
             String name = policy.sanitize(request.getParameter("id"));
             String columnName = policy.sanitize(request.getParameter("columnName"));
+            // ValueBDD sans Sanitizer pour ne pas escaper les caractères spéciaux
+            String valueBdd = request.getParameter("value");
             String value = policy.sanitize(request.getParameter("value"));
-
+           
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         ISqlLibraryService sqlLibService = appContext.getBean(ISqlLibraryService.class);
-        sqlLibService.updateSqlLibrary(name, columnName, value);
+        sqlLibService.updateSqlLibrary(name, columnName, valueBdd);
            
         out.print(value);
         } finally {
@@ -91,8 +90,9 @@ public class UpdateSqlLibrary extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         try {
+            String t = request.getParameter("value");
             processRequest(request, response);
-        } catch (CerberusException ex) {
+        } catch (CerberusException ex) { 
             MyLogger.log(UpdateSqlLibrary.class.getName(), Level.FATAL, ex.toString());
         }
     }
