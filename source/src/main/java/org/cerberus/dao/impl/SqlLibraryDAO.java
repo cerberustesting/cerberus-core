@@ -196,7 +196,7 @@ public class SqlLibraryDAO implements ISqlLibraryDAO {
     public void deleteSqlLibrary(SqlLibrary sqlLibrary) throws CerberusException {
         boolean throwExcep = false;
         StringBuilder query = new StringBuilder();
-        query.append("delete from sqlLibrary where `Name`=? ");
+        query.append("delete from sqllibrary where `Name`=? ");
 
         Connection connection = this.databaseSpring.connect();
         try {
