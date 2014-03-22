@@ -14,8 +14,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Level;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.factory.IFactoryLogEvent;
+import org.cerberus.factory.impl.FactoryLogEvent;
 import org.cerberus.log.MyLogger;
+import org.cerberus.service.ILogEventService;
 import org.cerberus.service.ISoapLibraryService;
+import org.cerberus.service.impl.LogEventService;
+import org.cerberus.servlet.sqllibrary.UpdateSqlLibrary;
 import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;
 import org.springframework.context.ApplicationContext;
@@ -29,8 +34,9 @@ import org.springframework.web.util.HtmlUtils;
 public class UpdateSoapLibrary extends HttpServlet {
 
     /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
+     * Processes requests for both HTTP
+     * <code>GET</code> and
+     * <code>POST</code> methods.
      *
      * @param request servlet request
      * @param response servlet response
@@ -47,20 +53,31 @@ public class UpdateSoapLibrary extends HttpServlet {
             final String name = policy.sanitize(request.getParameter("id"));
             final String columnName = policy.sanitize(request.getParameter("columnName"));
             // CTE Cas particulier pour cette colonne - Le contenu est du xml on remplace les caractères spéciaux pour avoir un affichage correct
-            if ("Envelope".equals(columnName)){
+            final ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+            if ("Envelope".equals(columnName)) {
                 final String value = request.getParameter("value");
                 final String valueHTML = HtmlUtils.htmlEscape(value);
-                final ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
                 final ISoapLibraryService soapLibService = appContext.getBean(ISoapLibraryService.class);
                 soapLibService.updateSoapLibrary(name, columnName, valueHTML);
                 out.print(valueHTML);
             } else {
                 final String value = policy.sanitize(request.getParameter("value"));
-                final ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
                 final ISoapLibraryService soapLibService = appContext.getBean(ISoapLibraryService.class);
                 soapLibService.updateSoapLibrary(name, columnName, value);
                 out.print(value);
             }
+
+            /**
+             * Adding Log entry.
+             */
+            ILogEventService logEventService = appContext.getBean(LogEventService.class);
+            IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
+            try {
+                logEventService.insertLogEvent(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/UpdateSoapLibrary", "UPDATE", "Updated SoapLibrary : " + name, "", ""));
+            } catch (CerberusException ex) {
+                org.apache.log4j.Logger.getLogger(UpdateSoapLibrary.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex);
+            }
+
         } finally {
             out.close();
         }
@@ -68,7 +85,8 @@ public class UpdateSoapLibrary extends HttpServlet {
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
-     * Handles the HTTP <code>GET</code> method.
+     * Handles the HTTP
+     * <code>GET</code> method.
      *
      * @param request servlet request
      * @param response servlet response
@@ -86,7 +104,8 @@ public class UpdateSoapLibrary extends HttpServlet {
     }
 
     /**
-     * Handles the HTTP <code>POST</code> method.
+     * Handles the HTTP
+     * <code>POST</code> method.
      *
      * @param request servlet request
      * @param response servlet response

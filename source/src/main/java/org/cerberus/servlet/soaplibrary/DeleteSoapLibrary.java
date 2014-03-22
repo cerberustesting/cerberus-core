@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package org.cerberus.servlet.soaplibrary;
 
 import java.io.IOException;
@@ -15,9 +14,14 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Level;
 import org.cerberus.entity.SoapLibrary;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.factory.IFactoryLogEvent;
 import org.cerberus.factory.IFactorySoapLibrary;
+import org.cerberus.factory.impl.FactoryLogEvent;
 import org.cerberus.log.MyLogger;
+import org.cerberus.service.ILogEventService;
 import org.cerberus.service.ISoapLibraryService;
+import org.cerberus.service.impl.LogEventService;
+import org.cerberus.servlet.sqllibrary.DeleteSqlLibrary;
 import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;
 import org.springframework.context.ApplicationContext;
@@ -28,10 +32,11 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  * @author cte
  */
 public class DeleteSoapLibrary extends HttpServlet {
-    
-     /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
+
+    /**
+     * Processes requests for both HTTP
+     * <code>GET</code> and
+     * <code>POST</code> methods.
      *
      * @param request servlet request
      * @param response servlet response
@@ -46,22 +51,35 @@ public class DeleteSoapLibrary extends HttpServlet {
 
         try {
             final String name = policy.sanitize(request.getParameter("id"));
-            
+
             final ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
             final ISoapLibraryService soapLibraryService = appContext.getBean(ISoapLibraryService.class);
             final IFactorySoapLibrary factorySoapLibrary = appContext.getBean(IFactorySoapLibrary.class);
 
-            final SoapLibrary soapLib = factorySoapLibrary.create(null, name, null,  null, null, null, null);
+            final SoapLibrary soapLib = factorySoapLibrary.create(null, name, null, null, null, null, null);
             soapLibraryService.deleteSoapLibrary(soapLib);
-            
+
+            /**
+             * Adding Log entry.
+             */
+            ILogEventService logEventService = appContext.getBean(LogEventService.class);
+            IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
+            try {
+                logEventService.insertLogEvent(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/DeleteSoapLibrary", "DELETE", "Delete SoapLibrary : " + name, "", ""));
+            } catch (CerberusException ex) {
+                org.apache.log4j.Logger.getLogger(DeleteSoapLibrary.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex);
+            }
+
+
         } finally {
             out.close();
         }
     }
-    
-     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
+
+    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
-     * Handles the HTTP <code>GET</code> method.
+     * Handles the HTTP
+     * <code>GET</code> method.
      *
      * @param request servlet request
      * @param response servlet response
@@ -79,7 +97,8 @@ public class DeleteSoapLibrary extends HttpServlet {
     }
 
     /**
-     * Handles the HTTP <code>POST</code> method.
+     * Handles the HTTP
+     * <code>POST</code> method.
      *
      * @param request servlet request
      * @param response servlet response

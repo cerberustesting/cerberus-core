@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package org.cerberus.servlet.sqllibrary;
 
 import java.io.IOException;
@@ -14,8 +13,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Level;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.factory.IFactoryLogEvent;
+import org.cerberus.factory.impl.FactoryLogEvent;
 import org.cerberus.log.MyLogger;
+import org.cerberus.service.ILogEventService;
 import org.cerberus.service.ISqlLibraryService;
+import org.cerberus.service.impl.LogEventService;
 import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;
 import org.springframework.context.ApplicationContext;
@@ -28,8 +31,9 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 public class UpdateSqlLibrary extends HttpServlet {
 
     /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
+     * Processes requests for both HTTP
+     * <code>GET</code> and
+     * <code>POST</code> methods.
      *
      * @param request servlet request
      * @param response servlet response
@@ -38,7 +42,7 @@ public class UpdateSqlLibrary extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, CerberusException {
-        
+
         response.setContentType("text/html;charset=UTF-8");
         PrintWriter out = response.getWriter();
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
@@ -48,12 +52,24 @@ public class UpdateSqlLibrary extends HttpServlet {
             // ValueBDD sans Sanitizer pour ne pas escaper les caractères spéciaux
             String valueBdd = request.getParameter("value");
             String value = policy.sanitize(request.getParameter("value"));
-           
-        ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-        ISqlLibraryService sqlLibService = appContext.getBean(ISqlLibraryService.class);
-        sqlLibService.updateSqlLibrary(name, columnName, valueBdd);
-           
-        out.print(value);
+
+            ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+            ISqlLibraryService sqlLibService = appContext.getBean(ISqlLibraryService.class);
+            sqlLibService.updateSqlLibrary(name, columnName, valueBdd);
+
+            /**
+             * Adding Log entry.
+             */
+            ILogEventService logEventService = appContext.getBean(LogEventService.class);
+            IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
+            try {
+                logEventService.insertLogEvent(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/UpdateSqlLibrary", "UPDATE", "Updated SQLLibrary : " + name, "", ""));
+            } catch (CerberusException ex) {
+                org.apache.log4j.Logger.getLogger(UpdateSqlLibrary.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex);
+            }
+
+
+            out.print(value);
         } finally {
             out.close();
         }
@@ -61,7 +77,8 @@ public class UpdateSqlLibrary extends HttpServlet {
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
-     * Handles the HTTP <code>GET</code> method.
+     * Handles the HTTP
+     * <code>GET</code> method.
      *
      * @param request servlet request
      * @param response servlet response
@@ -79,7 +96,8 @@ public class UpdateSqlLibrary extends HttpServlet {
     }
 
     /**
-     * Handles the HTTP <code>POST</code> method.
+     * Handles the HTTP
+     * <code>POST</code> method.
      *
      * @param request servlet request
      * @param response servlet response
@@ -92,7 +110,7 @@ public class UpdateSqlLibrary extends HttpServlet {
         try {
             String t = request.getParameter("value");
             processRequest(request, response);
-        } catch (CerberusException ex) { 
+        } catch (CerberusException ex) {
             MyLogger.log(UpdateSqlLibrary.class.getName(), Level.FATAL, ex.toString());
         }
     }
@@ -106,5 +124,4 @@ public class UpdateSqlLibrary extends HttpServlet {
     public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
-
 }

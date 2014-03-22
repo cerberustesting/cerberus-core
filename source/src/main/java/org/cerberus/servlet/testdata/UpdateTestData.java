@@ -80,7 +80,6 @@ public class UpdateTestData extends HttpServlet {
                 org.apache.log4j.Logger.getLogger(UserService.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex);
             }
 
-
             out.print(value);
         } finally {
             out.close();

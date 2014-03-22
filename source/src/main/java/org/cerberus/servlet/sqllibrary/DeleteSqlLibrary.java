@@ -15,9 +15,13 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Level;
 import org.cerberus.entity.SqlLibrary;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.factory.IFactoryLogEvent;
 import org.cerberus.factory.IFactorySqlLibrary;
+import org.cerberus.factory.impl.FactoryLogEvent;
 import org.cerberus.log.MyLogger;
+import org.cerberus.service.ILogEventService;
 import org.cerberus.service.ISqlLibraryService;
+import org.cerberus.service.impl.LogEventService;
 import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;
 import org.springframework.context.ApplicationContext;
@@ -53,6 +57,18 @@ public class DeleteSqlLibrary extends HttpServlet {
 
             SqlLibrary sqlLib = factorySqlLibrary.create(null, name, null,  null);
             sqlLibraryService.deleteSqlLibrary(sqlLib);
+
+            /**
+             * Adding Log entry.
+             */
+            ILogEventService logEventService = appContext.getBean(LogEventService.class);
+            IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
+            try {
+                logEventService.insertLogEvent(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/DeleteSqlLibrary", "DELETE", "Delete SQLLibrary : " + name, "", ""));
+            } catch (CerberusException ex) {
+                org.apache.log4j.Logger.getLogger(DeleteSqlLibrary.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex);
+            }
+
             
         } finally {
             out.close();
