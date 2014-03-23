@@ -20,7 +20,9 @@
 package org.cerberus.service.impl;
 
 import org.cerberus.dao.IDocumentationDAO;
+import org.cerberus.entity.Documentation;
 import org.cerberus.service.IDocumentationService;
+import org.cerberus.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -38,22 +40,47 @@ public class DocumentationService implements IDocumentationService {
         String result = null;
         StringBuilder label = new StringBuilder();
 
-        String labelFromDB = this.documentationDAO.findDocumentationByKey(docTable, docField).getDocLabel();
+        String labelFromDB = "";
+        Documentation myDoc = this.documentationDAO.findDocumentationByKey(docTable, docField, "");
 
-        if (!labelFromDB.equals("")) {
-            label.append(labelFromDB);
-            label.append(" <a href=\'javascript:popup(\"Documentation.jsp?DocTable=");
+        if (myDoc == null) {
+            label.append("!!NoDoc!! ");
             label.append(docTable);
-            label.append("&DocField=");
+            label.append("|");
             label.append(docField);
-            label.append("\")\'>?</a>");
-
         } else {
-            label.append(defaultLabel);
+            labelFromDB = myDoc.getDocLabel();
+            label.append(labelFromDB);
         }
         result = label.toString();
 
         return result;
     }
 
+    @Override
+    public String findLabelHTML(String docTable, String docField, String defaultLabel) {
+        String result = null;
+        StringBuilder label = new StringBuilder();
+
+        String labelFromDB = "";
+        Documentation myDoc = this.documentationDAO.findDocumentationByKey(docTable, docField, "");
+
+        if (myDoc == null) {
+            label.append("!!NoDoc!! ");
+            label.append(docTable);
+            label.append("|");
+            label.append(docField);
+        } else {
+            labelFromDB = myDoc.getDocLabel();
+            label.append(labelFromDB);
+            label.append(" <a href=\'javascript:popup(\"Documentation.jsp?DocTable=");
+            label.append(docTable);
+            label.append("&DocField=");
+            label.append(docField);
+            label.append("\")\'>?</a>");
+        }
+        result = label.toString();
+
+        return result;
+    }
 }

@@ -17,6 +17,7 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
+<%@page import="org.cerberus.service.IDocumentationService"%>
 <%@page import="org.cerberus.util.SqlUtil"%>
 <%@page import="org.cerberus.entity.BuildRevisionInvariant"%>
 <%@page import="org.cerberus.service.impl.BuildRevisionInvariantService"%>
@@ -55,6 +56,7 @@
 
                 IApplicationService applicationService = appContext.getBean(ApplicationService.class);
                 IBuildRevisionInvariantService buildRevisionInvariantService = appContext.getBean(BuildRevisionInvariantService.class);
+                IDocumentationService docService = appContext.getBean(IDocumentationService.class);
 
                 String MySystem = request.getAttribute("MySystem").toString();
                 if (request.getParameter("system") != null && request.getParameter("system").compareTo("") != 0) {
@@ -97,7 +99,7 @@
                     <td><a href="?build=NONE&revision=NONE">Pending Release</a></td>
                     <td><a href="BuildContent.jsp">Latest Release</a></td>
                     <td> 
-                <ftxt><%=dbDocS(conn, "buildrevisioninvariant", "versionname01", "")%></ftxt> 
+                <ftxt><%=docService.findLabelHTML("buildrevisioninvariant", "versionname01", "")%></ftxt> 
                 <select id="build" name="build" style="width: 100px" OnChange ="document.buildcontent.submit()">
                     <option style="width: 100px" value="NONE" <%=build.compareTo("NONE") == 0 ? " SELECTED " : ""%>>-- NONE --</option>
                     <%
@@ -106,7 +108,7 @@
                     %><option style="width: 100px" value="<%= myBR.getVersionName()%>" <%=build.compareTo(myBR.getVersionName()) == 0 ? " SELECTED " : ""%>><%= myBR.getVersionName()%></option>
                     <% }
                     %></select>
-                <ftxt><%=dbDocS(conn, "buildrevisioninvariant", "versionname02", "")%></ftxt> 
+                <ftxt><%=docService.findLabelHTML("buildrevisioninvariant", "versionname02", "")%></ftxt> 
                 <select id="revision" name="revision" style="width: 100px" OnChange ="document.buildcontent.submit()">
                     <option style="width: 100px" value="ALL" <%=revision.compareTo("ALL") == 0 ? " SELECTED " : ""%>>-- ALL --</option>
                     <option style="width: 100px" value="NONE" <%=revision.compareTo("NONE") == 0 ? " SELECTED " : ""%>>-- NONE --</option>
@@ -148,20 +150,20 @@
             <input style="display:none" name="ubcRevisionFilter" value="<%=revision%>"></input>
             <table  id="buildcontenttable"  style="text-align: left; border-collapse:collapse ; border-color: gainsboro" border="1">
                 <tr id="header">
-                    <td><%=dbDocS(conn, "page_buildcontent", "delete", "")%></td>
-                    <td><%=dbDocS(conn, "buildrevisioninvariant", "versionname01", "")%></td>
-                    <td><%=dbDocS(conn, "buildrevisioninvariant", "versionname02", "")%></td>
-                    <td><%=dbDocS(conn, "application", "Application", "")%></td>
-                    <td><%=dbDocS(conn, "buildrevisionparameters", "Release", "")%></td>
+                    <td><%=docService.findLabelHTML("page_buildcontent", "delete", "")%></td>
+                    <td><%=docService.findLabelHTML("buildrevisioninvariant", "versionname01", "")%></td>
+                    <td><%=docService.findLabelHTML("buildrevisioninvariant", "versionname02", "")%></td>
+                    <td><%=docService.findLabelHTML("application", "Application", "")%></td>
+                    <td><%=docService.findLabelHTML("buildrevisionparameters", "Release", "")%></td>
                     <td></img>Project</td>
                     <td></img>Ticket</td>
                     <td></img>Bug</td>
                     <td>Subject</td>
-                    <td><%=dbDocS(conn, "buildrevisionparameters", "ReleaseOwner", "")%></td>
-                    <td colspan="2"><%=dbDocS(conn, "buildrevisionparameters", "Link", "")%></td>
+                    <td><%=docService.findLabelHTML("buildrevisionparameters", "ReleaseOwner", "")%></td>
+                    <td colspan="2"><%=docService.findLabelHTML("buildrevisionparameters", "Link", "")%></td>
 
 
-<!--                <td><%=dbDocS(conn, "buildrevisionparameters", "Link", "")%></td>-->
+<!--                <td><%=docService.findLabelHTML("buildrevisionparameters", "Link", "")%></td>-->
                 </tr>
                 <%
                     int a = 1;
@@ -222,9 +224,9 @@
                     </td>
                     <td class="wob" style="background-color:<%=backColor%>">
                         <select id="ubcApplication" name="ubcApplication" class="wob" style="width:170px; font-size:x-small;background-color:<%=backColor%>"><%
-                        ResultSet rsApp = stmtProj.executeQuery(" SELECT distinct application from application where application != '' and application " + appliInSQL + " order by sort ");
-                        rsApp.first();
-                        do {
+                            ResultSet rsApp = stmtProj.executeQuery(" SELECT distinct application from application where application != '' and application " + appliInSQL + " order by sort ");
+                            rsApp.first();
+                            do {
                             %><option value="<%=rsApp.getString("application")%>" <%=rsApp.getString("application").compareTo(rsBR.getString("b.Application")) == 0 ? " SELECTED " : ""%>><%=rsApp.getString("application")%></option><%
                                 } while (rsApp.next());
                             %></select>

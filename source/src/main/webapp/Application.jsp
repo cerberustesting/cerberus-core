@@ -182,43 +182,43 @@
         </div>
         <div>
             <form id="formAddNewRow" action="#" title="Add Application" style="width:600px" method="post">
-                    <label for="Application" style="font-weight:bold"><%=docService.findLabel("Application","Application","")%></label>
+                    <label for="Application" style="font-weight:bold"><%=docService.findLabelHTML("Application","Application","")%></label>
                     <input id="Application" name="Application" style="width:150px;" 
                            class="ncdetailstext" rel="0" >
                 <br><br>
-                    <label for="System" style="font-weight:bold"><%=docService.findLabel("Application","System","")%></label>
+                    <label for="System" style="font-weight:bold"><%=docService.findLabelHTML("Application","System","")%></label>
                     <%=ComboInvariantAjax(conn, "System", "", "System", "1", "SYSTEM", "", "", false)%>
-                    <label for="SubSystem" style="font-weight:bold"><%=docService.findLabel("Application","subsystem","")%></label>
+                    <label for="SubSystem" style="font-weight:bold"><%=docService.findLabelHTML("Application","subsystem","")%></label>
                     <input id="SubSystem" name="SubSystem" style="width:100px;" 
                            class="ncdetailstext" rel="2" >
-                    <label for="Type" style="font-weight:bold"><%=docService.findLabel("Application","type","")%></label>
+                    <label for="Type" style="font-weight:bold"><%=docService.findLabelHTML("Application","type","")%></label>
                     <%=ComboInvariantAjax(conn, "Type", "", "Type", "4", "APPLITYPE", "", "", false)%>
                 <br>
                 <br>
-                    <label for="Description" style="font-weight:bold"><%=docService.findLabel("Application","description","")%></label>
+                    <label for="Description" style="font-weight:bold"><%=docService.findLabelHTML("Application","description","")%></label>
                     <input id="Description" name="Description" style="width:400px;" 
                            class="ncdetailstext" rel="3" >
                 <br>
-                    <label for="Sort" style="font-weight:bold"><%=docService.findLabel("Application","sort","")%></label>
+                    <label for="Sort" style="font-weight:bold"><%=docService.findLabelHTML("Application","sort","")%></label>
                     <input id="Sort" name="Sort" style="width:100px;" 
                            class="ncdetailstext" rel="7" >
                 <br><br>
-                    <label for="MavenGroupID" style="font-weight:bold"><%=docService.findLabel("Application","mavengroupid","")%></label>
+                    <label for="MavenGroupID" style="font-weight:bold"><%=docService.findLabelHTML("Application","mavengroupid","")%></label>
                     <input id="MavenGroupID" name="MavenGroupID" style="width:400px;" 
                            class="ncdetailstext" rel="5" >
                 <br>
-                    <label for="DeployType" style="font-weight:bold"><%=docService.findLabel("Application","deploytype","")%></label>
+                    <label for="DeployType" style="font-weight:bold"><%=docService.findLabelHTML("Application","deploytype","")%></label>
                     <%=ComboDeployTypeAjax(conn, "DeployType", "", "DeployType", "6", "", "")%>
                 <br><br>
-                    <label for="SVNURL" style="font-weight:bold"><%=docService.findLabel("Application","svnurl","")%></label>
+                    <label for="SVNURL" style="font-weight:bold"><%=docService.findLabelHTML("Application","svnurl","")%></label>
                     <input id="SVNURL" name="SVNURL" style="width:600px;" 
                            class="ncdetailstext" rel="8" >
                 <br><br>
-                    <label for="BugTrackerURL" style="font-weight:bold"><%=docService.findLabel("Application","bugtrackerurl","")%></label>
+                    <label for="BugTrackerURL" style="font-weight:bold"><%=docService.findLabelHTML("Application","bugtrackerurl","")%></label>
                     <input id="BugTrackerURL" name="BugTrackerURL" style="width:600px;" 
                            class="ncdetailstext" rel="9" >
                 <br><br>
-                    <label for="NewBugURL" style="font-weight:bold"><%=docService.findLabel("Application","bugtrackernewurl","")%></label>
+                    <label for="NewBugURL" style="font-weight:bold"><%=docService.findLabelHTML("Application","bugtrackernewurl","")%></label>
                     <input id="NewBugURL" name="NewBugURL" style="width:600px;" 
                            class="ncdetailstext" rel="10" >
                 <br><br>

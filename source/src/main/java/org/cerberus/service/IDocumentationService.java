@@ -25,4 +25,7 @@ package org.cerberus.service;
 public interface IDocumentationService {
 
     String findLabel(String docTable, String docField, String defaultLabel);
+    
+    String findLabelHTML(String docTable, String docField, String defaultLabel);
+    
 }

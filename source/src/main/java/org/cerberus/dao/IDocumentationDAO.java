@@ -25,5 +25,5 @@ import org.cerberus.entity.Documentation;
  */
 public interface IDocumentationDAO {
 
-    Documentation findDocumentationByKey(String docTable, String docField);
+    Documentation findDocumentationByKey(String docTable, String docField, String docValue);
 }

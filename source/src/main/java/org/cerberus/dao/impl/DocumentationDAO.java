@@ -43,9 +43,9 @@ public class DocumentationDAO implements IDocumentationDAO {
     private IFactoryDocumentation factoryDocumentation;
 
     @Override
-    public Documentation findDocumentationByKey(String docTable, String docField) {
+    public Documentation findDocumentationByKey(String docTable, String docField, String docValue) {
         Documentation result = null;
-        final String query = "SELECT * FROM documentation d WHERE d.doctable = ? AND d.docfield = ?";
+        final String query = "SELECT * FROM documentation d WHERE d.doctable = ? AND d.docfield = ? AND d.DocValue = ? ";
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -53,14 +53,16 @@ public class DocumentationDAO implements IDocumentationDAO {
             try {
                 preStat.setString(1, docTable);
                 preStat.setString(2, docField);
+                preStat.setString(3, docValue);
 
                 ResultSet resultSet = preStat.executeQuery();
                 try {
-                    while (resultSet.next()) {
-                        String docValue = resultSet.getString("DocValue");
+                    if (resultSet.first()) {
                         String docLabel = resultSet.getString("DocLabel");
                         String description = resultSet.getString("DocDesc");
                         result = factoryDocumentation.create(docTable, docField, docValue, docLabel, description);
+                    }else{
+                        return null;
                     }
                 } catch (SQLException exception) {
                     MyLogger.log(DocumentationDAO.class.getName(), Level.ERROR, exception.toString());
