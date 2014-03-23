@@ -49,28 +49,25 @@ import org.springframework.stereotype.Repository;
 public class ApplicationDAO implements IApplicationDAO {
 
     /**
-     * Bean of the DatabaseSpring, Spring automatically links.
-     * Establishes connection to database and return it to allow
-     * perform queries and updates.
+     * Bean of the DatabaseSpring, Spring automatically links. Establishes
+     * connection to database and return it to allow perform queries and
+     * updates.
      */
     @Autowired
     private DatabaseSpring databaseSpring;
     /**
-     * Bean of the IFactoryApplication, Spring automatically links.
-     * Creates new objects {@link Application}
+     * Bean of the IFactoryApplication, Spring automatically links. Creates new
+     * objects {@link Application}
      */
     @Autowired
     private IFactoryApplication factoryApplication;
 
     /**
-     * Finds the Application by the name.
-     * </p>
-     * Access to database to return the {@link Application} given by the
-     * unique name.<br/>
-     * If no application found with the given name, returns CerberusException
-     * with {@link MessageGeneralEnum#NO_DATA_FOUND}.<br/>
-     * If an SQLException occur, returns null in the application object and
-     * writes the error on the logs.
+     * Finds the Application by the name. </p> Access to database to return the
+     * {@link Application} given by the unique name.<br/> If no application
+     * found with the given name, returns CerberusException with
+     * {@link MessageGeneralEnum#NO_DATA_FOUND}.<br/> If an SQLException occur,
+     * returns null in the application object and writes the error on the logs.
      *
      * @param application name of the Application to find
      * @return object application if exist
@@ -120,12 +117,10 @@ public class ApplicationDAO implements IApplicationDAO {
     }
 
     /**
-     * Finds all Applications that exists.
-     * </p>
-     * Access to database to return all existing {@link Application}.<br/>
-     * If no application found, returns a empty {@literal List<Application>}.<br/>
-     * If an SQLException occur, returns null in the list object and
-     * writes the error on the logs.
+     * Finds all Applications that exists. </p> Access to database to return all
+     * existing {@link Application}.<br/> If no application found, returns a
+     * empty {@literal List<Application>}.<br/> If an SQLException occur,
+     * returns null in the list object and writes the error on the logs.
      *
      * @return list of applications
      * @throws CerberusException
@@ -173,12 +168,11 @@ public class ApplicationDAO implements IApplicationDAO {
     }
 
     /**
-     * Finds Applications of the given system.
-     * </p>
-     * Access to database to return a list of {@link Application} filtering by system.<br/>
-     * If no application found, returns a empty {@literal List<Application>}.<br/>
-     * If an SQLException occur, returns null in the list object and
-     * writes the error on the logs.
+     * Finds Applications of the given system. </p> Access to database to return
+     * a list of {@link Application} filtering by system.<br/> If no application
+     * found, returns a empty {@literal List<Application>}.<br/> If an
+     * SQLException occur, returns null in the list object and writes the error
+     * on the logs.
      *
      * @param system name of the System to filter
      * @return list of applications
@@ -228,11 +222,11 @@ public class ApplicationDAO implements IApplicationDAO {
     }
 
     /**
-     * Updates the information based on the object application.
-     * </p>
-     * Access to database to update application information given by the object Application and
-     * returns boolean of PreparedStatement.executeUpdate() > 0. <br/>
-     * If an SQLException occur, returns false and writes the error on the logs.
+     * Updates the information based on the object application. </p> Access to
+     * database to update application information given by the object
+     * Application and returns boolean of PreparedStatement.executeUpdate() > 0.
+     * <br/> If an SQLException occur, returns false and writes the error on the
+     * logs.
      *
      * @param application object Application to update
      * @return true if updated successfully and false if no row updated or error
@@ -283,8 +277,7 @@ public class ApplicationDAO implements IApplicationDAO {
 
     /**
      *
-     * @return
-     * @throws CerberusException
+     * @return @throws CerberusException
      * @since 0.9.1
      */
     @Override
@@ -327,12 +320,93 @@ public class ApplicationDAO implements IApplicationDAO {
         return list;
     }
 
+    @Override
+    public void createApplication(Application application) throws CerberusException {
+        boolean throwExcep = false;
+        StringBuilder query = new StringBuilder();
+        query.append("INSERT INTO application (`application`, `description`, `sort`, `type`, `system`, `SubSystem`, `svnurl`, `BugTrackerUrl`, `BugTrackerNewUrl`, `deploytype`, `mavengroupid` ) ");
+        query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?)");
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query.toString());
+            try {
+                preStat.setString(1, application.getApplication());
+                preStat.setString(2, application.getDescription());
+                preStat.setInt(3, application.getSort());
+                preStat.setString(4, application.getType());
+                preStat.setString(5, application.getSystem());
+                preStat.setString(6, application.getSubsystem());
+                preStat.setString(7, application.getSvnurl());
+                preStat.setString(8, application.getBugTrackerUrl());
+                preStat.setString(9, application.getBugTrackerNewUrl());
+                preStat.setString(10, application.getDeploytype());
+                preStat.setString(11, application.getMavengroupid());
+
+                preStat.executeUpdate();
+                throwExcep = false;
+
+            } catch (SQLException exception) {
+                MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, exception.toString());
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(ApplicationDAO.class.getName(), Level.WARN, e.toString());
+            }
+        }
+        if (throwExcep) {
+            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.CANNOT_UPDATE_TABLE));
+        }
+    }
+
+    @Override
+    public void deleteApplication(Application application) throws CerberusException {
+        boolean throwExcep = false;
+        final String query = "DELETE FROM application WHERE aplication = ? ";
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            try {
+                preStat.setString(1, application.getApplication());
+
+                throwExcep = preStat.executeUpdate() == 0;
+            } catch (SQLException exception) {
+                MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, exception.toString());
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(ApplicationDAO.class.getName(), Level.WARN, e.toString());
+            }
+        }
+        if (throwExcep) {
+            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.CANNOT_UPDATE_TABLE));
+        }
+    }
+
     /**
      * Uses data of ResultSet to create object {@link Application}
      *
      * @param rs ResultSet relative to select from table Application
      * @return object {@link Application}
-     * @throws SQLException when trying to get value from {@link java.sql.ResultSet#getString(String)}
+     * @throws SQLException when trying to get value from
+     * {@link java.sql.ResultSet#getString(String)}
      * @see FactoryApplication
      */
     private Application loadApplicationFromResultSet(ResultSet rs) throws SQLException {
@@ -350,7 +424,6 @@ public class ApplicationDAO implements IApplicationDAO {
 
         //TODO remove when working in test with mockito and autowired
         factoryApplication = new FactoryApplication();
-        return factoryApplication.create(application, description, sort, type, system
-                , subsystem, svnUrl, deployType, mavenGroupId, bugTrackerUrl, bugTrackerNewUrl);
+        return factoryApplication.create(application, description, sort, type, system, subsystem, svnUrl, deployType, mavenGroupId, bugTrackerUrl, bugTrackerNewUrl);
     }
 }

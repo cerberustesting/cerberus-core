@@ -78,4 +78,11 @@ public interface IApplicationDAO {
      * @since 0.9.0
      */
     boolean updateApplication(Application application) throws CerberusException;
+    
+    public void createApplication(Application application) throws CerberusException;
+
+    public void deleteApplication(Application application) throws CerberusException;
+
+    
+    
 }

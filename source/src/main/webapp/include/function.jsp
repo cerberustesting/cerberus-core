@@ -251,6 +251,39 @@
         }
     }
 
+    String ComboDeployTypeAjax(Connection conn, String HTMLComboName, String HTMLComboStyle, String HTMLId, String HTMLrel, String value, String HTMLOnChange) {
+        try {
+            Statement stmtQuery = conn.createStatement();
+            try {
+                String sq = "SELECT deploytype from deploytype ";
+                ResultSet q = stmtQuery.executeQuery(sq);
+                try {
+                    String ret = "<select id=\"" + HTMLId + "\" rel=\"" + HTMLrel + "\" style=\"" + HTMLComboStyle + "\" name=\"" + HTMLComboName + "\"";
+                    if (HTMLOnChange.compareToIgnoreCase("") != 0) {
+                        ret = ret + " onchange=\"" + HTMLOnChange + "\"";
+                    }
+                    ret = ret + ">";
+                    while (q.next()) {
+                        ret = ret + "<option value=\"" + q.getString("deploytype") + "\"";
+                        if ((value != null) && (value.compareTo(q.getString("deploytype")) == 0)) {
+                            ret = ret + " SELECTED ";
+                        }
+                        ret = ret + ">" + q.getString("deploytype");
+                        ret = ret + "</option>";
+                    }
+                    ret = ret + "</select>";
+                    return ret;
+                } finally {
+                    q.close();
+                }
+            } finally {
+                stmtQuery.close();
+            }
+        } catch (Exception e) {
+            return e.toString();
+        }
+    }
+
     Boolean checkSelected(Collection<Country> col, String selection) {
         Iterator<Country> it = col.iterator();
         while (it.hasNext()) {

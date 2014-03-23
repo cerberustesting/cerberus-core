@@ -61,7 +61,7 @@ public class GetInvariantList extends HttpServlet {
             JSONObject jsonResponse = new JSONObject();
             try {
                 for (Invariant myInvariant : invariantService.findListOfInvariantById(idName)) {
-                    jsonResponse.put(myInvariant.getValue(), myInvariant.getDescription());
+                    jsonResponse.put(myInvariant.getValue(), myInvariant.getValue());
                 }
             } catch (CerberusException ex) {
                 response.setContentType("text/html");

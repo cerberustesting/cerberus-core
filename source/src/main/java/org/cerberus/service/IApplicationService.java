@@ -59,6 +59,10 @@ public interface IApplicationService {
      */
     boolean updateApplication(Application application) throws CerberusException;
 
+    public void createApplication(Application application) throws CerberusException;
+
+    public void deleteApplication(Application application) throws CerberusException;
+
     /**
      *
      * @param Application
@@ -69,8 +73,7 @@ public interface IApplicationService {
 
     /**
      *
-     * @return
-     * @throws CerberusException
+     * @return @throws CerberusException
      * @since 0.9.1
      */
     List<String> findDistinctSystem();

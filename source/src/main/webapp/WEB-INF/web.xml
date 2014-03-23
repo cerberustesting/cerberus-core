@@ -194,7 +194,7 @@
         <servlet-class>org.cerberus.servlet.environment.UpdateBuildRevisionParameter</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>UpdateApplicationAjax</servlet-name>
+        <servlet-name>UpdateApplication</servlet-name>
         <servlet-class>org.cerberus.servlet.application.UpdateApplication</servlet-class>
     </servlet>
     <servlet>
@@ -340,6 +340,14 @@
     <servlet>
         <servlet-name>UpdateProject</servlet-name>
         <servlet-class>org.cerberus.servlet.project.UpdateProject</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>CreateApplication</servlet-name>
+        <servlet-class>org.cerberus.servlet.application.CreateApplication</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>DeleteApplication</servlet-name>
+        <servlet-class>org.cerberus.servlet.application.DeleteApplication</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>RunTestCase</servlet-name>
@@ -518,8 +526,8 @@
         <url-pattern>/UpdateBuildRevisionParameter</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>UpdateApplicationAjax</servlet-name>
-        <url-pattern>/UpdateApplicationAjax</url-pattern>
+        <servlet-name>UpdateApplication</servlet-name>
+        <url-pattern>/UpdateApplication</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>NewBuildRev</servlet-name>
@@ -664,6 +672,14 @@
     <servlet-mapping>
         <servlet-name>UpdateProject</servlet-name>
         <url-pattern>/UpdateProject</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>CreateApplication</servlet-name>
+        <url-pattern>/CreateApplication</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DeleteApplication</servlet-name>
+        <url-pattern>/DeleteApplication</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>
@@ -846,7 +862,8 @@
         <web-resource-collection>
             <web-resource-name>servlet</web-resource-name>
             <description>servlet</description>
-            <url-pattern>/UpdateApplicationAjax</url-pattern>
+            <url-pattern>/UpdateApplication</url-pattern>
+            <url-pattern>/CreateApplication</url-pattern>
             <url-pattern>/UpdateBuildRevisionParameter</url-pattern>
             <url-pattern>/UpdateCountryEnv</url-pattern>
             <url-pattern>/DeleteBuildRevisionInvariant</url-pattern>
@@ -912,6 +929,7 @@
             <url-pattern>/CreateInvariant</url-pattern>
             <url-pattern>/UpdateInvariant</url-pattern>
             <url-pattern>/DeleteInvariant</url-pattern>
+            <url-pattern>/DeleteApplication</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <description>Administrator</description>

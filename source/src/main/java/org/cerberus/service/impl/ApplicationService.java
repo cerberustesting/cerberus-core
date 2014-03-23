@@ -59,6 +59,16 @@ public class ApplicationService implements IApplicationService {
     }
 
     @Override
+    public void createApplication(Application application) throws CerberusException {
+        ApplicationDAO.createApplication(application);
+    }
+
+    @Override
+    public void deleteApplication(Application application) throws CerberusException {
+        ApplicationDAO.deleteApplication(application);
+    }
+
+    @Override
     public boolean isApplicationExist(String Application) {
         try {
             findApplicationByKey(Application);

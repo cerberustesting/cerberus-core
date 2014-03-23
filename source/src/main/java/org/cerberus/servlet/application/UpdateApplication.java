@@ -45,7 +45,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  *
  * @author vertigo
  */
-@WebServlet(name = "UpdateApplicationAjax", urlPatterns = {"/UpdateApplicationAjax"})
+@WebServlet(name = "UpdateApplication", urlPatterns = {"/UpdateApplication"})
 public class UpdateApplication extends HttpServlet {
 
     /**
@@ -117,7 +117,7 @@ public class UpdateApplication extends HttpServlet {
             ILogEventService logEventService = appContext.getBean(LogEventService.class);
             IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
             try {
-                logEventService.insertLogEvent(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/UpdateApplicationAjax", "UPDATE", "Update application : " + application, "", ""));
+                logEventService.insertLogEvent(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/UpdateApplication", "UPDATE", "Update application : " + application, "", ""));
             } catch (CerberusException ex) {
                 Logger.getLogger(UpdateApplication.class.getName()).log(Level.ERROR, null, ex);
             }

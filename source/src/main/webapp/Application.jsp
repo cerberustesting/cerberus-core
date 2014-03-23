@@ -17,6 +17,7 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
   --%>
+<%@page import="org.cerberus.service.IDocumentationService"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <% Date DatePageStart = new Date() ; %>
@@ -44,6 +45,15 @@
     <body>
         <%@ include file="include/function.jsp" %>
         <%@ include file="include/header.jsp" %>
+            <%
+                /*
+                 * Database connexion
+                 */
+                Connection conn = db.connect();
+                try {
+                    IDocumentationService docService = appContext.getBean(IDocumentationService.class);
+
+            %>
         <script type="text/javascript">      
             $(document).ready(function(){
                 $('#applicationsTable').dataTable({
@@ -60,21 +70,41 @@
                     "bSearchable": false, 
                     "aTargets": [ 0 ],
                     "aoColumns": [
-                        {"sName": "Application"},
-                        {"sName": "System"},
-                        {"sName": "SubSystem"},
-                        {"sName": "Description"},
-                        {"sName": "Type"},
-                        {"sName": "Maven Group ID"},
-                        {"sName": "Deploy Type"},
-                        {"sName": "sort"},
-                        {"sName": "svn URL"},
-                        {"sName": "Bug Tracker URL"},
-                        {"sName": "New Bug URL"}
+                        {"sName": "Application", "sWidth": "10%"},
+                        {"sName": "System", "sWidth": "5%"},
+                        {"sName": "SubSystem", "sWidth": "5%"},
+                        {"sName": "Description", "sWidth": "10%"},
+                        {"sName": "Type", "sWidth": "10%"},
+                        {"sName": "Maven Group ID", "sWidth": "5%"},
+                        {"sName": "Deploy Type", "sWidth": "5%"},
+                        {"sName": "sort", "sWidth": "5%"},
+                        {"sName": "svn URL", "sWidth": "15%"},
+                        {"sName": "Bug Tracker URL", "sWidth": "15%"},
+                        {"sName": "New Bug URL", "sWidth": "15%"}
                     ]
                 }
             ).makeEditable({
-                    sUpdateURL: "UpdateApplicationAjax",
+                    sAddURL: "CreateApplication",
+                    sAddHttpMethod: "POST",
+                    oAddNewRowButtonOptions: {
+                        label: "<b>Create Application</b>",
+                        background: "#AAAAAA",
+                        icons: {primary: 'ui-icon-plus'}
+                    },
+                    sDeleteHttpMethod: "POST",
+                    sDeleteURL: "DeleteApplication",
+                    sAddDeleteToolbarSelector: ".dataTables_length",
+                    oDeleteRowButtonOptions: {
+                        label: "Remove",
+                        icons: {primary: 'ui-icon-trash'}
+                    },
+                    oAddNewRowFormOptions: {
+                        title: 'Add Application Entry',
+                        show: "blind",
+                        hide: "explode",
+                        width: "700px"
+                    },
+                    sUpdateURL: "UpdateApplication",
                     fnOnEdited: function(status){
                         $(".dataTables_processing").css('visibility', 'hidden');
                     },
@@ -133,22 +163,78 @@
             <table id="applicationsTable" class="display">
                 <thead>
                     <tr>
-                        <th><%=dbDocS("Application","Application","")%></th>
-                        <th><%=dbDocS("Application","system","")%></th>
-                        <th><%=dbDocS("Application","subsystem","")%></th>
-                        <th><%=dbDocS("Application","description","")%></th>
-                        <th><%=dbDocS("Application","type","")%></th>
-                        <th><%=dbDocS("Application","mavengroupid","")%></th>
-                        <th><%=dbDocS("Application","deploytype","")%></th>
-                        <th><%=dbDocS("Application","sort","")%></th>
-                        <th><%=dbDocS("Application","svnurl","")%></th>
-                        <th><%=dbDocS("Application","bugtrackerurl","")%></th>
-                        <th><%=dbDocS("Application","bugtrackernewurl","")%></th>
+                        <th><%=docService.findLabel("Application","Application","")%></th>
+                        <th><%=docService.findLabel("Application","System","")%></th>
+                        <th><%=docService.findLabel("Application","subsystem","")%></th>
+                        <th><%=docService.findLabel("Application","description","")%></th>
+                        <th><%=docService.findLabel("Application","type","")%></th>
+                        <th><%=docService.findLabel("Application","mavengroupid","")%></th>
+                        <th><%=docService.findLabel("Application","deploytype","")%></th>
+                        <th><%=docService.findLabel("Application","sort","")%></th>
+                        <th><%=docService.findLabel("Application","svnurl","")%></th>
+                        <th><%=docService.findLabel("Application","bugtrackerurl","")%></th>
+                        <th><%=docService.findLabel("Application","bugtrackernewurl","")%></th>
                     </tr>
                 </thead>
                 <tbody>
                 </tbody>
             </table>
+        </div>
+        <div>
+            <form id="formAddNewRow" action="#" title="Add Application" style="width:600px" method="post">
+                    <label for="Application" style="font-weight:bold"><%=docService.findLabel("Application","Application","")%></label>
+                    <input id="Application" name="Application" style="width:150px;" 
+                           class="ncdetailstext" rel="0" >
+                <br><br>
+                    <label for="System" style="font-weight:bold"><%=docService.findLabel("Application","System","")%></label>
+                    <%=ComboInvariantAjax(conn, "System", "", "System", "1", "SYSTEM", "", "", false)%>
+                    <label for="SubSystem" style="font-weight:bold"><%=docService.findLabel("Application","subsystem","")%></label>
+                    <input id="SubSystem" name="SubSystem" style="width:100px;" 
+                           class="ncdetailstext" rel="2" >
+                    <label for="Type" style="font-weight:bold"><%=docService.findLabel("Application","type","")%></label>
+                    <%=ComboInvariantAjax(conn, "Type", "", "Type", "4", "APPLITYPE", "", "", false)%>
+                <br>
+                <br>
+                    <label for="Description" style="font-weight:bold"><%=docService.findLabel("Application","description","")%></label>
+                    <input id="Description" name="Description" style="width:400px;" 
+                           class="ncdetailstext" rel="3" >
+                <br>
+                    <label for="Sort" style="font-weight:bold"><%=docService.findLabel("Application","sort","")%></label>
+                    <input id="Sort" name="Sort" style="width:100px;" 
+                           class="ncdetailstext" rel="7" >
+                <br><br>
+                    <label for="MavenGroupID" style="font-weight:bold"><%=docService.findLabel("Application","mavengroupid","")%></label>
+                    <input id="MavenGroupID" name="MavenGroupID" style="width:400px;" 
+                           class="ncdetailstext" rel="5" >
+                <br>
+                    <label for="DeployType" style="font-weight:bold"><%=docService.findLabel("Application","deploytype","")%></label>
+                    <%=ComboDeployTypeAjax(conn, "DeployType", "", "DeployType", "6", "", "")%>
+                <br><br>
+                    <label for="SVNURL" style="font-weight:bold"><%=docService.findLabel("Application","svnurl","")%></label>
+                    <input id="SVNURL" name="SVNURL" style="width:600px;" 
+                           class="ncdetailstext" rel="8" >
+                <br><br>
+                    <label for="BugTrackerURL" style="font-weight:bold"><%=docService.findLabel("Application","bugtrackerurl","")%></label>
+                    <input id="BugTrackerURL" name="BugTrackerURL" style="width:600px;" 
+                           class="ncdetailstext" rel="9" >
+                <br><br>
+                    <label for="NewBugURL" style="font-weight:bold"><%=docService.findLabel("Application","bugtrackernewurl","")%></label>
+                    <input id="NewBugURL" name="NewBugURL" style="width:600px;" 
+                           class="ncdetailstext" rel="10" >
+                <br><br>
+                <button id="btnAddNewRowOk">Add</button>
+                <button id="btnAddNewRowCancel">Cancel</button>
+            </form>
+        <%
+            } catch (Exception e) {
+                out.println(e);
+            } finally {
+                try {
+                    conn.close();
+                } catch (Exception ex) {
+                }
+            }
+        %>
         </div>
         <br><%
             out.print(display_footer(DatePageStart));
