@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -94,10 +95,10 @@ public class GetInvariantsForTest extends HttpServlet {
                 }
             }
 
-            for(String key: invariants.keySet()) {
-                JSONArray jSONArray = new JSONArray(invariants.get(key));
+            for(Map.Entry<String,List<String>> key: invariants.entrySet()) {
+                JSONArray jSONArray = new JSONArray(key.getValue());
 
-                jsonResponse.put(key,jSONArray);
+                jsonResponse.put(key.getKey(),jSONArray);
             }
 
             httpServletResponse.setContentType("application/json");
