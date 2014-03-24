@@ -57,7 +57,7 @@ public class DocumentationField extends HttpServlet {
         String docField = policy.sanitize(httpServletRequest.getParameter("docField"));
         String docLabel = policy.sanitize(httpServletRequest.getParameter("docLabel"));
 
-        result = docService.findLabel(docTable, docField, docLabel);
+        result = docService.findLabelHTML(docTable, docField, docLabel);
 
         try {
             httpServletResponse.setContentType("text/html");
