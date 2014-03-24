@@ -273,7 +273,7 @@
                     Statement stQueryTest = conn.createStatement();
                     Statement stQueryTestCase = conn.createStatement();
             %>
-            <form action="TestCase.jsp" method="post" name="selectTestCase">
+            <form action="TestCase.jsp" method="post" name="selectTestCase" id="selectTestCase">
                 <table id="arrond">
                     <tr>
                         <td id="arrond">
@@ -1412,8 +1412,8 @@
                                                             <table><tr><td id="wob"><input type="button" value="Add Action"
                                                                                            onclick="addTestCaseAction('Action<%=rs_step.getString("step")%>','<%=rs_step.getString("step")%>', <%=testcase_stepaction_maxlength_sequence%>, <%=testcase_stepaction_maxlength_action%>, <%=testcase_stepaction_maxlength_object%>, <%=testcase_stepaction_maxlength_property%>, <%=testcase_stepaction_maxlength_description%>) ; enableField('submitButtonAction');">
                                                                     <td id="wob"><input type="button" value="import HTML Scenario" onclick="importer('ImportHTML.jsp?Test=<%=test%>&Testcase=<%=testcase%>&Step=<%=rs_step.getString("step")%>')"></td>
-                                                                </td><td id="wob"><input value="Save Changes" onclick="document.getElementById('UpdateTestCaseDetail').action = document.getElementById('UpdateTestCaseDetail').action+'#stepAnchor_<%=i1%>'" id="submitButtonAction" name="submitChanges"
-                                                                                         type="submit" >
+                                                                </td><td id="wob"><input value="Save Changes" onclick="submitTestCaseModification('#stepAnchor_<%=i1%>');" id="submitButtonAction" name="submitChanges"
+                                                                                         type="button" >
                                                                 <%=ComboInvariant(conn, "actions_action_", "width: 150px;visibility:hidden", "actions_action_", "actions_action_", "ACTION", "", "", null)%></td></tr></table></td></tr>
                                                                 <% }%>
                                                                 
@@ -1465,7 +1465,9 @@
                                                         
                                                 %>
                                                 <tr>
-                                                    <td style="text-align: center; background-color: <%=controlColor%>">
+                                                    <td style="text-align: center; background-color: <%=controlColor%>" 
+                                                        class="controls_<%=rs_controls.getString("Step") + '-'
+                                                                       + rs_controls.getString("Sequence") %>">
                                                         <%  if (canEdit) {%>
                                                         <input class="wob" type="checkbox" name="controls_delete" 
                                                                value="<%=rs_controls.getString("Step") + '-'
@@ -1512,8 +1514,8 @@
                                         <table><tr><td id="wob"><input type="button"
                                                                        value="Add Control"
                                                                        onclick="addTestCaseControl('control_table<%=rs_step.getString("step")%>',<%=rs_step.getString("step")%>, '10', '10', '10', '100', '250', '250','250') ; enableField('submitButtonChanges');">
-                                                </td><td id="wob"><input	value="Save changes" onclick="document.getElementById('UpdateTestCaseDetail').action = document.getElementById('UpdateTestCaseDetail').action+'#stepAnchor_<%=i1%>'" id="submitButtonChanges" name="submitChanges"
-                                                                         type="submit" ></td></tr></table>
+                                                </td><td id="wob"><input value="Save Changes" onclick="submitTestCaseModification('#stepAnchor_<%=i1%>');" id="submitButtonAction" name="submitChanges"
+                                                                                         type="button" ></td></tr></table>
                                                     <% }%>
                                     </td></tr></table>        
                         </div></td></tr></table><tr><td class="wob" style="height:30px"></td></tr></td></tr><% }%>

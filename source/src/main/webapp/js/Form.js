@@ -1393,3 +1393,27 @@ function loadSqlLibraryPopin(value) {
     $('#popin').load('SqlLib.jsp?Lign='+value);
 //    $('#popin').show();
 }
+
+function submitTestCaseModification( anchor ) {
+    var form = $("#UpdateTestCaseDetail");
+    var allControlsToDelete = 0;
+
+    var actionsToDelete = $("input[name='actions_delete']:checked");
+    if(actionsToDelete.length > 0) {
+        for(var i=0; i<actionsToDelete.length; i++) {
+            allControlsToDelete = eval(allControlsToDelete + $("td.controls_"+$(actionsToDelete[i]).val()).length);
+        }
+    }
+
+    if(allControlsToDelete > 0) {
+        if(confirm("Your action will delete "+actionsToDelete.length+" action(s) and "+
+                allControlsToDelete+" control(s).\nDo you want to continue ?")) {
+            form.action = form.action + anchor;
+            form.submit();
+        }
+    } else {
+        form.action = form.action + anchor;
+        form.submit();
+    }
+    return false;
+}
