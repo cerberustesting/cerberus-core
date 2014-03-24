@@ -14,6 +14,16 @@ font-family: Trebuchet MS;
 color:#555555;
 font-size:16px;
 }
+
+.filters{
+background-image: -moz-linear-gradient(top, #ebebeb, #CCCCCC); 
+background-image: -webkit-linear-gradient(top, #ebebeb, #CCCCCC); 
+font-weight:bold;
+font-family: Trebuchet MS;
+color:#555555;
+text-align: center;
+}
+
 ul{
     font-size: 100%;
     font-family: helvetica;
@@ -99,7 +109,7 @@ table#testcasetable {
     border-color: #8999c4;
     -moz-border-radius: 5px;
 }
-div#menu {
+/*div#menu {
     border-bottom: groove 2px;
     padding-top: 5px;
     padding-bottom: 2px;
@@ -118,16 +128,10 @@ div#menu {
 
 
 /* Table header */
-tr#header,
-tr.reportDelimiter {
+tr#header {
     background-color:#cad3f1; 
     font-weight:bold;   
-}
 
-tr#header td,
-tr.reportDelimiter td {
-    border-left: 1px grey solid;
-    border-right: 1px grey solid;
 }
 
 tr#tableheader {
@@ -251,20 +255,20 @@ td#repsynthesis3 {
 }
 
 
-table#menu {
+/*table#menu {
     margin-right:auto;
     margin-left:auto;
 
-}
+}*/
 
-div#menu ul {
+/*div#menu ul {
     padding:0;
     margin:0;
     list-style-type:none;
 }
 div#menu li {
     margin-left:3px;
-    float:left; /* IE */
+    float:left;  IE 
 }
 
 div#menu ul li a {
@@ -283,14 +287,14 @@ div#menu ul li a {
     -webkit-box-shadow: -1px -1px 5px #d0d0d0;
     -o-box-shadow: -1px -1px 5x #d0d0d0;
     -box-shadow: -1px -1px 5px #d0d0d0;
-    /* for IE effect */
+     for IE effect 
     border-color:#DCDCDC #696969 #696969 #DCDCDC;
 }
 
 div#menu ul li a:hover {
     background-color:#cad3f1;
     border-color:#ccffcc #00ff00 #00ff00 #ccffcc;
-}
+}*/
 
 input#button{
     background-color: #cad3f1;  
@@ -490,8 +494,12 @@ html, body {
 
 }
 
-
-
+/*footer{
+position:absolute;
+   bottom:0;
+   width:100%;
+   height:60px;
+}*/
 
 
 .filter {
@@ -720,7 +728,241 @@ table.doctb {
 
 /* Elements de premier niveau
 --------------------------------------*/
-#navlist
+
+#navcontainer {
+    background: url("../images/background.png") repeat-x scroll 0 0 rgba(0, 0, 0, 0);
+    height: 35px;
+    position: relative;
+    z-index: 99;
+    text-align:center;
+}
+
+#navlist li {
+    background: url("../images/background.png") repeat-x scroll 0 -45px rgba(0, 0, 0, 0);
+    display: inline-block;
+    height: 35px;
+    margin: 0;
+    padding-left: 1px;
+    text-align:center;
+    vertical-align: middle;
+}
+
+.crumbs2 { 
+display: block; 
+margin-left: 150px; 
+padding: 0; 
+padding-top: 0px;  
+} 
+.crumbs2 li { display: inline; } 
+.crumbs2 li a, 
+.crumbs2 li a:link, 
+
+.crumbs2 li a:visited { 
+color: #666; 
+display: block; 
+float: left; 
+font-size: 12px; 
+padding: 7px 16px 7px 19px; 
+position: relative; 
+text-decoration: none; 
+border: 1px solid #d9d9d9; 
+border-right-width: 0px; 
+} 
+
+.crumbs2 li a  {  
+background-image: -webkit-gradient(linear,left bottombottom,left top,color-stop(0.45, rgb(241,241,241)),color-stop(0.73, rgb(245,245,245))); 
+background-image: -moz-linear-gradient( center bottombottom, rgb(241,241,241) 45%, rgb(245,245,245) 73%); 
+ 
+/* For Internet Explorer 5.5 - 7 */ 
+filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#f1f1f1, endColorstr=#f5f5f5); 
+ 
+/* For Internet Explorer 8 */ 
+-ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#f1f1f1, endColorstr=#f5f5f5)"; 
+} 
+ 
+.crumbs2 li.first a { 
+border-top-left-radius: 5px; 
+-moz-border-radius-topleft: 5px; 
+-webkit-border-top-left-radius: 5px; 
+} 
+
+.crumbs2 li.last a { 
+border-right-width: 1px; 
+border-bottom-rightright-radius: 5px; 
+-moz-border-radius-bottomright: 5px; 
+-webkit-border-bottom-rightright-radius: 5px; 
+}  
+
+
+firstPartLine{
+    background: url("../images/background.png") repeat-x scroll 0 -45px rgba(0, 0, 0, 0);
+    display: inline-block;
+    height: 35px;
+    margin: 0;
+    padding-left: 1px;
+    text-align:center;
+    vertical-align: middle;
+}
+
+
+#logo {
+    background-image: -moz-linear-gradient(top, #ebebeb, #CCCCCC); 
+background-image: -webkit-linear-gradient(top, #ebebeb, #CCCCCC); 
+display: inline-block;
+    height: 35px;
+    margin: 0;
+    padding-left: 1px;
+    text-align:center;
+    vertical-align: middle;
+}
+
+#userInfo {
+    background: url("../images/background.png") repeat-x scroll 0 -45px rgba(0, 0, 0, 0);
+    display: inline-block;
+    height: 35px;
+    margin: 0;
+    padding-left: 1px;
+    text-align:center;
+    vertical-align: middle;
+}
+
+#navlist li a {
+    background: url("../images/background.png") repeat-x scroll 0 -45px rgba(0, 0, 0, 0);
+    display: inline-block;
+    height: 35px;
+    margin: 0;
+    padding-left: 1px;
+    text-align:center;
+    vertical-align: middle;
+    
+}
+#navlist li a img{
+    text-align: center;
+    
+}
+
+#navlist li a:link, #navlist li a:visited {
+    background: url("../images/background.png") repeat-x scroll 0 -90px rgba(0, 0, 0, 0);
+    color: #FFFFFF;
+    float: left;
+    font-size: 14px;
+    /*font-weight: bold;*/
+    margin-right: 1px;
+    text-shadow: 0 -1px 1px #000000;
+}
+a {
+    color: #008CDA;
+    text-decoration: none;
+}
+#navlist .subnav li a:link, #navlist .subnav li a:visited {
+    -moz-user-select: none;
+    background-image: url("../images/background.png");
+    background-position: 0 0;
+    background-repeat: repeat-x;
+    color: #D6D6D6;
+    display: block;
+    text-align:left;
+    font-family: "myriad-pro","myriad-pro-1","myriad-pro-2",sans-serif;
+    /*font-weight: 600;*/
+    height: 35px;
+    line-height: 35px;
+    margin: 0 1px;
+    padding: 0 29px;
+}
+/*#navlist li a:hover{
+    background-position: 0 -135px;
+    margin: 0;
+    padding: 0 30px;
+}*/
+#navlist .subnav li a:link, #navlist .subnav li a:visited{
+    background-position: 0 -180px;
+    margin: 0;
+    padding: 0 30px;
+}
+#navlist .subnav {
+    background: none repeat scroll 0 0 #353535;
+    border: 1px solid #424242;
+    display: none;
+    padding: 4px 0;
+    position: absolute;
+    top: 35px;
+}
+#navlist li:hover > .subnav{
+    display: block;
+}
+#navlist .subnav li {
+    display: block;
+    padding: 2px 0;
+}
+#header .nav ol.menu a {
+    color: #DEDEDE;
+    display: block;
+    font-size: 13px;
+    line-height: 20px;
+    padding: 0 29px;
+}
+#header .nav ol.menu a:hover {
+    background-color: #000000;
+}
+#header .controls {
+    background-color: #D7D7D7;
+    color: #A9A9A9;
+    min-height: 25px;
+}
+#header .controls a {
+    color: #000000;
+}
+#header .controls a:hover {
+    color: #888888;
+}
+#header .controls ol {
+    font-size: 11px;
+    line-height: 24px;
+    margin: 0;
+    padding-right: 100px;
+    text-align: right;
+}
+#header .controls li {
+    display: inline;
+}
+#header .controls li img {
+    vertical-align: middle;
+}
+#header .controls li.sep {
+    color: #444444;
+    margin: 0 2px;
+}
+#header .controls li.share {
+    margin-left: 5px;
+}
+#header .controls li.join a {
+    color: #008CDA;
+}
+#header .controls li.join a:hover {
+    color: #888888;
+}
+#sign_in_box {
+    overflow: hidden;
+    width: 670px;
+}
+#sign_in_box .join {
+    color: #666666;
+    float: left;
+    font-size: 10pt;
+    font-weight: bold;
+    line-height: 30px;
+}
+.sign_in_error {
+    display: none;
+}
+.sign_in_error, .verify_error, .terms_error, .domain_error, .forgot_error, .error {
+    color: #FF0000 !important;
+}
+#sign_in_forgot, #sign_in_disabled, #sign_in_verify, #sign_in_verify_complete, #sign_in_terms, #sign_in_domain, #sign_in_forgot_complete {
+    display: none;
+}
+
+/*#navlist(done)
 {
     height: 15px;
     list-style-type: none;
@@ -731,9 +973,9 @@ table.doctb {
     left: 120px;
     top: 30px;
     z-index: 999;
-}
+}*/
 
-#navlist li
+/*#navlist li(done)
 {
     float: left;
     width: 115px;
@@ -742,8 +984,8 @@ table.doctb {
     padding: 0;
     border: 0;
     z-index: 999;
-}
-#navlist li a:link, #navlist li a:visited
+}*/
+/*#navlist li a:link, #navlist li a:visited(done)
 {
     display: block;
     width: 145px;
@@ -753,7 +995,7 @@ table.doctb {
     -webkit-box-shadow: -1px -1px 5px #d0d0d0;
     -o-box-shadow: -1px -1px 5x #d0d0d0;
     -box-shadow: -1px -1px 5px #d0d0d0;
-    /* for IE effect */
+     for IE effect 
     border-color:#DCDCDC #696969 #696969 #DCDCDC;
     margin: 0;
     padding: 4px 8px;
@@ -761,8 +1003,8 @@ table.doctb {
     text-decoration: none;
     font-weight: bold;
     z-index: 999;
-}
-#navlist li a:hover { background-color: #F2462E; }
+}*/
+/*#navlist li a:hover { background-color: #F2462E; }
 #navlist li a:active { background-color: #5F879D; }
 
 #navlist .subnav
@@ -799,7 +1041,7 @@ table.doctb {
     -webkit-box-shadow: -1px -1px 5px #d0d0d0;
     -o-box-shadow: -1px -1px 5x #d0d0d0;
     -box-shadow: -1px -1px 5px #d0d0d0;
-    /* for IE effect */
+     for IE effect 
     border-color:#DCDCDC #696969 #696969 #DCDCDC;
     z-index: 999;
 }
@@ -811,29 +1053,4 @@ table.doctb {
     z-index: 999;
 }
 
-#navlist li:hover > .subnav { display: block; }
-
-
-.notVisible {
-    display: none;
-}
-
-.OKVisible,
-.KOVisible,
-.FAVisible,
-.PEVisible,
-.NAVisible {
-    display: table-row;
-}
-
-.library {
-    display: inline-block;
-    padding: 5px;
-    margin: 5px;
-    
-    border: 1px grey solid;
-    text-align: center;
-    
-    width: 70px;
-    height: 20px;
-}
+#navlist li:hover > .subnav { display: block; }*/

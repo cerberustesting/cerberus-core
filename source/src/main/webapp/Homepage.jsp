@@ -24,7 +24,7 @@
     <head>
         <meta content="text/html; charset=UTF-8" http-equiv="content-type">
         <title>Cerberus Homepage</title>
-        <link rel="stylesheet" type="text/css" href="css/crb_style.css">
+        <!--<link rel="stylesheet" type="text/css" href="css/crb_style.css">-->
         <link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico" />
         <link rel="stylesheet" type="text/css" href="css/crb_style.css">
         <style media="screen" type="text/css">

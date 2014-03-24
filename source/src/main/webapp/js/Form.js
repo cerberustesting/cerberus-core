@@ -85,9 +85,11 @@ function menuColoring(arg) {
                 
 		if (location.toString().indexOf(menuCollection[cpt_menu]) != -1) {
                     if (unicityMenu == 0){
-			menuCollection[cpt_menu].style.background = "#00FF00";
-                        menuCollection[cpt_menu].parentNode.parentNode.parentNode.firstChild.style.background = "#00FF00";
-                    unicityMenu = 1;
+						//menuCollection[cpt_menu].style.background = "#00FF00";
+                        menuCollection[cpt_menu].style.color = "#00FF00";
+                        //menuCollection[cpt_menu].parentNode.parentNode.parentNode.firstChild.style.background = "#00FF00";
+                        menuCollection[cpt_menu].parentNode.parentNode.parentNode.firstChild.style.color = "#00FF00";
+                        unicityMenu = 1;
                 }
                     
             }

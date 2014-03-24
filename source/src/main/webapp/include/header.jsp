@@ -40,18 +40,15 @@
 <%@page import="org.cerberus.version.Version"%>
 <script type='text/javascript' src='js/Form.js'></script>
 
-<div id="menu">
-    <table >
-        <tr>
-            <td id="wob" rowspan="2">
-                <a href="Homepage.jsp"><img src="images/logo-1.png" valign="Top" alt="Cerberus" /></a>
-            </td>
-            <td id="wob" style="width: 100%;">
-            </td>
-        </tr>
-        <tr>
-            <td id="wob" valign="Bottom">
-                <div id="navcontainer">
+        
+        <div id="navcontainer">
+            <div style="float:left; width:15px">
+                <p style="width:15px;">.</p>
+            </div>
+            <div id="logo" style="float:left; width:55px">
+                <a href="Homepage.jsp"><img style="width:55px; height:35px" src="images/logo-2.png" valign="Top" alt="Cerberus" /></a>
+            </div>
+            <div style="float:left;">
                     <ul id="navlist">
                         <% if (request.getUserPrincipal() != null && (request.isUserInRole("TestRO"))) {%>
                         <li id="active"><a id="current" name="menu" href="#" style="width:100px">Test</a>
@@ -91,7 +88,7 @@
                         </li>
                         <% }%>
                         <% if (request.getUserPrincipal() != null && (request.isUserInRole("TestRO"))) {%>
-                        <li id="active"><a id="current" name="menu" href="#" style="width:100px">Execution<br>Reporting</a>
+                        <li id="active"><a id="current" name="menu" href="#" style="width:170px">Execution Reporting</a>
                             <ul class="subnav" id="subnavlist">
                                 <li id="subactive"><a name="menu" id="menuExecutionPerBuildRevision" href="ExecutionPerBuildRevision" style="width:150px">Execution Per Build/Rev</a></li>
                                 <li id="subactive"><a name="menu" id="menuReportingExecutionStatus" href="ReportingExecution.jsp" style="width:150px">Execution Status</a></li>
@@ -108,7 +105,6 @@
                                 <li id="subactive"><a name="menu" id="menuEnvironments" href="EnvironmentList.jsp" style="width:130px">Environments</a></li>
                                 <li id="subactive"><a name="menu" id="menuBuildRevision" href="BuildRevDefinition.jsp" style="width:130px">Build/Rev Definition</a></li>
                                 <li id="subactive"><a name="menu" id="menuBuildContent" href="BuildContent.jsp" style="width:130px">Build Content</a></li>
-                                <li id="subactive"><a name="menu" id="menuProjects" href="Project.jsp" style="width:130px">Projects</a></li>
                             </ul>
                         </li>
                         <% }%>
@@ -119,17 +115,17 @@
                                 <li id="subactive"><a name="menu" id="menuLogViewer" href="LogViewer.jsp" style="width:130px">Log Viewer</a></li>
                                 <li id="subactive"><a name="menu" id="menuDatabaseMaintenance" href="DatabaseMaintenance.jsp" style="width:130px">Database Maintenance</a></li>
                                 <li id="subactive"><a name="menu" id="menuParameter" href="Parameter.jsp" style="width:130px">Parameters</a></li>
-                                <li id="subactive"><a name="menu" id="menuInvariantPublic" href="InvariantPublic.jsp" style="width:130px">Edit Public Invariants</a></li>
-                                <li id="subactive"><a name="menu" id="menuInvariantPrivate" href="InvariantPrivate.jsp" style="width:130px">See Private Invariants</a></li>
+                                <li id="subactive"><a name="menu" id="menuInvariantPublic" href="InvariantPublic.jsp" style="width:150px">Edit Public Invariants</a></li>
+                                <li id="subactive"><a name="menu" id="menuInvariantPrivate" href="InvariantPrivate.jsp" style="width:150px">See Private Invariants</a></li>
                             </ul>
                         </li>
                         <% }%>
-                    </ul></div>
-	    </td>
+                    </ul>
+            </div>
+	<div style="float:right">
             <% if (request.getUserPrincipal() != null) {%>
-            <td class="loginIcon">
-                <h6>Welcome</h6>
-                <p style="text-align: right" ><%= request.getUserPrincipal().getName()%></p>
+                <div style="float:right; width:170px">
+                    <p style="color:white">System</p>
                 <form action="" method="post" name="SysFilter" id="SysFilter">
                     <%
                         String MySystem = ParameterParserUtil.parseStringParam(request.getParameter("MySystem"), "");
@@ -165,26 +161,27 @@
                         %>
                     </select>
                 </form>
-                <a href="Logout.jsp">
-                    <div id="logout" style="width: 75px; padding-left: 25px">
+               </div><div id="userInfo" style="float:right; width:100px">
+                    <p style="color:white"><%= request.getUserPrincipal().getName()%></p>
+                    <a href="Logout.jsp">
+                    <div id="logout" style="width: 75px;">
                         <img src="images/logout.png">
                         <span>logout</span>
                     </div>
                 </a>
-            </td>
             <% } else {%>
-            <td class="loginIcon">
-                <a href="Homepage">
+            <a href="Homepage">
                     <img src="images/LoginIcon.png" />
                     <span>Login</span>
                 </a>
-            </td>
             <% }%>
-        </tr>
-    </table>
-</div>
-
-
+        </div>
+   </div>
+        </div>
+        <div style="clear:both">
+            <p class="dttTitle">Cerberus : Framework for Automated Testing</p>
+        </div>
+        <br><br>
 <script type="text/javascript">
     menuColoring(null);
 </script>
