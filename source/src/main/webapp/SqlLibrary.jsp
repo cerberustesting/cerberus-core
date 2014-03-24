@@ -109,8 +109,8 @@
         <%@ include file="include/function.jsp" %>
         <%@ include file="include/header.jsp" %>
 
-        <br>
-        <div style="width: 80%;  font: 90% sans-serif">
+        <p class="dttTitle">SQL Library</p>
+        <div style="width: 100%; font: 90% sans-serif">
             <table id="sqlLibraryList" class="display">
                 <thead>
                     <tr>

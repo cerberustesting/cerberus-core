@@ -115,8 +115,8 @@
         <%@ include file="include/function.jsp" %>
         <%@ include file="include/header.jsp" %>
 
-        <br>
-        <div style="width: 80%;  font: 90% sans-serif">
+        <p class="dttTitle">SOAP Library</p>
+        <div style="width: 100%; font: 90% sans-serif">
             <table id="soapLibraryList" class="display">
                 <thead>
                     <tr>
