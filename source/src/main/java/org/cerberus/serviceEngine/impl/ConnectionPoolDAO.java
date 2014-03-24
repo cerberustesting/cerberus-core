@@ -74,6 +74,11 @@ public class ConnectionPoolDAO implements IConnectionPoolDAO {
         Connection connection = this.databaseSpring.connect(connectionName);
         try {
             PreparedStatement preStat = connection.prepareStatement(sql);
+            if(limit > 0 && limit < maxSecurityFetch) {
+                preStat.setMaxRows(limit);
+            } else {
+                preStat.setMaxRows(maxSecurityFetch);
+            }
             //TODO add limit of select
             /*
              ORACLE      => * WHERE ROWNUM <= limit *

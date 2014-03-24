@@ -17,113 +17,50 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
+<%@page import="org.cerberus.service.ITestCaseCountryService"%>
+<%@page import="org.springframework.web.context.support.WebApplicationContextUtils"%>
+<%@page import="org.springframework.context.ApplicationContext"%>
 <%@page import="java.sql.Connection"%>
 <%@page import="java.sql.ResultSet"%>
 <%@page import="java.sql.Statement"%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ include file="include/function.jsp"%>
+<%
+    String test = request.getParameter("test");
+    String testcase = request.getParameter("testcase");
+    String property = request.getParameter("property");
+    String database = request.getParameter("db");
+
+    Connection conn = db.connect();
+
+    if(test != null && !"".equals(test.trim()) 
+        && testcase != null && !"".equals(testcase.trim())) {
+%>
+<form action="">
+    <input type="hidden" id="test" name="test" value="<%=test%>">
+    <input type="hidden" id="testCase" name="testCase" value="<%=testcase%>">
+    <input type="hidden" id="db" name="db" value="<%=database%>">
+    <label for="country"><% out.print(dbDocS(conn, "invariant", "Country", "Country"));%></label>
+    <select id="country" name="country" onchange="getEnvironmentSelectBox()">
+        <option></option>
+    </select>
+    &nbsp;&nbsp;
+    <label for="environment"><% out.print(dbDocS(conn, "invariant", "Environment", "Environment"));%></label>
+    <select id="environment" name="environment" onchange="getEnvironmentSelectBox()">
+        <option></option>
+    </select>
+    <br>
+    <textarea rows="5" cols="80" id="property" name="property"><%=property%></textarea>
+    <br>
+    <input type="button" name="calculate" id="calculate" value="Calculate property" onclick="calculateProperty()">
+    <div id="result"></div>
     <script>
-    function reporter(script, valueField, propertyType) {
-	document.getElementById(valueField).value = script;
-        document.getElementById(propertyType).value = "executeSqlFromLib";
-        
-        $("#popin").dialog('close');
-}
+        $(document).ready(function() {
+            getCountrySelectBox();
+        });
 
-    function reporterScript(script, valueField, propertyType) {
-	document.getElementById(valueField).value = script;
-        document.getElementById(propertyType).value = "executeSql";
-        $("#popin").dialog('close');
-}
+    </script>
 
-</script>
-
-    <%@ include file="include/function.jsp"%>
-
-        <%
-     //Database Connection
-
-                    Connection conn = db.connect();
-
-    try {
-            String Lign;
-            Lign = request.getParameter("Lign");
-            String propertyType;
-            propertyType = "type"+Lign;
-
-        String Type;
-            Type = request.getParameter("Type");
-            //Enter when type is selected
-        if (request.getParameter("Type") != null) {
-
-
-            //List of SQL script when type is selected
-            Statement stmtQueryVal = conn.createStatement();
-            String sqVal = "SELECT Name, Script, Description FROM sqllibrary where Type = '"+ Type +"'";
-            ResultSet qVal = stmtQueryVal.executeQuery(sqVal);
-
-
-
-                    %>
-
-    <h3><a href="#" onclick="loadPropertyPopin('<%=Lign%>');">Root</a> / <%=Type %></h3>
-    <table>
-            <% 
-            if (qVal.first()) 
-            {
-                do {
-                    String name = qVal.getString("Name");
-                    String script = qVal.getString("Script").replace("'", "\\'");
-                %>
-            <tr id="header">
-            <td rowspan="2"><%=qVal.getString("Name")%><input type="button" value="Select SQL" onclick="reporter('<%=name%>', '<%=Lign%>', '<%=propertyType%>');"></td>
-            <td style="font-style: normal"><%=qVal.getString("Description")%></td></tr>
-            <tr><td><textarea rows="2" style="width: 700px"><%=qVal.getString("Script")%></textarea>
-                <input type="button" value="Import SQL" onclick="reporterScript('<%=script%>', '<%=Lign%>', '<%=propertyType%>');">
-                </td>
-            </tr>
-            
-            <% 
-                }
-                while (qVal.next());
-                               }
-            %>
-        </table>
-
-        <%
-} else {
-            Type = new String("empty");
-                   //List of SQL Type
-            Statement stmtQuery1 = conn.createStatement();
-            String sq1 = "SELECT distinct Type FROM sqllibrary ";
-            ResultSet q1 = stmtQuery1.executeQuery(sq1);
-            
-        %>
-    <h3> SQL Library !</h3>
-            <% 
-            if (q1.first()) {
-                do {
-                %>
-                <div class="library">
-                 <a href="#" onclick="loadPropertyPopin('<%=Lign%>&Type=<%=q1.getString("Type")%>');"><%=q1.getString("Type")%></a>
-                </div>
-            <% }
-                while (q1.next());
-                               }
-
-            }
-                
-            } catch (Exception e) {
-                out.println("<br> error message : " + e.getMessage() + " "
-                        + e.toString() + "<br>");
-            } finally{
-                try {
-                    conn.close();
-                } catch (SQLException e) {
-
-                }
-            }
-        %>
-
-        <br>
-
+<% } %>
+</form>

@@ -1374,28 +1374,6 @@ function importStep(){
     location.href=urlImportStep;
 }
 
-function openViewPropertyPopin(value) {
-    loadPropertyPopin(value);
-    $('#popin').dialog({hide: { duration: 300 }, height: 600, width: 800, buttons: [ { text: "Ok", click: function() { $( this ).dialog( "close" ); } } ] });
-}
-
-function loadPropertyPopin(value) {
-//    $('#popin').hide().empty();
-    $('#popin').load('viewProperty.jsp?Lign='+value);
-//    $('#popin').show();
-}
-
-function openSqlLibraryPopin(value) {
-    loadPropertyPopin(value);
-    $('#popin').dialog({hide: { duration: 300 }, height: 600, width: 800, buttons: [ { text: "Ok", click: function() { $( this ).dialog( "close" ); } } ] });
-}
-
-function loadSqlLibraryPopin(value) {
-//    $('#popin').hide().empty();
-    $('#popin').load('SqlLib.jsp?Lign='+value);
-//    $('#popin').show();
-}
-
 function submitTestCaseModification( anchor ) {
     var form = $("#UpdateTestCaseDetail");
     var allControlsToDelete = 0;
@@ -1422,3 +1400,67 @@ function submitTestCaseModification( anchor ) {
 
     return false;
 }
+
+function openViewPropertyPopin(propertyID,test,testcase) {
+    loadPropertyPopin(propertyID,test,testcase);
+    $('#popin').dialog({hide: { duration: 300 }, height: 300, width: 700, buttons: [ { text: "Ok", click: function() { $( this ).dialog( "close" ); } } ] });
+}
+
+function loadPropertyPopin(propertyID,test,testcase) {
+//    $('#popin').hide().empty();
+    var value = $('#'+propertyID).val();
+    var db = $('select#properties_dtb'+propertyID+'[name=\'properties_dtb\']').val();
+    var type = $('select#type3-BAD_FORMAT').val();
+    
+    $('#popin').load('viewProperty.jsp?type='+escape(type)+'&db='+escape(db)+'&test='+escape(test)+'&testcase='+escape(testcase)+'&property='+escape(value));
+//    $('#popin').show();
+}
+
+function openSqlLibraryPopin(value) {
+    loadPropertyPopin(value);
+    $('#popin').dialog({hide: { duration: 300 }, height: 600, width: 800, buttons: [ { text: "Ok", click: function() { $( this ).dialog( "close" ); } } ] });
+}
+
+function loadSqlLibraryPopin(value) {
+//    $('#popin').hide().empty();
+    $('#popin').load('SqlLib.jsp?Lign='+value);
+//    $('#popin').show();
+}
+
+
+function getCountrySelectBox() {
+    $.get('GetCountryForTestCase', {test: $('#test').val(), testCase: $('#testCase').val()}, function (data) {
+        for(var i=0; i<data.countriesList.length; i++) {
+            $('#country').append($("<option></option>")
+                                        .attr("value",data.countriesList[i])
+                                        .text(data.countriesList[i]));
+        }
+    });
+};
+
+function getEnvironmentSelectBox() {
+    $.get('GetEnvironmentAvailable', {test: $('#test').val(), testCase: $('#testCase').val(), country: $('#country').val()}, function (data) {
+        for(var i=0; i<data.envList.length; i++) {
+            $('#environment').append($("<option></option>")
+                                        .attr("value",data.envList[i].environment)
+                                        .text(data.envList[i].description));
+        }
+    });
+};
+
+function calculateProperty() {
+    $.get('CalculatePropertyForTestCase', {test: $("#test").val(),
+                                            testCase: $("#testCase").val(),
+                                            country: $("#country").val(),
+                                            environment: $("#environment").val(),
+                                            property: $("#property").val(),
+                                            database: $("#db").val()}
+                                    ,function(data) {
+
+        if(data != null && data.resultList != null) {
+            $("#result").empty().text(data.resultList);
+        } else {
+            $("#result").empty().append("<b>Unable to retrieve property in database !</b>");
+        }
+    });
+};
