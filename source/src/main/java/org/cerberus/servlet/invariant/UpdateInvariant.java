@@ -6,7 +6,6 @@
 package org.cerberus.servlet.invariant;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.ServletException;
@@ -15,7 +14,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.cerberus.entity.Invariant;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.factory.IFactoryInvariant;
 import org.cerberus.factory.IFactoryLogEvent;
 import org.cerberus.factory.impl.FactoryLogEvent;
 import org.cerberus.service.IInvariantService;
@@ -49,7 +47,6 @@ public class UpdateInvariant extends HttpServlet {
 
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         IInvariantService invariantService = appContext.getBean(IInvariantService.class);
-        IFactoryInvariant factoryInvariant = appContext.getBean(IFactoryInvariant.class);
 
         String[] invKey = key.split("\\$#");
         String idName = invKey[0];

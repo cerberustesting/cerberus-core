@@ -15,7 +15,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.cerberus.entity.Project;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.factory.IFactoryLogEvent;
-import org.cerberus.factory.IFactoryProject;
 import org.cerberus.factory.impl.FactoryLogEvent;
 import org.cerberus.service.ILogEventService;
 import org.cerberus.service.IProjectService;
@@ -48,7 +47,6 @@ public class UpdateProject extends HttpServlet {
 
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         IProjectService projectService = appContext.getBean(IProjectService.class);
-        IFactoryProject factoryProject = appContext.getBean(IFactoryProject.class);
 
 
         Project projectData = projectService.findProjectByKey(key);
