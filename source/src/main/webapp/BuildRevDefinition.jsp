@@ -87,7 +87,8 @@
                 });
             });
         </script>
-        <div style="width: 80%; padding: 25px; font: 90% sans-serif">
+        <p class="dttTitle">Build / Revision Definition</p>
+        <div style="width: 100%; font: 90% sans-serif">
             <table id="buildrevTable" class="display">
                 <thead>
                     <tr>

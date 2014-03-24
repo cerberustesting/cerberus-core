@@ -159,7 +159,8 @@
                 });
             });
         </script>
-        <div style="width: 80%; padding: 25px; font: 90% sans-serif">
+        <p class="dttTitle">Application</p>
+        <div style="width: 100%; font: 90% sans-serif">
             <table id="applicationsTable" class="display">
                 <thead>
                     <tr>
