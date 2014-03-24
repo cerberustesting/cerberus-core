@@ -226,4 +226,52 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
         
         return factoryTestCaseStepAction.create(test, testCase, step, sequence, action, object, property, description);
     }
+    
+    
+    /**
+     * Short one line description.
+     * <p/>
+     * Longer description. If there were any, it would be here. <p> And even
+     * more explanations to follow in consecutive paragraphs separated by HTML
+     * paragraph breaks.
+     *
+     * @param variable Description text text text.
+     * @return Description text text text.
+     */
+    @Override
+    public boolean changeTestCaseStepActionSequence(String test, String testCase, int step, int oldSequence, int newSequence) {
+        TestCaseStepAction testCaseStepAction = null;
+        final String query = "update testcasestepaction set sequence = ? WHERE test = ? AND testcase = ? AND step = ? AND sequence = ?";
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            try {
+                preStat.setInt(1, newSequence);
+                preStat.setString(2, test);
+                preStat.setString(3, testCase);
+                preStat.setInt(4, step);
+                preStat.setInt(5, oldSequence);
+
+                int lines = preStat.executeUpdate();
+                return (lines > 0);
+            } catch (SQLException exception) {
+                MyLogger.log(TestCaseStepActionDAO.class.getName(), Level.ERROR, exception.toString());
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(TestCaseStepActionDAO.class.getName(), Level.ERROR, exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(TestCaseStepActionControlDAO.class.getName(), Level.WARN, e.toString());
+            }
+        }
+        return false;
+    }
+
 }

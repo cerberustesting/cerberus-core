@@ -37,4 +37,5 @@ public interface ITestCaseStepActionDAO {
 
     void insertTestCaseStepAction(TestCaseStepAction testCaseStepAction) throws CerberusException;
 
+    boolean changeTestCaseStepActionSequence(String test, String testCase, int step, int oldSequence, int newSequence);
 }
