@@ -104,6 +104,10 @@ public class ControlService implements IControlService {
                 //TODO validate properties
                 res = this.verifyElementNotPresent(testCaseStepActionControlExecution.getControlProperty());
 
+            } else if (testCaseStepActionControlExecution.getControlType().equals("verifyElementInElement")) {
+                //TODO validate properties
+                res = this.verifyElementInElement(testCaseStepActionControlExecution.getControlProperty(), testCaseStepActionControlExecution.getControlValue());
+
             } else if (testCaseStepActionControlExecution.getControlType().equals("verifyElementVisible")) {
                 //TODO validate properties
                 res = this.verifyElementVisible(testCaseStepActionControlExecution.getControlProperty());
@@ -301,6 +305,30 @@ public class ControlService implements IControlService {
             }
         } else {
             return new MessageEvent(MessageEventEnum.CONTROL_FAILED_PRESENT_NULL);
+        }
+    }
+
+    private MessageEvent verifyElementInElement(String element, String childElement) {
+        MyLogger.log(ControlService.class.getName(), Level.DEBUG, "Control : verifyElementInElement on : '" + element + "' is child of '" + childElement + "'");
+        MessageEvent mes;
+        if (!StringUtil.isNull(element) && !StringUtil.isNull(childElement)) {
+            try {
+                if (this.seleniumService.isElementInElement(element, childElement)) {
+                    mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_ELEMENTINELEMENT);
+                    mes.setDescription(mes.getDescription().replaceAll("%STRING2%", element).replaceAll("%STRING1%", childElement));
+                    return mes;
+                } else {
+                    mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_ELEMENTINELEMENT);
+                    mes.setDescription(mes.getDescription().replaceAll("%STRING2%", element).replaceAll("%STRING1%", childElement));
+                    return mes;
+                }
+            } catch (WebDriverException exception) {
+                return parseWebDriverException(exception);
+            }
+        } else {
+            mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_ELEMENTINELEMENT);
+            mes.setDescription(mes.getDescription().replaceAll("%STRING2%", element).replaceAll("%STRING1%", childElement));
+            return mes;
         }
     }
 
