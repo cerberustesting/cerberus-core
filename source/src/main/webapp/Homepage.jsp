@@ -26,7 +26,21 @@
         <title>Cerberus Homepage</title>
         <link rel="stylesheet" type="text/css" href="css/crb_style.css">
         <link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico" />
+        <link rel="stylesheet" type="text/css" href="css/crb_style.css">
+        <style media="screen" type="text/css">
+            @import "css/demo_page.css";
+            @import "css/demo_table.css";
+            @import "css/demo_table_jui.css";
+            @import "css/themes/base/jquery-ui.css";
+            @import "css/themes/smoothness/jquery-ui-1.7.2.custom.css";
+        </style>
+        <link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico">
         <script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>
+        <script type="text/javascript" src="js/jquery-ui-1.10.2.custom.min.js"></script>
+        <script type="text/javascript" src="js/jquery.jeditable.mini.js"></script>
+        <script type="text/javascript" src="js/jquery.dataTables.min.js"></script>
+        <script type="text/javascript" src="js/jquery.dataTables.editable.js"></script>
+        <script type="text/javascript" src="js/jquery.validate.min.js"></script>
         <style>
             .divBorder{
                 background-color: #f3f6fa;
@@ -47,96 +61,111 @@
                 text-align: center;
             }
         </style>
+        <script>
+function getSys()
+  {
+  var x = document.getElementById("systemSelected").value;
+  return x;
+  }
+</script>
+        <script type="text/javascript">
+
+            $(document).ready(function() {
+                var mySys = getSys();
+                var oTable = $('#testTable').dataTable({
+                    "aaSorting": [[0, "desc"]],
+                    "bServerSide": true,
+                    "sAjaxSource": "Homepage?MySystem="+mySys,
+                    "bJQueryUI": true,
+                    "bProcessing": true,
+                    "bPaginate": true,
+                    "bAutoWidth": false,
+                    "sPaginationType": "full_numbers",
+                    "bSearchable": true,
+                    "aTargets": [0],
+                    "iDisplayLength": 25,
+                    "aoColumns": [
+                        {"sName": "Test", "sWidth": "40%"},
+                        {"sName": "Total", "sWidth": "10%"},
+                        {"sName": "Created", "sWidth": "10%"},
+                        {"sName": "Poorly Described", "sWidth": "10%"},
+                        {"sName": "Fully Described", "sWidth": "10%"},
+                        {"sName": "To Be Implemented", "sWidth": "10%"},
+                        {"sName": "Poorly Implemented", "sWidth": "10%"},
+                        {"sName": "Fully Implemented", "sWidth": "10%"},
+                        {"sName": "Working", "sWidth": "10%"},
+                        {"sName": "To Be Deleted", "sWidth": "10%"}
+
+                    ]
+                    
+                }
+                );
+            });
+
+
+        </script>
     </head>
     <body id="body">
         <%@ include file="include/function.jsp"%>
         <%@ include file="include/header.jsp"%>
-        <div class="divBorder">
+       
             <%
-                IDatabaseVersioningService DatabaseVersioningService = appContext.getBean(IDatabaseVersioningService.class);
-                if (!(DatabaseVersioningService.isDatabaseUptodate())) {
-                    out.print("<b>WARNING : Database Not Uptodate</b>");
-                }
-                IInvariantService invariantService = appContext.getBean(IInvariantService.class);
-                List<Invariant> myInvariants = invariantService.findInvariantByIdGp1("TCSTATUS", "Y");
-
-            %>
-            <h3 style="color: blue">Tests Status</h3>
-            <table valign="top">
-                <tr>
-                    <td id="wob" valign="top">
-                        <table id="tableau">
-                            <%
-                                Connection conn = db.connect();
-                                try {
-                                    String test = (dbDocS(conn, "test", "Test", "Test"));
-                                    String nbtest = "TOT";
-                            %>
-                            <tr id="header">
-                                <th style="width: 145px; text-align: left"><%=test%>&nbsp;</th>
-                                <th class="verticalText"><%=nbtest%>&nbsp;</th>
-                                <%
-                                    for (Invariant i1 : myInvariants) {
-                                %><th title="<%=i1.getValue()%>" class="verticalText"><%=i1.getVeryShortDesc()%>&nbsp;</th><%
-                                    }
-                                %>
-                            </tr>
-                            <%
-                                ArrayList<ArrayList<String>> arrayTest = (ArrayList<ArrayList<String>>) request.getAttribute("arrayTest");
-                                int j = 0;
-                                for (int i = 0; i < arrayTest.size(); i++) {
-                                    ArrayList<String> array = arrayTest.get(i);
-
-                                    if (i == arrayTest.size() / 3 || i == 2 * (arrayTest.size() / 3)) {
-                            %>
-                        </table> </td> <td id="wob" valign="top"> <table id="tableau">
-                            <tr id="header">
-                                <th style="width: 145px; text-align: left"><%=test%>&nbsp;</th>
-                                <th class="verticalText"><%=nbtest%>&nbsp;</th>
-                                <%
-                                    for (Invariant i1 : myInvariants) {
-                                %><th title="<%=i1.getValue()%>" class="verticalText"><%=i1.getVeryShortDesc()%>&nbsp;</th><%
-                                    }
-                                %>
-                            </tr>
-                            <% }%>
-                            <tr>
-                                <td style="font-weight: bold; background-color: white; text-align: left;" name="Test">
-                                    <% if (i != (arrayTest.size() - 1)) {%>
-                                    <a style="color:black; text-decoration:none" href="Test.jsp?stestbox=<%=array.get(0)%>"><%=array.get(0)%></a>
-                                    <% } else {%>
-                                    <a style="color:black; text-decoration:none"><%=array.get(0)%></a>
-                                    <% }%>
-                                </td>
-                                <td id="nbtest" name="NbTest" style="background-color: white;"><%=array.get(1)%>&nbsp;</td>
-                                <%
-                                    j = 2;
-                                    for (Invariant i1 : myInvariants) {
-                                %><td name="<%=i1.getValue()%>" style="background-color: white;"><%=array.get(j)%>&nbsp;</td><%
-                                        j++;
-                                    }
-                                %>
-                            </tr>
-                            <% }%>
-                        </table>
-                    </td>
-                </tr>
-            </table>
-        </div>
-        <%
-            } finally {
-                if (conn != null) {
-                    try {
-                        conn.close();
-                    } catch (SQLException e) {
-                        //TODO logger
-                    }
+            IUserService userService = appContext.getBean(IUserService.class);
+            User myUser = userService.findUserByKey(request.getUserPrincipal().getName());
+            String MySystem = ParameterParserUtil.parseStringParam(request.getParameter("MySystem"), "");
+            
+            if (MySystem.equals("")) {
+                MySystem = myUser.getDefaultSystem();
+            } else {
+                if (!(myUser.getDefaultSystem().equals(MySystem))) {
+                    myUser.setDefaultSystem(MySystem);
+                    userService.updateUser(myUser);
                 }
             }
+            
+                     
+                IDatabaseVersioningService DatabaseVersioningService = appContext.getBean(IDatabaseVersioningService.class);
+    if (!(DatabaseVersioningService.isDatabaseUptodate())  && request.isUserInRole("Administrator")) {%>
+                <script>
+                    var r=confirm("WARNING : Database Not Uptodate   >>   Redirect to the DatabaseMaintenance page ?");
+                    if (r==true)
+                      {
+                      location.href='./DatabaseMaintenance.jsp';
+                      }
+                     </script>
+                     
+               <% }
+                
 
-        %>
-
-        <br/>
-        <span><%=display_footer((Date) request.getAttribute("startPageGeneration"))%></span>
-    </body>
+//               if (myUser.getRequest().equalsIgnoreCase("Y")) {
+//                request.getRequestDispatcher("/ChangePassword.jsp").forward(request, response);
+//            } else {
+            
+                
+            %>
+           <input id="systemSelected" value="<%=MySystem%>" style="display:none">
+           <p class="dttTitle">TestCase per Application</p>
+            <div style="float:left; width: 100%;  font: 90% sans-serif">
+            <table id="testTable" class="display">
+                <thead>
+                    <tr>
+                        <th>Test</th>
+                        <th>Total</th>
+                        <th>Created</th>
+                        <th>Poorly Described</th>
+                        <th>Fully Described</th>
+                        <th>To Be Implemented</th>
+                        <th>Poorly Implemented</th>
+                        <th>Fully Implemented</th>
+                        <th>Working</th>
+                        <th>To Be Deleted</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+           <% // } %>
+                        <br/>
+        </body>
 </html>

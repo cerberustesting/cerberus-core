@@ -7,6 +7,13 @@ input{
     font-family: helvetica;
     
 }
+
+.dttTitle{
+    font-weight:bold;
+font-family: Trebuchet MS;
+color:#555555;
+font-size:16px;
+}
 ul{
     font-size: 100%;
     font-family: helvetica;

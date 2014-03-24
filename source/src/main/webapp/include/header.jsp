@@ -44,7 +44,7 @@
     <table >
         <tr>
             <td id="wob" rowspan="2">
-                <a href="Homepage"><img src="images/logo-1.png" valign="Top" alt="Cerberus" /></a>
+                <a href="Homepage.jsp"><img src="images/logo-1.png" valign="Top" alt="Cerberus" /></a>
             </td>
             <td id="wob" style="width: 100%;">
             </td>
