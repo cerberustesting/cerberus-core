@@ -17,6 +17,7 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
+<%@page import="org.cerberus.service.IDocumentationService"%>
 <%@page import="org.cerberus.refactor.BatchInfo"%>
 <%@page import="org.apache.commons.lang3.StringUtils"%>
 <%@page import="java.util.Enumeration"%>
@@ -24,7 +25,7 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
     "http://www.w3.org/TR/html4/loose.dtd">
-<% Date DatePageStart = new Date() ; %>
+<% Date DatePageStart = new Date();%>
 
 <html>
     <head>
@@ -50,6 +51,8 @@
                     String testcaseApplication = null;
 
                     Connection conn = db.connect();
+                    IDocumentationService docService = appContext.getBean(IDocumentationService.class);
+
                     try {
 
 
@@ -253,7 +256,7 @@
                             tag = new String("None");
                         }
 
-                        
+
                 %>
 
 
@@ -263,17 +266,17 @@
                             <!--         <form method="post" name="ToolParameters" action="ToolParameters" >-->
                             <table border="0px">
                                 <tr>                                         
-                                    <td id="wob" style="font-weight: bold; width: 150px"><% out.print(dbDocS(conn, "page_runtests", "SeleniumServerIP", "Selenium Server IP "));%></td>
+                                    <td id="wob" style="font-weight: bold; width: 150px"><% out.print(docService.findLabelHTML("page_runtests", "SeleniumServerIP", "Selenium Server IP "));%></td>
                                     <td id="wob"><input type="text" name="ss_ip" value="<%= ssIP%>" />
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td id="wob" style="font-weight: bold; width: 150px"><% out.print(dbDocS(conn, "page_runtests", "SeleniumServerPort", "Selenium Server Port "));%></td>
+                                    <td id="wob" style="font-weight: bold; width: 150px"><% out.print(docService.findLabelHTML("page_runtests", "SeleniumServerPort", "Selenium Server Port "));%></td>
                                     <td id="wob"><input type="text" name="ss_p" value="<%= ssPort%>" />
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td id="wob" style="font-weight: bold; width: 150px"><% out.print(dbDocS(conn, "page_runtests", "Browser", "Browser"));%></td>
+                                    <td id="wob" style="font-weight: bold; width: 150px"><% out.print(docService.findLabelHTML("page_runtests", "Browser", "Browser"));%></td>
                                     <td id="wob"><input type="text" name="browser" value="<%= browser%>"
                                                         style="width: 450px" />
                                     </td>
@@ -311,19 +314,19 @@
                             <!--         <form method="post" name="Tests" action="Tests" >-->
                             <table border="0px">
                                 <tr>
-                                    <td COLSPAN=3 id="wob" style="font-weight: bold; width: 100px"><% out.print(dbDocS(conn, "testcase", "TestCase", "Test Case"));%></td>
+                                    <td COLSPAN=3 id="wob" style="font-weight: bold; width: 100px"><% out.print(docService.findLabelHTML("testcase", "TestCase", "Test Case"));%></td>
 
 
                                     <%/*
-                                                                     * if
-                                                                     * (locked)
-                                                                     * { %>
+                                         * if
+                                         * (locked)
+                                         * { %>
                                     <td id="wob"><input type="submit" name="statusPage" value="Unlock"></td>
                                         <% } %>
                                         <% if (!locked) { %>
                                     <td id="wob"><input type="submit" name="statusPage" value="Lock"></td>
                                         <% }
-                                     */%>
+                                             */%>
 
                                 </tr>
                                 <tr>
@@ -465,16 +468,16 @@
                                                 %>
 
                                                 <%     	if (testcase.compareTo(rsTestCase.getString(1)) == 0) {
-                                                                    testcaseApplication = rsTestCase.getString(2);
-                                                                }
-                                                            }%>
+                                                            testcaseApplication = rsTestCase.getString(2);
+                                                        }
+                                                    }%>
                                         </select>
 
                                     </td>
                                 </tr>
                                 <tr>				
                                     <td id="wob"><br /><% if (locked) {%><input type="submit" name="statusPage" value="Resume"><% }
-                                    if (!locked) {%><input type="submit" DISABLED="" name="statusPage" value="Resume"> <% }%></td>
+                                            if (!locked) {%><input type="submit" DISABLED="" name="statusPage" value="Resume"> <% }%></td>
                                     <td id="wob"><br /><input type="submit" name="statusPage" value="Delete"></td>
                                     <td id="wob"><br /><input type="submit" name="statusPage" value="ExportList"></td>
                                 </tr>
@@ -504,6 +507,6 @@
 
         </div>
 
-<br><% out.print(display_footer(DatePageStart)); %>
+        <br><% out.print(display_footer(DatePageStart));%>
     </body>
 </html>

@@ -16,7 +16,8 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
-  --%>
+--%>
+<%@page import="org.cerberus.service.IDocumentationService"%>
 <%@page import="org.cerberus.service.IDatabaseVersioningService"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE HTML>
@@ -54,21 +55,22 @@
         <%@ include file="include/header.jsp"%>
         <%
             Connection conn = db.connect();
+            IDocumentationService docService = appContext.getBean(IDocumentationService.class);
             try {
         %>
 
         <%
-            String title1 = dbDocS(conn, "page_exeperbuildrevision", "RegressionExecutionStatus", "");
-            String build = dbDocS(conn, "testcaseexecution", "Build", "Build");
-            String revision = dbDocS(conn, "testcaseexecution", "Revision", "Revision");
-            String nbExecution = dbDocS(conn, "page_exeperbuildrevision", "NbExecution", "NbExecution");
-            String nbOK = dbDocS(conn, "page_exeperbuildrevision", "NbOK", "NbOK");
-            String okPercentage = dbDocS(conn, "page_exeperbuildrevision", "OK_percentage", "%OK");
-            String nbTC = dbDocS(conn, "page_exeperbuildrevision", "NbTC", "NbTC");
-            String nbExePerTc = dbDocS(conn, "page_exeperbuildrevision", "nb_exe_per_tc", "nb_exe_per_tc");
-            String days = dbDocS(conn, "page_exeperbuildrevision", "Days", "Days");
-            String nbTcPerDay = dbDocS(conn, "page_exeperbuildrevision", "nb_tc_per_day", "nb_tc_per_day");
-            String nbApp = dbDocS(conn, "page_exeperbuildrevision", "NbAPP", "NbAPP");
+            String title1 = docService.findLabelHTML("page_exeperbuildrevision", "RegressionExecutionStatus", "");
+            String build = docService.findLabelHTML("testcaseexecution", "Build", "Build");
+            String revision = docService.findLabelHTML("testcaseexecution", "Revision", "Revision");
+            String nbExecution = docService.findLabelHTML("page_exeperbuildrevision", "NbExecution", "NbExecution");
+            String nbOK = docService.findLabelHTML("page_exeperbuildrevision", "NbOK", "NbOK");
+            String okPercentage = docService.findLabelHTML("page_exeperbuildrevision", "OK_percentage", "%OK");
+            String nbTC = docService.findLabelHTML("page_exeperbuildrevision", "NbTC", "NbTC");
+            String nbExePerTc = docService.findLabelHTML("page_exeperbuildrevision", "nb_exe_per_tc", "nb_exe_per_tc");
+            String days = docService.findLabelHTML("page_exeperbuildrevision", "Days", "Days");
+            String nbTcPerDay = docService.findLabelHTML("page_exeperbuildrevision", "nb_tc_per_day", "nb_tc_per_day");
+            String nbApp = docService.findLabelHTML("page_exeperbuildrevision", "NbAPP", "NbAPP");
         %>
 
         <div class="divBorder">
@@ -198,7 +200,7 @@
         </div>
 
         <%
-            title1 = dbDocS(conn, "page_exeperbuildrevision", "RegressionExecutionStatus1", "");
+            title1 = docService.findLabelHTML("page_exeperbuildrevision", "RegressionExecutionStatus1", "");
 
             arrayExecution = (ArrayList<ArrayList<String>>) request.getAttribute("arrayExecutionExternal");
             arrayExecutionEnv = (ArrayList<ArrayList<ArrayList<String>>>) request.getAttribute("arrayExecutionEnvExternal");

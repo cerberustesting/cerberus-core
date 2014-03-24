@@ -17,6 +17,7 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
+<%@page import="org.cerberus.service.IDocumentationService"%>
 <%@page import="org.apache.commons.lang3.StringUtils"%>
 <%@page import="java.sql.Connection"%>
 <%@page import="java.sql.ResultSet"%>
@@ -69,6 +70,7 @@
         <div id="body">
             <%
                 Connection conn = db.connect();
+                IDocumentationService docService = appContext.getBean(IDocumentationService.class);
                 try {
 
                     String testselected;
@@ -91,7 +93,7 @@
                                     <td colspan="2" class="wob"><h4 style="color : blue">Test Information</h4></td>
                                 </tr>
                                 <tr id="header"> 
-                                    <td class="wob" style="width: 300px"><%out.print(dbDocS(conn, "test", "test", "Test"));%></td>
+                                    <td class="wob" style="width: 300px"><%out.print(docService.findLabelHTML("test", "test", "Test"));%></td>
                                 </tr>
                                 <tr>
                                     <td class="wob">
@@ -124,13 +126,13 @@
                                                 <td colspan="6" class="wob"><h4 style="color : blue">Testcase Information</h4></td>
                                             </tr>
                                             <tr id="header">
-                                                <td class="wob" style="width: 100px"><%out.print(dbDocS(conn, "testcase", "testcase", "TestCase"));%></td>
-                                                <td class="wob" style="width: 100px"><%out.print(dbDocS(conn, "testcase", "Origine", "Origin"));%></td>
-                                                <td class="wob" style="width: 100px"><%out.print(dbDocS(conn, "testcase", "RefOrigine", "RefOrigine"));%></td>
-                                                <td class="wob" style="width: 100px; visibility:hidden"><%out.print(dbDocS(conn, "testcase", "Creator", "creator"));%></td>
-                                                <td class="wob" style="width: 100px"><%out.print(dbDocS(conn, "project", "idproject", "Project"));%></td>
-                                                <td class="wob" style="width: 100px"><%out.print(dbDocS(conn, "testcase", "ticket", "Ticket"));%></td>
-                                                <td class="wob" style="width: 70px"><%out.print(dbDocS(conn, "testcase", "BugID", "BugID"));%></td>
+                                                <td class="wob" style="width: 100px"><%out.print(docService.findLabelHTML("testcase", "testcase", "TestCase"));%></td>
+                                                <td class="wob" style="width: 100px"><%out.print(docService.findLabelHTML("testcase", "Origine", "Origin"));%></td>
+                                                <td class="wob" style="width: 100px"><%out.print(docService.findLabelHTML("testcase", "RefOrigine", "RefOrigine"));%></td>
+                                                <td class="wob" style="width: 100px; visibility:hidden"><%out.print(docService.findLabelHTML("testcase", "Creator", "creator"));%></td>
+                                                <td class="wob" style="width: 100px"><%out.print(docService.findLabelHTML("project", "idproject", "Project"));%></td>
+                                                <td class="wob" style="width: 100px"><%out.print(docService.findLabelHTML("testcase", "ticket", "Ticket"));%></td>
+                                                <td class="wob" style="width: 70px"><%out.print(docService.findLabelHTML("testcase", "BugID", "BugID"));%></td>
                                             </tr>
                                             <%
                                                 String tcnumber = "";
@@ -205,13 +207,13 @@
                                                     <table class="wob" style="text-align: left; border-collapse: collapse" border="0px" cellpadding="0px" cellspacing="0px">
                                                         <tr><td class="wob"><h4 style="color : blue">TestCase Parameters</h4></td></tr>
                                                         <tr id="header">
-                                                            <td class="wob" style="width: 150px"><%out.print(dbDocS(conn, "application", "application", "Application"));%></td>
-                                                            <td class="wob" style="width: 90px"><%out.print(dbDocS(conn, "testcase", "ActiveQA", "RunQA"));%></td>
-                                                            <td class="wob" style="width: 90px"><%out.print(dbDocS(conn, "testcase", "ActiveUAT", "RunUAT"));%></td>
-                                                            <td class="wob" style="width: 90px"><%out.print(dbDocS(conn, "testcase", "ActivePROD", "RunPROD"));%></td>
-                                                            <td class="wob" style="width: 90px"><%out.print(dbDocS(conn, "invariant", "PRIORITY", "Priority"));%></td>
-                                                            <td class="wob" style="width: 150px"><%out.print(dbDocS(conn, "invariant", "GROUP", "Group"));%></td>
-                                                            <td class="wob" style="width: 150px"><%out.print(dbDocS(conn, "testcase", "status", "Status"));%></td>
+                                                            <td class="wob" style="width: 150px"><%out.print(docService.findLabelHTML("application", "application", "Application"));%></td>
+                                                            <td class="wob" style="width: 90px"><%out.print(docService.findLabelHTML("testcase", "ActiveQA", "RunQA"));%></td>
+                                                            <td class="wob" style="width: 90px"><%out.print(docService.findLabelHTML("testcase", "ActiveUAT", "RunUAT"));%></td>
+                                                            <td class="wob" style="width: 90px"><%out.print(docService.findLabelHTML("testcase", "ActivePROD", "RunPROD"));%></td>
+                                                            <td class="wob" style="width: 90px"><%out.print(docService.findLabelHTML("invariant", "PRIORITY", "Priority"));%></td>
+                                                            <td class="wob" style="width: 150px"><%out.print(docService.findLabelHTML("invariant", "GROUP", "Group"));%></td>
+                                                            <td class="wob" style="width: 150px"><%out.print(docService.findLabelHTML("testcase", "status", "Status"));%></td>
                                                             <%
                                                                 rs_tccountgen.first();
                                                                 do {%>
@@ -248,66 +250,66 @@
                                                 <td class="wob" style="text-align: left; vertical-align : top ; border-collapse: collapse">
                                                     <table class="wob"  style="text-align: left; border-collapse: collapse" border="0px" cellpadding="0px" cellspacing="0px">
                                                         <tr id="header">
-                                                            <td class="wob" style="width: 1200px"><%out.print(dbDocS(conn, "testcase", "description", "Description"));%></td>
+                                                            <td class="wob" style="width: 1200px"><%out.print(docService.findLabelHTML("testcase", "description", "Description"));%></td>
                                                         </tr><tr>
                                                             <td class="wob"><input id="createDescription" style="width: 1200px;" name="createDescription"></td>
                                                         </tr>
                                                         <tr  id="header">
 
                                                         </tr>
-                                                        </table>
+                                                    </table>
                                                 </td>
                                             <tr></tr>
-                                                <td class="wob" style="text-align: left; vertical-align : top ; border-collapse: collapse">
-                                                    <table>   
-                                                        <tr id="header">
-                                                            <td class="wob" style="width: 600px"><%out.print(dbDocS(conn, "testcase", "BehaviorOrValueExpected", "Value Expected"));%></td>
-                                                            <td class="wob" style="width: 600px"><%out.print(dbDocS(conn, "testcase", "HowTo", "HowTo"));%></td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td class="wob" style="text-align: left; border-collapse: collapse">
-                                                                <textarea id="createBehaviorOrValueExpected" rows="9" style="width: 600px;" name="createBehaviorOrValueExpected"></textarea>
-                                                                <input type="hidden" id="valueDetail" name="valueDetail" value="">
-                                                            </td>
-                                                            <td class="wob">
-                                                                <textarea id="createHowTo" rows="9" style="width: 600px;" name="createHowTo"></textarea>
-                                                                <input type="hidden" id="howtoDetail" name="howtoDetail" value="">
-                                                            </td>
-                                                        </tr>
-                                                    </table><br>
-                                                </td>
-                                            </tr>
-                                        </table>
-                                    </td>
+                                            <td class="wob" style="text-align: left; vertical-align : top ; border-collapse: collapse">
+                                                <table>   
+                                                    <tr id="header">
+                                                        <td class="wob" style="width: 600px"><%out.print(docService.findLabelHTML("testcase", "BehaviorOrValueExpected", "Value Expected"));%></td>
+                                                        <td class="wob" style="width: 600px"><%out.print(docService.findLabelHTML("testcase", "HowTo", "HowTo"));%></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="wob" style="text-align: left; border-collapse: collapse">
+                                                            <textarea id="createBehaviorOrValueExpected" rows="9" style="width: 600px;" name="createBehaviorOrValueExpected"></textarea>
+                                                            <input type="hidden" id="valueDetail" name="valueDetail" value="">
+                                                        </td>
+                                                        <td class="wob">
+                                                            <textarea id="createHowTo" rows="9" style="width: 600px;" name="createHowTo"></textarea>
+                                                            <input type="hidden" id="howtoDetail" name="howtoDetail" value="">
+                                                        </td>
+                                                    </tr>
+                                                </table><br>
+                                            </td>
                                 </tr>
-
-                                <tr>
-                                    <td class="wob">
-                                        <input type="hidden" id="createTestSelect" name="createTestSelect" value="<%=testselected%>"> 
-                                        <table>
-                                            <tr>
-                                                <td class="wob"><input type="submit" name="submitCreation" value="Create Test Case" onclick="$('#howtoDetail').val($('#createHowTo').elrte('val'));$('#valueDetail').val($('#createBehaviorOrValueExpected').elrte('val'));">
-                                                </td>
-                                            </tr>
-                                        </table>
-                                    </td></tr>
                             </table>
-                        </form>
                     </td>
                 </tr>
+
+                <tr>
+                    <td class="wob">
+                        <input type="hidden" id="createTestSelect" name="createTestSelect" value="<%=testselected%>"> 
+                        <table>
+                            <tr>
+                                <td class="wob"><input type="submit" name="submitCreation" value="Create Test Case" onclick="$('#howtoDetail').val($('#createHowTo').elrte('val'));$('#valueDetail').val($('#createBehaviorOrValueExpected').elrte('val'));">
+                                </td>
+                            </tr>
+                        </table>
+                    </td></tr>
             </table>
-            <%
-                } catch (Exception e) {
-                    out.println("<br> error message : " + e.getMessage() + " "
-                            + e.toString() + "<br>");
-                } finally {
-                    try {
-                        conn.close();
-                    } catch (Exception ex) {
-                    }
-                }
-            %>
-        </div>
-        <br><% out.print(display_footer(DatePageStart));%>
-    </body>
+        </form>
+    </td>
+</tr>
+</table>
+<%
+    } catch (Exception e) {
+        out.println("<br> error message : " + e.getMessage() + " "
+                + e.toString() + "<br>");
+    } finally {
+        try {
+            conn.close();
+        } catch (Exception ex) {
+        }
+    }
+%>
+</div>
+<br><% out.print(display_footer(DatePageStart));%>
+</body>
 </html>

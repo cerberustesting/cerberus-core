@@ -16,7 +16,8 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
-  --%>
+--%>
+<%@page import="org.cerberus.service.IDocumentationService"%>
 <%@page import="org.cerberus.service.impl.BuildRevisionInvariantService"%>
 <%@page import="org.cerberus.entity.BuildRevisionInvariant"%>
 <%@page import="org.cerberus.service.IBuildRevisionInvariantService"%>
@@ -49,6 +50,7 @@
             Date DatePageStart = new Date();
 
             Connection conn = db.connect();
+            IDocumentationService docService = appContext.getBean(IDocumentationService.class);
 
             try {
 
@@ -143,7 +145,7 @@
 
         %><table class="tablef"> <tr> <td> 
                     <form method="GET" name="environment" id="environment">
-                        <ftxt><%=dbDocS(conn, "invariant", "country", "")%></ftxt> <select id="country" name="country" style="width: 100px" OnChange ="document.environment.submit()">
+                        <ftxt><%=docService.findLabelHTML("invariant", "country", "")%></ftxt> <select id="country" name="country" style="width: 100px" OnChange ="document.environment.submit()">
                             <option style="width: 400px" value="ALL">-- ALL --</option>
                             <%ResultSet rsCountry = stmtCountry.executeQuery("SELECT value, description "
                                         + "FROM invariant "
@@ -153,7 +155,7 @@
                             %><option style="width: 400px" value="<%= rsCountry.getString(1)%>" <%=country.compareTo(rsCountry.getString(1)) == 0 ? " SELECTED " : ""%>><%= rsCountry.getString(1)%> - <%= rsCountry.getString(2)%></option>
                             <% }
                             %></select>
-                        <ftxt><%=dbDocS(conn, "invariant", "environment", "")%></ftxt> <select id="env" name="env" style="width: 100px" OnChange ="document.environment.submit()">
+                        <ftxt><%=docService.findLabelHTML("invariant", "environment", "")%></ftxt> <select id="env" name="env" style="width: 100px" OnChange ="document.environment.submit()">
                             <option style="width: 500px" value="ALL">-- ALL --</option>
                             <%ResultSet rsEnv = stmtEnv.executeQuery("SELECT value, description "
                                         + "FROM invariant "
@@ -163,7 +165,7 @@
                             %><option style="width: 500px" value="<%= rsEnv.getString(1)%>" <%=env.compareTo(rsEnv.getString(1)) == 0 ? " SELECTED " : ""%>><%= rsEnv.getString(1)%> - <%= rsEnv.getString(2)%></option>
                             <% }
                             %></select>
-                        <ftxt><%=dbDocS(conn, "invariant", "environmentgp", "")%></ftxt> <select id="envgp" name="envgp" style="width: 80px" OnChange ="document.environment.submit()">
+                        <ftxt><%=docService.findLabelHTML("invariant", "environmentgp", "")%></ftxt> <select id="envgp" name="envgp" style="width: 80px" OnChange ="document.environment.submit()">
                             <option style="width: 200px" value="ALL">-- ALL --</option>
                             <%ResultSet rsEnvgp = stmtEnvgp.executeQuery("SELECT distinct gp1 "
                                         + "FROM invariant "
@@ -173,7 +175,7 @@
                             %><option style="width: 200px" value="<%= rsEnvgp.getString(1)%>" <%=envgp.compareTo(rsEnvgp.getString(1)) == 0 ? " SELECTED " : ""%>><%= rsEnvgp.getString(1)%></option>
                             <% }
                             %></select>
-                        <ftxt><%=dbDocS(conn, "buildrevisioninvariant", "versionname01", "")%></ftxt> <select id="build" name="build" style="width: 80px" OnChange ="document.environment.submit()">
+                        <ftxt><%=docService.findLabelHTML("buildrevisioninvariant", "versionname01", "")%></ftxt> <select id="build" name="build" style="width: 80px" OnChange ="document.environment.submit()">
                             <option style="width: 200px" value="ALL">-- ALL --</option>
                             <%
                                 List<BuildRevisionInvariant> listBuildRev = buildRevisionInvariantService.findAllBuildRevisionInvariantBySystemLevel(MySystem, 1);
@@ -181,7 +183,7 @@
                             %><option style="width: 200px" value="<%= myBR.getVersionName()%>" <%=build.compareTo(myBR.getVersionName()) == 0 ? " SELECTED " : ""%>><%= myBR.getVersionName()%></option>
                             <% }
                             %></select>
-                        <ftxt><%=dbDocS(conn, "buildrevisioninvariant", "versionname02", "")%></ftxt> <select id="revision" name="revision" style="width: 80px" OnChange ="document.environment.submit()">
+                        <ftxt><%=docService.findLabelHTML("buildrevisioninvariant", "versionname02", "")%></ftxt> <select id="revision" name="revision" style="width: 80px" OnChange ="document.environment.submit()">
                             <option style="width: 200px" value="ALL">-- ALL --</option>
                             <%
                                 listBuildRev = buildRevisionInvariantService.findAllBuildRevisionInvariantBySystemLevel(MySystem, 2);
@@ -189,8 +191,8 @@
                             %><option style="width: 200px" value="<%= myBR.getVersionName()%>" <%=revision.compareTo(myBR.getVersionName()) == 0 ? " SELECTED " : ""%>><%= myBR.getVersionName()%></option>
                             <% }
                             %></select>
-                        <ftxt><%=dbDocS(conn, "countryenvparam", "chain", "")%></ftxt> <input id="chain" name="chain" style="width: 50px" value="<%=chain%>"/>
-                        <ftxt><%=dbDocS(conn, "countryenvparam", "active", "")%></ftxt> <select id="active" name="active" style="width: 80px" OnChange ="document.environment.submit()">
+                        <ftxt><%=docService.findLabelHTML("countryenvparam", "chain", "")%></ftxt> <input id="chain" name="chain" style="width: 50px" value="<%=chain%>"/>
+                        <ftxt><%=docService.findLabelHTML("countryenvparam", "active", "")%></ftxt> <select id="active" name="active" style="width: 80px" OnChange ="document.environment.submit()">
                             <option style="width: 200px" value="ALL">-- ALL --</option>
                             <%ResultSet rsActive = stmtActive.executeQuery("SELECT value, description "
                                         + "FROM invariant "
@@ -200,7 +202,7 @@
                             %><option style="width: 200px" value="<%= rsActive.getString(1)%>" <%=active.compareTo(rsActive.getString(1)) == 0 ? " SELECTED " : ""%>><%= rsActive.getString(1)%></option>
                             <% }
                             %></select>
-                        <ftxt><%=dbDocS(conn, "countryenvparam", "type", "")%></ftxt> <select id="type" name="type" style="width: 100px" OnChange ="document.environment.submit()">
+                        <ftxt><%=docService.findLabelHTML("countryenvparam", "type", "")%></ftxt> <select id="type" name="type" style="width: 100px" OnChange ="document.environment.submit()">
                             <option style="width: 200px" value="ALL">-- ALL --</option>
                             <%ResultSet rsType = stmtType.executeQuery("SELECT value, description "
                                         + "FROM invariant "
@@ -320,14 +322,14 @@
 
                     <table style="text-align: left; border-collapse: collapse">
                         <tr id="header">
-                            <td><%=dbDocS(conn, "application", "system", "")%></td>
-                            <td><%=dbDocS(conn, "invariant", "country", "")%></td>
-                            <td><%=dbDocS(conn, "invariant", "environment", "")%></td>
-                            <td><%=dbDocS(conn, "buildrevisioninvariant", "versionname01", "")%></td>
-                            <td><%=dbDocS(conn, "buildrevisioninvariant", "versionname02", "")%></td>
-                            <td><%=dbDocS(conn, "countryenvparam", "chain", "")%></td>
-                            <td><%=dbDocS(conn, "countryenvparam", "active", "")%></td>
-                            <td><%=dbDocS(conn, "countryenvparam", "type", "")%></td>
+                            <td><%=docService.findLabelHTML("application", "system", "")%></td>
+                            <td><%=docService.findLabelHTML("invariant", "country", "")%></td>
+                            <td><%=docService.findLabelHTML("invariant", "environment", "")%></td>
+                            <td><%=docService.findLabelHTML("buildrevisioninvariant", "versionname01", "")%></td>
+                            <td><%=docService.findLabelHTML("buildrevisioninvariant", "versionname02", "")%></td>
+                            <td><%=docService.findLabelHTML("countryenvparam", "chain", "")%></td>
+                            <td><%=docService.findLabelHTML("countryenvparam", "active", "")%></td>
+                            <td><%=docService.findLabelHTML("countryenvparam", "type", "")%></td>
                             <td> </td>
                         </tr>
                         <%}%>

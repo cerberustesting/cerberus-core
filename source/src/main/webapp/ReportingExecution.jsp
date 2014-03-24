@@ -1,3 +1,4 @@
+<%@page import="org.cerberus.service.IDocumentationService"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
     "http://www.w3.org/TR/html4/loose.dtd">
@@ -390,6 +391,8 @@
                 String reportingFavorite = "ReportingExecution.jsp?";
 
                 Connection conn = db.connect();
+                IDocumentationService docService = appContext.getBean(IDocumentationService.class);
+
                 try {
 
                     Statement stmt = conn.createStatement();
@@ -427,18 +430,18 @@
                     <tr><td id="arrond"><h3 style="color:blue">Filters</h3>
                             <table border="0px">
                                 <tr>
-                                    <td id="wob" style="width: 110px"><%out.print(dbDocS(conn, "test", "Test", "Test"));%></td>
-                                    <td id="wob" style="width: 70px"><%out.print(dbDocS(conn, "project", "idproject", "Project"));%></td>
-                                    <td id="wob" style="width: 60px"><%out.print(dbDocS(conn, "application", "System", "System"));%></td>
-                                    <td id="wob" style="width: 100px"><%out.print(dbDocS(conn, "application", "Application", "Application"));%></td>
-                                    <td id="wob" style="width: 70px"><%out.print(dbDocS(conn, "testcase", "tcactive", "TestCase Active"));%></td>
-                                    <td id="wob" style="width: 70px"><%out.print(dbDocS(conn, "invariant", "PRIORITY", "Priority"));%></td>
-                                    <td id="wob" style="width: 110px"><%out.print(dbDocS(conn, "testcase", "Status", "Status"));%></td>
-                                    <td id="wob" style="width: 110px"><%out.print(dbDocS(conn, "invariant", "GROUP", "Group"));%></td>
-                                    <td id="wob" style="width: 110px"><%out.print(dbDocS(conn, "testcase", "targetBuild", "targetBuild"));%></td>                        
-                                    <td id="wob" style="width: 110px"><%out.print(dbDocS(conn, "testcase", "targetRev", "targetRev"));%></td>                        
-                                    <td id="wob" style="width: 100px"><%out.print(dbDocS(conn, "testcase", "creator", "Creator"));%></td>
-                                    <td id="wob" style="width: 100px"><%out.print(dbDocS(conn, "testcase", "implementer", "implementer"));%></td>
+                                    <td id="wob" style="width: 110px"><%out.print(docService.findLabelHTML("test", "Test", "Test"));%></td>
+                                    <td id="wob" style="width: 70px"><%out.print(docService.findLabelHTML("project", "idproject", "Project"));%></td>
+                                    <td id="wob" style="width: 60px"><%out.print(docService.findLabelHTML("application", "System", "System"));%></td>
+                                    <td id="wob" style="width: 100px"><%out.print(docService.findLabelHTML("application", "Application", "Application"));%></td>
+                                    <td id="wob" style="width: 70px"><%out.print(docService.findLabelHTML("testcase", "tcactive", "TestCase Active"));%></td>
+                                    <td id="wob" style="width: 70px"><%out.print(docService.findLabelHTML("invariant", "PRIORITY", "Priority"));%></td>
+                                    <td id="wob" style="width: 110px"><%out.print(docService.findLabelHTML("testcase", "Status", "Status"));%></td>
+                                    <td id="wob" style="width: 110px"><%out.print(docService.findLabelHTML("invariant", "GROUP", "Group"));%></td>
+                                    <td id="wob" style="width: 110px"><%out.print(docService.findLabelHTML("testcase", "targetBuild", "targetBuild"));%></td>                        
+                                    <td id="wob" style="width: 110px"><%out.print(docService.findLabelHTML("testcase", "targetRev", "targetRev"));%></td>                        
+                                    <td id="wob" style="width: 100px"><%out.print(docService.findLabelHTML("testcase", "creator", "Creator"));%></td>
+                                    <td id="wob" style="width: 100px"><%out.print(docService.findLabelHTML("testcase", "implementer", "implementer"));%></td>
                                 </tr>
 
                                 <tr>                        
@@ -577,15 +580,15 @@
                             <table border="0px">
                                 <tr><td colspan="7" class="wob"></td></tr>
                                 <tr>
-                                    <td id="wob" style="width: 130px"><%out.print(dbDocS(conn, "invariant", "Environment", "Environment"));%></td>
-                                    <td id="wob" style="width: 70px"><%out.print(dbDocS(conn, "application", "system", "System"));%></td>
-                                    <td id="wob" style="width: 130px"><%out.print(dbDocS(conn, "buildrevisioninvariant", "versionname01", "Build"));%></td>
-                                    <td id="wob" style="width: 130px"><%out.print(dbDocS(conn, "buildrevisioninvariant", "versionname02", "Revision"));%></td>
-                                    <td id="wob" style="width: 130px"><%out.print(dbDocS(conn, "testcaseexecution", "IP", "Ip"));%></td>
-                                    <td id="wob" style="width: 130px"><%out.print(dbDocS(conn, "testcaseexecution", "Port", "Port"));%></td>
-                                    <td id="wob" style="width: 130px"><%out.print(dbDocS(conn, "testcaseexecution", "tag", "Tag"));%></td>
-                                    <td id="wob" style="width: 130px"><%out.print(dbDocS(conn, "testcaseexecution", "browserfullversion", ""));%></td>
-                                    <td id="wob" style="width: 130px"><%out.print(dbDocS(conn, "testcaseexecution", "status", ""));%></td>
+                                    <td id="wob" style="width: 130px"><%out.print(docService.findLabelHTML("invariant", "Environment", "Environment"));%></td>
+                                    <td id="wob" style="width: 70px"><%out.print(docService.findLabelHTML("application", "system", "System"));%></td>
+                                    <td id="wob" style="width: 130px"><%out.print(docService.findLabelHTML("buildrevisioninvariant", "versionname01", "Build"));%></td>
+                                    <td id="wob" style="width: 130px"><%out.print(docService.findLabelHTML("buildrevisioninvariant", "versionname02", "Revision"));%></td>
+                                    <td id="wob" style="width: 130px"><%out.print(docService.findLabelHTML("testcaseexecution", "IP", "Ip"));%></td>
+                                    <td id="wob" style="width: 130px"><%out.print(docService.findLabelHTML("testcaseexecution", "Port", "Port"));%></td>
+                                    <td id="wob" style="width: 130px"><%out.print(docService.findLabelHTML("testcaseexecution", "tag", "Tag"));%></td>
+                                    <td id="wob" style="width: 130px"><%out.print(docService.findLabelHTML("testcaseexecution", "browserfullversion", ""));%></td>
+                                    <td id="wob" style="width: 130px"><%out.print(docService.findLabelHTML("testcaseexecution", "status", ""));%></td>
                                 </tr>
 
                                 <tr>
@@ -647,7 +650,7 @@
                                                     if ((exeStatus != null) && (exeStatus.indexOf(q.getString("value") + ",") >= 0)) {
                                                         ret = ret + " SELECTED ";
                                                     }
-                                                    ret = ret + ">" + q.getString("value") ;
+                                                    ret = ret + ">" + q.getString("value");
                                                     ret = ret + "</option>";
                                                 }%>
                                             <%=ret%>
@@ -757,12 +760,12 @@
                         <td id="wob">
                             <table id="reportingExec" style="text-align: left;border-collapse:collapse;display:table" border="1px" cellpadding="0" cellspacing="1">
                                 <tr id="headerFirst">
-                                    <td style="width:10%"><%out.print(dbDocS(conn, "test", "test", "Test"));%></td>
-                                    <td style="width:5%"><%out.print(dbDocS(conn, "testcase", "testcase", "TestCase"));%></td>
-                                    <td style="width:5%"><%out.print(dbDocS(conn, "application", "application", "Aplication"));%></td>
-                                    <td style="width:20%"><%out.print(dbDocS(conn, "testcase", "description", "Description"));%></td>
-                                    <td style="width:2%"><%out.print(dbDocS(conn, "invariant", "PRIORITY", "Priority"));%></td>
-                                    <td style="width:5%"><%out.print(dbDocS(conn, "testcase", "status", "Status"));%></td>
+                                    <td style="width:10%"><%out.print(docService.findLabelHTML("test", "test", "Test"));%></td>
+                                    <td style="width:5%"><%out.print(docService.findLabelHTML("testcase", "testcase", "TestCase"));%></td>
+                                    <td style="width:5%"><%out.print(docService.findLabelHTML("application", "application", "Aplication"));%></td>
+                                    <td style="width:20%"><%out.print(docService.findLabelHTML("testcase", "description", "Description"));%></td>
+                                    <td style="width:2%"><%out.print(docService.findLabelHTML("invariant", "PRIORITY", "Priority"));%></td>
+                                    <td style="width:5%"><%out.print(docService.findLabelHTML("testcase", "status", "Status"));%></td>
                                     <%
                                         //rs_testcasecountrygeneral.first();								
                                         //do {
@@ -776,9 +779,9 @@
                                         // } while (rs_testcasecountrygeneral.next());
 
                                     %>
-                                    <td><%out.print(dbDocS(conn, "testcase", "comment", "Comment"));%></td> 
-                                    <td style="width:5%" ><%out.print(dbDocS(conn, "testcase", "bugID", "BugID"));%></td>
-                                    <td style="width:5%" ><%out.print(dbDocS(conn, "invariant", "GROUP", "Group"));%></td>
+                                    <td><%out.print(docService.findLabelHTML("testcase", "comment", "Comment"));%></td> 
+                                    <td style="width:5%" ><%out.print(docService.findLabelHTML("testcase", "bugID", "BugID"));%></td>
+                                    <td style="width:5%" ><%out.print(docService.findLabelHTML( "invariant", "GROUP", "Group"));%></td>
                                 </tr>
                                 <%
                                     // out.println(tcclauses);
@@ -981,8 +984,8 @@
                                     <%   }// }   
                                         }
                                     %>
-                                        <td class="INF"><%
-                                            if (rs_time.getString("tc.Comment") != null) {%><%=rs_time.getString("tc.Comment")%><%}%></td>
+                                    <td class="INF"><%
+                                        if (rs_time.getString("tc.Comment") != null) {%><%=rs_time.getString("tc.Comment")%><%}%></td>
                                     <td class="INF"><%
                                         if ((rs_time.getString("tc.BugID") != null)
                                                 && (rs_time.getString("tc.BugID").compareToIgnoreCase("") != 0)
@@ -997,8 +1000,8 @@
                                             if ((rs_time.getString("tc.TargetBuild") != null) && (rs_time.getString("tc.TargetBuild").equalsIgnoreCase("") == false)) {
                                         %> for <%=rs_time.getString("tc.TargetBuild")%>/<%=rs_time.getString("tc.TargetRev")%><%
                                             }%></td>
-                                <td class="INF"><%
-                                    if (rs_time.getString("tc.Group") != null) {%><%=rs_time.getString("tc.Group")%><%}%></td>
+                                    <td class="INF"><%
+                                        if (rs_time.getString("tc.Group") != null) {%><%=rs_time.getString("tc.Group")%><%}%></td>
 
                                 </tr>
 
@@ -1006,8 +1009,7 @@
                                 } else {
                                     // do{
                                     for (int i = 0; i < country_list.length; i++) {
-                                        %><td class="NOINF"></td><td class="NOINF"></td><%                                                              
-                                    }
+                                %><td class="NOINF"></td><td class="NOINF"></td><%                                            }
                                 %>
                                 <td class="INF"><%
                                     if (rs_time.getString("tc.Comment") != null) {%><%=rs_time.getString("tc.Comment")%><%}%></td>
@@ -1250,7 +1252,7 @@
 
                                             }
 
-                                            int total = 0+listCTOK.size()+listCTKO.size()+listCTFA.size()+listCTPE.size()+listCTNE.size();
+                                            int total = 0 + listCTOK.size() + listCTKO.size() + listCTFA.size() + listCTPE.size() + listCTNE.size();
                                     %><td id="repsynthesis1" class="INF" align="center" style="font : bold  ;
                                         ; color: green; border-top-color: <%=cssleftTOP%> ; border-right-color: <%=cssleftRIG%>  ">
                                         <%=listCTOK.size() != 0 ? listCTOK.size() : "0"%> 
@@ -1332,7 +1334,7 @@
                                                 }
                                             }
 
-                                            int total = 0 + listCTTOTOK.size()+ listCTTOTKO.size() +listCTTOTFA.size()+listCTTOTPE.size()+listCTTOTNE.size();
+                                            int total = 0 + listCTTOTOK.size() + listCTTOTKO.size() + listCTTOTFA.size() + listCTTOTPE.size() + listCTTOTNE.size();
 
                                     %>
                                     <td align="center" style="color : green"><%=listCTTOTOK.size()%></td>
@@ -1375,7 +1377,7 @@
                                     %><td align="center"><%=totalTest%></td></tr><%
                                         }
                                     %>
-                            <tr id="header"><td>TOTAL</td><%
+                                <tr id="header"><td>TOTAL</td><%
                                     int totalTest = 0;
                                     for (int i = 0; i < listGroup.size(); i++) {
                                         if (statsGroupForTest.containsKey("TOTAL" + listGroup.get(i))) {
@@ -1418,7 +1420,7 @@
                                             mj++;
                                         }
                                         if (mj >= listStatus.size()) { // Current status was not in the test data
-%><td></td><%                                                    } else {
+                                    %><td></td><%                                                    } else {
                                         if (statsStatusForTest.containsKey(distinctList.get(index) + listStatus.get(mj))) {
                                             totalTest += statsStatusForTest.get(distinctList.get(index) + listStatus.get(mj));
                                     %><td align="center"><%=statsStatusForTest.get(distinctList.get(index) + listStatus.get(mj))%></td><%
@@ -1430,8 +1432,8 @@
                                     %><td align="center"><%=totalTest%></td></tr><%
                                         }
                                     %>
-                            <tr id="header"><td>TOTAL</td><%
-totalTest = 0;
+                                <tr id="header"><td>TOTAL</td><%
+                                    totalTest = 0;
                                     for (int i = 0; i < myInv.size(); i++) {
 
                                         // finding the real list of status from the page data inside the current complete status
@@ -1440,15 +1442,15 @@ totalTest = 0;
                                             mj++;
                                         }
                                         if (mj >= listStatus.size()) { // Current status was not in the test data
-%><td></td><%                                                    } else {
-                                        if (statsStatusForTest.containsKey("TOTAL" + listStatus.get(mj))) {
-                                            totalTest += statsStatusForTest.get("TOTAL" + listStatus.get(mj));
+                                    %><td></td><%                                                    } else {
+                                                                            if (statsStatusForTest.containsKey("TOTAL" + listStatus.get(mj))) {
+                                                                                totalTest += statsStatusForTest.get("TOTAL" + listStatus.get(mj));
                                     %><td align="center"><%=statsStatusForTest.get("TOTAL" + listStatus.get(mj))%></td><%
-                                    } else {
+                                                                        } else {
                                     %><td></td><%                                                                }
 
-                                            }
-                                        }
+                                                                                }
+                                                                            }
                                     %><td align="center"><%=totalTest%></td></tr></table>
                         </td>
                     </tr>
@@ -1477,49 +1479,49 @@ totalTest = 0;
             </form>
         </div>
 
-                <script>
-                    function filterDisplay(checked) {
-                        if(checked) {
-                            $('tr#header').addClass('notVisible');
-                            $('tr.testCaseExecutionResult').addClass('notVisible');
-                            $('tr.reportDelimiter').addClass('notVisible');
+        <script>
+            function filterDisplay(checked) {
+                if(checked) {
+                    $('tr#header').addClass('notVisible');
+                    $('tr.testCaseExecutionResult').addClass('notVisible');
+                    $('tr.reportDelimiter').addClass('notVisible');
 
-                            $('input.filterCheckbox').removeAttr('disabled');
-                            $('input.filterDisplay').attr('checked','checked');
-                        } else {
-                            $('tr#header').removeClass('notVisible');
-                            $('tr.testCaseExecutionResult').removeClass('notVisible');
-                            $('tr.reportDelimiter').removeClass('notVisible');
+                    $('input.filterCheckbox').removeAttr('disabled');
+                    $('input.filterDisplay').attr('checked','checked');
+                } else {
+                    $('tr#header').removeClass('notVisible');
+                    $('tr.testCaseExecutionResult').removeClass('notVisible');
+                    $('tr.reportDelimiter').removeClass('notVisible');
 
-                            $('input.filterCheckbox').attr('disabled','disabled');
-                            $('input.filterDisplay').removeAttr('checked');
-                        }
-                    };
-                    function toogleDisplay(input) {
-                        input = $(input);
-                        var value = input.val();
-                        if(input.is(':checked')) {
-                            $('tr.testCaseExecutionResult').has('td.'+value).addClass(value+'Visible');
-                        } else {
-                            $('tr.testCaseExecutionResult').has('td.'+value).removeClass(value+'Visible');
-                        }
-                    };
+                    $('input.filterCheckbox').attr('disabled','disabled');
+                    $('input.filterDisplay').removeAttr('checked');
+                }
+            };
+            function toogleDisplay(input) {
+                input = $(input);
+                var value = input.val();
+                if(input.is(':checked')) {
+                    $('tr.testCaseExecutionResult').has('td.'+value).addClass(value+'Visible');
+                } else {
+                    $('tr.testCaseExecutionResult').has('td.'+value).removeClass(value+'Visible');
+                }
+            };
                     
-                    <%
-                        if(request.getParameter("FILTER")!= null && !"".equals(request.getParameter("FILTER"))) {
-                            out.println("$(document).ready(function(){filterDisplay(true);");
-                            String[] filters = {"OK","KO","NA","FA","PE"};
-                            
-                            for(int i=0;i<filters.length;i++) {
-                                if(request.getParameter(filters[i])!= null && filters[i].equals(request.getParameter(filters[i]))) {
-                                    out.println("$('#F"+filters[i]+"').delay( 300 ).queue(function(){$(this).trigger('click');$(this).dequeue();});");
-                                }
-                            }
-                            out.println("});");
+            <%
+                if (request.getParameter("FILTER") != null && !"".equals(request.getParameter("FILTER"))) {
+                    out.println("$(document).ready(function(){filterDisplay(true);");
+                    String[] filters = {"OK", "KO", "NA", "FA", "PE"};
+
+                    for (int i = 0; i < filters.length; i++) {
+                        if (request.getParameter(filters[i]) != null && filters[i].equals(request.getParameter(filters[i]))) {
+                            out.println("$('#F" + filters[i] + "').delay( 300 ).queue(function(){$(this).trigger('click');$(this).dequeue();});");
                         }
-                    %>
-                </script>
-                
+                    }
+                    out.println("});");
+                }
+            %>
+        </script>
+
         <br><% out.print(display_footer(DatePageStart));%>
     </body>
 </html>

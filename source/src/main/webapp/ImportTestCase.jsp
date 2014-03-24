@@ -1,4 +1,3 @@
-<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%--
   ~ Cerberus  Copyright (C) 2013  vertigo17
   ~ DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
@@ -18,6 +17,7 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
+<%@page import="org.cerberus.service.IDocumentationService"%>
 <%@page import="org.cerberus.entity.BuildRevisionInvariant"%>
 <%@page import="org.cerberus.service.impl.BuildRevisionInvariantService"%>
 <%@page import="org.cerberus.service.IBuildRevisionInvariantService"%>
@@ -29,6 +29,7 @@
 <%@page import="java.sql.ResultSet"%>
 <%@page import="java.sql.Statement"%>
 <%@page import="java.net.URLEncoder"%>
+<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%--
     Document   : ImportTestCase
@@ -55,28 +56,28 @@
     }
 
     Connection conn = db.connect();
-    
+    IDocumentationService docService = appContext.getBean(IDocumentationService.class);
+
     String optstyle;
     Statement stQueryTestCase = conn.createStatement();
     Statement stQueryTestCaseStep = conn.createStatement();
 
 %>
 <tr>
-    <td class="wob"><span style="font-weight: bold"><%out.print(dbDocS(conn, "testcase", "testcase", "OriginTestCase"));%></span>
+    <td class="wob"><span style="font-weight: bold"><%out.print(docService.findLabelHTML("testcase", "testcase", "OriginTestCase"));%></span>
         <select id="fromTestCase" name="FromTestCase" onchange="getTestCasesForImportStep()">
             <%
                 if (test.compareTo("%%") == 0) {
-                    %><option value="All">-- Choose Test First --</option><%
-                } else {
-                    String sql = "SELECT TestCase, Application,  Description, tcactive FROM testcase where TestCase IS NOT NULL and test like '" + test + "'Order by TestCase asc";
-                    ResultSet rsTestCase = stQueryTestCase.executeQuery(sql);
-                    while (rsTestCase.next()) {
-                        if (rsTestCase.getString("tcactive").equalsIgnoreCase("Y")) {
-                            optstyle = "font-weight:bold;";
-                        } else {
-                            optstyle = "font-weight:lighter;";
-                        }
-                        %><option style="<%=optstyle%>" value="<%=rsTestCase.getString("TestCase")%>" <%=testcase.compareTo(rsTestCase.getString("TestCase")) == 0 ? " SELECTED " : ""%>><%=rsTestCase.getString("TestCase")%>  [<%=rsTestCase.getString("Application")%>]  : <%=rsTestCase.getString("Description")%></option><%
+            %><option value="All">-- Choose Test First --</option><%                    } else {
+                String sql = "SELECT TestCase, Application,  Description, tcactive FROM testcase where TestCase IS NOT NULL and test like '" + test + "'Order by TestCase asc";
+                ResultSet rsTestCase = stQueryTestCase.executeQuery(sql);
+                while (rsTestCase.next()) {
+                    if (rsTestCase.getString("tcactive").equalsIgnoreCase("Y")) {
+                        optstyle = "font-weight:bold;";
+                    } else {
+                        optstyle = "font-weight:lighter;";
+                    }
+            %><option style="<%=optstyle%>" value="<%=rsTestCase.getString("TestCase")%>" <%=testcase.compareTo(rsTestCase.getString("TestCase")) == 0 ? " SELECTED " : ""%>><%=rsTestCase.getString("TestCase")%>  [<%=rsTestCase.getString("Application")%>]  : <%=rsTestCase.getString("Description")%></option><%
                     }
                 }
             %>
@@ -84,22 +85,21 @@
 </tr>
 <tr>
     <td  class="wob">
-            <select id="fromStep" name="FromStep">
+        <select id="fromStep" name="FromStep">
             <%
                 if (testcase.compareTo("%%") == 0) {
-                    %><option value="All">-- Choose Test Case First --</option><%
-                } else {
+            %><option value="All">-- Choose Test Case First --</option><%                    } else {
 
-                    String sql = "SELECT Step, Description FROM testcasestep WHERE Test like '"+test+"' and TestCase like '"+testcase+"' Order by Step asc";
-                    //String sql = "SELECT TestCase, Application,  Description, tcactive FROM testcase where TestCase IS NOT NULL and test like '" + test + "'Order by TestCase asc";
+                String sql = "SELECT Step, Description FROM testcasestep WHERE Test like '" + test + "' and TestCase like '" + testcase + "' Order by Step asc";
+                //String sql = "SELECT TestCase, Application,  Description, tcactive FROM testcase where TestCase IS NOT NULL and test like '" + test + "'Order by TestCase asc";
 
-                    ResultSet rsTestCaseStep = stQueryTestCaseStep.executeQuery(sql);
-                    while (rsTestCaseStep.next()) {
-                        %><option value="<%=rsTestCaseStep.getString("Step")%>" <%=step.compareTo(rsTestCaseStep.getString("Step")) == 0 ? " SELECTED " : ""%>>[<%=rsTestCaseStep.getString("Step")%>] <%=rsTestCaseStep.getString("Description")%></option><%
+                ResultSet rsTestCaseStep = stQueryTestCaseStep.executeQuery(sql);
+                while (rsTestCaseStep.next()) {
+            %><option value="<%=rsTestCaseStep.getString("Step")%>" <%=step.compareTo(rsTestCaseStep.getString("Step")) == 0 ? " SELECTED " : ""%>>[<%=rsTestCaseStep.getString("Step")%>] <%=rsTestCaseStep.getString("Description")%></option><%
                     }
                 }
             %>
-            </select>
+        </select>
     </td>
 </tr>
 <tr>

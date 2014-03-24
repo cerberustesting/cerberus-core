@@ -73,11 +73,13 @@ public class DocumentationService implements IDocumentationService {
         } else {
             labelFromDB = myDoc.getDocLabel();
             label.append(labelFromDB);
-            label.append(" <a href=\'javascript:popup(\"Documentation.jsp?DocTable=");
-            label.append(docTable);
-            label.append("&DocField=");
-            label.append(docField);
-            label.append("\")\'>?</a>");
+            if (!(StringUtil.isNullOrEmpty(myDoc.getDocDesc().trim()))) {
+                label.append(" <a href=\'javascript:popup(\"Documentation.jsp?DocTable=");
+                label.append(docTable);
+                label.append("&DocField=");
+                label.append(docField);
+                label.append("\")\'>?</a>");
+            }
         }
         result = label.toString();
 

@@ -17,6 +17,7 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
+<%@page import="org.cerberus.service.IDocumentationService"%>
 <%@page import="org.cerberus.util.SqlUtil"%>
 <%@page import="org.cerberus.service.IParameterService"%>
 <%@page import="org.cerberus.log.MyLogger"%>
@@ -51,6 +52,8 @@
 
                     String testcaseApplication = null;
                     Connection conn = null;
+                    IDocumentationService docService = appContext.getBean(IDocumentationService.class);
+
                     try {
 
                         conn = db.connect();
@@ -203,19 +206,19 @@
                         String seleniumUrl = "";
                         IParameterService myParameterService = appContext.getBean(IParameterService.class);
                         try {
-                            seleniumUrl = myParameterService.findParameterByKey("selenium_download_url","").getValue();
+                            seleniumUrl = myParameterService.findParameterByKey("selenium_download_url", "").getValue();
                         } catch (Exception ex) {
                             MyLogger.log("RunTests.jsp", Level.FATAL, " Exception catched : " + ex);
                         }
                         String seleniumChromeUrl = "";
                         try {
-                            seleniumChromeUrl = myParameterService.findParameterByKey("selenium_chromedriver_download_url","").getValue();
+                            seleniumChromeUrl = myParameterService.findParameterByKey("selenium_chromedriver_download_url", "").getValue();
                         } catch (Exception ex) {
                             MyLogger.log("RunTests.jsp", Level.FATAL, " Exception catched : " + ex);
                         }
                         String seleniumIEUrl = "";
                         try {
-                            seleniumIEUrl = myParameterService.findParameterByKey("selenium_iedriver_download_url","").getValue();
+                            seleniumIEUrl = myParameterService.findParameterByKey("selenium_iedriver_download_url", "").getValue();
                         } catch (Exception ex) {
                             MyLogger.log("RunTests.jsp", Level.FATAL, " Exception catched : " + ex);
                         }
@@ -228,7 +231,7 @@
 
                             <table border="0px">
                                 <tr>                                         
-                                    <td id="wob" style="font-weight: bold; width: 150px"><% out.print(dbDocS(conn, "page_runtests", "SeleniumServerIP", "Selenium Server IP "));%></td>
+                                    <td id="wob" style="font-weight: bold; width: 150px"><% out.print(docService.findLabelHTML("page_runtests", "SeleniumServerIP", "Selenium Server IP "));%></td>
                                     <td id="wob">
                                         <input type="text" name="ss_ip" value="<%= ssIP%>" />
                                         <input id="button" type="submit" <%=enable%> name="DefaultIP" value="Set As My Default IP" >
@@ -241,7 +244,7 @@
 
                                 </tr>
                                 <tr>
-                                    <td id="wob" style="font-weight: bold; width: 150px"><% out.print(dbDocS(conn, "page_runtests", "SeleniumServerPort", "Selenium Server Port "));%></td>
+                                    <td id="wob" style="font-weight: bold; width: 150px"><% out.print(docService.findLabelHTML("page_runtests", "SeleniumServerPort", "Selenium Server Port "));%></td>
                                     <td id="wob">
                                         <input type="text" name="ss_p" value="<%= ssPort%>" />
                                     </td>
@@ -252,7 +255,7 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td id="wob" style="font-weight: bold; width: 150px"><% out.print(dbDocS(conn, "page_runtests", "Browser", "Browser"));%></td>
+                                    <td id="wob" style="font-weight: bold; width: 150px"><% out.print(docService.findLabelHTML("page_runtests", "Browser", "Browser"));%></td>
                                     <td id="wob">
                                         <%=ComboInvariant(conn, "browser", "width: 90px", "browser", "browser", "BROWSER", browser, "", null)%>
                                     </td>
@@ -275,9 +278,9 @@
 
                             <table id="testParameters" border="0px">
                                 <tr>
-                                    <td id="wob" style="font-weight: bold; width: 100px"><% out.print(dbDocS(conn, "test", "Test", "Test"));%></td>
-                                    <td id="wob" style="font-weight: bold; width: 100px"><% out.print(dbDocS(conn, "testcase", "TestCase", "Test Case"));%></td>
-                                    <td id="wob" style="font-weight: bold; width: 100px"><% out.print(dbDocS(conn, "invariant", "Country", "Country"));%></td>
+                                    <td id="wob" style="font-weight: bold; width: 100px"><% out.print(docService.findLabelHTML("test", "Test", "Test"));%></td>
+                                    <td id="wob" style="font-weight: bold; width: 100px"><% out.print(docService.findLabelHTML("testcase", "TestCase", "Test Case"));%></td>
+                                    <td id="wob" style="font-weight: bold; width: 100px"><% out.print(docService.findLabelHTML("invariant", "Country", "Country"));%></td>
                                 </tr>
                                 <tr>
                                     <td id="wob"><select size="16" id="test" name="Test"
@@ -324,7 +327,7 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td id="wob" style="font-weight: bold; width: 150px"><% out.print(dbDocS(conn, "invariant", "Environment", "Environment"));%></td>
+                                    <td id="wob" style="font-weight: bold; width: 150px"><% out.print(docService.findLabelHTML("invariant", "Environment", "Environment"));%></td>
                                 </tr>
                                 <tr>
                                     <td colspan="3">
@@ -415,21 +418,21 @@
                             <h3 style="color: blue">Execution Parameters</h3>
                             <table>
                                 <tr>
-                                    <td id="wob" style="font-weight: bold; width: 100px"><% out.print(dbDocS(conn, "testcaseexecution", "tag", "Tag"));%></td>
+                                    <td id="wob" style="font-weight: bold; width: 100px"><% out.print(docService.findLabelHTML("testcaseexecution", "tag", "Tag"));%></td>
                                     <td class="wob" colspan="4">
                                         <input id="tag" name="Tag" style="width: 200px">
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td id="wob" style="font-weight: bold; width: 100px"><% out.print(dbDocS(conn, "page_runtests", "outputformat", ""));%></td>
+                                    <td id="wob" style="font-weight: bold; width: 100px"><% out.print(docService.findLabelHTML("page_runtests", "outputformat", ""));%></td>
                                     <td class="wob">
                                         <%=ComboInvariant(conn, "outputformat", "width: 90px", "Format", "Format", "OUTPUTFORMAT", "gui", "", null)%>
                                     </td>
-                                    <td id="wob" style="font-weight: bold; width: 100px"><% out.print(dbDocS(conn, "testcaseexecution", "verbose", ""));%></td>
+                                    <td id="wob" style="font-weight: bold; width: 100px"><% out.print(docService.findLabelHTML("testcaseexecution", "verbose", ""));%></td>
                                     <td class="wob">
                                         <%=ComboInvariant(conn, "verbose", "width: 90px", "Verbose", "Verbose", "VERBOSE", "0", "", null)%>
                                     </td>
-                                    <td id="wob" style="font-weight: bold; width: 100px"><% out.print(dbDocS(conn, "page_runtests", "screenshot", ""));%></td>
+                                    <td id="wob" style="font-weight: bold; width: 100px"><% out.print(docService.findLabelHTML("page_runtests", "screenshot", ""));%></td>
                                     <td class="wob">
                                         <%=ComboInvariant(conn, "screenshot", "width: 90px", "Screenshot", "Screenshot", "SCREENSHOT", "1", "", null)%>
                                     </td>

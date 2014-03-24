@@ -17,6 +17,7 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
+<%@page import="org.cerberus.service.IDocumentationService"%>
 <%@page import="org.cerberus.entity.BuildRevisionInvariant"%>
 <%@page import="org.cerberus.service.impl.BuildRevisionInvariantService"%>
 <%@page import="org.cerberus.service.IBuildRevisionInvariantService"%>
@@ -285,6 +286,7 @@
                 try {
 
                     conn = db.connect();
+                    IDocumentationService docService = appContext.getBean(IDocumentationService.class);
 
                     Statement stmt = conn.createStatement();
 
@@ -308,13 +310,13 @@
                                         <table border="0px">
                                             <tr><td class="wob" COLSPAN="8"><h4 style="color:black">TestCase Parameters</h4></td></tr>              
                                             <tr>
-                                                <td id="wob" style="width: 110px"><%out.print(dbDocS(conn, "test", "Test", "Test"));%></td>
-                                                <td id="wob" style="width: 110px"><%out.print(dbDocS(conn, "project", "idproject", "Project"));%></td>
-                                                <td id="wob" style="width: 110px"><%out.print(dbDocS(conn, "application", "Application", "Application"));%></td>
-                                                <td id="wob" style="width: 110px"><%out.print(dbDocS(conn, "testcase", "tcactive", "TestCase Active"));%></td>
-                                                <td id="wob" style="width: 70px"><%out.print(dbDocS(conn, "invariant", "PRIORITY", "Priority"));%></td>
-                                                <td id="wob" style="width: 110px"><%out.print(dbDocS(conn, "testcase", "Status", "Status"));%></td>
-                                                <td id="wob" style="width: 110px"><%out.print(dbDocS(conn, "invariant", "GROUP", "Group"));%></td>
+                                                <td id="wob" style="width: 110px"><%out.print(docService.findLabelHTML("test", "Test", "Test"));%></td>
+                                                <td id="wob" style="width: 110px"><%out.print(docService.findLabelHTML("project", "idproject", "Project"));%></td>
+                                                <td id="wob" style="width: 110px"><%out.print(docService.findLabelHTML("application", "Application", "Application"));%></td>
+                                                <td id="wob" style="width: 110px"><%out.print(docService.findLabelHTML("testcase", "tcactive", "TestCase Active"));%></td>
+                                                <td id="wob" style="width: 70px"><%out.print(docService.findLabelHTML("invariant", "PRIORITY", "Priority"));%></td>
+                                                <td id="wob" style="width: 110px"><%out.print(docService.findLabelHTML("testcase", "Status", "Status"));%></td>
+                                                <td id="wob" style="width: 110px"><%out.print(docService.findLabelHTML("invariant", "GROUP", "Group"));%></td>
                                             </tr>
                                             <tr>                        
                                                 <td id="wob">
@@ -415,12 +417,12 @@
                                         <table border="0px">
                                             <tr><td class="wob" colspan="7"></td></tr>
                                             <tr>
-                                                <td id="wob" style="width: 90px"><%out.print(dbDocS(conn, "invariant", "Environment", "Environment"));%></td>
-                                                <td id="wob" style="width: 90px"><%out.print(dbDocS(conn, "buildrevisioninvariant", "versionname01", "Build"));%></td>
-                                                <td id="wob" style="width: 90px"><%out.print(dbDocS(conn, "buildrevisioninvariant", "versionname02", "Revision"));%></td>
-                                                <td id="wob" style="width: 90px"><%out.print(dbDocS(conn, "testcaseexecution", "IP", "Ip"));%></td>
-                                                <td id="wob" style="width: 90px"><%out.print(dbDocS(conn, "testcaseexecution", "Port", "Port"));%></td>
-                                                <td id="wob" style="width: 90px"><%out.print(dbDocS(conn, "testcaseexecution", "tag", "Tag"));%></td>
+                                                <td id="wob" style="width: 90px"><%out.print(docService.findLabelHTML("invariant", "Environment", "Environment"));%></td>
+                                                <td id="wob" style="width: 90px"><%out.print(docService.findLabelHTML("buildrevisioninvariant", "versionname01", "Build"));%></td>
+                                                <td id="wob" style="width: 90px"><%out.print(docService.findLabelHTML("buildrevisioninvariant", "versionname02", "Revision"));%></td>
+                                                <td id="wob" style="width: 90px"><%out.print(docService.findLabelHTML("testcaseexecution", "IP", "Ip"));%></td>
+                                                <td id="wob" style="width: 90px"><%out.print(docService.findLabelHTML("testcaseexecution", "Port", "Port"));%></td>
+                                                <td id="wob" style="width: 90px"><%out.print(docService.findLabelHTML("testcaseexecution", "tag", "Tag"));%></td>
                                             </tr>
 
                                             <tr>
@@ -462,12 +464,12 @@
                                         <table border="0px">
                                             <tr><td class="wob" colspan="7"></td></tr>
                                             <tr>
-                                                <td id="wob" style="width: 90px"><%out.print(dbDocS(conn, "invariant", "Environment", "Environment"));%></td>
-                                                <td id="wob" style="width: 90px"><%out.print(dbDocS(conn, "buildrevisioninvariant", "versionname01", "Build"));%></td>
-                                                <td id="wob" style="width: 90px"><%out.print(dbDocS(conn, "buildrevisioninvariant", "versionname02", "Revision"));%></td>
-                                                <td id="wob" style="width: 90px"><%out.print(dbDocS(conn, "testcaseexecution", "IP", "Ip"));%></td>
-                                                <td id="wob" style="width: 90px"><%out.print(dbDocS(conn, "testcaseexecution", "Port", "Port"));%></td>
-                                                <td id="wob" style="width: 90px"><%out.print(dbDocS(conn, "testcaseexecution", "tag", "Tag"));%></td>
+                                                <td id="wob" style="width: 90px"><%out.print(docService.findLabelHTML("invariant", "Environment", "Environment"));%></td>
+                                                <td id="wob" style="width: 90px"><%out.print(docService.findLabelHTML("buildrevisioninvariant", "versionname01", "Build"));%></td>
+                                                <td id="wob" style="width: 90px"><%out.print(docService.findLabelHTML("buildrevisioninvariant", "versionname02", "Revision"));%></td>
+                                                <td id="wob" style="width: 90px"><%out.print(docService.findLabelHTML("testcaseexecution", "IP", "Ip"));%></td>
+                                                <td id="wob" style="width: 90px"><%out.print(docService.findLabelHTML("testcaseexecution", "Port", "Port"));%></td>
+                                                <td id="wob" style="width: 90px"><%out.print(docService.findLabelHTML("testcaseexecution", "tag", "Tag"));%></td>
                                             </tr>
 
                                             <tr>
@@ -530,11 +532,11 @@
                     <td>
                         <table style="text-align: left;border-collapse:collapse;" border="1px" cellpadding="0" cellspacing="1">
                             <tr id="header">
-                                <td style="width: 30px"><%out.print(dbDocS(conn, "testcase", "test", "Test"));%></td>
-                                <td style="width: 30px"><%out.print(dbDocS(conn, "testcase", "testcase", "TestCase"));%></td>
-                                <td style="width: 30px"><%out.print(dbDocS(conn, "application", "application", "Aplication"));%></td>
-                                <td style="width: 30px"><%out.print(dbDocS(conn, "testcase", "description", "Description"));%></td>
-                                <td style="width: 30px"><%out.print(dbDocS(conn, "invariant", "PRIORITY", "Priority"));%></td>
+                                <td style="width: 30px"><%out.print(docService.findLabelHTML("testcase", "test", "Test"));%></td>
+                                <td style="width: 30px"><%out.print(docService.findLabelHTML("testcase", "testcase", "TestCase"));%></td>
+                                <td style="width: 30px"><%out.print(docService.findLabelHTML("application", "application", "Aplication"));%></td>
+                                <td style="width: 30px"><%out.print(docService.findLabelHTML("testcase", "description", "Description"));%></td>
+                                <td style="width: 30px"><%out.print(docService.findLabelHTML("invariant", "PRIORITY", "Priority"));%></td>
                                 <%
                                     //rs_testcasecountrygeneral.first();								
                                     //do {
@@ -773,7 +775,7 @@
                                 <%   }
                                     }
                                     //} while (rs_testcasecountrygeneral.next());
-                                %>
+%>
                                 <%
                                 } else {
                                     for (int i = 0; i < country_list.length; i++) {

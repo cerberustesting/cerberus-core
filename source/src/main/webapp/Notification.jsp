@@ -17,6 +17,7 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
+<%@page import="org.cerberus.service.IDocumentationService"%>
 <%@page import="org.cerberus.serviceEmail.IEmailGeneration"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 
@@ -47,6 +48,7 @@
             Date DatePageStart = new Date();
 
             Connection conn = db.connect();
+            IDocumentationService docService = appContext.getBean(IDocumentationService.class);
 
             try {
 
@@ -138,19 +140,19 @@
                 <td colspan="2" style="background-color: lightyellow; text-align: center">EMail Notification Preview</td>
             </tr>
             <tr>
-                <td><%=dbDocS(conn, "page_notification", "To", "")%></td>
+                <td><%=docService.findLabelHTML("page_notification", "To", "")%></td>
                 <td><table border><tr><td><%=to%></td></tr></table></td>
             </tr> 
             <tr>
-                <td><%=dbDocS(conn, "page_notification", "Cc", "")%></td>
+                <td><%=docService.findLabelHTML("page_notification", "Cc", "")%></td>
                 <td><table border><tr><td><%=cc%></td></tr></table></td>
             </tr> 
             <tr>
-                <td><%=dbDocS(conn, "page_notification", "Subject", "")%></td>
+                <td><%=docService.findLabelHTML("page_notification", "Subject", "")%></td>
                 <td><table border><tr><td><%=subject%></td></tr></table></td>
             </tr>
             <tr>
-                <td><%=dbDocS(conn, "page_notification", "Body", "")%></td>
+                <td><%=docService.findLabelHTML("page_notification", "Body", "")%></td>
                 <td><table border><tr><td><%=body%></td></tr></table></td>
             </tr>
         </table>
@@ -211,7 +213,7 @@
                 IParameterService myParameterService = appContext.getBean(IParameterService.class);
 
                 String JenkinsURL;
-                JenkinsURL = myParameterService.findParameterByKey("jenkins_deploy_pipeline_url","").getValue();
+                JenkinsURL = myParameterService.findParameterByKey("jenkins_deploy_pipeline_url", "").getValue();
                 String final_JenkinsURL = "";
 
                 String DeployURL;

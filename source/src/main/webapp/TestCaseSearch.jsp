@@ -17,6 +17,7 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
+<%@page import="org.cerberus.service.IDocumentationService"%>
 <%@page import="org.apache.commons.lang3.StringUtils"%>
 <%@page import="java.sql.Connection"%>
 <%@page import="java.sql.ResultSet"%>
@@ -41,7 +42,9 @@
         <div id="body">
             <%
                 Connection conn = db.connect();
-                try {
+                IDocumentationService docService = appContext.getBean(IDocumentationService.class);
+
+                               try {
 
                     /*
                      * Filter requests
@@ -305,17 +308,17 @@
                                                 <td id="wob">
                                                     <table>
                                                         <tr id="header">
-                                                            <td class="wob" style="width: 100px"><%out.print(dbDocS(conn, "test", "test", "Test"));%></td>
-                                                            <td class="wob" style="width: 60px"><%out.print(dbDocS(conn, "testcase", "testcase", "Testcase"));%></td>
-                                                            <td class="wob" style="width: 100px"><%out.print(dbDocS(conn, "project", "idproject", "Project"));%></td>
-                                                            <td class="wob" style="width: 100px"><%out.print(dbDocS(conn, "testcase", "ticket", "Ticket"));%></td>
-                                                            <td class="wob" style="width: 70px"><%out.print(dbDocS(conn, "testcase", "BugID", ""));%></td>
-                                                            <td class="wob" style="width: 100px"><%out.print(dbDocS(conn, "testcase", "origine", "Origine"));%></td>
-                                                            <td class="wob" style="width: 100px"><%out.print(dbDocS(conn, "testcase", "creator", "Creator"));%></td>
-                                                            <td class="wob" style="width: 150px"><%out.print(dbDocS(conn, "application", "system", "System"));%></td>
-                                                            <td class="wob" style="width: 150px"><%out.print(dbDocS(conn, "application", "application", "Application"));%></td>
-                                                            <td class="wob" style="width: 150px"><%out.print(dbDocS(conn, "invariant", "PRIORITY", ""));%></td>
-                                                            <td class="wob" style="width: 150px"><%out.print(dbDocS(conn, "testcase", "status", ""));%></td>
+                                                            <td class="wob" style="width: 100px"><%out.print(docService.findLabelHTML( "test", "test", "Test"));%></td>
+                                                            <td class="wob" style="width: 60px"><%out.print(docService.findLabelHTML( "testcase", "testcase", "Testcase"));%></td>
+                                                            <td class="wob" style="width: 100px"><%out.print(docService.findLabelHTML( "project", "idproject", "Project"));%></td>
+                                                            <td class="wob" style="width: 100px"><%out.print(docService.findLabelHTML( "testcase", "ticket", "Ticket"));%></td>
+                                                            <td class="wob" style="width: 70px"><%out.print(docService.findLabelHTML( "testcase", "BugID", ""));%></td>
+                                                            <td class="wob" style="width: 100px"><%out.print(docService.findLabelHTML( "testcase", "origine", "Origine"));%></td>
+                                                            <td class="wob" style="width: 100px"><%out.print(docService.findLabelHTML( "testcase", "creator", "Creator"));%></td>
+                                                            <td class="wob" style="width: 150px"><%out.print(docService.findLabelHTML( "application", "system", "System"));%></td>
+                                                            <td class="wob" style="width: 150px"><%out.print(docService.findLabelHTML( "application", "application", "Application"));%></td>
+                                                            <td class="wob" style="width: 150px"><%out.print(docService.findLabelHTML( "invariant", "PRIORITY", ""));%></td>
+                                                            <td class="wob" style="width: 150px"><%out.print(docService.findLabelHTML( "testcase", "status", ""));%></td>
                                                         </tr>
                                                         <tr>
                                                             <td class="wob">
@@ -403,11 +406,11 @@
                                                     </table>
                                                     <table>
                                                         <tr id="header">
-                                                            <td class="wob" style="width: 150px"><%out.print(dbDocS(conn, "invariant", "GROUP", ""));%></td>
-                                                            <td class="wob" style="width: 150px"><%out.print(dbDocS(conn, "testcase", "activePROD", ""));%></td>
-                                                            <td class="wob" style="width: 150px"><%out.print(dbDocS(conn, "testcase", "activeQA", ""));%></td>
-                                                            <td class="wob" style="width: 150px"><%out.print(dbDocS(conn, "testcase", "activeUAT", ""));%></td>
-                                                            <td class="wob" style="width: 150px"><%out.print(dbDocS(conn, "page_testcasesearch", "text", ""));%></td>
+                                                            <td class="wob" style="width: 150px"><%out.print(docService.findLabelHTML( "invariant", "GROUP", ""));%></td>
+                                                            <td class="wob" style="width: 150px"><%out.print(docService.findLabelHTML( "testcase", "activePROD", ""));%></td>
+                                                            <td class="wob" style="width: 150px"><%out.print(docService.findLabelHTML( "testcase", "activeQA", ""));%></td>
+                                                            <td class="wob" style="width: 150px"><%out.print(docService.findLabelHTML( "testcase", "activeUAT", ""));%></td>
+                                                            <td class="wob" style="width: 150px"><%out.print(docService.findLabelHTML( "page_testcasesearch", "text", ""));%></td>
                                                         </tr> 
                                                         <tr>
                                                             <td class="wob"><select id="ScGroup" name="ScGroup" style="width: 140px">
@@ -444,13 +447,13 @@
                                                         </tr>
                                                     </table>
                                                     <table><tr id="header">
-                                                            <td class="wob" style="width: 150px"><%out.print(dbDocS(conn, "testcase", "tcactive", ""));%></td>
-                                                            <td class="wob" style="width: 150px"><%out.print(dbDocS(conn, "testcase", "FromBuild", ""));%></td>
-                                                            <td class="wob" style="width: 150px"><%out.print(dbDocS(conn, "testcase", "FromRev", ""));%></td>
-                                                            <td class="wob" style="width: 150px"><%out.print(dbDocS(conn, "testcase", "ToBuild", ""));%></td>
-                                                            <td class="wob" style="width: 150px"><%out.print(dbDocS(conn, "testcase", "ToRev", ""));%></td>
-                                                            <td class="wob" style="width: 150px"><%out.print(dbDocS(conn, "testcase", "TargetBuild", ""));%></td>
-                                                            <td class="wob" style="width: 150px"><%out.print(dbDocS(conn, "testcase", "TargetRev", ""));%></td>
+                                                            <td class="wob" style="width: 150px"><%out.print(docService.findLabelHTML( "testcase", "tcactive", ""));%></td>
+                                                            <td class="wob" style="width: 150px"><%out.print(docService.findLabelHTML( "testcase", "FromBuild", ""));%></td>
+                                                            <td class="wob" style="width: 150px"><%out.print(docService.findLabelHTML( "testcase", "FromRev", ""));%></td>
+                                                            <td class="wob" style="width: 150px"><%out.print(docService.findLabelHTML( "testcase", "ToBuild", ""));%></td>
+                                                            <td class="wob" style="width: 150px"><%out.print(docService.findLabelHTML( "testcase", "ToRev", ""));%></td>
+                                                            <td class="wob" style="width: 150px"><%out.print(docService.findLabelHTML( "testcase", "TargetBuild", ""));%></td>
+                                                            <td class="wob" style="width: 150px"><%out.print(docService.findLabelHTML( "testcase", "TargetRev", ""));%></td>
                                                         </tr> 
                                                         <tr>
                                                             <td class="wob"><select id="ScActive" name="ScActive" style="width: 140px">

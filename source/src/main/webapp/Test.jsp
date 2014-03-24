@@ -17,6 +17,7 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
+<%@page import="org.cerberus.service.IDocumentationService"%>
 <%@page import="org.apache.commons.lang3.StringUtils"%>
 <%@page import="org.cerberus.service.impl.TestService"%>
 <%@page import="org.cerberus.entity.Test"%>
@@ -47,6 +48,8 @@
                  * Database connexion
                  */
                 Connection conn = db.connect();
+                IDocumentationService docService = appContext.getBean(IDocumentationService.class);
+
                 try {
                     // 			System.out.println("Test : " + request.getParameter ( "stestbox" ));
                     testService = appContext.getBean(TestService.class);
@@ -96,7 +99,7 @@
                                     <td class="wob">
                                         <table border="0">
                                             <tr>
-                                                <td id="wob" style="font-weight: bold; width: 100px"> <%out.print(dbDocS(conn, "test", "test", "Test"));%></td>
+                                                <td id="wob" style="font-weight: bold; width: 100px"> <%out.print(docService.findLabelHTML("test", "test", "Test"));%></td>
                                                 <td id="selectboxtestpage" class="wob" >
                                                     <form action="Test.jsp" method="post" name="selectTest">
                                                         <select id="stestbox" name="stestbox" style="width: 300px">
@@ -167,7 +170,7 @@
                         test_automated__man = "N";
                     }
             %>
-            <% if(canEdit){ %>
+            <% if (canEdit) {%>
             <form method="post" name="DeleteTest">
                 <table  id="generalparameter" class ="arrond" style="text-align: left; display:none" border="0" cellpadding="2" cellspacing="2" >
                     <tr>
@@ -175,7 +178,7 @@
                             <h3 style="color: blue">Test Parameters</h3>
                             <table>
                                 <tr>
-                                    <td class="wob" style="font-weight: bold; width: 110px"><%out.print(dbDocS(conn, "test", "test", "Test"));%></td>
+                                    <td class="wob" style="font-weight: bold; width: 110px"><%out.print(docService.findLabelHTML("test", "test", "Test"));%></td>
 
                                     <td class="wob"><input style="font-weight: bold; width: 200px" name="test_test" id="test_test"
                                                            maxlength="<%=rs_test_select.getMetaData().getColumnDisplaySize(
@@ -184,21 +187,21 @@
                                                            onchange="EnableAddTestButton('add_test', 'submit_changes', updateTest.test_test.value, '<%=test_test%>' );"></td>
                                 </tr>
                                 <tr>
-                                    <td id="wob" style="font-weight: bold; width: 110px"><%out.print(dbDocS(conn, "test", "description", "Description"));%></td>
+                                    <td id="wob" style="font-weight: bold; width: 110px"><%out.print(docService.findLabelHTML("test", "description", "Description"));%></td>
                                     <td class="wob" ><input id="test_description" style="width: 900px" name="test_description" value="<%=test_description%>"
                                                             maxlength="<%=rs_test_select.getMetaData().getColumnDisplaySize(
                                                                     rs_test_select_cpt_incr_field_length++)%>"></td>
                                 </tr>
 
                                 <tr>
-                                    <td id="wob" style="font-weight: bold; width: 110px"><%out.print(dbDocS(conn, "test", "active", "Active"));%></td>
+                                    <td id="wob" style="font-weight: bold; width: 110px"><%out.print(docService.findLabelHTML("test", "active", "Active"));%></td>
                                     <td class="wob" ><select id="test_active" style="width: 40px;" name="test_active">
                                             <option selected="selected" value="<%=test_active%>"><%=test_active%></option>
                                             <option value="<%=test_activated__man%>"><%=test_activated__man%></option>
                                         </select></td>
                                 </tr>
                                 <tr>
-                                    <td id="wob" style="font-weight: bold; width: 110px"><%out.print(dbDocS(conn, "test", "automated", "Automated"));%></td>
+                                    <td id="wob" style="font-weight: bold; width: 110px"><%out.print(docService.findLabelHTML("test", "automated", "Automated"));%></td>
                                     <td class="wob" ><select id="test_automated" style="width: 40px;" name="test_automated">
                                             <option selected="selected" value="<%=test_automated%>"><%=test_automated%></option>
                                             <option value="<%=test_automated__man%>"><%=test_automated__man%></option>
@@ -210,7 +213,7 @@
                                     <td class="wob"><input id="savetestbutton" class="button" name="save_test" value="Save Test Modification" type="submit" onclick="redirectionTestCase(0, '<%=test_test%>')"></td>
 
                                 </tr></table></td></tr></table></form>
-            <% } %>
+                                <% }%>
             <table  id="parametergeneral" class="arrond" style="text-align: left; display:table" border="0" cellpadding="2" cellspacing="2" >
                 <tr><td class="wob">
                         <table>
@@ -220,9 +223,9 @@
                                 <td class="wob" id="active" style="width: 40px;" name="active"><%=test_active%> //</td>
                                 <td id="wob" style="font-weight: bold; width: 80px">\\ Automated: </td>
                                 <td class="wob" id="automated" style="width: 40px;" name="automated"><%=test_automated%> //</td>
-                            <% if(canEdit){ %>
+                                <% if (canEdit) {%>
                                 <td class="wob"><input id="button1" type="button" value="+" onclick="javascript:setVisible();"></td>	</tr>
-                            <% } %>
+                                    <% }%>
                         </table></td></tr></table>   
 
             <form method="post" name="DeleteTestCase" action="DeleteTestCase">               
@@ -234,7 +237,7 @@
                                 <table id="testcasetable" class="tableau"  style="text-align: left; border-collapse: collapse" border="0px" cellpadding="0px" cellspacing="0px">
                                     <!--					<tr id="header" style="position:relative;top:expression(this.offsetParent.scrollTop-2);">-->
                                     <tr id="header">   
-                                        <td style="width: 10px"><%out.print(dbDocS(conn, "page_test", "delete", "Delete"));%></td>
+                                        <td style="width: 10px"><%out.print(docService.findLabelHTML("page_test", "delete", "Delete"));%></td>
                                         <td style="width: 200px" colspan="2">Testcase Information</td>
                                         <td style="width: 800px" colspan="2">Testcase Parameters</td>
                                         <td style="width: 100px">Activation Criterias</td>
@@ -457,9 +460,9 @@
                                     stmt_testcase.close();
                                 %>
                                 <br>
-                            <% if(canEdit){ %>
+                                <% if (canEdit) {%>
                                 <input class="button" name="submit_changes" id="submit_changes" value="Delete TestCase" type="submit"> 
-                            <%}%>
+                                <%}%>
                             </div></td></tr></table>
             </form>
             <%

@@ -16,7 +16,8 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
-  --%>
+--%>
+<%@page import="org.cerberus.service.IDocumentationService"%>
 <%@page import="org.apache.log4j.Level"%>
 <%@page import="org.apache.log4j.Logger"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
@@ -71,6 +72,7 @@
 
         <%
             Connection conn = db.connect();
+            IDocumentationService docService = appContext.getBean(IDocumentationService.class);
 
             try {
 
@@ -82,7 +84,7 @@
             <table>
                 <tr>
                     <td style="alignment-baseline: central; text-align: center; background-color: lightgrey">Last modifications done on environments since the last <%=NBDAYS%> days<br>
-                <ftxt><%=dbDocS(conn, "invariant", "environmentgp", "")%></ftxt> <select id="envgp" name="envgp" style="width: 80px" OnChange ="document.EnvFilters.submit()">
+                <ftxt><%=docService.findLabelHTML("invariant", "environmentgp", "")%></ftxt> <select id="envgp" name="envgp" style="width: 80px" OnChange ="document.EnvFilters.submit()">
                     <option style="width: 200px" value="ALL">-- ALL --</option>
                     <%ResultSet rsEnvgp = stmtEnvgp.executeQuery("SELECT distinct gp1 "
                                 + "FROM invariant "
@@ -92,7 +94,7 @@
                     %><option style="width: 200px" value="<%= rsEnvgp.getString(1)%>" <%=envgp.compareTo(rsEnvgp.getString(1)) == 0 ? " SELECTED " : ""%>><%= rsEnvgp.getString(1)%></option>
                     <% }
                     %></select>
-                <ftxt><%=dbDocS(conn, "invariant", "FILTERNBDAYS", "")%></ftxt> <select id="nbdays" name="nbdays" style="width: 80px" OnChange ="document.EnvFilters.submit()">
+                <ftxt><%=docService.findLabelHTML("invariant", "FILTERNBDAYS", "")%></ftxt> <select id="nbdays" name="nbdays" style="width: 80px" OnChange ="document.EnvFilters.submit()">
                     <%ResultSet rsNbDays = stmtEnvgp.executeQuery("SELECT value, description "
                                 + "FROM invariant "
                                 + "WHERE idname = 'FILTERNBDAYS' "
@@ -189,12 +191,12 @@
                                     + "order by c.Build asc, c.Revision asc";%>
                         <table  style="text-align: left; border-collapse:collapse ; border-color: gainsboro" border="1">
                             <tr id="header">
-                                <td><b><%=dbDocS(conn, "buildrevisioninvariant", "versionname01", "")%></b></td>
-                                <td><b><%=dbDocS(conn, "buildrevisioninvariant", "versionname02", "")%></b></td>
-                                <td><%=dbDocS(conn, "page_integrationstatus", "DEV", "")%></td>
-                                <td><%=dbDocS(conn, "page_integrationstatus", "QA", "")%></td>
-                                <td><%=dbDocS(conn, "page_integrationstatus", "UAT", "")%></td>
-                                <td><%=dbDocS(conn, "page_integrationstatus", "PROD", "")%></td>
+                                <td><b><%=docService.findLabelHTML("buildrevisioninvariant", "versionname01", "")%></b></td>
+                                <td><b><%=docService.findLabelHTML("buildrevisioninvariant", "versionname02", "")%></b></td>
+                                <td><%=docService.findLabelHTML("page_integrationstatus", "DEV", "")%></td>
+                                <td><%=docService.findLabelHTML("page_integrationstatus", "QA", "")%></td>
+                                <td><%=docService.findLabelHTML("page_integrationstatus", "UAT", "")%></td>
+                                <td><%=docService.findLabelHTML("page_integrationstatus", "PROD", "")%></td>
                             </tr><%
 
 

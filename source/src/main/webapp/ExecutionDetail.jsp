@@ -17,6 +17,7 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
+<%@page import="org.cerberus.service.IDocumentationService"%>
 <%@page import="org.cerberus.entity.TestCaseStepActionControl"%>
 <%@page import="org.cerberus.service.ITestCaseStepActionControlService"%>
 <%@page import="org.cerberus.entity.TestCaseStepAction"%>
@@ -89,8 +90,9 @@
         <div id="body">
             <%
                 Connection conn = db.connect();
-                try {
+                IDocumentationService docService = appContext.getBean(IDocumentationService.class);
 
+                try {
 
                     /*
                      * Filter requests
@@ -183,24 +185,24 @@
 
                 <table id="arrond" style="text-align: left" border="1" >
                     <tr id="header" style="font-style: italic">
-                        <td style="font-weight: bold; width: 140px"><%out.print(dbDocS(conn, "testcaseexecution", "id", "ID"));%></td>
-                        <td style="font-weight: bold; width: 140px"><%out.print(dbDocS(conn, "test", "test", "Test"));%></td>
-                        <td style="font-weight: bold; width: 140px"><%out.print(dbDocS(conn, "testcase", "testcase", "TestCase"));%></td>
-                        <td style="font-weight: bold; width: 140px"><%out.print(dbDocS(conn, "invariant", "country", "Country"));%></td>
-                        <td style="font-weight: bold; width: 140px"><%out.print(dbDocS(conn, "invariant", "environment", "Environment"));%></td>
-                        <td style="font-weight: bold; width: 140px"><%out.print(dbDocS(conn, "page_executiondetail", "buildrevision", ""));%></td>
-                        <td style="font-weight: bold; width: 140px"><%out.print(dbDocS(conn, "page_executiondetail", "buildrevisionlink", ""));%></td>
-                        <td style="font-weight: bold; width: 140px"><%out.print(dbDocS(conn, "application", "Application", "Application"));%></td>
-                        <td style="font-weight: bold; width: 140px"><%out.print(dbDocS(conn, "testcaseexecution", "URL", "URL"));%></td>
-                        <td style="font-weight: bold; width: 140px"><%out.print(dbDocS(conn, "testcaseexecution", "IP", "Ip"));
+                        <td style="font-weight: bold; width: 140px"><%out.print(docService.findLabelHTML("testcaseexecution", "id", "ID"));%></td>
+                        <td style="font-weight: bold; width: 140px"><%out.print(docService.findLabelHTML("test", "test", "Test"));%></td>
+                        <td style="font-weight: bold; width: 140px"><%out.print(docService.findLabelHTML("testcase", "testcase", "TestCase"));%></td>
+                        <td style="font-weight: bold; width: 140px"><%out.print(docService.findLabelHTML("invariant", "country", "Country"));%></td>
+                        <td style="font-weight: bold; width: 140px"><%out.print(docService.findLabelHTML("invariant", "environment", "Environment"));%></td>
+                        <td style="font-weight: bold; width: 140px"><%out.print(docService.findLabelHTML("page_executiondetail", "buildrevision", ""));%></td>
+                        <td style="font-weight: bold; width: 140px"><%out.print(docService.findLabelHTML("page_executiondetail", "buildrevisionlink", ""));%></td>
+                        <td style="font-weight: bold; width: 140px"><%out.print(docService.findLabelHTML("application", "Application", "Application"));%></td>
+                        <td style="font-weight: bold; width: 140px"><%out.print(docService.findLabelHTML("testcaseexecution", "URL", "URL"));%></td>
+                        <td style="font-weight: bold; width: 140px"><%out.print(docService.findLabelHTML("testcaseexecution", "IP", "Ip"));
                             out.print("<br>");
-                            out.print(dbDocS(conn, "testcaseexecution", "port", "Port"));%></td>
-                        <td style="font-weight: bold; width: 140px"><%out.print(dbDocS(conn, "testcaseexecution", "browser", "Browser"));
+                            out.print(docService.findLabelHTML("testcaseexecution", "port", "Port"));%></td>
+                        <td style="font-weight: bold; width: 140px"><%out.print(docService.findLabelHTML("testcaseexecution", "browser", "Browser"));
                             out.print("<br>[");
-                            out.print(dbDocS(conn, "testcaseexecution", "browserFullVersion", ""));%>]</td>
-                        <td style="font-weight: bold; width: 140px"><%out.print(dbDocS(conn, "testcaseexecution", "start", "Start"));%></td>
-                        <td style="font-weight: bold; width: 140px"><%out.print(dbDocS(conn, "testcaseexecution", "end", "End"));%></td>
-                        <td style="font-weight: bold; width: 140px"><%out.print(dbDocS(conn, "testcaseexecution", "controlstatus", "ControlStatus"));%></td>
+                            out.print(docService.findLabelHTML("testcaseexecution", "browserFullVersion", ""));%>]</td>
+                        <td style="font-weight: bold; width: 140px"><%out.print(docService.findLabelHTML("testcaseexecution", "start", "Start"));%></td>
+                        <td style="font-weight: bold; width: 140px"><%out.print(docService.findLabelHTML("testcaseexecution", "end", "End"));%></td>
+                        <td style="font-weight: bold; width: 140px"><%out.print(docService.findLabelHTML("testcaseexecution", "controlstatus", "ControlStatus"));%></td>
                     </tr>            
                     <tr>
 
@@ -258,11 +260,11 @@
                             }%>
                     </tr>
                     <tr id="header" style="font-style: italic">
-                        <td style="font-weight: bold; width: 140px" colspan=3><%out.print(dbDocS(conn, "testcaseexecution", "tag", "Tag"));%></td>
-                        <td style="font-weight: bold; width: 140px" colspan=8><%out.print(dbDocS(conn, "testcaseexecution", "controlmessage", "Message"));%></td>
-                        <td style="font-weight: bold; width: 140px"><%out.print(dbDocS(conn, "testcaseexecution", "verbose", "Verbose"));%></td>
-                        <td style="font-weight: bold; width: 140px"><%out.print(dbDocS(conn, "testcaseexecution", "status", "Status"));%></td>
-                        <td style="font-weight: bold; width: 140px"><%out.print(dbDocS(conn, "testcaseexecution", "crbversion", "Engine Version"));%></td>
+                        <td style="font-weight: bold; width: 140px" colspan=3><%out.print(docService.findLabelHTML("testcaseexecution", "tag", "Tag"));%></td>
+                        <td style="font-weight: bold; width: 140px" colspan=8><%out.print(docService.findLabelHTML("testcaseexecution", "controlmessage", "Message"));%></td>
+                        <td style="font-weight: bold; width: 140px"><%out.print(docService.findLabelHTML("testcaseexecution", "verbose", "Verbose"));%></td>
+                        <td style="font-weight: bold; width: 140px"><%out.print(docService.findLabelHTML("testcaseexecution", "status", "Status"));%></td>
+                        <td style="font-weight: bold; width: 140px"><%out.print(docService.findLabelHTML("testcaseexecution", "crbversion", "Engine Version"));%></td>
                     </tr>
                     <tr>
                         <td colspan=3><span id="exetag"><%= rs_inf.getString("tag") == null ? "" : rs_inf.getString("tag")%></span></td>
@@ -288,25 +290,25 @@
 
                     <table id="arrond" style="text-align: left" border="1" >
                         <tr id="header" style="font-style: italic">
-                            <td style="font-weight: bold; width: 140px" colspan="2"><%out.print(dbDocS(conn, "testcaseexecutionwwwsum", "tot_nbhits", "tot_nbhits"));%></td>
-                            <td style="font-weight: bold; width: 140px" colspan="2"><%out.print(dbDocS(conn, "testcaseexecutionwwwsum", "tot_tps", "tot_tps"));%></td>
-                            <td style="font-weight: bold; width: 140px" colspan="2"><%out.print(dbDocS(conn, "testcaseexecutionwwwsum", "tot_size", "tot_size"));%></td>
-                            <td style="font-weight: bold; width: 140px" colspan="2"><%out.print(dbDocS(conn, "testcaseexecutionwwwsum", "nb_rc2xx", "nb_rc2xx"));%></td>
-                            <td style="font-weight: bold; width: 140px" colspan="2"><%out.print(dbDocS(conn, "testcaseexecutionwwwsum", "nb_rc3xx", "nb_rc3xx"));%></td>
-                            <td style="font-weight: bold; width: 140px" colspan="2"><%out.print(dbDocS(conn, "testcaseexecutionwwwsum", "nb_rc4xx", "nb_rc4xx"));%></td>
-                            <td style="font-weight: bold; width: 140px" colspan="2"><%out.print(dbDocS(conn, "testcaseexecutionwwwsum", "nb_rc5xx", "nb_rc5xx"));%></td>
-                            <td style="font-weight: bold; width: 140px" colspan="2"><%out.print(dbDocS(conn, "testcaseexecutionwwwsum", "img_nb", "img_nb"));%></td>
-                            <td style="font-weight: bold; width: 140px" colspan="2"><%out.print(dbDocS(conn, "testcaseexecutionwwwsum", "img_tps", "img_tps"));%></td>
-                            <td style="font-weight: bold; width: 140px" colspan="2"><%out.print(dbDocS(conn, "testcaseexecutionwwwsum", "img_size_tot", "img_size_tot"));%></td>
-                            <td style="font-weight: bold; width: 140px" colspan="2"><%out.print(dbDocS(conn, "testcaseexecutionwwwsum", "img_size_max", "img_size_max"));%></td>
-                            <td style="font-weight: bold; width: 140px" colspan="2"><%out.print(dbDocS(conn, "testcaseexecutionwwwsum", "js_nb", "js_nb"));%></td>
-                            <td style="font-weight: bold; width: 140px" colspan="2"><%out.print(dbDocS(conn, "testcaseexecutionwwwsum", "js_tps", "js_tps"));%></td>
-                            <td style="font-weight: bold; width: 140px" colspan="2"><%out.print(dbDocS(conn, "testcaseexecutionwwwsum", "js_size_tot", "js_size_tot"));%></td>
-                            <td style="font-weight: bold; width: 140px" colspan="2"><%out.print(dbDocS(conn, "testcaseexecutionwwwsum", "js_size_max", "js_size_max"));%></td>
-                            <td style="font-weight: bold; width: 140px" colspan="2"><%out.print(dbDocS(conn, "testcaseexecutionwwwsum", "css_nb", "css_nb"));%></td>
-                            <td style="font-weight: bold; width: 140px" colspan="2"><%out.print(dbDocS(conn, "testcaseexecutionwwwsum", "css_tps", "css_tps"));%></td>
-                            <td style="font-weight: bold; width: 140px" colspan="2"><%out.print(dbDocS(conn, "testcaseexecutionwwwsum", "css_size_tot", "css_size_tot"));%></td>
-                            <td style="font-weight: bold; width: 140px" colspan="2"><%out.print(dbDocS(conn, "testcaseexecutionwwwsum", "css_size_max", "css_size_max"));%></td>
+                            <td style="font-weight: bold; width: 140px" colspan="2"><%out.print(docService.findLabelHTML("testcaseexecutionwwwsum", "tot_nbhits", "tot_nbhits"));%></td>
+                            <td style="font-weight: bold; width: 140px" colspan="2"><%out.print(docService.findLabelHTML("testcaseexecutionwwwsum", "tot_tps", "tot_tps"));%></td>
+                            <td style="font-weight: bold; width: 140px" colspan="2"><%out.print(docService.findLabelHTML("testcaseexecutionwwwsum", "tot_size", "tot_size"));%></td>
+                            <td style="font-weight: bold; width: 140px" colspan="2"><%out.print(docService.findLabelHTML("testcaseexecutionwwwsum", "nb_rc2xx", "nb_rc2xx"));%></td>
+                            <td style="font-weight: bold; width: 140px" colspan="2"><%out.print(docService.findLabelHTML("testcaseexecutionwwwsum", "nb_rc3xx", "nb_rc3xx"));%></td>
+                            <td style="font-weight: bold; width: 140px" colspan="2"><%out.print(docService.findLabelHTML("testcaseexecutionwwwsum", "nb_rc4xx", "nb_rc4xx"));%></td>
+                            <td style="font-weight: bold; width: 140px" colspan="2"><%out.print(docService.findLabelHTML("testcaseexecutionwwwsum", "nb_rc5xx", "nb_rc5xx"));%></td>
+                            <td style="font-weight: bold; width: 140px" colspan="2"><%out.print(docService.findLabelHTML("testcaseexecutionwwwsum", "img_nb", "img_nb"));%></td>
+                            <td style="font-weight: bold; width: 140px" colspan="2"><%out.print(docService.findLabelHTML("testcaseexecutionwwwsum", "img_tps", "img_tps"));%></td>
+                            <td style="font-weight: bold; width: 140px" colspan="2"><%out.print(docService.findLabelHTML("testcaseexecutionwwwsum", "img_size_tot", "img_size_tot"));%></td>
+                            <td style="font-weight: bold; width: 140px" colspan="2"><%out.print(docService.findLabelHTML("testcaseexecutionwwwsum", "img_size_max", "img_size_max"));%></td>
+                            <td style="font-weight: bold; width: 140px" colspan="2"><%out.print(docService.findLabelHTML("testcaseexecutionwwwsum", "js_nb", "js_nb"));%></td>
+                            <td style="font-weight: bold; width: 140px" colspan="2"><%out.print(docService.findLabelHTML("testcaseexecutionwwwsum", "js_tps", "js_tps"));%></td>
+                            <td style="font-weight: bold; width: 140px" colspan="2"><%out.print(docService.findLabelHTML("testcaseexecutionwwwsum", "js_size_tot", "js_size_tot"));%></td>
+                            <td style="font-weight: bold; width: 140px" colspan="2"><%out.print(docService.findLabelHTML("testcaseexecutionwwwsum", "js_size_max", "js_size_max"));%></td>
+                            <td style="font-weight: bold; width: 140px" colspan="2"><%out.print(docService.findLabelHTML("testcaseexecutionwwwsum", "css_nb", "css_nb"));%></td>
+                            <td style="font-weight: bold; width: 140px" colspan="2"><%out.print(docService.findLabelHTML("testcaseexecutionwwwsum", "css_tps", "css_tps"));%></td>
+                            <td style="font-weight: bold; width: 140px" colspan="2"><%out.print(docService.findLabelHTML("testcaseexecutionwwwsum", "css_size_tot", "css_size_tot"));%></td>
+                            <td style="font-weight: bold; width: 140px" colspan="2"><%out.print(docService.findLabelHTML("testcaseexecutionwwwsum", "css_size_max", "css_size_max"));%></td>
                         </tr>            
                         <tr>
 
@@ -402,7 +404,7 @@
                                 TestCaseStep myTCS;
                                 myTCS = testCaseStepService.findTestCaseStep(myStepData.getTest(), myStepData.getTestCase(), myStepData.getStep());
                                 String myTCSDesc = "";
-                                if (!(myTCS==null)) {
+                                if (!(myTCS == null)) {
                                     myTCSDesc = myTCS.getDescription();
                                 }
                                 String styleMainTestCase1 = "";
