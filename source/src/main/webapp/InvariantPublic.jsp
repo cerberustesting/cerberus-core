@@ -132,9 +132,8 @@
                 try {
 
             %>
-
-        <br>
-        <div style="width: 80%;  font: 90% sans-serif">
+            <p class="dttTitle">Public Invariants</p>
+        <div style="width: 100%;  font: 90% sans-serif">
             <table id="invariantPublicList" class="display">
                 <thead>
                     <tr>

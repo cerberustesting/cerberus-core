@@ -93,9 +93,8 @@
     <body  id="wrapper">
         <%@ include file="include/function.jsp" %>
         <%@ include file="include/header.jsp" %>
-
-        <br>
-        <div style="width: 80%;  font: 90% sans-serif">
+        <p class="dttTitle">Private Invariants</p>
+        <div style="width: 100%;  font: 90% sans-serif">
             <table id="invariantPrivateList" class="display">
                 <thead>
                     <tr>

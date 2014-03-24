@@ -90,7 +90,7 @@
                         <% if (request.getUserPrincipal() != null && (request.isUserInRole("TestRO"))) {%>
                         <li id="active"><a id="current" name="menu" href="#" style="width:170px">Execution Reporting</a>
                             <ul class="subnav" id="subnavlist">
-                                <li id="subactive"><a name="menu" id="menuExecutionPerBuildRevision" href="ExecutionPerBuildRevision" style="width:150px">Execution Per Build/Rev</a></li>
+                                <li id="subactive"><a name="menu" id="menuExecutionPerBuildRevision" href="ExecutionPerBuildRevision" style="width:160px">Execution Per Build/Rev</a></li>
                                 <li id="subactive"><a name="menu" id="menuReportingExecutionStatus" href="ReportingExecution.jsp" style="width:150px">Execution Status</a></li>
                                 <li id="subactive"><a name="menu" id="menuReportingExecutionTime" href="ReportingExecutionTime.jsp" style="width:150px">Execution Time</a></li>
                                 <li id="subactive"><a name="menu" id="menuReportingExecutionDetail" href="ExecutionDetailList.jsp" style="width:150px">Execution Detail</a></li>
