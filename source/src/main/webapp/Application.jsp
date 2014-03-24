@@ -16,11 +16,11 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
-  --%>
+--%>
 <%@page import="org.cerberus.service.IDocumentationService"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
-<% Date DatePageStart = new Date() ; %>
+<% Date DatePageStart = new Date();%>
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -45,15 +45,15 @@
     <body>
         <%@ include file="include/function.jsp" %>
         <%@ include file="include/header.jsp" %>
-            <%
-                /*
-                 * Database connexion
-                 */
-                Connection conn = db.connect();
-                try {
-                    IDocumentationService docService = appContext.getBean(IDocumentationService.class);
+        <%
+            /*
+             * Database connexion
+             */
+            Connection conn = db.connect();
+            try {
+                IDocumentationService docService = appContext.getBean(IDocumentationService.class);
 
-            %>
+        %>
         <script type="text/javascript">      
             $(document).ready(function(){
                 $('#applicationsTable').dataTable({
@@ -164,17 +164,17 @@
             <table id="applicationsTable" class="display">
                 <thead>
                     <tr>
-                        <th><%=docService.findLabel("Application","Application","")%></th>
-                        <th><%=docService.findLabel("Application","System","")%></th>
-                        <th><%=docService.findLabel("Application","subsystem","")%></th>
-                        <th><%=docService.findLabel("Application","description","")%></th>
-                        <th><%=docService.findLabel("Application","type","")%></th>
-                        <th><%=docService.findLabel("Application","mavengroupid","")%></th>
-                        <th><%=docService.findLabel("Application","deploytype","")%></th>
-                        <th><%=docService.findLabel("Application","sort","")%></th>
-                        <th><%=docService.findLabel("Application","svnurl","")%></th>
-                        <th><%=docService.findLabel("Application","bugtrackerurl","")%></th>
-                        <th><%=docService.findLabel("Application","bugtrackernewurl","")%></th>
+                        <th><%=docService.findLabel("Application", "Application", "")%></th>
+                        <th><%=docService.findLabel("Application", "System", "")%></th>
+                        <th><%=docService.findLabel("Application", "subsystem", "")%></th>
+                        <th><%=docService.findLabel("Application", "description", "")%></th>
+                        <th><%=docService.findLabel("Application", "type", "")%></th>
+                        <th><%=docService.findLabel("Application", "mavengroupid", "")%></th>
+                        <th><%=docService.findLabel("Application", "deploytype", "")%></th>
+                        <th><%=docService.findLabel("Application", "sort", "")%></th>
+                        <th><%=docService.findLabel("Application", "svnurl", "")%></th>
+                        <th><%=docService.findLabel("Application", "bugtrackerurl", "")%></th>
+                        <th><%=docService.findLabel("Application", "bugtrackernewurl", "")%></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -183,59 +183,60 @@
         </div>
         <div>
             <form id="formAddNewRow" action="#" title="Add Application" style="width:600px" method="post">
-                    <label for="Application" style="font-weight:bold"><%=docService.findLabelHTML("Application","Application","")%></label>
-                    <input id="Application" name="Application" style="width:150px;" 
-                           class="ncdetailstext" rel="0" >
+                <label for="Application" style="font-weight:bold"><%=docService.findLabelHTML("Application", "Application", "")%></label>
+                <input id="Application" name="Application" style="width:150px;" 
+                       class="ncdetailstext" rel="0" >
                 <br><br>
-                    <label for="System" style="font-weight:bold"><%=docService.findLabelHTML("Application","System","")%></label>
-                    <%=ComboInvariantAjax(conn, "System", "", "System", "1", "SYSTEM", "", "", false)%>
-                    <label for="SubSystem" style="font-weight:bold"><%=docService.findLabelHTML("Application","subsystem","")%></label>
-                    <input id="SubSystem" name="SubSystem" style="width:100px;" 
-                           class="ncdetailstext" rel="2" >
-                    <label for="Type" style="font-weight:bold"><%=docService.findLabelHTML("Application","type","")%></label>
-                    <%=ComboInvariantAjax(conn, "Type", "", "Type", "4", "APPLITYPE", "", "", false)%>
+                <label for="System" style="font-weight:bold"><%=docService.findLabelHTML("Application", "System", "")%></label>
+                <input id="System" name="System" style="width:150px;" 
+                       class="System" rel="1" value="<%=request.getAttribute("MySystem")%>" disabled="">
+                <label for="SubSystem" style="font-weight:bold"><%=docService.findLabelHTML("Application", "subsystem", "")%></label>
+                <input id="SubSystem" name="SubSystem" style="width:100px;" 
+                       class="ncdetailstext" rel="2" >
+                <label for="Type" style="font-weight:bold"><%=docService.findLabelHTML("Application", "type", "")%></label>
+                <%=ComboInvariantAjax(conn, "Type", "", "Type", "4", "APPLITYPE", "", "", false)%>
                 <br>
                 <br>
-                    <label for="Description" style="font-weight:bold"><%=docService.findLabelHTML("Application","description","")%></label>
-                    <input id="Description" name="Description" style="width:400px;" 
-                           class="ncdetailstext" rel="3" >
+                <label for="Description" style="font-weight:bold"><%=docService.findLabelHTML("Application", "description", "")%></label>
+                <input id="Description" name="Description" style="width:400px;" 
+                       class="ncdetailstext" rel="3" >
                 <br>
-                    <label for="Sort" style="font-weight:bold"><%=docService.findLabelHTML("Application","sort","")%></label>
-                    <input id="Sort" name="Sort" style="width:100px;" 
-                           class="ncdetailstext" rel="7" >
+                <label for="Sort" style="font-weight:bold"><%=docService.findLabelHTML("Application", "sort", "")%></label>
+                <input id="Sort" name="Sort" style="width:100px;" 
+                       class="ncdetailstext" rel="7" >
                 <br><br>
-                    <label for="MavenGroupID" style="font-weight:bold"><%=docService.findLabelHTML("Application","mavengroupid","")%></label>
-                    <input id="MavenGroupID" name="MavenGroupID" style="width:400px;" 
-                           class="ncdetailstext" rel="5" >
+                <label for="MavenGroupID" style="font-weight:bold"><%=docService.findLabelHTML("Application", "mavengroupid", "")%></label>
+                <input id="MavenGroupID" name="MavenGroupID" style="width:400px;" 
+                       class="ncdetailstext" rel="5" >
                 <br>
-                    <label for="DeployType" style="font-weight:bold"><%=docService.findLabelHTML("Application","deploytype","")%></label>
-                    <%=ComboDeployTypeAjax(conn, "DeployType", "", "DeployType", "6", "", "")%>
+                <label for="DeployType" style="font-weight:bold"><%=docService.findLabelHTML("Application", "deploytype", "")%></label>
+                <%=ComboDeployTypeAjax(conn, "DeployType", "", "DeployType", "6", "", "")%>
                 <br><br>
-                    <label for="SVNURL" style="font-weight:bold"><%=docService.findLabelHTML("Application","svnurl","")%></label>
-                    <input id="SVNURL" name="SVNURL" style="width:600px;" 
-                           class="ncdetailstext" rel="8" >
+                <label for="SVNURL" style="font-weight:bold"><%=docService.findLabelHTML("Application", "svnurl", "")%></label>
+                <input id="SVNURL" name="SVNURL" style="width:600px;" 
+                       class="ncdetailstext" rel="8" >
                 <br><br>
-                    <label for="BugTrackerURL" style="font-weight:bold"><%=docService.findLabelHTML("Application","bugtrackerurl","")%></label>
-                    <input id="BugTrackerURL" name="BugTrackerURL" style="width:600px;" 
-                           class="ncdetailstext" rel="9" >
+                <label for="BugTrackerURL" style="font-weight:bold"><%=docService.findLabelHTML("Application", "bugtrackerurl", "")%></label>
+                <input id="BugTrackerURL" name="BugTrackerURL" style="width:600px;" 
+                       class="ncdetailstext" rel="9" >
                 <br><br>
-                    <label for="NewBugURL" style="font-weight:bold"><%=docService.findLabelHTML("Application","bugtrackernewurl","")%></label>
-                    <input id="NewBugURL" name="NewBugURL" style="width:600px;" 
-                           class="ncdetailstext" rel="10" >
+                <label for="NewBugURL" style="font-weight:bold"><%=docService.findLabelHTML("Application", "bugtrackernewurl", "")%></label>
+                <input id="NewBugURL" name="NewBugURL" style="width:600px;" 
+                       class="ncdetailstext" rel="10" >
                 <br><br>
                 <button id="btnAddNewRowOk">Add</button>
                 <button id="btnAddNewRowCancel">Cancel</button>
             </form>
-        <%
-            } catch (Exception e) {
-                out.println(e);
-            } finally {
-                try {
-                    conn.close();
-                } catch (Exception ex) {
+            <%
+                } catch (Exception e) {
+                    out.println(e);
+                } finally {
+                    try {
+                        conn.close();
+                    } catch (Exception ex) {
+                    }
                 }
-            }
-        %>
+            %>
         </div>
         <br><%
             out.print(display_footer(DatePageStart));
