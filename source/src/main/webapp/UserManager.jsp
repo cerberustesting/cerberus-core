@@ -186,7 +186,8 @@
     <body>
         <%@ include file="include/function.jsp" %>
         <%@ include file="include/header.jsp" %>
-        <div style="width: 80%; padding: 25px; font: 90% sans-serif">
+        <p class="dttTitle">User Management</p>
+        <div style="width: 100%;font: 90% sans-serif">
             <%
                 /*
                  * Database connexion
