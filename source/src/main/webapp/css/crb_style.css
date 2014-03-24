@@ -806,9 +806,7 @@ firstPartLine{
 
 
 #logo {
-    background-image: -moz-linear-gradient(top, #ebebeb, #CCCCCC); 
-background-image: -webkit-linear-gradient(top, #ebebeb, #CCCCCC); 
-display: inline-block;
+    display: inline-block;
     height: 35px;
     margin: 0;
     padding-left: 1px;

@@ -45,8 +45,8 @@
             <div style="float:left; width:15px">
                 <p style="width:15px;">.</p>
             </div>
-            <div id="logo" style="float:left; width:55px">
-                <a href="Homepage.jsp"><img style="width:55px; height:35px" src="images/logo-2.png" valign="Top" alt="Cerberus" /></a>
+            <div id="logo" style="float:left; ">
+                <a href="Homepage.jsp"><img src="images/logo1.png" valign="Top" alt="Cerberus" /></a>
             </div>
             <div style="float:left;">
                     <ul id="navlist">
