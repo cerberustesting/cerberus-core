@@ -166,7 +166,7 @@ public class Homepage extends HttpServlet {
                 searchTerm = request.getParameter("sSearch");
             }
 
-            String inds = String.valueOf(individualSearch);
+            String inds = individualSearch.toString();
 
             JSONArray data = new JSONArray(); 
             
@@ -188,11 +188,11 @@ public class Homepage extends HttpServlet {
 
                 StringBuilder gSearch = new StringBuilder();
                 String searchSQL = "";
-                if(!searchTerm.equals("") && !individualSearch.equals("")){
-                searchSQL = gSearch.toString() + " and " + individualSearch;
+                if(!searchTerm.equals("") && !inds.equals("")){
+                searchSQL = gSearch.toString() + " and " + inds;
                 }
-                else if(!individualSearch.equals("")){
-                    searchSQL = " where " + individualSearch;
+                else if(!inds.equals("")){
+                    searchSQL = " where " + inds;
                 }else if(!searchTerm.equals("")){
                     searchSQL=gSearch.toString();
                 }
