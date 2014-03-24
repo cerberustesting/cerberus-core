@@ -1405,15 +1405,18 @@ function submitTestCaseModification( anchor ) {
         }
     }
 
+
+    var execute = true;
     if(allControlsToDelete > 0) {
-        if(confirm("Your action will delete "+actionsToDelete.length+" action(s) and "+
-                allControlsToDelete+" control(s).\nDo you want to continue ?")) {
-            form.action = form.action + anchor;
-            form.submit();
-        }
-    } else {
-        form.action = form.action + anchor;
+        execute = confirm("Your action will delete "+actionsToDelete.length+" action(s) and "+
+                allControlsToDelete+" control(s).\nDo you want to continue ?");
+    }
+
+    if(execute) {
+        form.attr("action", form.attr("action") + anchor);
+        alert(form.attr("action"));
         form.submit();
     }
+
     return false;
 }
