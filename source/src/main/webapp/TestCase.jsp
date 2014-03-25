@@ -1059,7 +1059,7 @@
                                                                 if (rs_properties.getString("a.Type").equals("executeSqlFromLib")) {
 
                                                                     String sqlLib = (" SELECT Script from sqllibrary where name = '"
-                                                                            + rs_properties.getString("a.Value1") + "'");
+                                                                            + rs_properties.getString("a.Value1").replaceAll("'", "''") + "'");
 
                                                                     ResultSet rs_sqllib = stmt80.executeQuery(sqlLib);
                                                                     if (rs_sqllib.first()) {
