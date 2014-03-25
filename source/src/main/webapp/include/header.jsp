@@ -111,12 +111,12 @@
             <% if (request.getUserPrincipal() != null && request.isUserInRole("Administrator")) {%>
             <li id="active"><a id="current" name="menuAdmin" href="#" style="width:100px">Admin</a>
                 <ul class="subnav" id="subnavlist">
-                    <li id="subactive"><a name="menu" id="menuUsersManager" href="UserManager.jsp" style="width:160px">Users Manager</a></li>
-                    <li id="subactive"><a name="menu" id="menuLogViewer" href="LogViewer.jsp" style="width:160px">Log Viewer</a></li>
-                    <li id="subactive"><a name="menu" id="menuDatabaseMaintenance" href="DatabaseMaintenance.jsp" style="width:160px">Database Maintenance</a></li>
-                    <li id="subactive"><a name="menu" id="menuParameter" href="Parameter.jsp" style="width:160px">Parameters</a></li>
-                    <li id="subactive"><a name="menu" id="menuInvariantPublic" href="InvariantPublic.jsp" style="width:160px">Edit Public Invariants</a></li>
-                    <li id="subactive"><a name="menu" id="menuInvariantPrivate" href="InvariantPrivate.jsp" style="width:160px">See Private Invariants</a></li>
+                    <li id="subactive"><a name="menu" id="menuUsersManager" href="UserManager.jsp" style="width:180px">Users Manager</a></li>
+                    <li id="subactive"><a name="menu" id="menuLogViewer" href="LogViewer.jsp" style="width:180px">Log Viewer</a></li>
+                    <li id="subactive"><a name="menu" id="menuDatabaseMaintenance" href="DatabaseMaintenance.jsp" style="width:180px">Database Maintenance</a></li>
+                    <li id="subactive"><a name="menu" id="menuParameter" href="Parameter.jsp" style="width:180px">Parameters</a></li>
+                    <li id="subactive"><a name="menu" id="menuInvariantPublic" href="InvariantPublic.jsp" style="width:180px">Edit Public Invariants</a></li>
+                    <li id="subactive"><a name="menu" id="menuInvariantPrivate" href="InvariantPrivate.jsp" style="width:180px">See Private Invariants</a></li>
                 </ul>
             </li>
             <% }%>
