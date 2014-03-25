@@ -730,7 +730,8 @@ table.doctb {
 --------------------------------------*/
 
 #navcontainer {
-    background: url("../images/background.png") repeat-x scroll 0 0 rgba(0, 0, 0, 0);
+    background: url("../images/background.png") repeat-x scroll 0 0;
+    /*background: url("../images/background.png") repeat-x scroll 0 0 rgba(0, 0, 0, 0);*/
     height: 35px;
     position: relative;
     z-index: 99;
