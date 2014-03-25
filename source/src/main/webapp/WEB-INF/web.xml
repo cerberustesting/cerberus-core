@@ -185,6 +185,10 @@
         <servlet-class>org.cerberus.servlet.testCase.GetInvariantsForTest</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>GetCountryForTestCase</servlet-name>
+        <servlet-class>org.cerberus.servlet.testCase.GetCountryForTestCase</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>GetShortTests</servlet-name>
         <servlet-class>org.cerberus.servlet.test.GetShortTests</servlet-class>
     </servlet>
@@ -199,6 +203,10 @@
     <servlet>
         <servlet-name>UpdateBuildRevisionParameter</servlet-name>
         <servlet-class>org.cerberus.servlet.environment.UpdateBuildRevisionParameter</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>GetEnvironmentAvailable</servlet-name>
+        <servlet-class>org.cerberus.servlet.environment.GetEnvironmentAvailable</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>UpdateApplication</servlet-name>
@@ -533,12 +541,20 @@
         <url-pattern>/GetInvariantsForTest</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
+        <servlet-name>GetCountryForTestCase</servlet-name>
+        <url-pattern>/GetCountryForTestCase</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
         <servlet-name>GetLogEvent</servlet-name>
         <url-pattern>/GetLogEvent</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>UpdateBuildRevisionParameter</servlet-name>
         <url-pattern>/UpdateBuildRevisionParameter</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>GetEnvironmentAvailable</servlet-name>
+        <url-pattern>/GetEnvironmentAvailable</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>UpdateApplication</servlet-name>
@@ -868,6 +884,8 @@
             <url-pattern>/GetApplication</url-pattern>
             <url-pattern>/GetShortTests</url-pattern>
             <url-pattern>/GetInvariantsForTest</url-pattern>
+            <url-pattern>/GetCountryForTestCase</url-pattern>
+            <url-pattern>/GetEnvironmentAvailable</url-pattern>
             <url-pattern>/GetDeployTypeList</url-pattern>
             <url-pattern>/GetBuildRevisionInvariant</url-pattern>
             <url-pattern>/GetProject</url-pattern>
@@ -885,6 +903,7 @@
             <url-pattern>/UpdateApplication</url-pattern>
             <url-pattern>/CreateApplication</url-pattern>
             <url-pattern>/UpdateBuildRevisionParameter</url-pattern>
+            <url-pattern>/GetEnvironmentAvailable</url-pattern>            
             <url-pattern>/UpdateCountryEnv</url-pattern>
             <url-pattern>/DeleteBuildRevisionInvariant</url-pattern>
             <url-pattern>/CreateProject</url-pattern>
