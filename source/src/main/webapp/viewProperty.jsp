@@ -17,6 +17,7 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
+<%@page import="org.cerberus.service.IDocumentationService"%>
 <%@page import="org.cerberus.service.ITestCaseCountryService"%>
 <%@page import="org.springframework.web.context.support.WebApplicationContextUtils"%>
 <%@page import="org.springframework.context.ApplicationContext"%>
@@ -25,14 +26,14 @@
 <%@page import="java.sql.Statement"%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
-<%@ include file="include/function.jsp"%>
+<%@include file="include/function.jsp"%>
 <%
     String test = request.getParameter("test");
     String testcase = request.getParameter("testcase");
     String property = request.getParameter("property");
     String database = request.getParameter("db");
 
-    Connection conn = db.connect();
+    IDocumentationService docService = appContext.getBean(IDocumentationService.class);
 
     if(test != null && !"".equals(test.trim()) 
         && testcase != null && !"".equals(testcase.trim())) {
@@ -41,12 +42,12 @@
     <input type="hidden" id="test" name="test" value="<%=test%>">
     <input type="hidden" id="testCase" name="testCase" value="<%=testcase%>">
     <input type="hidden" id="db" name="db" value="<%=database%>">
-    <label for="country"><% out.print(dbDocS(conn, "invariant", "Country", "Country"));%></label>
+    <label for="country"><% out.print(docService.findLabelHTML("invariant", "Country", "Country"));%></label>
     <select id="country" name="country" onchange="getEnvironmentSelectBox()">
         <option></option>
     </select>
     &nbsp;&nbsp;
-    <label for="environment"><% out.print(dbDocS(conn, "invariant", "Environment", "Environment"));%></label>
+    <label for="environment"><% out.print(docService.findLabelHTML( "invariant", "Environment", "Environment"));%></label>
     <select id="environment" name="environment" onchange="getEnvironmentSelectBox()">
         <option></option>
     </select>
