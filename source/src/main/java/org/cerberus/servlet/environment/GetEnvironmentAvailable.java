@@ -46,7 +46,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  * @version 1.0, 21/02/2013
  * @since 2.0.0
  */
-@WebServlet(value = "/GetEnvironmentAvailable")
+@WebServlet(name= "GetEnvironmentAvailable", value = "/GetEnvironmentAvailable")
 public class GetEnvironmentAvailable extends HttpServlet {
 
     @Override

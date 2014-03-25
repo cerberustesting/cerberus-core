@@ -45,7 +45,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  * @version 1.0, 21/02/2013
  * @since 0.9.0
  */
-@WebServlet(value = "/GetCountryForTestCase")
+@WebServlet(name= "GetCountryForTestCase" , value = "/GetCountryForTestCase")
 public class GetCountryForTestCase extends HttpServlet {
 
     @Override
