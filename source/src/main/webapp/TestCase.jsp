@@ -46,12 +46,16 @@
         <script type="text/javascript" src="js/jquery-ui-1.10.2.custom.min.js"></script>
         <script type="text/javascript" src="js/elrte.min.js"></script>
         <script type="text/javascript" src="js/i18n/elrte.en.js"></script>
+        <!-- elFinder -->
+        <script type="text/javascript" src="js/elfinder.min.js"></script>
         <style media="screen" type="text/css">
             @import "css/smoothness/jquery-ui-1.10.2.custom.min.css";
             @import "css/elrte.min.css";
         </style>
         <link rel="stylesheet" type="text/css" href="css/crb_style.css">
         <link rel="stylesheet" type="text/css" href="css/elrte.min.css">
+        <link rel="stylesheet" type="text/css" href="css/elfinder.min.css">
+        <link rel="stylesheet" type="text/css" href="css/theme.css">
         <link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico" />
 
         <script type="text/javascript">
@@ -90,7 +94,7 @@
             }
 
             $().ready(function() {
-                elRTE.prototype.options.toolbars.cerberus = ['style', 'alignment', 'colors', 'format', 'indent', 'lists', 'links'];
+                elRTE.prototype.options.toolbars.cerberus = ['style', 'alignment', 'colors', 'images', 'format', 'indent', 'lists', 'links'];
                 var opts = {
                     lang         : 'en',
                     styleWithCSS : false,
@@ -98,7 +102,18 @@
                     height       : 200,
                     toolbar      : 'cerberus',
                     allowSource  : false,
-                    cssfiles     : ['css/crb_style.css']
+                    cssfiles     : ['css/crb_style.css'],
+                    fmOpen : function(callback) {
+                        $('<div />').dialogelfinder({
+                            url: '',
+                            commandsOptions: {
+                                getfile: {
+                                    oncomplete: 'destroy' // destroy elFinder after file selection
+                                }
+                            },
+                            getFileCallback: callback // pass callback to file manager
+                        });
+                    }
                 };
                 var bool = $('#generalparameter').is(':visible');
 
