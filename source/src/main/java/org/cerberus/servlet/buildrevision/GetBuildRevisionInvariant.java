@@ -71,11 +71,12 @@ public class GetBuildRevisionInvariant extends HttpServlet {
             JSONObject jsonResponse = new JSONObject();
             try {
                 for (BuildRevisionInvariant myBuildRevisionInvariant : buildRevisionInvariantService.findAllBuildRevisionInvariantBySystem(MySystem)) {
-                    JSONObject row = new JSONObject();
-                    row.put("system", myBuildRevisionInvariant.getSystem());
-                    row.put("level", myBuildRevisionInvariant.getLevel());
-                    row.put("seq", myBuildRevisionInvariant.getSeq());
-                    row.put("versionName", myBuildRevisionInvariant.getVersionName());
+                    JSONArray row = new JSONArray();
+                    row.put(myBuildRevisionInvariant.getSystem() + "$#" + myBuildRevisionInvariant.getLevel() + "$#" + myBuildRevisionInvariant.getSeq())
+                            .put(myBuildRevisionInvariant.getSystem())
+                            .put(myBuildRevisionInvariant.getLevel())
+                            .put(myBuildRevisionInvariant.getSeq())
+                            .put(myBuildRevisionInvariant.getVersionName());
                     arrayData.put(row);
                 }
             } catch (CerberusException ex) {

@@ -79,13 +79,13 @@
                         label: "Remove",
                         icons: {primary: 'ui-icon-trash'}
                     },
-                    sUpdateURL: "UpdateProject",
                     oAddNewRowFormOptions: {
                         title: 'Add Invariant Entry',
                         show: "blind",
                         hide: "explode",
                         width: "600px"
                     },
+                    sUpdateURL: "UpdateProject",
                     "aoColumns": [
                         null,
                         {

@@ -60,9 +60,11 @@ public class DeleteBuildRevisionInvariant extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
 
-        String system = policy.sanitize(request.getParameter("system"));
-        Integer level = Integer.valueOf(policy.sanitize(request.getParameter("level")));
-        Integer seq = Integer.valueOf(policy.sanitize(request.getParameter("seq")));
+        String key = request.getParameter("id");
+        String[] invKey = key.split("\\$#");
+        String system = invKey[0];
+        Integer level = Integer.valueOf(invKey[1]);
+        Integer seq = Integer.valueOf(invKey[2]);
 
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         IBuildRevisionInvariantService briService = appContext.getBean(BuildRevisionInvariantService.class);

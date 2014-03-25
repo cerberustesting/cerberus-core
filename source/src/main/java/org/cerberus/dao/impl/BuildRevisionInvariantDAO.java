@@ -63,10 +63,11 @@ public class BuildRevisionInvariantDAO implements IBuildRevisionInvariantDAO {
 
                 ResultSet resultSet = preStat.executeQuery();
                 try {
-                    if (!(resultSet.first())) {
+                    if (resultSet.first()) {
+                        result = this.loadBuildRevisionInvariantFromResultSet(resultSet);
+                    } else {
                         throwEx = true;
                     }
-                    result = this.loadBuildRevisionInvariantFromResultSet(resultSet);
 
                 } catch (SQLException exception) {
                     MyLogger.log(BuildRevisionInvariantDAO.class.getName(), Level.ERROR, exception.toString());
@@ -282,8 +283,8 @@ public class BuildRevisionInvariantDAO implements IBuildRevisionInvariantDAO {
             PreparedStatement preStat = connection.prepareStatement(query);
             try {
                 preStat.setString(1, buildRevisionInvariant.getSystem());
-                preStat.setInt(1, buildRevisionInvariant.getLevel());
-                preStat.setInt(1, buildRevisionInvariant.getSeq());
+                preStat.setInt(2, buildRevisionInvariant.getLevel());
+                preStat.setInt(3, buildRevisionInvariant.getSeq());
 
                 bool = preStat.executeUpdate() > 0;
             } catch (SQLException exception) {
@@ -308,7 +309,7 @@ public class BuildRevisionInvariantDAO implements IBuildRevisionInvariantDAO {
     @Override
     public boolean updateBuildRevisionInvariant(BuildRevisionInvariant buildRevisionInvariant) {
         boolean bool = false;
-        final String query = "UPDATE buildrevisioninvariant SET versionname = ?  WHERE system = ? and level = ? and seq = ?, ";
+        final String query = "UPDATE buildrevisioninvariant SET versionname = ?  WHERE system = ? and level = ? and seq = ? ";
 
         Connection connection = this.databaseSpring.connect();
         try {

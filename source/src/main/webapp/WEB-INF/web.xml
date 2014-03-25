@@ -349,6 +349,10 @@
         <servlet-name>DeleteApplication</servlet-name>
         <servlet-class>org.cerberus.servlet.application.DeleteApplication</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>UpdateBuildRevisionInvariant</servlet-name>
+        <servlet-class>org.cerberus.servlet.buildrevision.UpdateBuildRevisionInvariant</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>RunTestCase</servlet-name>
         <url-pattern>/RunTestCase</url-pattern>
@@ -681,6 +685,10 @@
         <servlet-name>DeleteApplication</servlet-name>
         <url-pattern>/DeleteApplication</url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>UpdateBuildRevisionInvariant</servlet-name>
+        <url-pattern>/UpdateBuildRevisionInvariant</url-pattern>
+    </servlet-mapping>
     <session-config>
         <session-timeout>
             60
@@ -870,6 +878,8 @@
             <url-pattern>/CreateProject</url-pattern>
             <url-pattern>/DeleteProject</url-pattern>
             <url-pattern>/UpdateProject</url-pattern>
+            <url-pattern>/UpdateBuildRevisionInvariant</url-pattern>
+            <url-pattern>/DeleteBuildRevisionInvariant</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <description>Integrator</description>

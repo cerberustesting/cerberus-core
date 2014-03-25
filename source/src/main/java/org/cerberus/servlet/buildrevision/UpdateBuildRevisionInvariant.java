@@ -17,10 +17,9 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.servlet.invariant;
+package org.cerberus.servlet.buildrevision;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.ServletException;
@@ -28,12 +27,13 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.cerberus.entity.Invariant;
+import org.cerberus.entity.BuildRevisionInvariant;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.factory.IFactoryInvariant;
+import org.cerberus.factory.IFactoryBuildRevisionInvariant;
 import org.cerberus.factory.IFactoryLogEvent;
 import org.cerberus.factory.impl.FactoryLogEvent;
-import org.cerberus.service.IInvariantService;
+import org.cerberus.log.MyLogger;
+import org.cerberus.service.IBuildRevisionInvariantService;
 import org.cerberus.service.ILogEventService;
 import org.cerberus.service.impl.LogEventService;
 import org.springframework.context.ApplicationContext;
@@ -43,8 +43,8 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  *
  * @author bcivel
  */
-@WebServlet(name = "UpdateInvariant", urlPatterns = {"/UpdateInvariant"})
-public class UpdateInvariant extends HttpServlet {
+@WebServlet(name = "UpdateBuildRevisionInvariant", urlPatterns = {"/UpdateBuildRevisionInvariant"})
+public class UpdateBuildRevisionInvariant extends HttpServlet {
 
     /**
      * Processes requests for both HTTP
@@ -64,14 +64,15 @@ public class UpdateInvariant extends HttpServlet {
 
 
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-        IInvariantService invariantService = appContext.getBean(IInvariantService.class);
-        IFactoryInvariant factoryInvariant = appContext.getBean(IFactoryInvariant.class);
+        IBuildRevisionInvariantService brinvariantService = appContext.getBean(IBuildRevisionInvariantService.class);
+        IFactoryBuildRevisionInvariant factoryBRInvariant = appContext.getBean(IFactoryBuildRevisionInvariant.class);
 
         String[] invKey = key.split("\\$#");
-        String idName = invKey[0];
-        String invVal = invKey[1];
+        String system = invKey[0];
+        Integer level = Integer.valueOf(invKey[1]);
+        Integer seq = Integer.valueOf(invKey[2]);
 
-        Invariant invariantData = invariantService.findInvariantByIdValue(idName, invVal);
+        BuildRevisionInvariant briData = brinvariantService.findBuildRevisionInvariantByKey(system, level, seq);
 
         switch (columnPosition) {
             case 0:
@@ -79,26 +80,13 @@ public class UpdateInvariant extends HttpServlet {
             case 1:
                 break;
             case 2:
-                invariantData.setSort(Integer.valueOf(value));
                 break;
             case 3:
-                invariantData.setDescription(value);
-                break;
-            case 4:
-                invariantData.setVeryShortDesc(value);
-                break;
-            case 5:
-                invariantData.setGp1(value);
-                break;
-            case 6:
-                invariantData.setGp2(value);
-                break;
-            case 7:
-                invariantData.setGp3(value);
+                briData.setVersionName(value);
                 break;
         }
 
-        invariantService.updateInvariant(invariantData);
+        brinvariantService.updateBuildRevisionInvariant(briData);
 
         /**
          * Adding Log entry.
@@ -106,9 +94,9 @@ public class UpdateInvariant extends HttpServlet {
         ILogEventService logEventService = appContext.getBean(LogEventService.class);
         IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
         try {
-            logEventService.insertLogEvent(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/UpdateInvariant", "UPDATE", "Updated invariant : ['" + idName + "'|'" + invVal + "']", "", ""));
+            logEventService.insertLogEvent(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/UpdateBuildRevisionInvariant", "UPDATE", "Updated build revision invariant : ['" + system + "'|'" + level + "'|'" + seq + "']", "", ""));
         } catch (CerberusException ex) {
-            Logger.getLogger(UpdateInvariant.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(UpdateBuildRevisionInvariant.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         response.getWriter().print(value);
@@ -130,7 +118,7 @@ public class UpdateInvariant extends HttpServlet {
         try {
             processRequest(request, response);
         } catch (CerberusException ex) {
-            Logger.getLogger(UpdateInvariant.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(UpdateBuildRevisionInvariant.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -149,7 +137,7 @@ public class UpdateInvariant extends HttpServlet {
         try {
             processRequest(request, response);
         } catch (CerberusException ex) {
-            Logger.getLogger(UpdateInvariant.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(UpdateBuildRevisionInvariant.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 

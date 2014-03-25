@@ -87,15 +87,15 @@
                         label: "Remove",
                         icons: {primary: 'ui-icon-trash'}
                     },
-                    sUpdateURL: "UpdateInvariant",
-                    fnOnEdited: function(status) {
-                        $(".dataTables_processing").css('visibility', 'hidden');
-                    },
                     oAddNewRowFormOptions: {
                         title: 'Add Invariant Entry',
                         show: "blind",
                         hide: "explode",
                         width: "600px"
+                    },
+                    sUpdateURL: "UpdateInvariant",
+                    fnOnEdited: function(status) {
+                        $(".dataTables_processing").css('visibility', 'hidden');
                     },
                     "aoColumns": [
                         null,
