@@ -890,6 +890,9 @@ a {
 }
 #navlist li:hover > .subnav{
     display: block;
+    *display: inline;
+    *list-style: none;
+    *margin-left: -10%;
 }
 #navlist .subnav li {
     display: block;
