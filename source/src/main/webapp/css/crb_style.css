@@ -33,6 +33,10 @@ textarea{
     font-family: helvetica;
 }
 
+a img {
+    border: 0;
+}
+
 div#header {
     font-style: italic;
     font-weight: bold;
