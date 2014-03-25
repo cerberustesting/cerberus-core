@@ -1417,7 +1417,7 @@ function loadPropertyPopin(propertyID,test,testcase) {
 }
 
 function openSqlLibraryPopin(value) {
-    loadPropertyPopin(value);
+    loadSqlLibraryPopin(value);
     $('#popin').dialog({hide: { duration: 300 }, height: 600, width: 800, buttons: [ { text: "Ok", click: function() { $( this ).dialog( "close" ); } } ] });
 }
 
