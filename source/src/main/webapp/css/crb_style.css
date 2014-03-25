@@ -738,8 +738,11 @@ table.doctb {
 }
 
 #navlist li {
-    background: url("../images/background.png") repeat-x scroll 0 -45px rgba(0, 0, 0, 0);
+    background: url("../images/background.png") repeat-x scroll 0 -45px;
+    /*background: url("../images/background.png") repeat-x scroll 0 -45px rgba(0, 0, 0, 0);*/
     display: inline-block;
+    *zoom: 1;
+    *display: inline;
     height: 35px;
     margin: 0;
     padding-left: 1px;
