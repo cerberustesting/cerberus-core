@@ -80,6 +80,13 @@
         <servlet-class>org.cerberus.servlet.testCase.UpdateTestCase</servlet-class>
     </servlet>
     <servlet>
+        <description>
+        </description>
+        <display-name>CalculatePropertyForTestCase</display-name>
+        <servlet-name>CalculatePropertyForTestCase</servlet-name>
+        <servlet-class>org.cerberus.servlet.testCase.CalculatePropertyForTestCase</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>TestcaseList</servlet-name>
         <servlet-class>org.cerberus.refactor.TestcaseList</servlet-class>
     </servlet>
@@ -486,6 +493,10 @@
         <url-pattern>/UpdateTestCase</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
+        <servlet-name>CalculatePropertyForTestCase</servlet-name>
+        <url-pattern>/CalculatePropertyForTestCase</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
         <servlet-name>UpdateTestCaseDetail</servlet-name>
         <url-pattern>/UpdateTestCaseDetail</url-pattern>
     </servlet-mapping>
@@ -787,6 +798,7 @@
             <url-pattern>/UpdateTest</url-pattern>
             <url-pattern>/DuplicateTestCase</url-pattern>
             <url-pattern>/UpdateTestCase</url-pattern>
+            <url-pattern>/CalculatePropertyForTestCase</url-pattern>
             <url-pattern>/UpdateProperties</url-pattern>
             <url-pattern>/CreateTestCase</url-pattern>
             <url-pattern>/CreateTest</url-pattern>

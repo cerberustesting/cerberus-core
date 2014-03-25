@@ -66,7 +66,7 @@ public class TestCaseDAO implements ITestCaseDAO {
      *
      * @param test Name of test group.
      * @return List with a list of 3 strings (name of test case, type of
-     *         application, description of test case).
+     * application, description of test case).
      */
     @Override
     public List<TCase> findTestCaseByTest(String test) {
@@ -114,7 +114,7 @@ public class TestCaseDAO implements ITestCaseDAO {
     /**
      * Get test case information.
      *
-     * @param test     Name of test group.
+     * @param test Name of test group.
      * @param testCase Name of test case.
      * @return TestCase object or null.
      * @see org.cerberus.entity.TestCase
@@ -305,7 +305,81 @@ public class TestCaseDAO implements ITestCaseDAO {
 
     @Override
     public boolean createTestCase(TestCase testCase) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        boolean res = false;
+
+        final StringBuffer sql = new StringBuffer("INSERT INTO `cerberus`.`testcase` ")
+                .append(" ( `Test`, `TestCase`, `Application`, `Project`, `Ticket`, ")
+                .append("`Description`, `BehaviorOrValueExpected`, ")
+                .append("`ChainNumberNeeded`, `Priority`, `Status`, `TcActive`, ")
+                .append("`Group`, `Origine`, `RefOrigine`, `HowTo`, `Comment`, ")
+                .append("`FromBuild`, `FromRev`, `ToBuild`, `ToRev`, ")
+                .append("`BugID`, `TargetBuild`, `TargetRev`, `Creator`, ")
+                .append("`Implementer`, `LastModifier`, `Sla`) ")
+                .append("VALUES ( ?, ?, ?, ?, ?, ")
+                .append("?, ?, ")
+                .append("?, ?, ?, ?, ")
+                .append("?, ?, ?, ?, ?, ")
+                .append("?, ?, ?, ?, ")
+                .append("?, ?, ?, ?, ")
+                .append("?, ?, ? ")
+                .append("); ");
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(sql.toString());
+            try {
+                preStat.setString(1, testCase.getTest());
+                preStat.setString(2, testCase.getTestCase());
+                preStat.setString(3, testCase.getApplication());
+                preStat.setString(4, testCase.getProject());
+                preStat.setString(5, testCase.getTicket());
+                preStat.setString(6, testCase.getShortDescription());
+                preStat.setString(7, testCase.getDescription());
+                preStat.setString(9, "");
+                preStat.setString(9, Integer.toString(testCase.getPriority()));
+                preStat.setString(10, testCase.getStatus());
+                preStat.setString(11, testCase.isActive() ? "Y" : "N");
+                preStat.setString(12, testCase.getGroup());
+                preStat.setString(13, "");
+                preStat.setString(14, "");
+                preStat.setString(15, testCase.getHowTo());
+                preStat.setString(16, testCase.getComment());
+                preStat.setString(17, testCase.getFromSprint());
+                preStat.setString(18, testCase.getFromRevision());
+                preStat.setString(17, testCase.getToSprint());
+                preStat.setString(19, testCase.getToRevision());
+                preStat.setString(20, testCase.getBugID());
+                preStat.setString(21, testCase.getTargetSprint());
+                preStat.setString(22, testCase.getTargetRevision());
+                preStat.setString(23, "");
+                preStat.setString(24, testCase.getImplementer());
+                preStat.setString(25, testCase.getLastModifier());
+                preStat.setString(26, "");
+                /*        preStat.setString(4, testCase.isRunQA() ? "Y" : "N");
+                 preStat.setString(5, testCase.isRunUAT() ? "Y" : "N");
+                 preStat.setString(6, testCase.isRunPROD() ? "Y" : "N");
+                 */
+                res = preStat.executeUpdate() > 0;
+            } catch (SQLException exception) {
+                MyLogger.log(TestCaseDAO.class.getName(), Level.ERROR, exception.toString());
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(TestCaseDAO.class.getName(), Level.ERROR, exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(TestCaseDAO.class.getName(), Level.WARN, e.toString());
+            }
+        }
+
+        return res;
+
+        //throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
@@ -360,13 +434,13 @@ public class TestCaseDAO implements ITestCaseDAO {
      */
     public List<TCase> findTestCaseByCriteria(TCase testCase, String text, String system) {
         List<TCase> list = null;
-        final String query = "SELECT * FROM testcase t2 LEFT OUTER JOIN application a ON a.application=t2.application " +
-                "WHERE t2.test LIKE ? AND t2.project LIKE ? AND t2.ticket LIKE ? AND t2.bugid LIKE ? AND t2.origine LIKE ? " +
-                "AND t2.creator LIKE ? AND a.system LIKE ? AND t2.application LIKE ? AND t2.priority LIKE ? AND t2.status LIKE ? " +
-                "AND t2.group LIKE ? AND t2.activePROD LIKE ? AND t2.activeUAT LIKE ? AND t2.activeQA LIKE ? AND " +
-                "( t2.description LIKE ? OR t2.howto LIKE ? OR t2.behaviororvalueexpected LIKE ? OR t2.comment LIKE ?) " +
-                "AND t2.TcActive LIKE ? AND t2.frombuild LIKE ? AND t2.fromrev LIKE ? AND t2.tobuild LIKE ? " +
-                "AND t2.torev LIKE ? AND t2.targetbuild LIKE ? AND t2.targetrev LIKE ? AND t2.testcase LIKE ?";
+        final String query = "SELECT * FROM testcase t2 LEFT OUTER JOIN application a ON a.application=t2.application "
+                + "WHERE t2.test LIKE ? AND t2.project LIKE ? AND t2.ticket LIKE ? AND t2.bugid LIKE ? AND t2.origine LIKE ? "
+                + "AND t2.creator LIKE ? AND a.system LIKE ? AND t2.application LIKE ? AND t2.priority LIKE ? AND t2.status LIKE ? "
+                + "AND t2.group LIKE ? AND t2.activePROD LIKE ? AND t2.activeUAT LIKE ? AND t2.activeQA LIKE ? AND "
+                + "( t2.description LIKE ? OR t2.howto LIKE ? OR t2.behaviororvalueexpected LIKE ? OR t2.comment LIKE ?) "
+                + "AND t2.TcActive LIKE ? AND t2.frombuild LIKE ? AND t2.fromrev LIKE ? AND t2.tobuild LIKE ? "
+                + "AND t2.torev LIKE ? AND t2.targetbuild LIKE ? AND t2.targetrev LIKE ? AND t2.testcase LIKE ?";
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -482,7 +556,7 @@ public class TestCaseDAO implements ITestCaseDAO {
     @Override
     public List<String> findUniqueDataOfColumn(String column) {
         List<String> list = null;
-        final String query = "SELECT DISTINCT tc."+column+" FROM testcase tc ORDER BY tc."+column+" ASC";
+        final String query = "SELECT DISTINCT tc." + column + " FROM testcase tc ORDER BY tc." + column + " ASC";
 
         Connection connection = this.databaseSpring.connect();
         try {

@@ -69,8 +69,6 @@ public class FindAllInvariantPublic extends HttpServlet {
             String dir = "asc";
             String[] cols = {"key", "idname", "value", "sort", "description", "VeryShortDesc", "gp1", "gp2", "gp3"};
 
-            JSONObject result = new JSONObject();
-            JSONArray array = new JSONArray();
             int amount = 10;
             int start = 0;
             int col = 0;

@@ -40,6 +40,7 @@ import org.cerberus.refactor.ITestCaseBusiness;
 import org.cerberus.refactor.StatusMessage;
 import org.cerberus.refactor.TestCaseBusiness;
 import org.cerberus.service.ILogEventService;
+import org.cerberus.service.ITestCaseStepActionService;
 import org.cerberus.service.impl.LogEventService;
 import org.cerberus.service.impl.UserService;
 import org.springframework.context.ApplicationContext;
@@ -90,6 +91,24 @@ public class UpdateTestCase extends HttpServlet {
         }
     }
 
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+        
+        ITestCaseStepActionService testCaseStepActionService = appContext.getBean(ITestCaseStepActionService.class);
+        
+        testCaseStepActionService.changeTestCaseStepActionSequence(request.getParameter("test"), request.getParameter("testcase"), 
+                Integer.valueOf(request.getParameter("step")), Integer.valueOf(request.getParameter("fromPosition")), 
+                Integer.valueOf(request.getParameter("toPosition")));
+/*
+id	2
+step8	
+test	Customer Identification
+testcase	5023A
+toPosition	161
+        */
+    }
+    
     /**
      * Create new TestCase object from the information of request form
      *

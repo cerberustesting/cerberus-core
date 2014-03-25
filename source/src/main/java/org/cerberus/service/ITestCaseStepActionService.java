@@ -37,4 +37,6 @@ public interface ITestCaseStepActionService {
     void insertTestCaseStepAction(TestCaseStepAction testCaseStepAction) throws CerberusException ;
     
     boolean insertListTestCaseStepAction(List<TestCaseStepAction> testCaseStepActionList);
+    
+    boolean changeTestCaseStepActionSequence(String test, String testCase, int step, int oldSequence, int newSequence);
 }

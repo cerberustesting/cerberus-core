@@ -514,4 +514,85 @@ public class ControlServiceTest {
         Assert.assertEquals("CA", tcsace.getReturnCode());
         Assert.assertEquals("Y", tcsace.getFatal());
     }
+
+    @Test
+    public void testDoControlElementInElementWhenValueIsNull() {
+        String property = "id=test";
+        String value = "null";
+        String msg = "Element '"+value+"' is not child of element '"+property+"'.";
+
+        TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
+        tcsace.setControlType("verifyElementInElement");
+        tcsace.setControlProperty(property);
+        tcsace.setControlValue(value);
+        tcsace.setFatal("Y");
+
+        this.controlService.doControl(tcsace);
+
+        Assert.assertEquals(msg, tcsace.getControlResultMessage().getDescription());
+        Assert.assertEquals("KO", tcsace.getReturnCode());
+        Assert.assertEquals("Y", tcsace.getFatal());
+    }
+    
+
+    @Test
+    public void testDoControlElementInElementWhenPropertyIsNull() {
+        String property = "null";
+        String value = "id=test";
+        String msg = "Element '"+value+"' is not child of element '"+property+"'.";
+
+        TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
+        tcsace.setControlType("verifyElementInElement");
+        tcsace.setControlProperty(property);
+        tcsace.setControlValue(value);
+        tcsace.setFatal("Y");
+
+        this.controlService.doControl(tcsace);
+
+        Assert.assertEquals(msg, tcsace.getControlResultMessage().getDescription());
+        Assert.assertEquals("KO", tcsace.getReturnCode());
+        Assert.assertEquals("Y", tcsace.getFatal());
+    }
+
+    @Test
+    public void testDoControlElementInElementWhenValueIsNotChildOfProperty() {
+        String property = "id=parent";
+        String value = "id=child";
+        String msg = "Element '"+value+"' is not child of element '"+property+"'.";
+
+        when(seleniumService.isElementInElement(property, value)).thenReturn(Boolean.FALSE);
+
+        TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
+        tcsace.setControlType("verifyElementInElement");
+        tcsace.setControlProperty(property);
+        tcsace.setControlValue(value);
+        tcsace.setFatal("Y");
+
+        this.controlService.doControl(tcsace);
+
+        Assert.assertEquals(msg, tcsace.getControlResultMessage().getDescription());
+        Assert.assertEquals("KO", tcsace.getReturnCode());
+        Assert.assertEquals("Y", tcsace.getFatal());
+    }
+
+    @Test
+    public void testDoControlElementInElementWhenValueIsChildOfProperty() {
+        String property = "id=parent";
+        String value = "id=child";
+        String msg = "Element '"+value+"' in child of element '"+property+"'.";
+
+        when(seleniumService.isElementInElement(property, value)).thenReturn(Boolean.TRUE);
+
+        TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
+        tcsace.setControlType("verifyElementInElement");
+        tcsace.setControlProperty(property);
+        tcsace.setControlValue(value);
+        tcsace.setFatal("Y");
+
+        this.controlService.doControl(tcsace);
+
+        Assert.assertEquals(msg, tcsace.getControlResultMessage().getDescription());
+        Assert.assertEquals("OK", tcsace.getReturnCode());
+        Assert.assertEquals("Y", tcsace.getFatal());
+    }
 }

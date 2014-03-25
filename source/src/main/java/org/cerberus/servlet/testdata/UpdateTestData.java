@@ -16,7 +16,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.cerberus.entity.TestData;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.factory.IFactoryLogEvent;
-import org.cerberus.factory.IFactoryTestData;
 import org.cerberus.factory.impl.FactoryLogEvent;
 import org.cerberus.service.ILogEventService;
 import org.cerberus.service.ITestDataService;
@@ -52,7 +51,6 @@ public class UpdateTestData extends HttpServlet {
 
             ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
             ITestDataService testDataService = appContext.getBean(ITestDataService.class);
-            IFactoryTestData factoryTestData = appContext.getBean(IFactoryTestData.class);
 
             TestData testData = testDataService.findTestDataByKey(key);
 

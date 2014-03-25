@@ -17,10 +17,10 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
-<%@page import="org.cerberus.entity.Project"%>
-<%@page import="org.apache.log4j.Level"%>
-<%@page import="org.cerberus.log.MyLogger"%>
-<%@page import="org.cerberus.exception.CerberusException"%>
+<%@ page import="org.cerberus.entity.Project"%>
+<%@ page import="org.apache.log4j.Level"%>
+<%@ page import="org.cerberus.log.MyLogger"%>
+<%@ page import="org.cerberus.exception.CerberusException"%>
 <%@ page import="org.cerberus.dao.IApplicationDAO" %>
 <%@ page import="org.cerberus.entity.Application" %>
 <%@ page import="org.cerberus.dao.IInvariantDAO" %>
@@ -612,7 +612,7 @@
 
             for (var i = 0; i < data.list.length; i++) {
                 //alert('<div id="divStep' + data.list[i].number + '"> <div> <span>' + data.list[i].number + '</span> <input type="text" style="width: 500px" value="' + data.list[i].name + '"/> </div> <div> <div> <table id="step' + data.list[i].number + '" class="display" style="font-size: small"> <thead> <tr> <th style="width: 20px; text-align: center">Seq</th> <th style="width: 160px">Action</th> <th style="width: 640px">Object</th> <th style="width: 210px">Property</th> <th style="width: 40px">Fatal</th> </tr> </thead> <tbody style="font-size: x-small"> </tbody> <tfoot></tfoot> </table> </div> </div></div>');
-                $('#divSteps').append('<div id="divStep' + data.list[i].number + '"> <div> <span>' + data.list[i].number + '</span> <input type="text" style="width: 500px" value="' + data.list[i].name + '"/> </div> <div> <div> <table id="step' + data.list[i].number + '" class="display" style="font-size: small"> <thead> <tr> <th style="width: 20px; text-align: center">Seq</th> <th style="width: 160px">Action</th> <th style="width: 640px">Object</th> <th style="width: 210px">Property</th> <th style="width: 40px">Fatal</th> </tr> </thead> <tbody style="font-size: x-small"> </tbody> <tfoot></tfoot> </table> </div> </div></div>');
+                $('#divSteps').append('<div id="divStep' + data.list[i].number + '"> <div> <span>' + data.list[i].number + '</span> <input type="text" size="100%" value="' + data.list[i].name + '"/> </div> <div> <div> <table id="step' + data.list[i].number + '" class="display"> <thead> <tr> <th style="text-align: center">Seq</th> <th >Action</th> <th>Object</th> <th>Property</th><th>Description</th> <th>Fatal</th> </tr> </thead> <tbody> </tbody> <tfoot></tfoot> </table> </div> </div></div>');
 
                 $('#step' + data.list[i].number).dataTable({
                     "bJQueryUI": true,
@@ -621,12 +621,14 @@
                     "bFilter": false,
                     "bInfo": false,
                     "bAutoWidth": false,
-                    "aaData": data.list[i].sequences,
+                    "aaData": data.list[i].actions,
                     "aoColumns": [
                         { "mDataProp": "sequence" },
                         { "mDataProp": "action" },
                         { "mDataProp": "object" },
                         { "mDataProp": "property" },
+                        { "mDataProp": "description" },
+                        { "mDataProp": "controls" },
                         { "mDataProp": "fatal", fnRender: function (o, v) {
                             if (v === true) {
                                 return "Y";
@@ -641,11 +643,13 @@
                         nRow.id = iDataIndex;
                     },
                     "bDestroy": true
-                }).rowReordering();
+                }).rowReordering({sURL: './UpdateTestCase?test='+$("#Test").val()+'&testcase='+$("#TestCase").val()+'&step='+data.list[i].number,
+                                    sRequestType: "GET",
+                                    fnAlert: function(message) { alert(message); }
+                                });
             }
             load.remove();
         });
     }
 </script>
-
 </html>
