@@ -371,6 +371,12 @@
                     testcase = rs_testcase_general_info.getString("TestCase");
                     group = rs_testcase_general_info.getString("Group");
                     status = rs_testcase_general_info.getString("Status");
+                    String dateCrea;
+                    try { // Managing the case where the date is 0000-00-00 00:00:00 inside MySQL
+                        dateCrea = rs_testcase_general_info.getString("tcdatecrea");
+                    } catch (Exception e) {
+                        dateCrea = "-- unknown --";
+                    }
                     Application myApplication;
                     myApplication = myApplicationService.findApplicationByKey(rs_testcase_general_info.getString("tc.Application"));
                     appSystem = myApplication.getSystem();
@@ -460,7 +466,7 @@
                                             <tr>
                                                 <td class="wob"><input readonly="readonly" id="origine" style="width: 90px; background-color: #DCDCDC" name="editOrigine" value="<%=rs_testcase_general_info.getString("Origine")%>"></td>
                                                 <td class="wob"><input readonly="readonly" id="reforigine" style="width: 90px;  background-color: #DCDCDC" name="editRefOrigine" value="<%=rs_testcase_general_info.getString("RefOrigine")%>"></td>
-                                                <td class="wob"><%=rs_testcase_general_info.getString("tcdatecrea")%></td>
+                                                <td class="wob"><%=dateCrea%></td>
                                                 <td class="wob"><input readonly="readonly" id="creator" style="width: 90px; background-color: #DCDCDC" name="editCreator" value="<%=rs_testcase_general_info.getString("tc.creator")%>"></td>
                                                 <td class="wob"><input id="implementer" style="width: 90px;" name="editImplementer" value="<%=rs_testcase_general_info.getString("tc.implementer") == null ? "" : rs_testcase_general_info.getString("tc.implementer")%>"></td>
                                                 <td class="wob"><input readonly="readonly" id="lastModifier" style="width: 90px; background-color: #DCDCDC" name="editLastModifier" value="<%=rs_testcase_general_info.getString("tc.lastModifier")%>"></td>
@@ -946,10 +952,10 @@
                                             <table id="testcaseproperties_table" style="text-align: left; border-collapse: collapse"
                                                    border="0">
                                                 <tr id="header">
-                                                    <td style="width: 30px"><%out.print(docService.findLabelHTML( "page_testcase", "delete", "Delete"));%></td>
-                                                    <td style="width: 100px"><%out.print(docService.findLabelHTML( "testcasecountryproperties", "property", "Property"));%></td>
-                                                    <td style="width: <%=size%>px"><%out.print(docService.findLabelHTML( "invariant", "country", "Country"));%></td>
-                                                    <td style="width: 120px"><%out.print(docService.findLabelHTML( "testcasecountryproperties", "type", "Type"));%></td>
+                                                    <td style="width: 30px"><%out.print(docService.findLabelHTML("page_testcase", "delete", "Delete"));%></td>
+                                                    <td style="width: 100px"><%out.print(docService.findLabelHTML("testcasecountryproperties", "property", "Property"));%></td>
+                                                    <td style="width: <%=size%>px"><%out.print(docService.findLabelHTML("invariant", "country", "Country"));%></td>
+                                                    <td style="width: 120px"><%out.print(docService.findLabelHTML("testcasecountryproperties", "type", "Type"));%></td>
                                                     <td style="width: 40px"><%out.print(docService.findLabelHTML("testcasecountryproperties", "database", "Database"));%></td>
                                                     <td style="width: <%=size2%>px"><%out.print(docService.findLabelHTML("testcasecountryproperties", "value", "Value"));%>
                                                     <td style="width: 40px"><%out.print(docService.findLabelHTML("testcasecountryproperties", "length", "Length"));%></td>
@@ -1168,17 +1174,16 @@
                                                                     if (rs_properties.getString("a.Type").equals("executeSqlFromLib")
                                                                             || rs_properties.getString("a.Type").equals("executeSql")) {
                                                                 %>
-                                                                    <td class="wob"><input style="display:inline; height:20px; width:20px; background-color: <%=color%>; color:blue; font-weight:bolder" title="Open SQL Library" class="smallbutton" type="button" value="L" name="opensql-library"  onclick="openSqlLibraryPopin('<%=valueID%>')"></td>
-                                                                <% } %>
-                                                                <%
-                                                                    if (rs_properties.getString("a.Type").equals("executeSqlFromLib")
-                                                                            || rs_properties.getString("a.Type").equals("executeSql")
-                                                                         //   || rs_properties.getString("a.Type").equals("getFromTestData")
-                                                                         //   || rs_properties.getString("a.Type").equals("executeSoapFromLib")
-                                                                    ) {
-                                                                %>
-                                                                    <td class="wob"><input style="display:inline; height:20px; width:20px; background-color: <%=color%>; color:green; font-weight:bolder" title="View property" class="smallbutton" type="button" value="V" name="openview-library"  onclick="openViewPropertyPopin('<%=valueID%>','<%=rs_property.getString("Test")%>','<%=rs_property.getString("TestCase")%>')"></td>
-                                                                <%}%>
+                                                                <td class="wob"><input style="display:inline; height:20px; width:20px; background-color: <%=color%>; color:blue; font-weight:bolder" title="Open SQL Library" class="smallbutton" type="button" value="L" name="opensql-library"  onclick="openSqlLibraryPopin('<%=valueID%>')"></td>
+                                                                    <% }%>
+                                                                    <%
+                                                                        if (rs_properties.getString("a.Type").equals("executeSqlFromLib")
+                                                                                || rs_properties.getString("a.Type").equals("executeSql") //   || rs_properties.getString("a.Type").equals("getFromTestData")
+                                                                                //   || rs_properties.getString("a.Type").equals("executeSoapFromLib")
+                                                                                ) {
+                                                                    %>
+                                                                <td class="wob"><input style="display:inline; height:20px; width:20px; background-color: <%=color%>; color:green; font-weight:bolder" title="View property" class="smallbutton" type="button" value="V" name="openview-library"  onclick="openViewPropertyPopin('<%=valueID%>','<%=rs_property.getString("Test")%>','<%=rs_property.getString("TestCase")%>')"></td>
+                                                                    <%}%>
 
                                                             </tr><tr>
                                                                 <% if (nbline > 3) {%>
@@ -1361,7 +1366,7 @@
                                                                         %>
                                                                         <table id="Action<%=rs_step.getString("step")%>" style="text-align: left; border-collapse: collapse">
                                                                             <tr id="header">
-                                                                                <td style="width: 30px"><%out.print(docService.findLabelHTML( "page_testcase", "delete", "Delete"));%></td>
+                                                                                <td style="width: 30px"><%out.print(docService.findLabelHTML("page_testcase", "delete", "Delete"));%></td>
                                                                                 <td style="width: 60px"><%out.print(docService.findLabelHTML("testcasestepaction", "sequence", "Sequence"));%></td>
                                                                                 <td style="width: 136px"><%out.print(docService.findLabelHTML("testcasestepaction", "action", "Action"));%></td>
                                                                                 <td class="technical_part" style="width: 350px"><%out.print(docService.findLabelHTML("testcasestepaction", "object", "Object"));%></td>
