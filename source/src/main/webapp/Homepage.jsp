@@ -87,14 +87,14 @@ function getSys()
                     "aoColumns": [
                         {"sName": "Test", "sWidth": "40%"},
                         {"sName": "Total", "sWidth": "10%"},
-                        {"sName": "Created", "sWidth": "10%"},
-                        {"sName": "Poorly Described", "sWidth": "10%"},
-                        {"sName": "Fully Described", "sWidth": "10%"},
-                        {"sName": "To Be Implemented", "sWidth": "10%"},
-                        {"sName": "Poorly Implemented", "sWidth": "10%"},
-                        {"sName": "Fully Implemented", "sWidth": "10%"},
-                        {"sName": "Working", "sWidth": "10%"},
-                        {"sName": "To Be Deleted", "sWidth": "10%"}
+                        {"sName": "Created","bSortable": false, "sWidth": "10%"},
+                        {"sName": "Poorly Described","bSortable": false, "sWidth": "10%"},
+                        {"sName": "Fully Described","bSortable": false, "sWidth": "10%"},
+                        {"sName": "To Be Implemented","bSortable": false, "sWidth": "10%"},
+                        {"sName": "Poorly Implemented","bSortable": false, "sWidth": "10%"},
+                        {"sName": "Fully Implemented", "bSortable": false,"sWidth": "10%"},
+                        {"sName": "Working", "bSortable": false,"sWidth": "10%"},
+                        {"sName": "To Be Deleted", "bSortable": false,"sWidth": "10%"}
 
                     ]
                     
