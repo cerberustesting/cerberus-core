@@ -189,7 +189,7 @@
                 <br><br>
                 <label for="System" style="font-weight:bold"><%=docService.findLabelHTML("Application", "System", "")%></label>
                 <input id="System" name="System" style="width:150px;" 
-                       class="System" rel="1" value="<%=request.getAttribute("MySystem")%>" disabled="">
+                       class="System" rel="1" value="<%=request.getAttribute("MySystem")%>" readonly>
                 <label for="SubSystem" style="font-weight:bold"><%=docService.findLabelHTML("Application", "subsystem", "")%></label>
                 <input id="SubSystem" name="SubSystem" style="width:100px;" 
                        class="ncdetailstext" rel="2" >
