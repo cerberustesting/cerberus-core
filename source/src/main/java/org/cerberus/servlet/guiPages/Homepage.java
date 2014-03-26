@@ -89,7 +89,7 @@ public class Homepage extends HttpServlet {
         String sCol = policy.sanitize(request.getParameter("iSortCol_0"));
         String sdir = policy.sanitize(request.getParameter("sSortDir_0"));
         String dir = "asc";
-        String[] cols = {"Test", "Total", "Created", "Poorly Described", "Described", "To Be Implemented", "Poorly Implemented"
+        String[] cols = {"Application", "Total", "Created", "Poorly Described", "Described", "To Be Implemented", "Poorly Implemented"
                 , "Implemented", "Working", "Not Applicable"};
         String mySystem = policy.sanitize(request.getParameter("MySystem"));
         Connection connection = null;
@@ -256,7 +256,6 @@ public class Homepage extends HttpServlet {
                     jsonResponse.put("aaData", data);
                     jsonResponse.put("sEcho", echo);
                     jsonResponse.put("iTotalRecords", data.length());
-                    jsonResponse.put("iDisplayLength", data.length());
                     jsonResponse.put("iTotalDisplayRecords", data.length());
 
                     response.setContentType("application/json");

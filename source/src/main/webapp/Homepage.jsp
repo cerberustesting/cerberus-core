@@ -73,7 +73,7 @@ function getSys()
             $(document).ready(function() {
                 var mySys = getSys();
                 var oTable = $('#testTable').dataTable({
-                    "aaSorting": [[0, "desc"]],
+                    "aaSorting": [[0, "asc"]],
                     "bServerSide": true,
                     "sAjaxSource": "Homepage?MySystem="+mySys,
                     "bJQueryUI": true,
@@ -85,7 +85,7 @@ function getSys()
                     "aTargets": [0],
                     "iDisplayLength": 25,
                     "aoColumns": [
-                        {"sName": "Test", "sWidth": "40%"},
+                        {"sName": "Application", "sWidth": "40%"},
                         {"sName": "Total", "sWidth": "10%"},
                         {"sName": "Created","bSortable": false, "sWidth": "10%"},
                         {"sName": "Poorly Described","bSortable": false, "sWidth": "10%"},
@@ -149,7 +149,7 @@ function getSys()
             <table id="testTable" class="display">
                 <thead>
                     <tr>
-                        <th>Test</th>
+                        <th>Application</th>
                         <th>Total</th>
                         <th>Created</th>
                         <th>Poorly Described</th>
