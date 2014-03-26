@@ -43,14 +43,10 @@
     <input type="hidden" id="testCase" name="testCase" value="<%=testcase%>">
     <input type="hidden" id="db" name="db" value="<%=database%>">
     <label for="country"><% out.print(docService.findLabelHTML("invariant", "Country", "Country"));%></label>
-    <select id="country" name="country" onchange="getEnvironmentSelectBox()">
-        <option></option>
-    </select>
+    <select id="country" name="country" onchange="getEnvironmentSelectBox()"></select>
     &nbsp;&nbsp;
     <label for="environment"><% out.print(docService.findLabelHTML( "invariant", "Environment", "Environment"));%></label>
-    <select id="environment" name="environment" onchange="getEnvironmentSelectBox()">
-        <option></option>
-    </select>
+    <select id="environment" name="environment" onchange="getEnvironmentSelectBox()"></select>
     <br>
     <textarea rows="5" cols="80" id="property" name="property"><%=property%></textarea>
     <br>

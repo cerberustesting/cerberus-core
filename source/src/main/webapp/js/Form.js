@@ -1430,6 +1430,7 @@ function loadSqlLibraryPopin(value) {
 
 function getCountrySelectBox() {
     $.get('GetCountryForTestCase', {test: $('#test').val(), testCase: $('#testCase').val()}, function (data) {
+        $('#country').empty().append($("<option></option>"));
         for(var i=0; i<data.countriesList.length; i++) {
             $('#country').append($("<option></option>")
                                         .attr("value",data.countriesList[i])
@@ -1440,6 +1441,7 @@ function getCountrySelectBox() {
 
 function getEnvironmentSelectBox() {
     $.get('GetEnvironmentAvailable', {test: $('#test').val(), testCase: $('#testCase').val(), country: $('#country').val()}, function (data) {
+        $('#environment').empty().append($("<option></option>"));
         for(var i=0; i<data.envList.length; i++) {
             $('#environment').append($("<option></option>")
                                         .attr("value",data.envList[i].environment)
