@@ -64,15 +64,15 @@
                     "sPaginationType": "full_numbers",
                     "aaSorting": [[ 1, "asc" ]],
                     "aoColumns": [
-                        {"sName": "key", "bVisible": false},
-                        {"sName": "system"},
-                        {"sName": "Level"},
-                        {"sName": "Sequence"},
-                        {"sName": "VersionName"}
+                        {"sName": "key", "bVisible": false, "sWidth": "0%"},
+                        {"sName": "system", "sWidth": "20%"},
+                        {"sName": "Level", "sWidth": "20%"},
+                        {"sName": "Sequence", "sWidth": "20%"},
+                        {"sName": "VersionName", "sWidth": "40%"}
                     ]
                 }
             ).makeEditable({
-                    sAddURL: "AddBuildRevisionInvariant",
+                    sAddURL: "CreateBuildRevisionInvariant",
                     sAddHttpMethod: "POST",
                     oAddNewRowButtonOptions: {
                         label: "Add...",
@@ -131,19 +131,19 @@
                 </div>
                 <label for="System" style="font-weight:bold"><%=docService.findLabelHTML("application", "SYSTEM", "")%></label>
                 <input id="System" name="System" style="width:150px;" 
-                       class="System" rel="1" value="<%=request.getAttribute("MySystem")%>" disabled="">
+                       class="System" rel="1" value="<%=request.getAttribute("MySystem")%>" readonly>
                 <br><br>
-                <label for="level" style="font-weight:bold"><%=docService.findLabelHTML("buildrevisioninvariant", "level", "")%></label>
-                <select id="level" name="level" style="width:100px;" 
-                        class="level" rel="2" ><option value="1">1</option><option value="2">2</option></select>
+                <label for="Level" style="font-weight:bold"><%=docService.findLabelHTML("buildrevisioninvariant", "level", "")%></label>
+                <select id="Level" name="Level" style="width:100px;" 
+                        class="Level" rel="2" ><option value="1">1</option><option value="2">2</option></select>
                 <br>
                 <label for="Seq" style="font-weight:bold"><%=docService.findLabelHTML("buildrevisioninvariant", "Seq", "")%></label>
                 <input id="Seq" name="Seq" style="width:50px;" 
                        class="Seq" rel="3" >
                 <br>
-                <label for="versionname" style="font-weight:bold"><%=docService.findLabelHTML("buildrevisioninvariant", "versionname", "")%></label>
-                <input id="versionname" name="versionname" style="width:400px;" 
-                       class="versionname" rel="4" >
+                <label for="VersionName" style="font-weight:bold"><%=docService.findLabelHTML("buildrevisioninvariant", "versionname", "")%></label>
+                <input id="VersionName" name="VersionName" style="width:400px;" 
+                       class="VersionName" rel="4" >
                 <br><br>
                 <button id="btnAddNewRowOk">Add</button>
                 <button id="btnAddNewRowCancel">Cancel</button>
