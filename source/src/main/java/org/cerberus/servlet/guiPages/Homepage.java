@@ -84,82 +84,18 @@ public class Homepage extends HttpServlet {
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
 
         String echo = policy.sanitize(request.getParameter("sEcho"));
-        String sStart = policy.sanitize(request.getParameter("iDisplayStart"));
-        String sAmount = policy.sanitize(request.getParameter("iDisplayLength"));
-        String sCol = policy.sanitize(request.getParameter("iSortCol_0"));
-        String sdir = policy.sanitize(request.getParameter("sSortDir_0"));
-        String dir = "asc";
-        String[] cols = {"Application", "Total", "Created", "Poorly Described", "Described", "To Be Implemented", "Poorly Implemented"
-                , "Implemented", "Working", "Not Applicable"};
         String mySystem = policy.sanitize(request.getParameter("MySystem"));
         Connection connection = null;
 
-//        JSONObject result = new JSONObject();
         JSONObject jsonResponse = new JSONObject();
-//        JSONArray array = new JSONArray();
-        int amount = 10;
-        int start = 0;
-        int col = 0;
 
         try {
 
-//            if (mySystem != null) {
-//            String smySystem = " (";
-//            for (int a = 0; a < mySystem.length - 1; a++) {
-//                smySystem += " stream like '%" + mySystem[a] + "%' or";
-//            }
-//            smySystem += " stream like '%" + mySystem[mySystem.length - 1] + "%') ";
-//            sArray.add(smySystem);
-//        }
             List<String> sArray = new ArrayList<String>();
             if (!mySystem.equals("")) {
                 String smySystem = " `system` like '%" + mySystem + "%'";
                 sArray.add(smySystem);
             }
-
-            StringBuilder individualSearch = new StringBuilder();
-            if (sArray.size() == 1) {
-                individualSearch.append(sArray.get(0));
-            } else if (sArray.size() > 1) {
-                for (int i = 0; i < sArray.size() - 1; i++) {
-                    individualSearch.append(sArray.get(i));
-                    individualSearch.append(" and ");
-                }
-                individualSearch.append(sArray.get(sArray.size() - 1));
-            }
-
-            if (sStart != null) {
-                start = Integer.parseInt(sStart);
-                if (start < 0) {
-                    start = 0;
-                }
-            }
-            if (sAmount != null) {
-                amount = Integer.parseInt(sAmount);
-                if (amount < 10 || amount > 100) {
-                    amount = 10;
-                }
-            }
-
-            if (sCol != null) {
-                col = Integer.parseInt(sCol);
-                if (col < 0 || col > 5) {
-                    col = 0;
-                }
-            }
-            if (sdir != null) {
-                if (!sdir.equals("asc")) {
-                    dir = "desc";
-                }
-            }
-            String colName = cols[col];
-
-            String searchTerm = "";
-            if (!request.getParameter("sSearch").equals("")) {
-                searchTerm = request.getParameter("sSearch");
-            }
-
-            String inds = individualSearch.toString();
 
             JSONArray data = new JSONArray();
 
@@ -176,16 +112,6 @@ public class Homepage extends HttpServlet {
                 inSQL = " and application " + inSQL + " ";
             } else {
                 inSQL = " and application in ('') ";
-            }
-
-            StringBuilder gSearch = new StringBuilder();
-            String searchSQL = "";
-            if (!searchTerm.equals("") && !inds.equals("")) {
-                searchSQL = gSearch.toString() + " and " + inds;
-            } else if (!inds.equals("")) {
-                searchSQL = " where " + inds;
-            } else if (!searchTerm.equals("")) {
-                searchSQL = gSearch.toString();
             }
 
             List<Invariant> myInvariants = invariantService.findInvariantByIdGp1("TCSTATUS", "Y");
@@ -213,14 +139,6 @@ public class Homepage extends HttpServlet {
             SQLb.append(" WHERE 1=1  ");
             SQLb.append(inSQL.replace("application", "t.application"));
             SQLb.append(" GROUP BY t.application ");
-            SQLb.append("order by ");
-            SQLb.append(colName);
-            SQLb.append(" ");
-            SQLb.append(dir);
-            SQLb.append(" limit ");
-            SQLb.append(start);
-            SQLb.append(" , ");
-            SQLb.append(amount);
 
             SQL.append(SQLa);
             SQL.append(SQLb);
@@ -247,7 +165,6 @@ public class Homepage extends HttpServlet {
                             i.getSort();
                             row.put(rs_teststatus.getString("Col" + String.valueOf(i.getSort())));
                         }
-                        //Integer numberOfTotalRows = datamapService.getNumberOfDatamapPerCrtiteria(searchTerm, inds);
                         data.put(row);
                     }
 
