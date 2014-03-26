@@ -43,7 +43,7 @@
             <input type="hidden" id="test" name="test" value="<%=test%>">
             <input type="hidden" id="testCase" name="testCase" value="<%=testcase%>">
             <input type="hidden" id="type" name="type" value="<%=type%>">
-        <%if(!"executeSoapFromLib".equals(type)) {%>
+        <%if(!"executeSoapFromLib".equals(type) && !"getFromTestData".equals(type)) {%>
             <input type="hidden" id="db" name="db" value="<%=database%>">
             <label for="country"><% out.print(docService.findLabelHTML("invariant", "Country", "Country"));%></label>
             <select id="country" name="country" onchange="getEnvironmentSelectBox()"></select>

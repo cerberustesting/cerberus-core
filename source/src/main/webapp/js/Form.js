@@ -1457,7 +1457,7 @@ function calculateProperty() {
         type: $("#type").val()
     };
 
-    if(query.type !== "executeSoapFromLib") {
+    if(query.type !== "executeSoapFromLib" && query.type !== "getFromTestData") {
         query.country = $("#country").val();
         query.environment = $("#environment").val();
         query.database = $("#db").val();
