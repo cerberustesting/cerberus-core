@@ -971,6 +971,16 @@ a {
     display: none;
 }
 
+a.sqlLib {
+    display: inline-block;
+    *display: inline;
+    width: 10%;
+    border: 2px solid grey;
+    text-align: center;
+    padding: 5px;
+    margin: 5px;
+}
+
 /*#navlist(done)
 {
     height: 15px;
