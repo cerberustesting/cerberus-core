@@ -1178,8 +1178,9 @@
                                                                     <% }%>
                                                                     <%
                                                                         if (rs_properties.getString("a.Type").equals("executeSqlFromLib")
-                                                                                || rs_properties.getString("a.Type").equals("executeSql") //   || rs_properties.getString("a.Type").equals("getFromTestData")
-                                                                                //   || rs_properties.getString("a.Type").equals("executeSoapFromLib")
+                                                                                || rs_properties.getString("a.Type").equals("executeSql")
+                                                                                //   || rs_properties.getString("a.Type").equals("getFromTestData")
+                                                                                || rs_properties.getString("a.Type").equals("executeSoapFromLib")
                                                                                 ) {
                                                                     %>
                                                                 <td class="wob"><input style="display:inline; height:20px; width:20px; background-color: <%=color%>; color:green; font-weight:bolder" title="View property" class="smallbutton" type="button" value="V" name="openview-library"  onclick="openViewPropertyPopin('<%=valueID%>','<%=rs_property.getString("Test")%>','<%=rs_property.getString("TestCase")%>')"></td>
