@@ -40,6 +40,7 @@ import org.cerberus.service.ICountryEnvironmentDatabaseService;
 import org.cerberus.service.ISoapLibraryService;
 import org.cerberus.service.ISqlLibraryService;
 import org.cerberus.service.ITestCaseService;
+import org.cerberus.service.ITestDataService;
 import org.cerberus.serviceEngine.IConnectionPoolDAO;
 import org.cerberus.serviceEngine.IPropertyService;
 import org.cerberus.util.StringUtil;
@@ -71,7 +72,11 @@ public class CalculatePropertyForTestCase extends HttpServlet {
         
         String result = null;
         try {
-            if (type.equals("executeSoapFromLib")) {
+            if (type.equals("getFromTestData")) {
+                ITestDataService testDataService = appContext.getBean(ITestDataService.class);
+
+                result = testDataService.findTestDataByKey(property).getValue();
+            } else if (type.equals("executeSoapFromLib")) {
                 ISoapLibraryService soapLibraryService = appContext.getBean(ISoapLibraryService.class);
                 IPropertyService propertyService = appContext.getBean(IPropertyService.class);
                 SoapLibrary soapLib = soapLibraryService.findSoapLibraryByKey(property);
