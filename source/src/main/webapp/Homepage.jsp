@@ -1,5 +1,3 @@
-<%@page contentType="text/html" pageEncoding="UTF-8"%><!DOCTYPE HTML>
-<%@page import="org.cerberus.service.IDatabaseVersioningService"%>
 <%--
   ~ Cerberus  Copyright (C) 2013  vertigo17
   ~ DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
@@ -19,7 +17,11 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
+<%@page import="org.cerberus.service.IDatabaseVersioningService"%>
+<%@page contentType="text/html" pageEncoding="UTF-8"%><!DOCTYPE HTML>
+<!DOCTYPE html>
 
+<% Date DatePageStart = new Date();%>
 <html>
     <head>
         <meta content="text/html; charset=UTF-8" http-equiv="content-type">
@@ -62,19 +64,27 @@
             }
         </style>
         <script>
-function getSys()
-  {
-  var x = document.getElementById("systemSelected").value;
-  return x;
-  }
-</script>
+            function getSys()
+            {
+                var x = document.getElementById("systemSelected").value;
+                return x;
+            }
+        </script>
+    </head>
+    <body>
+        <%@ include file="include/function.jsp"%>
+        <%@ include file="include/header.jsp"%>
+
+<%
+                IInvariantService invariantService = appContext.getBean(IInvariantService.class);
+%>
         <script type="text/javascript">
 
             $(document).ready(function() {
                 var mySys = getSys();
                 var oTable = $('#testTable').dataTable({
-                    "aaSorting": [[0, "desc"]],
-                    "bServerSide": true,
+                    "aaSorting": [[0, "asc"]],
+                    "bServerSide": false,
                     "sAjaxSource": "Homepage?MySystem="+mySys,
                     "bJQueryUI": true,
                     "bProcessing": true,
@@ -85,35 +95,31 @@ function getSys()
                     "aTargets": [0],
                     "iDisplayLength": 25,
                     "aoColumns": [
-                        {"sName": "Test", "sWidth": "40%"},
-                        {"sName": "Total", "sWidth": "10%"},
-                        {"sName": "Created", "sWidth": "10%"},
-                        {"sName": "Poorly Described", "sWidth": "10%"},
-                        {"sName": "Fully Described", "sWidth": "10%"},
-                        {"sName": "To Be Implemented", "sWidth": "10%"},
-                        {"sName": "Poorly Implemented", "sWidth": "10%"},
-                        {"sName": "Fully Implemented", "sWidth": "10%"},
-                        {"sName": "Working", "sWidth": "10%"},
-                        {"sName": "To Be Deleted", "sWidth": "10%"}
+                        {"sName": "Application", "sWidth": "40%"},
+                        {"sName": "Total", "sWidth": "10%"}
+                        <%
+                                    List<Invariant> myInvariants = invariantService.findInvariantByIdGp1("TCSTATUS", "Y");
+            for (Invariant i : myInvariants) {
+
+                        %>
+                        ,{"sName": "<%=i.getValue()%>"}
+                                            <%
+                                                                                       }
+                                            %>
 
                     ]
                     
                 }
-                );
+            );
             });
 
 
         </script>
-    </head>
-    <body id="body">
-        <%@ include file="include/function.jsp"%>
-        <%@ include file="include/header.jsp"%>
-       
-            <%
+        <%
             IUserService userService = appContext.getBean(IUserService.class);
             User myUser = userService.findUserByKey(request.getUserPrincipal().getName());
             String MySystem = ParameterParserUtil.parseStringParam(request.getParameter("MySystem"), "");
-            
+
             if (MySystem.equals("")) {
                 MySystem = myUser.getDefaultSystem();
             } else {
@@ -122,50 +128,50 @@ function getSys()
                     userService.updateUser(myUser);
                 }
             }
-            
-                     
-                IDatabaseVersioningService DatabaseVersioningService = appContext.getBean(IDatabaseVersioningService.class);
-    if (!(DatabaseVersioningService.isDatabaseUptodate())  && request.isUserInRole("Administrator")) {%>
-                <script>
-                    var r=confirm("WARNING : Database Not Uptodate   >>   Redirect to the DatabaseMaintenance page ?");
-                    if (r==true)
-                      {
-                      location.href='./DatabaseMaintenance.jsp';
-                      }
-                     </script>
-                     
-               <% }
-                
+
+
+            IDatabaseVersioningService DatabaseVersioningService = appContext.getBean(IDatabaseVersioningService.class);
+                if (!(DatabaseVersioningService.isDatabaseUptodate()) && request.isUserInRole("Administrator")) {%>
+        <script>
+            var r=confirm("WARNING : Database Not Uptodate   >>   Redirect to the DatabaseMaintenance page ?");
+            if (r==true)
+            {
+                location.href='./DatabaseMaintenance.jsp';
+            }
+        </script>
+
+        <% }
+
 
 //               if (myUser.getRequest().equalsIgnoreCase("Y")) {
 //                request.getRequestDispatcher("/ChangePassword.jsp").forward(request, response);
 //            } else {
-            
-                
-            %>
-           <input id="systemSelected" value="<%=MySystem%>" style="display:none">
-           <p class="dttTitle">TestCase per Application</p>
-            <div style="float:left; width: 100%;  font: 90% sans-serif">
+
+
+        %>
+        <input id="systemSelected" value="<%=MySystem%>" style="display:none">
+        <p class="dttTitle">TestCase per Application</p>
+        <div style="width: 100%; font: 90% sans-serif">
             <table id="testTable" class="display">
                 <thead>
                     <tr>
-                        <th>Test</th>
+                        <th>Application</th>
                         <th>Total</th>
-                        <th>Created</th>
-                        <th>Poorly Described</th>
-                        <th>Fully Described</th>
-                        <th>To Be Implemented</th>
-                        <th>Poorly Implemented</th>
-                        <th>Fully Implemented</th>
-                        <th>Working</th>
-                        <th>To Be Deleted</th>
+                        <%
+            for (Invariant i : myInvariants) {
+
+                        %>
+                        <th><%=i.getValue()%></th>
+                                            <%
+                                                                                       }
+                                            %>
                     </tr>
                 </thead>
                 <tbody>
                 </tbody>
             </table>
         </div>
-           <% // } %>
-                        <br/>
-        </body>
+        <% // } %>
+        <br><% out.print(display_footer(DatePageStart));%>
+    </body>
 </html>
