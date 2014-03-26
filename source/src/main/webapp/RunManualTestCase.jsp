@@ -277,8 +277,8 @@
             function saveManualTest(res, row) {
                 var data = oTable.fnGetNodes(row);
                 var message = data.cells[5].children[0].value;
-                if (message == "") {
-                    alert("Please edit Control Message before update Result!");
+                if (message == "" && res == "KO") {
+                    alert("TestCase is KO and a reason is mandatory.\nPlease edit Control Message before update Result!");
                 } else if ($('#executionEnv').val() == "") {
                     alert("Please choose Environment before update Result!");
                 } else if ($('#executionCountry').val() == "") {
