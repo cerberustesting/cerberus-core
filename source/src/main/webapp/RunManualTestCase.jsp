@@ -92,6 +92,10 @@
     <body>
         <%@ include file="include/function.jsp" %>
         <%@ include file="include/header.jsp" %>
+        <%
+            IInvariantService invariantService = appContext.getBean(IInvariantService.class);
+            List<Invariant> invariants = invariantService.findListOfInvariantById("BROWSER");
+        %>
         <div id="searchTestCase">
             <div class="fields" style="margin-left: 15px">
                 <div>
@@ -236,6 +240,7 @@
                             <th>Value Expected</th>
                             <th>How To</th>
                             <th>Detail</th>
+                            <th>Browser</th>
                             <th>Control Message</th>
                             <th>Result</th>
                         </tr>
@@ -276,7 +281,7 @@
 
             function saveManualTest(res, row) {
                 var data = oTable.fnGetNodes(row);
-                var message = data.cells[5].children[0].value;
+                var message = data.cells[6].children[0].value;
                 if (message == "" && res == "KO") {
                     alert("TestCase is KO and a reason is mandatory.\nPlease edit Control Message before update Result!");
                 } else if ($('#executionEnv').val() == "") {
@@ -289,8 +294,11 @@
                     var env = $('#executionEnv').val();
                     var country = $('#executionCountry').val();
                     var tag = $('#executionTag').val();
+                    var browser = data.cells[5].children[0].value;
+                    var browserVersion = data.cells[5].children[1].value;
 
-                    var d = {test: test, testCase: testCase, env: env, country: country, controlStatus: res, controlMessage: message, tag: tag};
+                    var d = {test: test, testCase: testCase, env: env, country: country, controlStatus: res,
+                        controlMessage: message, tag: tag, browser: browser, browserVersion: browserVersion};
 
                     $.post("SaveManualExecution", d,function (run) {
                         $("#resultMessage").html("Manual Execution of Test Case <i>" + test + " - " + testCase + "</i> created");
@@ -349,21 +357,29 @@
                                 }
                                 return detail;
                             }, "sName": "detail", "bSortable": false, sWidth: "140px", sClass: "center"},
+                            {"mDataProp": function(tCase, type, val){
+                                var browser = "<select style='font-size: 100%'>";
+                                <% for(Invariant i : invariants) { %>
+                                    browser += "<option value='<%=i.getValue()%>'><%=i.getValue()%></option>";
+                                <% } %>
+                                browser += "</select><input type='text' placeholder='Browser Full Version'/>";
+                                return browser;
+                            }, "sDefaultContent": '', "bSortable": false, sWidth: "100px"},
                             {"mDataProp": null, "sDefaultContent": '', "bSortable": false, sWidth: "140px"},
                             {"mDataProp": null, "sDefaultContent": '', "bSortable": false, sWidth: "30px"}
                         ],
                         aoColumnDefs: [
                             {
-                                "aTargets": [6],
+                                "aTargets": [7],
                                 "fnRender": function (o, v) {
                                     return "<p style='text-align: center'><input type='button' style='background-image: url(images/ok.png); width: 20px; height: 20px; border: 0 none; top: 0px' onclick='saveManualTest(\"OK\"," + o.iDataRow + ")'/></p><br/><br/>" +
                                         "<p style='text-align: center'><input type='button' style='background-image: url(images/ko.png); width: 20px; height: 20px; border: 0 none; bottom: 0px' onclick='saveManualTest(\"KO\"," + o.iDataRow + ")'/></p>"
                                 }
                             },
                             {
-                                "aTargets": [5],
+                                "aTargets": [6],
                                 "mRender": function ( data, type, full ){
-                                    return "<textarea></textarea>";
+                                    return "<textarea placeholder='Give reason in case of KO'></textarea>";
                                 }
                             }
                         ]
