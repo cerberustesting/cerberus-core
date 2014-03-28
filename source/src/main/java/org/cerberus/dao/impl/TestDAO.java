@@ -147,134 +147,7 @@ public class TestDAO implements ITestDAO {
         }
         return result;    
     }
-    /*
-     public List<Test> findTestByCriteria(Test testSelect, Test testCriteria, String whereClause, String orderClause) {
-        StringBuilder stringBuilderQuery = new StringBuilder("SELECT ");
-        boolean notFirst = false;
-        if (testSelect == null) {
-            stringBuilderQuery.append("* ");
-        } else {
-            if (testSelect.getTest() != null) {
-                stringBuilderQuery.append("Test ");
-                notFirst = true;
-            }
-
-            if (testSelect.getDescription() != null) {
-                if (notFirst) {
-                    stringBuilderQuery.append(", ");
-                }
-                stringBuilderQuery.append("Description ");
-                notFirst = true;
-            }
-
-            if (testSelect.getActive() != null) {
-                if (notFirst) {
-                    stringBuilderQuery.append(", ");
-                }
-                stringBuilderQuery.append("Active ");
-                notFirst = true;
-            }
-
-            if (testSelect.getAutomated() != null) {
-                if (notFirst) {
-                    stringBuilderQuery.append(", ");
-                }
-                stringBuilderQuery.append("Automated ");
-                notFirst = true;
-            }
-
-            if (testSelect.gettDateCrea() != null) {
-                if (notFirst) {
-                    stringBuilderQuery.append(", ");
-                }
-                stringBuilderQuery.append("TDateCrea ");
-                notFirst = true;
-            }
-        }
-
-        stringBuilderQuery.append(" FROM Test ");
-
-        StringBuilder whereClauseCriteria = new StringBuilder("WHERE 1=1 ");
-
-        List<String> parameters = new ArrayList<String>();
-
-        Connection connection = this.databaseSpring.connect();
-        try {
-            if (testCriteria.getTest() != null && !"".equals(testCriteria.getTest().trim())) {
-                whereClauseCriteria.append("AND Test LIKE ? ");
-                parameters.add(testCriteria.getTest());
-            }
-
-            if (testCriteria.getDescription() != null && !"".equals(testCriteria.getDescription().trim())) {
-                whereClauseCriteria.append("AND Description LIKE ? ");
-                parameters.add(testCriteria.getDescription());
-            }
-
-            if (testCriteria.getActive() != null && !"".equals(testCriteria.getActive().trim())) {
-                whereClauseCriteria.append("AND Active LIKE ? ");
-                parameters.add(testCriteria.getActive());
-            }
-
-            if (testCriteria.getAutomated() != null && !"".equals(testCriteria.getAutomated().trim())) {
-                whereClauseCriteria.append("AND Automated LIKE ? ");
-                parameters.add(testCriteria.getAutomated());
-            }
-
-            if (testCriteria.gettDateCrea() != null && !"".equals(testCriteria.gettDateCrea().trim())) {
-                whereClauseCriteria.append("AND TDateCrea LIKE ? ");
-                parameters.add(testCriteria.gettDateCrea());
-            }
-            if (parameters.size() > 0) {
-                stringBuilderQuery.append(whereClauseCriteria);
-            }
-
-            if (whereClause != null && !whereClause.isEmpty()) {
-                stringBuilderQuery.append(whereClause);
-            }
-
-            MyLogger.log(TestDAO.class.getName(), Level.ERROR, "Query : Test.findTestByCriteria : " + query.toString());
-            PreparedStatement preStat = connection.prepareStatement(query.toString());
-            if (parameters.size() > 0) {
-                int index = 0;
-                for (String parameter : parameters) {
-                    index++;
-                    preStat.setString(index, ParameterParserUtil.wildcardIfEmpty(parameter));
-                }
-            }
-            try {
-
-                ResultSet resultSet = preStat.executeQuery();
-                result = new ArrayList<Test>();
-                try {
-                    while (resultSet.next()) {
-                        result.add(this.loadTestFromResultSet(resultSet));
-                    }
-                } catch (SQLException exception) {
-                    MyLogger.log(TestDAO.class.getName(), Level.ERROR, exception.toString());
-                } finally {
-                    resultSet.close();
-                }
-            } catch (SQLException exception) {
-                MyLogger.log(TestDAO.class.getName(), Level.ERROR, exception.toString());
-            } finally {
-                preStat.close();
-            }
-        } catch (SQLException exception) {
-            MyLogger.log(TestDAO.class.getName(), Level.ERROR, exception.toString());
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                MyLogger.log(TestDAO.class.getName(), Level.WARN, e.toString());
-            }
-        }
-        return result;
-
-
-    }
-*/
+    
     @Override
     public boolean createTest(Test test) {
         boolean res = false;
@@ -362,5 +235,47 @@ public class TestDAO implements ITestDAO {
         }
 
         return factoryTest.create(test, description, active, automated, tcactive);
+    }
+
+    @Override
+    public Test findTestByKey(String test) {
+        Test result = null;
+        StringBuilder query = new StringBuilder("SELECT Test, Description, Active, Automated, TDateCrea FROM test ");
+        query.append(" where test = ?");
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query.toString());
+            
+            try {
+                preStat.setString(1, test);
+                ResultSet resultSet = preStat.executeQuery();
+                
+                try {
+                    if (resultSet.next()) {
+                        result = loadTestFromResultSet(resultSet);
+                        }
+                    
+                } catch (SQLException exception) {
+                    MyLogger.log(TestDAO.class.getName(), Level.ERROR, exception.toString());
+                } finally {
+                    resultSet.close();
+                }
+            } catch (SQLException exception) {
+                MyLogger.log(TestDAO.class.getName(), Level.ERROR, exception.toString());
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(TestDAO.class.getName(), Level.ERROR, exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(TestDAO.class.getName(), Level.WARN, e.toString());
+            }
+        }
+        return result; 
     }
 }

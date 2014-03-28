@@ -36,4 +36,12 @@ public interface ITestDAO {
     boolean createTest(Test test);
 
     boolean deleteTest(Test test);
+    
+    /**
+     * 
+     * @param test Name of the test
+     * @return Test Object
+     */
+    Test findTestByKey(String test);
+    
 }

@@ -55,4 +55,11 @@ public interface ITestService {
      * @return TRUE if test have been deleted successfully
      */
     boolean deleteTest(Test test);
+    
+    /**
+     * 
+     * @param test Key of the table Test
+     * @return Test object
+     */
+    Test findTestByKey(String test);
 }
