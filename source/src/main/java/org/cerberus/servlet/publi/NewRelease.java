@@ -27,19 +27,19 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.log.MyLogger;
 import org.cerberus.service.IApplicationService;
+import org.cerberus.service.ILogEventService;
 import org.cerberus.service.IProjectService;
 import org.cerberus.service.IUserService;
 import org.cerberus.service.impl.ApplicationService;
+import org.cerberus.service.impl.LogEventService;
 import org.cerberus.service.impl.ProjectService;
 import org.cerberus.service.impl.UserService;
 import org.cerberus.util.ParameterParserUtil;
@@ -67,6 +67,18 @@ public class NewRelease extends HttpServlet {
             throws ServletException, IOException {
         PrintWriter out = response.getWriter();
 
+        ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+
+        /**
+         * Adding Log entry.
+         */
+        ILogEventService logEventService = appContext.getBean(LogEventService.class);
+        logEventService.insertLogEventPublicCalls("/NewRelease", "CALL", "NewReleaseV0 called : " + request.getRequestURI(), request);
+        
+        IApplicationService MyApplicationService = appContext.getBean(ApplicationService.class);
+        IUserService MyUserService = appContext.getBean(UserService.class);
+        IProjectService MyProjectService = appContext.getBean(ProjectService.class);
+        
         // Parsing all parameters.
         String application = ParameterParserUtil.parseStringParam(request.getParameter("application"), "");
         String release = ParameterParserUtil.parseStringParam(request.getParameter("release"), "");
@@ -97,13 +109,7 @@ public class NewRelease extends HttpServlet {
                 + "mavenartifactid : Maven Artifact ID. [" + mavenartifactid + "]\n"
                 + "mavenversion : Maven Version. [" + mavenversion + "]\n";
         
-
-        //Create Connexion // Statement
-        ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         DatabaseSpring database = appContext.getBean(DatabaseSpring.class);
-        IApplicationService MyApplicationService = appContext.getBean(ApplicationService.class);
-        IUserService MyUserService = appContext.getBean(UserService.class);
-        IProjectService MyProjectService = appContext.getBean(ProjectService.class);
 
         Connection connection = database.connect();
         try {

@@ -55,18 +55,18 @@
                     <img src="images/dropdown.gif"/></a>
                 <ul class="subnav" id="subnavlist">
                     <li id="subactive"><a name="menu" id="menuEditTest" href="Test.jsp" style="width:130px">Edit Test</a></li>
-                        <% if (request.getUserPrincipal() != null && (request.isUserInRole("Test"))) {%>
+                    <% if (request.getUserPrincipal() != null && (request.isUserInRole("Test"))) {%>
                     <li id="subactive"><a name="menu" id="menuCreateTest" href="TestCreate.jsp" style="width:130px">Create Test</a></li>
-                        <% }%>
+                    <% }%>
                 </ul>
             </li>
             <li id="active"><a id="current" name="menu" href="#" style="width:100px">TestCase
                 <img src="images/dropdown.gif"/></a>
                 <ul class="subnav" id="subnavlist">
                     <li id="subactive"><a name="menu" id="menuEditTestCase" href="TestCase.jsp" style="width:130px">Edit TestCase</a></li>
-                        <% if (request.getUserPrincipal() != null && (request.isUserInRole("Test"))) {%>
+                    <% if (request.getUserPrincipal() != null && (request.isUserInRole("Test"))) {%>
                     <li id="subactive"><a name="menu" id="menuCreateTestCase" href="TestCaseCreate.jsp" style="width:130px">Create TestCase</a></li>
-                        <% }%>
+                    <% }%>
                     <li id="subactive"><a name="menu" id="menuSearchTestCase" href="TestCaseSearch.jsp" style="width:130px">Search TestCase</a></li>
                 </ul>
             </li>
@@ -86,7 +86,7 @@
                 <img src="images/dropdown.gif"/></a>
                 <ul class="subnav" id="subnavlist">
                     <li id="subactive"><a name="menu" id="menuRunTestCase" href="RunTests.jsp" style="width:130px">Run Tests</a></li>
-                        <%--                              <li><a name="menu" id="menuResumeTestCase" href="ResumeTests.jsp" style="width:130px">Resume Tests</a></li> --%>
+                    <%--                              <li><a name="menu" id="menuResumeTestCase" href="ResumeTests.jsp" style="width:130px">Resume Tests</a></li> --%>
                     <li id="subactive"><a name="menu" id="menuRunManualTestCase" href="RunManualTestCase.jsp" style="width:130px">Run Manual Tests</a></li>
                 </ul>
             </li>
@@ -168,7 +168,8 @@
                     %>
                 </select>
             </form>
-        </div><div id="userInfo" style="float:right; width:100px">
+        </div>
+        <div id="userInfo" style="float:right; width:100px">
             <p style="color:white"><%= request.getUserPrincipal().getName()%></p>
             <a href="Logout.jsp">
                 <div id="logout" style="width: 75px;">
@@ -177,22 +178,25 @@
                 </div>
             </a>
             <% } else {%>
-            <a href="Homepage">
-                <img src="images/LoginIcon.png" />
-                <span>Login</span>
-            </a>
-            <% }%>
+            <div id="userInfo" style="float:right; width:100px">
+                <a href="Homepage.jsp">
+                    <div id="login" style="width: 75px;">
+                        <img src="images/LoginIcon1.png" />
+                        <span>Login</span>
+                    </div>
+                </a>
+                <% }%>
+            </div>
         </div>
     </div>
-</div>
-<div style="clear:both">
-    <p class="dttTitle">Cerberus : Framework for Automated Testing</p>
-</div>
-<br><br>
-<script type="text/javascript">
-    menuColoring(null);
-</script>
+    <div style="clear:both">
+        <p class="dttTitle">Cerberus : Framework for Automated Testing</p>
+    </div>
+    <br><br>
+    <script type="text/javascript">
+        menuColoring(null);
+    </script>
 
-<script type="text/javascript">
-    EnvTuning("<%=System.getProperty("org.cerberus.environment")%>");
-</script>
+    <script type="text/javascript">
+        EnvTuning("<%=System.getProperty("org.cerberus.environment")%>");
+    </script>

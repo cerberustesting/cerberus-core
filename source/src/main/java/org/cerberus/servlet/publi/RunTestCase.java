@@ -39,6 +39,8 @@ import org.cerberus.entity.TCase;
 import org.cerberus.factory.IFactoryTestCaseExecution;
 import org.cerberus.factory.IFactoryTCase;
 import org.cerberus.log.MyLogger;
+import org.cerberus.service.ILogEventService;
+import org.cerberus.service.impl.LogEventService;
 import org.cerberus.serviceEngine.IRunTestCaseService;
 import org.cerberus.serviceEngine.impl.RunTestCaseService;
 import org.cerberus.util.DateUtil;
@@ -61,6 +63,16 @@ public class RunTestCase extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        PrintWriter out = response.getWriter();
+
+        ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+
+        /**
+         * Adding Log entry.
+         */
+        ILogEventService logEventService = appContext.getBean(LogEventService.class);
+        logEventService.insertLogEventPublicCalls("/RunTestCase", "CALL", "RunTestCase called : " + request.getRequestURI(), request);
+
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
 
         //Tool
@@ -89,7 +101,6 @@ public class RunTestCase extends HttpServlet {
         int screenshot = ParameterParserUtil.parseIntegerParam(policy.sanitize(request.getParameter("screenshot")), 1);
         int verbose = ParameterParserUtil.parseIntegerParam(policy.sanitize(request.getParameter("verbose")), 0);
 
-        ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         IRunTestCaseService runTestCaseService = appContext.getBean(RunTestCaseService.class);
         IFactoryTCase factoryTCase = appContext.getBean(IFactoryTCase.class);
         IFactoryTestCaseExecution factoryTCExecution = appContext.getBean(IFactoryTestCaseExecution.class);
@@ -107,7 +118,6 @@ public class RunTestCase extends HttpServlet {
         }
 
         long runID = tCExecution.getId();
-        PrintWriter out = response.getWriter();
         if (outputFormat.equalsIgnoreCase("gui")) {
             if (runID > 0) {
                 response.sendRedirect("./ExecutionDetail.jsp?id_tc=" + runID);

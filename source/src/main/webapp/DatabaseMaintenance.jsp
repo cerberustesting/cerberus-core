@@ -102,9 +102,9 @@
                                 if ((i < SQLLimit) || (SQLExecuted == false)) { // After version SQLLimit, only 1 execution at a time.
                                     out.print("<tr><td>");
                                     out.print(i);
-                                    out.print("</td><td>");
-                                    out.print(MySQL);
-                                    out.print("</td>");
+                                    out.print("</td><td class=\"wob\" style=\"width: 900px\"><textarea name=\"SQL\" rows=\"5\" style=\"font-size:x-small;width: 100%\" readonly>");
+                                    out.print(MySQL.replaceAll("</textarea>", "</text4rea>"));
+                                    out.print("</textarea></td>");
                                     // Execute the SQL Here
                                     MySQLRC = DatabaseVersionService.exeSQL(MySQL);
                                     SQLExecuted = true;
@@ -153,9 +153,9 @@
                                 if (i > DtbVersion.getValue()) {
                                     out.print("<tr><td>");
                                     out.print(i);
-                                    out.print("</td><td>");
-                                    out.print(MySQL);
-                                    out.print("</td>");
+                                    out.print("</td><td class=\"wob\" style=\"width: 900px\"><textarea name=\"SQL\" rows=\"3\" style=\"font-size:x-small;width: 100%\" readonly>");
+                                    out.print(MySQL.replaceAll("</textarea>", "</text4rea>"));
+                                    out.print("</textarea></td>");
                                     out.println("</tr>");
                                 }
                             }

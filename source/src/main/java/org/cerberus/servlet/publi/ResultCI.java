@@ -35,7 +35,9 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.log.MyLogger;
+import org.cerberus.service.ILogEventService;
 import org.cerberus.service.IParameterService;
+import org.cerberus.service.impl.LogEventService;
 import org.cerberus.service.impl.ParameterService;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
@@ -47,17 +49,44 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 public class ResultCI extends HttpServlet {
 
     protected void processRequest(HttpServletRequest request,
-                                  HttpServletResponse response) throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
+            HttpServletResponse response) throws ServletException, IOException {
         PrintWriter out = response.getWriter();
+
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+
+        /**
+         * Adding Log entry.
+         */
+        ILogEventService logEventService = appContext.getBean(LogEventService.class);
+        logEventService.insertLogEventPublicCalls("/ResultCI", "CALL", "ResultCI called : " + request.getRequestURI(), request);
+
+        String tag = request.getParameter("tag");
+
+        String helpMessage = "\nThis servlet is used to profide a global OK or KO based on the number and status of the execution done on a specific tag."
+                + "The number of executions are ponderated by parameters by priority from CI_OK_prio1 to CI_OK_prio4.\n"
+                + "Formula used is the following :\n"
+                + "Nb Exe Prio 1 testcases * CI_OK_prio1 + Nb Exe Prio 2 testcases * CI_OK_prio2 +\n"
+                + "  Nb Exe Prio 3 testcases * CI_OK_prio3 + Nb Exe Prio 4 testcases * CI_OK_prio4\n\n"
+                + "If result is < 1 then global servlet result is OK. If not, it is KO\n"
+                + "All execution needs to have a status equal to KO, FA, NA or PE.\n\n"
+                + "Parameter list :\n"
+                + "tag [mandatory] : Execution Tag to filter the test cases execution. [" + tag + "]\n";
+
+
         DatabaseSpring database = appContext.getBean(DatabaseSpring.class);
 
         Connection connection = database.connect();
         try {
 
-            String tag = request.getParameter("tag");
-            if (StringUtils.isNotBlank(tag)) {
+            boolean error = false;
+
+            // Checking the parameter validity. Tag is a mandatory parameter
+            if (StringUtils.isBlank(tag)) {
+                out.println("Error - Parameter nbminuteshistory is mandatory.");
+                error = true;
+            }
+
+            if (error == false) {
 
                 PreparedStatement prepStmt = connection.prepareStatement("SELECT count(*) AS NBKOP1 "
                         + "FROM testcaseexecution t "
@@ -151,19 +180,26 @@ public class ResultCI extends HttpServlet {
 
                 IParameterService parameterService = appContext.getBean(ParameterService.class);
 
-                float pond1 = Float.valueOf(parameterService.findParameterByKey("CI_OK_prio1","").getValue());
-                float pond2 = Float.valueOf(parameterService.findParameterByKey("CI_OK_prio2","").getValue());
-                float pond3 = Float.valueOf(parameterService.findParameterByKey("CI_OK_prio3","").getValue());
-                float pond4 = Float.valueOf(parameterService.findParameterByKey("CI_OK_prio4","").getValue());
+                float pond1 = Float.valueOf(parameterService.findParameterByKey("CI_OK_prio1", "").getValue());
+                float pond2 = Float.valueOf(parameterService.findParameterByKey("CI_OK_prio2", "").getValue());
+                float pond3 = Float.valueOf(parameterService.findParameterByKey("CI_OK_prio3", "").getValue());
+                float pond4 = Float.valueOf(parameterService.findParameterByKey("CI_OK_prio4", "").getValue());
 
-                if ((nbkop1 * pond1) + (nbkop2 * pond2) + (nbkop3 * pond3) + (nbkop4 * pond4) < 1) {
-                    out.print("OK");
+                String result = "";
+                float resultCal = (nbkop1 * pond1) + (nbkop2 * pond2) + (nbkop3 * pond3) + (nbkop4 * pond4);
+                if ((resultCal < 1) && (nbkop1 + nbkop2 + nbkop3 + nbkop4 > 0)) {
+                    result = "OK";
                 } else {
-                    out.print("KO");
+                    result = "KO";
                 }
+                out.print(result);
+
+                // Log the result with calculation detail.
+                logEventService.insertLogEventPublicCalls("/ResultCI", "CALLRESULT", "ResultCI calculated with result [" + result + "] : " + nbkop1 + "*" + pond1 + " + " + nbkop2 + "*" + pond2 + " + " + nbkop3 + "*" + pond3 + " + " + nbkop4 + "*" + pond4 + " = " + resultCal, request);
 
             } else {
-                out.print("Error : Tag information is not fed");
+                // In case of errors, we display the help message.
+                out.println(helpMessage);
             }
 
         } catch (Exception e) {
@@ -183,19 +219,18 @@ public class ResultCI extends HttpServlet {
 
     // <editor-fold defaultstate="collapsed"
     // desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-
     /**
      * Handles the HTTP
      * <code>GET</code> method.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     @Override
     protected void doGet(HttpServletRequest request,
-                         HttpServletResponse response) throws ServletException, IOException {
+            HttpServletResponse response) throws ServletException, IOException {
         processRequest(request, response);
     }
 
@@ -203,14 +238,14 @@ public class ResultCI extends HttpServlet {
      * Handles the HTTP
      * <code>POST</code> method.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     @Override
     protected void doPost(HttpServletRequest request,
-                          HttpServletResponse response) throws ServletException, IOException {
+            HttpServletResponse response) throws ServletException, IOException {
         processRequest(request, response);
     }
 
