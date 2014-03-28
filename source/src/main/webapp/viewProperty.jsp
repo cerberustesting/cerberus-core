@@ -32,36 +32,36 @@
     String testcase = request.getParameter("testcase");
     String property = request.getParameter("property");
     String database = request.getParameter("db");
+    String type = request.getParameter("type");
 
     IDocumentationService docService = appContext.getBean(IDocumentationService.class);
 
     if(test != null && !"".equals(test.trim()) 
         && testcase != null && !"".equals(testcase.trim())) {
 %>
-<form action="">
-    <input type="hidden" id="test" name="test" value="<%=test%>">
-    <input type="hidden" id="testCase" name="testCase" value="<%=testcase%>">
-    <input type="hidden" id="db" name="db" value="<%=database%>">
-    <label for="country"><% out.print(docService.findLabelHTML("invariant", "Country", "Country"));%></label>
-    <select id="country" name="country" onchange="getEnvironmentSelectBox()">
-        <option></option>
-    </select>
-    &nbsp;&nbsp;
-    <label for="environment"><% out.print(docService.findLabelHTML( "invariant", "Environment", "Environment"));%></label>
-    <select id="environment" name="environment" onchange="getEnvironmentSelectBox()">
-        <option></option>
-    </select>
-    <br>
-    <textarea rows="5" cols="80" id="property" name="property"><%=property%></textarea>
-    <br>
-    <input type="button" name="calculate" id="calculate" value="Calculate property" onclick="calculateProperty()">
-    <div id="result"></div>
-    <script>
-        $(document).ready(function() {
-            getCountrySelectBox();
-        });
+        <form action="">
+            <input type="hidden" id="test" name="test" value="<%=test%>">
+            <input type="hidden" id="testCase" name="testCase" value="<%=testcase%>">
+            <input type="hidden" id="type" name="type" value="<%=type%>">
+        <%if(!"executeSoapFromLib".equals(type) && !"getFromTestData".equals(type)) {%>
+            <input type="hidden" id="db" name="db" value="<%=database%>">
+            <label for="country"><% out.print(docService.findLabelHTML("invariant", "Country", "Country"));%></label>
+            <select id="country" name="country" onchange="getEnvironmentSelectBox()"></select>
+            &nbsp;&nbsp;
+            <label for="environment"><% out.print(docService.findLabelHTML( "invariant", "Environment", "Environment"));%></label>
+            <select id="environment" name="environment" onchange="getEnvironmentSelectBox()"></select>
+            <br>
+            <script>
+                $(document).ready(function() {
+                    getCountrySelectBox();
+                });
 
-    </script>
+            </script>
+        <%}%>
+            <textarea rows="5" cols="80" id="property" name="property"><%=property%></textarea>
+            <br>
+            <input type="button" name="calculate" id="calculate" value="Calculate property" onclick="calculateProperty()">
+            <div id="result"></div>
 
 <% } %>
 </form>

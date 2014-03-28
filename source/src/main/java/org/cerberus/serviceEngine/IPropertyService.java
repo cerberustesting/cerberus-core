@@ -26,6 +26,7 @@ import org.cerberus.entity.TestCaseExecution;
 import org.cerberus.entity.TestCaseCountryProperties;
 import org.cerberus.entity.TestCaseExecutionData;
 import org.cerberus.entity.TestCaseStepActionExecution;
+import org.cerberus.exception.CerberusException;
 
 /**
  * {Insert class description here}
@@ -39,4 +40,7 @@ public interface IPropertyService {
     TestCaseExecutionData calculateProperty(TestCaseExecutionData testCaseExecutionData, TestCaseStepActionExecution testCaseStepActionExecution, TestCaseCountryProperties testCaseCountryProperty);
     
     String decodeValue(String myString, List<TestCaseExecutionData> properties, TestCaseExecution tCExecution);
+
+    String calculatePropertyFromSOAPResponse(final String envelope, final String servicePath, final String parsingAnswer, final String method) throws CerberusException;
+
 }

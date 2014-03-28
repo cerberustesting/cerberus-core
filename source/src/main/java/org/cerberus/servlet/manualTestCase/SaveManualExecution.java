@@ -68,6 +68,8 @@ public class SaveManualExecution extends HttpServlet {
         String controlStatus = req.getParameter("controlStatus");
         String controlMessage = req.getParameter("controlMessage");
         String tag = req.getParameter("tag");
+        String browser = req.getParameter("browser");
+        String browserVersion = req.getParameter("browserVersion");
 
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         ITestCaseService testService = appContext.getBean(ITestCaseService.class);
@@ -96,7 +98,7 @@ public class SaveManualExecution extends HttpServlet {
             long now = new Date().getTime();
             String version = "Cerberus-"+Version.VERSION;
 
-            TestCaseExecution execution = factoryTCExecution.create(0, test, testCase, build, revision, env, country, "", "", now, now,
+            TestCaseExecution execution = factoryTCExecution.create(0, test, testCase, build, revision, env, country, browser, browserVersion, now, now,
                     controlStatus, controlMessage, application, "", "", "", tag, "Y", 0, 0, "", tCase.getStatus(), version,
                     null, null, null, false, "", "", "", "", "", "", null, null);
 

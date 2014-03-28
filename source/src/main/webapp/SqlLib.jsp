@@ -100,23 +100,15 @@
             
         %>
     <h3> SQL Library !</h3>
-        <table>
             <% 
             if (q1.first()) {
                 do {
-                %>
-                <tr>
-                 <td> <a href="#" onclick="loadSqlLibraryPopin('<%=Lign%>&Type=<%=q1.getString("Type")%>');"><%=q1.getString("Type")%></a></td>
-                </tr>
-            <% }
+                    %><a href="#" class="sqlLib" onclick="loadSqlLibraryPopin('<%=Lign%>&Type=<%=q1.getString("Type")%>');"><%=q1.getString("Type")%></a><%
+                }
                 while (q1.next());
-                               }
-            %>
-        </table>
-        
-         
-        <%            
             }
+
+}
                 
             } catch (Exception e) {
                 out.println("<br> error message : " + e.getMessage() + " "

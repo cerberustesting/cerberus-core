@@ -463,7 +463,8 @@ public class PropertyService implements IPropertyService {
     /**
      * Calcule d'une propriété depuis une requête SOAP.
      */
-    private String calculatePropertyFromSOAPResponse(final String envelope, final String servicePath, final String parsingAnswer, final String method) throws CerberusException {
+    @Override
+    public String calculatePropertyFromSOAPResponse(final String envelope, final String servicePath, final String parsingAnswer, final String method) throws CerberusException {
         String result = null;
         // Test des inputs nécessaires.
         if(envelope != null && servicePath != null && parsingAnswer != null && method != null) {

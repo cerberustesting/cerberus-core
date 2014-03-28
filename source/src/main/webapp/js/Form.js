@@ -1418,7 +1418,7 @@ function loadPropertyPopin(propertyID,test,testcase) {
 //    $('#popin').hide().empty();
     var value = $('#'+propertyID).val();
     var db = $('select#properties_dtb'+propertyID+'[name=\'properties_dtb\']').val();
-    var type = $('select#type3-BAD_FORMAT').val();
+    var type = $('select#type'+propertyID).val();
     
     $('#popin').load('viewProperty.jsp?type='+escape(type)+'&db='+escape(db)+'&test='+escape(test)+'&testcase='+escape(testcase)+'&property='+escape(value));
 //    $('#popin').show();
@@ -1438,6 +1438,7 @@ function loadSqlLibraryPopin(value) {
 
 function getCountrySelectBox() {
     $.get('GetCountryForTestCase', {test: $('#test').val(), testCase: $('#testCase').val()}, function (data) {
+        $('#country').empty().append($("<option></option>"));
         for(var i=0; i<data.countriesList.length; i++) {
             $('#country').append($("<option></option>")
                                         .attr("value",data.countriesList[i])
@@ -1448,6 +1449,7 @@ function getCountrySelectBox() {
 
 function getEnvironmentSelectBox() {
     $.get('GetEnvironmentAvailable', {test: $('#test').val(), testCase: $('#testCase').val(), country: $('#country').val()}, function (data) {
+        $('#environment').empty().append($("<option></option>"));
         for(var i=0; i<data.envList.length; i++) {
             $('#environment').append($("<option></option>")
                                         .attr("value",data.envList[i].environment)
@@ -1457,15 +1459,21 @@ function getEnvironmentSelectBox() {
 };
 
 function calculateProperty() {
-    $.get('CalculatePropertyForTestCase', {test: $("#test").val(),
-                                            testCase: $("#testCase").val(),
-                                            country: $("#country").val(),
-                                            environment: $("#environment").val(),
-                                            property: $("#property").val(),
-                                            database: $("#db").val()}
-                                    ,function(data) {
+    var query = {test: $("#test").val(),
+        testCase: $("#testCase").val(),
+        property: $("#property").val(),
+        type: $("#type").val()
+    };
 
-        if(data != null && data.resultList != null) {
+    if(query.type !== "executeSoapFromLib" && query.type !== "getFromTestData") {
+        query.country = $("#country").val();
+        query.environment = $("#environment").val();
+        query.database = $("#db").val();
+    }
+
+    $.get('CalculatePropertyForTestCase', query ,function(data) {
+
+        if(data !== null && data.resultList !== null) {
             $("#result").empty().text(data.resultList);
         } else {
             $("#result").empty().append("<b>Unable to retrieve property in database !</b>");
