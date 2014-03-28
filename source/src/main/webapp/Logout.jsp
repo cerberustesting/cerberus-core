@@ -28,7 +28,7 @@
         <META HTTP-EQUIV="refresh" CONTENT="1;URL=Homepage.jsp">
         <title>Logout</title>
     </head>
-    <body> 
+    <body>
         <%@ include file="include/function.jsp" %>
         <%@ include file="include/header.jsp" %>
         <div align="center" style="padding-top: 12%;">

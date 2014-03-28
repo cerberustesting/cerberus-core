@@ -16,7 +16,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
-  --%>
+--%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
     "http://www.w3.org/TR/html4/loose.dtd">
@@ -25,9 +25,13 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
         <link rel="stylesheet" type="text/css" href="css/crb_style.css">
         <link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico" />
+        <META HTTP-EQUIV="refresh" CONTENT="2;URL=Homepage.jsp">
         <title>Login Error</title>
     </head>
     <body>
-        <h3>Access Denied!</h3>
+        <div align="center" style="padding-top: 12%;">
+            <h1>Access Denied!<br>Wrong User or Password.</h1>
+        </div>
     </body>
 </html>
+<% session.invalidate();%>
