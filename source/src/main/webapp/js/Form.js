@@ -882,6 +882,14 @@ function addTestCaseControl(table, step_id, max_tcc_step, max_tcc_sequence,
 
 	document.getElementById(table).appendChild(TR);
 }
+
+function switchDivVisibleInvisible(visible, invisible){
+        document.getElementById(visible).style.display = "inline-block";
+	document.getElementById(invisible).style.display = "none"; 
+}
+function enableElement(element){
+    document.getElementById(element).disabled = false;
+}
 function setVisible() {
 	document.getElementById('generalparameter').style.display = "table";
 	document.getElementById('parametergeneral').style.display = "none";

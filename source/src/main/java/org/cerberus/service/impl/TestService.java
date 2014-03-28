@@ -68,4 +68,9 @@ public class TestService implements ITestService {
         return testAccess.deleteTest(test);
     }
 
+    @Override
+    public Test findTestByKey(String test) {
+        return testAccess.findTestByKey(test);
+                }
+
 }

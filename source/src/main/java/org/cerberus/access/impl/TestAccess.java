@@ -55,4 +55,9 @@ public class TestAccess implements ITestAccess {
     public boolean deleteTest(Test test) {
         return this.testDAO.deleteTest(test);
     }
+
+    @Override
+    public Test findTestByKey(String Test) {
+        return this.testDAO.findTestByKey(Test);
+    }
 }

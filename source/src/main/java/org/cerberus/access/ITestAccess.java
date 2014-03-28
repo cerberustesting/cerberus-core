@@ -54,4 +54,11 @@ public interface ITestAccess {
      * @return TRUE if test is deleted in database
      */
     boolean deleteTest(Test test);
+    
+    /**
+     * 
+     * @param Test Key of the test table
+     * @return Test object
+     */
+    Test findTestByKey(String Test);
 }
