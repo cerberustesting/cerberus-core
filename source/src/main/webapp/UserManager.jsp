@@ -237,9 +237,6 @@
                     <option value="N">N</option>
                 </select>
                 <br /><br />
-                <label for="name">Email</label>
-                <input type="text" name="email" id="email" maxlength="25" rel="6" />
-                <br /><br />
                 <label for="groups">User Group</label>
                 <%=ComboInvariantMultipleAjax(conn, "groups", "", "groups", "0", "USERGROUP", "", "", false)%>
                 <br /><br />
