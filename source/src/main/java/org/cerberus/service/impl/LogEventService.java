@@ -20,11 +20,17 @@
 package org.cerberus.service.impl;
 
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.servlet.http.HttpServletRequest;
 
 import org.cerberus.dao.ILogEventDAO;
 import org.cerberus.entity.LogEvent;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.factory.IFactoryLogEvent;
 import org.cerberus.service.ILogEventService;
+import org.cerberus.service.IParameterService;
+import org.cerberus.util.ParameterParserUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -37,7 +43,11 @@ public class LogEventService implements ILogEventService {
 
     @Autowired
     private ILogEventDAO logEventDAO;
-    
+    @Autowired
+    private IFactoryLogEvent factoryLogEvent;
+    @Autowired
+    private IParameterService parameterService;
+
     @Override
     public List<LogEvent> findAllLogEvent() throws CerberusException {
         return logEventDAO.findAllLogEvent();
@@ -53,12 +63,31 @@ public class LogEventService implements ILogEventService {
         return logEventDAO.getNumberOfLogEvent(searchTerm);
     }
 
-    
     @Override
     public boolean insertLogEvent(LogEvent logevent) throws CerberusException {
         return logEventDAO.insertLogEvent(logevent);
     }
-    
-    
-    
+
+    @Override
+    public void insertLogEventPublicCalls(String page, String action, String log, HttpServletRequest request) {
+        // Only log if cerberus_log_publiccalls parameter is equal to Y.
+        String doit = "";
+        try {
+            doit = parameterService.findParameterByKey("cerberus_log_publiccalls", "").getValue();
+        } catch (CerberusException ex) {
+            Logger.getLogger(LogEventService.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        if (doit.equalsIgnoreCase("Y")) {
+            String myUser = "";
+            if (!(request.getUserPrincipal() == null)) {
+                myUser = ParameterParserUtil.parseStringParam(request.getUserPrincipal().getName(), "");
+            }
+            try {
+                this.insertLogEvent(factoryLogEvent.create(0, 0, myUser, null, page, action, log, request.getRemoteAddr(), request.getLocalAddr()));
+            } catch (CerberusException ex) {
+                org.apache.log4j.Logger.getLogger(LogEventService.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex);
+            }
+        }
+    }
 }

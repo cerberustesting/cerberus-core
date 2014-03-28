@@ -35,9 +35,11 @@ import org.cerberus.entity.TestCaseExecution;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.service.IApplicationService;
 import org.cerberus.service.IInvariantService;
+import org.cerberus.service.ILogEventService;
 import org.cerberus.service.ITestCaseExecutionService;
 import org.cerberus.service.impl.ApplicationService;
 import org.cerberus.service.impl.InvariantService;
+import org.cerberus.service.impl.LogEventService;
 import org.cerberus.service.impl.TestCaseExecutionService;
 import org.cerberus.util.DateUtil;
 import org.cerberus.util.ParameterParserUtil;
@@ -46,15 +48,21 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
- * This servlet is for monitoring purpose. It reports the number of "Performance
- * monitor" execution on WORKING testcases that were performed in the last
- * minutes (nbminuteshistory). Nagios system calls it in order to verify the
- * number of KO in the last n minutes.
+ * This servlet is for monitoring purpose. It reports the number of execution of
+ * testcases that were performed in the last minutes (nbminuteshistory). Nagios
+ * system calls it in order to verify the number of KO in the last n minutes.
  * <p/>
- * It can be filtered using the following criterias : application - Filter on
- * the executions performed on the application - country : filter on the
- * execution performed on the country - controlstatus : filter all execution
- * that return the following status.
+ * It can be filtered using the following criterias :
+ * <p/>
+ * test - Filter on the corresponding test
+ * <p/>
+ * environment - Filter on the corresponding environment
+ * <p/>
+ * country : filter on the execution performed on the country.
+ * <p/>
+ * application - Filter on the executions performed on the application
+ * <p/>
+ * controlstatus : filter all execution that return the following status.
  *
  * @author vertigo
  */
@@ -76,6 +84,13 @@ public class GetNumberOfExecutions extends HttpServlet {
         PrintWriter out = response.getWriter();
 
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+
+        /**
+         * Adding Log entry.
+         */
+        ILogEventService logEventService = appContext.getBean(LogEventService.class);
+        logEventService.insertLogEventPublicCalls("/GetNumberOfExecutions", "CALL", "GetNumberOfExecutionsV0 called : " + request.getRequestURI(), request);
+
         IApplicationService myApplicationService = appContext.getBean(ApplicationService.class);
         IInvariantService myInvariantService = appContext.getBean(InvariantService.class);
 
@@ -121,7 +136,7 @@ public class GetNumberOfExecutions extends HttpServlet {
             if (!controlStatus.equalsIgnoreCase("") && !myInvariantService.isInvariantExist("TCESTATUS", controlStatus)) {
                 out.println("Warning - Control Status does not exist  : " + controlStatus);
             }
-            
+
             // Starting the request only if previous parameters exist.
             if (!error) {
 

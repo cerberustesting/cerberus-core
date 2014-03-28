@@ -20,6 +20,7 @@
 package org.cerberus.service;
 
 import java.util.List;
+import javax.servlet.http.HttpServletRequest;
 
 import org.cerberus.entity.LogEvent;
 import org.cerberus.exception.CerberusException;
@@ -37,4 +38,12 @@ public interface ILogEventService {
     public Integer getNumberOfLogEvent(String searchTerm) throws CerberusException;
 
     public boolean insertLogEvent(LogEvent logevent) throws CerberusException;
+    
+    /**
+     *
+     * @param message
+     * @param request
+     * @return
+     */
+    public void insertLogEventPublicCalls(String page, String action, String log, HttpServletRequest request);
 }
