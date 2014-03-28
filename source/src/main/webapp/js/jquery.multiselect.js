@@ -202,7 +202,8 @@ $.widget("ech.multiselect", {
 	update: function(){
 		var o = this.options,
 			$inputs = this.labels.find('input'),
-			$checked = $inputs.filter('[checked]'),
+                        $checked = this.labels.find('input:checked'),
+                        //$inputs.filter('[checked]'),
 			numChecked = $checked.length,
 			value;
 		
@@ -547,14 +548,14 @@ $.widget("ech.multiselect", {
 				.show()
 				.position( o.position )
 				.hide()
-				.show( effect, speed );
+				.show( speed );
 		
 		// if position utility is not available...
 		} else {
 			menu.css({ 
 				top: pos.top + button.outerHeight(),
 				left: pos.left
-			}).show( effect, speed );
+			}).show(  speed );
 		}
 		
 		// select the first option
@@ -581,7 +582,7 @@ $.widget("ech.multiselect", {
 			speed = o.hide[1] || this.speed;
 		}
 	
-		this.menu.hide(effect, speed);
+		this.menu.hide(speed);
 		this.button.removeClass('ui-state-active').trigger('blur').trigger('mouseleave');
 		this._isOpen = false;
 		this._trigger('close');
