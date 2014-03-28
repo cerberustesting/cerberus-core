@@ -25,7 +25,7 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <link rel="stylesheet" type="text/css" href="css/crb_style.css">
         <link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico">
-        <META HTTP-EQUIV="refresh" CONTENT="1;URL=Homepage">
+        <META HTTP-EQUIV="refresh" CONTENT="1;URL=Homepage.jsp">
         <title>Logout</title>
     </head>
     <body> 
