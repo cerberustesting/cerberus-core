@@ -38,7 +38,15 @@ public interface ILogEventService {
     public Integer getNumberOfLogEvent(String searchTerm) throws CerberusException;
 
     public boolean insertLogEvent(LogEvent logevent) throws CerberusException;
-    
+
+    /**
+     *
+     * @param message
+     * @param request
+     * @return
+     */
+    public void insertLogEvent(String page, String action, String log, HttpServletRequest request);
+
     /**
      *
      * @param message

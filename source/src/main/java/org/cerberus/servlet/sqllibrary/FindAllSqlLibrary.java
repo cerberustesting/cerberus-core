@@ -165,6 +165,7 @@ public class FindAllSqlLibrary extends HttpServlet {
 
             response.setContentType("application/json");
             response.getWriter().print(jsonResponse.toString());
+            
         } catch (JSONException ex) {
             MyLogger.log(FindAllSqlLibrary.class.getName(), Level.FATAL, ex.toString());
         } finally {

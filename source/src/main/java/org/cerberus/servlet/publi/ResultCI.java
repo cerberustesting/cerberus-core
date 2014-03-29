@@ -58,19 +58,20 @@ public class ResultCI extends HttpServlet {
          * Adding Log entry.
          */
         ILogEventService logEventService = appContext.getBean(LogEventService.class);
-        logEventService.insertLogEventPublicCalls("/ResultCI", "CALL", "ResultCI called : " + request.getRequestURI(), request);
+        logEventService.insertLogEventPublicCalls("/ResultCI", "CALL", "ResultCIV0 called : " + request.getRequestURL(), request);
 
         String tag = request.getParameter("tag");
 
-        String helpMessage = "\nThis servlet is used to profide a global OK or KO based on the number and status of the execution done on a specific tag."
+        String helpMessage = "\nThis servlet is used to profide a global OK or KO based on the number and status of the execution done on a specific tag.\n"
                 + "The number of executions are ponderated by parameters by priority from CI_OK_prio1 to CI_OK_prio4.\n"
                 + "Formula used is the following :\n"
                 + "Nb Exe Prio 1 testcases * CI_OK_prio1 + Nb Exe Prio 2 testcases * CI_OK_prio2 +\n"
                 + "  Nb Exe Prio 3 testcases * CI_OK_prio3 + Nb Exe Prio 4 testcases * CI_OK_prio4\n\n"
-                + "If result is < 1 then global servlet result is OK. If not, it is KO\n"
+                + "If not executions are found, the result is KO.\n"
+                + "With at least 1 execution, if result is < 1 then global servlet result is OK. If not, it is KO.\n"
                 + "All execution needs to have a status equal to KO, FA, NA or PE.\n\n"
                 + "Parameter list :\n"
-                + "tag [mandatory] : Execution Tag to filter the test cases execution. [" + tag + "]\n";
+                + "- tag [mandatory] : Execution Tag to filter the test cases execution. [" + tag + "]\n";
 
 
         DatabaseSpring database = appContext.getBean(DatabaseSpring.class);
@@ -82,7 +83,7 @@ public class ResultCI extends HttpServlet {
 
             // Checking the parameter validity. Tag is a mandatory parameter
             if (StringUtils.isBlank(tag)) {
-                out.println("Error - Parameter nbminuteshistory is mandatory.");
+                out.println("Error - Parameter tag is mandatory.");
                 error = true;
             }
 

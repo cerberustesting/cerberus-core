@@ -20,6 +20,7 @@
 package org.cerberus.servlet.log;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -105,34 +106,41 @@ public class GetLogEvent extends HttpServlet {
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         ILogEventService logEventService = appContext.getBean(LogEventService.class);
         try {
+
+
+            List<LogEvent> logEventList = logEventService.findAllLogEvent(start, amount, colName, dir, searchTerm);
+
             JSONObject jsonResponse = new JSONObject();
-            try {
-                for (LogEvent myLogEvent : logEventService.findAllLogEvent(start, amount, colName, dir, searchTerm)) {
-                    JSONObject u = new JSONObject();
-                    u.put("login", myLogEvent.getLogin());
-                    u.put("time", myLogEvent.getTime());
-                    u.put("page", myLogEvent.getPage());
-                    u.put("action", myLogEvent.getAction());
-                    u.put("log", myLogEvent.getLog());
-                    data.put(u);
-                }
-                Integer iTotalRecords = logEventService.getNumberOfLogEvent("");
-                Integer iTotalDisplayRecords = logEventService.getNumberOfLogEvent(searchTerm);
-                jsonResponse.put("aaData", data);
-                jsonResponse.put("sEcho", echo);
-                jsonResponse.put("iTotalRecords", iTotalRecords);
-                jsonResponse.put("iTotalDisplayRecords", iTotalDisplayRecords);
-                response.setContentType("application/json");
-                response.getWriter().print(jsonResponse.toString());
-            } catch (CerberusException ex) {
-                response.setContentType("text/html");
-                response.getWriter().print(ex.getMessageError().getDescription());
+
+            for (LogEvent myLogEvent : logEventList) {
+                JSONObject u = new JSONObject();
+                u.put("login", myLogEvent.getLogin());
+                u.put("time", myLogEvent.getTime());
+                u.put("page", myLogEvent.getPage());
+                u.put("action", myLogEvent.getAction());
+                u.put("log", myLogEvent.getLog());
+                data.put(u);
             }
+
+            Integer iTotalRecords = logEventService.getNumberOfLogEvent("");
+            Integer iTotalDisplayRecords = logEventService.getNumberOfLogEvent(searchTerm);
+            jsonResponse.put("aaData", data);
+            jsonResponse.put("sEcho", echo);
+            jsonResponse.put("iTotalRecords", iTotalRecords);
+            jsonResponse.put("iTotalDisplayRecords", iTotalDisplayRecords);
+
+            response.setContentType("application/json");
+            response.getWriter().print(jsonResponse.toString());
+
+        } catch (CerberusException ex) {
+            response.setContentType("application/json");
+            response.getWriter().print("");
         } catch (JSONException e) {
             MyLogger.log(GetUsers.class.getName(), Level.FATAL, "" + e);
-            response.setContentType("text/html");
+            response.setContentType("application/json");
             response.getWriter().print(e.getMessage());
         }
+        
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

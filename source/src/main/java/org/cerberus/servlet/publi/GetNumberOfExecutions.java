@@ -89,7 +89,7 @@ public class GetNumberOfExecutions extends HttpServlet {
          * Adding Log entry.
          */
         ILogEventService logEventService = appContext.getBean(LogEventService.class);
-        logEventService.insertLogEventPublicCalls("/GetNumberOfExecutions", "CALL", "GetNumberOfExecutionsV0 called : " + request.getRequestURI(), request);
+        logEventService.insertLogEventPublicCalls("/GetNumberOfExecutions", "CALL", "GetNumberOfExecutionsV0 called : " + request.getRequestURL(), request);
 
         IApplicationService myApplicationService = appContext.getBean(ApplicationService.class);
         IInvariantService myInvariantService = appContext.getBean(InvariantService.class);
@@ -103,12 +103,12 @@ public class GetNumberOfExecutions extends HttpServlet {
         int NbMinutes = ParameterParserUtil.parseIntegerParam(request.getParameter("nbminuteshistory"), 0);
 
         String helpMessage = "\nThis servlet return the number of execution that match the following criterias :\n"
-                + "nbminuteshistory [mandatory] : the number of minutes in the past from the moment the servlet is called. This parameter must be > 0. " + NbMinutes + "\n"
-                + "test : Executions done on the test. " + test + "\n"
-                + "environment : Environment where the execution happened. Default to PROD. " + environment + "\n"
-                + "country : Executions done on the country. " + country + "\n"
-                + "application : Executions done against that application. " + application + "\n"
-                + "controlstatus : execution that return the following status. " + controlStatus + "\n";
+                + "- nbminuteshistory [mandatory] : the number of minutes in the past from the moment the servlet is called. This parameter must be > 0. [" + NbMinutes + "]\n"
+                + "- test : Executions done on the test. [" + test + "]\n"
+                + "- environment : Environment where the execution happened. Default to PROD. [" + environment + "]\n"
+                + "- country : Executions done on the country. [" + country + "]\n"
+                + "- application : Executions done against that application. [" + application + "]\n"
+                + "- controlstatus : execution that return the following status. [" + controlStatus + "]\n";
 
         try {
 

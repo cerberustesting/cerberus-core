@@ -69,6 +69,19 @@ public class LogEventService implements ILogEventService {
     }
 
     @Override
+    public void insertLogEvent(String page, String action, String log, HttpServletRequest request) {
+        String myUser = "";
+        if (!(request.getUserPrincipal() == null)) {
+            myUser = ParameterParserUtil.parseStringParam(request.getUserPrincipal().getName(), "");
+        }
+        try {
+            this.insertLogEvent(factoryLogEvent.create(0, 0, myUser, null, page, action, log, request.getRemoteAddr(), request.getLocalAddr()));
+        } catch (CerberusException ex) {
+            org.apache.log4j.Logger.getLogger(LogEventService.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex);
+        }
+    }
+
+    @Override
     public void insertLogEventPublicCalls(String page, String action, String log, HttpServletRequest request) {
         // Only log if cerberus_log_publiccalls parameter is equal to Y.
         String doit = "";
@@ -79,15 +92,7 @@ public class LogEventService implements ILogEventService {
         }
 
         if (doit.equalsIgnoreCase("Y")) {
-            String myUser = "";
-            if (!(request.getUserPrincipal() == null)) {
-                myUser = ParameterParserUtil.parseStringParam(request.getUserPrincipal().getName(), "");
-            }
-            try {
-                this.insertLogEvent(factoryLogEvent.create(0, 0, myUser, null, page, action, log, request.getRemoteAddr(), request.getLocalAddr()));
-            } catch (CerberusException ex) {
-                org.apache.log4j.Logger.getLogger(LogEventService.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex);
-            }
+            this.insertLogEvent(page, action, log, request);
         }
     }
 }

@@ -73,12 +73,12 @@ public class NewRelease extends HttpServlet {
          * Adding Log entry.
          */
         ILogEventService logEventService = appContext.getBean(LogEventService.class);
-        logEventService.insertLogEventPublicCalls("/NewRelease", "CALL", "NewReleaseV0 called : " + request.getRequestURI(), request);
-        
+        logEventService.insertLogEventPublicCalls("/NewRelease", "CALL", "NewReleaseV0 called : " + request.getRequestURL(), request);
+
         IApplicationService MyApplicationService = appContext.getBean(ApplicationService.class);
         IUserService MyUserService = appContext.getBean(UserService.class);
         IProjectService MyProjectService = appContext.getBean(ProjectService.class);
-        
+
         // Parsing all parameters.
         String application = ParameterParserUtil.parseStringParam(request.getParameter("application"), "");
         String release = ParameterParserUtil.parseStringParam(request.getParameter("release"), "");
@@ -94,21 +94,21 @@ public class NewRelease extends HttpServlet {
         String mavenartifactid = ParameterParserUtil.parseStringParam(request.getParameter("mavenartifactid"), "");
         String mavenversion = ParameterParserUtil.parseStringParam(request.getParameter("mavenversion"), "");
 
-        String helpMessage="\nThis servlet is used to create or update a release entry in a 'NONE' build and 'NONE' revision.\n\nParameter list :\n"
-                + "application [mandatory] : the application that produced the release. This parameter must match the application list in Cerberus. [" + application + "]\n"
-                + "release : release number or svn number. This should be unique at the application level. 2 calls on the same application and release will update the other parameters on the same entry. [" + release + "]\n"
-                + "project : Project reference. [" + project + "]\n"
-                + "ticket : Ticket Reference. [" + ticket + "]\n"
-                + "bug : Bug reference. [" + bug + "]\n"
-                + "subject : A short description of the change. [" + subject + "]\n"
-                + "owner : User name of the developper/ person who did the commit. [" + owner + "]\n"
-                + "link : URL Link on detail documentation on the release. [" + link + "]\n"
+        String helpMessage = "\nThis servlet is used to create or update a release entry in a 'NONE' build and 'NONE' revision.\n\nParameter list :\n"
+                + "- application [mandatory] : the application that produced the release. This parameter must match the application list in Cerberus. [" + application + "]\n"
+                + "- release : release number or svn number. This should be unique at the application level. 2 calls on the same application and release will update the other parameters on the same entry. [" + release + "]\n"
+                + "- project : Project reference. [" + project + "]\n"
+                + "- ticket : Ticket Reference. [" + ticket + "]\n"
+                + "- bug : Bug reference. [" + bug + "]\n"
+                + "- subject : A short description of the change. [" + subject + "]\n"
+                + "- owner : User name of the developper/ person who did the commit. [" + owner + "]\n"
+                + "- link : URL Link on detail documentation on the release. [" + link + "]\n\n"
                 + "The following optional parameters could be used later when Cerberus send the deploy request to Jenkins.\n"
-                + "jenkinsbuildid : Jenkins Build ID. [" + jenkinsbuildid + "]\n"
-                + "mavengroupid : Maven Group ID. [" + mavengroupid + "]\n"
-                + "mavenartifactid : Maven Artifact ID. [" + mavenartifactid + "]\n"
-                + "mavenversion : Maven Version. [" + mavenversion + "]\n";
-        
+                + "- jenkinsbuildid : Jenkins Build ID. [" + jenkinsbuildid + "]\n"
+                + "- mavengroupid : Maven Group ID. [" + mavengroupid + "]\n"
+                + "- mavenartifactid : Maven Artifact ID. [" + mavenartifactid + "]\n"
+                + "- mavenversion : Maven Version. [" + mavenversion + "]\n";
+
         DatabaseSpring database = appContext.getBean(DatabaseSpring.class);
 
         Connection connection = database.connect();
@@ -119,6 +119,10 @@ public class NewRelease extends HttpServlet {
             // Checking the parameter validity. If application has been entered, does it exist ?
             if (!application.equalsIgnoreCase("") && !MyApplicationService.isApplicationExist(application)) {
                 out.println("Error - Application does not exist  : " + application);
+                error = true;
+            }
+            if (application.equalsIgnoreCase("")) {
+                out.println("Error - Parameter application is mandatory.");
                 error = true;
             }
 

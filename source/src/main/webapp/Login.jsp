@@ -40,7 +40,7 @@
              * Adding Log entry.
              */
             ILogEventService logEventService = appContext.getBean(LogEventService.class);
-            logEventService.insertLogEventPublicCalls("/Login.jsp", "LOGINERROR", "Invalid Password for : " + request.getParameter("j_username"), request);
+            logEventService.insertLogEvent("/Login.jsp", "LOGINERROR", "Invalid Password for : " + request.getParameter("j_username"), request);
         }
 %>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
