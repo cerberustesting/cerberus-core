@@ -3149,6 +3149,10 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("('', 'cerberus_log_publiccalls', 'N', 'Enable [Y] or Disable [N] the loging of all the calls done to Cerberus public servlets.')");
         SQLInstruction.add(SQLS.toString());
 
+//Add parameters for the enabling or disabling the logs of public calls.
+        SQLS = new StringBuilder();
+        SQLS.append("DROP TABLE `logglassfish`;");
+        SQLInstruction.add(SQLS.toString());
 
 
         return SQLInstruction;
