@@ -404,6 +404,18 @@ input#submitButtonDuplicate {
     margin:0 0 7px 0;
 }
 
+.login-box-error {
+    float: left;
+    display:inline;
+    width:180px;
+    color: red;
+    text-align: right;
+    padding: 0px 0px 0 0;
+    margin:0 0 7px 0;
+    font-weight: bold;
+    text-align: center;
+}
+
 .login-box-field {
     float: left;
     display:inline;

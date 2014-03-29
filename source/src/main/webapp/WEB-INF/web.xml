@@ -993,7 +993,6 @@
             <url-pattern>/DatabaseMaintenance.jsp</url-pattern>
             <url-pattern>/Documentation.jsp</url-pattern>
             <url-pattern>/Login.jsp</url-pattern>
-            <url-pattern>/LoginError.jsp</url-pattern>
             <url-pattern>/Logout.jsp</url-pattern>
         </web-resource-collection>
         <web-resource-collection>
@@ -1047,7 +1046,7 @@
             <realm-name>securityCerberusQA</realm-name>-->
         <form-login-config>
             <form-login-page>/Login.jsp</form-login-page>
-            <form-error-page>/LoginError.jsp</form-error-page>
+            <form-error-page>/Login.jsp?error=1</form-error-page>
         </form-login-config>
     </login-config>
     <!--End JAAS Configuration -->

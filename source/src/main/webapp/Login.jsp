@@ -16,7 +16,9 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
-  --%>
+--%>
+<%@page import="org.cerberus.service.impl.LogEventService"%>
+<%@page import="org.cerberus.service.ILogEventService"%>
 <%@page import="org.cerberus.version.Version"%>
 <%@page import="org.cerberus.log.MyLogger"%>
 <%@page import="org.cerberus.service.IParameterService"%>
@@ -30,7 +32,16 @@
     ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
     IParameterService myParameterService = appContext.getBean(IParameterService.class);
     try {
-        String CerberusSupportEmail = myParameterService.findParameterByKey("cerberus_support_email","").getValue();
+        String CerberusSupportEmail = myParameterService.findParameterByKey("cerberus_support_email", "").getValue();
+        String errorMessage = "";
+        if (request.getParameter("error") != null && request.getParameter("error").equalsIgnoreCase("1")) {
+            errorMessage = "User or password invalid !!!";
+            /**
+             * Adding Log entry.
+             */
+            ILogEventService logEventService = appContext.getBean(LogEventService.class);
+            logEventService.insertLogEventPublicCalls("/Login.jsp", "LOGINERROR", "Invalid Password for : " + request.getParameter("j_username"), request);
+        }
 %>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
     "http://www.w3.org/TR/html4/loose.dtd">
@@ -68,8 +79,9 @@
                     <div class="login-box-field">
                         <input name="j_password" type="password" class="form-login" title="Password" value="" size="30" maxlength="20">
                     </div>
-                    <br>
-                    <br>
+                    <div class="login-box-error">
+                        <%= errorMessage%>
+                    </div>
                     <input id="Login" name="Login" type="image" src="images/login-btn.png" value="Submit" alt="Submit" style="margin-left:90px;">
                 </form>
             </div>
