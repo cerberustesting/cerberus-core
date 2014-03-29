@@ -41,8 +41,22 @@
 <html>
 <head>
     <title>TestCase</title>
-    <script src="js/jquery-1.9.1.min.js" type="text/javascript"></script>
-    <script src="js/ajax-loader.js" type="text/javascript"></script>
+    <link rel="stylesheet" type="text/css" href="css/crb_style.css">
+        <link rel="stylesheet" type="text/css" href="css/jquery.dataTables.css">
+        <link rel="stylesheet" type="text/css" href="css/jquery-ui.css">
+        <link rel="stylesheet" type="text/css" href="css/dataTables_jui.css">
+        <link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico">
+        <link href="css/jquery.dataTables_themeroller.css" rel="stylesheet">
+        <link rel="stylesheet" type="text/css" href="css/elrte.min.css">
+        <script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>
+        <script type="text/javascript" src="js/jquery-ui-1.10.2.js"></script>
+        <script type="text/javascript" src="js/jquery.jeditable.mini.js"></script>
+        <script type="text/javascript" src="js/jquery.dataTables.min.js"></script>
+        <script type="text/javascript" src="js/jquery.dataTables.editable.js"></script>
+        <script type="text/javascript" src="js/jquery.validate.min.js"></script>
+        <script type="text/javascript" src="js/jquery.dataTables.rowReordering.js"></script>
+        <script type="text/javascript" src="js/jquery.dataTables.rowGrouping.js"></script>
+        <script src="js/ajax-loader.js" type="text/javascript"></script>
     <style type="text/css">
         body {
             font-family: helvetica;
@@ -126,22 +140,6 @@
         }
     </style>
 
-    <script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>
-    <script type="text/javascript" src="js/jquery-ui-1.10.2.custom.min.js"></script>
-    <script type="text/javascript" src="js/jquery.dataTables.min.js"></script>
-    <script type="text/javascript" src="js/jquery.dataTables.rowReordering.js"></script>
-    <script type="text/javascript" src="js/jquery.dataTables.rowGrouping.js"></script>
-    <link href="css/ui-lightness/jquery-ui-1.10.2.custom.css" rel="stylesheet">
-    <link href="css/demo_page.css" rel="stylesheet">
-    <link href="css/demo_table.css" rel="stylesheet">
-    <link href="css/demo_table_jui.css" rel="stylesheet">
-    <link href="css/jquery.dataTables.css" rel="stylesheet">
-    <link href="css/jquery.dataTables_themeroller.css" rel="stylesheet">
-    <link href="css/smoothness/jquery-ui-1.10.2.custom.min.css" rel="stylesheet">
-
-        <link rel="stylesheet" type="text/css" href="css/crb_style.css">
-        <link rel="stylesheet" type="text/css" href="css/elrte.min.css">
-        <link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico" />
 </head>
 <body>
 <%@ include file="include/header.jsp" %>

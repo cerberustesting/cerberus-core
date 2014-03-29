@@ -41,15 +41,22 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Execution Reporting : Status</title>
+        
         <link rel="stylesheet" type="text/css" href="css/crb_style.css">
         <link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico" />
+        <link type="text/css" rel="stylesheet" href="css/jquery.multiselect.css">
+        <link type="text/css" rel="stylesheet" href="css/jquery.dataTables.css">
+        <link type="text/css" rel="stylesheet" href="css/jquery-ui.css">
         <script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>
+        <script type="text/javascript" src="js/jquery-ui-1.10.2.js"></script>
+        <script type="text/javascript" src="js/jquery.multiselect.js" charset="utf-8"></script>
     </head>
     <body>
         <%@ include file="include/function.jsp" %>
         <%@ include file="include/header.jsp" %>
         <div id="body">
             <%
+            
 
                 HashMap<String, Integer> statsStatusForTest = new HashMap<String, Integer>();
                 List<String> listStatus = new ArrayList<String>();
@@ -220,6 +227,8 @@
                     build = new String("%%");
                 }
 
+                
+                
                 String[] projects;
                 String project = "";
                 if (request.getParameterValues("Project") != null && (request.getParameterValues("Project")[0]).compareTo("All") != 0) {
@@ -1521,6 +1530,34 @@
                 }
             %>
         </script>
+        <script type="text/javascript">
+            (document).ready($("#project").multiselect({
+                multiple: true,
+                header: "Select an option",
+                noneSelectedText:"Select Project",
+                selectedText: "# of # Projects selected",
+                selectedList: 1
+            }));
+        </script>
+        <script type="text/javascript">
+            (document).ready($("#status").multiselect({
+                multiple: true,
+                header: "Select an option",
+                noneSelectedText:"Select Status",
+                selectedText: "# of # Status selected",
+                selectedList: 1
+            }));
+        </script>
+        <script type="text/javascript">
+            (document).ready($("#exestatus").multiselect({
+                multiple: true,
+                header: "Select an option",
+                noneSelectedText:"Select Status",
+                selectedText: "# of # Status selected",
+                selectedList: 1
+            }));
+        </script>
+        
 
         <br><% out.print(display_footer(DatePageStart));%>
     </body>

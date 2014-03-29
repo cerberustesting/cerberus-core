@@ -31,21 +31,18 @@
     <head>
         <meta content="text/html; charset=UTF-8" http-equiv="content-type">
         <title>TestCase Creation</title>
-        <link rel="stylesheet" type="text/css" href="css/crb_style.css">
-        <link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico" />
-        <script type="text/javascript" src="js/jquery-1.10.2.min.js"></script>
-        <!--must import to use elRTE plugin-->
+        <script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>
         <script type="text/javascript" src="js/jquery-migrate-1.2.1.min.js"></script>
-        <script type="text/javascript" src="js/jquery-ui-1.10.2.custom.min.js"></script>
+        <script type="text/javascript" src="js/jquery-ui-1.10.2.js"></script>
         <script type="text/javascript" src="js/elrte.min.js"></script>
         <script type="text/javascript" src="js/i18n/elrte.en.js"></script>
-        <style media="screen" type="text/css">
-            @import "css/smoothness/jquery-ui-1.10.2.custom.min.css";
-            @import "css/elrte.min.css";
-        </style>
-        <link rel="stylesheet" type="text/css" href="css/crb_style.css">
+        <script type="text/javascript" src="js/elfinder.min.js"></script>
+        <link rel="stylesheet" type="text/css" href="css/jquery-ui.css">
         <link rel="stylesheet" type="text/css" href="css/elrte.min.css">
-
+        <link rel="stylesheet" type="text/css" href="css/crb_style.css">
+        <link rel="stylesheet" type="text/css" href="css/elfinder.min.css">
+        <link rel="stylesheet" type="text/css" href="css/theme.css">
+        <link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico" />
         <script type="text/javascript">
             $().ready(function() {
                 elRTE.prototype.options.toolbars.cerberus = ['style', 'alignment', 'colors', 'format', 'indent', 'lists', 'links'];
