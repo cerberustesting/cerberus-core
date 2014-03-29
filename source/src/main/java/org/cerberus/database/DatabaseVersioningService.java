@@ -283,7 +283,6 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('COUNTRY','PT',15,4,'Portugal','200',NULL,NULL)");
         SQLS.append(",('COUNTRY','RU',16,4,'Russia','240',NULL,NULL)");
         SQLS.append(",('COUNTRY','UK',17,4,'Great Britan','300',NULL,NULL)");
-        SQLS.append(",('COUNTRY','VI',19,4,'Generic country used by .com','280',NULL,NULL)");
         SQLS.append(",('COUNTRY','UA',25,4,'Ukrainia','290',NULL,NULL)");
         SQLS.append(",('COUNTRY','DE',40,4,'Germany','600',NULL,NULL)");
         SQLS.append(",('COUNTRY','AT',41,4,'Austria','600',NULL,NULL)");
@@ -291,29 +290,10 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('COUNTRY','RX',50,4,'Transversal Country used for Transversal Applications.','RBX',NULL,NULL)");
         SQLS.append(",('COUNTRY','FR',60,4,'France',NULL,NULL,NULL)");
         SQLS.append(",('ENVIRONMENT','DEV',0,5,'Developpement','DEV',NULL,NULL)");
-        SQLS.append(",('ENVIRONMENT','CDIDEV',3,5,'Quality Assurance - Leiria','QAold',NULL,NULL)");
-        SQLS.append(",('ENVIRONMENT','CDIQA',4,5,'Quality Assurance - Leiria','QAold',NULL,NULL)");
         SQLS.append(",('ENVIRONMENT','QA',5,5,'Quality Assurance','QA',NULL,NULL)");
-        SQLS.append(",('ENVIRONMENT','QA1',6,5,'Quality Assurance - Roubaix 720 (C2)','QA',NULL,NULL)");
-        SQLS.append(",('ENVIRONMENT','QA2',7,5,'Quality Assurance - Roubaix 720 (C2)','QA',NULL,NULL)");
-        SQLS.append(",('ENVIRONMENT','QA3',8,5,'Quality Assurance - Roubaix 720 (C2)','QA',NULL,NULL)");
-        SQLS.append(",('ENVIRONMENT','QA4',13,5,'Quality Assurance - Roubaix 720 (C4)','QA',NULL,NULL)");
-        SQLS.append(",('ENVIRONMENT','QA5',14,5,'Quality Assurance - Roubaix 720 (C4)','QA',NULL,NULL)");
-        SQLS.append(",('ENVIRONMENT','QA6',23,5,'Quality Assurance - Roubaix 720 (C4)','QA',NULL,NULL)");
-        SQLS.append(",('ENVIRONMENT','QA7',24,5,'Quality Assurance - Roubaix 720 (C4)','QAold',NULL,NULL)");
         SQLS.append(",('ENVIRONMENT','UAT',30,5,'User Acceptance Test','UAT',NULL,NULL)");
         SQLS.append(",('ENVIRONMENT','PROD',50,5,'Production','PROD',NULL,NULL)");
         SQLS.append(",('ENVIRONMENT','PREPROD',60,5,'PreProduction','PROD',NULL,NULL)");
-        SQLS.append(",('ENVIRONMENT','RQA',71,5,'Quality Assurance - Aubervilliers','QAold',NULL,NULL)");
-        SQLS.append(",('ENVIRONMENT','PROTOPROD',72,5,'720 Production Prototype','QA',NULL,NULL)");
-        SQLS.append(",('ENVIRONMENT','PROTOUAT',73,5,'720 UAT Prototype','QA',NULL,NULL)");
-        SQLS.append(",('ENVIRONMENT','CDI',74,5,'CDI development - Roubaix 720','QA',NULL,NULL)");
-        SQLS.append(",('ENVIRONMENT','RQA2',75,5,'Quality Assurance - Roubaix (v5r4)','QAold',NULL,NULL)");
-        SQLS.append(",('ENVIRONMENT','UAT2',81,5,'UAT2 environment','UAT',NULL,NULL)");
-        SQLS.append(",('ENVIRONMENT','UAT3',82,5,'UAT3 environment','UAT',NULL,NULL)");
-        SQLS.append(",('ENVIRONMENT','UAT4',83,5,'UAT4 environment','UAT',NULL,NULL)");
-        SQLS.append(",('ENVIRONMENT','UAT5',84,5,'UAT5 environment','UAT',NULL,NULL)");
-        SQLS.append(",('ENVIRONMENT','PROD2',90,5,'Production temporarly for new theseus','PROD',NULL,'')");
         SQLS.append(",('SERVER','PRIMARY',1,6,'Primary Server',NULL,NULL,NULL)");
         SQLS.append(",('SERVER','BACKUP1',2,6,'Backup 1',NULL,NULL,NULL)");
         SQLS.append(",('SERVER','BACKUP2',3,6,'Backup 2',NULL,NULL,NULL)");
@@ -327,13 +307,8 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('SESSION','8',8,7,'Session 8',NULL,NULL,NULL)");
         SQLS.append(",('SESSION','9',9,7,'Session 9',NULL,NULL,NULL)");
         SQLS.append(",('SESSION','10',10,7,'Session 10',NULL,NULL,NULL)");
-        SQLS.append(",('BUILD','2011B2',9,8,'2011B2',NULL,NULL,NULL)");
-        SQLS.append(",('BUILD','2011B3',10,8,'2011B3',NULL,NULL,NULL)");
-        SQLS.append(",('BUILD','2012B1',11,8,'2012B1',NULL,NULL,NULL)");
-        SQLS.append(",('BUILD','2012S1',12,8,'2012S1',NULL,NULL,NULL)");
         SQLS.append(",('BUILD','2012S2',13,8,'2012 Sprint 02',NULL,NULL,NULL)");
         SQLS.append(",('BUILD','2013S1',14,8,'2013 Sprint 01',NULL,NULL,NULL)");
-        SQLS.append(",('REVISION','A00',0,9,'Pre QA Revision',NULL,NULL,NULL)");
         SQLS.append(",('REVISION','R00',1,9,'R00',NULL,NULL,NULL)");
         SQLS.append(",('REVISION','R01',10,9,'R01',NULL,NULL,NULL)");
         SQLS.append(",('REVISION','R02',20,9,'R02',NULL,NULL,NULL)");
@@ -397,8 +372,6 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('REVISION','R60',600,9,'R60',NULL,NULL,NULL)");
         SQLS.append(",('REVISION','R61',610,9,'R61',NULL,NULL,NULL)");
         SQLS.append(",('REVISION','R62',620,9,'R62',NULL,NULL,NULL)");
-        SQLS.append(",('REVISION','C12',1120,9,'R12 cancelled',NULL,NULL,NULL)");
-        SQLS.append(",('REVISION','C13',1130,9,'R13 Cancelled',NULL,NULL,NULL)");
         SQLS.append(",('ENVTYPE','STD',1,10,'Regression and evolution Standard Testing.',NULL,NULL,NULL)");
         SQLS.append(",('ENVTYPE','COMPARISON',2,10,'Comparison Testing. No GUI Tests are allowed.',NULL,NULL,NULL)");
         SQLS.append(",('ENVACTIVE','Y',1,11,'Active',NULL,NULL,NULL)");
@@ -464,10 +437,6 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('ORIGIN','RU',8,21,'Russia',NULL,NULL,NULL)");
         SQLS.append(",('ORIGIN','UA',9,21,'Ukrainia',NULL,NULL,NULL)");
         SQLS.append(",('ORIGIN','UK',10,21,'Great Britain',NULL,NULL,NULL)");
-        SQLS.append(",('ORIGIN','VI',11,21,'Generic filiale',NULL,NULL,NULL)");
-        SQLS.append(",('ORIGIN','RX',12,21,'Roubaix',NULL,NULL,NULL)");
-        SQLS.append(",('ORIGIN','CDI',13,21,'CDITeam',NULL,NULL,NULL)");
-        SQLS.append(",('ORIGIN','TIT',14,21,'Test and Integration Team',NULL,NULL,NULL)");
         SQLS.append(",('ORIGIN','DE',15,21,'Germany',NULL,NULL,NULL)");
         SQLS.append(",('ORIGIN','FR',16,21,'France',NULL,NULL,NULL)");
         SQLS.append(",('PROPERTYDATABASE','VC',1,22,'VC Database',NULL,NULL,NULL)");
@@ -2296,13 +2265,20 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLInstruction.add(SQLS.toString());
 
 //-- Force default system to DEFAULT.
-//-- ------------------------
+//-- ------------------------ 330
         SQLS = new StringBuilder();
         SQLS.append("UPDATE `user` SET DefaultSystem='DEFAULT' where DefaultSystem is null;");
         SQLInstruction.add(SQLS.toString());
 
-//-- Database structure to handle link between environment and history of Build rev per system for each execution.
 //-- ------------------------
+//-- ------------------------
+//-- Cerberus 0.9.0 Stops here.
+//-- ------------------------
+//-- ------------------------
+
+
+//-- Database structure to handle link between environment and history of Build rev per system for each execution.
+//-- ------------------------ 331
         SQLS = new StringBuilder();
         SQLS.append("CREATE  TABLE `testcaseexecutionsysver` (");
         SQLS.append("  `ID` BIGINT UNSIGNED NOT NULL ,");
@@ -2343,16 +2319,16 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLInstruction.add(SQLS.toString());
 
 //-- New Documentation on homepage.
-//-- ------------------------
+//-- ------------------------ 334
         SQLS = new StringBuilder();
-        SQLS.append("SELECT 1 FROM dual;");
+        SQLS.append("DELETE FROM `invariant` WHERE `id`='23' and`sort`='6';");
         SQLInstruction.add(SQLS.toString());
         SQLS = new StringBuilder();
         SQLS.append("SELECT 1 FROM dual;");
         SQLInstruction.add(SQLS.toString());
 
 //-- Update System Variables %XXX% to %SYS_XXX%.
-//-- ------------------------
+//-- ------------------------ 336
         SQLS = new StringBuilder();
         SQLS.append("UPDATE testcasestepactioncontrol ");
         SQLS.append("SET ControlValue=REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(ControlValue,\'%ENV%\',\'%SYS_ENV%\'),\'%ENVGP%\',\'%SYS_ENVGP%\'),\'%COUNTRY%\',\'%SYS_COUNTRY%\'),\'%COUNTRYGP1%\',\'%SYS_COUNTRYGP1%\'),\'%SSIP%\',\'%SYS_SSIP%\'),\'%SSPORT%\',\'%SYS_SSPORT%\'),\'%TAG%\',\'%SYS_TAG%\'),\'%TODAY-yyyy%\',\'%SYS_TODAY-yyyy%\'),\'%TODAY-MM%\',\'%SYS_TODAY-MM%\'),\'%TODAY-dd%\',\'%SYS_TODAY-dd%\'),\'%TODAY-HH%\',\'%SYS_TODAY-HH%\'),\'%TODAY-mm%\',\'%SYS_TODAY-mm%\'),\'%TODAY-ss%\',\'%SYS_TODAY-ss%\'),\'%YESTERDAY-yyyy%\',\'%SYS_YESTERDAY-yyyy%\'),\'%YESTERDAY-MM%\',\'%SYS_YESTERDAY-MM%\'),\'%YESTERDAY-dd%\',\'%SYS_YESTERDAY-dd%\'),\'%YESTERDAY-HH%\',\'%SYS_YESTERDAY-HH%\'),\'%YESTERDAY-mm%\',\'%SYS_YESTERDAY-mm%\'),\'%YESTERDAY-ss%\',\'%SYS_YESTERDAY-ss%\')");
@@ -2369,19 +2345,19 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLInstruction.add(SQLS.toString());
 
 //-- Added takeScreenshot action.
-//-- ------------------------
+//-- ------------------------ 339
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `id`, `description`) VALUES ('ACTION', 'takeScreenshot', 105, 12, 'takeScreenshot');");
         SQLInstruction.add(SQLS.toString());
 
 //-- New Parameter for Selenium download link.
-//-- ------------------------
+//-- ------------------------ 340
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `parameter` (`param`, `value`, `description`) VALUES ('selenium_download_url', 'http://selenium.googlecode.com/files/selenium-server-standalone-2.35.0.jar', 'URL to download the selenium package from the web.');");
         SQLInstruction.add(SQLS.toString());
 
 //-- New Documentation on detail execution page.
-//-- ------------------------
+//-- ------------------------ 341
         SQLS = new StringBuilder();
         SQLS.append("SELECT 1 FROM dual;");
         SQLInstruction.add(SQLS.toString());
@@ -2390,18 +2366,19 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLInstruction.add(SQLS.toString());
 
 //-- Revision Field resized to 20 to fit standard size in testcase execution table.
-//-- ------------------------
+//-- ------------------------ 343
         SQLS = new StringBuilder();
         SQLS.append("ALTER TABLE `testcaseexecution` CHANGE COLUMN `Revision` `Revision` VARCHAR(20) NULL DEFAULT NULL ;");
         SQLInstruction.add(SQLS.toString());
 
 //-- Replace \n by <br/> in HowTo textarea of TestCase
+//-- ------------------------ 344
         SQLS = new StringBuilder();
         SQLS.append("UPDATE testcase SET HowTo=REPLACE(HowTo, '\\n', '<br/>');");
         SQLInstruction.add(SQLS.toString());
 
 //-- Adding table that will host specific build revision lists per system.
-//-- ------------------------
+//-- ------------------------ 345
         SQLS = new StringBuilder();
         SQLS.append(" CREATE  TABLE `buildrevisioninvariant` (");
         SQLS.append("  `system` VARCHAR(45) NOT NULL DEFAULT '' ,");
@@ -2413,19 +2390,19 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLInstruction.add(SQLS.toString());
 
 //-- Cleaning Build and Revision from invariant table.
-//-- ------------------------
+//-- ------------------------ 346
         SQLS = new StringBuilder();
         SQLS.append("DELETE FROM `invariant` where id in (8,9);");
         SQLInstruction.add(SQLS.toString());
 
 //-- New Parameter for Selenium timeout when waiting for an element.
-//-- ------------------------
+//-- ------------------------ 347
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `parameter` (`param`, `value`, `description`) VALUES ('selenium_defaultWait', '90', 'Integer that correspond to the number of seconds that selenium will wait before give timeout, when searching for a element.');");
         SQLInstruction.add(SQLS.toString());
 
 //-- Updating documentation.
-//-- ------------------------
+//-- ------------------------ 348
         SQLS = new StringBuilder();
         SQLS.append("SELECT 1 FROM dual;");
         SQLInstruction.add(SQLS.toString());
@@ -2816,6 +2793,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
 
 
 // Adding invariant for Public and private invariant.
+//-- ------------------------ 434
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `id`, `description`, `VeryShortDesc`) ");
         SQLS.append(" VALUES ('INVARIANTPRIVATE', 'ACTION', '10', '44', '', ''),");
@@ -2857,18 +2835,21 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLInstruction.add(SQLS.toString());
 
 // Removing id column to invariant table.
+//-- ------------------------ 435
         SQLS = new StringBuilder();
         SQLS.append("ALTER TABLE `invariant` DROP PRIMARY KEY , DROP COLUMN `id` , CHANGE COLUMN `sort` `sort` INT(10) NOT NULL DEFAULT 0 ");
         SQLS.append(" , ADD PRIMARY KEY (`idname`, `value`) , ADD INDEX `IX_invariant_01` (`idname` ASC, `sort` ASC) ;");
         SQLInstruction.add(SQLS.toString());
 
 // Adding getFromSoap property type.
+//-- ------------------------ 436
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`) ");
         SQLS.append(" VALUES ('PROPERTYTYPE', 'executeSoapFromLib', '27', 'Getting from the SOAP request using the query');");
         SQLInstruction.add(SQLS.toString());
 
 // Adding table to host soaplibrary.
+//-- ------------------------ 437
         SQLS = new StringBuilder();
         SQLS.append("CREATE TABLE `soaplibrary` (");
         SQLS.append("  `Name` VARCHAR(45) ,");
@@ -2883,6 +2864,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLInstruction.add(SQLS.toString());
 
 // Adding Project Active Combo invariant.
+//-- ------------------------ 438
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`) ");
         SQLS.append(" VALUES ('INVARIANTPRIVATE', 'PROJECTACTIVE', '21', ''),");
@@ -2891,6 +2873,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLInstruction.add(SQLS.toString());
 
 // New updated Documentation.
+//-- ------------------------ 439
         SQLS = new StringBuilder();
         SQLS.append("DELETE FROM `documentation`;");
         SQLInstruction.add(SQLS.toString());
@@ -3131,6 +3114,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
 
 
 // Chenged project constrain on testcase table so that in case a project is removed, the testcases are not removed.
+//-- ------------------------ 441
         SQLS = new StringBuilder();
         SQLS.append("ALTER TABLE `testcase` DROP FOREIGN KEY `FK_testcase_03` ;");
         SQLInstruction.add(SQLS.toString());
@@ -3139,17 +3123,20 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLInstruction.add(SQLS.toString());
 
 // Added Description column in TestData Table
+//-- ------------------------ 443
         SQLS = new StringBuilder();
         SQLS.append("ALTER TABLE `testdata` ADD COLUMN `Description` VARCHAR(1000) NULL DEFAULT ''  AFTER `value` ;");
         SQLInstruction.add(SQLS.toString());
-        
+
 //Add parameters for the enabling or disabling the logs of public calls.
+//-- ------------------------ 444
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) VALUES ");
         SQLS.append("('', 'cerberus_log_publiccalls', 'N', 'Enable [Y] or Disable [N] the loging of all the calls done to Cerberus public servlets.')");
         SQLInstruction.add(SQLS.toString());
 
-//Add parameters for the enabling or disabling the logs of public calls.
+//Removed unused logglassfish table.
+//-- ------------------------ 445
         SQLS = new StringBuilder();
         SQLS.append("DROP TABLE `logglassfish`;");
         SQLInstruction.add(SQLS.toString());
