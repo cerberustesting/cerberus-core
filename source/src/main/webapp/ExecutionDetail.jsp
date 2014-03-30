@@ -64,17 +64,8 @@
         <link type="text/css" rel="stylesheet" href="js/jqplot/syntaxhighlighter/styles/shCoreDefault.min.css" >
         <link type="text/css" rel="stylesheet" href="js/jqplot/syntaxhighlighter/styles/shThemejqPlot.min.css" >
         <link type="text/css" rel="stylesheet" href="js/zoombox/zoombox.css" >
-
-        <title>Execution Detail</title>
-
-
-    </head>
-    <body>
-
-        <%@ include file="include/function.jsp" %>
-        <%@ include file="include/header.jsp" %>
-
-        <script type="text/javascript" src="js/jqplot/jquery.min.js"></script>   
+        <script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>
+        <script type="text/javascript" src="js/jquery-migrate-1.2.1.min.js"></script>
         <script type="text/javascript" src="js/jqplot/jquery.jqplot.min.js"></script>
         <script type="text/javascript" src="js/jqplot/plugins/jqplot.dateAxisRenderer.min.js"></script>
         <script type="text/javascript" src="js/jqplot/plugins/jqplot.cursor.min.js"></script>
@@ -86,6 +77,16 @@
         <script type="text/javascript" src="js/jqplot/plugins/jqplot.canvasAxisTickRenderer.min.js"></script>
         <script type="text/javascript" src="js/jqplot/plugins/jqplot.barRenderer.min.js"></script>
         <script type="text/javascript" src="js/zoombox/zoombox.js"></script>
+        <title>Execution Detail</title>
+
+
+    </head>
+    <body>
+
+        <%@ include file="include/function.jsp" %>
+        <%@ include file="include/header.jsp" %>
+
+        
 
         <div id="body">
             <%
