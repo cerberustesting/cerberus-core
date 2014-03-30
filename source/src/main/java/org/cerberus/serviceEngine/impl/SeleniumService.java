@@ -456,7 +456,7 @@ public class SeleniumService implements ISeleniumService {
     
     
     @Override
-    public String getAttributeFromHTMLElement(String locator, String attribute) {
+    public String getAttributeFromHtml(String locator, String attribute) {
         String result = null;
         try {
         WebElement webElement = this.getSeleniumElement(locator, true);

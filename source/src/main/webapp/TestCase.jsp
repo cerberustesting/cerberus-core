@@ -1074,7 +1074,7 @@
                                                                 size3 = 0;
                                                                 size4 = size2;
                                                                 String styleValue2 = "none";
-                                                                if (rs_properties.getString("a.Type").equals("getAttributeFromHTMLElement")) {
+                                                                if (rs_properties.getString("a.Type").equals("getAttributeFromHtml")) {
                                                                     size3 = 1 * size2 / 3;
                                                                     size4 = (2 * size2 / 3) - 5;
                                                                     styleValue2 = "inline";

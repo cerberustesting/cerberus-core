@@ -77,7 +77,7 @@ public interface ISeleniumService {
 
     String getFullBrowserVersion();
     
-    String getAttributeFromHTMLElement(String locator, String attribute);
+    String getAttributeFromHtml(String locator, String attribute);
 
     void doScreenShot(String runId, String path);
 

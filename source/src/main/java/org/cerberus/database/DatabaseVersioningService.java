@@ -3141,13 +3141,13 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("DROP TABLE `logglassfish`;");
         SQLInstruction.add(SQLS.toString());
 
-//Add invariant getAttributeFromHTMLElement.
+//Add invariant getAttributeFromHtml.
 //-- ------------------------ 446
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ('PROPERTYTYPE', 'getAttributeFromHtml', '38', 'Getting Attribute value from an HTML field in the current page.', '');");
         SQLInstruction.add(SQLS.toString());
 
-//Add documentation for new type of property getAttributeFromHTMLElement.
+//Add documentation for new type of property getAttributeFromHtml.
 //-- ------------------------ 447
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `DocLabel`, `DocDesc`) VALUES ('testcasecountryproperties', 'Type', 'getAttributeFromHtml', 'Get an attribute value from an HTML field in the current page.', '<code class=\\'doc-fixed\\'>getAttributeFromHtml</code> will allow you to take an attribute value from an html field on the current webpage.</br>Cerberus will automatically wait for the field to start to appear before getting the attribute value.<br>The different attributes identifier that can be used in order to find the HTML field are : id, name, class, css, xpath, link, and data-cerberus.<br>Syntax is as follow :<br><code class=\\'doc-sql\\'>identifier=html-value</code><br><br>Usage :<br><doc class=\"usage\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Field</th><th class=\\'ex\\'>Usage</th><tr><td class=\\'ex\\'>DTB</td><td class=\\'ex\\'>Not used.</td></tr><tr><td class=\\'ex\\'>Value</td><td class=\\'ex\\'>IDENTIFIER=HTML-VALUE</td></tr><tr><td class=\\'ex\\'>Value2</td><td class=\\'ex\\'>ATTRIBUTE</td></tr><tr><td class=\\'ex\\'>Length</td><td class=\\'ex\\'>Not used</td></tr><tr><td class=\\'ex\\'>RowLimit</td><td class=\\'ex\\'>Not used.</td></tr><tr><td class=\\'ex\\'>Nature</td><td class=\\'ex\\'>Not used.</td></tr></table></doc><br><br>Examples :<br><doc class=\"examples\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>HTML</th><th class=\\'ex\\'>Value</th><th class=\\'ex\\'>Value2</th><th class=\\'ex\\'>Result</th><tr><td class=\\'ex\\'><textarea rows=\"3\" style=\"width: 245px;\" readonly><div class=\"Main\"><img id=\"Name\" src=\"toto.jpeg\"><span id=\"env\">PRODUCTION</span></div></textarea></td><td class=\\'ex\\'>id=Name</td><td class=\\'ex\\'>src</td><td class=\\'ex\\'>toto.jpeg</td></tr><tr><td class=\\'ex\\'><textarea rows=\"3\" style=\"width: 245px;\" readonly><input data-cerberus=\"ctl00\" name=\"inputName\">toto</input></textarea></td><td class=\\'ex\\'>data-cerberus=ctl00</td><td class=\\'ex\\'>name</td><td class=\\'ex\\'>inputName</td></tr></table></doc>');");
