@@ -1,3 +1,4 @@
+<%@page import="org.cerberus.service.ITestCaseCountryService"%>
 <%@page import="org.cerberus.service.IDocumentationService"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
@@ -411,12 +412,9 @@
                     String SitdmossBugtrackingURL;
                     String SitdmossBugtrackingURL_tc;
                     SitdmossBugtrackingURL_tc = "";
-
-                    Statement stmt1 = conn.createStatement();
-                    ResultSet rs_testcasecountrygeneral = stmt1.executeQuery("SELECT value "
-                            + " FROM invariant "
-                            + " WHERE idname ='COUNTRY'"
-                            + " ORDER BY sort asc");
+                    
+                    List<Invariant> invariantCountry = invariantService.findListOfInvariantById("COUNTRY");
+                    
                     ResultSet rsPref = stmt33.executeQuery("SELECT ReportingFavorite from user where "
                             + " login = '"
                             + request.getUserPrincipal().getName()
@@ -435,8 +433,14 @@
 
             %>
             <form method="GET" name="Apply" action="ReportingExecution.jsp">
-                <table id="arrond">
-                    <tr><td id="arrond"><h3 style="color:blue">Filters</h3>
+                <div class="filters" style="float:left; width:100%;">
+                <p class="dttTitle">Filters</p>
+                <div id="dropDownDownArrow" style="float:left"><a 
+                        onclick="javascript:switchDivVisibleInvisible('dropDownDownArrow', 'filtersList')"><img src="images/dropdown.gif"/></a>
+                </div>
+                <div id="filtersList" style="float:left; width:100px">
+                
+                    <div style="clear:both"><p class="dttTitle">Line Filters</p>
                             <table border="0px">
                                 <tr>
                                     <td id="wob" style="width: 110px"><%out.print(docService.findLabelHTML("test", "Test", "Test"));%></td>
@@ -586,6 +590,7 @@
                                     </td>
                                 </tr>
                             </table>
+                    </div>       <div style="clear:both"><p class="dttTitle">Content Filters</p>
                             <table border="0px">
                                 <tr><td colspan="7" class="wob"></td></tr>
                                 <tr>
@@ -667,6 +672,7 @@
                                     </td>
                                 </tr>
                             </table>
+                    </div>
                             <%
                             %>
                             <table border="0px">
@@ -677,21 +683,20 @@
                                             <tr><td class="wob" colspan="4"><h4 style="color:black">Country</h4></td></tr>
                                             <tr><%
 
-                                                rs_testcasecountrygeneral.first();
-                                                do {%>
-                                                <td class="wob" style="font-size : x-small ; width: 10px;"><%=rs_testcasecountrygeneral.getString("value")%></td><%
-                                                    } while (rs_testcasecountrygeneral.next());
+                                                for (Invariant countryInv : invariantCountry){
+                                                %>
+                                                <td class="wob" style="font-size : x-small ; width: 10px;"><%=countryInv.getValue()%></td><%
+                                                    } 
                                                 %></tr>
                                             <tr><%
 
-                                                rs_testcasecountrygeneral.first();
-                                                do {
+                                                for (Invariant countryInv : invariantCountry){
                                                 %>
-                                                <td class="wob"><input value="<%=rs_testcasecountrygeneral.getString("value")%>" type="checkbox" <%
+                                                <td class="wob"><input value="<%=countryInv.getValue()%>" type="checkbox" <%
                                                     for (int i = 0; i < country_list.length; i++) {
-                                                        if (country_list[i].equals(rs_testcasecountrygeneral.getString("value"))) {%> CHECKED <%}
+                                                        if (country_list[i].equals(countryInv.getValue())) {%> CHECKED <%}
                                                             }%> name="Country" ></td><%
-                                                                           } while (rs_testcasecountrygeneral.next());
+                                                                           }
                                                     %>
                                                 <td id="wob"><input id="button" type="button" value="All" onclick="selectAll('country',true)"><input id="button" type="button" value="None" onclick="selectAll('country',false)"></td>
                                             </tr>
@@ -735,9 +740,8 @@
                                     </td>
                                 </tr>
                             </table>
-                        </td>
-                    </tr>
-                </table>                                   
+                        </div> 
+                </div>
 
                 <br><br>
                 <%
@@ -893,7 +897,6 @@
                                             statsGroupForTest.put("TOTAL" + rs_time.getString("tc.Group"), 1);
                                         }
 
-                                        rs_testcasecountrygeneral.first();
                                         String cssStatus = "";
                                         String color = "black";
                                         Statement stmt4 = conn.createStatement();
@@ -1466,7 +1469,6 @@
                 </table>
                 <%
                             stmt.close();
-                            stmt1.close();
                             stmt33.close();
                             stmt5.close();
                             stmt2.close();
@@ -1554,6 +1556,15 @@
                 header: "Select an option",
                 noneSelectedText:"Select Status",
                 selectedText: "# of # Status selected",
+                selectedList: 1
+            }));
+        </script>
+        <script type="text/javascript">
+            (document).ready($("#test").multiselect({
+                multiple: false,
+                header: "Select a Test",
+                noneSelectedText: "Select a Test",
+                selectedText: "Test Selected",
                 selectedList: 1
             }));
         </script>
