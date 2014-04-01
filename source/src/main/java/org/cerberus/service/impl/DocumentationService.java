@@ -19,6 +19,7 @@
  */
 package org.cerberus.service.impl;
 
+import java.util.List;
 import org.cerberus.dao.IDocumentationDAO;
 import org.cerberus.entity.Documentation;
 import org.cerberus.service.IDocumentationService;
@@ -84,5 +85,30 @@ public class DocumentationService implements IDocumentationService {
         result = label.toString();
 
         return result;
+    }
+
+    @Override
+    public List<Documentation> findDocumentationsWithNotEmptyValueAndDescription(String docTable, String docField) {
+        return this.documentationDAO.findDocumentationsWithNotEmptyValueAndDescription(docTable, docField);
+    }
+
+    @Override
+    public List<Documentation> findDocumentationsWithEmptyValueAndNotEmptyDescription(String docTable, String docField) {
+        return this.documentationDAO.findDocumentationsWithEmptyValueAndNotEmptyDescription(docTable, docField);
+    }
+
+    @Override
+    public String findLabelFromTableAndField(String docTable, String docField) {
+        return this.documentationDAO.findLabelFromTableAndField(docTable, docField);
+    }
+
+    @Override
+    public String findDescriptionFromTableFieldAndValue(String docTable, String docField, String docValue) {
+        return this.documentationDAO.findDescriptionFromTableFieldAndValue(docTable, docField, docValue);
+    }
+
+    @Override
+    public List<Documentation> findAll() {
+        return this.documentationDAO.findAll();
     }
 }

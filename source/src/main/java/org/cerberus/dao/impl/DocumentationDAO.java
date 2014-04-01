@@ -21,6 +21,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.log4j.Level;
 import org.cerberus.dao.IDocumentationDAO;
@@ -87,4 +89,230 @@ public class DocumentationDAO implements IDocumentationDAO {
         }
         return result;
     }
+
+    @Override
+    public List<Documentation> findDocumentationsWithNotEmptyValueAndDescription(String docTable, String docField) {
+        List<Documentation> result = new ArrayList<Documentation>();
+        final String query = "SELECT DocValue, DocDesc, DocLabel FROM documentation where DocTable = ? and docfield = ? and docValue IS NOT NULL and length(docValue) > 1 AND length(docdesc) > 1";
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            try {
+                preStat.setString(1, docTable);
+                preStat.setString(2, docField);
+
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+                    while (resultSet.next()) {
+                        String docLabel = resultSet.getString("DocLabel");
+                        String description = resultSet.getString("DocDesc");
+                        String docValue = resultSet.getString("DocValue");
+
+                        result.add(factoryDocumentation.create(docTable, docField, docValue, docLabel, description));
+                    }
+                } catch (SQLException exception) {
+                    MyLogger.log(DocumentationDAO.class.getName(), Level.ERROR, exception.toString());
+                } finally {
+                    resultSet.close();
+                }
+            } catch (SQLException exception) {
+                MyLogger.log(DocumentationDAO.class.getName(), Level.ERROR, exception.toString());
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(DocumentationDAO.class.getName(), Level.ERROR, exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(DocumentationDAO.class.getName(), Level.WARN, e.toString());
+            }
+        }
+
+        return result;
+    }
+
+    @Override
+    public List<Documentation> findDocumentationsWithEmptyValueAndNotEmptyDescription(String docTable, String docField) {
+        List<Documentation> result = new ArrayList<Documentation>();
+        final String query = "SELECT DocDesc, DocLabel FROM documentation where DocTable = ? and docfield = ? and length(docvalue)=0 and length(docdesc) > 1";
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            try {
+                preStat.setString(1, docTable);
+                preStat.setString(2, docField);
+
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+                    while (resultSet.next()) {
+                        String docLabel = resultSet.getString("DocLabel");
+                        String description = resultSet.getString("DocDesc");
+
+                        result.add(factoryDocumentation.create(docTable, docField, "", docLabel, description));
+                    }
+                } catch (SQLException exception) {
+                    MyLogger.log(DocumentationDAO.class.getName(), Level.ERROR, exception.toString());
+                } finally {
+                    resultSet.close();
+                }
+            } catch (SQLException exception) {
+                MyLogger.log(DocumentationDAO.class.getName(), Level.ERROR, exception.toString());
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(DocumentationDAO.class.getName(), Level.ERROR, exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(DocumentationDAO.class.getName(), Level.WARN, e.toString());
+            }
+        }
+
+        return result;
+    }
+
+    @Override
+    public String findLabelFromTableAndField(String docTable, String docField) {
+        final String query = "SELECT DocLabel FROM documentation where DocTable = ? and docfield = ? and length(docvalue)=0 and length(docdesc) > 1";
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            preStat.setMaxRows(1);
+            try {
+                preStat.setString(1, docTable);
+                preStat.setString(2, docField);
+
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+                    if (resultSet.first()) {
+                        return resultSet.getString("DocLabel");
+                    }
+                } catch (SQLException exception) {
+                    MyLogger.log(DocumentationDAO.class.getName(), Level.ERROR, exception.toString());
+                } finally {
+                    resultSet.close();
+                }
+            } catch (SQLException exception) {
+                MyLogger.log(DocumentationDAO.class.getName(), Level.ERROR, exception.toString());
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(DocumentationDAO.class.getName(), Level.ERROR, exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(DocumentationDAO.class.getName(), Level.WARN, e.toString());
+            }
+        }
+
+        return null;
+    }
+
+    
+    
+    
+    @Override
+    public String findDescriptionFromTableFieldAndValue(String docTable, String docField, String docValue) {
+        final String query = "SELECT DocDesc FROM documentation where DocTable = ? and DocField = ? and DocValue = ? and length(docdesc) > 1";
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            preStat.setMaxRows(1);
+            try {
+                preStat.setString(1, docTable);
+                preStat.setString(2, docField);
+                preStat.setString(3, docValue);
+
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+                    if (resultSet.first()) {
+                        return resultSet.getString("DocDesc");
+                    }
+                } catch (SQLException exception) {
+                    MyLogger.log(DocumentationDAO.class.getName(), Level.ERROR, exception.toString());
+                } finally {
+                    resultSet.close();
+                }
+            } catch (SQLException exception) {
+                MyLogger.log(DocumentationDAO.class.getName(), Level.ERROR, exception.toString());
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(DocumentationDAO.class.getName(), Level.ERROR, exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(DocumentationDAO.class.getName(), Level.WARN, e.toString());
+            }
+        }
+
+        return null;
+    }
+
+    @Override
+    public List<Documentation> findAll() {
+
+        List<Documentation> result = new ArrayList<Documentation>();
+        final String query = "SELECT DocTable, DocField, DocValue, DocLabel, DocDesc FROM documentation";
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            try {
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+                    while (resultSet.next()) {
+                        String table = resultSet.getString("DocTable");
+                        String field = resultSet.getString("DocField");
+                        String value = resultSet.getString("DocValue");
+                        String label = resultSet.getString("DocLabel");
+                        String description = resultSet.getString("DocDesc");
+
+                        result.add(factoryDocumentation.create(table, field, value, label, description));
+                    }
+                } catch (SQLException exception) {
+                    MyLogger.log(DocumentationDAO.class.getName(), Level.ERROR, exception.toString());
+                } finally {
+                    resultSet.close();
+                }
+            } catch (SQLException exception) {
+                MyLogger.log(DocumentationDAO.class.getName(), Level.ERROR, exception.toString());
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(DocumentationDAO.class.getName(), Level.ERROR, exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(DocumentationDAO.class.getName(), Level.WARN, e.toString());
+            }
+        }
+
+        return result;
+    }
+
 }
