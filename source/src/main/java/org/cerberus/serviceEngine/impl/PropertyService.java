@@ -235,9 +235,9 @@ public class PropertyService implements IPropertyService {
                 res.setDescription(res.getDescription().replaceAll("%PROPERTY%", testCaseCountryProperty.getValue1()));
                 testCaseExecutionData.setPropertyResultMessage(res);
             }
-        } else if (testCaseCountryProperty.getType().equals("getAttributeFromHTMLElement")) {
+        } else if (testCaseCountryProperty.getType().equals("getAttributeFromHtml")) {
             try {
-                String valueFromHTML = this.seleniumService.getAttributeFromHTMLElement(testCaseCountryProperty.getValue1(), testCaseCountryProperty.getValue2());
+                String valueFromHTML = this.seleniumService.getAttributeFromHtml(testCaseCountryProperty.getValue1(), testCaseCountryProperty.getValue2());
                 if (valueFromHTML != null) {
                     testCaseExecutionData.setValue(valueFromHTML);
                     res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETATTRIBUTEFROMHTML);
