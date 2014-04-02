@@ -60,9 +60,10 @@ public class SearchManualTestCaseInformation extends HttpServlet {
         String system = this.getValue(req, "ScSystem");
         String country = this.getValue(req, "ScCountry");
         String env = this.getValue(req, "ScEnv");
+        String group = this.getValue(req, "ScGroup");
         TCase tCase = this.getTestCaseFromRequest(req);
 
-        tCase.setGroup("MANUAL");
+        tCase.setGroup(group);
         tCase.setActive("Y");
         if (env.equalsIgnoreCase("QA")) {
             tCase.setRunQA("Y");

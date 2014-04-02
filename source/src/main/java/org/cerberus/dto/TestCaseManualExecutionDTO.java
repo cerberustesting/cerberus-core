@@ -51,13 +51,13 @@ public class TestCaseManualExecutionDTO implements ITestCaseManualExecutionDTO {
                 "    ON (cenvp.system=a.system AND cenvp.country=tcc.country AND cenvp.environment=cep.environment) " +
                 "  LEFT JOIN testcaseexecution tce " +
                 "    ON tce.id = (SELECT max(id) FROM testcaseexecution ttce WHERE ttce.test=tc.test AND ttce.testcase=tc.testcase AND ttce.environment=cep.environment AND ttce.country=tcc.country) " +
-                "WHERE tc.group='MANUAL' AND tc.tcactive='Y' AND tcc.country=? AND cep.environment=? AND " +
+                "WHERE tc.tcactive='Y' AND tcc.country=? AND cep.environment=? AND " +
                 "tc.test LIKE ? AND tc.project LIKE ? AND tc.ticket LIKE ? AND tc.bugid LIKE ? AND tc.origine LIKE ? " +
                 "AND tc.creator LIKE ? AND a.system LIKE ? AND tc.application LIKE ? AND tc.priority LIKE ? " +
                 "AND tc.status LIKE ? AND tc.activePROD LIKE ? AND tc.activeUAT LIKE ? AND tc.activeQA LIKE ? AND " +
                 "( tc.description LIKE ? OR tc.howto LIKE ? OR tc.behaviororvalueexpected LIKE ? OR tc.comment LIKE ?) " +
                 "AND tc.frombuild LIKE ? AND tc.fromrev LIKE ? AND tc.tobuild LIKE ? " +
-                "AND tc.torev LIKE ? AND tc.targetbuild LIKE ? AND tc.targetrev LIKE ? AND tc.testcase LIKE ?";
+                "AND tc.torev LIKE ? AND tc.targetbuild LIKE ? AND tc.targetrev LIKE ? AND tc.testcase LIKE ? AND tc.group=?";
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -100,6 +100,7 @@ public class TestCaseManualExecutionDTO implements ITestCaseManualExecutionDTO {
                 preStat.setString(24, ParameterParserUtil.wildcardIfEmpty(testCase.getTargetSprint()));
                 preStat.setString(25, ParameterParserUtil.wildcardIfEmpty(testCase.getTargetRevision()));
                 preStat.setString(26, ParameterParserUtil.wildcardIfEmpty(testCase.getTestCase()));
+                preStat.setString(27, ParameterParserUtil.wildcardIfEmpty(testCase.getGroup()));
 
                 ResultSet resultSet = preStat.executeQuery();
                 list = new ArrayList<TestCaseManualExecution>();

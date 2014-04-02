@@ -190,8 +190,14 @@
                         </select>
                     </div>
                     <div class="field">
-                        <label for="text" style="width: 500px">Text</label><br/>
-                        <input id="text" name="text" type="text" style="width: 500px"/>
+                        <label for="group" style="width: 90px">Group</label><br/>
+                        <select id="group" name="group" style="width: 90px">
+                            <option value="All">-- ALL --</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label for="text" style="width: 400px">Text</label><br/>
+                        <input id="text" name="text" type="text" style="width: 400px"/>
                     </div>
                 </div>
             </div>
@@ -267,6 +273,7 @@
                 url += "&ScTRev=" + $('#toRev').val();
                 url += "&ScTargetBuild=" + $('#targetBuild').val();
                 url += "&ScTargetRev=" + $('#targetRev').val();
+                url += "&ScGroup=" + $('#group').val();
                 url += "&ScCountry=" + $('#executionCountry').val();
                 url += "&ScEnv=" + $('#executionEnv').val();
                 return url;
@@ -411,6 +418,7 @@
                     {label: "priority", dTable: "invariant", dField: "PRIORITY", dLabel: ""},
                     {label: "status", dTable: "testcase", dField: "Status", dLabel: ""},
                     {label: "text", dTable: "page_testcasesearch", dField: "text", dLabel: ""},
+                    {label: "group", dTable: "invariant", dField: "group", dLabel: ""},
                     {label: "fromBuild", dTable: "testcase", dField: "FromBuild", dLabel: ""},
                     {label: "fromRev", dTable: "testcase", dField: "FromRev", dLabel: ""},
                     {label: "toBuild", dTable: "testcase", dField: "ToBuild", dLabel: ""},
