@@ -600,3 +600,16 @@ input#submitButtonDuplicate {
     color:purple;
     font-weight: bold;
 }
+
+.notVisible {
+    display: none;
+}
+
+.OKVisible,
+.KOVisible,
+.NAVisible,
+.FAVisible,
+.PEVisible {
+    display: table-row;
+}
+
