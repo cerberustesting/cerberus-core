@@ -1,3 +1,9 @@
+<%@page import="org.cerberus.entity.TestCaseCountry"%>
+<%@page import="org.cerberus.entity.Project"%>
+<%@page import="org.cerberus.service.IProjectService"%>
+<%@page import="org.cerberus.entity.Test"%>
+<%@page import="org.cerberus.service.ITestService"%>
+<%@page import="org.cerberus.service.ITestCaseService"%>
 <%@page import="org.cerberus.service.ITestCaseCountryService"%>
 <%@page import="org.cerberus.service.IDocumentationService"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
@@ -73,7 +79,14 @@
 
                 IInvariantService invariantService = appContext.getBean(InvariantService.class);
                 IBuildRevisionInvariantService buildRevisionInvariantService = appContext.getBean(BuildRevisionInvariantService.class);
-
+                ITestService testService = appContext.getBean(ITestService.class);
+                List<Test> testList = testService.getListOfTest();
+                
+                IProjectService projectService = appContext.getBean(IProjectService.class);
+                List<Project> projectList = projectService.findAllProject();
+                
+                ITestCaseCountryService testCaseCountryService = appContext.getBean(ITestCaseCountryService.class);
+                
                 String MySystem = request.getAttribute("MySystem").toString();
                 if (request.getParameter("system") != null && request.getParameter("system").compareTo("") != 0) {
                     MySystem = request.getParameter("system");
@@ -414,6 +427,7 @@
                     SitdmossBugtrackingURL_tc = "";
                     
                     List<Invariant> invariantCountry = invariantService.findListOfInvariantById("COUNTRY");
+                    List<Invariant> invariantTCStatus = invariantService.findListOfInvariantById("TCSTATUS");
                     
                     ResultSet rsPref = stmt33.executeQuery("SELECT ReportingFavorite from user where "
                             + " login = '"
@@ -462,14 +476,13 @@
                                         <select id="test" style="width: 110px"  name="Test">
                                             <option value="All">-- ALL --</option><%
                                                 String optstyle = "";
-                                                ResultSet rsTest = stmt.executeQuery("SELECT Test, active FROM test where Test IS NOT NULL Order by Test asc");
-                                                while (rsTest.next()) {
-                                                    if (rsTest.getString("active").equalsIgnoreCase("Y")) {
+                                                for(Test testL : testList){
+                                                    if (testL.getActive().equalsIgnoreCase("Y")) {
                                                         optstyle = "font-weight:bold;";
                                                     } else {
                                                         optstyle = "font-weight:lighter;";
                                                     }%>
-                                            <option style="width: 200px;<%=optstyle%>" value="<%= rsTest.getString(1)%>" <%=test.compareTo(rsTest.getString(1)) == 0 ? " SELECTED " : ""%>><%= rsTest.getString(1)%></option><%
+                                            <option style="width: 200px;<%=optstyle%>" value="<%=testL.getTest()%>" <%=test.compareTo(testL.getTest()) == 0 ? " SELECTED " : ""%>><%=testL.getTest()%></option><%
                                                 }%>
                                         </select>
                                     </td>
@@ -477,21 +490,19 @@
                                         <select multiple  size="3" id="project" style="width: 170px" name="Project">
                                             <option value="All">-- ALL --</option>
                                             <%
-                                                String sq = "SELECT idproject, VCCode, Description, active FROM project ORDER BY idproject";
-                                                ResultSet q = stmt.executeQuery(sq);
                                                 String ret = "";
-                                                while (q.next()) {
-                                                    ret = ret + " <option value=\"" + q.getString("idproject") + "\"";
+                                                for(Project projectL : projectList) {
+                                                    ret = ret + " <option value=\"" + projectL.getIdProject() + "\"";
                                                     ret = ret + " style=\"width: 200px;";
-                                                    if (q.getString("active").equalsIgnoreCase("Y")) {
+                                                    if (projectL.getActive().equalsIgnoreCase("Y")) {
                                                         ret = ret + "font-weight:bold;";
                                                     }
                                                     ret = ret + "\"";
 
-                                                    if ((project != null) && (project.indexOf(q.getString("idproject") + ",") >= 0)) {
+                                                    if ((project != null) && (project.indexOf(projectL.getIdProject() + ",") >= 0)) {
                                                         ret = ret + " SELECTED ";
                                                     }
-                                                    ret = ret + ">" + q.getString("idproject") + " " + q.getString("Description");
+                                                    ret = ret + ">" + projectL.getIdProject() + " " + projectL.getDescription();
                                                     ret = ret + "</option>";
                                                 }%>
                                             <%=ret%>
@@ -653,18 +664,16 @@
                                         <select multiple  size="3" id="exestatus" style="width: 170px" name="ExeStatus">
                                             <option value="All">-- ALL --</option>
                                             <%
-                                                sq = "SELECT value FROM invariant WHERE idname='TCSTATUS' ORDER BY sort;";
-                                                q = stmt.executeQuery(sq);
                                                 ret = "";
-                                                while (q.next()) {
-                                                    ret = ret + " <option value=\"" + q.getString("value") + "\"";
+                                                for(Invariant statusInv : invariantTCStatus) {
+                                                    ret = ret + " <option value=\"" + statusInv.getValue() + "\"";
                                                     ret = ret + " style=\"width: 200px;";
                                                     ret = ret + "\"";
 
-                                                    if ((exeStatus != null) && (exeStatus.indexOf(q.getString("value") + ",") >= 0)) {
+                                                    if ((exeStatus != null) && (exeStatus.indexOf(statusInv.getValue() + ",") >= 0)) {
                                                         ret = ret + " SELECTED ";
                                                     }
-                                                    ret = ret + ">" + q.getString("value");
+                                                    ret = ret + ">" + statusInv.getValue();
                                                     ret = ret + "</option>";
                                                 }%>
                                             <%=ret%>
@@ -899,30 +908,24 @@
 
                                         String cssStatus = "";
                                         String color = "black";
-                                        Statement stmt4 = conn.createStatement();
-                                        ResultSet rs_count = stmt4.executeQuery("select country "
-                                                + " from testcasecountry where "
-                                                + " test = '"
-                                                + rs_time.getString("tc.Test")
-                                                + "' and testcase = '"
-                                                + rs_time.getString("tc.testcase")
-                                                + "' order by country asc");
-                                        if (rs_count.first()) {
+                                        List<TestCaseCountry> tccList = testCaseCountryService.findTestCaseCountryByTestTestCase(rs_time.getString("tc.Test"), rs_time.getString("tc.testcase"));
+
+                                        Integer tccIncrement = 0;
+                                        if (!tccList.isEmpty()) {
                                             cssStatus = "NE";
                                             color = "black";
 
                                             for (int i = 0; i < country_list.length; i++) {
 
-                                                rs_count.first();
-                                                while (!rs_count.isLast()) {
-                                                    if (rs_count.getString("Country").equalsIgnoreCase(country_list[i])) {
+                                                tccIncrement = 0;
+                                                for(TestCaseCountry tcc : tccList){
+                                                tccIncrement++;
+                                                if (tcc.getCountry().equalsIgnoreCase(country_list[i])) {
                                                         break;
                                                     }
-                                                    rs_count.next();
                                                 }
 
-                                                if (country_list[i].equals(rs_count.getString("country"))) {
-                                                    //out.println(execclauses);
+                                        if (country_list[i].equals(tccList.get(tccIncrement-1).getCountry())) {
                                                     Statement stmt3 = conn.createStatement();
                                                     String stmt3SQL = "SELECT DISTINCT tce.ID, tce.test, tce.testcase, tce.application, "
                                                             + "tce.ControlStatus, DATE_FORMAT(tce.Start,'%Y-%m-%d %H:%i') as Start, DATE_FORMAT(tce.End,'%Y-%m-%d %H:%i') as End "
@@ -981,9 +984,11 @@
                                     <td class="<%=cssStatus%>"><a href="RunTests.jsp?Test=<%=rs_time.getString("tc.test")%>&TestCase=<%=rs_time.getString("tc.testcase")%>&Country=<%=country_list[i]%>" class="<%=cssStatus%>F"><%= country_list[i]%></a></td>
                                     <td class="INF"></td>
                                     <%    }
-                                        if (rs_count.isLast() == true) {
+                                        if (tccIncrement==tccList.size()-1){
+                                                //rs_count.isLast() == true) {
                                         } else {
-                                            rs_count.next();
+                                            tccIncrement++;
+                                            //rs_count.next();
                                         }
                                     } else {
                                         // if (rs_count.getString("Country").compareTo(country_list[i]) > 0){
@@ -1045,7 +1050,7 @@
 
                                 <%    }
                                                 j++;
-                                                stmt4.close();
+//                                                stmt4.close();
                                             } while (rs_time.next());
                                     }
                                 %>
