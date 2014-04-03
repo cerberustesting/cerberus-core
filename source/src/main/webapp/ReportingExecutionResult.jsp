@@ -228,9 +228,9 @@
                                         for (int i = 0; i < country_list.length; i++) {
                                             for (int k = 0; k < columnBrowser.length; k++) {
                                     %> 
-                                    <td  class="header"> 
+                                    <td colspan="2" class="header"> 
                                         <%=country_list[i]%>/<%=columnBrowser[k]%> </td>
-                                    <td  class="header" style="font-size : x-small ;">Reporting Execution</td>
+                                    <!--<td  class="header" style="font-size : x-small ;">Reporting Execution</td>-->
                                     <%
                                         }}
                                         // } while (rs_testcasecountrygeneral.next());

@@ -422,7 +422,7 @@
                                 </div>
                             </div>
                             <div style="float:left">
-                                <div style="clear:both; width:150px; text-align: left"><%out.print(docService.findLabelHTML("testcaseexecution", "IP", "Ip"));%></div>
+                                <div style="clear:both; width:150px; text-align: left"><%out.print(docService.findLabelHTML("testcaseexecution", "status", ""));%></div>
                                 <div style="clear:both">   <%
                                     options.clear();
                                     for (Invariant statusInv : invariantTCStatus) {
@@ -434,20 +434,20 @@
                                 </div>
                             </div>
                             <div style="float:left">
+                                <div style="clear:both; width:150px; text-align: left"><%out.print(docService.findLabelHTML("testcaseexecution", "IP", "Ip"));%></div>
+                                <div style="clear:both"><input style="font-weight: bold; width: 130px; height:16px" name="Ip" id="Ip" value="<%=ip%>"></div>
+                            </div>
+                            <div style="float:left">
                                 <div style="clear:both; width:150px; text-align: left"><%out.print(docService.findLabelHTML("testcaseexecution", "Port", "Port"));%></div>
-                                <div style="clear:both"><input style="font-weight: bold; width: 130px" name="Ip" id="Ip" value="<%=ip%>"></div>
+                                <div style="clear:both"><input style="font-weight: bold; width: 130px; height:16px" name="Port" id="Port" value="<%=port%>"></div>
                             </div>
                             <div style="float:left">
                                 <div style="clear:both; width:150px; text-align: left"><%out.print(docService.findLabelHTML("testcaseexecution", "tag", "Tag"));%></div>
-                                <div style="clear:both"><input style="font-weight: bold; width: 60px" name="Port" id="Port" value="<%=port%>"></div>
+                                <div style="clear:both"><input style="font-weight: bold; width: 130px; height:16px" name="Tag" id="Tag" value="<%=tag%>"></div>
                             </div>
                             <div style="float:left">
                                 <div style="clear:both; width:150px; text-align: left"><%out.print(docService.findLabelHTML("testcaseexecution", "browserfullversion", ""));%></div>
-                                <div style="clear:both"><input style="font-weight: bold; width: 130px" name="Tag" id="Tag" value="<%=tag%>"></div>
-                            </div>
-                            <div style="float:left">
-                                <div style="clear:both; width:150px; text-align: left"><%out.print(docService.findLabelHTML("testcaseexecution", "status", ""));%></div>
-                                <div style="clear:both"><input style="font-weight: bold; width: 130px" name="BrowserFullVersion" id="Tag" value="<%=browserFullVersion%>"></div>
+                                <div style="clear:both"><input style="font-weight: bold; width: 130px; height:16px" name="BrowserFullVersion" id="Tag" value="<%=browserFullVersion%>"></div>
                             </div>
                         </div>
                         <%
