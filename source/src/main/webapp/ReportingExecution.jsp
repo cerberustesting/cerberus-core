@@ -245,11 +245,13 @@
                                                 "Select an application", "Select Application", "# of # Application selected", 1) %>
                                     </td>
                                     <td id="wob">
-                                        <select style="width: 70px" id="active_tc" name="TcActive">
-                                            <option value="A" <%=tcActive.compareTo("A") == 0 ? " SELECTED " : ""%>>-- ALL --</option>
-                                            <option value="Y" <%=tcActive.compareTo("Y") == 0 ? " SELECTED " : ""%>>Y</option>
-                                            <option value="N" <%=tcActive.compareTo("N") == 0 ? " SELECTED " : ""%>>N</option>
-                                        </select>
+                                        <%
+                                            options.clear();
+                                            options.put("Y", "Yes");
+                                            options.put("N", "No");
+                                        %>
+                                        <%=generateMultiSelect("TcActive", request.getParameterValues("TcActive"), options, 
+                                                "Select Activation state", "Select Activation", "# of # Activation state selected", 1) %> 
                                     </td>
                                     <td id="wob">
                                         <%
@@ -295,24 +297,32 @@
                                                 "Select a Group", "Select Group", "# of # Group selected", 1) %> 
                                     </td>
                                     <td id="wob">
-                                        <select style="width: 110px" id="targetBuild" name="TargetBuild">
-                                            <option value="All" <%=targetBuild.equals("All") == true ? " SELECTED " : ""%>>-- ALL --</option>
-                                            <option value="NTB" <%=targetBuild.equals("") == true ? " SELECTED " : ""%>>--No Target Build--</option>
-                                            <% ResultSet rsTargetBuild = stmt.executeQuery("SELECT value from invariant where idname = 'BUILD' order by sort");
-                                                while (rsTargetBuild.next()) {%>
-                                            <option value="<%= rsTargetBuild.getString(1)%>" <%=targetBuild.compareTo(rsTargetBuild.getString(1)) == 0 ? " SELECTED " : ""%>><%= rsTargetBuild.getString(1)%></option><%
-                                                }%>
-                                        </select>
+                                        <%
+                                            options.clear();
+                                            options.put("NTB", "-- No Target Build --");
+                                            ResultSet rsTargetBuild = stmt.executeQuery("SELECT value from invariant where idname = 'BUILD' order by sort");
+                                                while (rsTargetBuild.next()) {
+                                                    if(rsTargetBuild.getString(1) != null && !"".equals(rsTargetBuild.getString(1).trim())) {
+                                                        options.put(rsTargetBuild.getString(1), rsTargetBuild.getString(1));
+                                                    }
+                                            }
+                                        %>
+                                        <%=generateMultiSelect("TargetBuild", request.getParameterValues("TargetBuild"), options, 
+                                                "Select a Target Build", "Select Target Build", "# of # Target Build selected", 1) %> 
                                     </td>
                                     <td id="wob">
-                                        <select style="width: 110px" id="targetRev" name="TargetRev">
-                                            <option value="All" <%=targetRev.compareTo("All") == 0 ? " SELECTED " : ""%>>-- ALL --</option>
-                                            <option value="NTR" <%=targetRev.compareTo("") == 0 ? " SELECTED " : ""%>>--No Target Rev--</option>
-                                            <% ResultSet rsTargetRev = stmt.executeQuery("SELECT value from invariant where idname = 'REVISION' order by sort");
-                                                while (rsTargetRev.next()) {%>
-                                            <option value="<%= rsTargetRev.getString(1)%>" <%=targetRev.compareTo(rsTargetRev.getString(1)) == 0 ? " SELECTED " : ""%>><%= rsTargetRev.getString(1)%></option><%
-                                                }%>
-                                        </select>
+                                        <%
+                                            options.clear();
+                                            options.put("NTR", "-- No Target Rev --");
+                                            ResultSet rsTargetRev = stmt.executeQuery("SELECT value from invariant where idname = 'REVISION' order by sort");
+                                            while (rsTargetRev.next()) {
+                                                if(rsTargetRev.getString(1) != null && !"".equals(rsTargetRev.getString(1).trim())) {
+                                                    options.put(rsTargetRev.getString(1), rsTargetRev.getString(1));
+                                                }
+                                            }
+                                        %>
+                                        <%=generateMultiSelect("TargetRev", request.getParameterValues("TargetRev"), options, 
+                                                "Select a Target Rev", "Select Target Rev", "# of # Target Rev selected", 1) %> 
                                     </td>
                                     <td id="wob">
                                         <%
