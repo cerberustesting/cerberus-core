@@ -1,3 +1,4 @@
+<%@page import="java.util.TreeMap"%>
 <%@page import="java.util.Map"%>
 <%@page import="org.cerberus.entity.TestCaseCountry"%>
 <%@page import="org.cerberus.entity.Project"%>
@@ -66,7 +67,7 @@
         <div id="body">
             <%
             
-                Map<String, String> options = new HashMap<String, String>();
+                TreeMap<String, String> options = new TreeMap<String, String>();
 
                 IInvariantService invariantService = appContext.getBean(InvariantService.class);
                 IBuildRevisionInvariantService buildRevisionInvariantService = appContext.getBean(BuildRevisionInvariantService.class);
@@ -133,18 +134,6 @@
                     }
                 } else {
                     tcActive = new String("Y");
-                }
-
-                String priority;
-                if (request.getParameter("Priority") != null) {
-                    if (request.getParameter("Priority").compareTo("All") != 0) {
-                        priority = request.getParameter("Priority");
-                    } else {
-                        priority = "%%";
-                    }
-
-                } else {
-                    priority = new String("%%");
                 }
 
                 String environment;
@@ -599,7 +588,7 @@
         </div>
 
 <%!
-            String generateMultiSelect(String parameterName,String[] parameters, Map<String,String> options, String headerText, String noneSeletedText, String selectedText, int selectedList) {
+            String generateMultiSelect(String parameterName,String[] parameters, TreeMap<String,String> options, String headerText, String noneSeletedText, String selectedText, int selectedList) {
                 String parameter = "";
                 if (parameters != null && parameters.length > 0 && (parameters[0]).compareTo("All") != 0) {
                     for (int index = 0; index < parameters.length; index++) {
