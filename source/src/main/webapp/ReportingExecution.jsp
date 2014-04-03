@@ -50,7 +50,7 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Execution Reporting : Status</title>
-        
+
         <link rel="stylesheet" type="text/css" href="css/crb_style.css">
         <link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico" />
         <link type="text/css" rel="stylesheet" href="css/jquery.multiselect.css">
@@ -66,17 +66,16 @@
         <%@ include file="include/header.jsp" %>
         <div id="body">
             <%
-            
+
                 TreeMap<String, String> options = new TreeMap<String, String>();
 
                 IInvariantService invariantService = appContext.getBean(InvariantService.class);
                 IBuildRevisionInvariantService buildRevisionInvariantService = appContext.getBean(BuildRevisionInvariantService.class);
                 ITestService testService = appContext.getBean(ITestService.class);
                 List<Test> testList = testService.getListOfTest();
-                
+
                 IProjectService projectService = appContext.getBean(IProjectService.class);
                 List<Project> projectList = projectService.findAllProject();
-                
 
                 String tag;
                 if (request.getParameter("Tag") != null && request.getParameter("Tag").compareTo("") != 0) {
@@ -92,10 +91,9 @@
                     browserFullVersion = new String("");
                 }
 
-                
                 String systemBR; // Used for filtering Build and Revision.
                 if (request.getParameter("SystemExe") != null && request.getParameter("SystemExe").compareTo("All") != 0) {
-                    systemBR =  request.getParameter("SystemExe");
+                    systemBR = request.getParameter("SystemExe");
                 } else {
                     systemBR = request.getAttribute("MySystem").toString();
                     if (request.getParameter("system") != null && request.getParameter("system").compareTo("") != 0) {
@@ -127,7 +125,6 @@
                     tcActive = new String("Y");
                 }
 
-                
                 String targetBuild = "";
                 if (request.getParameter("TargetBuild") != null) {
                     if (request.getParameter("TargetBuild").compareTo("All") == 0) {
@@ -176,297 +173,317 @@
                     Statement stmt = conn.createStatement();
                     List<Invariant> invariantCountry = invariantService.findListOfInvariantById("COUNTRY");
                     List<Invariant> invariantTCStatus = invariantService.findListOfInvariantById("TCSTATUS");
-                    
+
             %>
             <form method="GET" name="Apply" id="Apply" action="ReportingExecutionResult.jsp">
                 <div class="filters" style="float:left; width:100%;">
-                <p class="dttTitle">Filters</p>
-                <div id="dropDownDownArrow" style="float:left"><a 
-                        onclick="javascript:switchDivVisibleInvisible('dropDownDownArrow', 'filtersList')"><img src="images/dropdown.gif"/></a>
-                </div>
-                <div id="filtersList" style="float:left; width:100px">
-                
-                    <div style="clear:both"><p class="dttTitle">Line Filters</p>
-                            <table border="0px">
-                                <tr>
-                                    <td id="wob" style="width: 110px"><%out.print(docService.findLabelHTML("test", "Test", "Test"));%></td>
-                                    <td id="wob" style="width: 70px"><%out.print(docService.findLabelHTML("project", "idproject", "Project"));%></td>
-                                    <td id="wob" style="width: 60px"><%out.print(docService.findLabelHTML("application", "System", "System"));%></td>
-                                    <td id="wob" style="width: 100px"><%out.print(docService.findLabelHTML("application", "Application", "Application"));%></td>
-                                    <td id="wob" style="width: 70px"><%out.print(docService.findLabelHTML("testcase", "tcactive", "TestCase Active"));%></td>
-                                    <td id="wob" style="width: 70px"><%out.print(docService.findLabelHTML("invariant", "PRIORITY", "Priority"));%></td>
-                                </tr>
+                    <p style="float:left" class="dttTitle">Filters</p>
 
-                                <tr>                        
-                                    <td id="wob">
-                                        <%
-                                            options.clear();
-                                            for(Test testL : testList){
-                                                    options.put(testL.getTest(), testL.getTest());
-                                            }
-                                        %>
-                                            <%=generateMultiSelect("Test", request.getParameterValues("Test"), options, 
-                                                "Select a test", "Select Test", "# of # Test selected", 1) %>
-                                    </td>
-                                    <td id="wob">
-                                        <%
-                                            options.clear();
-                                            for (Project project: projectList) {
-                                                if(project.getIdProject() != null && !"".equals(project.getIdProject().trim())) {
-                                                    options.put(project.getIdProject(), project.getIdProject()+" - "+project.getDescription());
-                                                }
-                                            }
-                                            
-                                            
-                                        
-                                        %>
-                                            <%=generateMultiSelect("Project", request.getParameterValues("Project"), options, 
-                                                "Select a project", "Select Project", "# of # Project selected", 1) %>
-                                    </td>
-                                    <td id="wob">
-                                        <%
-                                                ResultSet rsSys = stmt.executeQuery("SELECT DISTINCT System FROM application Order by System asc");
-                                                options.clear();
-                                                while (rsSys.next()) {
-                                                        options.put(rsSys.getString("System"), rsSys.getString("System"));
-                                                }%>
-                                                <%=generateMultiSelect("System", request.getParameterValues("System"), options, 
-                                                    "Select a sytem", "Select System", "# of # System selected", 1) %>
-                                    </td>
-                                    <td id="wob">
-                                        <%
-                                            ResultSet rsApp = stmt.executeQuery("SELECT Application , System FROM application Order by Sort asc");
-                                            options.clear();
-                                            while (rsApp.next()) {
-                                                    options.put(rsApp.getString("Application"), rsApp.getString("Application")+" ["+rsApp.getString("System")+"]");
-                                            }
-                                        %>
-                                            <%=generateMultiSelect("Application", request.getParameterValues("Application"), options, 
-                                                "Select an application", "Select Application", "# of # Application selected", 1) %>
-                                    </td>
-                                    <td id="wob">
-                                        <%
-                                            options.clear();
-                                            options.put("Y", "Yes");
-                                            options.put("N", "No");
-                                        %>
-                                        <%=generateMultiSelect("TcActive", request.getParameterValues("TcActive"), options, 
-                                                "Select Activation state", "Select Activation", "# of # Activation state selected", 1) %> 
-                                    </td>
-                                    <td id="wob">
-                                        <%
-                                            ResultSet rsPri = stmt.executeQuery("SELECT DISTINCT value FROM invariant WHERE idname='PRIORITY' Order by sort asc");
-                                            options.clear();
-                                            while (rsPri.next()) {
-                                                    options.put(rsPri.getString(1), rsPri.getString(1));
-                                            }
-                                        %>
-                                            <%=generateMultiSelect("Priority", request.getParameterValues("Priority"), options, 
-                                                "Select a Priority", "Select Priority", "# of # Priority selected", 1) %>
-                                    </td>
-                                </tr><tr>
-                                    <td id="wob" style="width: 110px"><%out.print(docService.findLabelHTML("testcase", "Status", "Status"));%></td>
-                                    <td id="wob" style="width: 110px"><%out.print(docService.findLabelHTML("invariant", "GROUP", "Group"));%></td>
-                                    <td id="wob" style="width: 110px"><%out.print(docService.findLabelHTML("testcase", "targetBuild", "targetBuild"));%></td>                        
-                                    <td id="wob" style="width: 110px"><%out.print(docService.findLabelHTML("testcase", "targetRev", "targetRev"));%></td>                        
-                                    <td id="wob" style="width: 100px"><%out.print(docService.findLabelHTML("testcase", "creator", "Creator"));%></td>
-                                    <td id="wob" style="width: 100px"><%out.print(docService.findLabelHTML("testcase", "implementer", "implementer"));%></td>
-                                </tr><tr>
-                                    <td id="wob">
-                                        <%
-                                            options.clear();
-                                            for(Invariant statusInv : invariantTCStatus) {
-                                                options.put(statusInv.getValue(), statusInv.getValue());
-                                            }
-                                        %>
-                                        <%=generateMultiSelect("Status", request.getParameterValues("Status"), options, 
-                                                "Select an option", "Select Status", "# of # Status selected", 1) %>
-                                    </td>
-
-                                    <td id="wob">
-                                        <%
-                                            options.clear();
-                                            ResultSet rsGroup = stmt.executeQuery("SELECT value from invariant where idname = 'GROUP' order by sort");
-                                                while (rsGroup.next()) {
-                                                    if(rsGroup.getString(1) != null && !"".equals(rsGroup.getString(1).trim())) {
-                                                        options.put(rsGroup.getString(1), rsGroup.getString(1));
-                                                    }
-                                            }
-                                        %>
-                                        <%=generateMultiSelect("Group", request.getParameterValues("Group"), options, 
-                                                "Select a Group", "Select Group", "# of # Group selected", 1) %> 
-                                    </td>
-                                    <td id="wob">
-                                        <%
-                                            options.clear();
-                                            options.put("NTB", "-- No Target Build --");
-                                            ResultSet rsTargetBuild = stmt.executeQuery("SELECT value from invariant where idname = 'BUILD' order by sort");
-                                                while (rsTargetBuild.next()) {
-                                                    if(rsTargetBuild.getString(1) != null && !"".equals(rsTargetBuild.getString(1).trim())) {
-                                                        options.put(rsTargetBuild.getString(1), rsTargetBuild.getString(1));
-                                                    }
-                                            }
-                                        %>
-                                        <%=generateMultiSelect("TargetBuild", request.getParameterValues("TargetBuild"), options, 
-                                                "Select a Target Build", "Select Target Build", "# of # Target Build selected", 1) %> 
-                                    </td>
-                                    <td id="wob">
-                                        <%
-                                            options.clear();
-                                            options.put("NTR", "-- No Target Rev --");
-                                            ResultSet rsTargetRev = stmt.executeQuery("SELECT value from invariant where idname = 'REVISION' order by sort");
-                                            while (rsTargetRev.next()) {
-                                                if(rsTargetRev.getString(1) != null && !"".equals(rsTargetRev.getString(1).trim())) {
-                                                    options.put(rsTargetRev.getString(1), rsTargetRev.getString(1));
-                                                }
-                                            }
-                                        %>
-                                        <%=generateMultiSelect("TargetRev", request.getParameterValues("TargetRev"), options, 
-                                                "Select a Target Rev", "Select Target Rev", "# of # Target Rev selected", 1) %> 
-                                    </td>
-                                    <td id="wob">
-                                        <%
-                                            options.clear();
-                                            ResultSet rsCreator = stmt.executeQuery("SELECT login from user");
-                                            while (rsCreator.next()) {
-                                                if(rsCreator.getString(1) != null && !"".equals(rsCreator.getString(1).trim())) {
-                                                    options.put(rsCreator.getString(1), rsCreator.getString(1));
-                                                }
-                                            }
-                                        %>
-                                        <%=generateMultiSelect("Creator", request.getParameterValues("Creator"), options, 
-                                                "Select a Creator", "Select Creator", "# of # Creator selected", 1) %> 
-                                    </td>
-                                    <td id="wob">
-                                        <%=generateMultiSelect("Implementer", request.getParameterValues("Implementer"), options, 
-                                                "Select an Implementer", "Select Implementer", "# of # Implementer selected", 1) %> 
-                                    </td>
-                                </tr>
-                            </table>
-                    </div>       <div style="clear:both"><p class="dttTitle">Content Filters</p>
-                            <table border="0px">
-                                <tr><td colspan="7" class="wob"></td></tr>
-                                <tr>
-                                    <td id="wob" style="width: 130px"><%out.print(docService.findLabelHTML("invariant", "Environment", "Environment"));%></td>
-                                    <td id="wob" style="width: 70px"><%out.print(docService.findLabelHTML("application", "system", "System"));%></td>
-                                    <td id="wob" style="width: 130px"><%out.print(docService.findLabelHTML("buildrevisioninvariant", "versionname01", "Build"));%></td>
-                                    <td id="wob" style="width: 130px"><%out.print(docService.findLabelHTML("buildrevisioninvariant", "versionname02", "Revision"));%></td>
-                                    <td id="wob" style="width: 130px"><%out.print(docService.findLabelHTML("testcaseexecution", "IP", "Ip"));%></td>
-                                    <td id="wob" style="width: 130px"><%out.print(docService.findLabelHTML("testcaseexecution", "Port", "Port"));%></td>
-                                    <td id="wob" style="width: 130px"><%out.print(docService.findLabelHTML("testcaseexecution", "tag", "Tag"));%></td>
-                                    <td id="wob" style="width: 130px"><%out.print(docService.findLabelHTML("testcaseexecution", "browserfullversion", ""));%></td>
-                                    <td id="wob" style="width: 130px"><%out.print(docService.findLabelHTML("testcaseexecution", "status", ""));%></td>
-                                </tr>
-
-                                <tr>
-                                    <td id="wob">
-                                                                                <%
-                                            options.clear();
-                                            ResultSet rsEnv = stmt.executeQuery("SELECT value from invariant where idname = 'ENVIRONMENT' order by sort");
-                                            while (rsEnv.next()) {
-                                                if(rsEnv.getString(1) != null && !"".equals(rsEnv.getString(1).trim())) {
-                                                    options.put(rsEnv.getString(1), rsEnv.getString(1));
-                                                }
-                                            }
-                                        %>
-                                        <%=generateMultiSelect("Environment", request.getParameterValues("Environment"), options, 
-                                                "Select an Environment", "Select Environment", "# of # Environment selected", 1) %> 
-                                    </td>
-                                    <td id="wob">
-                                        <%
-                                            List<Invariant> systemList = invariantService.findListOfInvariantById("SYSTEM");
-                                            options.clear();
-                                            for(Invariant systemInv : systemList) {
-                                                options.put(systemInv.getValue(), systemInv.getValue());
-                                            }
-                                        %>
-                                        <%=generateMultiSelect("SystemExe", request.getParameterValues("SystemExe"), options, 
-                                                "Select a System", "Select System", "# of # System selected", 1) %>
-                                                
-                                    </td>
-                                    <td id="wob">
-                                        <%
-                                            List<BuildRevisionInvariant> listBuildRev = buildRevisionInvariantService.findAllBuildRevisionInvariantBySystemLevel(systemBR, 1);
-                                            options.clear();
-                                            for(BuildRevisionInvariant myBR : listBuildRev) {
-                                                options.put(myBR.getVersionName(), myBR.getVersionName());
-                                            }
-                                        %>
-                                        <%=generateMultiSelect("Build", request.getParameterValues("Build"), options, 
-                                                "Select a Build", "Select Build", "# of # Build selected", 1) %>
-                                    </td>
-                                    <td id="wob">
-                                        <%
-                                            listBuildRev = buildRevisionInvariantService.findAllBuildRevisionInvariantBySystemLevel(systemBR, 2);
-                                            options.clear();
-                                            for(BuildRevisionInvariant myBR : listBuildRev) {
-                                                options.put(myBR.getVersionName(), myBR.getVersionName());
-                                            }
-                                        %>
-                                        <%=generateMultiSelect("Revision", request.getParameterValues("Revision"), options, 
-                                                "Select a Revision", "Select Revision", "# of # Revision selected", 1) %>
-                                    </td>
-                                    <td id="wob"><input style="font-weight: bold; width: 130px" name="Ip" id="Ip" value="<%=ip%>"></td>
-                                    <td id="wob"><input style="font-weight: bold; width: 60px" name="Port" id="Port" value="<%=port%>"></td>
-                                    <td id="wob"><input style="font-weight: bold; width: 130px" name="Tag" id="Tag" value="<%=tag%>"></td>
-                                    <td id="wob"><input style="font-weight: bold; width: 130px" name="BrowserFullVersion" id="Tag" value="<%=browserFullVersion%>"></td>
-                                    <td id="wob">
-                                        <%
-                                            options.clear();
-                                            for(Invariant statusInv : invariantTCStatus) {
-                                                options.put(statusInv.getValue(), statusInv.getValue());
-                                            }
-                                        %>
-                                        <%=generateMultiSelect("ExeStatus", request.getParameterValues("exeStatus"), options, 
-                                                "Select a TC Status", "Select TC Status", "# of # TC Status selected", 1) %>
-                                    </td>
-                                </tr>
-                            </table>
+                    <div id="dropDownUpArrow" style="float:left; display:none"><a 
+                            onclick="javascript:switchDivVisibleInvisible('filtersList', 'dropDownUpArrow');switchDivVisibleInvisible('dropDownDownArrow', 'dropDownUpArrow'); "><img src="images/dropdown.gif"/></a>
                     </div>
-                            <%
-                            %>
-                            <table border="0px">
-                                <tr><td></td></tr>
-                                <tr>
-                                    <td id ="arrond">
-                                        <table>
-                                            <tr><td class="wob"><h4 style="color:black">Country</h4></td></tr>
-                                            <tr><td class="wob"><%
-                                                options.clear();
-                                                for (Invariant countryInv : invariantCountry){
-                                                    options.put(countryInv.getValue(), countryInv.getValue()+" - "+countryInv.getDescription());
-                                                }
-                                                
-                                                
-                                            %><%=generateMultiSelect("Country", request.getParameterValues("Country"), options, 
-                                                "Select a country", "Select Country", "# of # Country selected", 1) %></td>
-                                        </table>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td id="wob">
-                                        <table>
-                                            <tr>
-                                                <td class="wob">
-                                                    <input id="button" type="submit" name="Apply" value="Apply">
-                                                </td>
-                                                <%if (!apply) {
-                                                %>
-                                                <td class="wob">
-                                                    <input id="button" type="button" name="defaultFilter" value="Select My Default Filters" onclick="loadReporting('<%=reportingFavorite%>')">           
-                                                </td><% }
+                    <div id="dropDownDownArrow" style="float:left"><a 
+                                onclick="javascript:switchDivVisibleInvisible('dropDownUpArrow', 'filtersList'); switchDivVisibleInvisible('dropDownUpArrow', 'dropDownDownArrow')"><img src="images/dropdown.gif"/></a>
+                    </div>
+                    <div id="filtersList" style="clear:both;">
+                    <br><div class="underlinedDiv"></div>
+                        <p style="text-align:left" class="dttTitle">Testcase Filters (Displayed Rows)</p>
+                        <div style="float:left">
+                            <div style="float:left">
+                                <div style="width:150px; text-align: left"><%out.print(docService.findLabelHTML("test", "Test", "Test"));%></div>
+                                <div>
+                                    <%
+                                        options.clear();
+                                        for (Test testL : testList) {
+                                            options.put(testL.getTest(), testL.getTest());
+                                        }
+                                    %>
+                                    <%=generateMultiSelect("Test", request.getParameterValues("Test"), options,
+                                            "Select a test", "Select Test", "# of # Test selected", 1)%>
+                                </div>
+                            </div>
+                            <div style="float:left">
+                                <div style="width:150px; text-align: left"><%out.print(docService.findLabelHTML("project", "idproject", "Project"));%></div>
+                                <div>
+                                    <%
+                                        options.clear();
+                                        for (Project project : projectList) {
+                                            if (project.getIdProject() != null && !"".equals(project.getIdProject().trim())) {
+                                                options.put(project.getIdProject(), project.getIdProject() + " - " + project.getDescription());
+                                            }
+                                        }
 
-                                                %>
-                                                <td class="wob">
-                                                    <input id="button" type="button" value="Set As My Default Filter" onclick="saveFilters()">
-                                                </td>
-                                            </tr>
-                                        </table>
-                                    </td>
-                                </tr>
-                            </table>
-                        </div> 
-                </div>
+
+                                    %>
+                                    <%=generateMultiSelect("Project", request.getParameterValues("Project"), options,
+                                            "Select a project", "Select Project", "# of # Project selected", 1)%>
+                                </div>
+                            </div>
+                            <div style="float:left">
+                                <div style="clear:both; width:150px; text-align: left"><%out.print(docService.findLabelHTML("application", "System", "System"));%></div>
+                                <div style="clear:both">
+                                    <%
+                                        ResultSet rsSys = stmt.executeQuery("SELECT DISTINCT System FROM application Order by System asc");
+                                        options.clear();
+                                        while (rsSys.next()) {
+                                            options.put(rsSys.getString("System"), rsSys.getString("System"));
+                                        }%>
+                                    <%=generateMultiSelect("System", request.getParameterValues("System"), options,
+                                            "Select a sytem", "Select System", "# of # System selected", 1)%>
+                                </div>
+                            </div>
+                            <div style="float:left">
+                                <div style="clear:both; width:150px; text-align: left"><%out.print(docService.findLabelHTML("application", "Application", "Application"));%></div>
+                                <div style="clear:both">
+                                    <%
+                                        ResultSet rsApp = stmt.executeQuery("SELECT Application , System FROM application Order by Sort asc");
+                                        options.clear();
+                                        while (rsApp.next()) {
+                                            options.put(rsApp.getString("Application"), rsApp.getString("Application") + " [" + rsApp.getString("System") + "]");
+                                        }
+                                    %>
+                                    <%=generateMultiSelect("Application", request.getParameterValues("Application"), options,
+                                            "Select an application", "Select Application", "# of # Application selected", 1)%>
+                                </div>
+                            </div>
+                            <div style="float:left">
+                                <div style="clear:both; width:150px; text-align: left"><%out.print(docService.findLabelHTML("testcase", "tcactive", "TestCase Active"));%></div>
+                                <div style="clear:both">
+                                    <%
+                                        options.clear();
+                                        options.put("Y", "Yes");
+                                        options.put("N", "No");
+                                    %>
+                                    <%=generateMultiSelect("TcActive", request.getParameterValues("TcActive"), options,
+                                            "Select Activation state", "Select Activation", "# of # Activation state selected", 1)%> 
+                                </div>
+                            </div>
+                            <div style="float:left">
+                                <div style="clear:both; width:150px; text-align: left"><%out.print(docService.findLabelHTML("invariant", "PRIORITY", "Priority"));%></div>
+                                <div style="clear:both">
+                                    <%
+                                        ResultSet rsPri = stmt.executeQuery("SELECT DISTINCT value FROM invariant WHERE idname='PRIORITY' Order by sort asc");
+                                        options.clear();
+                                        while (rsPri.next()) {
+                                            options.put(rsPri.getString(1), rsPri.getString(1));
+                                        }
+                                    %>
+                                    <%=generateMultiSelect("Priority", request.getParameterValues("Priority"), options,
+                                            "Select a Priority", "Select Priority", "# of # Priority selected", 1)%>
+                                </div>
+                            </div>
+                            <div style="float:left">
+                                <div style="clear:both; width:150px; text-align: left"><%out.print(docService.findLabelHTML("testcase", "Status", "Status"));%></div>
+                                <div style="clear:both">
+                                    <%
+                                        options.clear();
+                                        for (Invariant statusInv : invariantTCStatus) {
+                                            options.put(statusInv.getValue(), statusInv.getValue());
+                                        }
+                                    %>
+                                    <%=generateMultiSelect("Status", request.getParameterValues("Status"), options,
+                                            "Select an option", "Select Status", "# of # Status selected", 1)%>
+                                </div>
+                            </div>
+                            <div style="float:left">
+                                <div style="clear:both; width:150px; text-align: left"><%out.print(docService.findLabelHTML("invariant", "GROUP", "Group"));%></div>
+                                <div style="clear:both">
+                                    <%
+                                        options.clear();
+                                        ResultSet rsGroup = stmt.executeQuery("SELECT value from invariant where idname = 'GROUP' order by sort");
+                                        while (rsGroup.next()) {
+                                            if (rsGroup.getString(1) != null && !"".equals(rsGroup.getString(1).trim())) {
+                                                options.put(rsGroup.getString(1), rsGroup.getString(1));
+                                            }
+                                        }
+                                    %>
+                                    <%=generateMultiSelect("Group", request.getParameterValues("Group"), options,
+                                            "Select a Group", "Select Group", "# of # Group selected", 1)%> 
+                                </div>
+                            </div>
+                            <div style="float:left">
+                                <div style="clear:both; width:150px; text-align: left"><%out.print(docService.findLabelHTML("testcase", "targetBuild", "targetBuild"));%></div>
+                                <div style="clear:both">
+                                    <%
+                                        options.clear();
+                                        options.put("NTB", "-- No Target Build --");
+                                        ResultSet rsTargetBuild = stmt.executeQuery("SELECT value from invariant where idname = 'BUILD' order by sort");
+                                        while (rsTargetBuild.next()) {
+                                            if (rsTargetBuild.getString(1) != null && !"".equals(rsTargetBuild.getString(1).trim())) {
+                                                options.put(rsTargetBuild.getString(1), rsTargetBuild.getString(1));
+                                            }
+                                        }
+                                    %>
+                                    <%=generateMultiSelect("TargetBuild", request.getParameterValues("TargetBuild"), options,
+                                            "Select a Target Build", "Select Target Build", "# of # Target Build selected", 1)%> 
+                                </div>
+                            </div>
+                            <div style="float:left">
+                                <div style="clear:both; width:150px; text-align: left"><%out.print(docService.findLabelHTML("testcase", "targetRev", "targetRev"));%></div>
+                                <div style="clear:both">
+                                    <%
+                                        options.clear();
+                                        options.put("NTR", "-- No Target Rev --");
+                                        ResultSet rsTargetRev = stmt.executeQuery("SELECT value from invariant where idname = 'REVISION' order by sort");
+                                        while (rsTargetRev.next()) {
+                                            if (rsTargetRev.getString(1) != null && !"".equals(rsTargetRev.getString(1).trim())) {
+                                                options.put(rsTargetRev.getString(1), rsTargetRev.getString(1));
+                                            }
+                                        }
+                                    %>
+                                    <%=generateMultiSelect("TargetRev", request.getParameterValues("TargetRev"), options,
+                                            "Select a Target Rev", "Select Target Rev", "# of # Target Rev selected", 1)%> 
+                                </div>
+                            </div>
+                            <div style="float:left">
+                                <div style="clear:both; width:150px; text-align: left"><%out.print(docService.findLabelHTML("testcase", "creator", "Creator"));%></div>
+                                <div style="clear:both">
+                                    <%
+                                        options.clear();
+                                        ResultSet rsCreator = stmt.executeQuery("SELECT login from user");
+                                        while (rsCreator.next()) {
+                                            if (rsCreator.getString(1) != null && !"".equals(rsCreator.getString(1).trim())) {
+                                                options.put(rsCreator.getString(1), rsCreator.getString(1));
+                                            }
+                                        }
+                                    %>
+                                    <%=generateMultiSelect("Creator", request.getParameterValues("Creator"), options,
+                                            "Select a Creator", "Select Creator", "# of # Creator selected", 1)%> 
+                                </div>
+                            </div>
+                            <div style="float:left">
+                                <div style="clear:both; width:150px; text-align: left"><%out.print(docService.findLabelHTML("testcase", "implementer", "implementer"));%></div>
+                                <div style="clear:both">
+                                    <%=generateMultiSelect("Implementer", request.getParameterValues("Implementer"), options,
+                                            "Select an Implementer", "Select Implementer", "# of # Implementer selected", 1)%> 
+                                </div>
+                            </div>
+                        </div>
+                               
+<div style="clear:both">
+                                <br><div class="underlinedDiv"></div>
+                        <p style="text-align:left" class="dttTitle">Testcase Execution Filters (Displayed Content)</p>
+                        
+                            <div style="float:left">
+                                <div style="clear:both; width:150px; text-align: left"><%out.print(docService.findLabelHTML("invariant", "Environment", "Environment"));%></div>
+                                <div style="clear:both"><%
+                                    options.clear();
+                                    ResultSet rsEnv = stmt.executeQuery("SELECT value from invariant where idname = 'ENVIRONMENT' order by sort");
+                                    while (rsEnv.next()) {
+                                        if (rsEnv.getString(1) != null && !"".equals(rsEnv.getString(1).trim())) {
+                                            options.put(rsEnv.getString(1), rsEnv.getString(1));
+                                        }
+                                    }
+                                    %>
+                                    <%=generateMultiSelect("Environment", request.getParameterValues("Environment"), options,
+                                                "Select an Environment", "Select Environment", "# of # Environment selected", 1)%> 
+                                </div>
+                            </div>
+                            <div style="float:left">
+                                <div style="clear:both; width:150px; text-align: left"><%out.print(docService.findLabelHTML("application", "system", "System"));%></div>
+                                <div style="clear:both"><%
+                                    List<Invariant> systemList = invariantService.findListOfInvariantById("SYSTEM");
+                                    options.clear();
+                                    for (Invariant systemInv : systemList) {
+                                        options.put(systemInv.getValue(), systemInv.getValue());
+                                    }
+                                    %>
+                                    <%=generateMultiSelect("SystemExe", request.getParameterValues("SystemExe"), options,
+                                                "Select a System", "Select System", "# of # System selected", 1)%>
+                                </div>
+                            </div>
+                            <div style="float:left">
+                                <div style="clear:both; width:150px; text-align: left"><%out.print(docService.findLabelHTML("buildrevisioninvariant", "versionname01", "Build"));%></div>
+                                <div style="clear:both"><%
+                                    List<BuildRevisionInvariant> listBuildRev = buildRevisionInvariantService.findAllBuildRevisionInvariantBySystemLevel(systemBR, 1);
+                                    options.clear();
+                                    for (BuildRevisionInvariant myBR : listBuildRev) {
+                                        options.put(myBR.getVersionName(), myBR.getVersionName());
+                                    }
+                                    %>
+                                    <%=generateMultiSelect("Build", request.getParameterValues("Build"), options,
+                                                "Select a Build", "Select Build", "# of # Build selected", 1)%>
+                                </div>
+                            </div>
+                            <div style="float:left">
+                                <div style="clear:both; width:150px; text-align: left"><%out.print(docService.findLabelHTML("buildrevisioninvariant", "versionname02", "Revision"));%></div>
+                                <div style="clear:both"> <%
+                                    listBuildRev = buildRevisionInvariantService.findAllBuildRevisionInvariantBySystemLevel(systemBR, 2);
+                                    options.clear();
+                                    for (BuildRevisionInvariant myBR : listBuildRev) {
+                                        options.put(myBR.getVersionName(), myBR.getVersionName());
+                                    }
+                                    %>
+                                    <%=generateMultiSelect("Revision", request.getParameterValues("Revision"), options,
+                                                "Select a Revision", "Select Revision", "# of # Revision selected", 1)%>
+                                </div>
+                            </div>
+                            <div style="float:left">
+                                <div style="clear:both; width:150px; text-align: left"><%out.print(docService.findLabelHTML("testcaseexecution", "IP", "Ip"));%></div>
+                                <div style="clear:both">   <%
+                                    options.clear();
+                                    for (Invariant statusInv : invariantTCStatus) {
+                                        options.put(statusInv.getValue(), statusInv.getValue());
+                                    }
+                                    %>
+                                    <%=generateMultiSelect("ExeStatus", request.getParameterValues("exeStatus"), options,
+                                                "Select a TC Status", "Select TC Status", "# of # TC Status selected", 1)%>
+                                </div>
+                            </div>
+                            <div style="float:left">
+                                <div style="clear:both; width:150px; text-align: left"><%out.print(docService.findLabelHTML("testcaseexecution", "Port", "Port"));%></div>
+                                <div style="clear:both"><input style="font-weight: bold; width: 130px" name="Ip" id="Ip" value="<%=ip%>"></div>
+                            </div>
+                            <div style="float:left">
+                                <div style="clear:both; width:150px; text-align: left"><%out.print(docService.findLabelHTML("testcaseexecution", "tag", "Tag"));%></div>
+                                <div style="clear:both"><input style="font-weight: bold; width: 60px" name="Port" id="Port" value="<%=port%>"></div>
+                            </div>
+                            <div style="float:left">
+                                <div style="clear:both; width:150px; text-align: left"><%out.print(docService.findLabelHTML("testcaseexecution", "browserfullversion", ""));%></div>
+                                <div style="clear:both"><input style="font-weight: bold; width: 130px" name="Tag" id="Tag" value="<%=tag%>"></div>
+                            </div>
+                            <div style="float:left">
+                                <div style="clear:both; width:150px; text-align: left"><%out.print(docService.findLabelHTML("testcaseexecution", "status", ""));%></div>
+                                <div style="clear:both"><input style="font-weight: bold; width: 130px" name="BrowserFullVersion" id="Tag" value="<%=browserFullVersion%>"></div>
+                            </div>
+                        </div>
+                        <%
+                        %>
+                        
+                        <div style="clear:both">
+                            <br><div class="underlinedDiv"></div>
+                        <p style="text-align:left" class="dttTitle">Execution Context Filters (Displayed Columns)</p>
+                            <div style="float:left">
+                                <div style="clear:both; width:150px; text-align: left">Country</div>
+                                <div style="clear:both"><%
+                                    options.clear();
+                                    for (Invariant countryInv : invariantCountry) {
+                                        options.put(countryInv.getValue(), countryInv.getValue() + " - " + countryInv.getDescription());
+                                    }
+
+
+                                    %><%=generateMultiSelect("Country", request.getParameterValues("Country"), options,
+                                                        "Select a country", "Select Country", "# of # Country selected", 1)%></div>
+                            </div>
+                        </div>
+                        <div style="clear:both">
+                        <br><div class="underlinedDiv"></div>
+                        <br>
+                        <div style="float:left">
+                            <input id="button" type="submit" name="Apply" value="Apply">
+                        </div>
+                        <%if (!apply) {
+                        %>
+                        <div style="float:left">
+                            <input id="button" type="button" name="defaultFilter" value="Select My Default Filters" onclick="loadReporting('<%=reportingFavorite%>')">           
+                        </div><% }
+
+                        %>
+                        <div style="float:left">
+                            <input id="button" type="button" value="Set As My Default Filter" onclick="saveFilters()">
+                        </div>         
+                    </div> 
+                    </div></div>
 
                 <br><br>
                 <div id="displayResult">
@@ -477,8 +494,7 @@
                     <br>
                     <br>
                 </div>
-                <%
-                    } catch (Exception e) {
+                <%                    } catch (Exception e) {
                         out.println(e);
                     } finally {
                         try {
@@ -493,21 +509,21 @@
         </div>
 
         <script type="text/javascript">
-                    $(document).ready(function() {
-                        $(".multiSelectOptions").each(function(){
-                            var currentElement = $(this);
-                            currentElement.multiselect({
-                                multiple: true,
-                                minWidth: 150,
-                                header: currentElement.data('header'),
-                                noneSelectedText: currentElement.data('none-selected-text'),
-                                selectedText: currentElement.data('selected-text'),
-                                selectedList: currentElement.data('selected-list')
-                            });
-                        });
+            $(document).ready(function() {
+                $(".multiSelectOptions").each(function() {
+                    var currentElement = $(this);
+                    currentElement.multiselect({
+                        multiple: true,
+                        minWidth: 150,
+                        header: currentElement.data('header'),
+                        noneSelectedText: currentElement.data('none-selected-text'),
+                        selectedText: currentElement.data('selected-text'),
+                        selectedList: currentElement.data('selected-list')
                     });
+                });
+            });
         </script>
-        
+
         <script type="text/javascript">
             $(document).ready(function() {
 
@@ -520,16 +536,15 @@
                     });
                 });
 
-                <%
-                    if("Apply".equals(request.getParameter("Apply"))) {
-                        %>
-                                $('#Apply').submit();
-                        <%
-                    }
-                %>
+            <%                    if ("Apply".equals(request.getParameter("Apply"))) {
+            %>
+                $('#Apply').submit();
+            <%
+                }
+            %>
 
                 function saveFilters() {
-                    $('#Apply').action = $('#Apply').action+"?Apply=Apply&RecordPref=Y";
+                    $('#Apply').action = $('#Apply').action + "?Apply=Apply&RecordPref=Y";
                     $('#Apply').submit();
                 }
 

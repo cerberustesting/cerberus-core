@@ -180,7 +180,7 @@
                 execclauses : <%=execclauses%>
             -->
                 <br><br>
-                <table  class="arrond" >
+                <table class="backDiv" style="width:100%">
                     <tr>
                         <td id="wob">
                             <table>
@@ -207,7 +207,7 @@
                         <td id="wob">
                             <table id="reportingExec" class="arrondTable dataTable" style="text-align: left;border-collapse:collapse;display:table" border="1px" cellpadding="0" cellspacing="1">
                                 <thead>
-                                <tr id="headerFirst">
+                                <tr id="headerFirst"  class="filters">
                                     <td ><%out.print(docService.findLabelHTML("test", "test", "Test"));%></td>
                                     <td ><%out.print(docService.findLabelHTML("testcase", "testcase", "TestCase"));%></td>
                                     <td ><%out.print(docService.findLabelHTML("application", "application", "Aplication"));%></td>

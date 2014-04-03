@@ -32,6 +32,10 @@ textarea{
 * {
     margin: 0;
 }
+.underlinedDiv{
+    border-bottom-color:#555555;
+    border-bottom-style:double;
+}
 /* Fields without border (TODO Refactor)*/
 td#wob { 
     border-width:0px;
