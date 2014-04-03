@@ -169,7 +169,6 @@
                             + request.getQueryString() + "' where login = '"
                             + request.getUserPrincipal().getName()
                             + "'";
-                    System.out.print(recordPref);
                     if (recordPref == true) {
                         stmt5.execute(insertURL);
                     }
