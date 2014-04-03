@@ -92,24 +92,15 @@
                     browserFullVersion = new String("");
                 }
 
-                String systemExe;
+                
                 String systemBR; // Used for filtering Build and Revision.
                 if (request.getParameter("SystemExe") != null && request.getParameter("SystemExe").compareTo("All") != 0) {
-                    systemExe = request.getParameter("SystemExe");
-                    systemBR = systemExe;
+                    systemBR =  request.getParameter("SystemExe");
                 } else {
-                    systemExe = new String("");
                     systemBR = request.getAttribute("MySystem").toString();
                     if (request.getParameter("system") != null && request.getParameter("system").compareTo("") != 0) {
                         systemBR = request.getParameter("system");
                     }
-                }
-
-                String group;
-                if (request.getParameter("Group") != null && request.getParameter("Group").compareTo("All") != 0) {
-                    group = request.getParameter("Group");
-                } else {
-                    group = new String("%%");
                 }
 
                 String port;
@@ -136,95 +127,7 @@
                     tcActive = new String("Y");
                 }
 
-                String environment;
-                if (request.getParameter("Environment") != null && request.getParameter("Environment").compareTo("All") != 0) {
-                    environment = request.getParameter("Environment");
-                } else {
-                    environment = new String("%%");
-                }
-                String revision;
-                if (request.getParameter("Revision") != null && request.getParameter("Revision").compareTo("All") != 0) {
-                    revision = request.getParameter("Revision");
-                } else {
-                    revision = new String("%%");
-                }
-                String creator;
-                if (request.getParameter("Creator") != null && request.getParameter("Creator").compareTo("All") != 0) {
-                    creator = request.getParameter("Creator");
-                } else {
-                    creator = new String("%%");
-                }
-                String implementer;
-                if (request.getParameter("Implementer") != null && request.getParameter("Implementer").compareTo("All") != 0) {
-                    implementer = request.getParameter("Implementer");
-                } else {
-                    implementer = new String("%%");
-                }
-                String build;
-                if (request.getParameter("Build") != null && request.getParameter("Build").compareTo("All") != 0) {
-                    build = request.getParameter("Build");
-                } else {
-                    build = new String("%%");
-                }
-
                 
-                /*
-                String project = "";
-                if (request.getParameterValues("Project") != null && (request.getParameterValues("Project")[0]).compareTo("All") != 0) {
-                    String[] projects = request.getParameterValues("Project");
-                    if (projects != null && projects.length > 0) {
-                        for (int index = 0; index < projects.length; index++) {
-                            project += projects[index] + ",";
-
-                        }
-                    }
-                }
-*/
-                String app;
-                if (request.getParameter("Application") != null && request.getParameter("Application").compareTo("All") != 0) {
-                    app = request.getParameter("Application");
-                } else {
-                    app = new String("%%");
-                }
-
-                String system;
-                if (request.getParameter("System") != null && request.getParameter("System").compareTo("All") != 0) {
-                    system = request.getParameter("System");
-                } else {
-                    system = new String("%%");
-                }
-
-
-                /*
-                String[] allstatus;
-                String status = "";
-                if (request.getParameterValues("Status") != null && (request.getParameterValues("Status")[0]).compareTo("All") != 0) {
-                    allstatus = request.getParameterValues("Status");
-                    if (allstatus != null && allstatus.length > 0) {
-                        for (int index = 0; index < allstatus.length; index++) {
-                            status += allstatus[index] + ",";
-
-                        }
-                    }
-                } else {
-                    allstatus = new String[1];
-                    allstatus[0] = new String("%%");
-                }
-
-                String[] allExeStatus;
-                String exeStatus = "";
-                if (request.getParameterValues("ExeStatus") != null && (request.getParameterValues("ExeStatus")[0]).compareTo("All") != 0) {
-                    allExeStatus = request.getParameterValues("ExeStatus");
-                    if (allExeStatus != null && allExeStatus.length > 0) {
-                        for (int index = 0; index < allExeStatus.length; index++) {
-                            exeStatus += allExeStatus[index] + ",";
-                        }
-                    }
-                } else {
-                    allExeStatus = new String[1];
-                    allExeStatus[0] = new String("%%");
-                }*/
-
                 String targetBuild = "";
                 if (request.getParameter("TargetBuild") != null) {
                     if (request.getParameter("TargetBuild").compareTo("All") == 0) {
@@ -255,20 +158,6 @@
                     targetRev = "All";
                 }
 
-                String test;
-                if (request.getParameter("Test") != null && request.getParameter("Test").compareTo("All") != 0) {
-                    test = request.getParameter("Test");
-                } else {
-                    test = new String("%%");
-                }
-
-                String[] country_list = null;
-                if (request.getParameter("Country") != null) {
-                    country_list = request.getParameterValues("Country");
-                } else {
-                    country_list = new String[0];
-                }
-
                 Boolean apply;
                 if (request.getParameter("Apply") != null
                         && request.getParameter("Apply").compareTo("Apply") == 0) {
@@ -285,7 +174,6 @@
                 try {
 
                     Statement stmt = conn.createStatement();
-                
                     List<Invariant> invariantCountry = invariantService.findListOfInvariantById("COUNTRY");
                     List<Invariant> invariantTCStatus = invariantService.findListOfInvariantById("TCSTATUS");
                     
@@ -591,10 +479,10 @@
             String generateMultiSelect(String parameterName,String[] parameters, TreeMap<String,String> options, String headerText, String noneSeletedText, String selectedText, int selectedList) {
                 String parameter = "";
                 if (parameters != null && parameters.length > 0 && (parameters[0]).compareTo("All") != 0) {
-                    for (int index = 0; index < parameters.length; index++) {
-                        parameter += parameters[index] + ",";
-                    }
+                    parameter = StringUtils.join(parameters, ",");
                 }
+                parameter += ",";
+
                 String select = "<select class=\"multiSelectOptions\" multiple  "
                         + "data-header=\""+headerText+"\" "
                         + "data-none-selected-text=\""+noneSeletedText+"\" "
@@ -612,7 +500,7 @@
                     select +=  ">"+options.get(key)+"</option>\n";
                 }
                 select += "</select>\n";
-                
+                select += "<!-- "+parameter+" -->\n";                
                 return select;
             }
 %>
