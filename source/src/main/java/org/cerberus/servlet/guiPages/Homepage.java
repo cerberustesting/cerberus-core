@@ -85,6 +85,7 @@ public class Homepage extends HttpServlet {
 
         String echo = policy.sanitize(request.getParameter("sEcho"));
         String mySystem = policy.sanitize(request.getParameter("MySystem"));
+        String application = policy.sanitize(request.getParameter("Application"));
         Connection connection = null;
 
         JSONObject jsonResponse = new JSONObject();
@@ -100,49 +101,39 @@ public class Homepage extends HttpServlet {
             JSONArray data = new JSONArray();
 
             ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-            IApplicationService applicationService = appContext.getBean(ApplicationService.class);
             IInvariantService invariantService = appContext.getBean(InvariantService.class);
             DatabaseSpring database = appContext.getBean(DatabaseSpring.class);
             connection = database.connect();
-
-            List<Application> appliList = applicationService.findApplicationBySystem(mySystem);
-            String inSQL = SqlUtil.getInSQLClause(appliList);
-
-            if (!(inSQL.equalsIgnoreCase(""))) {
-                inSQL = " and application " + inSQL + " ";
-            } else {
-                inSQL = " and application in ('') ";
-            }
 
             List<Invariant> myInvariants = invariantService.findInvariantByIdGp1("TCSTATUS", "Y");
             StringBuilder SQL = new StringBuilder();
             StringBuilder SQLa = new StringBuilder();
             StringBuilder SQLb = new StringBuilder();
-            SQLa.append("SELECT t.application, count(*) as TOTAL ");
+            SQLa.append("SELECT t.test, count(*) as TOTAL ");
             SQLb.append(" FROM testcase t ");
             for (Invariant i : myInvariants) {
                 i.getSort();
                 SQLa.append(", Col");
                 SQLa.append(String.valueOf(i.getSort()));
-                SQLb.append(" LEFT JOIN (SELECT g.application, count(*) as Col");
+                SQLb.append(" LEFT JOIN (SELECT g.test, count(*) as Col");
                 SQLb.append(String.valueOf(i.getSort()));
                 SQLb.append(" FROM testcase g WHERE Status = '");
                 SQLb.append(i.getValue());
-                SQLb.append("' ");
-                SQLb.append(inSQL);
-                SQLb.append(" GROUP BY g.application) Tab");
+                SQLb.append("' and application ='");
+                SQLb.append(application);
+                SQLb.append("' GROUP BY g.test) Tab");
                 SQLb.append(String.valueOf(i.getSort()));
                 SQLb.append(" ON Tab");
                 SQLb.append(String.valueOf(i.getSort()));
-                SQLb.append(".application=t.application ");
+                SQLb.append(".test=t.test ");
             }
-            SQLb.append(" WHERE 1=1  ");
-            SQLb.append(inSQL.replace("application", "t.application"));
-            SQLb.append(" GROUP BY t.application ");
-
+            SQLb.append(" where t.application ='");
+            SQLb.append(application);
+            SQLb.append("'");
+            SQLb.append(" group by t.test");
             SQL.append(SQLa);
             SQL.append(SQLb);
-            MyLogger.log(Homepage.class.getName(), Level.DEBUG, " SQL1 : " + SQL.toString());
+            MyLogger.log(Homepage.class.getName(), Level.ERROR, " SQL1 : " + SQL.toString());
 
             PreparedStatement stmt_teststatus = connection.prepareStatement(SQL.toString());
             try {
@@ -159,7 +150,13 @@ public class Homepage extends HttpServlet {
                 try {
                     while (rs_teststatus.next()) {
                         JSONArray row = new JSONArray();
-                        row.put(rs_teststatus.getString("t.application"));
+                        StringBuilder testLink = new StringBuilder();
+                        testLink.append("<a href=\"Test.jsp?stestbox=");
+                        testLink.append(rs_teststatus.getString("t.test"));
+                        testLink.append("\">");
+                        testLink.append(rs_teststatus.getString("t.test"));
+                        testLink.append("</a>");
+                        row.put(testLink.toString());
                         row.put(rs_teststatus.getString("TOTAL"));
                         for (Invariant i : myInvariants) {
                             i.getSort();
