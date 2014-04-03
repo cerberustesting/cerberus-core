@@ -205,31 +205,34 @@
                     </tr>    
                     <tr>
                         <td id="wob">
-                            <table id="reportingExec" style="text-align: left;border-collapse:collapse;display:table" border="1px" cellpadding="0" cellspacing="1">
+                            <table id="reportingExec" class="arrondTable dataTable" style="text-align: left;border-collapse:collapse;display:table" border="1px" cellpadding="0" cellspacing="1">
+                                <thead>
                                 <tr id="headerFirst">
-                                    <td style="width:10%"><%out.print(docService.findLabelHTML("test", "test", "Test"));%></td>
-                                    <td style="width:5%"><%out.print(docService.findLabelHTML("testcase", "testcase", "TestCase"));%></td>
-                                    <td style="width:5%"><%out.print(docService.findLabelHTML("application", "application", "Aplication"));%></td>
-                                    <td style="width:20%"><%out.print(docService.findLabelHTML("testcase", "description", "Description"));%></td>
-                                    <td style="width:2%"><%out.print(docService.findLabelHTML("invariant", "PRIORITY", "Priority"));%></td>
-                                    <td style="width:5%"><%out.print(docService.findLabelHTML("testcase", "status", "Status"));%></td>
+                                    <td ><%out.print(docService.findLabelHTML("test", "test", "Test"));%></td>
+                                    <td ><%out.print(docService.findLabelHTML("testcase", "testcase", "TestCase"));%></td>
+                                    <td ><%out.print(docService.findLabelHTML("application", "application", "Aplication"));%></td>
+                                    <td ><%out.print(docService.findLabelHTML("testcase", "description", "Description"));%></td>
+                                    <td ><%out.print(docService.findLabelHTML("invariant", "PRIORITY", "Priority"));%></td>
+                                    <td ><%out.print(docService.findLabelHTML("testcase", "status", "Status"));%></td>
                                     <%
                                         //rs_testcasecountrygeneral.first();								
                                         //do {
                                         for (int i = 0; i < country_list.length; i++) {
                                     %> 
-                                    <td style="width:2%" class="header"> 
+                                    <td  class="header"> 
                                         <%=country_list[i]%> </td>
-                                    <td style="width:7%" class="header" style="font-size : x-small ;">Reporting Execution</td>
+                                    <td  class="header" style="font-size : x-small ;">Reporting Execution</td>
                                     <%
                                         }
                                         // } while (rs_testcasecountrygeneral.next());
 
                                     %>
                                     <td><%out.print(docService.findLabelHTML("testcase", "comment", "Comment"));%></td> 
-                                    <td style="width:5%" ><%out.print(docService.findLabelHTML("testcase", "bugID", "BugID"));%></td>
-                                    <td style="width:5%" ><%out.print(docService.findLabelHTML( "invariant", "GROUP", "Group"));%></td>
+                                    <td  ><%out.print(docService.findLabelHTML("testcase", "bugID", "BugID"));%></td>
+                                    <td  ><%out.print(docService.findLabelHTML( "invariant", "GROUP", "Group"));%></td>
                                 </tr>
+                                </thead>
+                                <tbody>
                                 <%
                                     // out.println(tcclauses);
                                     // out.println(avgclauses);
@@ -257,10 +260,14 @@
                                             + tcclauses
                                             + " and tc.group != 'PRIVATE' "
                                             + " order by test ");
+                                    
+                                    
                                     if (rs_time.first()) {
+                                        int indexColor = 0;
                                         //if (StringUtils.isNotBlank(rs_time.getString("tc.test")) == true){ 
                                         if (rs_test.first())
                                             do {
+                                                indexColor = indexColor + 1;
                                                 if (!rs_test.getString("test").equals(rs_time.getString("tc.test"))) {%>
                                 <tr id="header">
                                     <td colspan="6"></td>
@@ -294,13 +301,13 @@
                                         j = 0;
                                     }
                                 %>
-                                <tr class="testCaseExecutionResult">
-                                    <td class="INF"><%=rs_time.getString("tc.test")%></td>
-                                    <td class="INF"><a href="TestCase.jsp?Load=Load&Test=<%=rs_time.getString("tc.test")%>&TestCase=<%=rs_time.getString("tc.testcase")%>"> <%=rs_time.getString("tc.testcase")%></a></td>
-                                    <td class="INF"><%=rs_time.getString("tc.application")%></td>
-                                    <td class="INF"><%=rs_time.getString("tc.description")%></td>
-                                    <td class="INF"><%=rs_time.getString("tc.Priority")%></td>
-                                    <td class="INF"><%=rs_time.getString("tc.Status")%></td>
+                                <tr class="testCaseExecutionResult <%=(indexColor%2 == 1) ? "even" : "odd"%>">
+                                    <td ><%=rs_time.getString("tc.test")%></td>
+                                    <td ><a href="TestCase.jsp?Load=Load&Test=<%=rs_time.getString("tc.test")%>&TestCase=<%=rs_time.getString("tc.testcase")%>"> <%=rs_time.getString("tc.testcase")%></a></td>
+                                    <td ><%=rs_time.getString("tc.application")%></td>
+                                    <td ><%=rs_time.getString("tc.description")%></td>
+                                    <td ><%=rs_time.getString("tc.Priority")%></td>
+                                    <td ><%=rs_time.getString("tc.Status")%></td>
                                     <%
                                         // Collecting status stats for current test. 
                                         if (!listStatus.contains(rs_time.getString("tc.Status"))) {
@@ -400,7 +407,7 @@
                                     <td class="<%=cssStatus%>"> 
                                         <a href="ExecutionDetail.jsp?id_tc=<%=rs_exec.getString("ID")%>" class="<%=cssStatus%>F"><%=rs_exec.getString("ControlStatus")%></a>
                                     </td>
-                                    <td class="INF" style="font-size : x-small"> <%=rs_exec.getString("Start")%></td>
+                                    <td  style="font-size : x-small"> <%=rs_exec.getString("Start")%></td>
                                     <%
                                             stmt3.close();
                                         }
@@ -408,7 +415,7 @@
                                         statistiques.add(i, rs_time.getString("tc.test") + "-" + country_list[i] + "-" + "NE");
                                         cssStatus = "NotExecuted";%>
                                     <td class="<%=cssStatus%>"><a href="RunTests.jsp?Test=<%=rs_time.getString("tc.test")%>&TestCase=<%=rs_time.getString("tc.testcase")%>&Country=<%=country_list[i]%>" class="<%=cssStatus%>F"><%= country_list[i]%></a></td>
-                                    <td class="INF"></td>
+                                    <td ></td>
                                     <%    }
                                         if (tccIncrement==tccList.size()-1){
                                                 //rs_count.isLast() == true) {
@@ -427,9 +434,9 @@
                                     <%   }// }   
                                         }
                                     %>
-                                    <td class="INF"><%
+                                    <td ><%
                                         if (rs_time.getString("tc.Comment") != null) {%><%=rs_time.getString("tc.Comment")%><%}%></td>
-                                    <td class="INF"><%
+                                    <td ><%
                                         if ((rs_time.getString("tc.BugID") != null)
                                                 && (rs_time.getString("tc.BugID").compareToIgnoreCase("") != 0)
                                                 && (rs_time.getString("tc.BugID").compareToIgnoreCase("null") != 0)) {
@@ -443,7 +450,7 @@
                                             if ((rs_time.getString("tc.TargetBuild") != null) && (rs_time.getString("tc.TargetBuild").equalsIgnoreCase("") == false)) {
                                         %> for <%=rs_time.getString("tc.TargetBuild")%>/<%=rs_time.getString("tc.TargetRev")%><%
                                             }%></td>
-                                    <td class="INF"><%
+                                    <td ><%
                                         if (rs_time.getString("tc.Group") != null) {%><%=rs_time.getString("tc.Group")%><%}%></td>
 
                                 </tr>
@@ -454,9 +461,9 @@
                                     for (int i = 0; i < country_list.length; i++) {
                                 %><td class="NOINF"></td><td class="NOINF"></td><%                                            }
                                 %>
-                                <td class="INF"><%
+                                <td ><%
                                     if (rs_time.getString("tc.Comment") != null) {%><%=rs_time.getString("tc.Comment")%><%}%></td>
-                                <td class="INF"><%
+                                <td ><%
                                     if ((rs_time.getString("tc.BugID") != null)
                                             && (rs_time.getString("tc.BugID").compareToIgnoreCase("") != 0)
                                             && (rs_time.getString("tc.BugID").compareToIgnoreCase("null") != 0)) {
@@ -470,7 +477,7 @@
                                         if ((rs_time.getString("tc.TargetBuild") != null) && (rs_time.getString("tc.TargetBuild").equalsIgnoreCase("") == false)) {
                                     %> for <%=rs_time.getString("tc.TargetBuild")%>/<%=rs_time.getString("tc.TargetRev")%><%
                                         }%></td>
-                                <td class="INF"><%
+                                <td ><%
                                     if (rs_time.getString("tc.Group") != null) {%><%=rs_time.getString("tc.Group")%><%}%></td>
 
 
@@ -480,6 +487,7 @@
                                             } while (rs_time.next());
                                     }
                                 %>
+                                </tbody>
                             </table>
                             <table id="execReporting" style="display: none" border="0px" cellpadding="0" cellspacing="0">
                                 <tr id="header">
@@ -696,22 +704,22 @@
                                             }
 
                                             int total = 0 + listCTOK.size() + listCTKO.size() + listCTFA.size() + listCTPE.size() + listCTNE.size();
-                                    %><td id="repsynthesis1" class="INF" align="center" style="font : bold  ;
+                                    %><td id="repsynthesis1"  align="center" style="font : bold  ;
                                         ; color: green; border-top-color: <%=cssleftTOP%> ; border-right-color: <%=cssleftRIG%>  ">
                                         <%=listCTOK.size() != 0 ? listCTOK.size() : "0"%> 
-                                    <td id="repsynthesis2" class="INF" align="center" style="font : bold; 
+                                    <td id="repsynthesis2"  align="center" style="font : bold; 
                                         ; color: red; border-top-color: <%=cssleftTOP%> ; border-right-color: <%=cssleftRIG%> ;border-left-color: <%=cssleftRIG%>  ">
                                         <%=listCTKO.size() != 0 ? listCTKO.size() : "0"%> 
-                                    <td id="repsynthesis3" class="INF" align="center" style="font : bold ; 
+                                    <td id="repsynthesis3"  align="center" style="font : bold ; 
                                         ; color: darkmagenta; border-top-color: <%=cssleftTOP%> ; border-left-color: <%=cssleftRIG%>  ">
                                         <%=listCTFA.size() != 0 ? listCTFA.size() : "0"%></td>
-                                    <td id="repsynthesis4" class="INF" align="center" style="font : bold ; 
+                                    <td id="repsynthesis4"  align="center" style="font : bold ; 
                                         ; color: blue; border-top-color: <%=cssleftTOP%> ; border-left-color: <%=cssleftRIG%>  ">
                                         <%=listCTPE.size() != 0 ? listCTPE.size() : "0"%></td>
-                                    <td id="repsynthesis5" class="INF" align="center" style="font : bold ; 
+                                    <td id="repsynthesis5"  align="center" style="font : bold ; 
                                         ; color: #999; border-top-color: <%=cssleftTOP%> ; border-left-color: <%=cssleftRIG%>  ">
                                         <%=listCTNE.size() != 0 ? listCTNE.size() : "0"%></td>
-                                    <td id="repsynthesis5" class="INF" align="center" style="font : bold ; 
+                                    <td id="repsynthesis5"  align="center" style="font : bold ; 
                                         ; color: black; border-top-color: <%=cssleftTOP%> ; border-left-color: <%=cssleftRIG%>  ">
                                         <%=total != 0 ? total : "0"%></td>
                                         <%

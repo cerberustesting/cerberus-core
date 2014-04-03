@@ -121,7 +121,7 @@ table#arrond {
     border-width: 2px;
     border-color: #8999c4;
     -moz-border-radius: 5px;
-    width : 1260px;    
+/*    width : 1260px;    */
 }
 .arrond {
     background-color:#e1e7f3;
@@ -129,7 +129,7 @@ table#arrond {
     border-width: 2px;
     border-color: #8999c4;
     -moz-border-radius: 5px;
-    width : 1260px;    
+/*    width : 1260px;    */
 }
 .contour {
     background-color:#e1e7f3;
