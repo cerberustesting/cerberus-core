@@ -53,6 +53,7 @@
             <%@ include file="include/function.jsp" %>
             <%
                 IInvariantService myInvariantService = appContext.getBean(IInvariantService.class);
+                List<Invariant> browserList = myInvariantService.findListOfInvariantById("BROWSER");
     
                 HashMap<String, Integer> statsStatusForTest = new HashMap<String, Integer>();
                 List<String> listStatus = new ArrayList<String>();
@@ -140,6 +141,13 @@
                 } else {
                     country_list = new String[0];
                 }
+                
+                String[] columnBrowser = null;
+                if (request.getParameter("Browser") != null) {
+                    columnBrowser = request.getParameterValues("Browser");
+                } else {
+                    columnBrowser = new String[0];
+                }
 
                 List<String> statistiques = new ArrayList<String>();
 
@@ -157,7 +165,7 @@
                 
                     Statement stmt = conn.createStatement();
                     Statement stmt33 = conn.createStatement();
-
+                    
                     IApplicationService myApplicationService = appContext.getBean(IApplicationService.class);
                     String SitdmossBugtrackingURL;
                     String SitdmossBugtrackingURL_tc;
@@ -218,12 +226,13 @@
                                         //rs_testcasecountrygeneral.first();								
                                         //do {
                                         for (int i = 0; i < country_list.length; i++) {
+                                            for (int k = 0; k < columnBrowser.length; k++) {
                                     %> 
                                     <td  class="header"> 
-                                        <%=country_list[i]%> </td>
+                                        <%=country_list[i]%>/<%=columnBrowser[k]%> </td>
                                     <td  class="header" style="font-size : x-small ;">Reporting Execution</td>
                                     <%
-                                        }
+                                        }}
                                         // } while (rs_testcasecountrygeneral.next());
 
                                     %>
@@ -273,10 +282,11 @@
                                     <td colspan="6"></td>
                                     <%
                                         for (int i = 0; i < country_list.length; i++) {
+                                            for (int k = 0; k < columnBrowser.length; k++) {
                                     %> 
                                     <td colspan="2" style="text-align: center"> 
-                                        <%=country_list[i]%> </td>
-                                        <%}%>
+                                        <%=country_list[i]%>/<%=columnBrowser[k]%> </td>
+                                        <%}}%>
                                     <td colspan="3"></td>
                                 </tr>
 
@@ -289,11 +299,12 @@
                                     <td colspan="6" ></td>
                                     <%
                                         for (int i = 0; i < country_list.length; i++) {
+                                            for (int k = 0; k < columnBrowser.length; k++) {
                                     %> 
                                     <td colspan="2" style="text-align: center"> 
-                                        <%=country_list[i]%> </td>
+                                        <%=country_list[i]%>/<%=columnBrowser[k]%> </td>
 
-                                    <%}%>
+                                    <%}}%>
                                     <td colspan="3" ></td>
                                 </tr>
 
@@ -344,11 +355,13 @@
                                         List<TestCaseCountry> tccList = testCaseCountryService.findTestCaseCountryByTestTestCase(rs_time.getString("tc.Test"), rs_time.getString("tc.testcase"));
 
                                         Integer tccIncrement = 0;
+                                        Integer brIncrement = 0;
                                         if (!tccList.isEmpty()) {
                                             cssStatus = "NE";
                                             color = "black";
 
                                             for (int i = 0; i < country_list.length; i++) {
+                                                 for (int k = 0; k < columnBrowser.length; k++) {
 
                                                 tccIncrement = 0;
                                                 for(TestCaseCountry tcc : tccList){
@@ -357,8 +370,18 @@
                                                         break;
                                                     }
                                                 }
+                                                
+                                                brIncrement = 0;
+                                                for(Invariant inv : browserList){
+                                                brIncrement++;
+                                                if (inv.getValue().equalsIgnoreCase(columnBrowser[k])) {
+                                                        break;
+                                                    }
+                                                }
+                                                
 
-                                        if (country_list[i].equals(tccList.get(tccIncrement-1).getCountry())) {
+                                        if (country_list[i].equals(tccList.get(tccIncrement-1).getCountry())
+                                                && columnBrowser[k].equals(browserList.get(brIncrement-1).getValue())) {
                                                     Statement stmt3 = conn.createStatement();
                                                     String stmt3SQL = "SELECT DISTINCT tce.ID, tce.test, tce.testcase, tce.application, "
                                                             + "tce.ControlStatus, DATE_FORMAT(tce.Start,'%Y-%m-%d %H:%i') as Start, DATE_FORMAT(tce.End,'%Y-%m-%d %H:%i') as End "
@@ -373,6 +396,8 @@
                                                             + rs_time.getString("tc.testcase")
                                                             + "' and tce.country = '"
                                                             + country_list[i]
+                                                            + "' and tce.browser = '"
+                                                            + columnBrowser[k]
                                                             + "' order by tce.ID desc LIMIT 1";
                                                     MyLogger.log("ReportingExecution.jsp", Level.DEBUG, stmt3SQL);
 
@@ -431,7 +456,7 @@
 
                                     %>
                                     <td class="NOINF"></td><td class="NOINF"></td>
-                                    <%   }// }   
+                                    <%   } }   
                                         }
                                     %>
                                     <td ><%

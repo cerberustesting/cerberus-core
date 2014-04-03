@@ -175,6 +175,7 @@
                     Statement stmt = conn.createStatement();
                     List<Invariant> invariantCountry = invariantService.findListOfInvariantById("COUNTRY");
                     List<Invariant> invariantTCStatus = invariantService.findListOfInvariantById("TCSTATUS");
+                    List<Invariant> invariantBrowser = invariantService.findListOfInvariantById("BROWSER");
 
             %>
             <form method="GET" name="Apply" id="Apply" action="ReportingExecutionResult.jsp">
@@ -201,7 +202,7 @@
                                         }
                                     %>
                                     <%=generateMultiSelect("Test", request.getParameterValues("Test"), options,
-                                            "Select a test", "Select Test", "# of # Test selected", 1)%>
+                                            "Select a test", "Select Test", "# of # Test selected", 1, true)%>
                                 </div>
                             </div>
                             <div style="float:left">
@@ -218,7 +219,7 @@
 
                                     %>
                                     <%=generateMultiSelect("Project", request.getParameterValues("Project"), options,
-                                            "Select a project", "Select Project", "# of # Project selected", 1)%>
+                                            "Select a project", "Select Project", "# of # Project selected", 1, true)%>
                                 </div>
                             </div>
                             <div style="float:left">
@@ -231,7 +232,7 @@
                                             options.put(rsSys.getString("System"), rsSys.getString("System"));
                                         }%>
                                     <%=generateMultiSelect("System", request.getParameterValues("System"), options,
-                                            "Select a sytem", "Select System", "# of # System selected", 1)%>
+                                            "Select a sytem", "Select System", "# of # System selected", 1, true)%>
                                 </div>
                             </div>
                             <div style="float:left">
@@ -245,7 +246,7 @@
                                         }
                                     %>
                                     <%=generateMultiSelect("Application", request.getParameterValues("Application"), options,
-                                            "Select an application", "Select Application", "# of # Application selected", 1)%>
+                                            "Select an application", "Select Application", "# of # Application selected", 1, true)%>
                                 </div>
                             </div>
                             <div style="float:left">
@@ -257,7 +258,7 @@
                                         options.put("N", "No");
                                     %>
                                     <%=generateMultiSelect("TcActive", request.getParameterValues("TcActive"), options,
-                                            "Select Activation state", "Select Activation", "# of # Activation state selected", 1)%> 
+                                            "Select Activation state", "Select Activation", "# of # Activation state selected", 1, true)%> 
                                 </div>
                             </div>
                             <div style="float:left">
@@ -271,7 +272,7 @@
                                         }
                                     %>
                                     <%=generateMultiSelect("Priority", request.getParameterValues("Priority"), options,
-                                            "Select a Priority", "Select Priority", "# of # Priority selected", 1)%>
+                                            "Select a Priority", "Select Priority", "# of # Priority selected", 1, true)%>
                                 </div>
                             </div>
                             <div style="float:left">
@@ -284,7 +285,7 @@
                                         }
                                     %>
                                     <%=generateMultiSelect("Status", request.getParameterValues("Status"), options,
-                                            "Select an option", "Select Status", "# of # Status selected", 1)%>
+                                            "Select an option", "Select Status", "# of # Status selected", 1, true)%>
                                 </div>
                             </div>
                             <div style="float:left">
@@ -300,7 +301,7 @@
                                         }
                                     %>
                                     <%=generateMultiSelect("Group", request.getParameterValues("Group"), options,
-                                            "Select a Group", "Select Group", "# of # Group selected", 1)%> 
+                                            "Select a Group", "Select Group", "# of # Group selected", 1, true)%> 
                                 </div>
                             </div>
                             <div style="float:left">
@@ -317,7 +318,7 @@
                                         }
                                     %>
                                     <%=generateMultiSelect("TargetBuild", request.getParameterValues("TargetBuild"), options,
-                                            "Select a Target Build", "Select Target Build", "# of # Target Build selected", 1)%> 
+                                            "Select a Target Build", "Select Target Build", "# of # Target Build selected", 1, true)%> 
                                 </div>
                             </div>
                             <div style="float:left">
@@ -334,7 +335,7 @@
                                         }
                                     %>
                                     <%=generateMultiSelect("TargetRev", request.getParameterValues("TargetRev"), options,
-                                            "Select a Target Rev", "Select Target Rev", "# of # Target Rev selected", 1)%> 
+                                            "Select a Target Rev", "Select Target Rev", "# of # Target Rev selected", 1, true)%> 
                                 </div>
                             </div>
                             <div style="float:left">
@@ -350,14 +351,14 @@
                                         }
                                     %>
                                     <%=generateMultiSelect("Creator", request.getParameterValues("Creator"), options,
-                                            "Select a Creator", "Select Creator", "# of # Creator selected", 1)%> 
+                                            "Select a Creator", "Select Creator", "# of # Creator selected", 1, true)%> 
                                 </div>
                             </div>
                             <div style="float:left">
                                 <div style="clear:both; width:150px; text-align: left"><%out.print(docService.findLabelHTML("testcase", "implementer", "implementer"));%></div>
                                 <div style="clear:both">
                                     <%=generateMultiSelect("Implementer", request.getParameterValues("Implementer"), options,
-                                            "Select an Implementer", "Select Implementer", "# of # Implementer selected", 1)%> 
+                                            "Select an Implementer", "Select Implementer", "# of # Implementer selected", 1, true)%> 
                                 </div>
                             </div>
                         </div>
@@ -378,7 +379,7 @@
                                     }
                                     %>
                                     <%=generateMultiSelect("Environment", request.getParameterValues("Environment"), options,
-                                                "Select an Environment", "Select Environment", "# of # Environment selected", 1)%> 
+                                                "Select an Environment", "Select Environment", "# of # Environment selected", 1, true)%> 
                                 </div>
                             </div>
                             <div style="float:left">
@@ -391,7 +392,7 @@
                                     }
                                     %>
                                     <%=generateMultiSelect("SystemExe", request.getParameterValues("SystemExe"), options,
-                                                "Select a System", "Select System", "# of # System selected", 1)%>
+                                                "Select a System", "Select System", "# of # System selected", 1, true)%>
                                 </div>
                             </div>
                             <div style="float:left">
@@ -404,7 +405,7 @@
                                     }
                                     %>
                                     <%=generateMultiSelect("Build", request.getParameterValues("Build"), options,
-                                                "Select a Build", "Select Build", "# of # Build selected", 1)%>
+                                                "Select a Build", "Select Build", "# of # Build selected", 1, true)%>
                                 </div>
                             </div>
                             <div style="float:left">
@@ -417,7 +418,7 @@
                                     }
                                     %>
                                     <%=generateMultiSelect("Revision", request.getParameterValues("Revision"), options,
-                                                "Select a Revision", "Select Revision", "# of # Revision selected", 1)%>
+                                                "Select a Revision", "Select Revision", "# of # Revision selected", 1, true)%>
                                 </div>
                             </div>
                             <div style="float:left">
@@ -429,7 +430,7 @@
                                     }
                                     %>
                                     <%=generateMultiSelect("ExeStatus", request.getParameterValues("exeStatus"), options,
-                                                "Select a TC Status", "Select TC Status", "# of # TC Status selected", 1)%>
+                                                "Select a TC Status", "Select TC Status", "# of # TC Status selected", 1, true)%>
                                 </div>
                             </div>
                             <div style="float:left">
@@ -465,7 +466,19 @@
 
 
                                     %><%=generateMultiSelect("Country", request.getParameterValues("Country"), options,
-                                                        "Select a country", "Select Country", "# of # Country selected", 1)%></div>
+                                                        "Select a country", "Select Country", "# of # Country selected", 1, false)%></div>
+                            </div>
+                            <div style="float:left">
+                                <div style="clear:both; width:150px; text-align: left"><%out.print(docService.findLabelHTML("testcaseexecution", "Browser", "browser"));%></div>
+                                <div style="clear:both">   <%
+                                    options.clear();
+                                    for (Invariant browserInv : invariantBrowser) {
+                                        options.put(browserInv.getValue(), browserInv.getValue());
+                                    }
+                                    %>
+                                    <%=generateMultiSelect("Browser", request.getParameterValues("Browser"), options,
+                                                "Select a Browser", "Select Browser", "# of # Browser selected", 1, false)%>
+                                </div>
                             </div>
                         </div>
                         <div style="clear:both">

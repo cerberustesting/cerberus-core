@@ -257,7 +257,7 @@
         return footer;
     }
 
-    String generateMultiSelect(String parameterName,String[] parameters, TreeMap<String,String> options, String headerText, String noneSeletedText, String selectedText, int selectedList) {
+    String generateMultiSelect(String parameterName,String[] parameters, TreeMap<String,String> options, String headerText, String noneSeletedText, String selectedText, int selectedList, boolean firstValueAll) {
         String parameter = "";
         if (parameters != null && parameters.length > 0 && (parameters[0]).compareTo("All") != 0) {
             parameter = StringUtils.join(parameters, ",");
@@ -270,8 +270,9 @@
                 + "data-selected-text=\""+selectedText+"\" "
                 + "data-selected-list=\""+selectedList+"\" "
                 + "size=\"3\" id=\""+parameterName+"\" name=\""+parameterName+"\">\n";
+        if (firstValueAll){
         select += "<option value=\"All\">-- ALL --</option>\n";
-
+        }
         for(String key: options.keySet()) {
             select += " <option value=\"" + key + "\"";
 
