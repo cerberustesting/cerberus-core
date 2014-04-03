@@ -163,7 +163,9 @@
                     apply = false;
                 }
 
-                String reportingFavorite = "ReportingExecution.jsp?";
+                IUserService userService = appContext.getBean(IUserService.class);
+                User usr = userService.findUserByKey(request.getUserPrincipal().getName());
+                String reportingFavorite = "ReportingExecution.jsp?"+usr.getReportingFavorite();
 
                 Connection conn = db.connect();
                 IDocumentationService docService = appContext.getBean(IDocumentationService.class);
