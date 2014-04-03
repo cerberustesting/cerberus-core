@@ -469,7 +469,14 @@
                 </div>
 
                 <br><br>
-                <div id="displayResult"></div>
+                <div id="displayResult">
+                    <br>
+                    <br>
+                    <br>
+                    <br>
+                    <br>
+                    <br>
+                </div>
                 <%
                     } catch (Exception e) {
                         out.println(e);
@@ -505,10 +512,14 @@
             $(document).ready(function() {
 
                 // prepare all forms for ajax submission
-                $('#Apply').ajaxForm({
-                    target: '#displayResult'
+                $('#Apply').on('submit', function(e) {
+                    $('#displayResult').html('<img src="./images/loading.gif"> loading...');
+                    e.preventDefault(); // <-- important
+                    $(this).ajaxSubmit({
+                        target: '#displayResult'
+                    });
                 });
-                
+
                 <%
                     if("Apply".equals(request.getParameter("Apply"))) {
                         %>
