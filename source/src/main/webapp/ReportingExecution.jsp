@@ -545,13 +545,16 @@
                 }
             %>
 
-                function saveFilters() {
-                    $('#Apply').action = $('#Apply').action + "?Apply=Apply&RecordPref=Y";
-                    $('#Apply').submit();
-                }
+                
 
             });
         </script>
+            <script>
+            function saveFilters() {
+                $("#Apply").attr("action", "./ReportingExecutionResult.jsp?Apply=Apply&RecordPref=Y"); 
+                    $('#Apply').submit();
+                }
+            </script>
         <br><% out.print(display_footer(DatePageStart));%>
     </body>
 </html>

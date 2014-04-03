@@ -147,9 +147,9 @@
                 IDocumentationService docService = appContext.getBean(IDocumentationService.class);
 
                 try {
-                    Boolean recordPref;
+                    boolean recordPref;
                     if (request.getParameter("RecordPref") != null
-                            && request.getParameter("RecordPref").compareTo("Y") == 0) {
+                            && request.getParameter("RecordPref").equals("Y")) {
                         recordPref = true;
                     } else {
                         recordPref = false;
@@ -165,10 +165,11 @@
 
                     Statement stmt5 = conn.createStatement();
 
-                    String insertURL = "UPDATE user SET ReportingFavorite = '"
-                            + request.getRequestURI() + "' where login = '"
+                    String insertURL = "UPDATE user SET ReportingFavorite = 'Apply=Apply&"
+                            + request.getQueryString() + "' where login = '"
                             + request.getUserPrincipal().getName()
                             + "'";
+                    System.out.print(recordPref);
                     if (recordPref == true) {
                         stmt5.execute(insertURL);
                     }

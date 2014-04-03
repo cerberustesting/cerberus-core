@@ -133,7 +133,7 @@ public class Homepage extends HttpServlet {
             SQLb.append(" group by t.test");
             SQL.append(SQLa);
             SQL.append(SQLb);
-            MyLogger.log(Homepage.class.getName(), Level.ERROR, " SQL1 : " + SQL.toString());
+            MyLogger.log(Homepage.class.getName(), Level.DEBUG, " SQL1 : " + SQL.toString());
 
             PreparedStatement stmt_teststatus = connection.prepareStatement(SQL.toString());
             try {
