@@ -1,3 +1,4 @@
+<%@page import="java.util.Enumeration"%>
 <%@page import="java.sql.ResultSet"%>
 <%@page import="org.cerberus.entity.Invariant"%>
 <%@page import="java.sql.Statement"%>
@@ -49,11 +50,8 @@
 <%@page import="java.util.List"%>
 <%@page import="java.util.Set"%>
 <%@page import="java.util.HashMap"%>
+            <%@ include file="include/function.jsp" %>
             <%
-            
-
-                ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-                DatabaseSpring db = appContext.getBean(DatabaseSpring.class);
                 IInvariantService myInvariantService = appContext.getBean(IInvariantService.class);
     
                 HashMap<String, Integer> statsStatusForTest = new HashMap<String, Integer>();
@@ -65,179 +63,75 @@
                 String tcclauses = " WHERE 1=1 ";
                 String execclauses = " 1=1 ";
 
-                IInvariantService invariantService = appContext.getBean(InvariantService.class);
-
                 ITestCaseCountryService testCaseCountryService = appContext.getBean(ITestCaseCountryService.class);
                 
-                String tag;
-                if (request.getParameter("Tag") != null && request.getParameter("Tag").compareTo("") != 0) {
-                    tag = request.getParameter("Tag");
-                    //URL = URL + "&Tag=" + tag;
-                    execclauses = execclauses + " AND tce.Tag = '" + tag + "'";
-                } else {
-                    tag = new String("");
-                }
+                String[] tcParameterNames = {
+                            "Test",
+                            "Project",
+                            "System",
+                            "Application",
+                            "TcActive",
+                            "Priority",
+                            "Status",
+                            "Group",
+                            "TargetBuild",
+                            "TargetRev",
+                            "Creator",
+                            "Implementer"
+                };
 
-                String browserFullVersion;
-                if (request.getParameter("BrowserFullVersion") != null && request.getParameter("BrowserFullVersion").compareTo("") != 0) {
-                    browserFullVersion = request.getParameter("BrowserFullVersion");
-                    //URL = URL + "&BrowserFullVersion=" + browserFullVersion;
-                    execclauses = execclauses + " AND tce.BrowserFullVersion = '" + browserFullVersion + "'";
-                } else {
-                    browserFullVersion = new String("");
-                }
+                String[] tcColumnNames = {
+                            "Test",
+                            "Project",
+                            "a.System",
+                            "tc.Application",
+                            "TcActive",
+                            "Priority",
+                            "Status",
+                            "`Group`",
+                            "TargetBuild",
+                            "TargetRev",
+                            "Creator",
+                            "Implementer"
+                };
 
-                String systemExe;
-                if (request.getParameter("SystemExe") != null && request.getParameter("SystemExe").compareTo("All") != 0) {
-                    systemExe = request.getParameter("SystemExe");
-                    execclauses = execclauses + " AND tcev.`System` = '" + systemExe + "'";
-                } else {
-                    systemExe = new String("");
-                }
+                String[] execParameterNames = {
+                            "Environment",
+                            "SystemExe",
+                            "Build",
+                            "Revision",
+                            "Ip",
+                            "Port",
+                            "Tag",
+                            "Browser",
+                            "BrowserFullVersion",
+                            "ExeStatus",
+                            "Country"};
+                
+                String[] execColumnNames = {
+                            "tce.Environment",
+                            "tcev.`System`",
+                            "tce.Build",
+                            "tcev.Revision",
+                            "tce.Ip",
+                            "tce.Port",
+                            "tce.Tag",
+                            "tce.browser",
+                            "tce.BrowserFullVersion",
+                            "Status",
+                            "Country"};
+                
+                
+                tcclauses += generateWhereClausesForParametersAndColumns(tcParameterNames,tcColumnNames, request);
+                execclauses += generateWhereClausesForParametersAndColumns(execParameterNames,execColumnNames, request);
 
-                if (request.getParameter("Group") != null && request.getParameter("Group").compareTo("All") != 0) {
-                    tcclauses = tcclauses + " AND `Group` = '" + request.getParameter("Group") + "'";
-                }
-
-                if (request.getParameter("Port") != null && request.getParameter("Port").compareTo("") != 0) {
-                    execclauses = execclauses + " AND tce.Port = '" + request.getParameter("Port") + "'";
-                }
-
-                if (request.getParameter("Ip") != null && request.getParameter("Ip").compareTo("") != 0) {
-                    execclauses = execclauses + " AND tce.Ip = '" + request.getParameter("Ip") + "'";
-                }
-
-                if (request.getParameter("browser") != null && request.getParameter("browser").compareTo("") != 0) {
-                    execclauses = execclauses + " AND tce.browser = '" + request.getParameter("browser") + "'";
-                }
 
                 if (request.getParameter("logpath") != null && request.getParameter("logpath").compareTo("") != 0) {
                     execclauses = execclauses + " AND tce.logpath = '" + request.getParameter("logpath") + "'";
                 }
 
-                if (request.getParameter("TcActive") != null && request.getParameter("TcActive").compareTo("A") != 0) {
-                    tcclauses = tcclauses + " AND TcActive = '" + request.getParameter("TcActive") + "'";
-                }
-
                 if (request.getParameter("ReadOnly") != null && request.getParameter("ReadOnly").compareTo("A") != 0) {
                     tcclauses = tcclauses + " AND ReadOnly = '" + request.getParameter("ReadOnly") + "'";
-                }
-
-                if (request.getParameter("Priority") != null 
-                        && request.getParameter("Priority").compareTo("All") != 0) {
-                    tcclauses = tcclauses + " AND Priority = '" + request.getParameter("Priority") + "'";
-                }
-
-                if (request.getParameter("Environment") != null && request.getParameter("Environment").compareTo("All") != 0) {
-                    execclauses = execclauses + " AND tce.Environment = '" + request.getParameter("Environment") + "'";
-                }
-
-                if (request.getParameter("Revision") != null && request.getParameter("Revision").compareTo("All") != 0) {
-                    execclauses = execclauses + " AND tcev.Revision = '" + request.getParameter("Revision") + "'";
-                }
-
-                if (request.getParameter("Creator") != null && request.getParameter("Creator").compareTo("All") != 0) {
-                    tcclauses = tcclauses + " AND Creator = '" + request.getParameter("Creator") + "'";
-                }
-
-                if (request.getParameter("Implementer") != null && request.getParameter("Implementer").compareTo("All") != 0) {
-                    tcclauses = tcclauses + " AND Implementer = '" + request.getParameter("Implementer") + "'";
-                }
-
-                if (request.getParameter("Build") != null && request.getParameter("Build").compareTo("All") != 0) {
-                    execclauses = execclauses + " AND tce.Build = '" + request.getParameter("Build") + "'";
-                }
-
-                
-                
-                String[] projects;
-                if (request.getParameterValues("Project") != null && (request.getParameterValues("Project")[0]).compareTo("All") != 0) {
-                    projects = request.getParameterValues("Project");
-                    if (projects != null && projects.length > 0) {
-                        tcclauses += " AND (";
-                        for (int index = 0; index < projects.length; index++) {
-                            tcclauses += " Project = '" + projects[index] + "' ";
-
-                            if (index < (projects.length - 1)) {
-                                tcclauses += " OR ";
-                            }
-                        }
-                        tcclauses += ") ";
-                    }
-                } else {
-                    projects = new String[1];
-                    projects[0] = new String("%%");
-                }
-
-                if (request.getParameter("Application") != null && request.getParameter("Application").compareTo("All") != 0) {
-                    tcclauses = tcclauses + " AND tc.Application = '" + request.getParameter("Application") + "'";
-                }
-
-                if (request.getParameter("System") != null && request.getParameter("System").compareTo("All") != 0) {
-                    tcclauses = tcclauses + " AND a.System = '" + request.getParameter("System") + "'";
-                }
-
-
-                String[] allstatus;
-                if (request.getParameterValues("Status") != null && (request.getParameterValues("Status")[0]).compareTo("All") != 0) {
-                    allstatus = request.getParameterValues("Status");
-                    if (allstatus != null && allstatus.length > 0) {
-                        tcclauses += " AND (";
-                        for (int index = 0; index < allstatus.length; index++) {
-                            tcclauses += " Status = '" + allstatus[index] + "' ";
-
-                            if (index < (allstatus.length - 1)) {
-                                tcclauses += " OR ";
-                            }
-                        }
-                        tcclauses += ") ";
-                    }
-                } else {
-                    allstatus = new String[1];
-                    allstatus[0] = new String("%%");
-                }
-
-                String[] allExeStatus;
-                if (request.getParameterValues("ExeStatus") != null && (request.getParameterValues("ExeStatus")[0]).compareTo("All") != 0) {
-                    allExeStatus = request.getParameterValues("ExeStatus");
-                    if (allExeStatus != null && allExeStatus.length > 0) {
-                        execclauses += " AND (";
-                        for (int index = 0; index < allExeStatus.length; index++) {
-                            execclauses += " Status = '" + allExeStatus[index] + "' ";
-
-                            if (index < (allExeStatus.length - 1)) {
-                                execclauses += " OR ";
-                            }
-                        }
-                        execclauses += ") ";
-                    }
-                } else {
-                    allExeStatus = new String[1];
-                    allExeStatus[0] = new String("%%");
-                }
-
-                if (request.getParameter("TargetBuild") != null && !"all".equalsIgnoreCase(request.getParameter("TargetBuild"))) {
-                    if (request.getParameter("TargetBuild").equals("NTB")) {
-                        tcclauses = tcclauses + " AND TargetBuild = '' ";
-                    } else {
-                        tcclauses = tcclauses + " AND TargetBuild = '" + request.getParameter("TargetBuild") + "'";
-                    }
-                }
-
-                if (request.getParameter("TargetRev") != null && !"all".equalsIgnoreCase(request.getParameter("TargetBuild"))) {
-                    if (request.getParameter("TargetRev").equals("NTR")) {
-                        tcclauses = tcclauses + " AND TargetRev = '' ";
-                    } else {
-                        tcclauses = tcclauses + " AND TargetRev = '" + request.getParameter("TargetRev") + "'";
-                    }
-                }
-
-                if (request.getParameter("Test") != null && request.getParameter("Test").compareTo("All") != 0) {
-                    tcclauses = tcclauses + " AND test = '" + request.getParameter("Test") + "'";
-                }
-
-                if (request.getParameter("TestCase") != null && request.getParameter("TestCase").compareTo("All") != 0) {
-                    tcclauses = tcclauses + " AND testcase = '" + request.getParameter("testcase") + "'";
                 }
 
                 String[] country_list = null;

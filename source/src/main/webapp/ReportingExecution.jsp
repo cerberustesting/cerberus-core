@@ -475,35 +475,6 @@
             </form>
         </div>
 
-<%!
-            String generateMultiSelect(String parameterName,String[] parameters, TreeMap<String,String> options, String headerText, String noneSeletedText, String selectedText, int selectedList) {
-                String parameter = "";
-                if (parameters != null && parameters.length > 0 && (parameters[0]).compareTo("All") != 0) {
-                    parameter = StringUtils.join(parameters, ",");
-                }
-                parameter += ",";
-
-                String select = "<select class=\"multiSelectOptions\" multiple  "
-                        + "data-header=\""+headerText+"\" "
-                        + "data-none-selected-text=\""+noneSeletedText+"\" "
-                        + "data-selected-text=\""+selectedText+"\" "
-                        + "data-selected-list=\""+selectedList+"\" "
-                        + "size=\"3\" id=\""+parameterName+"\" name=\""+parameterName+"\">\n";
-                select += "<option value=\"All\">-- ALL --</option>\n";
-
-                for(String key: options.keySet()) {
-                    select += " <option value=\"" + key + "\"";
-
-                    if ((parameter != null) && (parameter.indexOf(key + ",") >= 0)) {
-                        select +=  " SELECTED ";
-                    }
-                    select +=  ">"+options.get(key)+"</option>\n";
-                }
-                select += "</select>\n";
-                select += "<!-- "+parameter+" -->\n";                
-                return select;
-            }
-%>
         <script type="text/javascript">
                     $(document).ready(function() {
                         $(".multiSelectOptions").each(function(){
