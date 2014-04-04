@@ -39,6 +39,8 @@ import org.cerberus.service.ILogEventService;
 import org.cerberus.service.IParameterService;
 import org.cerberus.service.impl.LogEventService;
 import org.cerberus.service.impl.ParameterService;
+import org.owasp.html.PolicyFactory;
+import org.owasp.html.Sanitizers;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -52,6 +54,8 @@ public class ResultCI extends HttpServlet {
             HttpServletResponse response) throws ServletException, IOException {
         PrintWriter out = response.getWriter();
 
+        PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
+
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
 
         /**
@@ -60,7 +64,7 @@ public class ResultCI extends HttpServlet {
         ILogEventService logEventService = appContext.getBean(LogEventService.class);
         logEventService.insertLogEventPublicCalls("/ResultCI", "CALL", "ResultCIV0 called : " + request.getRequestURL(), request);
 
-        String tag = request.getParameter("tag");
+        String tag = policy.sanitize(request.getParameter("tag"));
 
         String helpMessage = "\nThis servlet is used to profide a global OK or KO based on the number and status of the execution done on a specific tag.\n"
                 + "The number of executions are ponderated by parameters by priority from CI_OK_prio1 to CI_OK_prio4.\n"
@@ -87,7 +91,7 @@ public class ResultCI extends HttpServlet {
                 error = true;
             }
 
-            if (error == false) {
+            if (!error) {
 
                 PreparedStatement prepStmt = connection.prepareStatement("SELECT count(*) AS NBKOP1 "
                         + "FROM testcaseexecution t "
@@ -186,7 +190,7 @@ public class ResultCI extends HttpServlet {
                 float pond3 = Float.valueOf(parameterService.findParameterByKey("CI_OK_prio3", "").getValue());
                 float pond4 = Float.valueOf(parameterService.findParameterByKey("CI_OK_prio4", "").getValue());
 
-                String result = "";
+                String result;
                 float resultCal = (nbkop1 * pond1) + (nbkop2 * pond2) + (nbkop3 * pond3) + (nbkop4 * pond4);
                 if ((resultCal < 1) && (nbkop1 + nbkop2 + nbkop3 + nbkop4 > 0)) {
                     result = "OK";
