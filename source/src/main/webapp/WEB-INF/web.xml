@@ -372,6 +372,10 @@
         <servlet-name>CreateBuildRevisionInvariant</servlet-name>
         <servlet-class>org.cerberus.servlet.buildrevision.CreateBuildRevisionInvariant</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>FindTestImplementationStatusPerApplication</servlet-name>
+        <servlet-class>org.cerberus.servlet.guiPages.FindTestImplementationStatusPerApplication</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>RunTestCase</servlet-name>
         <url-pattern>/RunTestCase</url-pattern>
@@ -723,6 +727,10 @@
     <servlet-mapping>
         <servlet-name>CreateBuildRevisionInvariant</servlet-name>
         <url-pattern>/CreateBuildRevisionInvariant</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>FindTestImplementationStatusPerApplication</servlet-name>
+        <url-pattern>/FindTestImplementationStatusPerApplication</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>

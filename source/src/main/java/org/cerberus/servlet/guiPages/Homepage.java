@@ -1,22 +1,22 @@
 /*
- * Cerberus  Copyright (C) 2013  vertigo17
- * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
- *
- * This file is part of Cerberus.
- *
- * Cerberus is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Cerberus is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
- */
+* Cerberus Copyright (C) 2013 vertigo17
+* DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+*
+* This file is part of Cerberus.
+*
+* Cerberus is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*
+* Cerberus is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with Cerberus. If not, see <http://www.gnu.org/licenses/>.
+*/
 package org.cerberus.servlet.guiPages;
 
 import java.io.IOException;
@@ -53,8 +53,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
- * @author ip100003
- */
+* @author ip100003
+*/
 @WebServlet(name = "Homepage", urlPatterns = {"/Homepage"})
 public class Homepage extends HttpServlet {
 
@@ -65,13 +65,13 @@ public class Homepage extends HttpServlet {
     }
 
     /**
-     * Handles the HTTP <code>POST</code> method.
-     *
-     * @param request  servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
-     */
+* Handles the HTTP <code>POST</code> method.
+*
+* @param request servlet request
+* @param response servlet response
+* @throws ServletException if a servlet-specific error occurs
+* @throws IOException if an I/O error occurs
+*/
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -85,7 +85,6 @@ public class Homepage extends HttpServlet {
 
         String echo = policy.sanitize(request.getParameter("sEcho"));
         String mySystem = policy.sanitize(request.getParameter("MySystem"));
-        String application = policy.sanitize(request.getParameter("Application"));
         Connection connection = null;
 
         JSONObject jsonResponse = new JSONObject();
@@ -101,36 +100,46 @@ public class Homepage extends HttpServlet {
             JSONArray data = new JSONArray();
 
             ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+            IApplicationService applicationService = appContext.getBean(ApplicationService.class);
             IInvariantService invariantService = appContext.getBean(InvariantService.class);
             DatabaseSpring database = appContext.getBean(DatabaseSpring.class);
             connection = database.connect();
+
+            List<Application> appliList = applicationService.findApplicationBySystem(mySystem);
+            String inSQL = SqlUtil.getInSQLClause(appliList);
+
+            if (!(inSQL.equalsIgnoreCase(""))) {
+                inSQL = " and application " + inSQL + " ";
+            } else {
+                inSQL = " and application in ('') ";
+            }
 
             List<Invariant> myInvariants = invariantService.findInvariantByIdGp1("TCSTATUS", "Y");
             StringBuilder SQL = new StringBuilder();
             StringBuilder SQLa = new StringBuilder();
             StringBuilder SQLb = new StringBuilder();
-            SQLa.append("SELECT t.test, count(*) as TOTAL ");
+            SQLa.append("SELECT t.application, count(*) as TOTAL ");
             SQLb.append(" FROM testcase t ");
             for (Invariant i : myInvariants) {
                 i.getSort();
                 SQLa.append(", Col");
                 SQLa.append(String.valueOf(i.getSort()));
-                SQLb.append(" LEFT JOIN (SELECT g.test, count(*) as Col");
+                SQLb.append(" LEFT JOIN (SELECT g.application, count(*) as Col");
                 SQLb.append(String.valueOf(i.getSort()));
                 SQLb.append(" FROM testcase g WHERE Status = '");
                 SQLb.append(i.getValue());
-                SQLb.append("' and application ='");
-                SQLb.append(application);
-                SQLb.append("' GROUP BY g.test) Tab");
+                SQLb.append("' ");
+                SQLb.append(inSQL);
+                SQLb.append(" GROUP BY g.application) Tab");
                 SQLb.append(String.valueOf(i.getSort()));
                 SQLb.append(" ON Tab");
                 SQLb.append(String.valueOf(i.getSort()));
-                SQLb.append(".test=t.test ");
+                SQLb.append(".application=t.application ");
             }
-            SQLb.append(" where t.application ='");
-            SQLb.append(application);
-            SQLb.append("'");
-            SQLb.append(" group by t.test");
+            SQLb.append(" WHERE 1=1 ");
+            SQLb.append(inSQL.replace("application", "t.application"));
+            SQLb.append(" GROUP BY t.application ");
+
             SQL.append(SQLa);
             SQL.append(SQLb);
             MyLogger.log(Homepage.class.getName(), Level.DEBUG, " SQL1 : " + SQL.toString());
@@ -140,7 +149,7 @@ public class Homepage extends HttpServlet {
 
                 ResultSet rs_teststatus = stmt_teststatus.executeQuery();
 
-//                Integer tot = 0;
+// Integer tot = 0;
                 ArrayList<Integer> totLine;
                 totLine = new ArrayList<Integer>();
                 for (Invariant i : myInvariants) {
@@ -151,12 +160,13 @@ public class Homepage extends HttpServlet {
                     while (rs_teststatus.next()) {
                         JSONArray row = new JSONArray();
                         StringBuilder testLink = new StringBuilder();
-                        testLink.append("<a href=\"Test.jsp?stestbox=");
-                        testLink.append(rs_teststatus.getString("t.test"));
+                        testLink.append("<a href=\"TestPerApplication.jsp?Application=");
+                        testLink.append(rs_teststatus.getString("t.application"));
                         testLink.append("\">");
-                        testLink.append(rs_teststatus.getString("t.test"));
+                        testLink.append(rs_teststatus.getString("t.application"));
                         testLink.append("</a>");
                         row.put(testLink.toString());
+                        row.put(rs_teststatus.getString("t.application"));
                         row.put(rs_teststatus.getString("TOTAL"));
                         for (Invariant i : myInvariants) {
                             i.getSort();
