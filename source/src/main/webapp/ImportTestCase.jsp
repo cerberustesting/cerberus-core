@@ -17,18 +17,19 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
-<%@page import="org.cerberus.service.IDocumentationService"%>
-<%@page import="org.cerberus.entity.BuildRevisionInvariant"%>
-<%@page import="org.cerberus.service.impl.BuildRevisionInvariantService"%>
-<%@page import="org.cerberus.service.IBuildRevisionInvariantService"%>
-<%@page import="org.cerberus.service.IApplicationService"%>
-<%@page import="org.apache.commons.lang3.StringUtils"%>
 <%@page import="java.sql.Connection"%>
 <%@page import="java.util.ArrayList"%>
 <%@page import="java.util.List"%>
 <%@page import="java.sql.ResultSet"%>
 <%@page import="java.sql.Statement"%>
 <%@page import="java.net.URLEncoder"%>
+<%@page import="org.apache.commons.lang3.StringUtils"%>
+<%@page import="org.cerberus.service.IDocumentationService"%>
+<%@page import="org.cerberus.entity.BuildRevisionInvariant"%>
+<%@page import="org.cerberus.service.impl.BuildRevisionInvariantService"%>
+<%@page import="org.cerberus.service.IBuildRevisionInvariantService"%>
+<%@page import="org.cerberus.service.IApplicationService"%>
+
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%--

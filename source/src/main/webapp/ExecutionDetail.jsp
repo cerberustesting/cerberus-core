@@ -17,43 +17,42 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
-<%@page import="org.cerberus.service.IDocumentationService"%>
+<%@page import="java.sql.Statement"%>
+<%@page import="java.sql.ResultSet"%>
+<%@page import="org.apache.log4j.Level"%>
+<%@page import="org.springframework.web.context.support.WebApplicationContextUtils"%>
 <%@page import="org.cerberus.entity.TestCaseStepActionControl"%>
-<%@page import="org.cerberus.service.ITestCaseStepActionControlService"%>
 <%@page import="org.cerberus.entity.TestCaseStepAction"%>
-<%@page import="org.cerberus.service.ITestCaseStepActionService"%>
-<%@page import="org.cerberus.service.ITestCaseStepService"%>
 <%@page import="org.cerberus.entity.TestCaseStep"%>
 <%@page import="org.cerberus.entity.TCase"%>
 <%@page import="org.cerberus.entity.TestCase"%>
-<%@page import="org.cerberus.service.ITestCaseService"%>
-<%@page import="org.cerberus.util.StringUtil"%>
 <%@page import="org.cerberus.entity.TestCaseExecutionSysVer"%>
+<%@page import="org.cerberus.entity.TestCaseStepActionControlExecution"%>
+<%@page import="org.cerberus.entity.TestCaseStepActionExecution"%>
+<%@page import="org.cerberus.entity.TestCaseStepExecution"%>
+<%@page import="org.cerberus.entity.TestCaseExecutionData"%>
+<%@page import="org.cerberus.service.IDocumentationService"%>
+<%@page import="org.cerberus.service.ITestCaseStepActionControlService"%>
+<%@page import="org.cerberus.service.ITestCaseStepActionService"%>
+<%@page import="org.cerberus.service.ITestCaseStepService"%>
+<%@page import="org.cerberus.service.ITestCaseService"%>
 <%@page import="org.cerberus.service.ITestCaseExecutionSysVerService"%>
 <%@page import="org.cerberus.service.IApplicationService"%>
 <%@page import="org.cerberus.service.IParameterService"%>
-<%@page import="org.cerberus.util.DateUtil"%>
-<%@page import="org.cerberus.entity.TestCaseStepActionControlExecution"%>
 <%@page import="org.cerberus.service.ITestCaseStepActionControlExecutionService"%>
-<%@page import="org.cerberus.entity.TestCaseStepActionExecution"%>
 <%@page import="org.cerberus.service.ITestCaseStepActionExecutionService"%>
 <%@page import="org.cerberus.service.ITestCaseStepExecutionService"%>
-<%@page import="org.cerberus.entity.TestCaseStepExecution"%>
-<%@page import="org.cerberus.util.ParameterParserUtil"%>
-<%@page import="org.cerberus.entity.TestCaseExecutionData"%>
 <%@page import="org.cerberus.service.ITestCaseExecutionDataService"%>
 <%@page import="org.cerberus.refactor.TestcaseExecutionwwwSum"%>
 <%@page import="org.cerberus.refactor.ITCEwwwSumService"%>
+<%@page import="org.cerberus.util.StringUtil"%>
+<%@page import="org.cerberus.util.DateUtil"%>
+<%@page import="org.cerberus.util.ParameterParserUtil"%>
 <%@page import="org.cerberus.log.MyLogger"%>
-<%@page import="org.apache.log4j.Level"%>
-<%@page import="org.springframework.web.context.support.WebApplicationContextUtils"%>
-<%@page import="java.sql.Statement"%>
-<%@page import="java.sql.ResultSet"%>
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-    "http://www.w3.org/TR/html4/loose.dtd">
-
 <% Date DatePageStart = new Date();%>
+
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<!DOCTYPE html>
 <html>
     <head>
 

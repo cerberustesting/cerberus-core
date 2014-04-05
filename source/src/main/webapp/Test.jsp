@@ -17,19 +17,19 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
-<%@page import="org.cerberus.service.ITestCaseCountryService"%>
+<%@page import="org.apache.commons.lang3.StringUtils"%>
 <%@page import="org.cerberus.entity.TCase"%>
+<%@page import="org.cerberus.entity.Test"%>
 <%@page import="org.cerberus.service.ITestCaseService"%>
 <%@page import="org.cerberus.service.IDocumentationService"%>
-<%@page import="org.apache.commons.lang3.StringUtils"%>
-<%@page import="org.cerberus.service.impl.TestService"%>
-<%@page import="org.cerberus.entity.Test"%>
-<%@page import="org.cerberus.dao.ITestDAO"%>
 <%@page import="org.cerberus.service.ITestService"%>
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-    "http://www.w3.org/TR/html4/loose.dtd">
+<%@page import="org.cerberus.service.ITestCaseCountryService"%>
+<%@page import="org.cerberus.service.impl.TestService"%>
+<%@page import="org.cerberus.dao.ITestDAO"%>
 <% Date DatePageStart = new Date();%>
+
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<!DOCTYPE html>
 <html>
     <head>
         <meta content="text/html; charset=UTF-8" http-equiv="content-type">

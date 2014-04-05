@@ -17,9 +17,9 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
+<% Date DatePageStart = new Date();%>
 
 <!DOCTYPE html>
-<% Date DatePageStart = new Date();%>
 <html>
     <head>
         <title>Public Invariant</title>
@@ -120,15 +120,15 @@
     <body  id="wrapper">
         <%@ include file="include/function.jsp" %>
         <%@ include file="include/header.jsp" %>
-            <%
-                /*
-                 * Database connexion
-                 */
-                Connection conn = db.connect();
-                try {
+        <%
+            /*
+             * Database connexion
+             */
+            Connection conn = db.connect();
+            try {
 
-            %>
-            <p class="dttTitle">Public Invariants</p>
+        %>
+        <p class="dttTitle">Public Invariants</p>
         <div style="width: 100%;  font: 90% sans-serif">
             <table id="invariantPublicList" class="display">
                 <thead>
@@ -155,47 +155,47 @@
                     <input id="InvKey" name="InvKey" style="width:100px;" 
                            class="ncdetailstext" rel="0" >
                 </div>
-                    <label for="IDName" style="font-weight:bold">ID Name</label>
-                    <%=ComboInvariantAjax(conn, "IDName", "", "IDName", "1", "INVARIANTPUBLIC", "", "", false)%>
-                    
-                    <label for="Value" style="font-weight:bold">Value</label>
-                    <input id="Value" name="Value" style="width:150px;" 
-                           class="ncdetailstext" rel="2" >
-                    <label for="Sort" style="font-weight:bold">Sort</label>
-                    <input id="Sort" name="Sort" style="width:50px;" 
-                           class="ncdetailstext" rel="3" ><br>
+                <label for="IDName" style="font-weight:bold">ID Name</label>
+                <%=ComboInvariantAjax(conn, "IDName", "", "IDName", "1", "INVARIANTPUBLIC", "", "", false)%>
+
+                <label for="Value" style="font-weight:bold">Value</label>
+                <input id="Value" name="Value" style="width:150px;" 
+                       class="ncdetailstext" rel="2" >
+                <label for="Sort" style="font-weight:bold">Sort</label>
+                <input id="Sort" name="Sort" style="width:50px;" 
+                       class="ncdetailstext" rel="3" ><br>
                 <br><br>
-                    <label for="Description" style="font-weight:bold">Description</label>
-                    <input id="Description" name="Description" style="width:300px;" 
-                           class="ncdetailstext" rel="4" >
+                <label for="Description" style="font-weight:bold">Description</label>
+                <input id="Description" name="Description" style="width:300px;" 
+                       class="ncdetailstext" rel="4" >
                 <br><br>
-                    <label for="VeryShortDesc" style="font-weight:bold">Very Short Desc.</label>
-                    <input id="VeryShortDesc" name="VeryShortDesc" style="width:100px;" 
-                           class="ncdetailstext" rel="5" >
+                <label for="VeryShortDesc" style="font-weight:bold">Very Short Desc.</label>
+                <input id="VeryShortDesc" name="VeryShortDesc" style="width:100px;" 
+                       class="ncdetailstext" rel="5" >
                 <br><br>
-                    <label for="gp1" style="font-weight:bold">Group 1</label>
-                    <input id="gp1" name="gp1" style="width:100px;" 
-                           class="ncdetailstext" rel="6" >
-                    <label for="gp2" style="font-weight:bold">Group 2</label>
-                    <input id="gp2" name="gp2" style="width:100px;" 
-                           class="ncdetailstext" rel="7" >
-                    <label for="gp3" style="font-weight:bold">Group 3</label>
-                    <input id="gp3" name="gp3" style="width:100px;" 
-                           class="ncdetailstext" rel="8" >
+                <label for="gp1" style="font-weight:bold">Group 1</label>
+                <input id="gp1" name="gp1" style="width:100px;" 
+                       class="ncdetailstext" rel="6" >
+                <label for="gp2" style="font-weight:bold">Group 2</label>
+                <input id="gp2" name="gp2" style="width:100px;" 
+                       class="ncdetailstext" rel="7" >
+                <label for="gp3" style="font-weight:bold">Group 3</label>
+                <input id="gp3" name="gp3" style="width:100px;" 
+                       class="ncdetailstext" rel="8" >
                 <br><br>
                 <button id="btnAddNewRowOk">Add</button>
                 <button id="btnAddNewRowCancel">Cancel</button>
             </form>
-        <%
-            } catch (Exception e) {
-                out.println(e);
-            } finally {
-                try {
-                    conn.close();
-                } catch (Exception ex) {
+            <%
+                } catch (Exception e) {
+                    out.println(e);
+                } finally {
+                    try {
+                        conn.close();
+                    } catch (Exception ex) {
+                    }
                 }
-            }
-        %>
+            %>
         </div>
         <br><%
             out.print(display_footer(DatePageStart));

@@ -1419,7 +1419,7 @@ function loadPropertyPopin(propertyID,test,testcase) {
     var db = $('select#properties_dtb'+propertyID+'[name=\'properties_dtb\']').val();
     var type = $('select#type'+propertyID).val();
     
-    $('#popin').load('viewProperty.jsp?type='+escape(type)+'&db='+escape(db)+'&test='+escape(test)+'&testcase='+escape(testcase)+'&property='+escape(value));
+    $('#popin').load('ViewProperty.jsp?type='+escape(type)+'&db='+escape(db)+'&test='+escape(test)+'&testcase='+escape(testcase)+'&property='+escape(value));
 //    $('#popin').show();
 }
 

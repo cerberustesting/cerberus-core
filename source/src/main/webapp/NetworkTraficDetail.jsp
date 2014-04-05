@@ -18,6 +18,8 @@
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
 <%@page import="java.util.Date"%>
+<% Date DatePageStart = new Date();%>
+
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
@@ -74,9 +76,6 @@
   
         </script>
 
-        <%
-            Date DatePageStart = new Date();
-        %>
         <div style="width: 80%; padding: 25px; font: 70% sans-serif">
             <table id="nonConformityList" class="display">
                 <thead>
@@ -99,10 +98,6 @@
                 </tbody>
             </table>
         </div>
-
-        <%
-
-        %>
         <br>          
     </body>
 </html>

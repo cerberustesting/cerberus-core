@@ -17,11 +17,6 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
-<%@page import="org.cerberus.service.IDocumentationService"%>
-<%@page import="org.apache.log4j.Level"%>
-<%@page import="org.apache.log4j.Logger"%>
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
-
 <%@page import="java.util.Collection"%>
 <%@page import="java.util.Iterator"%>
 <%@page import="java.sql.SQLException"%>
@@ -30,8 +25,12 @@
 <%@page import="java.util.List"%>
 <%@page import="java.sql.ResultSet"%>
 <%@page import="java.sql.Statement"%>
+<%@page import="org.cerberus.service.IDocumentationService"%>
+<%@page import="org.apache.log4j.Level"%>
+<%@page import="org.apache.log4j.Logger"%>
+<% Date DatePageStart = new Date();%>
 
-
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
     <head>
@@ -49,7 +48,6 @@
         <%@ include file="include/header.jsp" %>
 
         <%
-            Date DatePageStart = new Date();
             String NBDAYS = "14";
             if (request.getParameter("nbdays") != null) {
                 NBDAYS = request.getParameter("nbdays");

@@ -19,9 +19,9 @@
 --%>
 <%@page import="org.cerberus.service.IDocumentationService"%>
 <%@page import="org.cerberus.service.IDatabaseVersioningService"%>
+
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE HTML>
-
 <html>
     <head>
         <meta content="text/html; charset=UTF-8" http-equiv="content-type">

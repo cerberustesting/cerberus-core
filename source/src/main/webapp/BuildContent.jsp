@@ -17,6 +17,9 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
+<%@page import="java.sql.Connection"%>
+<%@page import="java.sql.ResultSet"%>
+<%@page import="java.sql.Statement"%>
 <%@page import="org.cerberus.util.StringUtil"%>
 <%@page import="org.cerberus.service.IDocumentationService"%>
 <%@page import="org.cerberus.util.SqlUtil"%>
@@ -26,12 +29,9 @@
 <%@page import="org.cerberus.service.impl.ApplicationService"%>
 <%@page import="org.cerberus.entity.Application"%>
 <%@page import="org.cerberus.service.IApplicationService"%>
+<% Date DatePageStart = new Date();%>
+
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
-
-<%@page import="java.sql.Connection"%>
-<%@page import="java.sql.ResultSet"%>
-<%@page import="java.sql.Statement"%>
-
 <!DOCTYPE html>
 <html>
     <head>
@@ -46,8 +46,6 @@
         <%@ include file="include/function.jsp" %>
         <%@ include file="include/header.jsp" %>
         <%
-            Date DatePageStart = new Date();
-
             Connection conn = db.connect();
 
             try {

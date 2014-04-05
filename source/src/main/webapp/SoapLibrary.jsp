@@ -17,9 +17,9 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
+<% Date DatePageStart = new Date() ; %>
 
 <!DOCTYPE html>
-<% Date DatePageStart = new Date() ; %>
 <html>
     <head>
         <title>SOAP Library</title>

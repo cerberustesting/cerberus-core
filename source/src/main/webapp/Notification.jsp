@@ -17,17 +17,17 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
-<%@page import="org.cerberus.util.StringUtil"%>
-<%@page import="org.cerberus.service.IDocumentationService"%>
-<%@page import="org.cerberus.serviceEmail.IEmailGeneration"%>
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
-
-<%@page import="org.cerberus.service.IParameterService"%>
-<%@page import="com.mysql.jdbc.StringUtils"%>
 <%@page import="java.sql.Connection"%>
 <%@page import="java.sql.ResultSet"%>
 <%@page import="java.sql.Statement"%>
+<%@page import="com.mysql.jdbc.StringUtils"%>
+<%@page import="org.cerberus.service.IDocumentationService"%>
+<%@page import="org.cerberus.service.IParameterService"%>
+<%@page import="org.cerberus.serviceEmail.IEmailGeneration"%>
+<%@page import="org.cerberus.util.StringUtil"%>
+<% Date DatePageStart = new Date();%>
 
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
     <head>
@@ -44,8 +44,6 @@
         <%@ include file="include/header.jsp" %>
 
         <%
-            Date DatePageStart = new Date();
-
             Connection conn = db.connect();
             IDocumentationService docService = appContext.getBean(IDocumentationService.class);
 

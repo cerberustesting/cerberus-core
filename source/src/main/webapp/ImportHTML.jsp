@@ -32,9 +32,10 @@
 <%@page import="java.io.File"%>
 <%@page import="java.io.IOException"%>
 <%@page import="java.io.StringReader"%>
+<% Date DatePageStart = new Date();%>
+
 <%@page contentType="text/html" pageEncoding="windows-1252"%>
 <!DOCTYPE html>
-<% Date DatePageStart = new Date() ; %>
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=windows-1252">

@@ -17,20 +17,20 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
-<%@page import="org.cerberus.service.IDocumentationService"%>
-<%@page import="org.cerberus.util.SqlUtil"%>
-<%@page import="org.cerberus.service.IParameterService"%>
-<%@page import="org.cerberus.log.MyLogger"%>
-<%@page import="org.apache.log4j.Level"%>
-<%@page import="org.cerberus.service.impl.ApplicationService"%>
-<%@page import="org.cerberus.entity.Application"%>
-<%@page import="org.cerberus.service.IApplicationService"%>
-<%@page import="org.apache.commons.lang3.StringUtils"%>
 <%@page import="java.util.Enumeration"%>
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-    "http://www.w3.org/TR/html4/loose.dtd">
+<%@page import="org.apache.log4j.Level"%>
+<%@page import="org.apache.commons.lang3.StringUtils"%>
+<%@page import="org.cerberus.entity.Application"%>
+<%@page import="org.cerberus.service.IDocumentationService"%>
+<%@page import="org.cerberus.service.IParameterService"%>
+<%@page import="org.cerberus.service.IApplicationService"%>
+<%@page import="org.cerberus.service.impl.ApplicationService"%>
+<%@page import="org.cerberus.log.MyLogger"%>
+<%@page import="org.cerberus.util.SqlUtil"%>
 <% Date DatePageStart = new Date();%>
+
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<!DOCTYPE html>
 
 <html>
     <head>

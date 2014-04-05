@@ -1,22 +1,3 @@
-<%@page import="java.util.Enumeration"%>
-<%@page import="java.sql.ResultSet"%>
-<%@page import="org.cerberus.entity.Invariant"%>
-<%@page import="java.sql.Statement"%>
-<%@page import="java.sql.Connection"%>
-<%@page import="java.util.Date"%>
-<%@page import="org.cerberus.service.IInvariantService"%>
-<%@page import="org.springframework.web.context.support.WebApplicationContextUtils"%>
-<%@page import="org.springframework.context.ApplicationContext"%>
-<%@page import="org.cerberus.database.DatabaseSpring"%>
-<%@page import="org.cerberus.entity.TestCaseCountry"%>
-<%@page import="org.cerberus.entity.Project"%>
-<%@page import="org.cerberus.service.IProjectService"%>
-<%@page import="org.cerberus.entity.Test"%>
-<%@page import="org.cerberus.service.ITestService"%>
-<%@page import="org.cerberus.service.ITestCaseService"%>
-<%@page import="org.cerberus.service.ITestCaseCountryService"%>
-<%@page import="org.cerberus.service.IDocumentationService"%>
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%--
   ~ Cerberus  Copyright (C) 2013  vertigo17
   ~ DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
@@ -36,20 +17,40 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
-<%@page import="org.cerberus.log.MyLogger"%>
-<%@page import="org.apache.log4j.Level"%>
-<%@page import="org.cerberus.service.impl.BuildRevisionInvariantService"%>
-<%@page import="org.cerberus.service.IBuildRevisionInvariantService"%>
-<%@page import="org.cerberus.entity.BuildRevisionInvariant"%>
-<%@page import="org.cerberus.service.impl.InvariantService"%>
-<%@page import="org.cerberus.service.IApplicationService"%>
-<%@page import="org.apache.commons.lang3.StringUtils"%>
+<%@page import="java.sql.ResultSet"%>
+<%@page import="java.sql.Statement"%>
+<%@page import="java.sql.Connection"%>
+<%@page import="java.util.Enumeration"%>
+<%@page import="java.util.Date"%>
 <%@page import="java.util.Collections"%>
 <%@page import="java.util.HashSet"%>
 <%@page import="java.util.ArrayList"%>
 <%@page import="java.util.List"%>
 <%@page import="java.util.Set"%>
 <%@page import="java.util.HashMap"%>
+<%@page import="org.springframework.web.context.support.WebApplicationContextUtils"%>
+<%@page import="org.springframework.context.ApplicationContext"%>
+<%@page import="org.apache.log4j.Level"%>
+<%@page import="org.apache.commons.lang3.StringUtils"%>
+<%@page import="org.cerberus.database.DatabaseSpring"%>
+<%@page import="org.cerberus.entity.Invariant"%>
+<%@page import="org.cerberus.entity.TestCaseCountry"%>
+<%@page import="org.cerberus.entity.Project"%>
+<%@page import="org.cerberus.entity.Test"%>
+<%@page import="org.cerberus.entity.BuildRevisionInvariant"%>
+<%@page import="org.cerberus.service.IInvariantService"%>
+<%@page import="org.cerberus.service.IProjectService"%>
+<%@page import="org.cerberus.service.ITestService"%>
+<%@page import="org.cerberus.service.ITestCaseService"%>
+<%@page import="org.cerberus.service.ITestCaseCountryService"%>
+<%@page import="org.cerberus.service.IDocumentationService"%>
+<%@page import="org.cerberus.service.impl.BuildRevisionInvariantService"%>
+<%@page import="org.cerberus.service.IBuildRevisionInvariantService"%>
+<%@page import="org.cerberus.service.impl.InvariantService"%>
+<%@page import="org.cerberus.service.IApplicationService"%>
+<%@page import="org.cerberus.log.MyLogger"%>
+
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
             <%@ include file="include/function.jsp" %>
             <%
                 IInvariantService myInvariantService = appContext.getBean(IInvariantService.class);

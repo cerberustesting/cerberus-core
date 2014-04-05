@@ -1,16 +1,3 @@
-<%@page import="java.util.TreeMap"%>
-<%@page import="java.util.Map"%>
-<%@page import="org.cerberus.entity.TestCaseCountry"%>
-<%@page import="org.cerberus.entity.Project"%>
-<%@page import="org.cerberus.service.IProjectService"%>
-<%@page import="org.cerberus.entity.Test"%>
-<%@page import="org.cerberus.service.ITestService"%>
-<%@page import="org.cerberus.service.ITestCaseService"%>
-<%@page import="org.cerberus.service.ITestCaseCountryService"%>
-<%@page import="org.cerberus.service.IDocumentationService"%>
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-    "http://www.w3.org/TR/html4/loose.dtd">
 <%--
   ~ Cerberus  Copyright (C) 2013  vertigo17
   ~ DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
@@ -30,22 +17,35 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
-<%@page import="org.cerberus.log.MyLogger"%>
-<%@page import="org.apache.log4j.Level"%>
-<%@page import="org.cerberus.service.impl.BuildRevisionInvariantService"%>
-<%@page import="org.cerberus.service.IBuildRevisionInvariantService"%>
-<%@page import="org.cerberus.entity.BuildRevisionInvariant"%>
-<%@page import="org.cerberus.service.impl.InvariantService"%>
-<%@page import="org.cerberus.service.IApplicationService"%>
-<%@page import="org.apache.commons.lang3.StringUtils"%>
+<%@page import="java.util.TreeMap"%>
+<%@page import="java.util.Map"%>
 <%@page import="java.util.Collections"%>
 <%@page import="java.util.HashSet"%>
 <%@page import="java.util.ArrayList"%>
 <%@page import="java.util.List"%>
 <%@page import="java.util.Set"%>
 <%@page import="java.util.HashMap"%>
+<%@page import="org.cerberus.entity.TestCaseCountry"%>
+<%@page import="org.cerberus.entity.Project"%>
+<%@page import="org.cerberus.entity.Test"%>
+<%@page import="org.cerberus.entity.BuildRevisionInvariant"%>
+<%@page import="org.cerberus.service.IProjectService"%>
+<%@page import="org.cerberus.service.ITestService"%>
+<%@page import="org.cerberus.service.ITestCaseService"%>
+<%@page import="org.cerberus.service.ITestCaseCountryService"%>
+<%@page import="org.cerberus.service.IDocumentationService"%>
+<%@page import="org.cerberus.service.impl.BuildRevisionInvariantService"%>
+<%@page import="org.cerberus.service.IBuildRevisionInvariantService"%>
+<%@page import="org.cerberus.service.impl.InvariantService"%>
+<%@page import="org.cerberus.service.IApplicationService"%>
+<%@page import="org.cerberus.log.MyLogger"%>
+<%@page import="org.apache.log4j.Level"%>
+<%@page import="org.apache.commons.lang3.StringUtils"%>
 <% Date DatePageStart = new Date();%>
 
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+    "http://www.w3.org/TR/html4/loose.dtd">
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">

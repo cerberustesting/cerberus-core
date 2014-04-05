@@ -17,14 +17,14 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
-<%@page import="org.cerberus.service.IDocumentationService"%>
 <%@page import="org.cerberus.entity.Application"%>
+<%@page import="org.cerberus.service.IDocumentationService"%>
 <%@page import="org.cerberus.service.IApplicationService"%>
 <%@page import="org.cerberus.service.IDatabaseVersioningService"%>
-<%@page contentType="text/html" pageEncoding="UTF-8"%><!DOCTYPE HTML>
-<!DOCTYPE html>
-
 <% Date DatePageStart = new Date();%>
+
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<!DOCTYPE html>
 <html>
     <head>
         <meta content="text/html; charset=UTF-8" http-equiv="content-type">

@@ -17,16 +17,17 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
   --%>
+<%@page import="org.apache.log4j.Level"%>
+<%@page import="org.springframework.web.context.support.WebApplicationContextUtils" %>
 <%@page import="org.cerberus.factory.IFactoryMyversion"%>
 <%@page import="org.cerberus.factory.impl.FactoryMyversion"%>
 <%@page import="org.cerberus.service.IDatabaseVersioningService"%>
 <%@page import="org.cerberus.log.MyLogger"%>
 <%@page import="org.cerberus.entity.MyVersion"%>
 <%@page import="org.cerberus.service.IMyVersionService"%>
-<%@page import="org.apache.log4j.Level"%>
-<%@page import="org.springframework.web.context.support.WebApplicationContextUtils" %>
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
 <% Date DatePageStart = new Date();%>
+
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
     <head>
