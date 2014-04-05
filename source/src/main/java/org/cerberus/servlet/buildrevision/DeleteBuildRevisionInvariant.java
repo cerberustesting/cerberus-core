@@ -40,8 +40,6 @@ import org.cerberus.service.ILogEventService;
 import org.cerberus.service.impl.BuildRevisionInvariantService;
 import org.cerberus.service.impl.LogEventService;
 import org.cerberus.service.impl.UserService;
-import org.owasp.html.PolicyFactory;
-import org.owasp.html.Sanitizers;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -58,8 +56,6 @@ public class DeleteBuildRevisionInvariant extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
-
         String key = request.getParameter("id");
         String[] invKey = key.split("\\$#");
         String system = invKey[0];

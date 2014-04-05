@@ -17,17 +17,15 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
+<%@page import="java.util.Iterator"%>
+<%@page import="org.cerberus.entity.Documentation"%>
+<%@page import="org.cerberus.service.IDocumentationService"%>
 <%@page import="org.cerberus.util.StringUtil"%>
 <%@page import="java.util.ArrayList"%>
 <%@page import="java.util.List"%>
 <%@page import="org.cerberus.util.ParameterParserUtil"%>
-<%@ page import="java.sql.Connection"%>
-<%@ page import="java.sql.ResultSet"%>
-<%@ page import="java.sql.Statement"%>
 <%@ page import="org.springframework.context.ApplicationContext" %>
 <%@ page import="org.springframework.web.context.support.WebApplicationContextUtils" %>
-<%@ page import="org.cerberus.database.DatabaseSpring" %>
-<%@ page import="java.sql.SQLException" %>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
@@ -42,7 +40,7 @@
         }
 
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-        DatabaseSpring db = appContext.getBean(DatabaseSpring.class);
+        IDocumentationService documentationService = appContext.getBean(IDocumentationService.class);
 
         String Title = "";
         List<String> TitleList;
@@ -51,92 +49,56 @@
         List<String> DocList;
         DocList = new ArrayList<String>();
 
-        Connection conn = db.connect();
+        if (DocValue_isdefined == false) {
 
-        try {
+            if (DocTable.equalsIgnoreCase("all")) { // All the documentation displayed inside a single page.
+                Documentation documentation;
+                Iterator<Documentation> iterAllDoc = documentationService.findAll().iterator();
 
-            if (DocValue_isdefined == false) {
-
-                Statement stmtQuery = conn.createStatement();
-                Statement stmtQuerydet = conn.createStatement();
-                String sqDet = "";
-                String sq = "";
-                if (DocTable.equalsIgnoreCase("all")) { // All the documentation displayed inside a single page.
-                    sq = "SELECT DocTable, DocField, DocValue, DocLabel, DocDesc, DocLabel FROM documentation";
-                    ResultSet q = stmtQuery.executeQuery(sq);
-                    while (q.next()) {
-                        Doc = q.getString("DocDesc");
-                        if (StringUtil.isNullOrEmpty(q.getString("DocValue"))) {
-                            if (StringUtil.isNullOrEmpty(request.getParameter("HideKey"))) {
-                                Title = "[" + q.getString("DocTable") + " - " + q.getString("DocField") + "] - " + q.getString("DocLabel");
-                            } else {
-                                Title = q.getString("DocLabel");
-                            }
-                            sqDet = "SELECT DocValue, DocDesc, DocLabel FROM documentation where DocTable = '" + q.getString("DocTable") + "' and docfield = '" + q.getString("DocField") + "' and docValue IS NOT NULL and length(docValue) > 1 AND length(docdesc) > 1";
-                            ResultSet qDet = stmtQuerydet.executeQuery(sqDet);
-                            if (qDet.first()) {
-                                Doc = Doc + "<table>";
-                                do {
-                                    Doc = Doc + "<tr><td><a href=\"?DocTable=" + q.getString("DocTable");
-                                    Doc = Doc + "&amp;DocField=" + q.getString("DocField") + "&amp;DocValue=" + qDet.getString("DocValue") + "\">";
-                                    Doc = Doc + qDet.getString("DocValue") + "</a></td><td>" + qDet.getString("DocLabel") + "</td></tr>";
-                                } while (qDet.next());
-                                Doc = Doc + "</table>";
-                            }
+                while (iterAllDoc.hasNext()) {
+                    documentation = iterAllDoc.next();
+                    Doc = documentation.getDocDesc();
+                    if (StringUtil.isNullOrEmpty(documentation.getDocValue())) {
+                        if (StringUtil.isNullOrEmpty(request.getParameter("HideKey"))) {
+                            Title = "[" + documentation.getDocTable() + " - " + documentation.getDocField() + "] - " + documentation.getDocLabel();
                         } else {
-                            if (StringUtil.isNullOrEmpty(request.getParameter("HideKey"))) {
-                                Title = "[" + q.getString("DocTable") + " - " + q.getString("DocField") + " - " + q.getString("DocValue") + "] - " + q.getString("DocLabel");
-                            } else {
-                                Title = q.getString("DocLabel");
-                            }
+                            Title = documentation.getDocLabel();
                         }
-                        TitleList.add(Title);
-                        DocList.add(Doc);
-                    }
-                } else { // Documentation of a normal field. The field could potencially have occurences at Value level that will be displayed.
-                    sq = "SELECT DocLabel, DocDesc FROM documentation where DocTable = '" + DocTable + "' and docfield = '" + DocField + "' and length(docvalue)=0 and length(docdesc) > 1";
-                    ResultSet q = stmtQuery.executeQuery(sq);
-                    if (q.first()) {
-                        Title = q.getString("DocLabel");
-                        Doc = q.getString("DocDesc");
-                        sqDet = "SELECT DocValue, DocDesc, DocLabel FROM documentation where DocTable = '" + DocTable + "' and docfield = '" + DocField + "' and docValue IS NOT NULL and length(docValue) > 1  AND length(docdesc) > 1";
-                        ResultSet qDet = stmtQuery.executeQuery(sqDet);
-                        if (qDet.first()) {
-                            Doc = Doc + "<table>";
-                            do {
-                                Doc = Doc + "<tr><td><a href=\"?DocTable=" + DocTable;
-                                Doc = Doc + "&amp;DocField=" + DocField + "&amp;DocValue=" + qDet.getString("DocValue") + "\">";
-                                Doc = Doc + qDet.getString("DocValue") + "</a></td><td>" + qDet.getString("DocLabel") + "</td></tr>";
-                            } while (qDet.next());
-                            Doc = Doc + "</table>";
+
+                        List<Documentation> documentations = documentationService.findDocumentationsWithNotEmptyValueAndDescription(documentation.getDocTable(), documentation.getDocField());
+                        Doc = Doc + "<table>";
+                        for(int i=0; i<documentations.size();i++) {
+                                Doc = Doc + "<tr><td><a href=\"?DocTable=" + documentation.getDocTable();
+                                Doc = Doc + "&amp;DocField=" + documentation.getDocField() + "&amp;DocValue=" + documentations.get(i).getDocValue() + "\">";
+                                Doc = Doc + documentations.get(i).getDocValue() + "</a></td><td>" + documentations.get(i).getDocLabel() + "</td></tr>";
                         }
-                        TitleList.add(Title);
-                        DocList.add(Doc);
+                        Doc = Doc + "</table>";
+
                     } else {
-                        Title = "No Documentation Found !";
-                        Doc = "";
-                        TitleList.add(Title);
-                        DocList.add(Doc);
+                        if (StringUtil.isNullOrEmpty(request.getParameter("HideKey"))) {
+                            Title = "[" + documentation.getDocTable() + " - " + documentation.getDocField() + " - " + documentation.getDocValue() + "] - " + documentation.getDocLabel();
+                        } else {
+                            Title = documentation.getDocLabel();
+                        }
                     }
+                    TitleList.add(Title);
+                    DocList.add(Doc);
                 }
+            } else { // Documentation of a normal field. The field could potencially have occurences at Value level that will be displayed.
+                List<Documentation> documentations = documentationService.findDocumentationsWithEmptyValueAndNotEmptyDescription(DocTable, DocField);
+                if (documentations != null && documentations.size() > 0) {
+                    Title = documentations.get(0).getDocLabel();
+                    Doc = documentations.get(0).getDocDesc();
 
-            } else { // Documentation of the detail of a field + value.
+                    documentations = documentationService.findDocumentationsWithNotEmptyValueAndDescription(DocTable, DocField);
+                    Doc = Doc + "<table>";
+                    for(int i=0; i<documentations.size();i++) {
+                            Doc = Doc + "<tr><td><a href=\"?DocTable=" + DocTable;
+                            Doc = Doc + "&amp;DocField=" + DocField + "&amp;DocValue=" + documentations.get(i).getDocValue() + "\">";
+                            Doc = Doc + documentations.get(i).getDocValue() + "</a></td><td>" + documentations.get(i).getDocLabel() + "</td></tr>";
+                    }
+                    Doc = Doc + "</table>";
 
-                Statement stmtQuery1 = conn.createStatement();
-                String sq1 = "SELECT DocLabel FROM documentation where DocTable = '" + DocTable + "' and docfield = '" + DocField + "' and length(docvalue)=0 and length(docdesc) > 1";
-                ResultSet q1 = stmtQuery1.executeQuery(sq1);
-                String nav;
-                nav = "";
-                if (q1.first()) {
-                    nav = "<a href=\"?DocTable=" + DocTable + "&amp;DocField=" + DocField + "\">" + q1.getString("DocLabel") + "</a>";
-                }
-                Statement stmtQueryVal = conn.createStatement();
-                String sqVal = "SELECT DocDesc FROM documentation where DocTable = '" + DocTable + "' and docfield = '" + DocField + "' and docvalue = '" + DocValue + "' and length(docdesc) > 1";
-                ResultSet qVal = stmtQueryVal.executeQuery(sqVal);
-                if (qVal.first()) {
-                    Title = nav + " >> " + DocValue;
-                    Doc = qVal.getString("DocDesc");
-                    Doc = Doc + "<br><br>Back to " + nav;
                     TitleList.add(Title);
                     DocList.add(Doc);
                 } else {
@@ -145,12 +107,37 @@
                     TitleList.add(Title);
                     DocList.add(Doc);
                 }
-
             }
 
-            if (TitleList.size() > 1) {
-                Title = "Full Documentation";
+        } else { // Documentation of the detail of a field + value.
+
+
+            String docLabel = documentationService.findLabelFromTableAndField(DocTable, DocField);
+
+            String nav = "";
+            if (docLabel != null) {
+                nav = "<a href=\"?DocTable=" + DocTable + "&amp;DocField=" + DocField + "\">" + docLabel + "</a>";
             }
+
+            String docDesc = documentationService.findDescriptionFromTableFieldAndValue(DocTable, DocField, DocValue);
+            if (docDesc != null) {
+                Title = nav + " >> " + DocValue;
+                Doc = docDesc;
+                Doc = Doc + "<br><br>Back to " + nav;
+                TitleList.add(Title);
+                DocList.add(Doc);
+            } else {
+                Title = "No Documentation Found !";
+                Doc = "";
+                TitleList.add(Title);
+                DocList.add(Doc);
+            }
+
+        }
+
+        if (TitleList.size() > 1) {
+            Title = "Full Documentation";
+        }
 
     %>
 
@@ -180,18 +167,6 @@
         <%
                     i++;
                 }
-            } catch (Exception e) {
-                out.println("<br> error message : " + e.getMessage() + " "
-                        + e.toString() + "<br>");
-            } finally {
-                if (conn != null) {
-                    try {
-                        conn.close();
-                    } catch (SQLException e) {
-                        //TODO logger
-                    }
-                }
-            }
         %>
         <br>
         <span class="close"><a href="javascript:self.close()">Close</a> the popup.</span>

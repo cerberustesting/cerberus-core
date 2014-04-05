@@ -32,6 +32,10 @@ textarea{
 * {
     margin: 0;
 }
+.underlinedDiv{
+    border-bottom-color:#555555;
+    border-bottom-style:double;
+}
 /* Fields without border (TODO Refactor)*/
 td#wob { 
     border-width:0px;
@@ -121,7 +125,7 @@ table#arrond {
     border-width: 2px;
     border-color: #8999c4;
     -moz-border-radius: 5px;
-    width : 1260px;    
+    width : 1260px;
 }
 .arrond {
     background-color:#e1e7f3;
@@ -129,7 +133,7 @@ table#arrond {
     border-width: 2px;
     border-color: #8999c4;
     -moz-border-radius: 5px;
-    width : 1260px;    
+    width : 1260px;
 }
 .contour {
     background-color:#e1e7f3;
@@ -600,3 +604,16 @@ input#submitButtonDuplicate {
     color:purple;
     font-weight: bold;
 }
+
+.notVisible {
+    display: none;
+}
+
+.OKVisible,
+.KOVisible,
+.NAVisible,
+.FAVisible,
+.PEVisible {
+    display: table-row;
+}
+

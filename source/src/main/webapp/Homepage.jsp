@@ -1,5 +1,5 @@
 <%--
-  ~ Cerberus  Copyright (C) 2013  vertigo17
+  ~ Cerberus Copyright (C) 2013 vertigo17
   ~ DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
   ~
   ~ This file is part of Cerberus.
@@ -11,11 +11,11 @@
   ~
   ~ Cerberus is distributed in the hope that it will be useful,
   ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
-  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
   ~ GNU General Public License for more details.
   ~
   ~ You should have received a copy of the GNU General Public License
-  ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
+  ~ along with Cerberus. If not, see <http://www.gnu.org/licenses/>.
 --%>
 <%@page import="org.cerberus.service.IDatabaseVersioningService"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%><!DOCTYPE HTML>
@@ -115,7 +115,7 @@
             IDatabaseVersioningService DatabaseVersioningService = appContext.getBean(IDatabaseVersioningService.class);
                 if (!(DatabaseVersioningService.isDatabaseUptodate()) && request.isUserInRole("Administrator")) {%>
         <script>
-            var r=confirm("WARNING : Database Not Uptodate   >>   Redirect to the DatabaseMaintenance page ?");
+            var r=confirm("WARNING : Database Not Uptodate >> Redirect to the DatabaseMaintenance page ?");
             if (r==true)
             {
                 location.href='./DatabaseMaintenance.jsp';

@@ -1430,7 +1430,7 @@
                                                                         <table><tr><td id="wob"><input type="button" value="Add Action"
                                                                                                        onclick="addTestCaseAction('Action<%=rs_step.getString("step")%>','<%=rs_step.getString("step")%>', <%=testcase_stepaction_maxlength_sequence%>, <%=testcase_stepaction_maxlength_action%>, <%=testcase_stepaction_maxlength_object%>, <%=testcase_stepaction_maxlength_property%>, <%=testcase_stepaction_maxlength_description%>) ; enableField('submitButtonAction');">
                                                                                 <td id="wob"><input type="button" value="import HTML Scenario" onclick="importer('ImportHTML.jsp?Test=<%=test%>&Testcase=<%=testcase%>&Step=<%=rs_step.getString("step")%>')"></td>
-                                                                            </td><td id="wob"><input value="Save Changes" onclick="submitTestCaseModification('#stepAnchor_<%=i1%>');" id="submitButtonAction" name="submitChanges"
+                                                                            </td><td id="wob"><input value="Save Changes" onclick="submitTestCaseModification('stepAnchor_<%=i1%>');" id="submitButtonAction" name="submitChanges"
                                                                                                      type="button" >
                                                                             <%=ComboInvariant(conn, "actions_action_", "width: 150px;visibility:hidden", "actions_action_", "actions_action_", "ACTION", "", "", null)%></td></tr></table></td></tr>
                                                                             <% }%>

@@ -29,10 +29,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.cerberus.entity.BuildRevisionInvariant;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.factory.IFactoryBuildRevisionInvariant;
 import org.cerberus.factory.IFactoryLogEvent;
 import org.cerberus.factory.impl.FactoryLogEvent;
-import org.cerberus.log.MyLogger;
 import org.cerberus.service.IBuildRevisionInvariantService;
 import org.cerberus.service.ILogEventService;
 import org.cerberus.service.impl.LogEventService;
@@ -65,7 +63,6 @@ public class UpdateBuildRevisionInvariant extends HttpServlet {
 
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         IBuildRevisionInvariantService brinvariantService = appContext.getBean(IBuildRevisionInvariantService.class);
-        IFactoryBuildRevisionInvariant factoryBRInvariant = appContext.getBean(IFactoryBuildRevisionInvariant.class);
 
         String[] invKey = key.split("\\$#");
         String system = invKey[0];

@@ -17,6 +17,8 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
+<%@page import="org.apache.commons.lang3.StringUtils"%>
+<%@page import="java.util.TreeMap"%>
 <%@page import="org.springframework.web.context.support.WebApplicationContextUtils"%>
 <%@page import="org.springframework.context.ApplicationContext"%>
 <%@page import="org.cerberus.refactor.Country"%>
@@ -253,6 +255,57 @@
                 + " and took <b><span id=\"foot-duration\">" + Duration + "</span>ms</b>"
                 + " - Open a bug or ask for any new feature <a target=\"_blank\"  href=\"https://github.com/vertigo17/Cerberus/issues/new?body=Cerberus%20Version%20:%20" + Version.VERSION + "\">here</a>.";
         return footer;
+    }
+
+    String generateMultiSelect(String parameterName,String[] parameters, TreeMap<String,String> options, String headerText, String noneSeletedText, String selectedText, int selectedList, boolean firstValueAll) {
+        String parameter = "";
+        if (parameters != null && parameters.length > 0 && (parameters[0]).compareTo("All") != 0) {
+            parameter = StringUtils.join(parameters, ",");
+        }
+        parameter += ",";
+
+        String select = "<select class=\"multiSelectOptions\" multiple  "
+                + "data-header=\""+headerText+"\" "
+                + "data-none-selected-text=\""+noneSeletedText+"\" "
+                + "data-selected-text=\""+selectedText+"\" "
+                + "data-selected-list=\""+selectedList+"\" "
+                + "size=\"3\" id=\""+parameterName+"\" name=\""+parameterName+"\">\n";
+        if (firstValueAll){
+        select += "<option value=\"All\">-- ALL --</option>\n";
+        }
+        for(String key: options.keySet()) {
+            select += " <option value=\"" + key + "\"";
+
+            if ((parameter != null) && (parameter.indexOf(key + ",") >= 0)) {
+                select +=  " SELECTED ";
+            }
+            select +=  ">"+options.get(key)+"</option>\n";
+        }
+        select += "</select>\n";
+        select += "<!-- "+parameter+" -->\n";                
+        return select;
+    }
+    
+    
+    String generateWhereClausesForParametersAndColumns(String[] parameters,String[] columns,HttpServletRequest request) {
+        StringBuffer whereClause = new StringBuffer();
+        for(int index=0; index<parameters.length; index++) {
+            String[] values = request.getParameterValues(parameters[index]);
+            if(values != null) {
+                if(values.length == 1) {
+                    if(!"all".equalsIgnoreCase(values[0]) && !"".equalsIgnoreCase(values[0].trim())) {
+                        whereClause.append(" AND ").append(columns[index]).append("='").append(values[0]).append("'");
+                    }
+                } else {
+                    whereClause.append(" AND ( 1!=1 ");
+                    for(String value: values) {
+                        whereClause.append(" OR ").append(columns[index]).append("='").append(value).append("'");
+                    }
+                    whereClause.append(" ) ");
+                }
+            }
+        }
+        return whereClause.toString();
     }
 %>
 <% if (session.getAttribute("flashMessage") != null) {

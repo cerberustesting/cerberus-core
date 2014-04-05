@@ -17,6 +17,7 @@
  */
 package org.cerberus.dao;
 
+import java.util.List;
 import org.cerberus.entity.Documentation;
 
 /**
@@ -26,4 +27,14 @@ import org.cerberus.entity.Documentation;
 public interface IDocumentationDAO {
 
     Documentation findDocumentationByKey(String docTable, String docField, String docValue);
+
+    List<Documentation> findDocumentationsWithNotEmptyValueAndDescription(String docTable, String docField);
+
+    List<Documentation> findDocumentationsWithEmptyValueAndNotEmptyDescription(String docTable, String docField);
+
+    String findLabelFromTableAndField(String docTable, String docField);
+
+    String findDescriptionFromTableFieldAndValue(String docTable, String docField, String docValue);
+
+    List<Documentation> findAll();
 }

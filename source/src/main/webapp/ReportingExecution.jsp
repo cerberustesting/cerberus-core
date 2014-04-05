@@ -1,3 +1,12 @@
+<%@page import="java.util.TreeMap"%>
+<%@page import="java.util.Map"%>
+<%@page import="org.cerberus.entity.TestCaseCountry"%>
+<%@page import="org.cerberus.entity.Project"%>
+<%@page import="org.cerberus.service.IProjectService"%>
+<%@page import="org.cerberus.entity.Test"%>
+<%@page import="org.cerberus.service.ITestService"%>
+<%@page import="org.cerberus.service.ITestCaseService"%>
+<%@page import="org.cerberus.service.ITestCaseCountryService"%>
 <%@page import="org.cerberus.service.IDocumentationService"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
@@ -41,7 +50,7 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Execution Reporting : Status</title>
-        
+
         <link rel="stylesheet" type="text/css" href="css/crb_style.css">
         <link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico" />
         <link type="text/css" rel="stylesheet" href="css/jquery.multiselect.css">
@@ -50,39 +59,27 @@
         <script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>
         <script type="text/javascript" src="js/jquery-ui-1.10.2.js"></script>
         <script type="text/javascript" src="js/jquery.multiselect.js" charset="utf-8"></script>
+        <script type="text/javascript" src="js/jquery.form.js"></script>
     </head>
     <body>
         <%@ include file="include/function.jsp" %>
         <%@ include file="include/header.jsp" %>
         <div id="body">
             <%
-            
 
-                HashMap<String, Integer> statsStatusForTest = new HashMap<String, Integer>();
-                List<String> listStatus = new ArrayList<String>();
-
-                HashMap<String, Integer> statsGroupForTest = new HashMap<String, Integer>();
-                List<String> listGroup = new ArrayList<String>();
-
-                String tcclauses = " WHERE 1=1 ";
-                String execclauses = " 1=1 ";
-                String URL = "Apply=Apply";
-                String insertURL = "";
-                String enable = "disabled";
+                TreeMap<String, String> options = new TreeMap<String, String>();
 
                 IInvariantService invariantService = appContext.getBean(InvariantService.class);
                 IBuildRevisionInvariantService buildRevisionInvariantService = appContext.getBean(BuildRevisionInvariantService.class);
+                ITestService testService = appContext.getBean(ITestService.class);
+                List<Test> testList = testService.getListOfTest();
 
-                String MySystem = request.getAttribute("MySystem").toString();
-                if (request.getParameter("system") != null && request.getParameter("system").compareTo("") != 0) {
-                    MySystem = request.getParameter("system");
-                }
+                IProjectService projectService = appContext.getBean(IProjectService.class);
+                List<Project> projectList = projectService.findAllProject();
 
                 String tag;
                 if (request.getParameter("Tag") != null && request.getParameter("Tag").compareTo("") != 0) {
                     tag = request.getParameter("Tag");
-                    URL = URL + "&Tag=" + tag;
-                    execclauses = execclauses + " AND tce.Tag = '" + tag + "'";
                 } else {
                     tag = new String("");
                 }
@@ -90,64 +87,31 @@
                 String browserFullVersion;
                 if (request.getParameter("BrowserFullVersion") != null && request.getParameter("BrowserFullVersion").compareTo("") != 0) {
                     browserFullVersion = request.getParameter("BrowserFullVersion");
-                    URL = URL + "&BrowserFullVersion=" + browserFullVersion;
-                    execclauses = execclauses + " AND tce.BrowserFullVersion = '" + browserFullVersion + "'";
                 } else {
                     browserFullVersion = new String("");
                 }
 
-                String systemExe;
                 String systemBR; // Used for filtering Build and Revision.
                 if (request.getParameter("SystemExe") != null && request.getParameter("SystemExe").compareTo("All") != 0) {
-                    systemExe = request.getParameter("SystemExe");
-                    systemBR = systemExe;
-                    URL = URL + "&SystemExe=" + systemExe;
-                    execclauses = execclauses + " AND tcev.`System` = '" + systemExe + "'";
+                    systemBR = request.getParameter("SystemExe");
                 } else {
-                    systemExe = new String("");
-                    systemBR = MySystem;
-                }
-
-                String group;
-                if (request.getParameter("Group") != null && request.getParameter("Group").compareTo("All") != 0) {
-                    group = request.getParameter("Group");
-                    tcclauses = tcclauses + " AND `Group` = '" + request.getParameter("Group") + "'";
-                    URL = URL + "&Group=" + group;
-                } else {
-                    group = new String("%%");
+                    systemBR = request.getAttribute("MySystem").toString();
+                    if (request.getParameter("system") != null && request.getParameter("system").compareTo("") != 0) {
+                        systemBR = request.getParameter("system");
+                    }
                 }
 
                 String port;
                 if (request.getParameter("Port") != null && request.getParameter("Port").compareTo("") != 0) {
                     port = request.getParameter("Port");
-                    execclauses = execclauses + " AND tce.Port = '" + request.getParameter("Port") + "'";
-                    URL = URL + "&Port=" + port;
                 } else {
                     port = new String("");
                 }
                 String ip;
                 if (request.getParameter("Ip") != null && request.getParameter("Ip").compareTo("") != 0) {
                     ip = request.getParameter("Ip");
-                    execclauses = execclauses + " AND tce.Ip = '" + request.getParameter("Ip") + "'";
-                    URL = URL + "&Ip=" + ip;
                 } else {
                     ip = new String("");
-                }
-                String browser;
-                if (request.getParameter("browser") != null && request.getParameter("browser").compareTo("") != 0) {
-                    browser = request.getParameter("browser");
-                    execclauses = execclauses + " AND tce.browser = '" + request.getParameter("browser") + "'";
-                    URL = URL + "&Browser=" + browser;
-                } else {
-                    browser = new String("*firefox");
-                }
-
-                String logpath;
-                if (request.getParameter("logpath") != null && request.getParameter("logpath").compareTo("") != 0) {
-                    logpath = request.getParameter("logpath");
-                    execclauses = execclauses + " AND tce.logpath = '" + request.getParameter("logpath") + "'";
-                } else {
-                    logpath = new String("logpath");
                 }
 
                 String tcActive;
@@ -156,162 +120,9 @@
                         tcActive = "%%";
                     } else {
                         tcActive = request.getParameter("TcActive");
-                        tcclauses = tcclauses + " AND TcActive = '" + request.getParameter("TcActive") + "'";
-                        URL = URL + "&TcActive=" + tcActive;
                     }
                 } else {
                     tcActive = new String("Y");
-                }
-
-                String readOnly;
-                if (request.getParameter("ReadOnly") != null && request.getParameter("ReadOnly").compareTo("A") != 0) {
-                    readOnly = request.getParameter("ReadOnly");
-                    tcclauses = tcclauses + " AND ReadOnly = '" + request.getParameter("ReadOnly") + "'";
-                    URL = URL + "&ReadOnly=" + readOnly;
-                } else {
-                    readOnly = new String("%%");
-                }
-
-                String priority;
-                if (request.getParameter("Priority") != null) {
-                    if (request.getParameter("Priority").compareTo("All") != 0) {
-                        priority = request.getParameter("Priority");
-                        tcclauses = tcclauses + " AND Priority = '" + request.getParameter("Priority") + "'";
-                        URL = URL + "&Priority=" + priority;
-                    } else {
-                        priority = "%%";
-                    }
-
-                } else {
-                    priority = new String("%%");
-                }
-
-                String environment;
-                if (request.getParameter("Environment") != null && request.getParameter("Environment").compareTo("All") != 0) {
-                    environment = request.getParameter("Environment");
-                    execclauses = execclauses + " AND tce.Environment = '" + request.getParameter("Environment") + "'";
-                    URL = URL + "&Environment=" + environment;
-                } else {
-                    environment = new String("%%");
-                }
-                String revision;
-                if (request.getParameter("Revision") != null && request.getParameter("Revision").compareTo("All") != 0) {
-                    revision = request.getParameter("Revision");
-                    execclauses = execclauses + " AND tcev.Revision = '" + request.getParameter("Revision") + "'";
-                    URL = URL + "&Revision=" + revision;
-                } else {
-                    revision = new String("%%");
-                }
-                String creator;
-                if (request.getParameter("Creator") != null && request.getParameter("Creator").compareTo("All") != 0) {
-                    creator = request.getParameter("Creator");
-                    tcclauses = tcclauses + " AND Creator = '" + request.getParameter("Creator") + "'";
-                    URL = URL + "&Creator=" + creator;
-                } else {
-                    creator = new String("%%");
-                }
-                String implementer;
-                if (request.getParameter("Implementer") != null && request.getParameter("Implementer").compareTo("All") != 0) {
-                    implementer = request.getParameter("Implementer");
-                    tcclauses = tcclauses + " AND Implementer = '" + request.getParameter("Implementer") + "'";
-                    URL = URL + "&Implementer=" + implementer;
-                } else {
-                    implementer = new String("%%");
-                }
-                String build;
-                if (request.getParameter("Build") != null && request.getParameter("Build").compareTo("All") != 0) {
-                    build = request.getParameter("Build");
-                    execclauses = execclauses + " AND tce.Build = '" + request.getParameter("Build") + "'";
-                    URL = URL + "&Build=" + build;
-                } else {
-                    build = new String("%%");
-                }
-
-                
-                
-                String[] projects;
-                String project = "";
-                if (request.getParameterValues("Project") != null && (request.getParameterValues("Project")[0]).compareTo("All") != 0) {
-                    projects = request.getParameterValues("Project");
-                    if (projects != null && projects.length > 0) {
-                        tcclauses += " AND (";
-                        for (int index = 0; index < projects.length; index++) {
-                            tcclauses += " Project = '" + projects[index] + "' ";
-                            URL += "&Project=" + projects[index];
-                            project += projects[index] + ",";
-
-                            if (index < (projects.length - 1)) {
-                                tcclauses += " OR ";
-                            }
-                        }
-                        tcclauses += ") ";
-                    }
-                } else {
-                    projects = new String[1];
-                    projects[0] = new String("%%");
-                }
-
-                String app;
-                if (request.getParameter("Application") != null && request.getParameter("Application").compareTo("All") != 0) {
-                    app = request.getParameter("Application");
-                    tcclauses = tcclauses + " AND tc.Application = '" + request.getParameter("Application") + "'";
-                    URL = URL + "&Application=" + app;
-                } else {
-                    app = new String("%%");
-                }
-
-                String system;
-                if (request.getParameter("System") != null && request.getParameter("System").compareTo("All") != 0) {
-                    system = request.getParameter("System");
-                    tcclauses = tcclauses + " AND a.System = '" + request.getParameter("System") + "'";
-                    URL = URL + "&System=" + system;
-                } else {
-                    system = new String("%%");
-                }
-
-
-                String[] allstatus;
-                String status = "";
-                if (request.getParameterValues("Status") != null && (request.getParameterValues("Status")[0]).compareTo("All") != 0) {
-                    allstatus = request.getParameterValues("Status");
-                    if (allstatus != null && allstatus.length > 0) {
-                        tcclauses += " AND (";
-                        for (int index = 0; index < allstatus.length; index++) {
-                            tcclauses += " Status = '" + allstatus[index] + "' ";
-                            URL += "&Status=" + allstatus[index];
-                            status += allstatus[index] + ",";
-
-                            if (index < (allstatus.length - 1)) {
-                                tcclauses += " OR ";
-                            }
-                        }
-                        tcclauses += ") ";
-                    }
-                } else {
-                    allstatus = new String[1];
-                    allstatus[0] = new String("%%");
-                }
-
-                String[] allExeStatus;
-                String exeStatus = "";
-                if (request.getParameterValues("ExeStatus") != null && (request.getParameterValues("ExeStatus")[0]).compareTo("All") != 0) {
-                    allExeStatus = request.getParameterValues("ExeStatus");
-                    if (allExeStatus != null && allExeStatus.length > 0) {
-                        execclauses += " AND (";
-                        for (int index = 0; index < allExeStatus.length; index++) {
-                            execclauses += " Status = '" + allExeStatus[index] + "' ";
-                            URL += "&ExeStatus=" + allExeStatus[index];
-                            exeStatus += allExeStatus[index] + ",";
-
-                            if (index < (allExeStatus.length - 1)) {
-                                execclauses += " OR ";
-                            }
-                        }
-                        execclauses += ") ";
-                    }
-                } else {
-                    allExeStatus = new String[1];
-                    allExeStatus[0] = new String("%%");
                 }
 
                 String targetBuild = "";
@@ -321,17 +132,12 @@
                     } else {
                         if (request.getParameter("TargetBuild").equals("NTB")) {
                             targetBuild = "";
-                            tcclauses = tcclauses + " AND TargetBuild = '' ";
-                            URL = URL + "&TargetBuild=" + targetBuild;
                         } else {
                             targetBuild = request.getParameter("TargetBuild");
-                            tcclauses = tcclauses + " AND TargetBuild = '" + request.getParameter("TargetBuild") + "'";
-                            URL = URL + "&TargetBuild=" + targetBuild;
                         }
                     }
                 } else {
                     targetBuild = "All";
-                    //tcclauses = tcclauses + " AND TargetBuild = '' ";
                 }
 
                 String targetRev = "";
@@ -341,46 +147,13 @@
                     } else {
                         if (request.getParameter("TargetRev").equals("NTR")) {
                             targetRev = "";
-                            tcclauses = tcclauses + " AND TargetRev = '' ";
-                            URL = URL + "&TargetRev=" + targetRev;
                         } else {
                             targetRev = request.getParameter("TargetRev");
-                            tcclauses = tcclauses + " AND TargetRev = '" + request.getParameter("TargetRev") + "'";
-                            URL = URL + "&TargetRev=" + targetRev;
                         }
                     }
                 } else {
                     targetRev = "All";
-                    //tcclauses = tcclauses + " AND TargetRev = '' ";
                 }
-
-                String test;
-                if (request.getParameter("Test") != null && request.getParameter("Test").compareTo("All") != 0) {
-                    test = request.getParameter("Test");
-                    tcclauses = tcclauses + " AND test = '" + request.getParameter("Test") + "'";
-                    URL = URL + "&Test=" + test;
-                } else {
-                    test = new String("%%");
-                }
-                String testcase;
-                if (request.getParameter("TestCase") != null && request.getParameter("TestCase").compareTo("All") != 0) {
-                    testcase = request.getParameter("TestCase");
-                    tcclauses = tcclauses + " AND testcase = '" + request.getParameter("testcase") + "'";
-                } else {
-                    testcase = new String("%%");
-                }
-                String[] country_list = null;
-                if (request.getParameter("Country") != null) {
-                    country_list = request.getParameterValues("Country");
-                } else {
-                    country_list = new String[0];
-                }
-
-                for (int i = 0; i < country_list.length; i++) {
-                    URL = URL + "&Country=" + country_list[i];
-                }
-
-                List<String> statistiques = new ArrayList<String>();
 
                 Boolean apply;
                 if (request.getParameter("Apply") != null
@@ -390,14 +163,9 @@
                     apply = false;
                 }
 
-                Boolean recordPref;
-                if (request.getParameter("RecordPref") != null
-                        && request.getParameter("RecordPref").compareTo("Y") == 0) {
-                    recordPref = true;
-                } else {
-                    recordPref = false;
-                }
-                String reportingFavorite = "ReportingExecution.jsp?";
+                IUserService userService = appContext.getBean(IUserService.class);
+                User usr = userService.findUserByKey(request.getUserPrincipal().getName());
+                String reportingFavorite = "ReportingExecution.jsp?"+usr.getReportingFavorite();
 
                 Connection conn = db.connect();
                 IDocumentationService docService = appContext.getBean(IDocumentationService.class);
@@ -405,1076 +173,343 @@
                 try {
 
                     Statement stmt = conn.createStatement();
-                    Statement stmt33 = conn.createStatement();
-
-                    IApplicationService myApplicationService = appContext.getBean(IApplicationService.class);
-                    String SitdmossBugtrackingURL;
-                    String SitdmossBugtrackingURL_tc;
-                    SitdmossBugtrackingURL_tc = "";
-
-                    Statement stmt1 = conn.createStatement();
-                    ResultSet rs_testcasecountrygeneral = stmt1.executeQuery("SELECT value "
-                            + " FROM invariant "
-                            + " WHERE idname ='COUNTRY'"
-                            + " ORDER BY sort asc");
-                    ResultSet rsPref = stmt33.executeQuery("SELECT ReportingFavorite from user where "
-                            + " login = '"
-                            + request.getUserPrincipal().getName()
-                            + "'");
-
-                    Statement stmt5 = conn.createStatement();
-
-                    insertURL = "UPDATE user SET ReportingFavorite = '"
-                            + URL + "' where login = '"
-                            + request.getUserPrincipal().getName()
-                            + "'";
-                    if (recordPref == true) {
-                        stmt5.execute(insertURL);
-                    }
-
+                    List<Invariant> invariantCountry = invariantService.findListOfInvariantById("COUNTRY");
+                    List<Invariant> invariantTCStatus = invariantService.findListOfInvariantById("TCSTATUS");
+                    List<Invariant> invariantBrowser = invariantService.findListOfInvariantById("BROWSER");
 
             %>
-            <form method="GET" name="Apply" action="ReportingExecution.jsp">
-                <table id="arrond">
-                    <tr><td id="arrond"><h3 style="color:blue">Filters</h3>
-                            <table border="0px">
-                                <tr>
-                                    <td id="wob" style="width: 110px"><%out.print(docService.findLabelHTML("test", "Test", "Test"));%></td>
-                                    <td id="wob" style="width: 70px"><%out.print(docService.findLabelHTML("project", "idproject", "Project"));%></td>
-                                    <td id="wob" style="width: 60px"><%out.print(docService.findLabelHTML("application", "System", "System"));%></td>
-                                    <td id="wob" style="width: 100px"><%out.print(docService.findLabelHTML("application", "Application", "Application"));%></td>
-                                    <td id="wob" style="width: 70px"><%out.print(docService.findLabelHTML("testcase", "tcactive", "TestCase Active"));%></td>
-                                    <td id="wob" style="width: 70px"><%out.print(docService.findLabelHTML("invariant", "PRIORITY", "Priority"));%></td>
-                                    <td id="wob" style="width: 110px"><%out.print(docService.findLabelHTML("testcase", "Status", "Status"));%></td>
-                                    <td id="wob" style="width: 110px"><%out.print(docService.findLabelHTML("invariant", "GROUP", "Group"));%></td>
-                                    <td id="wob" style="width: 110px"><%out.print(docService.findLabelHTML("testcase", "targetBuild", "targetBuild"));%></td>                        
-                                    <td id="wob" style="width: 110px"><%out.print(docService.findLabelHTML("testcase", "targetRev", "targetRev"));%></td>                        
-                                    <td id="wob" style="width: 100px"><%out.print(docService.findLabelHTML("testcase", "creator", "Creator"));%></td>
-                                    <td id="wob" style="width: 100px"><%out.print(docService.findLabelHTML("testcase", "implementer", "implementer"));%></td>
-                                </tr>
+            <form method="GET" name="Apply" id="Apply" action="ReportingExecutionResult.jsp">
+                <div class="filters" style="float:left; width:100%;">
+                    <p style="float:left" class="dttTitle">Filters</p>
 
-                                <tr>                        
-                                    <td id="wob">
-                                        <select id="test" style="width: 110px"  name="Test">
-                                            <option value="All">-- ALL --</option><%
-                                                String optstyle = "";
-                                                ResultSet rsTest = stmt.executeQuery("SELECT Test, active FROM test where Test IS NOT NULL Order by Test asc");
-                                                while (rsTest.next()) {
-                                                    if (rsTest.getString("active").equalsIgnoreCase("Y")) {
-                                                        optstyle = "font-weight:bold;";
-                                                    } else {
-                                                        optstyle = "font-weight:lighter;";
-                                                    }%>
-                                            <option style="width: 200px;<%=optstyle%>" value="<%= rsTest.getString(1)%>" <%=test.compareTo(rsTest.getString(1)) == 0 ? " SELECTED " : ""%>><%= rsTest.getString(1)%></option><%
-                                                }%>
-                                        </select>
-                                    </td>
-                                    <td id="wob">
-                                        <select multiple  size="3" id="project" style="width: 170px" name="Project">
-                                            <option value="All">-- ALL --</option>
-                                            <%
-                                                String sq = "SELECT idproject, VCCode, Description, active FROM project ORDER BY idproject";
-                                                ResultSet q = stmt.executeQuery(sq);
-                                                String ret = "";
-                                                while (q.next()) {
-                                                    ret = ret + " <option value=\"" + q.getString("idproject") + "\"";
-                                                    ret = ret + " style=\"width: 200px;";
-                                                    if (q.getString("active").equalsIgnoreCase("Y")) {
-                                                        ret = ret + "font-weight:bold;";
-                                                    }
-                                                    ret = ret + "\"";
+                    <div id="dropDownUpArrow" style="float:left; display:none"><a 
+                            onclick="javascript:switchDivVisibleInvisible('filtersList', 'dropDownUpArrow');switchDivVisibleInvisible('dropDownDownArrow', 'dropDownUpArrow'); "><img src="images/dropdown.gif"/></a>
+                    </div>
+                    <div id="dropDownDownArrow" style="float:left"><a 
+                                onclick="javascript:switchDivVisibleInvisible('dropDownUpArrow', 'filtersList'); switchDivVisibleInvisible('dropDownUpArrow', 'dropDownDownArrow')"><img src="images/dropdown.gif"/></a>
+                    </div>
+                    <div id="filtersList" style="clear:both;">
+                    <br><div class="underlinedDiv"></div>
+                        <p style="text-align:left" class="dttTitle">Testcase Filters (Displayed Rows)</p>
+                        <div style="float:left">
+                            <div style="float:left">
+                                <div style="width:150px; text-align: left"><%out.print(docService.findLabelHTML("test", "Test", "Test"));%></div>
+                                <div>
+                                    <%
+                                        options.clear();
+                                        for (Test testL : testList) {
+                                            options.put(testL.getTest(), testL.getTest());
+                                        }
+                                    %>
+                                    <%=generateMultiSelect("Test", request.getParameterValues("Test"), options,
+                                            "Select a test", "Select Test", "# of # Test selected", 1, true)%>
+                                </div>
+                            </div>
+                            <div style="float:left">
+                                <div style="width:150px; text-align: left"><%out.print(docService.findLabelHTML("project", "idproject", "Project"));%></div>
+                                <div>
+                                    <%
+                                        options.clear();
+                                        for (Project project : projectList) {
+                                            if (project.getIdProject() != null && !"".equals(project.getIdProject().trim())) {
+                                                options.put(project.getIdProject(), project.getIdProject() + " - " + project.getDescription());
+                                            }
+                                        }
 
-                                                    if ((project != null) && (project.indexOf(q.getString("idproject") + ",") >= 0)) {
-                                                        ret = ret + " SELECTED ";
-                                                    }
-                                                    ret = ret + ">" + q.getString("idproject") + " " + q.getString("Description");
-                                                    ret = ret + "</option>";
-                                                }%>
-                                            <%=ret%>
-                                        </select>
-                                    </td>
-                                    <td id="wob">
-                                        <select id="system" style="width: 50px" name="System">
-                                            <option value="All">-- ALL --</option><%
-                                                ResultSet rsSys = stmt.executeQuery("SELECT DISTINCT System FROM application Order by System asc");
-                                                while (rsSys.next()) {%>
-                                            <option value="<%= rsSys.getString("System")%>" <%=system.compareTo(rsSys.getString("System")) == 0 ? " SELECTED " : ""%>><%= rsSys.getString("System")%></option><%
-                                                }%>
-                                        </select>
-                                    </td>
-                                    <td id="wob">
-                                        <select id="application" style="width: 100px"  name="Application">
-                                            <option value="All">-- ALL --</option><%
-                                                ResultSet rsApp = stmt.executeQuery("SELECT Application , System FROM application Order by Sort asc");
-                                                while (rsApp.next()) {%>
-                                            <option value="<%= rsApp.getString("Application")%>" <%=app.compareTo(rsApp.getString("Application")) == 0 ? " SELECTED " : ""%>><%= rsApp.getString("Application")%> [<%= rsApp.getString("System")%>]</option><%
-                                                }%>
-                                        </select>
-                                    </td>
-                                    <td id="wob">
-                                        <select style="width: 70px" id="active_tc" name="TcActive">
-                                            <option value="A" <%=tcActive.compareTo("A") == 0 ? " SELECTED " : ""%>>-- ALL --</option>
-                                            <option value="Y" <%=tcActive.compareTo("Y") == 0 ? " SELECTED " : ""%>>Y</option>
-                                            <option value="N" <%=tcActive.compareTo("N") == 0 ? " SELECTED " : ""%>>N</option>
-                                        </select>
-                                    </td>
-                                    <td id="wob">
-                                        <select style="width: 70px" id="priority" name="Priority">
-                                            <option value="All">-- ALL --</option><%
-                                                ResultSet rsPri = stmt.executeQuery("SELECT DISTINCT value FROM invariant WHERE idname='PRIORITY' Order by sort asc");
-                                                while (rsPri.next()) {%>
-                                            <option value="<%= rsPri.getString(1)%>" <%=priority.compareTo(rsPri.getString(1)) == 0 ? " SELECTED " : ""%>><%= rsPri.getString(1)%></option><%
-                                                }%>
-                                        </select>
-                                    </td>
-                                    <td id="wob">
-                                        <select  multiple style="width: 110px" id="status" name="Status">
-                                            <option value="All">-- ALL --</option><%
-                                                ResultSet rsStatus = stmt.executeQuery("SELECT value from invariant where idname = 'TCSTATUS' order by sort asc");
-                                                while (rsStatus.next()) {%>
-                                            <option value="<%= rsStatus.getString(1)%>" <%=status.indexOf(rsStatus.getString(1)) >= 0 ? " SELECTED " : ""%>><%= rsStatus.getString(1)%></option><%
-                                                }%>
-                                        </select>
-                                    </td>
 
-                                    <td id="wob">
-                                        <select style="width: 110px" id="group" name="Group">
-                                            <option value="All">-- ALL --</option><%
-                                                ResultSet rsGroup = stmt.executeQuery("SELECT value from invariant where idname = 'GROUP' order by sort");
-                                                while (rsGroup.next()) {%>
-                                            <option value="<%= rsGroup.getString(1)%>" <%=group.compareTo(rsGroup.getString(1)) == 0 ? " SELECTED " : ""%>><%= rsGroup.getString(1)%></option><%
-                                                }%>
-                                        </select>
-                                    </td>
-                                    <td id="wob">
-                                        <select style="width: 110px" id="targetBuild" name="TargetBuild">
-                                            <option value="All" <%=targetBuild.equals("All") == true ? " SELECTED " : ""%>>-- ALL --</option>
-                                            <option value="NTB" <%=targetBuild.equals("") == true ? " SELECTED " : ""%>>--No Target Build--</option>
-                                            <% ResultSet rsTargetBuild = stmt.executeQuery("SELECT value from invariant where idname = 'BUILD' order by sort");
-                                                while (rsTargetBuild.next()) {%>
-                                            <option value="<%= rsTargetBuild.getString(1)%>" <%=targetBuild.compareTo(rsTargetBuild.getString(1)) == 0 ? " SELECTED " : ""%>><%= rsTargetBuild.getString(1)%></option><%
-                                                }%>
-                                        </select>
-                                    </td>
-                                    <td id="wob">
-                                        <select style="width: 110px" id="targetRev" name="TargetRev">
-                                            <option value="All" <%=targetRev.compareTo("All") == 0 ? " SELECTED " : ""%>>-- ALL --</option>
-                                            <option value="NTR" <%=targetRev.compareTo("") == 0 ? " SELECTED " : ""%>>--No Target Rev--</option>
-                                            <% ResultSet rsTargetRev = stmt.executeQuery("SELECT value from invariant where idname = 'REVISION' order by sort");
-                                                while (rsTargetRev.next()) {%>
-                                            <option value="<%= rsTargetRev.getString(1)%>" <%=targetRev.compareTo(rsTargetRev.getString(1)) == 0 ? " SELECTED " : ""%>><%= rsTargetRev.getString(1)%></option><%
-                                                }%>
-                                        </select>
-                                    </td>
-                                    <td id="wob">
-                                        <select style="width: 100px" id="creator" name="Creator">
-                                            <option value="All" <%=creator.compareTo("All") == 0 ? " SELECTED " : ""%>>-- ALL --</option><%
-                                                ResultSet rsCreator = stmt.executeQuery("SELECT login from user");
-                                                while (rsCreator.next()) {%>
-                                            <option value="<%= rsCreator.getString(1)%>" <%=creator.compareTo(rsCreator.getString(1)) == 0 ? " SELECTED " : ""%>><%= rsCreator.getString(1)%></option><%
-                                                }%>
-                                        </select>
-                                    </td>
-                                    <td id="wob">
-                                        <select style="width: 100px" id="implementer" name="Implementer">
-                                            <option value="All" <%=implementer.compareTo("All") == 0 ? " SELECTED " : ""%>>-- ALL --</option><%
-                                                rsCreator.first();
-                                                while (rsCreator.next()) {%>
-                                            <option value="<%= rsCreator.getString(1)%>" <%=implementer.compareTo(rsCreator.getString(1)) == 0 ? " SELECTED " : ""%>><%= rsCreator.getString(1)%></option><%
-                                                }%>
-                                        </select>
-                                    </td>
-                                </tr>
-                            </table>
-                            <table border="0px">
-                                <tr><td colspan="7" class="wob"></td></tr>
-                                <tr>
-                                    <td id="wob" style="width: 130px"><%out.print(docService.findLabelHTML("invariant", "Environment", "Environment"));%></td>
-                                    <td id="wob" style="width: 70px"><%out.print(docService.findLabelHTML("application", "system", "System"));%></td>
-                                    <td id="wob" style="width: 130px"><%out.print(docService.findLabelHTML("buildrevisioninvariant", "versionname01", "Build"));%></td>
-                                    <td id="wob" style="width: 130px"><%out.print(docService.findLabelHTML("buildrevisioninvariant", "versionname02", "Revision"));%></td>
-                                    <td id="wob" style="width: 130px"><%out.print(docService.findLabelHTML("testcaseexecution", "IP", "Ip"));%></td>
-                                    <td id="wob" style="width: 130px"><%out.print(docService.findLabelHTML("testcaseexecution", "Port", "Port"));%></td>
-                                    <td id="wob" style="width: 130px"><%out.print(docService.findLabelHTML("testcaseexecution", "tag", "Tag"));%></td>
-                                    <td id="wob" style="width: 130px"><%out.print(docService.findLabelHTML("testcaseexecution", "browserfullversion", ""));%></td>
-                                    <td id="wob" style="width: 130px"><%out.print(docService.findLabelHTML("testcaseexecution", "status", ""));%></td>
-                                </tr>
+                                    %>
+                                    <%=generateMultiSelect("Project", request.getParameterValues("Project"), options,
+                                            "Select a project", "Select Project", "# of # Project selected", 1, true)%>
+                                </div>
+                            </div>
+                            <div style="float:left">
+                                <div style="clear:both; width:150px; text-align: left"><%out.print(docService.findLabelHTML("application", "System", "System"));%></div>
+                                <div style="clear:both">
+                                    <%
+                                        ResultSet rsSys = stmt.executeQuery("SELECT DISTINCT System FROM application Order by System asc");
+                                        options.clear();
+                                        while (rsSys.next()) {
+                                            options.put(rsSys.getString("System"), rsSys.getString("System"));
+                                        }%>
+                                    <%=generateMultiSelect("System", request.getParameterValues("System"), options,
+                                            "Select a sytem", "Select System", "# of # System selected", 1, true)%>
+                                </div>
+                            </div>
+                            <div style="float:left">
+                                <div style="clear:both; width:150px; text-align: left"><%out.print(docService.findLabelHTML("application", "Application", "Application"));%></div>
+                                <div style="clear:both">
+                                    <%
+                                        ResultSet rsApp = stmt.executeQuery("SELECT Application , System FROM application Order by Sort asc");
+                                        options.clear();
+                                        while (rsApp.next()) {
+                                            options.put(rsApp.getString("Application"), rsApp.getString("Application") + " [" + rsApp.getString("System") + "]");
+                                        }
+                                    %>
+                                    <%=generateMultiSelect("Application", request.getParameterValues("Application"), options,
+                                            "Select an application", "Select Application", "# of # Application selected", 1, true)%>
+                                </div>
+                            </div>
+                            <div style="float:left">
+                                <div style="clear:both; width:150px; text-align: left"><%out.print(docService.findLabelHTML("testcase", "tcactive", "TestCase Active"));%></div>
+                                <div style="clear:both">
+                                    <%
+                                        options.clear();
+                                        options.put("Y", "Yes");
+                                        options.put("N", "No");
+                                    %>
+                                    <%=generateMultiSelect("TcActive", request.getParameterValues("TcActive"), options,
+                                            "Select Activation state", "Select Activation", "# of # Activation state selected", 1, true)%> 
+                                </div>
+                            </div>
+                            <div style="float:left">
+                                <div style="clear:both; width:150px; text-align: left"><%out.print(docService.findLabelHTML("invariant", "PRIORITY", "Priority"));%></div>
+                                <div style="clear:both">
+                                    <%
+                                        ResultSet rsPri = stmt.executeQuery("SELECT DISTINCT value FROM invariant WHERE idname='PRIORITY' Order by sort asc");
+                                        options.clear();
+                                        while (rsPri.next()) {
+                                            options.put(rsPri.getString(1), rsPri.getString(1));
+                                        }
+                                    %>
+                                    <%=generateMultiSelect("Priority", request.getParameterValues("Priority"), options,
+                                            "Select a Priority", "Select Priority", "# of # Priority selected", 1, true)%>
+                                </div>
+                            </div>
+                            <div style="float:left">
+                                <div style="clear:both; width:150px; text-align: left"><%out.print(docService.findLabelHTML("testcase", "Status", "Status"));%></div>
+                                <div style="clear:both">
+                                    <%
+                                        options.clear();
+                                        for (Invariant statusInv : invariantTCStatus) {
+                                            options.put(statusInv.getValue(), statusInv.getValue());
+                                        }
+                                    %>
+                                    <%=generateMultiSelect("Status", request.getParameterValues("Status"), options,
+                                            "Select an option", "Select Status", "# of # Status selected", 1, true)%>
+                                </div>
+                            </div>
+                            <div style="float:left">
+                                <div style="clear:both; width:150px; text-align: left"><%out.print(docService.findLabelHTML("invariant", "GROUP", "Group"));%></div>
+                                <div style="clear:both">
+                                    <%
+                                        options.clear();
+                                        ResultSet rsGroup = stmt.executeQuery("SELECT value from invariant where idname = 'GROUP' order by sort");
+                                        while (rsGroup.next()) {
+                                            if (rsGroup.getString(1) != null && !"".equals(rsGroup.getString(1).trim())) {
+                                                options.put(rsGroup.getString(1), rsGroup.getString(1));
+                                            }
+                                        }
+                                    %>
+                                    <%=generateMultiSelect("Group", request.getParameterValues("Group"), options,
+                                            "Select a Group", "Select Group", "# of # Group selected", 1, true)%> 
+                                </div>
+                            </div>
+                            <div style="float:left">
+                                <div style="clear:both; width:150px; text-align: left"><%out.print(docService.findLabelHTML("testcase", "targetBuild", "targetBuild"));%></div>
+                                <div style="clear:both">
+                                    <%
+                                        options.clear();
+                                        options.put("NTB", "-- No Target Build --");
+                                        ResultSet rsTargetBuild = stmt.executeQuery("SELECT value from invariant where idname = 'BUILD' order by sort");
+                                        while (rsTargetBuild.next()) {
+                                            if (rsTargetBuild.getString(1) != null && !"".equals(rsTargetBuild.getString(1).trim())) {
+                                                options.put(rsTargetBuild.getString(1), rsTargetBuild.getString(1));
+                                            }
+                                        }
+                                    %>
+                                    <%=generateMultiSelect("TargetBuild", request.getParameterValues("TargetBuild"), options,
+                                            "Select a Target Build", "Select Target Build", "# of # Target Build selected", 1, true)%> 
+                                </div>
+                            </div>
+                            <div style="float:left">
+                                <div style="clear:both; width:150px; text-align: left"><%out.print(docService.findLabelHTML("testcase", "targetRev", "targetRev"));%></div>
+                                <div style="clear:both">
+                                    <%
+                                        options.clear();
+                                        options.put("NTR", "-- No Target Rev --");
+                                        ResultSet rsTargetRev = stmt.executeQuery("SELECT value from invariant where idname = 'REVISION' order by sort");
+                                        while (rsTargetRev.next()) {
+                                            if (rsTargetRev.getString(1) != null && !"".equals(rsTargetRev.getString(1).trim())) {
+                                                options.put(rsTargetRev.getString(1), rsTargetRev.getString(1));
+                                            }
+                                        }
+                                    %>
+                                    <%=generateMultiSelect("TargetRev", request.getParameterValues("TargetRev"), options,
+                                            "Select a Target Rev", "Select Target Rev", "# of # Target Rev selected", 1, true)%> 
+                                </div>
+                            </div>
+                            <div style="float:left">
+                                <div style="clear:both; width:150px; text-align: left"><%out.print(docService.findLabelHTML("testcase", "creator", "Creator"));%></div>
+                                <div style="clear:both">
+                                    <%
+                                        options.clear();
+                                        ResultSet rsCreator = stmt.executeQuery("SELECT login from user");
+                                        while (rsCreator.next()) {
+                                            if (rsCreator.getString(1) != null && !"".equals(rsCreator.getString(1).trim())) {
+                                                options.put(rsCreator.getString(1), rsCreator.getString(1));
+                                            }
+                                        }
+                                    %>
+                                    <%=generateMultiSelect("Creator", request.getParameterValues("Creator"), options,
+                                            "Select a Creator", "Select Creator", "# of # Creator selected", 1, true)%> 
+                                </div>
+                            </div>
+                            <div style="float:left">
+                                <div style="clear:both; width:150px; text-align: left"><%out.print(docService.findLabelHTML("testcase", "implementer", "implementer"));%></div>
+                                <div style="clear:both">
+                                    <%=generateMultiSelect("Implementer", request.getParameterValues("Implementer"), options,
+                                            "Select an Implementer", "Select Implementer", "# of # Implementer selected", 1, true)%> 
+                                </div>
+                            </div>
+                        </div>
+                               
+<div style="clear:both">
+                                <br><div class="underlinedDiv"></div>
+                        <p style="text-align:left" class="dttTitle">Testcase Execution Filters (Displayed Content)</p>
+                        
+                            <div style="float:left">
+                                <div style="clear:both; width:150px; text-align: left"><%out.print(docService.findLabelHTML("invariant", "Environment", "Environment"));%></div>
+                                <div style="clear:both"><%
+                                    options.clear();
+                                    ResultSet rsEnv = stmt.executeQuery("SELECT value from invariant where idname = 'ENVIRONMENT' order by sort");
+                                    while (rsEnv.next()) {
+                                        if (rsEnv.getString(1) != null && !"".equals(rsEnv.getString(1).trim())) {
+                                            options.put(rsEnv.getString(1), rsEnv.getString(1));
+                                        }
+                                    }
+                                    %>
+                                    <%=generateMultiSelect("Environment", request.getParameterValues("Environment"), options,
+                                                "Select an Environment", "Select Environment", "# of # Environment selected", 1, true)%> 
+                                </div>
+                            </div>
+                            <div style="float:left">
+                                <div style="clear:both; width:150px; text-align: left"><%out.print(docService.findLabelHTML("application", "system", "System"));%></div>
+                                <div style="clear:both"><%
+                                    List<Invariant> systemList = invariantService.findListOfInvariantById("SYSTEM");
+                                    options.clear();
+                                    for (Invariant systemInv : systemList) {
+                                        options.put(systemInv.getValue(), systemInv.getValue());
+                                    }
+                                    %>
+                                    <%=generateMultiSelect("SystemExe", request.getParameterValues("SystemExe"), options,
+                                                "Select a System", "Select System", "# of # System selected", 1, true)%>
+                                </div>
+                            </div>
+                            <div style="float:left">
+                                <div style="clear:both; width:150px; text-align: left"><%out.print(docService.findLabelHTML("buildrevisioninvariant", "versionname01", "Build"));%></div>
+                                <div style="clear:both"><%
+                                    List<BuildRevisionInvariant> listBuildRev = buildRevisionInvariantService.findAllBuildRevisionInvariantBySystemLevel(systemBR, 1);
+                                    options.clear();
+                                    for (BuildRevisionInvariant myBR : listBuildRev) {
+                                        options.put(myBR.getVersionName(), myBR.getVersionName());
+                                    }
+                                    %>
+                                    <%=generateMultiSelect("Build", request.getParameterValues("Build"), options,
+                                                "Select a Build", "Select Build", "# of # Build selected", 1, true)%>
+                                </div>
+                            </div>
+                            <div style="float:left">
+                                <div style="clear:both; width:150px; text-align: left"><%out.print(docService.findLabelHTML("buildrevisioninvariant", "versionname02", "Revision"));%></div>
+                                <div style="clear:both"> <%
+                                    listBuildRev = buildRevisionInvariantService.findAllBuildRevisionInvariantBySystemLevel(systemBR, 2);
+                                    options.clear();
+                                    for (BuildRevisionInvariant myBR : listBuildRev) {
+                                        options.put(myBR.getVersionName(), myBR.getVersionName());
+                                    }
+                                    %>
+                                    <%=generateMultiSelect("Revision", request.getParameterValues("Revision"), options,
+                                                "Select a Revision", "Select Revision", "# of # Revision selected", 1, true)%>
+                                </div>
+                            </div>
+                            <div style="float:left">
+                                <div style="clear:both; width:150px; text-align: left"><%out.print(docService.findLabelHTML("testcaseexecution", "status", ""));%></div>
+                                <div style="clear:both">   <%
+                                    options.clear();
+                                    for (Invariant statusInv : invariantTCStatus) {
+                                        options.put(statusInv.getValue(), statusInv.getValue());
+                                    }
+                                    %>
+                                    <%=generateMultiSelect("ExeStatus", request.getParameterValues("exeStatus"), options,
+                                                "Select a TC Status", "Select TC Status", "# of # TC Status selected", 1, true)%>
+                                </div>
+                            </div>
+                            <div style="float:left">
+                                <div style="clear:both; width:150px; text-align: left"><%out.print(docService.findLabelHTML("testcaseexecution", "IP", "Ip"));%></div>
+                                <div style="clear:both"><input style="font-weight: bold; width: 130px; height:16px" name="Ip" id="Ip" value="<%=ip%>"></div>
+                            </div>
+                            <div style="float:left">
+                                <div style="clear:both; width:150px; text-align: left"><%out.print(docService.findLabelHTML("testcaseexecution", "Port", "Port"));%></div>
+                                <div style="clear:both"><input style="font-weight: bold; width: 130px; height:16px" name="Port" id="Port" value="<%=port%>"></div>
+                            </div>
+                            <div style="float:left">
+                                <div style="clear:both; width:150px; text-align: left"><%out.print(docService.findLabelHTML("testcaseexecution", "tag", "Tag"));%></div>
+                                <div style="clear:both"><input style="font-weight: bold; width: 130px; height:16px" name="Tag" id="Tag" value="<%=tag%>"></div>
+                            </div>
+                            <div style="float:left">
+                                <div style="clear:both; width:150px; text-align: left"><%out.print(docService.findLabelHTML("testcaseexecution", "browserfullversion", ""));%></div>
+                                <div style="clear:both"><input style="font-weight: bold; width: 130px; height:16px" name="BrowserFullVersion" id="Tag" value="<%=browserFullVersion%>"></div>
+                            </div>
+                        </div>
+                        <%
+                        %>
+                        
+                        <div style="clear:both">
+                            <br><div class="underlinedDiv"></div>
+                        <p style="text-align:left" class="dttTitle">Execution Context Filters (Displayed Columns)</p>
+                            <div style="float:left">
+                                <div style="clear:both; width:150px; text-align: left">Country</div>
+                                <div style="clear:both"><%
+                                    options.clear();
+                                    for (Invariant countryInv : invariantCountry) {
+                                        options.put(countryInv.getValue(), countryInv.getValue() + " - " + countryInv.getDescription());
+                                    }
 
-                                <tr>
-                                    <td id="wob">
-                                        <select id="environment" name="Environment" style="width: 130px">
-                                            <option style="width: 130px" value="All">-- ALL --</option>
-                                            <% ResultSet rsEnv = stmt.executeQuery("SELECT value from invariant where idname = 'ENVIRONMENT' order by sort");
-                                                while (rsEnv.next()) {%>
-                                            <option style="width: 130px" value="<%= rsEnv.getString(1)%>" <%=environment.compareTo(rsEnv.getString(1)) == 0 ? " SELECTED " : ""%>><%= rsEnv.getString(1)%></option><%
-                                                }%>
-                                        </select>
-                                    </td>
-                                    <td id="wob">
-                                        <select id="systemExe" name="SystemExe" style="width: 70px" >
-                                            <option style="width: 100px" value="All">-- ALL --</option>
-                                            <%
-                                                List<Invariant> systemList = invariantService.findListOfInvariantById("SYSTEM");
-                                                for (Invariant myInv : systemList) {
-                                            %><option style="width: 100px" value="<%= myInv.getValue()%>" <%=systemExe.compareTo(myInv.getValue()) == 0 ? " SELECTED " : ""%>><%= myInv.getValue()%></option>
-                                            <% }
-                                            %></select>
-                                    </td>
-                                    <td id="wob">
-                                        <select id="build" name="Build" style="width: 130px" >
-                                            <option style="width: 130px" value="All">-- ALL --</option>
-                                            <%
-                                                List<BuildRevisionInvariant> listBuildRev = buildRevisionInvariantService.findAllBuildRevisionInvariantBySystemLevel(systemBR, 1);
-                                                for (BuildRevisionInvariant myBR : listBuildRev) {
-                                            %><option style="width: 100px" value="<%= myBR.getVersionName()%>" <%=build.compareTo(myBR.getVersionName()) == 0 ? " SELECTED " : ""%>><%= myBR.getVersionName()%></option>
-                                            <% }
-                                            %></select>
-                                    </td>
-                                    <td id="wob">
-                                        <select id="revision" name="Revision" style="width: 130px" >
-                                            <option style="width: 130px" value="All">-- ALL --</option>
-                                            <%
-                                                listBuildRev = buildRevisionInvariantService.findAllBuildRevisionInvariantBySystemLevel(systemBR, 2);
-                                                for (BuildRevisionInvariant myBR : listBuildRev) {
-                                            %><option style="width: 100px" value="<%= myBR.getVersionName()%>" <%=revision.compareTo(myBR.getVersionName()) == 0 ? " SELECTED " : ""%>><%= myBR.getVersionName()%></option>
-                                            <% }
-                                            %></select>
-                                    </td>
-                                    <td id="wob"><input style="font-weight: bold; width: 130px" name="Ip" id="Ip" value="<%=ip%>"></td>
-                                    <td id="wob"><input style="font-weight: bold; width: 60px" name="Port" id="Port" value="<%=port%>"></td>
-                                    <td id="wob"><input style="font-weight: bold; width: 130px" name="Tag" id="Tag" value="<%=tag%>"></td>
-                                    <td id="wob"><input style="font-weight: bold; width: 130px" name="BrowserFullVersion" id="Tag" value="<%=browserFullVersion%>"></td>
-                                    <td id="wob">
-                                        <select multiple  size="3" id="exestatus" style="width: 170px" name="ExeStatus">
-                                            <option value="All">-- ALL --</option>
-                                            <%
-                                                sq = "SELECT value FROM invariant WHERE idname='TCSTATUS' ORDER BY sort;";
-                                                q = stmt.executeQuery(sq);
-                                                ret = "";
-                                                while (q.next()) {
-                                                    ret = ret + " <option value=\"" + q.getString("value") + "\"";
-                                                    ret = ret + " style=\"width: 200px;";
-                                                    ret = ret + "\"";
 
-                                                    if ((exeStatus != null) && (exeStatus.indexOf(q.getString("value") + ",") >= 0)) {
-                                                        ret = ret + " SELECTED ";
-                                                    }
-                                                    ret = ret + ">" + q.getString("value");
-                                                    ret = ret + "</option>";
-                                                }%>
-                                            <%=ret%>
-                                        </select>
-                                    </td>
-                                </tr>
-                            </table>
-                            <%
-                            %>
-                            <table border="0px">
-                                <tr><td></td></tr>
-                                <tr>
-                                    <td id ="arrond">
-                                        <table>
-                                            <tr><td class="wob" colspan="4"><h4 style="color:black">Country</h4></td></tr>
-                                            <tr><%
+                                    %><%=generateMultiSelect("Country", request.getParameterValues("Country"), options,
+                                                        "Select a country", "Select Country", "# of # Country selected", 1, false)%></div>
+                            </div>
+                            <div style="float:left">
+                                <div style="clear:both; width:150px; text-align: left"><%out.print(docService.findLabelHTML("testcaseexecution", "Browser", "browser"));%></div>
+                                <div style="clear:both">   <%
+                                    options.clear();
+                                    for (Invariant browserInv : invariantBrowser) {
+                                        options.put(browserInv.getValue(), browserInv.getValue());
+                                    }
+                                    %>
+                                    <%=generateMultiSelect("Browser", request.getParameterValues("Browser"), options,
+                                                "Select a Browser", "Select Browser", "# of # Browser selected", 1, false)%>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="clear:both">
+                        <br><div class="underlinedDiv"></div>
+                        <br>
+                        <div style="float:left">
+                            <input id="button" type="submit" name="Apply" value="Apply">
+                        </div>
+                        <%if (!apply) {
+                        %>
+                        <div style="float:left">
+                            <input id="button" type="button" name="defaultFilter" value="Select My Default Filters" onclick="loadReporting('<%=reportingFavorite%>')">           
+                        </div><% }
 
-                                                rs_testcasecountrygeneral.first();
-                                                do {%>
-                                                <td class="wob" style="font-size : x-small ; width: 10px;"><%=rs_testcasecountrygeneral.getString("value")%></td><%
-                                                    } while (rs_testcasecountrygeneral.next());
-                                                %></tr>
-                                            <tr><%
-
-                                                rs_testcasecountrygeneral.first();
-                                                do {
-                                                %>
-                                                <td class="wob"><input value="<%=rs_testcasecountrygeneral.getString("value")%>" type="checkbox" <%
-                                                    for (int i = 0; i < country_list.length; i++) {
-                                                        if (country_list[i].equals(rs_testcasecountrygeneral.getString("value"))) {%> CHECKED <%}
-                                                            }%> name="Country" ></td><%
-                                                                           } while (rs_testcasecountrygeneral.next());
-                                                    %>
-                                                <td id="wob"><input id="button" type="button" value="All" onclick="selectAll('country',true)"><input id="button" type="button" value="None" onclick="selectAll('country',false)"></td>
-                                            </tr>
-                                        </table>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td id="wob">
-                                        <table>
-                                            <tr>
-                                                <td class="wob">
-                                                    <input id="button" type="submit" name="Apply" value="Apply">
-                                                </td>
-                                                <%if (!apply) {
-                                                        if (rsPref.first()) {
-                                                            if (StringUtils.isNotBlank(rsPref.getString("ReportingFavorite"))) {
-                                                                reportingFavorite = reportingFavorite + rsPref.getString("ReportingFavorite");
-                                                            }
-                                                %>
-                                                <td class="wob">
-                                                    <input id="button" type="button" name="defaultFilter" value="Select My Default Filters" onclick="loadReporting('<%=reportingFavorite%>')">           
-                                                </td><% }
-                                                } else {
-                                                    if (rsPref.first()) {
-                                                        if (StringUtils.isNotBlank(rsPref.getString("ReportingFavorite"))) {
-                                                            reportingFavorite = reportingFavorite + rsPref.getString("ReportingFavorite");
-                                                            if (URL.compareTo(rsPref.getString("ReportingFavorite")) != 0) {
-
-                                                                enable = "";
-                                                            }
-                                                        } else {
-                                                            enable = "";
-                                                        }
-                                                %>
-                                                <td class="wob">
-                                                    <input id="button" type="button" <%=enable%> value="Set As My Default Filter" onclick="loadReporting('ReportingExecution.jsp?RecordPref=Y&<%=URL%>')">
-                                                </td><%}
-                                                    }%>
-                                            </tr>
-                                        </table>
-                                    </td>
-                                </tr>
-                            </table>
-                        </td>
-                    </tr>
-                </table>                                   
+                        %>
+                        <div style="float:left">
+                            <input id="button" type="button" value="Set As My Default Filter" onclick="saveFilters()">
+                        </div>         
+                    </div> 
+                    </div></div>
 
                 <br><br>
-                <%
-                    if (apply) {
-                %>
-                <table  class="arrond" >
-                    <tr>
-                        <td id="wob">
-                            <table>
-                                <tr>
-                                    <td id="wob">
-                                        <input id="ShowS" type="button" value="Show Summary" onclick="javascript:setInvisibleRep();" style="display:table">
-                                        <input id="ShowD" type="button" value="Show Details" onclick="javascript:setVisibleRep();" style="display:none">
-                                    </td>
-                                    <td id="wob">Legend : </td>
-                                    <td id="wob" class="FILTER" title="FILTER : Use this checkbox to filter status."><input type="checkbox" name="FILTER" class="filterDisplay" value="FILTER" onchange="filterDisplay($(this).is(':checked'))"><label title="FILTER">FILTER</label></td>
-                                    <td id="wob" class="OK" title="OK : Test was fully executed and no bug are to be reported."><input type="checkbox" id="FOK" name="OK" value="OK" class="filterCheckbox" disabled="disabled" onchange="toogleDisplay(this)"><label class="OKF" title="OK">OK</label></td>
-                                    <td id="wob" class="KO" title="KO : Test was executed and bug have been detected."><input type="checkbox" name="KO" id="FKO" value="KO" class="filterCheckbox" disabled="disabled" onchange="toogleDisplay(this)"><label  class="KOF" title="KO">KO</label></td>
-                                    <td id="wob" class="NA" title="NA : Test could not be executed because some test data are not available."><input type="checkbox" id="FNA" class="filterCheckbox" disabled="disabled" name="NA" value="NA" onchange="toogleDisplay(this)"><label  title="NA" class="NAF">NA</label></td>
-                                    <td id="wob" class="FA" title="FA : Test could not be executed because there is a bug on the test."><input type="checkbox" name="FA"  id="FFA" class="filterCheckbox" disabled="disabled" value="FA" onchange="toogleDisplay(this)"><label  class="FAF">FA</label></td>
-                                    <td id="wob" class="PE" title="PE : Test execution is still running..."><input type="checkbox" name="PE" value="PE" class="filterCheckbox" id="FPE" disabled="disabled" onchange="toogleDisplay(this)"><label class="PEF">PE</label></td>
-                                    <td id="wob" class="NotExecuted" title="Test Case has not been executed for that country."><a class="NotExecutedF">XX</a></td>
-                                    <td id="wob" class="NOINF" title="Test Case not available for the country XX."><a class="NOINFF">XX</a></td>
-                                </tr>
-                            </table>
-                        </td>
-                    </tr>    
-                    <tr>
-                        <td id="wob">
-                            <table id="reportingExec" style="text-align: left;border-collapse:collapse;display:table" border="1px" cellpadding="0" cellspacing="1">
-                                <tr id="headerFirst">
-                                    <td style="width:10%"><%out.print(docService.findLabelHTML("test", "test", "Test"));%></td>
-                                    <td style="width:5%"><%out.print(docService.findLabelHTML("testcase", "testcase", "TestCase"));%></td>
-                                    <td style="width:5%"><%out.print(docService.findLabelHTML("application", "application", "Aplication"));%></td>
-                                    <td style="width:20%"><%out.print(docService.findLabelHTML("testcase", "description", "Description"));%></td>
-                                    <td style="width:2%"><%out.print(docService.findLabelHTML("invariant", "PRIORITY", "Priority"));%></td>
-                                    <td style="width:5%"><%out.print(docService.findLabelHTML("testcase", "status", "Status"));%></td>
-                                    <%
-                                        //rs_testcasecountrygeneral.first();								
-                                        //do {
-                                        for (int i = 0; i < country_list.length; i++) {
-                                    %> 
-                                    <td style="width:2%" class="header"> 
-                                        <%=country_list[i]%> </td>
-                                    <td style="width:7%" class="header" style="font-size : x-small ;">Reporting Execution</td>
-                                    <%
-                                        }
-                                        // } while (rs_testcasecountrygeneral.next());
-
-                                    %>
-                                    <td><%out.print(docService.findLabelHTML("testcase", "comment", "Comment"));%></td> 
-                                    <td style="width:5%" ><%out.print(docService.findLabelHTML("testcase", "bugID", "BugID"));%></td>
-                                    <td style="width:5%" ><%out.print(docService.findLabelHTML( "invariant", "GROUP", "Group"));%></td>
-                                </tr>
-                                <%
-                                    // out.println(tcclauses);
-                                    // out.println(avgclauses);
-                                    //out.println(execclauses);
-                                    int j = 0;
-                                    String stats = "";
-                                    String testlist = "";
-                                    String countrylist = "";
-                                    String statuslist = "";
-                                    Statement stmt2 = conn.createStatement();
-                                    ResultSet rs_time = stmt2.executeQuery("select tc.test, tc.testcase, "
-                                            + " tc.application, tc.description, tc.behaviororvalueexpected, tc.Status, "
-                                            + " tc.priority, tc.comment, tc.bugID, tc.TargetBuild, tc.TargetRev, tc.Group "
-                                            + " from testcase tc "
-                                            + " join application a on a.application = tc.application "
-                                            + tcclauses
-                                            + " and tc.group != 'PRIVATE' "
-                                            + " order by tc.test, tc.testcase ");
-
-                                    Statement stmt8 = conn.createStatement();
-                                    ResultSet rs_test = stmt8.executeQuery("select distinct test "
-                                            + " from testcase tc "
-                                            + " join application a on a.application = tc.application "
-                                            + tcclauses
-                                            + " and tc.group != 'PRIVATE' "
-                                            + " order by test ");
-                                    if (rs_time.first()) {
-                                        //if (StringUtils.isNotBlank(rs_time.getString("tc.test")) == true){ 
-                                        if (rs_test.first())
-                                            do {
-                                                if (!rs_test.getString("test").equals(rs_time.getString("tc.test"))) {%>
-                                <tr id="header">
-                                    <td colspan="6"></td>
-                                    <%
-                                        for (int i = 0; i < country_list.length; i++) {
-                                    %> 
-                                    <td colspan="2" style="text-align: center"> 
-                                        <%=country_list[i]%> </td>
-                                        <%}%>
-                                    <td colspan="3"></td>
-                                </tr>
-
-                                <%
-                                        j = 0;
-                                        rs_test.next();
-                                    }
-                                    if (j == 12) {%>
-                                <tr style="font-size : x-small ;" class="reportDelimiter">
-                                    <td colspan="6" ></td>
-                                    <%
-                                        for (int i = 0; i < country_list.length; i++) {
-                                    %> 
-                                    <td colspan="2" style="text-align: center"> 
-                                        <%=country_list[i]%> </td>
-
-                                    <%}%>
-                                    <td colspan="3" ></td>
-                                </tr>
-
-                                <%
-                                        j = 0;
-                                    }
-                                %>
-                                <tr class="testCaseExecutionResult">
-                                    <td class="INF"><%=rs_time.getString("tc.test")%></td>
-                                    <td class="INF"><a href="TestCase.jsp?Load=Load&Test=<%=rs_time.getString("tc.test")%>&TestCase=<%=rs_time.getString("tc.testcase")%>"> <%=rs_time.getString("tc.testcase")%></a></td>
-                                    <td class="INF"><%=rs_time.getString("tc.application")%></td>
-                                    <td class="INF"><%=rs_time.getString("tc.description")%></td>
-                                    <td class="INF"><%=rs_time.getString("tc.Priority")%></td>
-                                    <td class="INF"><%=rs_time.getString("tc.Status")%></td>
-                                    <%
-                                        // Collecting status stats for current test. 
-                                        if (!listStatus.contains(rs_time.getString("tc.Status"))) {
-                                            listStatus.add(rs_time.getString("tc.Status"));
-                                        }
-                                        if (statsStatusForTest.containsKey(rs_time.getString("tc.test") + rs_time.getString("tc.Status"))) {
-                                            statsStatusForTest.put(rs_time.getString("tc.test") + rs_time.getString("tc.Status"), statsStatusForTest.get(rs_time.getString("tc.test") + rs_time.getString("tc.Status")) + 1);
-                                        } else {
-                                            statsStatusForTest.put(rs_time.getString("tc.test") + rs_time.getString("tc.Status"), 1);
-                                        }
-                                        if (statsStatusForTest.containsKey("TOTAL" + rs_time.getString("tc.Status"))) {
-                                            statsStatusForTest.put("TOTAL" + rs_time.getString("tc.Status"), statsStatusForTest.get("TOTAL" + rs_time.getString("tc.Status")) + 1);
-                                        } else {
-                                            statsStatusForTest.put("TOTAL" + rs_time.getString("tc.Status"), 1);
-                                        }
-
-                                        // Collecting group stats for current test. 
-                                        if (!listGroup.contains(rs_time.getString("tc.Group"))) {
-                                            listGroup.add(rs_time.getString("tc.Group"));
-                                        }
-                                        if (statsGroupForTest.containsKey(rs_time.getString("tc.test") + rs_time.getString("tc.Group"))) {
-                                            statsGroupForTest.put(rs_time.getString("tc.test") + rs_time.getString("tc.Group"), statsGroupForTest.get(rs_time.getString("tc.test") + rs_time.getString("tc.Group")) + 1);
-                                        } else {
-                                            statsGroupForTest.put(rs_time.getString("tc.test") + rs_time.getString("tc.Group"), 1);
-                                        }
-                                        if (statsGroupForTest.containsKey("TOTAL" + rs_time.getString("tc.Group"))) {
-                                            statsGroupForTest.put("TOTAL" + rs_time.getString("tc.Group"), statsGroupForTest.get("TOTAL" + rs_time.getString("tc.Group")) + 1);
-                                        } else {
-                                            statsGroupForTest.put("TOTAL" + rs_time.getString("tc.Group"), 1);
-                                        }
-
-                                        rs_testcasecountrygeneral.first();
-                                        String cssStatus = "";
-                                        String color = "black";
-                                        Statement stmt4 = conn.createStatement();
-                                        ResultSet rs_count = stmt4.executeQuery("select country "
-                                                + " from testcasecountry where "
-                                                + " test = '"
-                                                + rs_time.getString("tc.Test")
-                                                + "' and testcase = '"
-                                                + rs_time.getString("tc.testcase")
-                                                + "' order by country asc");
-                                        if (rs_count.first()) {
-                                            cssStatus = "NE";
-                                            color = "black";
-
-                                            for (int i = 0; i < country_list.length; i++) {
-
-                                                rs_count.first();
-                                                while (!rs_count.isLast()) {
-                                                    if (rs_count.getString("Country").equalsIgnoreCase(country_list[i])) {
-                                                        break;
-                                                    }
-                                                    rs_count.next();
-                                                }
-
-                                                if (country_list[i].equals(rs_count.getString("country"))) {
-                                                    //out.println(execclauses);
-                                                    Statement stmt3 = conn.createStatement();
-                                                    String stmt3SQL = "SELECT DISTINCT tce.ID, tce.test, tce.testcase, tce.application, "
-                                                            + "tce.ControlStatus, DATE_FORMAT(tce.Start,'%Y-%m-%d %H:%i') as Start, DATE_FORMAT(tce.End,'%Y-%m-%d %H:%i') as End "
-                                                            + " from testcaseexecution tce "
-                                                            + "JOIN testcaseexecutionsysver tcev "
-                                                            + " ON tcev.id = tce.id "
-                                                            + "WHERE "
-                                                            + execclauses
-                                                            + " and tce.test = '"
-                                                            + rs_time.getString("tc.Test")
-                                                            + "' and tce.testcase = '"
-                                                            + rs_time.getString("tc.testcase")
-                                                            + "' and tce.country = '"
-                                                            + country_list[i]
-                                                            + "' order by tce.ID desc LIMIT 1";
-                                                    MyLogger.log("ReportingExecution.jsp", Level.DEBUG, stmt3SQL);
-
-                                                    ResultSet rs_exec = stmt3.executeQuery(stmt3SQL);
-                                                    if (rs_exec.first()) {
-                                                        if (StringUtils.isNotBlank(rs_exec.getString("ID"))) {
-                                                            cssStatus = "NotExecuted";
-                                                            color = "black";
-                                                            if (rs_exec.getString("ControlStatus").equals("OK")) {
-                                                                cssStatus = "OK";
-                                                                color = "green";
-                                                            } else if (rs_exec.getString("ControlStatus").equals("KO")) {
-                                                                cssStatus = "KO";
-                                                                color = "darkred";
-                                                            } else if (rs_exec.getString("ControlStatus").equals("NA")) {
-                                                                cssStatus = "NA";
-                                                                color = "darkyellow";
-                                                            } else if (rs_exec.getString("ControlStatus").equals("FA")) {
-                                                                cssStatus = "FA";
-                                                                color = "darkmagenta";
-                                                            } else if (rs_exec.getString("ControlStatus").equals("PE")) {
-                                                                cssStatus = "PE";
-                                                                color = "darkblue";
-                                                            }
-
-                                                            testlist = rs_time.getString("tc.test");
-                                                            countrylist = country_list[i];
-                                                            statuslist = rs_exec.getString("ControlStatus");
-                                                            stats = testlist + "-" + countrylist + "-" + statuslist;
-                                                            statistiques.add(i, stats);
-                                    %> 
-                                    <td class="<%=cssStatus%>"> 
-                                        <a href="ExecutionDetail.jsp?id_tc=<%=rs_exec.getString("ID")%>" class="<%=cssStatus%>F"><%=rs_exec.getString("ControlStatus")%></a>
-                                    </td>
-                                    <td class="INF" style="font-size : x-small"> <%=rs_exec.getString("Start")%></td>
-                                    <%
-                                            stmt3.close();
-                                        }
-                                    } else {
-                                        statistiques.add(i, rs_time.getString("tc.test") + "-" + country_list[i] + "-" + "NE");
-                                        cssStatus = "NotExecuted";%>
-                                    <td class="<%=cssStatus%>"><a href="RunTests.jsp?Test=<%=rs_time.getString("tc.test")%>&TestCase=<%=rs_time.getString("tc.testcase")%>&Country=<%=country_list[i]%>" class="<%=cssStatus%>F"><%= country_list[i]%></a></td>
-                                    <td class="INF"></td>
-                                    <%    }
-                                        if (rs_count.isLast() == true) {
-                                        } else {
-                                            rs_count.next();
-                                        }
-                                    } else {
-                                        // if (rs_count.getString("Country").compareTo(country_list[i]) > 0){
-                                        //    if(rs_count.isLast()) {} else { rs_count.next(); }
-
-                                        statistiques.add(i, rs_time.getString("tc.test") + "-" + country_list[i] + "-" + "NT");
-
-                                    %>
-                                    <td class="NOINF"></td><td class="NOINF"></td>
-                                    <%   }// }   
-                                        }
-                                    %>
-                                    <td class="INF"><%
-                                        if (rs_time.getString("tc.Comment") != null) {%><%=rs_time.getString("tc.Comment")%><%}%></td>
-                                    <td class="INF"><%
-                                        if ((rs_time.getString("tc.BugID") != null)
-                                                && (rs_time.getString("tc.BugID").compareToIgnoreCase("") != 0)
-                                                && (rs_time.getString("tc.BugID").compareToIgnoreCase("null") != 0)) {
-                                            SitdmossBugtrackingURL = myApplicationService.findApplicationByKey(rs_time.getString("application")).getBugTrackerUrl();
-                                            SitdmossBugtrackingURL_tc = SitdmossBugtrackingURL.replaceAll("%BUGID%", rs_time.getString("tc.BugID"));
-                                        } else {
-                                            SitdmossBugtrackingURL_tc = "";
-                                        }
-                                        if (SitdmossBugtrackingURL_tc.equalsIgnoreCase("") == false) {%><a href="<%=SitdmossBugtrackingURL_tc%>" target="_blank"><%=rs_time.getString("tc.BugID")%></a><%
-                                            }
-                                            if ((rs_time.getString("tc.TargetBuild") != null) && (rs_time.getString("tc.TargetBuild").equalsIgnoreCase("") == false)) {
-                                        %> for <%=rs_time.getString("tc.TargetBuild")%>/<%=rs_time.getString("tc.TargetRev")%><%
-                                            }%></td>
-                                    <td class="INF"><%
-                                        if (rs_time.getString("tc.Group") != null) {%><%=rs_time.getString("tc.Group")%><%}%></td>
-
-                                </tr>
-
-                                <%
-                                } else {
-                                    // do{
-                                    for (int i = 0; i < country_list.length; i++) {
-                                %><td class="NOINF"></td><td class="NOINF"></td><%                                            }
-                                %>
-                                <td class="INF"><%
-                                    if (rs_time.getString("tc.Comment") != null) {%><%=rs_time.getString("tc.Comment")%><%}%></td>
-                                <td class="INF"><%
-                                    if ((rs_time.getString("tc.BugID") != null)
-                                            && (rs_time.getString("tc.BugID").compareToIgnoreCase("") != 0)
-                                            && (rs_time.getString("tc.BugID").compareToIgnoreCase("null") != 0)) {
-                                        SitdmossBugtrackingURL = myApplicationService.findApplicationByKey(rs_time.getString("application")).getBugTrackerUrl();
-                                        SitdmossBugtrackingURL_tc = SitdmossBugtrackingURL.replaceAll("%BUGID%", rs_time.getString("tc.BugID"));
-                                    } else {
-                                        SitdmossBugtrackingURL_tc = "";
-                                    }
-                                    if (SitdmossBugtrackingURL_tc.equalsIgnoreCase("") == false) {%><a href="<%=SitdmossBugtrackingURL_tc%>" target="_blank"><%=rs_time.getString("tc.BugID")%></a><%
-                                        }
-                                        if ((rs_time.getString("tc.TargetBuild") != null) && (rs_time.getString("tc.TargetBuild").equalsIgnoreCase("") == false)) {
-                                    %> for <%=rs_time.getString("tc.TargetBuild")%>/<%=rs_time.getString("tc.TargetRev")%><%
-                                        }%></td>
-                                <td class="INF"><%
-                                    if (rs_time.getString("tc.Group") != null) {%><%=rs_time.getString("tc.Group")%><%}%></td>
-
-
-                                <%    }
-                                                j++;
-                                                stmt4.close();
-                                            } while (rs_time.next());
-                                    }
-                                %>
-                            </table>
-                            <table id="execReporting" style="display: none" border="0px" cellpadding="0" cellspacing="0">
-                                <tr id="header">
-                                    <td></td>
-                                    <%
-                                        for (int i = 0; i < country_list.length; i++) {
-                                    %>
-                                    <td colspan="6" align="center" style="width: 60px ;"><%=country_list[i]%></td>
-                                    <%
-                                        }
-                                    %>
-                                </tr>
-                                <tr id="header">
-                                    <td>Tests</td>
-                                    <%
-                                        for (int i = 0; i < country_list.length; i++) {
-                                    %>
-                                    <td id="repsynthesis1" align="center" style="color : green">OK</td>
-                                    <td id="repsynthesis2" align="center" style="color : red">KO</td>
-                                    <td id="repsynthesis3" align="center" style="color : darkmagenta">FA</td>
-                                    <td id="repsynthesis4" align="center" style="color : blue">PE</td>
-                                    <td id="repsynthesis5" align="center" style="color : #999999">NE</td>
-                                    <td id="repsynthesis6" align="center" style="color : black">TOTAL</td>
-                                    <%                                                              }
-                                    %>
-                                </tr>
-                                <%
-                                    String[] statsdetails = {"", ""};
-                                    for (int k = 0; k < country_list.length; k++) {
-                                        String OK = "OK" + country_list[k];
-                                        String KO = "KO" + country_list[k];
-                                        String FA = "FA" + country_list[k];
-                                        String PE = "PE" + country_list[k];
-                                        String NE = "NE" + country_list[k];
-                                        String NT = "NT" + country_list[k];
-                                    }
-
-                                    List<String> listtest = new ArrayList<String>();
-
-
-
-
-                                    for (int i = 0; i < statistiques.size(); i++) {
-                                        statsdetails = statistiques.get(i).split("-");
-                                        listtest.add(statsdetails[0]);
-                                    }
-                                    Set set = new HashSet();
-                                    set.addAll(listtest);
-                                    ArrayList distinctList = new ArrayList(set);
-                                    Collections.sort(distinctList);
-
-                                    List<String> listTOTOK = new ArrayList<String>();
-                                    List<String> listTOTKO = new ArrayList<String>();
-                                    List<String> listTOTFA = new ArrayList<String>();
-                                    List<String> listTOTPE = new ArrayList<String>();
-                                    List<String> listTOTNE = new ArrayList<String>();
-                                    List<String> listTOTNT = new ArrayList<String>();
-
-                                    for (int l = 0; l < distinctList.size(); l++) {
-                                        List<String> listOK = new ArrayList<String>();
-                                        List<String> listKO = new ArrayList<String>();
-                                        List<String> listFA = new ArrayList<String>();
-                                        List<String> listPE = new ArrayList<String>();
-                                        List<String> listNE = new ArrayList<String>();
-                                        List<String> listNT = new ArrayList<String>();
-                                        for (int i = 0; i < statistiques.size(); i++) {
-                                            statsdetails = statistiques.get(i).split("-");
-                                            String countrystatus = statsdetails[1] + "-" + statsdetails[2];
-
-                                            if (distinctList.get(l).equals(statsdetails[0])) {
-                                                if (statsdetails[2].equals("OK")) {
-                                                    listOK.add(countrystatus);
-                                                    listTOTOK.add(countrystatus);
-                                                }
-                                                if (statsdetails[2].equals("KO")) {
-                                                    listKO.add(countrystatus);
-                                                    listTOTKO.add(countrystatus);
-                                                }
-                                                if (statsdetails[2].equals("FA")) {
-                                                    listFA.add(countrystatus);
-                                                    listTOTFA.add(countrystatus);
-                                                }
-                                                if (statsdetails[2].equals("PE")) {
-                                                    listPE.add(countrystatus);
-                                                    listTOTPE.add(countrystatus);
-                                                }
-                                                if (statsdetails[2].equals("NE")) {
-                                                    listNE.add(countrystatus);
-                                                    listTOTNE.add(countrystatus);
-                                                }
-                                                if (statsdetails[2].equals("NT")) {
-                                                    listNT.add(countrystatus);
-                                                    listTOTNT.add(countrystatus);
-                                                }
-
-                                            }
-                                        }
-
-                                %>
-                                <tr>
-                                    <td><%=distinctList.get(l)%></td>
-                                    <%
-                                        for (int b = 0; b < country_list.length; b++) {
-                                            List<String> listCTOK = new ArrayList<String>();
-                                            List<String> listCTKO = new ArrayList<String>();
-                                            List<String> listCTFA = new ArrayList<String>();
-                                            List<String> listCTPE = new ArrayList<String>();
-                                            List<String> listCTNE = new ArrayList<String>();
-                                            List<String> listCTNT = new ArrayList<String>();
-
-                                            for (int a = 0; a < listOK.size(); a++) {
-                                                String[] CTOKdetails = listOK.get(a).split("-");
-                                                if (country_list[b].equals(CTOKdetails[0])) {
-                                                    if (CTOKdetails[1].equals("OK")) {
-                                                        listCTOK.add(CTOKdetails[1]);
-                                                    }
-                                                }
-                                            }
-
-                                            for (int a = 0; a < listKO.size(); a++) {
-                                                String[] CTKOdetails = listKO.get(a).split("-");
-                                                if (country_list[b].equals(CTKOdetails[0])) {
-                                                    if (CTKOdetails[1].equals("KO")) {
-                                                        listCTKO.add(CTKOdetails[1]);
-                                                    }
-                                                }
-                                            }
-
-                                            for (int a = 0; a < listFA.size(); a++) {
-                                                String[] CTFAdetails = listFA.get(a).split("-");
-                                                if (country_list[b].equals(CTFAdetails[0])) {
-                                                    if (CTFAdetails[1].equals("FA")) {
-                                                        listCTFA.add(CTFAdetails[1]);
-                                                    }
-                                                }
-                                            }
-
-                                            for (int a = 0; a < listPE.size(); a++) {
-                                                String[] CTPEdetails = listPE.get(a).split("-");
-                                                if (country_list[b].equals(CTPEdetails[0])) {
-                                                    if (CTPEdetails[1].equals("PE")) {
-                                                        listCTPE.add(CTPEdetails[1]);
-                                                    }
-                                                }
-                                            }
-
-                                            for (int a = 0; a < listNE.size(); a++) {
-                                                String[] CTNEdetails = listNE.get(a).split("-");
-                                                if (country_list[b].equals(CTNEdetails[0])) {
-                                                    if (CTNEdetails[1].equals("NE")) {
-                                                        listCTNE.add(CTNEdetails[1]);
-                                                    }
-                                                }
-                                            }
-
-                                            for (int a = 0; a < listNT.size(); a++) {
-                                                String[] CTNTdetails = listNT.get(a).split("-");
-                                                if (country_list[b].equals(CTNTdetails[0])) {
-                                                    if (CTNTdetails[1].equals("NT")) {
-                                                        listCTNT.add(CTNTdetails[1]);
-                                                    }
-                                                }
-                                            }
-                                            String cssGen = "White";
-                                            String cssleftTOP = "";
-                                            String cssleftRIG = "";
-                                            String cssmiddleTOP = "";
-                                            String cssmiddleRIG = "";
-                                            String cssmiddleLEF = "";
-                                            String cssrightTOP = "";
-                                            String cssrightLEF = "";
-
-                                            if (listCTKO.size() != 0) {
-                                                cssGen = "#FF0000";
-                                                cssleftTOP = "#FF0000";
-                                                cssleftRIG = "#FF0000";
-                                                cssmiddleTOP = "FF0000";
-                                                cssmiddleRIG = "FF0000";
-                                                cssmiddleLEF = "FF0000";
-                                                cssrightTOP = "FF0000";
-                                                cssrightLEF = "FF0000";
-                                            } else {
-                                                if (listCTNE.size() != 0) {
-                                                    cssGen = "whitesmoke";
-                                                    cssleftTOP = "whitesmoke";
-                                                    cssleftRIG = "whitesmoke";
-                                                    cssmiddleTOP = "whitesmoke";
-                                                    cssmiddleRIG = "whitesmoke";
-                                                    cssmiddleLEF = "whitesmoke";
-                                                    cssrightTOP = "whitesmoke";
-                                                    cssrightLEF = "whitesmoke";
-                                                } else {
-                                                    if (listCTOK.size() != 0) {
-                                                        cssGen = "#00FF00";
-                                                        cssleftTOP = "#00FF00";
-                                                        cssleftRIG = "#00FF00";
-                                                        cssmiddleTOP = "#00FF00";
-                                                        cssmiddleRIG = "#00FF00";
-                                                        cssmiddleLEF = "#00FF00";
-                                                        cssrightTOP = "#00FF00";
-                                                        cssrightLEF = "#00FF00";
-                                                    } else {
-                                                        cssGen = "White";
-                                                        cssleftTOP = "White";
-                                                        cssleftRIG = "White";
-                                                        cssmiddleTOP = "White";
-                                                        cssmiddleRIG = "White";
-                                                        cssmiddleLEF = "White";
-                                                        cssrightTOP = "White";
-                                                        cssrightLEF = "White";
-                                                    }
-                                                }
-
-                                            }
-
-                                            int total = 0 + listCTOK.size() + listCTKO.size() + listCTFA.size() + listCTPE.size() + listCTNE.size();
-                                    %><td id="repsynthesis1" class="INF" align="center" style="font : bold  ;
-                                        ; color: green; border-top-color: <%=cssleftTOP%> ; border-right-color: <%=cssleftRIG%>  ">
-                                        <%=listCTOK.size() != 0 ? listCTOK.size() : "0"%> 
-                                    <td id="repsynthesis2" class="INF" align="center" style="font : bold; 
-                                        ; color: red; border-top-color: <%=cssleftTOP%> ; border-right-color: <%=cssleftRIG%> ;border-left-color: <%=cssleftRIG%>  ">
-                                        <%=listCTKO.size() != 0 ? listCTKO.size() : "0"%> 
-                                    <td id="repsynthesis3" class="INF" align="center" style="font : bold ; 
-                                        ; color: darkmagenta; border-top-color: <%=cssleftTOP%> ; border-left-color: <%=cssleftRIG%>  ">
-                                        <%=listCTFA.size() != 0 ? listCTFA.size() : "0"%></td>
-                                    <td id="repsynthesis4" class="INF" align="center" style="font : bold ; 
-                                        ; color: blue; border-top-color: <%=cssleftTOP%> ; border-left-color: <%=cssleftRIG%>  ">
-                                        <%=listCTPE.size() != 0 ? listCTPE.size() : "0"%></td>
-                                    <td id="repsynthesis5" class="INF" align="center" style="font : bold ; 
-                                        ; color: #999; border-top-color: <%=cssleftTOP%> ; border-left-color: <%=cssleftRIG%>  ">
-                                        <%=listCTNE.size() != 0 ? listCTNE.size() : "0"%></td>
-                                    <td id="repsynthesis5" class="INF" align="center" style="font : bold ; 
-                                        ; color: black; border-top-color: <%=cssleftTOP%> ; border-left-color: <%=cssleftRIG%>  ">
-                                        <%=total != 0 ? total : "0"%></td>
-                                        <%
-                                            }
-                                        %>
-                                </tr>
-
-
-                                <%}%>
-                                <tr id="header"><td>TOTAL</td>
-                                    <%
-
-                                        for (int i = 0; i < country_list.length; i++) {
-                                            List<String> listCTTOTOK = new ArrayList<String>();
-                                            List<String> listCTTOTKO = new ArrayList<String>();
-                                            List<String> listCTTOTFA = new ArrayList<String>();
-                                            List<String> listCTTOTPE = new ArrayList<String>();
-                                            List<String> listCTTOTNE = new ArrayList<String>();
-                                            List<String> listCTTOTNT = new ArrayList<String>();
-
-                                            for (int a = 0; a < listTOTOK.size(); a++) {
-                                                String[] CTOKdetails = listTOTOK.get(a).split("-");
-                                                if (country_list[i].equals(CTOKdetails[0])) {
-                                                    if (CTOKdetails[1].equals("OK")) {
-                                                        listCTTOTOK.add(CTOKdetails[1]);
-                                                    }
-                                                }
-                                            }
-
-                                            for (int a = 0; a < listTOTKO.size(); a++) {
-                                                String[] CTKOdetails = listTOTKO.get(a).split("-");
-                                                if (country_list[i].equals(CTKOdetails[0])) {
-                                                    if (CTKOdetails[1].equals("KO")) {
-                                                        listCTTOTKO.add(CTKOdetails[1]);
-                                                    }
-                                                }
-                                            }
-
-                                            for (int a = 0; a < listTOTFA.size(); a++) {
-                                                String[] CTFAdetails = listTOTFA.get(a).split("-");
-                                                if (country_list[i].equals(CTFAdetails[0])) {
-                                                    if (CTFAdetails[1].equals("FA")) {
-                                                        listCTTOTFA.add(CTFAdetails[1]);
-                                                    }
-                                                }
-                                            }
-
-                                            for (int a = 0; a < listTOTPE.size(); a++) {
-                                                String[] CTPEdetails = listTOTPE.get(a).split("-");
-                                                if (country_list[i].equals(CTPEdetails[0])) {
-                                                    if (CTPEdetails[1].equals("PE")) {
-                                                        listCTTOTPE.add(CTPEdetails[1]);
-                                                    }
-                                                }
-                                            }
-
-                                            for (int a = 0; a < listTOTNE.size(); a++) {
-                                                String[] CTNEdetails = listTOTNE.get(a).split("-");
-                                                if (country_list[i].equals(CTNEdetails[0])) {
-                                                    if (CTNEdetails[1].equals("NE")) {
-                                                        listCTTOTNE.add(CTNEdetails[1]);
-                                                    }
-                                                }
-                                            }
-
-                                            int total = 0 + listCTTOTOK.size() + listCTTOTKO.size() + listCTTOTFA.size() + listCTTOTPE.size() + listCTTOTNE.size();
-
-                                    %>
-                                    <td align="center" style="color : green"><%=listCTTOTOK.size()%></td>
-                                    <td align="center" style="color : red"><%=listCTTOTKO.size()%></td>
-                                    <td align="center" style="color : darkmagenta"><%=listCTTOTFA.size()%></td>
-                                    <td align="center" style="color : blue"><%=listCTTOTPE.size()%></td>
-                                    <td align="center" style="color : #999"><%=listCTTOTNE.size()%></td>
-                                    <td align="center" style="color : black"><%=total%></td>
-                                    <%                                                              }
-                                    %>
-                                </tr>
-                            </table>
-                            <br>
-                            <table id="groupReporting" style="display: none" border="0px" cellpadding="0" cellspacing="0">
-                                <tr id="header">
-                                    <td>Number of test case</td>
-                                    <%
-                                        for (int i = 0; i < listGroup.size(); i++) {
-                                    %>
-                                    <td id="status<%=i%>" align="center" ><%=listGroup.get(i)%></td>
-                                    <%
-                                        }
-                                    %>
-                                    <td>TOTAL</td>
-                                </tr>
-                                <%
-
-                                    for (int index = 0; index < distinctList.size(); index++) {
-                                        int totalTest = 0;
-                                %><tr><td><%=distinctList.get(index)%></td><%
-
-                                    for (int i = 0; i < listGroup.size(); i++) {
-                                        if (statsGroupForTest.containsKey(distinctList.get(index) + listGroup.get(i))) {
-                                            totalTest += statsGroupForTest.get(distinctList.get(index) + listGroup.get(i));
-                                    %><td align="center"><%=statsGroupForTest.get(distinctList.get(index) + listGroup.get(i))%></td><%
-                                    } else {
-                                    %><td></td><%                                                            }
-                                        }
-
-                                    %><td align="center"><%=totalTest%></td></tr><%
-                                        }
-                                    %>
-                                <tr id="header"><td>TOTAL</td><%
-                                    int totalTest = 0;
-                                    for (int i = 0; i < listGroup.size(); i++) {
-                                        if (statsGroupForTest.containsKey("TOTAL" + listGroup.get(i))) {
-                                            totalTest += statsGroupForTest.get("TOTAL" + listGroup.get(i));
-                                    %><td align="center"><%=statsGroupForTest.get("TOTAL" + listGroup.get(i))%></td><%
-                                    } else {
-                                    %><td></td><%                                                            }
-                                        }
-
-                                    %><td align="center"><%=totalTest%></td></tr></table>
-                            <br>
-                            <table id="statusReporting" style="display: none" border="0px" cellpadding="0" cellspacing="0">
-                                <tr id="header">
-                                    <td>Number of test case</td>
-                                    <%
-                                        // Loading list of Status invariant sorted in the proper way.
-                                        IInvariantService myInvariantService = appContext.getBean(IInvariantService.class);
-                                        List<Invariant> myInv = myInvariantService.findListOfInvariantById("TCSTATUS");
-
-                                        // Display all status in the proper order.
-                                        for (int i = 0; i < myInv.size(); i++) {
-                                    %>
-                                    <td id="status<%=i%>" align="center" ><%=myInv.get(i).getValue()%></td>
-                                    <%
-                                        }
-                                    %>
-                                    <td>TOTAL</td>
-                                </tr>
-                                <%
-
-                                    for (int index = 0; index < distinctList.size(); index++) {
-                                        totalTest = 0;
-                                %><tr><td><%=distinctList.get(index)%></td><%
-
-                                    for (int i = 0; i < myInv.size(); i++) {
-
-                                        // finding the real list of status from the page data inside the current complete status
-                                        int mj = 0;
-                                        while ((mj < listStatus.size()) && !(listStatus.get(mj).equals(myInv.get(i).getValue()))) {
-                                            mj++;
-                                        }
-                                        if (mj >= listStatus.size()) { // Current status was not in the test data
-                                    %><td></td><%                                                    } else {
-                                        if (statsStatusForTest.containsKey(distinctList.get(index) + listStatus.get(mj))) {
-                                            totalTest += statsStatusForTest.get(distinctList.get(index) + listStatus.get(mj));
-                                    %><td align="center"><%=statsStatusForTest.get(distinctList.get(index) + listStatus.get(mj))%></td><%
-                                    } else {
-                                    %><td></td><%                                                                }
-
-                                            }
-                                        }
-                                    %><td align="center"><%=totalTest%></td></tr><%
-                                        }
-                                    %>
-                                <tr id="header"><td>TOTAL</td><%
-                                    totalTest = 0;
-                                    for (int i = 0; i < myInv.size(); i++) {
-
-                                        // finding the real list of status from the page data inside the current complete status
-                                        int mj = 0;
-                                        while ((mj < listStatus.size()) && !(listStatus.get(mj).equals(myInv.get(i).getValue()))) {
-                                            mj++;
-                                        }
-                                        if (mj >= listStatus.size()) { // Current status was not in the test data
-                                    %><td></td><%                                                    } else {
-                                                                            if (statsStatusForTest.containsKey("TOTAL" + listStatus.get(mj))) {
-                                                                                totalTest += statsStatusForTest.get("TOTAL" + listStatus.get(mj));
-                                    %><td align="center"><%=statsStatusForTest.get("TOTAL" + listStatus.get(mj))%></td><%
-                                                                        } else {
-                                    %><td></td><%                                                                }
-
-                                                                                }
-                                                                            }
-                                    %><td align="center"><%=totalTest%></td></tr></table>
-                        </td>
-                    </tr>
-                </table>
-                <%
-                            stmt.close();
-                            stmt1.close();
-                            stmt33.close();
-                            stmt5.close();
-                            stmt2.close();
-                            stmt8.close();
-
-                        }
-
-                    } catch (Exception e) {
+                <div id="displayResult">
+                    <br>
+                    <br>
+                    <br>
+                    <br>
+                    <br>
+                    <br>
+                </div>
+                <%                    } catch (Exception e) {
                         out.println(e);
                     } finally {
                         try {
@@ -1488,77 +523,51 @@
             </form>
         </div>
 
-        <script>
-            function filterDisplay(checked) {
-                if(checked) {
-                    $('tr#header').addClass('notVisible');
-                    $('tr.testCaseExecutionResult').addClass('notVisible');
-                    $('tr.reportDelimiter').addClass('notVisible');
+        <script type="text/javascript">
+            $(document).ready(function() {
+                $(".multiSelectOptions").each(function() {
+                    var currentElement = $(this);
+                    currentElement.multiselect({
+                        multiple: true,
+                        minWidth: 150,
+                        header: currentElement.data('header'),
+                        noneSelectedText: currentElement.data('none-selected-text'),
+                        selectedText: currentElement.data('selected-text'),
+                        selectedList: currentElement.data('selected-list')
+                    });
+                });
+            });
+        </script>
 
-                    $('input.filterCheckbox').removeAttr('disabled');
-                    $('input.filterDisplay').attr('checked','checked');
-                } else {
-                    $('tr#header').removeClass('notVisible');
-                    $('tr.testCaseExecutionResult').removeClass('notVisible');
-                    $('tr.reportDelimiter').removeClass('notVisible');
+        <script type="text/javascript">
+            $(document).ready(function() {
 
-                    $('input.filterCheckbox').attr('disabled','disabled');
-                    $('input.filterDisplay').removeAttr('checked');
-                }
-            };
-            function toogleDisplay(input) {
-                input = $(input);
-                var value = input.val();
-                if(input.is(':checked')) {
-                    $('tr.testCaseExecutionResult').has('td.'+value).addClass(value+'Visible');
-                } else {
-                    $('tr.testCaseExecutionResult').has('td.'+value).removeClass(value+'Visible');
-                }
-            };
-                    
+                // prepare all forms for ajax submission
+                $('#Apply').on('submit', function(e) {
+                    $('#displayResult').html('<img src="./images/loading.gif"> loading...');
+                    e.preventDefault(); // <-- important
+                    $(this).ajaxSubmit({
+                        target: '#displayResult'
+                    });
+                });
+
+            <%                    if ("Apply".equals(request.getParameter("Apply"))) {
+            %>
+                $('#Apply').submit();
             <%
-                if (request.getParameter("FILTER") != null && !"".equals(request.getParameter("FILTER"))) {
-                    out.println("$(document).ready(function(){filterDisplay(true);");
-                    String[] filters = {"OK", "KO", "NA", "FA", "PE"};
-
-                    for (int i = 0; i < filters.length; i++) {
-                        if (request.getParameter(filters[i]) != null && filters[i].equals(request.getParameter(filters[i]))) {
-                            out.println("$('#F" + filters[i] + "').delay( 300 ).queue(function(){$(this).trigger('click');$(this).dequeue();});");
-                        }
-                    }
-                    out.println("});");
                 }
             %>
-        </script>
-        <script type="text/javascript">
-            (document).ready($("#project").multiselect({
-                multiple: true,
-                header: "Select an option",
-                noneSelectedText:"Select Project",
-                selectedText: "# of # Projects selected",
-                selectedList: 1
-            }));
-        </script>
-        <script type="text/javascript">
-            (document).ready($("#status").multiselect({
-                multiple: true,
-                header: "Select an option",
-                noneSelectedText:"Select Status",
-                selectedText: "# of # Status selected",
-                selectedList: 1
-            }));
-        </script>
-        <script type="text/javascript">
-            (document).ready($("#exestatus").multiselect({
-                multiple: true,
-                header: "Select an option",
-                noneSelectedText:"Select Status",
-                selectedText: "# of # Status selected",
-                selectedList: 1
-            }));
-        </script>
-        
 
+                
+
+            });
+        </script>
+            <script>
+            function saveFilters() {
+                $("#Apply").attr("action", "./ReportingExecutionResult.jsp?Apply=Apply&RecordPref=Y"); 
+                    $('#Apply').submit();
+                }
+            </script>
         <br><% out.print(display_footer(DatePageStart));%>
     </body>
 </html>

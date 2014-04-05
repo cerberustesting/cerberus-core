@@ -57,10 +57,11 @@
             <li id="active"><a id="current" name="menu" href="#" style="width:100px">Test
                     <img src="images/dropdown.gif"/></a>
                 <ul class="subnav" id="subnavlist">
-                    <li id="subactive"><a name="menu" id="menuEditTest" href="Test.jsp" style="width:130px">Edit Test</a></li>
+                    <li id="subactive"><a name="menu" id="menuEditTest" href="Test.jsp" style="width:160px">Edit Test</a></li>
                     <% if (request.getUserPrincipal() != null && (request.isUserInRole("Test"))) {%>
-                    <li id="subactive"><a name="menu" id="menuCreateTest" href="TestCreate.jsp" style="width:130px">Create Test</a></li>
+                    <li id="subactive"><a name="menu" id="menuCreateTest" href="TestCreate.jsp" style="width:160px">Create Test</a></li>
                     <% }%>
+                    <li id="subactive"><a name="menu" id="menuTestPerApplication" href="TestPerApplication.jsp" style="width:160px">Test Per Application</a></li>
                 </ul>
             </li>
             <li id="active"><a id="current" name="menu" href="#" style="width:100px">TestCase

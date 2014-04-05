@@ -19,6 +19,9 @@
  */
 package org.cerberus.service;
 
+import java.util.List;
+import org.cerberus.entity.Documentation;
+
 /**
  * @author bcivel
  */
@@ -27,5 +30,14 @@ public interface IDocumentationService {
     String findLabel(String docTable, String docField, String defaultLabel);
     
     String findLabelHTML(String docTable, String docField, String defaultLabel);
-    
+
+    List<Documentation> findDocumentationsWithNotEmptyValueAndDescription(String docTable, String docField);
+
+    List<Documentation> findDocumentationsWithEmptyValueAndNotEmptyDescription(String docTable, String docField);
+
+    String findLabelFromTableAndField(String docTable, String docField);
+
+    String findDescriptionFromTableFieldAndValue(String docTable, String docField, String docValue);
+
+    List<Documentation> findAll();
 }

@@ -45,17 +45,8 @@
         <link rel="stylesheet" type="text/css" href="js/jqplot/jquery.jqplot.min.css" >
         <link rel="stylesheet" type="text/css" href="js/jqplot/syntaxhighlighter/styles/shCoreDefault.min.css" >
         <link rel="stylesheet" type="text/css" href="js/jqplot/syntaxhighlighter/styles/shThemejqPlot.min.css" >
-
-        <title>Execution Detail List</title>
-
-
-    </head>
-    <body>
-
-        <%@ include file="include/function.jsp" %>
-        <%@ include file="include/header.jsp" %>
-
-        <script type="text/javascript" src="js/jqplot/jquery.min.js"></script>   
+        <script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>  
+        <script type="text/javascript" src="js/jquery-migrate-1.2.1.min.js"></script>
         <script type="text/javascript" src="js/jqplot/jquery.jqplot.min.js"></script>
         <script type="text/javascript" src="js/jqplot/plugins/jqplot.dateAxisRenderer.js"></script>
         <script type="text/javascript" src="js/jqplot/plugins/jqplot.cursor.min.js"></script>
@@ -66,6 +57,15 @@
         <script type="text/javascript" src="js/jqplot/plugins/jqplot.canvasAxisLabelRenderer.min.js"></script>	
         <script type="text/javascript" src="js/jqplot/plugins/jqplot.canvasAxisTickRenderer.js"></script>
         <script type="text/javascript" src="js/jqplot/plugins/jqplot.barRenderer.js"></script>
+
+        <title>Execution Detail List</title>
+
+
+    </head>
+    <body>
+
+        <%@ include file="include/function.jsp" %>
+        <%@ include file="include/header.jsp" %>
 
         <div id="body">
             <%
