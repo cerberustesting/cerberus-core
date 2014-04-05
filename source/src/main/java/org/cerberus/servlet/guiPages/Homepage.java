@@ -166,7 +166,7 @@ public class Homepage extends HttpServlet {
                         testLink.append(rs_teststatus.getString("t.application"));
                         testLink.append("</a>");
                         row.put(testLink.toString());
-                        row.put(rs_teststatus.getString("t.application"));
+//                        row.put(rs_teststatus.getString("t.application"));
                         row.put(rs_teststatus.getString("TOTAL"));
                         for (Invariant i : myInvariants) {
                             i.getSort();
