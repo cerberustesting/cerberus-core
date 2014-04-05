@@ -147,7 +147,7 @@
             <table id="testTable<%=applicationL%>" class="display">
                 <thead>
                     <tr>
-                        <th>Application</th>
+                        <th>Test</th>
                         <th>Total</th>
                         <%
             for (Invariant i : myInvariants) {
@@ -181,7 +181,7 @@
                     "aTargets": [0],
                     "iDisplayLength": 25,
                     "aoColumns": [
-                        {"sName": "Application", "sWidth": "40%"},
+                        {"sName": "Test", "sWidth": "40%"},
                         {"sName": "Total", "sWidth": "10%"}
                         <%
                                     

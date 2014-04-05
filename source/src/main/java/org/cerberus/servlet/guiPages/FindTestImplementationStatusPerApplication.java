@@ -36,14 +36,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Level;
 import org.cerberus.database.DatabaseSpring;
-import org.cerberus.entity.Application;
 import org.cerberus.entity.Invariant;
 import org.cerberus.log.MyLogger;
-import org.cerberus.service.IApplicationService;
 import org.cerberus.service.IInvariantService;
-import org.cerberus.service.impl.ApplicationService;
 import org.cerberus.service.impl.InvariantService;
-import org.cerberus.util.SqlUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
