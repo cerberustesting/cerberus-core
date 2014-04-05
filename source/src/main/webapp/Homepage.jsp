@@ -70,7 +70,8 @@
         <%@ include file="include/header.jsp"%>
 
 <%
-                IInvariantService invariantService = appContext.getBean(IInvariantService.class);
+            IInvariantService invariantService = appContext.getBean(IInvariantService.class);
+            String MySystem = request.getAttribute("MySystem").toString();
 %>
         <script type="text/javascript">
 
@@ -79,7 +80,7 @@
                 var oTable = $('#testTable').dataTable({
                     "aaSorting": [[0, "asc"]],
                     "bServerSide": false,
-                    "sAjaxSource": "Homepage?MySystem="+mySys,
+                    "sAjaxSource": "Homepage?MySystem=<%=MySystem%>",
                     "bJQueryUI": true,
                     "bProcessing": true,
                     "bPaginate": true,
@@ -110,19 +111,6 @@
 
         </script>
         <%
-            IUserService userService = appContext.getBean(IUserService.class);
-            User myUser = userService.findUserByKey(request.getUserPrincipal().getName());
-            String MySystem = ParameterParserUtil.parseStringParam(request.getParameter("MySystem"), "");
-
-            if (MySystem.equals("")) {
-                MySystem = myUser.getDefaultSystem();
-            } else {
-                if (!(myUser.getDefaultSystem().equals(MySystem))) {
-                    myUser.setDefaultSystem(MySystem);
-                    userService.updateUser(myUser);
-                }
-            }
-
 
             IDatabaseVersioningService DatabaseVersioningService = appContext.getBean(IDatabaseVersioningService.class);
                 if (!(DatabaseVersioningService.isDatabaseUptodate()) && request.isUserInRole("Administrator")) {%>
@@ -135,13 +123,6 @@
         </script>
 
         <% }
-
-
-//               if (myUser.getRequest().equalsIgnoreCase("Y")) {
-//                request.getRequestDispatcher("/ChangePassword.jsp").forward(request, response);
-//            } else {
-
-
         %>
         <input id="systemSelected" value="<%=MySystem%>" style="display:none">
         <p class="dttTitle">TestCase per Application</p>
@@ -165,7 +146,6 @@
                 </tbody>
             </table>
         </div>
-        <% // } %>
         <br><% out.print(display_footer(DatePageStart));%>
     </body>
 </html>
