@@ -17,6 +17,7 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
+<%@page import="org.cerberus.util.StringUtil"%>
 <%@page import="org.cerberus.service.IDocumentationService"%>
 <%@page import="org.cerberus.util.SqlUtil"%>
 <%@page import="org.cerberus.entity.BuildRevisionInvariant"%>
@@ -25,9 +26,6 @@
 <%@page import="org.cerberus.service.impl.ApplicationService"%>
 <%@page import="org.cerberus.entity.Application"%>
 <%@page import="org.cerberus.service.IApplicationService"%>
-<%@page import="java.util.logging.Logger"%>
-<%@page import="java.util.logging.Level"%>
-<%@page import="com.mysql.jdbc.StringUtils"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 
 <%@page import="java.sql.Connection"%>
@@ -183,7 +181,7 @@
                             // 
                             String[] ticketLinks = new String[0];
                             String linkToTickets = "";
-                            if (!StringUtils.isNullOrEmpty(rsBR.getString("b.subject"))) {
+                            if (!StringUtil.isNullOrEmpty(rsBR.getString("b.subject"))) {
                                 ticketLinks = rsBR.getString("b.subject").split(", ");
                                 for (int i = 0; i < ticketLinks.length; i++) {
                                     linkToTickets = linkToTickets + "<a href=\"TestCaseSearch.jsp?ScTicket=" + ticketLinks[i] + "\">" + ticketLinks[i] + " </a>";
@@ -191,7 +189,7 @@
                             }
                             String[] bugLinks = new String[0];
                             String linkToBugs = "";
-                            if (!StringUtils.isNullOrEmpty(rsBR.getString("b.subject"))) {
+                            if (!StringUtil.isNullOrEmpty(rsBR.getString("b.subject"))) {
                                 bugLinks = rsBR.getString("b.subject").split(", ");
                                 for (int i = 0; i < bugLinks.length; i++) {
                                     linkToBugs = linkToBugs + "<a href=\"TestCaseSearch.jsp?ScBugID=" + bugLinks[i] + "\">" + bugLinks[i] + " </a>";
@@ -316,13 +314,13 @@
 
 
             } catch (Exception e) {
-                Logger.getLogger("buildcontent.jsp").log(Level.SEVERE, Version.PROJECT_NAME_VERSION + " - Exception catched.", e);
+                MyLogger.log("BuildContent.jsp", Level.FATAL, Version.PROJECT_NAME_VERSION + " - Exception catched." + e.toString());
                 out.println("<br> error message : " + e.getMessage() + " " + e.toString() + "<br>");
             } finally {
                 try {
                     conn.close();
                 } catch (Exception ex) {
-                    Logger.getLogger("buildcontent.jsp").log(Level.SEVERE, Version.PROJECT_NAME_VERSION + " - Exception catched.", ex);
+                    MyLogger.log("BuildContent.jsp", Level.FATAL, Version.PROJECT_NAME_VERSION + " - Exception catched." + ex.toString());
                 }
             }
 

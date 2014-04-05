@@ -22,8 +22,6 @@
 <%@page import="org.cerberus.service.ICountryEnvParamService"%>
 <%@page import="org.cerberus.entity.CountryEnvLink"%>
 <%@page import="org.cerberus.service.ICountryEnvLinkService"%>
-<%@page import="java.util.logging.Logger"%>
-<%@page import="java.util.logging.Level"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 
 <%@page import="java.sql.Connection"%>
@@ -623,13 +621,13 @@
 
 
             } catch (Exception e) {
-                Logger.getLogger("Environment.jsp").log(Level.SEVERE, Version.PROJECT_NAME_VERSION + " - Exception catched.", e);
+                MyLogger.log("Environment.jsp", Level.FATAL, Version.PROJECT_NAME_VERSION + " - Exception catched." + e.toString());
                 out.println("<br> error message : " + e.getMessage() + " " + e.toString() + "<br>");
             } finally {
                 try {
                     conn.close();
                 } catch (Exception ex) {
-                    Logger.getLogger("Environment.jsp").log(Level.SEVERE, Version.PROJECT_NAME_VERSION + " - Exception catched on close.", ex);
+                    MyLogger.log("Environment.jsp", Level.FATAL, Version.PROJECT_NAME_VERSION + " - Exception catched." + ex.toString());
                 }
             }
 

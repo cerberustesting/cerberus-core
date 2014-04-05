@@ -21,8 +21,6 @@
 <%@page import="org.cerberus.service.impl.BuildRevisionInvariantService"%>
 <%@page import="org.cerberus.entity.BuildRevisionInvariant"%>
 <%@page import="org.cerberus.service.IBuildRevisionInvariantService"%>
-<%@page import="java.util.logging.Logger"%>
-<%@page import="java.util.logging.Level"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 
 <%@page import="java.sql.Connection"%>
@@ -383,13 +381,13 @@
 
 
     } catch (Exception e) {
-        Logger.getLogger("EnvironmentList.jsp").log(Level.SEVERE, Version.PROJECT_NAME_VERSION + " - Exception catched.", e);
+        MyLogger.log("EnvironmentList.jsp", Level.FATAL, Version.PROJECT_NAME_VERSION + " - Exception catched." + e.toString());
         out.println("<br> error message : " + e.getMessage() + " " + e.toString() + "<br>");
     } finally {
         try {
             conn.close();
         } catch (Exception ex) {
-            Logger.getLogger("EnvironmentList.jsp").log(Level.SEVERE, Version.PROJECT_NAME_VERSION + " - Exception catched on close.", ex);
+            MyLogger.log("EnvironmentList.jsp", Level.FATAL, Version.PROJECT_NAME_VERSION + " - Exception catched." + ex.toString());
         }
     }
 

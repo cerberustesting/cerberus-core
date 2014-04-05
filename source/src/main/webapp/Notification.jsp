@@ -17,14 +17,13 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
+<%@page import="org.cerberus.util.StringUtil"%>
 <%@page import="org.cerberus.service.IDocumentationService"%>
 <%@page import="org.cerberus.serviceEmail.IEmailGeneration"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 
 <%@page import="org.cerberus.service.IParameterService"%>
 <%@page import="com.mysql.jdbc.StringUtils"%>
-<%@page import="java.util.logging.Level"%>
-<%@page import="java.util.logging.Logger"%>
 <%@page import="java.sql.Connection"%>
 <%@page import="java.sql.ResultSet"%>
 <%@page import="java.sql.Statement"%>
@@ -108,7 +107,7 @@
                 String eMailContent = "";
                 String formAction = "";
 
-                if (!StringUtils.isNullOrEmpty(event)) {
+                if (!StringUtil.isNullOrEmpty(event)) {
 
                     if (event.equals("newbuildrevision")) {
                         eMailContent = myEmailGeneration.EmailGenerationRevisionChange(system, country, env, build, revision, conn);
@@ -279,14 +278,14 @@
                 rsA.close();
                 rsBC.close();
             } catch (Exception e) {
-                Logger.getLogger("Notification.jsp").log(Level.SEVERE, Version.PROJECT_NAME_VERSION + " - Exception catched.", e);
+                MyLogger.log("Notification.jsp", Level.FATAL, Version.PROJECT_NAME_VERSION + " - Exception catched." + e.toString());
                 out.println("<br> error message : " + e.getMessage() + " " + e.toString() + "<br>");
 
             } finally {
                 try {
                     conn.close();
                 } catch (Exception ex) {
-                    Logger.getLogger("Notification.jsp").log(Level.SEVERE, Version.PROJECT_NAME_VERSION + " - Exception catched on close.", ex);
+                    MyLogger.log("Notification.jsp", Level.FATAL, Version.PROJECT_NAME_VERSION + " - Exception catched." + ex.toString());
                 }
             }
 
