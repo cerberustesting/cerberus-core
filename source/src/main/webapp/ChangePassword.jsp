@@ -34,9 +34,10 @@
     <body>
         <%@ include file="include/function.jsp" %>
         <%@ include file="include/header.jsp" %>
-        <div>
+        <div style="width: 100%; font: 90% sans-serif">
+            <table style="alignment-adjust: central"><tr><td style="alignment-adjust: central">
             <form id="changePasswordForm" action="ChangeUserPassword" title="Change Password" method="post">
-                <label><%=request.getUserPrincipal().getName() %></label>
+                <h1>Hello <%=request.getUserPrincipal().getName() %>, you are requested to change your password.</h1>
                 <input type="hidden" name="login" id="login" value="<%=request.getUserPrincipal().getName() %>">
                 <br /><br />
                 <label for="currentPassword">Current Password</label>
@@ -45,11 +46,12 @@
                 <label for="newPassword">New Password</label>
                 <input type="password" name="newPassword" id="newPassword" maxlength="20" rel="1" />
                 <br /><br />
-                <label for="confirmPassword">Confirm Password</label>
+                <label for="confirmPassword">Confirm New Password</label>
                 <input type="password" name="confirmPassword" id="confirmPassword" maxlength="20" rel="2" />
                 <br /><br />
                 <input id="submit" type="submit" value="Submit" />
             </form>
+                    </td></tr></table>
         </div>
     </body>
 </html>

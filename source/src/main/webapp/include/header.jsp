@@ -17,6 +17,9 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
+<%@page import="org.apache.log4j.Level"%>
+<%@page import="org.cerberus.log.MyLogger"%>
+<%@page import="org.cerberus.service.IDatabaseVersioningService"%>
 <%@page import="org.cerberus.entity.Invariant"%>
 <%@page import="org.cerberus.service.IInvariantService"%>
 <%@page import="org.cerberus.service.IUserService"%>
@@ -61,7 +64,7 @@
                 </ul>
             </li>
             <li id="active"><a id="current" name="menu" href="#" style="width:100px">TestCase
-                <img src="images/dropdown.gif"/></a>
+                    <img src="images/dropdown.gif"/></a>
                 <ul class="subnav" id="subnavlist">
                     <li id="subactive"><a name="menu" id="menuEditTestCase" href="TestCase.jsp" style="width:130px">Edit TestCase</a></li>
                     <% if (request.getUserPrincipal() != null && (request.isUserInRole("Test"))) {%>
@@ -73,7 +76,7 @@
             <% }%>
             <% if (request.getUserPrincipal() != null && (request.isUserInRole("Test"))) {%>
             <li id="active"><a id="current" name="menu" href="#" style="width:100px">Data
-                <img src="images/dropdown.gif"/></a>
+                    <img src="images/dropdown.gif"/></a>
                 <ul class="subnav" id="subnavlist">
                     <li id="subactive"><a name="menu" id="menuSqlLibrary" href="SqlLibrary.jsp" style="width:130px">SQL Library</a></li>
                     <li id="subactive"><a name="menu" id="menuSoapLibrary" href="SoapLibrary.jsp" style="width:130px">SOAP Library</a></li>
@@ -83,7 +86,7 @@
             <% }%>
             <%  if (request.getUserPrincipal() != null && (request.isUserInRole("RunTest"))) {%>
             <li id="active"><a id="current" name="menu" href="#" style="width:100px">Run
-                <img src="images/dropdown.gif"/></a>
+                    <img src="images/dropdown.gif"/></a>
                 <ul class="subnav" id="subnavlist">
                     <li id="subactive"><a name="menu" id="menuRunTestCase" href="RunTests.jsp" style="width:130px">Run Tests</a></li>
                     <%--                              <li><a name="menu" id="menuResumeTestCase" href="ResumeTests.jsp" style="width:130px">Resume Tests</a></li> --%>
@@ -93,7 +96,7 @@
             <% }%>
             <% if (request.getUserPrincipal() != null && (request.isUserInRole("TestRO"))) {%>
             <li id="active"><a id="current" name="menu" href="#" style="width:170px">Execution Reporting
-                <img src="images/dropdown.gif"/></a>
+                    <img src="images/dropdown.gif"/></a>
                 <ul class="subnav" id="subnavlist">
                     <li id="subactive"><a name="menu" id="menuExecutionPerBuildRevision" href="ExecutionPerBuildRevision" style="width:170px">Execution Per Build/Rev</a></li>
                     <li id="subactive"><a name="menu" id="menuReportingExecutionStatus" href="ReportingExecution.jsp" style="width:170px">Execution Status</a></li>
@@ -104,7 +107,7 @@
             <% }%>
             <% if (request.getUserPrincipal() != null && request.isUserInRole("IntegratorRO")) {%>
             <li id="active"><a id="current" name="menu" href="#" style="width:100px">Integration
-                <img src="images/dropdown.gif"/></a>
+                    <img src="images/dropdown.gif"/></a>
                 <ul class="subnav" id="subnavlist">
                     <li id="subactive"><a name="menu" id="menuIntegrationStatus" href="IntegrationStatus.jsp" style="width:150px">Integration Status</a></li>
                     <li id="subactive"><a name="menu" id="menuApplications" href="Application.jsp" style="width:150px">Applications</a></li>
@@ -116,7 +119,7 @@
             <% }%>
             <% if (request.getUserPrincipal() != null && request.isUserInRole("Administrator")) {%>
             <li id="active"><a id="current" name="menuAdmin" href="#" style="width:100px">Admin
-                <img src="images/dropdown.gif"/></a>
+                    <img src="images/dropdown.gif"/></a>
                 <ul class="subnav" id="subnavlist">
                     <li id="subactive"><a name="menu" id="menuUsersManager" href="UserManager.jsp" style="width:180px">Users Manager</a></li>
                     <li id="subactive"><a name="menu" id="menuLogViewer" href="LogViewer.jsp" style="width:180px">Log Viewer</a></li>
@@ -140,17 +143,34 @@
                     String MyUser = ParameterParserUtil.parseStringParam(request.getUserPrincipal().getName(), "");
                     ApplicationContext context = WebApplicationContextUtils.getWebApplicationContext(this.getServletConfig().getServletContext());
                     IUserService myUserService = context.getBean(IUserService.class);
-                    if (!(MyUser.equals(""))) {
-                        User MyUserobj = myUserService.findUserByKey(MyUser);
+                    IDatabaseVersioningService DatabaseVersioningService = context.getBean(IDatabaseVersioningService.class);
+                    // We access and update the user object only if database is uptodate. This is to prenvent 500 error 
+                    //   when adding new column on user table and trying to access this column even if it does not exist yet.
+                    //   Than means that system cannot be saved until database has been updated by administrator.
+                    if ((DatabaseVersioningService.isDatabaseUptodate()) && request.isUserInRole("Administrator")) {
+                        if (!(MyUser.equals(""))) {
 
-                        // Update MyDefaultSystem if different from user.
-                        if (MySystem.equals("")) {
-                            MySystem = MyUserobj.getDefaultSystem();
-                        } else {
-                            if (!(MyUserobj.getDefaultSystem().equals(MySystem))) {
-                                MyUserobj.setDefaultSystem(MySystem);
-                                myUserService.updateUser(MyUserobj);
+                            // We load the user object.
+                            User MyUserobj = myUserService.findUserByKey(MyUser);
+
+                            MyLogger.log("DatabaseMaintenance.jsp", Level.INFO, request.getRequestURI());
+                            // If user needs to change its password, we redirect to Change Password page.
+                            if (!(request.getRequestURI().contains("ChangePassword.jsp"))) {
+                                if (MyUserobj.getRequest().equalsIgnoreCase("Y")) {
+                                    request.getRequestDispatcher("/ChangePassword.jsp").forward(request, response);
+                                }
                             }
+
+                            // Update MyDefaultSystem if different from user.
+                            if (MySystem.equals("")) {
+                                MySystem = MyUserobj.getDefaultSystem();
+                            } else {
+                                if (!(MyUserobj.getDefaultSystem().equals(MySystem))) {
+                                    MyUserobj.setDefaultSystem(MySystem);
+                                    myUserService.updateUser(MyUserobj);
+                                }
+                            }
+
                         }
                     }
                     request.setAttribute("MySystem", MySystem);
