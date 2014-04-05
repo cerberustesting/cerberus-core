@@ -52,7 +52,9 @@
                 // This boolean is used in order to detec is an SQL has been performed. After version SQLLimit, 
                 // this is used in order to execute only 1 instruction at a time as it make take a lot of time to process.
                 boolean SQLExecuted = false;
-                Integer SQLLimit = 446; // SQL that has version equal to SQLLimit will not be executed automatically.
+                // SQL that has version equal to SQLLimit will not be executed automatically.
+                //Integer SQLLimit = 331; // 0.9.0 Version LEVEL.
+                Integer SQLLimit = 448; // 0.9.1 Version LEVEL.
                 IFactoryMyversion factoryMyversion;
 
                 try {
@@ -106,6 +108,7 @@
                                     out.print(MySQL.replaceAll("</textarea>", "</text4rea>"));
                                     out.print("</textarea></td>");
                                     // Execute the SQL Here
+                                    MyLogger.log("DatabaseMaintenance.jsp", Level.INFO, "Execute SQL to version : " + i + " / " + SQLInstruction.size());
                                     MySQLRC = DatabaseVersionService.exeSQL(MySQL);
                                     SQLExecuted = true;
                                     SQLRC.add(MySQLRC);
