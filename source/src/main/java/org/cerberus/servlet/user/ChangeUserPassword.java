@@ -60,7 +60,7 @@ public class ChangeUserPassword extends HttpServlet {
             myUser = userService.findUserByKey(login);
             try {
                 userService.updateUserPassword(myUser, currentPassword, newPassword, confirmPassword);
-                response.sendRedirect("Homepage");
+                response.sendRedirect("Homepage.jsp");
             } catch (CerberusException ex2) {
                 response.setContentType("text/html");
                 response.getWriter().print(ex2.getMessageError().getDescription());
