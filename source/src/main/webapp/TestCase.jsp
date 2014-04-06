@@ -371,9 +371,15 @@
                     } catch (Exception e) {
                         dateCrea = "-- unknown --";
                     }
-                    Application myApplication;
-                    myApplication = myApplicationService.findApplicationByKey(rs_testcase_general_info.getString("tc.Application"));
-                    appSystem = myApplication.getSystem();
+                    Application myApplication = null;
+                    if (rs_testcase_general_info.getString("tc.Application") != null) {
+                        myApplication = myApplicationService.findApplicationByKey(rs_testcase_general_info.getString("tc.Application"));
+                        appSystem = myApplication.getSystem();
+                        SitdmossBugtrackingURL = myApplication.getBugTrackerUrl();
+                    } else {
+                        appSystem = "";
+                        SitdmossBugtrackingURL = "";
+                    }
 
                     /**
                      * We can edit the testcase only if User role is TestAdmin
@@ -567,8 +573,12 @@
                                             <tr>
                                                 <td class="wob"><select id="application" name="editApplication" style="width: 140px"><%
                                                     ResultSet rsApp = stmt21.executeQuery(" SELECT distinct application from application where application != '' order by sort ");
+                                                    String defApp="";
+                                                    if (rs_testcase_general_info.getString("Application") != null) {
+                                                     defApp=rs_testcase_general_info.getString("Application");
+                                                    }
                                                     while (rsApp.next()) {
-                                                        %><option value="<%=rsApp.getString("application")%>"<%=rs_testcase_general_info.getString("Application").compareTo(rsApp.getString("application")) == 0 ? " SELECTED " : ""%>><%=rsApp.getString("application")%></option><%
+                                                        %><option value="<%=rsApp.getString("application")%>"<%=defApp.compareTo(rsApp.getString("application")) == 0 ? " SELECTED " : ""%>><%=rsApp.getString("application")%></option><%
                                                             }
                                                         %></select></td>
                                                 <td class="wob"><%=ComboInvariant(conn, "editRunQA", "width: 75px", "editRunQA", "runqa", "RUNQA", rs_testcase_general_info.getString("activeQA"), "", null)%></td>
@@ -681,7 +691,6 @@
                         if ((rs_testcase_general_info.getString("tc.BugID") != null)
                                 && (rs_testcase_general_info.getString("tc.BugID").compareToIgnoreCase("") != 0)
                                 && (rs_testcase_general_info.getString("tc.BugID").compareToIgnoreCase("null") != 0)) {
-                            SitdmossBugtrackingURL = myApplication.getBugTrackerUrl();
                             SitdmossBugtrackingURL = SitdmossBugtrackingURL.replaceAll("%BUGID%", rs_testcase_general_info.getString("tc.BugID"));
                         }
                     %>
@@ -1174,8 +1183,7 @@
                                                                         if (rs_properties.getString("a.Type").equals("executeSqlFromLib")
                                                                                 || rs_properties.getString("a.Type").equals("executeSql")
                                                                                 //   || rs_properties.getString("a.Type").equals("getFromTestData")
-                                                                                || rs_properties.getString("a.Type").equals("executeSoapFromLib")
-                                                                                ) {
+                                                                                || rs_properties.getString("a.Type").equals("executeSoapFromLib")) {
                                                                     %>
                                                                 <td class="wob"><input style="display:inline; height:20px; width:20px; background-color: <%=color%>; color:green; font-weight:bolder" title="View property" class="smallbutton" type="button" value="V" name="openview-library"  onclick="openViewPropertyPopin('<%=valueID%>','<%=rs_property.getString("Test")%>','<%=rs_property.getString("TestCase")%>')"></td>
                                                                     <%}%>
