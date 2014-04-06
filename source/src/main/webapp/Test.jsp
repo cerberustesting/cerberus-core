@@ -174,7 +174,7 @@
             <form method="post" name="DeleteTestCase" action="DeleteTestCase">               
                 <div style="clear:both;">
                     <div class="filters" style="float:left;width:100%; height:30px">
-                        <p style="float:left; width:100px" class="dttTitle">TestCase List</p>
+                        <p style="float:left; width:200px" class="dttTitle">TestCase List</p>
                         <% if (canEdit) {%>
                         <input style="float:left" class="button" name="submit_changes" disabled=disabled id="submit_changes" value="Delete TestCase" type="submit"> 
                         <%}%></div>
