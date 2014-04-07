@@ -36,10 +36,8 @@ import org.cerberus.entity.TestCase;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.factory.IFactoryLogEvent;
 import org.cerberus.factory.impl.FactoryLogEvent;
-import org.cerberus.refactor.ITestCaseBusiness;
-import org.cerberus.refactor.StatusMessage;
-import org.cerberus.refactor.TestCaseBusiness;
 import org.cerberus.service.ILogEventService;
+import org.cerberus.service.ITestCaseService;
 import org.cerberus.service.ITestCaseStepActionService;
 import org.cerberus.service.impl.LogEventService;
 import org.cerberus.service.impl.UserService;
@@ -69,10 +67,9 @@ public class UpdateTestCase extends HttpServlet {
         TestCase tc = getInfo(request);
 
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-        ITestCaseBusiness testcaseBusiness = appContext.getBean(TestCaseBusiness.class);
-
-        String str = testcaseBusiness.updateTestCase(tc, ITestCaseBusiness.UPDATE_INFORMATION);
-        if (str.equals(StatusMessage.SUCCESS_TESTCASEUPDATE)) {
+        ITestCaseService tcs = appContext.getBean(ITestCaseService.class);
+        
+        if (tcs.updateTestCaseInformation(tc) &&  tcs.updateTestCaseInformationCountries(tc)) {
 
             /**
              * Adding Log entry.
@@ -87,7 +84,7 @@ public class UpdateTestCase extends HttpServlet {
 
             response.sendRedirect(response.encodeRedirectURL("TestCase.jsp?Tinf=Y&Load=Load&Test=" + tc.getTest() + "&TestCase=" + tc.getTestCase()));
         } else {
-            response.getWriter().print(str);
+            response.getWriter().print("Unable to record testcase");
         }
     }
 
