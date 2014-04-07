@@ -20,9 +20,7 @@
 package org.cerberus.dao;
 
 import java.util.List;
-import org.cerberus.entity.Campaign;
 import org.cerberus.entity.CampaignContent;
-import org.cerberus.entity.TestBattery;
 import org.cerberus.exception.CerberusException;
 
 /**
@@ -36,9 +34,9 @@ public interface ICampaignContentDAO {
 
     CampaignContent findCampaignContentByKey(Integer campaignID) throws CerberusException;
 
-    CampaignContent findCampaignContentByCampaignName(String campaign) throws CerberusException;
+    List<CampaignContent> findCampaignContentByCampaignName(String campaign) throws CerberusException;
 
-    List<CampaignContent> findCampaignContentsByTestBattery(String description) throws CerberusException;
+    List<CampaignContent> findCampaignContentsByTestBattery(String testBattery) throws CerberusException;
 
     boolean updateCampaignName(CampaignContent campaign);
 
@@ -46,7 +44,7 @@ public interface ICampaignContentDAO {
 
     boolean createCampaignContent(CampaignContent campaign);
 
-    List<CampaignContent> findCampaignContentByCriteria(Campaign campaign, Integer campaignContentID, TestBattery testBattery);
+    List<CampaignContent> findCampaignContentByCriteria(String campaign, Integer campaignContentID, String testBattery) throws CerberusException;
 
 //    List<String> findUniqueDataOfColumn(String column);
 }
