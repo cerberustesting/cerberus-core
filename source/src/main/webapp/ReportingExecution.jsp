@@ -457,7 +457,7 @@
                             <br><div class="underlinedDiv"></div>
                         <p style="text-align:left" class="dttTitle">Execution Context Filters (Displayed Columns)</p>
                             <div style="float:left">
-                                <div style="clear:both; width:150px; text-align: left">Country</div>
+                                <div style="clear:both; width:150px; text-align: left">Country <span class="error-message requiered">*</span></div>
                                 <div style="clear:both"><%
                                     options.clear();
                                     for (Invariant countryInv : invariantCountry) {
@@ -469,8 +469,8 @@
                                                         "Select a country", "Select Country", "# of # Country selected", 1, false)%></div>
                             </div>
                             <div style="float:left">
-                                <div style="clear:both; width:150px; text-align: left"><%out.print(docService.findLabelHTML("testcaseexecution", "Browser", "browser"));%></div>
-                                <div style="clear:both">   <%
+                                <div style="clear:both; width:150px; text-align: left"><%out.print(docService.findLabelHTML("testcaseexecution", "Browser", "browser"));%><span class="error-message requiered">*</span></div>
+                                <div style="clear:both"><%
                                     options.clear();
                                     for (Invariant browserInv : invariantBrowser) {
                                         options.put(browserInv.getValue(), browserInv.getValue());
@@ -479,6 +479,9 @@
                                     <%=generateMultiSelect("Browser", request.getParameterValues("Browser"), options,
                                                 "Select a Browser", "Select Browser", "# of # Browser selected", 1, false)%>
                                 </div>
+                            </div>
+                            <div style="clear:both; text-align: left">
+                                <br><span class="error-message requiered">* Requiered Fields</span>
                             </div>
                         </div>
                         <div style="clear:both">
