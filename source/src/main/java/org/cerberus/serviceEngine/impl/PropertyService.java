@@ -443,6 +443,24 @@ public class PropertyService implements IPropertyService {
     }
 
     private String calculateNatureNotInUse(List<String> list, String propName, TestCaseExecution tCExecution) {
+        try {
+//            List<TCExecution> exelist = this.testCaseExecutionService.findTCExecutionbyCriteria1(DateUtil.getMySQLTimestampTodayDeltaMinutes(10), "%", "%", "%", "%", "%", "PE", "%");
+            this.testCaseExecutionService.findTCExecutionbyCriteria1(DateUtil.getMySQLTimestampTodayDeltaMinutes(10), "%", "%", "%", "%", "%", "PE", "%");
+            // boucle sur list
+            for (String value : list) {
+                /**
+                 * TODO
+                 */
+//        List<TestCaseExecutionData> pastValues = this.testCaseExecutionDataService.findTestCaseExecutionDataByCriteria1(propName, value, exelist);
+            }
+        } catch (CerberusException ex) {
+            return list.get(0);
+        }
+
+        return null;
+    }
+
+    private String calculateNatureNotInUseNew(List<String> list, String propName, TestCaseExecution tCExecution) {
         boolean notFound = true;
         TestCaseExecutionData pastValue;
 
