@@ -786,6 +786,7 @@
             <url-pattern>/ReportingExecution.jsp</url-pattern>
             <url-pattern>/ReportingExecutionTime.jsp</url-pattern>
             <url-pattern>/Test.jsp</url-pattern>
+            <url-pattern>/TestPerApplication.jsp</url-pattern>
             <url-pattern>/TestCase.jsp</url-pattern>
             <url-pattern>/TestCaseSearch.jsp</url-pattern>
             <url-pattern>/V2_TestCase2.jsp</url-pattern>
