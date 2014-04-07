@@ -21,11 +21,13 @@ package org.cerberus.factory.impl;
 
 import org.cerberus.entity.Campaign;
 import org.cerberus.factory.IFactoryCampaign;
+import org.springframework.stereotype.Service;
 
 /**
  *
  * @author memiks
  */
+@Service
 public class FactoryCampaign implements IFactoryCampaign {
 
     @Override
