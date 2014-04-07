@@ -67,12 +67,12 @@ public class TestDataDAO implements ITestDataDAO {
                 throwExcep = false;
 
             } catch (SQLException exception) {
-                MyLogger.log(TestDataDAO.class.getName(), Level.ERROR, exception.toString());
+                MyLogger.log(TestDataDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(TestDataDAO.class.getName(), Level.ERROR, exception.toString());
+            MyLogger.log(TestDataDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
         } finally {
             try {
                 if (connection != null) {
@@ -105,12 +105,12 @@ public class TestDataDAO implements ITestDataDAO {
                 throwExcep = false;
 
             } catch (SQLException exception) {
-                MyLogger.log(TestDataDAO.class.getName(), Level.ERROR, exception.toString());
+                MyLogger.log(TestDataDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(TestDataDAO.class.getName(), Level.ERROR, exception.toString());
+            MyLogger.log(TestDataDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
         } finally {
             try {
                 if (connection != null) {
@@ -141,12 +141,12 @@ public class TestDataDAO implements ITestDataDAO {
                 throwExcep = false;
 
             } catch (SQLException exception) {
-                MyLogger.log(TestDataDAO.class.getName(), Level.ERROR, exception.toString());
+                MyLogger.log(TestDataDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(TestDataDAO.class.getName(), Level.ERROR, exception.toString());
+            MyLogger.log(TestDataDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
         } finally {
             try {
                 if (connection != null) {
@@ -177,17 +177,17 @@ public class TestDataDAO implements ITestDataDAO {
                         list.add(this.loadTestDataFromResultSet(resultSet));
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(TestDataDAO.class.getName(), Level.ERROR, exception.toString());
+                    MyLogger.log(TestDataDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(TestDataDAO.class.getName(), Level.ERROR, exception.toString());
+                MyLogger.log(TestDataDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(TestDataDAO.class.getName(), Level.ERROR, exception.toString());
+            MyLogger.log(TestDataDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
         } finally {
             try {
                 if (connection != null) {
@@ -255,19 +255,19 @@ public class TestDataDAO implements ITestDataDAO {
                     }
 
                 } catch (SQLException exception) {
-                    MyLogger.log(TestDataDAO.class.getName(), Level.ERROR, exception.toString());
+                    MyLogger.log(TestDataDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
                 } finally {
                     resultSet.close();
                 }
 
             } catch (SQLException exception) {
-                MyLogger.log(TestDataDAO.class.getName(), Level.ERROR, exception.toString());
+                MyLogger.log(TestDataDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
             } finally {
                 preStat.close();
             }
 
         } catch (SQLException exception) {
-            MyLogger.log(TestDataDAO.class.getName(), Level.ERROR, exception.toString());
+            MyLogger.log(TestDataDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
         } finally {
             try {
                 if (connection != null) {
@@ -307,17 +307,17 @@ public class TestDataDAO implements ITestDataDAO {
                         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(TestDataDAO.class.getName(), Level.ERROR, exception.toString());
+                    MyLogger.log(TestDataDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(TestDataDAO.class.getName(), Level.ERROR, exception.toString());
+                MyLogger.log(TestDataDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(TestDataDAO.class.getName(), Level.ERROR, exception.toString());
+            MyLogger.log(TestDataDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
         } finally {
             try {
                 if (connection != null) {
@@ -371,19 +371,19 @@ public class TestDataDAO implements ITestDataDAO {
                     }
 
                 } catch (SQLException exception) {
-                    MyLogger.log(TestDataDAO.class.getName(), Level.ERROR, exception.toString());
+                    MyLogger.log(TestDataDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
                 } finally {
                     resultSet.close();
                 }
 
             } catch (SQLException exception) {
-                MyLogger.log(TestDataDAO.class.getName(), Level.ERROR, exception.toString());
+                MyLogger.log(TestDataDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
             } finally {
                 preStat.close();
             }
 
         } catch (SQLException exception) {
-            MyLogger.log(TestDataDAO.class.getName(), Level.ERROR, exception.toString());
+            MyLogger.log(TestDataDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
         } finally {
             try {
                 if (connection != null) {

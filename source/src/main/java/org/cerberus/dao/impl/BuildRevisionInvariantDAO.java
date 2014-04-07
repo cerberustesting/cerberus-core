@@ -70,17 +70,17 @@ public class BuildRevisionInvariantDAO implements IBuildRevisionInvariantDAO {
                     }
 
                 } catch (SQLException exception) {
-                    MyLogger.log(BuildRevisionInvariantDAO.class.getName(), Level.ERROR, exception.toString());
+                    MyLogger.log(BuildRevisionInvariantDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(BuildRevisionInvariantDAO.class.getName(), Level.ERROR, exception.toString());
+                MyLogger.log(BuildRevisionInvariantDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(BuildRevisionInvariantDAO.class.getName(), Level.ERROR, exception.toString());
+            MyLogger.log(BuildRevisionInvariantDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
         } finally {
             try {
                 if (connection != null) {
@@ -118,17 +118,17 @@ public class BuildRevisionInvariantDAO implements IBuildRevisionInvariantDAO {
                     result = this.loadBuildRevisionInvariantFromResultSet(resultSet);
 
                 } catch (SQLException exception) {
-                    MyLogger.log(BuildRevisionInvariantDAO.class.getName(), Level.ERROR, exception.toString());
+                    MyLogger.log(BuildRevisionInvariantDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(BuildRevisionInvariantDAO.class.getName(), Level.ERROR, exception.toString());
+                MyLogger.log(BuildRevisionInvariantDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(BuildRevisionInvariantDAO.class.getName(), Level.ERROR, exception.toString());
+            MyLogger.log(BuildRevisionInvariantDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
         } finally {
             try {
                 if (connection != null) {
@@ -164,17 +164,17 @@ public class BuildRevisionInvariantDAO implements IBuildRevisionInvariantDAO {
                         list.add(buildRevisionInvariant);
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(BuildRevisionInvariantDAO.class.getName(), Level.ERROR, exception.toString());
+                    MyLogger.log(BuildRevisionInvariantDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(BuildRevisionInvariantDAO.class.getName(), Level.ERROR, exception.toString());
+                MyLogger.log(BuildRevisionInvariantDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(BuildRevisionInvariantDAO.class.getName(), Level.ERROR, exception.toString());
+            MyLogger.log(BuildRevisionInvariantDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
         } finally {
             try {
                 if (connection != null) {
@@ -206,17 +206,17 @@ public class BuildRevisionInvariantDAO implements IBuildRevisionInvariantDAO {
                         list.add(buildRevisionInvariant);
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(BuildRevisionInvariantDAO.class.getName(), Level.ERROR, exception.toString());
+                    MyLogger.log(BuildRevisionInvariantDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(BuildRevisionInvariantDAO.class.getName(), Level.ERROR, exception.toString());
+                MyLogger.log(BuildRevisionInvariantDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(BuildRevisionInvariantDAO.class.getName(), Level.ERROR, exception.toString());
+            MyLogger.log(BuildRevisionInvariantDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
         } finally {
             try {
                 if (connection != null) {
@@ -250,17 +250,17 @@ public class BuildRevisionInvariantDAO implements IBuildRevisionInvariantDAO {
                         bool = true;
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(BuildRevisionInvariantDAO.class.getName(), Level.ERROR, exception.toString());
+                    MyLogger.log(BuildRevisionInvariantDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(BuildRevisionInvariantDAO.class.getName(), Level.ERROR, exception.toString());
+                MyLogger.log(BuildRevisionInvariantDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(BuildRevisionInvariantDAO.class.getName(), Level.ERROR, exception.toString());
+            MyLogger.log(BuildRevisionInvariantDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
         } finally {
             try {
                 if (connection != null) {
@@ -288,12 +288,12 @@ public class BuildRevisionInvariantDAO implements IBuildRevisionInvariantDAO {
 
                 bool = preStat.executeUpdate() > 0;
             } catch (SQLException exception) {
-                MyLogger.log(BuildRevisionInvariantDAO.class.getName(), Level.ERROR, exception.toString());
+                MyLogger.log(BuildRevisionInvariantDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(BuildRevisionInvariantDAO.class.getName(), Level.ERROR, exception.toString());
+            MyLogger.log(BuildRevisionInvariantDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
         } finally {
             try {
                 if (connection != null) {
@@ -322,12 +322,12 @@ public class BuildRevisionInvariantDAO implements IBuildRevisionInvariantDAO {
 
                 bool = preStat.executeUpdate() > 0;
             } catch (SQLException exception) {
-                MyLogger.log(BuildRevisionInvariantDAO.class.getName(), Level.ERROR, exception.toString());
+                MyLogger.log(BuildRevisionInvariantDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(BuildRevisionInvariantDAO.class.getName(), Level.ERROR, exception.toString());
+            MyLogger.log(BuildRevisionInvariantDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
         } finally {
             try {
                 if (connection != null) {

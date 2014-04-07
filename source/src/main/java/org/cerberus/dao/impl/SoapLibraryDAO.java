@@ -65,17 +65,17 @@ public class SoapLibraryDAO implements ISoapLibraryDAO {
                         throwEx = true;
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(SoapLibraryDAO.class.getName(), Level.ERROR, exception.toString());
+                    MyLogger.log(SoapLibraryDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(SoapLibraryDAO.class.getName(), Level.ERROR, exception.toString());
+                MyLogger.log(SoapLibraryDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(SoapLibraryDAO.class.getName(), Level.ERROR, exception.toString());
+            MyLogger.log(SoapLibraryDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
         } finally {
             try {
                 if (connection != null) {
@@ -114,12 +114,12 @@ public class SoapLibraryDAO implements ISoapLibraryDAO {
                 throwExcep = false;
 
             } catch (SQLException exception) {
-                MyLogger.log(SoapLibraryDAO.class.getName(), Level.ERROR, exception.toString());
+                MyLogger.log(SoapLibraryDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(SoapLibraryDAO.class.getName(), Level.ERROR, exception.toString());
+            MyLogger.log(SoapLibraryDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
         } finally {
             try {
                 if (connection != null) {
@@ -156,12 +156,12 @@ public class SoapLibraryDAO implements ISoapLibraryDAO {
                 throwExcep = false;
 
             } catch (SQLException exception) {
-                MyLogger.log(SoapLibraryDAO.class.getName(), Level.ERROR, exception.toString());
+                MyLogger.log(SoapLibraryDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(SoapLibraryDAO.class.getName(), Level.ERROR, exception.toString());
+            MyLogger.log(SoapLibraryDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
         } finally {
             try {
                 if (connection != null) {
@@ -192,12 +192,12 @@ public class SoapLibraryDAO implements ISoapLibraryDAO {
                 throwExcep = false;
 
             } catch (SQLException exception) {
-                MyLogger.log(SoapLibraryDAO.class.getName(), Level.ERROR, exception.toString());
+                MyLogger.log(SoapLibraryDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(SoapLibraryDAO.class.getName(), Level.ERROR, exception.toString());
+            MyLogger.log(SoapLibraryDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
         } finally {
             try {
                 if (connection != null) {
@@ -228,17 +228,17 @@ public class SoapLibraryDAO implements ISoapLibraryDAO {
                         list.add(this.loadSoapLibraryFromResultSet(resultSet));
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(SoapLibraryDAO.class.getName(), Level.ERROR, exception.toString());
+                    MyLogger.log(SoapLibraryDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(SoapLibraryDAO.class.getName(), Level.ERROR, exception.toString());
+                MyLogger.log(SoapLibraryDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(SoapLibraryDAO.class.getName(), Level.ERROR, exception.toString());
+            MyLogger.log(SoapLibraryDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
         } finally {
             try {
                 if (connection != null) {
@@ -309,19 +309,19 @@ public class SoapLibraryDAO implements ISoapLibraryDAO {
                     }
 
                 } catch (SQLException exception) {
-                    MyLogger.log(SoapLibraryDAO.class.getName(), Level.ERROR, exception.toString());
+                    MyLogger.log(SoapLibraryDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
                 } finally {
                     resultSet.close();
                 }
 
             } catch (SQLException exception) {
-                MyLogger.log(SoapLibraryDAO.class.getName(), Level.ERROR, exception.toString());
+                MyLogger.log(SoapLibraryDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
             } finally {
                 preStat.close();
             }
 
         } catch (SQLException exception) {
-            MyLogger.log(SoapLibraryDAO.class.getName(), Level.ERROR, exception.toString());
+            MyLogger.log(SoapLibraryDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
         } finally {
             try {
                 if (connection != null) {
@@ -353,12 +353,12 @@ public class SoapLibraryDAO implements ISoapLibraryDAO {
                 throwExcep = false;
 
             } catch (SQLException exception) {
-                MyLogger.log(SoapLibraryDAO.class.getName(), Level.ERROR, exception.toString());
+                MyLogger.log(SoapLibraryDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(SoapLibraryDAO.class.getName(), Level.ERROR, exception.toString());
+            MyLogger.log(SoapLibraryDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
         } finally {
             try {
                 if (connection != null) {
@@ -417,19 +417,19 @@ public class SoapLibraryDAO implements ISoapLibraryDAO {
                     }
 
                 } catch (SQLException exception) {
-                    MyLogger.log(SoapLibraryDAO.class.getName(), Level.ERROR, exception.toString());
+                    MyLogger.log(SoapLibraryDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
                 } finally {
                     resultSet.close();
                 }
 
             } catch (SQLException exception) {
-                MyLogger.log(SoapLibraryDAO.class.getName(), Level.ERROR, exception.toString());
+                MyLogger.log(SoapLibraryDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
             } finally {
                 preStat.close();
             }
 
         } catch (SQLException exception) {
-            MyLogger.log(SoapLibraryDAO.class.getName(), Level.ERROR, exception.toString());
+            MyLogger.log(SoapLibraryDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
         } finally {
             try {
                 if (connection != null) {

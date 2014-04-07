@@ -88,17 +88,17 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
                         testCaseStepAction = factoryTestCaseStepAction.create(test, testCase, step, sequence, action, object, property, description);
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(TestCaseStepActionDAO.class.getName(), Level.ERROR, exception.toString());
+                    MyLogger.log(TestCaseStepActionDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(TestCaseStepActionDAO.class.getName(), Level.ERROR, exception.toString());
+                MyLogger.log(TestCaseStepActionDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(TestCaseStepActionDAO.class.getName(), Level.ERROR, exception.toString());
+            MyLogger.log(TestCaseStepActionDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
         } finally {
             try {
                 if (connection != null) {
@@ -147,17 +147,17 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
                         list.add(factoryTestCaseStepAction.create(test, testcase, step, sequence, action, object, property, description));
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(TestCaseStepActionDAO.class.getName(), Level.ERROR, exception.toString());
+                    MyLogger.log(TestCaseStepActionDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(TestCaseStepActionDAO.class.getName(), Level.ERROR, exception.toString());
+                MyLogger.log(TestCaseStepActionDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(TestCaseStepActionDAO.class.getName(), Level.ERROR, exception.toString());
+            MyLogger.log(TestCaseStepActionDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
         } finally {
             try {
                 if (connection != null) {
@@ -194,12 +194,12 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
                 throwExcep = false;
                 
             } catch (SQLException exception) {
-                MyLogger.log(TestCaseStepActionDAO.class.getName(), Level.ERROR, exception.toString());
+                MyLogger.log(TestCaseStepActionDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(TestCaseStepActionDAO.class.getName(), Level.ERROR, exception.toString());
+            MyLogger.log(TestCaseStepActionDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
         } finally {
             try {
                 if (connection != null) {
@@ -256,12 +256,12 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
                 int lines = preStat.executeUpdate();
                 return (lines > 0);
             } catch (SQLException exception) {
-                MyLogger.log(TestCaseStepActionDAO.class.getName(), Level.ERROR, exception.toString());
+                MyLogger.log(TestCaseStepActionDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(TestCaseStepActionDAO.class.getName(), Level.ERROR, exception.toString());
+            MyLogger.log(TestCaseStepActionDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
         } finally {
             try {
                 if (connection != null) {

@@ -81,17 +81,17 @@ public class ParameterSystemDAO implements IParameterSystemDAO {
                         throwExep = false;
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(ParameterSystemDAO.class.getName(), Level.ERROR, exception.toString());
+                    MyLogger.log(ParameterSystemDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(ParameterSystemDAO.class.getName(), Level.ERROR, exception.toString());
+                MyLogger.log(ParameterSystemDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(ParameterSystemDAO.class.getName(), Level.ERROR, exception.toString());
+            MyLogger.log(ParameterSystemDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
         } finally {
             try {
                 if (connection != null) {

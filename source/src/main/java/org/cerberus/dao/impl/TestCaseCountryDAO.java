@@ -86,17 +86,17 @@ public class TestCaseCountryDAO implements ITestCaseCountryDAO {
                         throwException = true;
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(TestCaseCountryDAO.class.getName(), Level.ERROR, exception.toString());
+                    MyLogger.log(TestCaseCountryDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(TestCaseCountryDAO.class.getName(), Level.ERROR, exception.toString());
+                MyLogger.log(TestCaseCountryDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(TestCaseCountryDAO.class.getName(), Level.ERROR, exception.toString());
+            MyLogger.log(TestCaseCountryDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
         } finally {
             try {
                 if (connection != null) {
@@ -143,17 +143,17 @@ public class TestCaseCountryDAO implements ITestCaseCountryDAO {
                         result.add(factoryTestCaseCountry.create(test, testCase, country));
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(TestCaseCountryDAO.class.getName(), Level.ERROR, exception.toString());
+                    MyLogger.log(TestCaseCountryDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(TestCaseCountryDAO.class.getName(), Level.ERROR, exception.toString());
+                MyLogger.log(TestCaseCountryDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(TestCaseCountryDAO.class.getName(), Level.ERROR, exception.toString());
+            MyLogger.log(TestCaseCountryDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
         } finally {
             try {
                 if (connection != null) {
@@ -186,12 +186,12 @@ public class TestCaseCountryDAO implements ITestCaseCountryDAO {
                 
                 
             } catch (SQLException exception) {
-                MyLogger.log(TestCaseStepDAO.class.getName(), Level.ERROR, exception.toString());
+                MyLogger.log(TestCaseStepDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(TestCaseStepDAO.class.getName(), Level.ERROR, exception.toString());
+            MyLogger.log(TestCaseStepDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
         } finally {
             try {
                 if (connection != null) {

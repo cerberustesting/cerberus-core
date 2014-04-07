@@ -82,17 +82,17 @@ public class TestCaseStepBatchDAO implements ITestCaseStepBatchDAO {
                         list.add(factoryTestCaseStepBatch.create(test, testcase, stepNumber, batch));
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(TestCaseStepBatchDAO.class.getName(), Level.ERROR, exception.toString());
+                    MyLogger.log(TestCaseStepBatchDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(TestCaseStepBatchDAO.class.getName(), Level.ERROR, exception.toString());
+                MyLogger.log(TestCaseStepBatchDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(TestCaseStepBatchDAO.class.getName(), Level.ERROR, exception.toString());
+            MyLogger.log(TestCaseStepBatchDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
         } finally {
             try {
                 if (connection != null) {

@@ -70,17 +70,17 @@ public class CountryEnvParamDAO implements ICountryEnvParamDAO {
                         throwex = true;
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(CountryEnvironmentParametersDAO.class.getName(), Level.ERROR, exception.toString());
+                    MyLogger.log(CountryEnvironmentParametersDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(CountryEnvironmentParametersDAO.class.getName(), Level.ERROR, exception.toString());
+                MyLogger.log(CountryEnvironmentParametersDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(CountryEnvironmentParametersDAO.class.getName(), Level.ERROR, exception.toString());
+            MyLogger.log(CountryEnvironmentParametersDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
         } finally {
             try {
                 if (connection != null) {

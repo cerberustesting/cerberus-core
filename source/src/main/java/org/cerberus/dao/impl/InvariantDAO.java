@@ -84,21 +84,21 @@ public class InvariantDAO implements IInvariantDAO {
                         result = this.loadInvariantFromResultSet(resultSet);
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(InvariantDAO.class.getName(), Level.ERROR, exception.toString());
+                    MyLogger.log(InvariantDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
                 } catch (NullPointerException ex) {
                     MyLogger.log(InvariantDAO.class.getName(), Level.FATAL, "InvariantDAO - NullPointerException Resultset");
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(InvariantDAO.class.getName(), Level.ERROR, exception.toString());
+                MyLogger.log(InvariantDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
             } catch (NullPointerException ex) {
                 MyLogger.log(InvariantDAO.class.getName(), Level.FATAL, "InvariantDAO - NullPointerException Statement");
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(InvariantDAO.class.getName(), Level.ERROR, exception.toString());
+            MyLogger.log(InvariantDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
         } catch (NullPointerException ex) {
             MyLogger.log(InvariantDAO.class.getName(), Level.FATAL, "InvariantDAO - NullPointerException Connection");
         } finally {
@@ -145,21 +145,21 @@ public class InvariantDAO implements IInvariantDAO {
                         result = this.loadInvariantFromResultSet(resultSet);
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(InvariantDAO.class.getName(), Level.ERROR, exception.toString());
+                    MyLogger.log(InvariantDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
                 } catch (NullPointerException ex) {
                     MyLogger.log(InvariantDAO.class.getName(), Level.FATAL, "InvariantDAO - NullPointerException Resultset");
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(InvariantDAO.class.getName(), Level.ERROR, exception.toString());
+                MyLogger.log(InvariantDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
             } catch (NullPointerException ex) {
                 MyLogger.log(InvariantDAO.class.getName(), Level.FATAL, "InvariantDAO - NullPointerException Statement");
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(InvariantDAO.class.getName(), Level.ERROR, exception.toString());
+            MyLogger.log(InvariantDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
         } catch (NullPointerException ex) {
             MyLogger.log(InvariantDAO.class.getName(), Level.FATAL, "InvariantDAO - NullPointerException Connection");
         } finally {
@@ -198,17 +198,17 @@ public class InvariantDAO implements IInvariantDAO {
                         result.add(this.loadInvariantFromResultSet(resultSet));
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(InvariantDAO.class.getName(), Level.ERROR, exception.toString());
+                    MyLogger.log(InvariantDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(InvariantDAO.class.getName(), Level.ERROR, exception.toString());
+                MyLogger.log(InvariantDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(InvariantDAO.class.getName(), Level.ERROR, exception.toString());
+            MyLogger.log(InvariantDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
         } finally {
             try {
                 if (connection != null) {
@@ -246,17 +246,17 @@ public class InvariantDAO implements IInvariantDAO {
                         result.add(this.loadInvariantFromResultSet(resultSet));
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(InvariantDAO.class.getName(), Level.ERROR, exception.toString());
+                    MyLogger.log(InvariantDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(InvariantDAO.class.getName(), Level.ERROR, exception.toString());
+                MyLogger.log(InvariantDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(InvariantDAO.class.getName(), Level.ERROR, exception.toString());
+            MyLogger.log(InvariantDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
         } finally {
             try {
                 if (connection != null) {
@@ -327,19 +327,19 @@ public class InvariantDAO implements IInvariantDAO {
                     }
 
                 } catch (SQLException exception) {
-                    MyLogger.log(InvariantDAO.class.getName(), Level.ERROR, exception.toString());
+                    MyLogger.log(InvariantDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
                 } finally {
                     resultSet.close();
                 }
 
             } catch (SQLException exception) {
-                MyLogger.log(InvariantDAO.class.getName(), Level.ERROR, exception.toString());
+                MyLogger.log(InvariantDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
             } finally {
                 preStat.close();
             }
 
         } catch (SQLException exception) {
-            MyLogger.log(InvariantDAO.class.getName(), Level.ERROR, exception.toString());
+            MyLogger.log(InvariantDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
         } finally {
             try {
                 if (connection != null) {
@@ -383,21 +383,21 @@ public class InvariantDAO implements IInvariantDAO {
                         result = resultSet.getInt(1);
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(InvariantDAO.class.getName(), Level.ERROR, exception.toString());
+                    MyLogger.log(InvariantDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
                 } catch (NullPointerException ex) {
                     MyLogger.log(InvariantDAO.class.getName(), Level.FATAL, "InvariantDAO - NullPointerException Resultset");
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(InvariantDAO.class.getName(), Level.ERROR, exception.toString());
+                MyLogger.log(InvariantDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
             } catch (NullPointerException ex) {
                 MyLogger.log(InvariantDAO.class.getName(), Level.FATAL, "InvariantDAO - NullPointerException Statement");
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(InvariantDAO.class.getName(), Level.ERROR, exception.toString());
+            MyLogger.log(InvariantDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
         } catch (NullPointerException ex) {
             MyLogger.log(InvariantDAO.class.getName(), Level.FATAL, "InvariantDAO - NullPointerException Connection");
         } finally {
@@ -439,12 +439,12 @@ public class InvariantDAO implements IInvariantDAO {
                 throwExcep = false;
 
             } catch (SQLException exception) {
-                MyLogger.log(InvariantDAO.class.getName(), Level.ERROR, exception.toString());
+                MyLogger.log(InvariantDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(InvariantDAO.class.getName(), Level.ERROR, exception.toString());
+            MyLogger.log(InvariantDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
         } finally {
             try {
                 if (connection != null) {
@@ -473,12 +473,12 @@ public class InvariantDAO implements IInvariantDAO {
 
                 throwExcep = preStat.executeUpdate() == 0;
             } catch (SQLException exception) {
-                MyLogger.log(InvariantDAO.class.getName(), Level.ERROR, exception.toString());
+                MyLogger.log(InvariantDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(InvariantDAO.class.getName(), Level.ERROR, exception.toString());
+            MyLogger.log(InvariantDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
         } finally {
             try {
                 if (connection != null) {
@@ -512,12 +512,12 @@ public class InvariantDAO implements IInvariantDAO {
 
                 throwExcep = preStat.executeUpdate() == 0;
             } catch (SQLException exception) {
-                MyLogger.log(InvariantDAO.class.getName(), Level.ERROR, exception.toString());
+                MyLogger.log(InvariantDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(InvariantDAO.class.getName(), Level.ERROR, exception.toString());
+            MyLogger.log(InvariantDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
         } finally {
             try {
                 if (connection != null) {

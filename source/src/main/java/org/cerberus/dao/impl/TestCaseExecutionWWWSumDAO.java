@@ -93,12 +93,12 @@ public class TestCaseExecutionWWWSumDAO implements ITestCaseExecutionWWWSumDAO {
                 preStat.executeUpdate();
 
             } catch (SQLException exception) {
-                MyLogger.log(TestCaseExecutionWWWSumDAO.class.getName(), Level.ERROR, exception.toString());
+                MyLogger.log(TestCaseExecutionWWWSumDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(TestCaseExecutionWWWSumDAO.class.getName(), Level.ERROR, exception.toString());
+            MyLogger.log(TestCaseExecutionWWWSumDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
         } finally {
             try {
                 if (connection != null) {
