@@ -36,14 +36,20 @@ public class CampaignContent implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private Integer campaigncontentID;
-    private TestBattery testbattery;
-    private Campaign campaign;
+    private String testbattery;
+    private String campaign;
 
     public CampaignContent() {
     }
 
     public CampaignContent(Integer campaigncontentID) {
         this.campaigncontentID = campaigncontentID;
+    }
+
+    public CampaignContent(Integer campaigncontentID, String testbattery, String campaign) {
+        this.campaigncontentID = campaigncontentID;
+        this.testbattery = testbattery;
+        this.campaign = campaign;
     }
 
     public Integer getCampaigncontentID() {
@@ -54,19 +60,19 @@ public class CampaignContent implements Serializable {
         this.campaigncontentID = campaigncontentID;
     }
 
-    public TestBattery getTestbattery() {
+    public String getTestbattery() {
         return testbattery;
     }
 
-    public void setTestbattery(TestBattery testbattery) {
+    public void setTestbattery(String testbattery) {
         this.testbattery = testbattery;
     }
 
-    public Campaign getCampaign() {
+    public String getCampaign() {
         return campaign;
     }
 
-    public void setCampaign(Campaign campaign) {
+    public void setCampaign(String campaign) {
         this.campaign = campaign;
     }
 
