@@ -29,7 +29,7 @@ public interface ICampaignDAO {
 
     boolean createCampaign(Campaign campaign);
 
-    List<Campaign> findCampaignByCriteria(Integer campaignID, String campaign, String description);
+    List<Campaign> findCampaignByCriteria(Integer campaignID, String campaign, String description) throws CerberusException;
 
 //    List<String> findUniqueDataOfColumn(String column);
 }
