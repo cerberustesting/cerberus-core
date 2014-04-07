@@ -36,8 +36,33 @@ public class TestBatteryContent implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private Integer testbatterycontentID;
-    private TestCase testCase;
-    private TestBattery testbattery;
+    private String test;
+    private String testCase;
+    private String testbattery;
+
+    public String getTest() {
+        return test;
+    }
+
+    public void setTest(String test) {
+        this.test = test;
+    }
+
+    public String getTestCase() {
+        return testCase;
+    }
+
+    public void setTestCase(String testCase) {
+        this.testCase = testCase;
+    }
+
+    public String getTestbattery() {
+        return testbattery;
+    }
+
+    public void setTestbattery(String testbattery) {
+        this.testbattery = testbattery;
+    }
 
     public TestBatteryContent() {
     }
@@ -46,28 +71,19 @@ public class TestBatteryContent implements Serializable {
         this.testbatterycontentID = testbatterycontentID;
     }
 
+    public TestBatteryContent(Integer testbatterycontentID, String test, String testCase, String testbattery) {
+        this.testbatterycontentID = testbatterycontentID;
+        this.test = test;
+        this.testCase = testCase;
+        this.testbattery = testbattery;
+    }
+
     public Integer getTestbatterycontentID() {
         return testbatterycontentID;
     }
 
     public void setTestbatterycontentID(Integer testbatterycontentID) {
         this.testbatterycontentID = testbatterycontentID;
-    }
-
-    public TestCase getTestCase() {
-        return testCase;
-    }
-
-    public void setTestCase(TestCase testCase) {
-        this.testCase = testCase;
-    }
-
-    public TestBattery getTestbattery() {
-        return testbattery;
-    }
-
-    public void setTestbattery(TestBattery testbattery) {
-        this.testbattery = testbattery;
     }
 
     @Override

@@ -20,30 +20,31 @@
 package org.cerberus.dao;
 
 import java.util.List;
-import org.cerberus.entity.CampaignParameter;
+import org.cerberus.entity.TestBattery;
 import org.cerberus.exception.CerberusException;
 
 /**
  *
  * @author memiks
  */
-public interface ICampaignParameterDAO {
+public interface ITestBatteryDAO {
 
-    List<CampaignParameter> findAll() throws CerberusException;
 
-    CampaignParameter findCampaignParameterByKey(Integer campaignparameterID) throws CerberusException;
+    List<TestBattery> findAll() throws CerberusException;
 
-    List<CampaignParameter> findCampaignParametersByCampaign(String campaign) throws CerberusException;
+    TestBattery findTestBatteryByKey(Integer testBatteryID) throws CerberusException;
 
-    boolean updateCampaignName(CampaignParameter campaignParameter);
+    TestBattery findTestBatteryByTestBatteryName(String testBattery) throws CerberusException;
 
-    boolean updateParameter(CampaignParameter campaignParameter);
+    List<TestBattery> findTestBatteriesByDescription(String description) throws CerberusException;
 
-    boolean updateValue(CampaignParameter campaignParameter);
+    boolean updateTestBattery(TestBattery testBattery);
 
-    boolean createCampaignParameter(CampaignParameter campaignParameter);
+    boolean updateDescription(TestBattery testBattery);
 
-    List<CampaignParameter> findCampaignParameterByCriteria(Integer campaignparameterID, String campaign, String parameter, String value) throws CerberusException;
+    boolean createTestBattery(TestBattery testBattery);
+
+    List<TestBattery> findTestBatteryByCriteria(Integer testBatteryID, String testBattery, String Description) throws CerberusException;
 
 //    List<String> findUniqueDataOfColumn(String column);
 }

@@ -20,9 +20,6 @@
 package org.cerberus.entity;
 
 import java.io.Serializable;
-import java.util.List;
-import javax.xml.bind.annotation.XmlTransient;
-import org.codehaus.jackson.annotate.JsonIgnore;
 
 /**
  *
@@ -43,8 +40,6 @@ public class TestBattery implements Serializable {
     private Integer testbatteryID;
     private String testbattery;
     private String description;
-    private List<CampaignContent> campaignContentList;
-    private List<TestBatteryContent> testBatteryContentList;
 
     public TestBattery() {
     }
@@ -81,26 +76,6 @@ public class TestBattery implements Serializable {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    @XmlTransient
-    @JsonIgnore
-    public List<CampaignContent> getCampaignContentList() {
-        return campaignContentList;
-    }
-
-    public void setCampaignContentList(List<CampaignContent> campaignContentList) {
-        this.campaignContentList = campaignContentList;
-    }
-
-    @XmlTransient
-    @JsonIgnore
-    public List<TestBatteryContent> getTestBatteryContentList() {
-        return testBatteryContentList;
-    }
-
-    public void setTestBatteryContentList(List<TestBatteryContent> testBatteryContentList) {
-        this.testBatteryContentList = testBatteryContentList;
     }
 
     @Override
