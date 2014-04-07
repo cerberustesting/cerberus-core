@@ -17,6 +17,7 @@ import org.cerberus.exception.CerberusException;
  */
 public interface ICampaignContentDAO {
 
+
     List<CampaignContent> findAll() throws CerberusException;
 
     CampaignContent findCampaignContentByKey(Integer campaignID) throws CerberusException;
