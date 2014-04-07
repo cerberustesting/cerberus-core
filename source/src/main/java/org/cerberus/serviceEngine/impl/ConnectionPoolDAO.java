@@ -99,7 +99,7 @@ public class ConnectionPoolDAO implements IConnectionPoolDAO {
                         nbFetch++;
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(ConnectionPoolDAO.class.getName(), Level.ERROR, exception.toString());
+                    MyLogger.log(ConnectionPoolDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
 
                 } finally {
                     resultSet.close();

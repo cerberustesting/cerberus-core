@@ -617,3 +617,10 @@ input#submitButtonDuplicate {
     display: table-row;
 }
 
+.error-message {
+    color: red;
+    font-weight: bold;
+    padding: 10px;
+    margin: 10px;
+    text-align: center;
+}
