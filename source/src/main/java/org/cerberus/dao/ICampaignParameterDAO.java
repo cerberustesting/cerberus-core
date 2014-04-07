@@ -20,8 +20,6 @@
 package org.cerberus.dao;
 
 import java.util.List;
-import org.cerberus.entity.Campaign;
-import org.cerberus.entity.CampaignContent;
 import org.cerberus.entity.CampaignParameter;
 import org.cerberus.exception.CerberusException;
 
@@ -35,7 +33,7 @@ public interface ICampaignParameterDAO {
 
     CampaignParameter findCampaignParameterByKey(Integer campaignparameterID) throws CerberusException;
 
-    List<CampaignContent> findCampaignParametersByCampaign(Campaign campaign) throws CerberusException;
+    List<CampaignParameter> findCampaignParametersByCampaign(String campaign) throws CerberusException;
 
     boolean updateCampaignName(CampaignParameter campaignParameter);
 
@@ -45,7 +43,7 @@ public interface ICampaignParameterDAO {
 
     boolean createCampaignParameter(CampaignParameter campaignParameter);
 
-    List<CampaignParameter> findCampaignParameterByCriteria(Campaign campaign, Integer campaignparameterID, String parameter, String value);
+    List<CampaignParameter> findCampaignParameterByCriteria(Integer campaignparameterID, String campaign, String parameter, String value) throws CerberusException;
 
 //    List<String> findUniqueDataOfColumn(String column);
 }

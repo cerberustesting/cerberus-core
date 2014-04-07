@@ -40,7 +40,7 @@ public class CampaignParameter implements Serializable {
     private Integer campaignparameterID;
     private String parameter;
     private String value;
-    private Campaign campaign;
+    private String campaign;
 
     public CampaignParameter() {
     }
@@ -49,8 +49,9 @@ public class CampaignParameter implements Serializable {
         this.campaignparameterID = campaignparameterID;
     }
 
-    public CampaignParameter(Integer campaignparameterID, String parameter, String value) {
+    public CampaignParameter(Integer campaignparameterID, String campaign, String parameter, String value) {
         this.campaignparameterID = campaignparameterID;
+        this.campaign = campaign;
         this.parameter = parameter;
         this.value = value;
     }
@@ -79,11 +80,11 @@ public class CampaignParameter implements Serializable {
         this.value = value;
     }
 
-    public Campaign getCampaign() {
+    public String getCampaign() {
         return campaign;
     }
 
-    public void setCampaign(Campaign campaign) {
+    public void setCampaign(String campaign) {
         this.campaign = campaign;
     }
 
