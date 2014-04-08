@@ -57,7 +57,7 @@ public class TestCaseManualExecutionDTO implements ITestCaseManualExecutionDTO {
                 "AND tc.status LIKE ? AND tc.activePROD LIKE ? AND tc.activeUAT LIKE ? AND tc.activeQA LIKE ? AND " +
                 "( tc.description LIKE ? OR tc.howto LIKE ? OR tc.behaviororvalueexpected LIKE ? OR tc.comment LIKE ?) " +
                 "AND tc.frombuild LIKE ? AND tc.fromrev LIKE ? AND tc.tobuild LIKE ? " +
-                "AND tc.torev LIKE ? AND tc.targetbuild LIKE ? AND tc.targetrev LIKE ? AND tc.testcase LIKE ? AND tc.group=?";
+ "AND tc.torev LIKE ? AND tc.targetbuild LIKE ? AND tc.targetrev LIKE ? AND tc.testcase LIKE ? AND (tc.group=? OR ?)";
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -101,6 +101,11 @@ public class TestCaseManualExecutionDTO implements ITestCaseManualExecutionDTO {
                 preStat.setString(25, ParameterParserUtil.wildcardIfEmpty(testCase.getTargetRevision()));
                 preStat.setString(26, ParameterParserUtil.wildcardIfEmpty(testCase.getTestCase()));
                 preStat.setString(27, ParameterParserUtil.wildcardIfEmpty(testCase.getGroup()));
+                if (testCase.getGroup() != null && !"".equals(testCase.getGroup().trim())) {
+                    preStat.setBoolean(28, false);
+                } else {
+                    preStat.setBoolean(28, true);
+                }
 
                 ResultSet resultSet = preStat.executeQuery();
                 list = new ArrayList<TestCaseManualExecution>();
