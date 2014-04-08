@@ -49,7 +49,7 @@
             <select id="country" name="country" onchange="getEnvironmentSelectBox()"></select>
             &nbsp;&nbsp;
             <label for="environment"><% out.print(docService.findLabelHTML( "invariant", "Environment", "Environment"));%></label>
-            <select id="environment" name="environment" onchange="getEnvironmentSelectBox()"></select>
+            <select id="environment" name="environment"></select>
             <br>
             <script>
                 $(document).ready(function() {
