@@ -174,6 +174,19 @@
 
                         }
                     }
+
+                    if (!(MyUser.equals(""))) {
+                        User MyUserobj = myUserService.findUserByKey(MyUser);
+                        if (MySystem.equals("")) {
+                                    MySystem = MyUserobj.getDefaultSystem();
+                                } else {
+                                    if (!(MyUserobj.getDefaultSystem().equals(MySystem))) {
+                                        MyUserobj.setDefaultSystem(MySystem);
+                                        myUserService.updateUser(MyUserobj);
+                                    }
+                                }
+                        }
+
                     request.setAttribute("MySystem", MySystem);
                 %>                
                 <select id="MySystem" style="" name="MySystem" onchange="document.SysFilter.submit()">
