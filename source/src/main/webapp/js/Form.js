@@ -1401,7 +1401,7 @@ function submitTestCaseModification( anchor ) {
     }
 
     if(execute) {
-        form.attr("action", form.attr("action") + anchor);
+        form.attr("action", form.attr("action") + "#" + anchor);
         form.submit();
     }
 
