@@ -144,16 +144,16 @@
                             <div style="float:left; width:150px; text-align: left"><%out.print(docService.findLabelHTML("test", "active", "Active"));%></div>
                             <div style="float:left">
                                 <select id="test_active" style="width: 40px;" name="test_active">
-                                    <option selected="selected" value="<%=testSelect.getActive()%>"><%=testSelect.getActive()%></option>
-                                    <option value="N">N</option>
+                                    <option value="N">No</option>
+                                    <option <%="Y".equalsIgnoreCase(testSelect.getActive()) ? "selected='selected'" : "" %> value="Y">Yes</option>
                                 </select>
                             </div>
                         </div>
                         <div style="clear:both">
                             <div style="float:left; width:150px; text-align: left"><%out.print(docService.findLabelHTML("test", "automated", "Automated"));%></div>
                             <div style="float:left"><select id="test_automated" style="width: 40px;" name="test_automated">
-                                    <option selected="selected" value="<%=testSelect.getAutomated()%>"><%=testSelect.getAutomated()%></option>
-                                    <option value="N">N</option>
+                                    <option value="N">No</option>
+                                    <option <%="Y".equalsIgnoreCase(testSelect.getAutomated()) ? "selected='selected'" : "" %> value="Y">Yes</option>
                                 </select>
                             </div>
                         </div>
