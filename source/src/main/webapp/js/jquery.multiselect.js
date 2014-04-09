@@ -141,7 +141,7 @@
         var description = this.innerHTML;
         var title = this.title;
         var value = this.value;
-        var dataCerberus = 'ui-multiselect-' + ($this.data('cerberus') || this.value || id + '-option-' + i );
+        var dataCerberus = 'ui-multiselect-' + ( el.data('cerberus') || el.attr('id') || el.attr('name') || multiselectID ) + '-' +($this.data('cerberus') || this.value || id + '-option-' + i );
         var inputID = 'ui-multiselect-' + multiselectID + '-' + (this.id || id + '-option-' + i);
         var isDisabled = this.disabled;
         var isSelected = this.selected;
