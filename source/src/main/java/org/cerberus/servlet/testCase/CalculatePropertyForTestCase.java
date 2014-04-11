@@ -43,14 +43,14 @@ import org.cerberus.service.ITestCaseService;
 import org.cerberus.service.ITestDataService;
 import org.cerberus.serviceEngine.IConnectionPoolDAO;
 import org.cerberus.serviceEngine.IPropertyService;
+import org.cerberus.serviceEngine.ISeleniumService;
 import org.cerberus.util.StringUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;
-import org.springframework.context.ApplicationContext;
-import org.springframework.web.context.support.WebApplicationContextUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * {Insert class description here}
@@ -62,23 +62,37 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 @WebServlet(name="CalculatePropertyForTestCase", value = "/CalculatePropertyForTestCase")
 public class CalculatePropertyForTestCase extends HttpServlet {
 
+    @Autowired
+    private ISeleniumService seleniumService;
+    @Autowired
+    private ISqlLibraryService sqlLibraryService;
+    @Autowired
+    private ISoapLibraryService soapLibraryService;
+    @Autowired
+    private IPropertyService propertyService;
+    @Autowired
+    private ITestDataService testDataService;
+    @Autowired
+    private ITestCaseService testCaseService;
+    @Autowired
+    private IApplicationService applicationService;
+    @Autowired
+    private IConnectionPoolDAO connectionPoolDAO;
+    @Autowired
+    private ICountryEnvironmentDatabaseService countryEnvironmentDatabaseService;
+
     @Override
     protected void doGet(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws ServletException, IOException {
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.BLOCKS);
-        String property = policy.sanitize(httpServletRequest.getParameter("property"));
         String type = policy.sanitize(httpServletRequest.getParameter("type"));
 
-        ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-        
         String result = null;
+        String property = httpServletRequest.getParameter("property");
         try {
             if (type.equals("getFromTestData")) {
-                ITestDataService testDataService = appContext.getBean(ITestDataService.class);
+                result = testDataService.findTestDataByKey(policy.sanitize(property)).getValue();
 
-                result = testDataService.findTestDataByKey(property).getValue();
             } else if (type.equals("executeSoapFromLib")) {
-                ISoapLibraryService soapLibraryService = appContext.getBean(ISoapLibraryService.class);
-                IPropertyService propertyService = appContext.getBean(IPropertyService.class);
                 SoapLibrary soapLib = soapLibraryService.findSoapLibraryByKey(property);
                 if (soapLib != null) {
                     result = propertyService.calculatePropertyFromSOAPResponse(soapLib.getEnvelope(), soapLib.getServicePath(), soapLib.getParsingAnswer(), soapLib.getMethod());
@@ -89,8 +103,6 @@ public class CalculatePropertyForTestCase extends HttpServlet {
                     String testName = policy.sanitize(httpServletRequest.getParameter("test"));
                     String testCaseName = policy.sanitize(httpServletRequest.getParameter("testCase"));
 
-                    ITestCaseService testCaseService = appContext.getBean(ITestCaseService.class);
-                    IApplicationService applicationService = appContext.getBean(IApplicationService.class);
 
                     TCase testCase = testCaseService.findTestCaseByKey(testName, testCaseName);
                     system = applicationService.findApplicationByKey(testCase.getApplication()).getSystem();
@@ -102,19 +114,15 @@ public class CalculatePropertyForTestCase extends HttpServlet {
                     String environment = policy.sanitize(httpServletRequest.getParameter("environment"));
                     String database = policy.sanitize(httpServletRequest.getParameter("database"));
 
-                    ICountryEnvironmentDatabaseService countryEnvironmentDatabaseService = appContext.getBean(ICountryEnvironmentDatabaseService.class);
-                    IConnectionPoolDAO connectionPoolDAO = appContext.getBean(IConnectionPoolDAO.class);
-
                     CountryEnvironmentDatabase countryEnvironmentDatabase;
                     countryEnvironmentDatabase = countryEnvironmentDatabaseService.findCountryEnvironmentDatabaseByKey(system, country, environment, database);
                     String connectionName = countryEnvironmentDatabase.getConnectionPoolName();
 
                     if (type.equals("executeSqlFromLib")) {
-                        ISqlLibraryService sqlLibraryService = appContext.getBean(ISqlLibraryService.class);
-                        property = sqlLibraryService.findSqlLibraryByKey(property).getScript();
+                        property = sqlLibraryService.findSqlLibraryByKey(policy.sanitize(property)).getScript();
                     }
-                    if (!(StringUtil.isNullOrEmpty(connectionName)) && !(StringUtil.isNullOrEmpty(property))) {
-                        result = connectionPoolDAO.queryDatabase(connectionName, property, 1).get(0);
+                    if (!(StringUtil.isNullOrEmpty(connectionName)) && !(StringUtil.isNullOrEmpty(policy.sanitize(property)))) {
+                        result = connectionPoolDAO.queryDatabase(connectionName, policy.sanitize(property), 1).get(0);
                     }
                 }
             }
