@@ -53,34 +53,27 @@
                     String testcaseApplication = null;
                     Connection conn = null;
                     IDocumentationService docService = appContext.getBean(IDocumentationService.class);
+                    IUserService userService = appContext.getBean(IUserService.class);
 
                     try {
 
                         conn = db.connect();
 
                         Statement stmt = conn.createStatement();
-                        Statement stmt2 = conn.createStatement();
-
-                        String insertDefIP = "update user set DefaultIP = '"
-                                + request.getParameter("ss_ip") + "' where login = '"
-                                + request.getUserPrincipal().getName() + "'";
-
+                        
+                        User usr = userService.findUserByKey(request.getUserPrincipal().getName());
+                        
                         if (StringUtils.isNotBlank(request.getParameter("DefaultIP"))) {
                             if (request.getParameter("ss_ip") != null && request.getParameter("ss_ip").compareTo("") != 0) {
-                                stmt.execute(insertDefIP);
+                                usr.setDefaultIP(request.getParameter("ss_ip"));
+                                userService.updateUser(usr);
                             }
                         }
-
-
-
-
 
                         if (request.getParameter("statusPage") != null && request.getParameter("statusPage").compareTo("Run") == 0) {
 
                             StringBuilder params = new StringBuilder();
                             params.append("RunTestCase?redirect=Y");
-                            //params.append("http://localhost:8080/newCerberus/RunTestCase?redirect=Y");
-                            //params.append("BatchExecution?redirect=Y");
                             Enumeration<String> pList = request.getParameterNames();
                             while (pList.hasMoreElements()) {
                                 String sName = pList.nextElement().toString();
@@ -112,21 +105,7 @@
                         } else {
                             ssIP = request.getHeader("X-FORWARDED-FOR");
                             if (ssIP == null) {
-
-                                String defaultIP = "SELECT DefaultIP from user where login = '"
-                                        + request.getUserPrincipal().getName() + "'";
-
-                                ResultSet rs_Ip = stmt2.executeQuery(defaultIP);
-
-                                if (rs_Ip.first()) {
-                                    if (StringUtils.isNotBlank(rs_Ip.getString("DefaultIP"))) {
-                                        ssIP = rs_Ip.getString("DefaultIP");
-                                    } else {
-                                        ssIP = "";
-                                    }
-                                }
-
-                                //    ssIP = request.getRemoteHost();
+                                ssIP = usr.getDefaultIP();
                             }
                         }
 

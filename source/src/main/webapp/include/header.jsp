@@ -54,7 +54,7 @@
     <div style="float:left;">
         <ul id="navlist">
             <% if (request.getUserPrincipal() != null && (request.isUserInRole("TestRO"))) {%>
-            <li id="active"><a id="current" name="menu" href="#" style="width:100px">Test
+            <li id="active"><a id="menu-Test" name="menu" href="#" style="width:100px">Test
                     <img src="images/dropdown.gif"/></a>
                 <ul class="subnav" id="subnavlist">
                     <li id="subactive"><a name="menu" id="menuEditTest" href="Test.jsp" style="width:160px">Edit Test</a></li>
@@ -64,7 +64,7 @@
                     <li id="subactive"><a name="menu" id="menuTestPerApplication" href="TestPerApplication.jsp" style="width:160px">Test Per Application</a></li>
                 </ul>
             </li>
-            <li id="active"><a id="current" name="menu" href="#" style="width:100px">TestCase
+            <li id="active"><a id="menu-TestCase" name="menu" href="#" style="width:100px">TestCase
                     <img src="images/dropdown.gif"/></a>
                 <ul class="subnav" id="subnavlist">
                     <li id="subactive"><a name="menu" id="menuEditTestCase" href="TestCase.jsp" style="width:130px">Edit TestCase</a></li>
@@ -76,7 +76,7 @@
             </li>
             <% }%>
             <% if (request.getUserPrincipal() != null && (request.isUserInRole("Test"))) {%>
-            <li id="active"><a id="current" name="menu" href="#" style="width:100px">Data
+            <li id="active"><a id="menu-Data" name="menu" href="#" style="width:100px">Data
                     <img src="images/dropdown.gif"/></a>
                 <ul class="subnav" id="subnavlist">
                     <li id="subactive"><a name="menu" id="menuSqlLibrary" href="SqlLibrary.jsp" style="width:130px">SQL Library</a></li>
@@ -86,7 +86,7 @@
             </li>
             <% }%>
             <%  if (request.getUserPrincipal() != null && (request.isUserInRole("RunTest"))) {%>
-            <li id="active"><a id="current" name="menu" href="#" style="width:100px">Run
+            <li id="active"><a id="menu-Run" name="menu" href="#" style="width:100px">Run
                     <img src="images/dropdown.gif"/></a>
                 <ul class="subnav" id="subnavlist">
                     <li id="subactive"><a name="menu" id="menuRunTestCase" href="RunTests.jsp" style="width:130px">Run Tests</a></li>
@@ -96,7 +96,7 @@
             </li>
             <% }%>
             <% if (request.getUserPrincipal() != null && (request.isUserInRole("TestRO"))) {%>
-            <li id="active"><a id="current" name="menu" href="#" style="width:170px">Execution Reporting
+            <li id="active"><a id="menu-Execution-Reporting" name="menu" href="#" style="width:170px">Execution Reporting
                     <img src="images/dropdown.gif"/></a>
                 <ul class="subnav" id="subnavlist">
                     <li id="subactive"><a name="menu" id="menuExecutionPerBuildRevision" href="ExecutionPerBuildRevision" style="width:170px">Execution Per Build/Rev</a></li>
@@ -107,7 +107,7 @@
             </li>
             <% }%>
             <% if (request.getUserPrincipal() != null && request.isUserInRole("IntegratorRO")) {%>
-            <li id="active"><a id="current" name="menu" href="#" style="width:100px">Integration
+            <li id="active"><a id="menu-Integration" name="menu" href="#" style="width:100px">Integration
                     <img src="images/dropdown.gif"/></a>
                 <ul class="subnav" id="subnavlist">
                     <li id="subactive"><a name="menu" id="menuIntegrationStatus" href="IntegrationStatus.jsp" style="width:150px">Integration Status</a></li>
@@ -119,7 +119,7 @@
             </li>
             <% }%>
             <% if (request.getUserPrincipal() != null && request.isUserInRole("Administrator")) {%>
-            <li id="active"><a id="current" name="menuAdmin" href="#" style="width:100px">Admin
+            <li id="active"><a id="menu-Admin" name="menuAdmin" href="#" style="width:100px">Admin
                     <img src="images/dropdown.gif"/></a>
                 <ul class="subnav" id="subnavlist">
                     <li id="subactive"><a name="menu" id="menuUsersManager" href="UserManager.jsp" style="width:180px">Users Manager</a></li>
@@ -174,6 +174,19 @@
 
                         }
                     }
+
+                    if (!(MyUser.equals(""))) {
+                        User MyUserobj = myUserService.findUserByKey(MyUser);
+                        if (MySystem.equals("")) {
+                                    MySystem = MyUserobj.getDefaultSystem();
+                                } else {
+                                    if (!(MyUserobj.getDefaultSystem().equals(MySystem))) {
+                                        MyUserobj.setDefaultSystem(MySystem);
+                                        myUserService.updateUser(MyUserobj);
+                                    }
+                                }
+                        }
+
                     request.setAttribute("MySystem", MySystem);
                 %>                
                 <select id="MySystem" style="" name="MySystem" onchange="document.SysFilter.submit()">

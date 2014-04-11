@@ -59,7 +59,9 @@
       var button = (this.button = $('<button type="button"><span class="ui-icon ui-icon-triangle-1-s"></span></button>'))
         .addClass('ui-multiselect ui-widget ui-state-default ui-corner-all')
         .addClass(o.classes)
-        .attr({ 'title':el.attr('title'), 'aria-haspopup':true, 'tabIndex':el.attr('tabIndex') })
+        .attr({ 'title':el.attr('title'), 'aria-haspopup':true, 'tabIndex':el.attr('tabIndex') 
+                , 'data-cerberus': "ui-multiselect-button-" + ( el.data('cerberus') || el.attr('id') || el.attr('name') || multiselectID )
+                })
         .insertAfter(el),
 
         buttonlabel = (this.buttonlabel = $('<span />'))
@@ -139,6 +141,7 @@
         var description = this.innerHTML;
         var title = this.title;
         var value = this.value;
+        var dataCerberus = 'ui-multiselect-' + ( el.data('cerberus') || el.attr('id') || el.attr('name') || multiselectID ) + '-' +($this.data('cerberus') || this.value || id + '-option-' + i );
         var inputID = 'ui-multiselect-' + multiselectID + '-' + (this.id || id + '-option-' + i);
         var isDisabled = this.disabled;
         var isSelected = this.selected;
@@ -170,7 +173,7 @@
         html += '<li class="' + liClasses + '">';
 
         // create the label
-        html += '<label for="' + inputID + '" title="' + title + '" class="' + labelClasses.join(' ') + '">';
+        html += '<label data-cerberus="' + dataCerberus + '" for="' + inputID + '" title="' + title + '" class="' + labelClasses.join(' ') + '">';
         html += '<input id="' + inputID + '" name="multiselect_' + id + '" type="' + (o.multiple ? "checkbox" : "radio") + '" value="' + value + '" title="' + title + '"';
 
         // pre-selected?

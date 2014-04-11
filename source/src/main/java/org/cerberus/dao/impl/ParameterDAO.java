@@ -74,17 +74,17 @@ public class ParameterDAO implements IParameterDAO {
                         throwExep = true;
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(ParameterDAO.class.getName(), Level.ERROR, exception.toString());
+                    MyLogger.log(ParameterDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(ParameterDAO.class.getName(), Level.ERROR, exception.toString());
+                MyLogger.log(ParameterDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(ParameterDAO.class.getName(), Level.ERROR, exception.toString());
+            MyLogger.log(ParameterDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
         } finally {
             try {
                 if (connection != null) {
@@ -127,17 +127,17 @@ public class ParameterDAO implements IParameterDAO {
                         throwExep = false;
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(ParameterDAO.class.getName(), Level.ERROR, exception.toString());
+                    MyLogger.log(ParameterDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(ParameterDAO.class.getName(), Level.ERROR, exception.toString());
+                MyLogger.log(ParameterDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(ParameterDAO.class.getName(), Level.ERROR, exception.toString());
+            MyLogger.log(ParameterDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
         } finally {
             try {
                 if (connection != null) {
@@ -171,12 +171,12 @@ public class ParameterDAO implements IParameterDAO {
                 preStat.executeUpdate();
 
             } catch (SQLException exception) {
-                MyLogger.log(ParameterDAO.class.getName(), Level.ERROR, exception.toString());
+                MyLogger.log(ParameterDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(ParameterDAO.class.getName(), Level.ERROR, exception.toString());
+            MyLogger.log(ParameterDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
         } finally {
             try {
                 if (connection != null) {
@@ -205,12 +205,12 @@ public class ParameterDAO implements IParameterDAO {
                 preStat.executeUpdate();
 
             } catch (SQLException exception) {
-                MyLogger.log(ParameterDAO.class.getName(), Level.ERROR, exception.toString());
+                MyLogger.log(ParameterDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(ParameterDAO.class.getName(), Level.ERROR, exception.toString());
+            MyLogger.log(ParameterDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
         } finally {
             try {
                 if (connection != null) {

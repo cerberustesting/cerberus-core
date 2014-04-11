@@ -86,17 +86,17 @@ public class CountryEnvironmentDatabaseDAO implements ICountryEnvironmentDatabas
                         throwEx = true;
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(CountryEnvironmentDatabaseDAO.class.getName(), Level.ERROR, exception.toString());
+                    MyLogger.log(CountryEnvironmentDatabaseDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(CountryEnvironmentDatabaseDAO.class.getName(), Level.ERROR, exception.toString());
+                MyLogger.log(CountryEnvironmentDatabaseDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(CountryEnvironmentDatabaseDAO.class.getName(), Level.ERROR, exception.toString());
+            MyLogger.log(CountryEnvironmentDatabaseDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
         } finally {
             try {
                 if (connection != null) {

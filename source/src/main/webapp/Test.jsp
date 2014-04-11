@@ -144,16 +144,16 @@
                             <div style="float:left; width:150px; text-align: left"><%out.print(docService.findLabelHTML("test", "active", "Active"));%></div>
                             <div style="float:left">
                                 <select id="test_active" style="width: 40px;" name="test_active">
-                                    <option selected="selected" value="<%=testSelect.getActive()%>"><%=testSelect.getActive()%></option>
-                                    <option value="N">N</option>
+                                    <option value="N">No</option>
+                                    <option <%="Y".equalsIgnoreCase(testSelect.getActive()) ? "selected='selected'" : "" %> value="Y">Yes</option>
                                 </select>
                             </div>
                         </div>
                         <div style="clear:both">
                             <div style="float:left; width:150px; text-align: left"><%out.print(docService.findLabelHTML("test", "automated", "Automated"));%></div>
                             <div style="float:left"><select id="test_automated" style="width: 40px;" name="test_automated">
-                                    <option selected="selected" value="<%=testSelect.getAutomated()%>"><%=testSelect.getAutomated()%></option>
-                                    <option value="N">N</option>
+                                    <option value="N">No</option>
+                                    <option <%="Y".equalsIgnoreCase(testSelect.getAutomated()) ? "selected='selected'" : "" %> value="Y">Yes</option>
                                 </select>
                             </div>
                         </div>
@@ -174,7 +174,7 @@
             <form method="post" name="DeleteTestCase" action="DeleteTestCase">               
                 <div style="clear:both;">
                     <div class="filters" style="float:left;width:100%; height:30px">
-                        <p style="float:left; width:100px" class="dttTitle">TestCase List</p>
+                        <p style="float:left; width:200px" class="dttTitle">TestCase List</p>
                         <% if (canEdit) {%>
                         <input style="float:left" class="button" name="submit_changes" disabled=disabled id="submit_changes" value="Delete TestCase" type="submit"> 
                         <%}%></div>

@@ -57,7 +57,7 @@ public class TestCaseManualExecutionDTO implements ITestCaseManualExecutionDTO {
                 "AND tc.status LIKE ? AND tc.activePROD LIKE ? AND tc.activeUAT LIKE ? AND tc.activeQA LIKE ? AND " +
                 "( tc.description LIKE ? OR tc.howto LIKE ? OR tc.behaviororvalueexpected LIKE ? OR tc.comment LIKE ?) " +
                 "AND tc.frombuild LIKE ? AND tc.fromrev LIKE ? AND tc.tobuild LIKE ? " +
-                "AND tc.torev LIKE ? AND tc.targetbuild LIKE ? AND tc.targetrev LIKE ? AND tc.testcase LIKE ? AND tc.group=?";
+ "AND tc.torev LIKE ? AND tc.targetbuild LIKE ? AND tc.targetrev LIKE ? AND tc.testcase LIKE ? AND tc.group LIKE ? ";
 
         Connection connection = this.databaseSpring.connect();
         try {

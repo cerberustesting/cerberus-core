@@ -459,6 +459,45 @@ public class PropertyService implements IPropertyService {
 
         return null;
     }
+
+    private String calculateNatureNotInUseNew(List<String> list, String propName, TestCaseExecution tCExecution) {
+        boolean notFound = true;
+        TestCaseExecutionData pastValue;
+
+        try {
+            List<TestCaseExecution> testCaseExecutionsLastTenMinutes = this.testCaseExecutionService.findTCExecutionbyCriteria1(DateUtil.getMySQLTimestampTodayDeltaMinutes(10), "%", "%", "%", "%", "%", "PE", "%");
+
+            // loop on list
+            for (String value : list) {
+                if (value != null) {
+                    // loop on past execution.
+                    for (TestCaseExecution testCaseExecution : testCaseExecutionsLastTenMinutes) {
+                        // retrieve past value
+                        pastValue = this.testCaseExecutionDataDAO.findTestCaseExecutionDataByKey(testCaseExecution.getId(), propName);
+
+                        // compare it, if equal
+                        if (value.equals(pastValue.getValue())) {
+                            // modify notFound boolean
+                            notFound = false;
+
+                            // and break loop
+                            break;
+                        }
+                    }
+
+                    // if value not found in the last 10 minutes execution, we use it now !
+                    if (notFound) {
+                        return value;
+                    }
+                }
+            }
+        } catch (CerberusException exception) {
+            MyLogger.log(PropertyService.class.getName(), Level.ERROR, exception.toString());
+        }
+
+        // if issue during search or if all are already used, we use the first
+        return list.get(0);
+    }
     
     /**
      * Calcule d'une propriété depuis une requête SOAP.

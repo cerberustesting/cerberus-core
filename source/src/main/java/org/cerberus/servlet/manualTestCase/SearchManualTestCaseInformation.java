@@ -60,10 +60,8 @@ public class SearchManualTestCaseInformation extends HttpServlet {
         String system = this.getValue(req, "ScSystem");
         String country = this.getValue(req, "ScCountry");
         String env = this.getValue(req, "ScEnv");
-        String group = this.getValue(req, "ScGroup");
         TCase tCase = this.getTestCaseFromRequest(req);
 
-        tCase.setGroup(group);
         tCase.setActive("Y");
         if (env.equalsIgnoreCase("QA")) {
             tCase.setRunQA("Y");
@@ -99,6 +97,7 @@ public class SearchManualTestCaseInformation extends HttpServlet {
     }
 
     private TCase getTestCaseFromRequest(HttpServletRequest req) {
+        String group = this.getValue(req, "ScGroup");
         String test = this.getValue(req, "ScTest");
         String testCase = "%" + this.getValue(req, "ScTestCase") + "%";
         String project = this.getValue(req, "ScProject");
@@ -120,8 +119,8 @@ public class SearchManualTestCaseInformation extends HttpServlet {
         String targetRev = this.getValue(req, "ScTargetRev");
 
         IFactoryTCase factoryTCase = new FactoryTCase();
-        return factoryTCase.create(test, testCase, origin, null, creator, null, null, project, ticket, application, "", "", "", priority, "",
-                status, null, null, null, "", fBuild, fRev, tBuild, tRev, null, bug, targetBuild, targetRev, null, null, null, null, null);
+        return factoryTCase.create(test, testCase, origin, null, creator, null, null, project, ticket, application, "", "", "", priority,
+                group, status, null, null, null, "", fBuild, fRev, tBuild, tRev, null, bug, targetBuild, targetRev, null, null, null, null, null);
     }
 
     private String getValue(HttpServletRequest req, String valueName) {

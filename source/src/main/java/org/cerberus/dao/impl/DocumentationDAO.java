@@ -67,17 +67,17 @@ public class DocumentationDAO implements IDocumentationDAO {
                         return null;
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(DocumentationDAO.class.getName(), Level.ERROR, exception.toString());
+                    MyLogger.log(DocumentationDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(DocumentationDAO.class.getName(), Level.ERROR, exception.toString());
+                MyLogger.log(DocumentationDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(DocumentationDAO.class.getName(), Level.ERROR, exception.toString());
+            MyLogger.log(DocumentationDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
         } finally {
             try {
                 if (connection != null) {
@@ -112,17 +112,17 @@ public class DocumentationDAO implements IDocumentationDAO {
                         result.add(factoryDocumentation.create(docTable, docField, docValue, docLabel, description));
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(DocumentationDAO.class.getName(), Level.ERROR, exception.toString());
+                    MyLogger.log(DocumentationDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(DocumentationDAO.class.getName(), Level.ERROR, exception.toString());
+                MyLogger.log(DocumentationDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(DocumentationDAO.class.getName(), Level.ERROR, exception.toString());
+            MyLogger.log(DocumentationDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
         } finally {
             try {
                 if (connection != null) {
@@ -157,17 +157,17 @@ public class DocumentationDAO implements IDocumentationDAO {
                         result.add(factoryDocumentation.create(docTable, docField, "", docLabel, description));
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(DocumentationDAO.class.getName(), Level.ERROR, exception.toString());
+                    MyLogger.log(DocumentationDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(DocumentationDAO.class.getName(), Level.ERROR, exception.toString());
+                MyLogger.log(DocumentationDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(DocumentationDAO.class.getName(), Level.ERROR, exception.toString());
+            MyLogger.log(DocumentationDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
         } finally {
             try {
                 if (connection != null) {
@@ -199,17 +199,17 @@ public class DocumentationDAO implements IDocumentationDAO {
                         return resultSet.getString("DocLabel");
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(DocumentationDAO.class.getName(), Level.ERROR, exception.toString());
+                    MyLogger.log(DocumentationDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(DocumentationDAO.class.getName(), Level.ERROR, exception.toString());
+                MyLogger.log(DocumentationDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(DocumentationDAO.class.getName(), Level.ERROR, exception.toString());
+            MyLogger.log(DocumentationDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
         } finally {
             try {
                 if (connection != null) {
@@ -245,17 +245,17 @@ public class DocumentationDAO implements IDocumentationDAO {
                         return resultSet.getString("DocDesc");
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(DocumentationDAO.class.getName(), Level.ERROR, exception.toString());
+                    MyLogger.log(DocumentationDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(DocumentationDAO.class.getName(), Level.ERROR, exception.toString());
+                MyLogger.log(DocumentationDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(DocumentationDAO.class.getName(), Level.ERROR, exception.toString());
+            MyLogger.log(DocumentationDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
         } finally {
             try {
                 if (connection != null) {
@@ -291,17 +291,17 @@ public class DocumentationDAO implements IDocumentationDAO {
                         result.add(factoryDocumentation.create(table, field, value, label, description));
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(DocumentationDAO.class.getName(), Level.ERROR, exception.toString());
+                    MyLogger.log(DocumentationDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(DocumentationDAO.class.getName(), Level.ERROR, exception.toString());
+                MyLogger.log(DocumentationDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(DocumentationDAO.class.getName(), Level.ERROR, exception.toString());
+            MyLogger.log(DocumentationDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
         } finally {
             try {
                 if (connection != null) {

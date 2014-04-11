@@ -81,17 +81,17 @@ public class LogEventDAO implements ILogEventDAO {
                         list.add(myLogEvent);
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(UserDAO.class.getName(), Level.ERROR, exception.toString());
+                    MyLogger.log(UserDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(UserDAO.class.getName(), Level.ERROR, exception.toString());
+                MyLogger.log(UserDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(UserDAO.class.getName(), Level.ERROR, exception.toString());
+            MyLogger.log(UserDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
         } finally {
             try {
                 if (connection != null) {
@@ -154,17 +154,17 @@ public class LogEventDAO implements ILogEventDAO {
                         list.add(myLogEvent);
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(UserDAO.class.getName(), Level.ERROR, exception.toString());
+                    MyLogger.log(UserDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(UserDAO.class.getName(), Level.ERROR, exception.toString());
+                MyLogger.log(UserDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(UserDAO.class.getName(), Level.ERROR, exception.toString());
+            MyLogger.log(UserDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
         } finally {
             try {
                 if (connection != null) {
@@ -203,17 +203,17 @@ public class LogEventDAO implements ILogEventDAO {
                         return resultSet.getInt("c");
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(UserDAO.class.getName(), Level.ERROR, exception.toString());
+                    MyLogger.log(UserDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(UserDAO.class.getName(), Level.ERROR, exception.toString());
+                MyLogger.log(UserDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(UserDAO.class.getName(), Level.ERROR, exception.toString());
+            MyLogger.log(UserDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
         } finally {
             try {
                 if (connection != null) {
@@ -253,17 +253,17 @@ public class LogEventDAO implements ILogEventDAO {
                         bool = true;
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(UserDAO.class.getName(), Level.ERROR, exception.toString());
+                    MyLogger.log(UserDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(UserDAO.class.getName(), Level.ERROR, exception.toString());
+                MyLogger.log(UserDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(UserDAO.class.getName(), Level.ERROR, exception.toString());
+            MyLogger.log(UserDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
         } finally {
             try {
                 if (connection != null) {

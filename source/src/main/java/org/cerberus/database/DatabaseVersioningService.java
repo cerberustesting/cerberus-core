@@ -3153,6 +3153,80 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `DocLabel`, `DocDesc`) VALUES ('testcasecountryproperties', 'Type', 'getAttributeFromHtml', 'Get an attribute value from an HTML field in the current page.', '<code class=\\'doc-fixed\\'>getAttributeFromHtml</code> will allow you to take an attribute value from an html field on the current webpage.</br>Cerberus will automatically wait for the field to start to appear before getting the attribute value.<br>The different attributes identifier that can be used in order to find the HTML field are : id, name, class, css, xpath, link, and data-cerberus.<br>Syntax is as follow :<br><code class=\\'doc-sql\\'>identifier=html-value</code><br><br>Usage :<br><doc class=\"usage\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Field</th><th class=\\'ex\\'>Usage</th><tr><td class=\\'ex\\'>DTB</td><td class=\\'ex\\'>Not used.</td></tr><tr><td class=\\'ex\\'>Value</td><td class=\\'ex\\'>IDENTIFIER=HTML-VALUE</td></tr><tr><td class=\\'ex\\'>Value2</td><td class=\\'ex\\'>ATTRIBUTE</td></tr><tr><td class=\\'ex\\'>Length</td><td class=\\'ex\\'>Not used</td></tr><tr><td class=\\'ex\\'>RowLimit</td><td class=\\'ex\\'>Not used.</td></tr><tr><td class=\\'ex\\'>Nature</td><td class=\\'ex\\'>Not used.</td></tr></table></doc><br><br>Examples :<br><doc class=\"examples\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>HTML</th><th class=\\'ex\\'>Value</th><th class=\\'ex\\'>Value2</th><th class=\\'ex\\'>Result</th><tr><td class=\\'ex\\'><textarea rows=\"3\" style=\"width: 245px;\" readonly><div class=\"Main\"><img id=\"Name\" src=\"toto.jpeg\"><span id=\"env\">PRODUCTION</span></div></textarea></td><td class=\\'ex\\'>id=Name</td><td class=\\'ex\\'>src</td><td class=\\'ex\\'>toto.jpeg</td></tr><tr><td class=\\'ex\\'><textarea rows=\"3\" style=\"width: 245px;\" readonly><input data-cerberus=\"ctl00\" name=\"inputName\">toto</input></textarea></td><td class=\\'ex\\'>data-cerberus=ctl00</td><td class=\\'ex\\'>name</td><td class=\\'ex\\'>inputName</td></tr></table></doc>');");
         SQLInstruction.add(SQLS.toString());
 
+//Add browser in an index of testcaseexecution table.
+//-- ------------------------ 448
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcaseexecution` DROP INDEX `IX_testcaseexecution_04` ,ADD INDEX `IX_testcaseexecution_04` (`Test` ASC, `TestCase` ASC, `Country` ASC, `Browser` ASC, `Start` ASC, `ControlStatus` ASC);");
+        SQLInstruction.add(SQLS.toString());
+
+
+//Add Campaing management tables.
+//-- ------------------------ 449
+        SQLS = new StringBuilder();
+        SQLS.append("CREATE TABLE `testbattery` (");
+        SQLS.append("  `testbatteryID` int(10) unsigned NOT NULL AUTO_INCREMENT,");
+        SQLS.append("  `testbattery` varchar(45) NOT NULL,");
+        SQLS.append("  `Description` varchar(300) NOT NULL DEFAULT '',");
+        SQLS.append("  PRIMARY KEY (`testbatteryID`),");
+        SQLS.append("  UNIQUE KEY `IX_testbattery_01` (`testbattery`)");
+        SQLS.append(") ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;");
+        SQLInstruction.add(SQLS.toString());
+
+//-- ------------------------ 450
+        SQLS = new StringBuilder();
+        SQLS.append("CREATE TABLE `testbatterycontent` (");
+        SQLS.append("  `testbatterycontentID` int(10) unsigned NOT NULL AUTO_INCREMENT,");
+        SQLS.append("  `testbattery` varchar(45) NOT NULL,");
+        SQLS.append("  `Test` varchar(45) NOT NULL,");
+        SQLS.append("  `TestCase` varchar(45) NOT NULL,");
+        SQLS.append("  PRIMARY KEY (`testbatterycontentID`),");
+        SQLS.append("  UNIQUE KEY `IX_testbatterycontent_01` (`testbattery`, `Test`, `TestCase`),");
+        SQLS.append("  KEY `IX_testbatterycontent_02` (`testbattery`),");
+        SQLS.append("  KEY `IX_testbatterycontent_03` (`Test`, `TestCase`),");
+        SQLS.append("  CONSTRAINT `FK_testbatterycontent_01` FOREIGN KEY (`testbattery`) REFERENCES `testbattery` (`testbattery`) ON DELETE CASCADE ON UPDATE CASCADE,");
+        SQLS.append("  CONSTRAINT `FK_testbatterycontent_02` FOREIGN KEY (`Test`,`TestCase`) REFERENCES `testcase` (`Test`,`TestCase`) ON DELETE CASCADE ON UPDATE CASCADE");
+        SQLS.append(") ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;");
+        SQLInstruction.add(SQLS.toString());
+
+//-- ------------------------ 451
+        SQLS = new StringBuilder();
+        SQLS.append("CREATE TABLE `campaign` (");
+        SQLS.append("  `campaignID` int(10) unsigned NOT NULL AUTO_INCREMENT,");
+        SQLS.append("  `campaign` varchar(45) NOT NULL,");
+        SQLS.append("  `Description` varchar(300) NOT NULL DEFAULT '',");
+        SQLS.append("  PRIMARY KEY (`campaignID`),");
+        SQLS.append("  UNIQUE KEY `IX_campaign_01` (`campaign`)");
+        SQLS.append(") ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;");
+        SQLInstruction.add(SQLS.toString());
+
+//-- ------------------------ 452
+        SQLS = new StringBuilder();
+        SQLS.append("CREATE TABLE `campaignparameter` (");
+        SQLS.append("  `campaignparameterID` int(10) unsigned NOT NULL AUTO_INCREMENT,");
+        SQLS.append("  `campaign` varchar(45) NOT NULL,");
+        SQLS.append("  `Parameter` varchar(100) NOT NULL,");
+        SQLS.append("  `Value` varchar(100) NOT NULL,");
+        SQLS.append("  PRIMARY KEY (`campaignparameterID`),");
+        SQLS.append("  UNIQUE KEY `IX_campaignparameter_01` (`campaign`, `Parameter`),");
+        SQLS.append("  KEY `IX_campaignparameter_02` (`campaign`),");
+        SQLS.append("  CONSTRAINT `FK_campaignparameter_01` FOREIGN KEY (`campaign`) REFERENCES `campaign` (`campaign`) ON DELETE CASCADE ON UPDATE CASCADE");
+        SQLS.append(") ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;");
+        SQLInstruction.add(SQLS.toString());
+
+//-- ------------------------ 453
+        SQLS = new StringBuilder();
+        SQLS.append("CREATE TABLE `campaigncontent` (");
+        SQLS.append("  `campaigncontentID` int(10) unsigned NOT NULL AUTO_INCREMENT,");
+        SQLS.append("  `campaign` varchar(45) NOT NULL,");
+        SQLS.append("  `testbattery` varchar(45) NOT NULL,");
+        SQLS.append("  PRIMARY KEY (`campaigncontentID`),");
+        SQLS.append("  UNIQUE KEY `IX_campaigncontent_01` (`campaign`, `testbattery`),");
+        SQLS.append("  KEY `IX_campaigncontent_02` (`campaign`),");
+        SQLS.append("  CONSTRAINT `FK_campaigncontent_01` FOREIGN KEY (`campaign`) REFERENCES `campaign` (`campaign`) ON DELETE CASCADE ON UPDATE CASCADE,");
+        SQLS.append("  CONSTRAINT `FK_campaigncontent_02` FOREIGN KEY (`testbattery`) REFERENCES `testbattery` (`testbattery`) ON DELETE CASCADE ON UPDATE CASCADE");
+        SQLS.append(") ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;");
+        SQLInstruction.add(SQLS.toString());
+
 
         return SQLInstruction;
     }

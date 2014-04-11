@@ -71,17 +71,17 @@ public class ProjectDAO implements IProjectDAO {
                         result = factoryProject.create(idProject, vcCode, description, active, dateCreation);
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(ProjectDAO.class.getName(), Level.ERROR, exception.toString());
+                    MyLogger.log(ProjectDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(ProjectDAO.class.getName(), Level.ERROR, exception.toString());
+                MyLogger.log(ProjectDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(ProjectDAO.class.getName(), Level.ERROR, exception.toString());
+            MyLogger.log(ProjectDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
         } finally {
             try {
                 if (connection != null) {
@@ -120,17 +120,17 @@ public class ProjectDAO implements IProjectDAO {
                         result.add(factoryProject.create(idProject, code, description, active, dateCreation));
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(ProjectDAO.class.getName(), Level.ERROR, exception.toString());
+                    MyLogger.log(ProjectDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(ProjectDAO.class.getName(), Level.ERROR, exception.toString());
+                MyLogger.log(ProjectDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(ProjectDAO.class.getName(), Level.ERROR, exception.toString());
+            MyLogger.log(ProjectDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
         } finally {
             try {
                 if (connection != null) {
@@ -164,12 +164,12 @@ public class ProjectDAO implements IProjectDAO {
                 throwExcep = false;
 
             } catch (SQLException exception) {
-                MyLogger.log(ProjectDAO.class.getName(), Level.ERROR, exception.toString());
+                MyLogger.log(ProjectDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(ProjectDAO.class.getName(), Level.ERROR, exception.toString());
+            MyLogger.log(ProjectDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
         } finally {
             try {
                 if (connection != null) {
@@ -197,12 +197,12 @@ public class ProjectDAO implements IProjectDAO {
 
                 throwExcep = preStat.executeUpdate() == 0;
             } catch (SQLException exception) {
-                MyLogger.log(ProjectDAO.class.getName(), Level.ERROR, exception.toString());
+                MyLogger.log(ProjectDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(ProjectDAO.class.getName(), Level.ERROR, exception.toString());
+            MyLogger.log(ProjectDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
         } finally {
             try {
                 if (connection != null) {
@@ -233,12 +233,12 @@ public class ProjectDAO implements IProjectDAO {
 
                 throwExcep = preStat.executeUpdate() == 0;
             } catch (SQLException exception) {
-                MyLogger.log(ProjectDAO.class.getName(), Level.ERROR, exception.toString());
+                MyLogger.log(ProjectDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(ProjectDAO.class.getName(), Level.ERROR, exception.toString());
+            MyLogger.log(ProjectDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
         } finally {
             try {
                 if (connection != null) {

@@ -95,10 +95,6 @@
         <servlet-class>org.cerberus.refactor.TestcaseListGrid</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>UpdateProperties</servlet-name>
-        <servlet-class>org.cerberus.refactor.UpdateProperties</servlet-class>
-    </servlet>
-    <servlet>
         <servlet-name>CreateTestCase</servlet-name>
         <servlet-class>org.cerberus.servlet.testCase.CreateTestCase</servlet-class>
     </servlet>
@@ -419,10 +415,6 @@
     <servlet-mapping>
         <servlet-name>TestcaseListGrid</servlet-name>
         <url-pattern>/TestcaseListGrid</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>UpdateProperties</servlet-name>
-        <url-pattern>/UpdateProperties</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>CreateTestCase</servlet-name>
@@ -789,6 +781,7 @@
             <url-pattern>/TestCase.jsp</url-pattern>
             <url-pattern>/TestCaseSearch.jsp</url-pattern>
             <url-pattern>/V2_TestCase2.jsp</url-pattern>
+            <url-pattern>/TestPerApplication.jsp</url-pattern>
         </web-resource-collection>
         <web-resource-collection>
             <web-resource-name>servlet</web-resource-name>

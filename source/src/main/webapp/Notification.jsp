@@ -20,7 +20,6 @@
 <%@page import="java.sql.Connection"%>
 <%@page import="java.sql.ResultSet"%>
 <%@page import="java.sql.Statement"%>
-<%@page import="com.mysql.jdbc.StringUtils"%>
 <%@page import="org.cerberus.service.IDocumentationService"%>
 <%@page import="org.cerberus.service.IParameterService"%>
 <%@page import="org.cerberus.serviceEmail.IEmailGeneration"%>

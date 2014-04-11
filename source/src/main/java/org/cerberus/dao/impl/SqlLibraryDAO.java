@@ -87,17 +87,17 @@ public class SqlLibraryDAO implements ISqlLibraryDAO {
                         throwEx = true;
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(SqlLibraryDAO.class.getName(), Level.ERROR, exception.toString());
+                    MyLogger.log(SqlLibraryDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(SqlLibraryDAO.class.getName(), Level.ERROR, exception.toString());
+                MyLogger.log(SqlLibraryDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(SqlLibraryDAO.class.getName(), Level.ERROR, exception.toString());
+            MyLogger.log(SqlLibraryDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
         } finally {
             try {
                 if (connection != null) {
@@ -133,12 +133,12 @@ public class SqlLibraryDAO implements ISqlLibraryDAO {
                 throwExcep = false;
 
             } catch (SQLException exception) {
-                MyLogger.log(SqlLibraryDAO.class.getName(), Level.ERROR, exception.toString());
+                MyLogger.log(SqlLibraryDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(SqlLibraryDAO.class.getName(), Level.ERROR, exception.toString());
+            MyLogger.log(SqlLibraryDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
         } finally {
             try {
                 if (connection != null) {
@@ -172,12 +172,12 @@ public class SqlLibraryDAO implements ISqlLibraryDAO {
                 throwExcep = false;
 
             } catch (SQLException exception) {
-                MyLogger.log(SqlLibraryDAO.class.getName(), Level.ERROR, exception.toString());
+                MyLogger.log(SqlLibraryDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(SqlLibraryDAO.class.getName(), Level.ERROR, exception.toString());
+            MyLogger.log(SqlLibraryDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
         } finally {
             try {
                 if (connection != null) {
@@ -208,12 +208,12 @@ public class SqlLibraryDAO implements ISqlLibraryDAO {
                 throwExcep = false;
 
             } catch (SQLException exception) {
-                MyLogger.log(SqlLibraryDAO.class.getName(), Level.ERROR, exception.toString());
+                MyLogger.log(SqlLibraryDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(SqlLibraryDAO.class.getName(), Level.ERROR, exception.toString());
+            MyLogger.log(SqlLibraryDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
         } finally {
             try {
                 if (connection != null) {
@@ -244,17 +244,17 @@ public class SqlLibraryDAO implements ISqlLibraryDAO {
                         list.add(this.loadSqlLibraryFromResultSet(resultSet));
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(SqlLibraryDAO.class.getName(), Level.ERROR, exception.toString());
+                    MyLogger.log(SqlLibraryDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(SqlLibraryDAO.class.getName(), Level.ERROR, exception.toString());
+                MyLogger.log(SqlLibraryDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(SqlLibraryDAO.class.getName(), Level.ERROR, exception.toString());
+            MyLogger.log(SqlLibraryDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
         } finally {
             try {
                 if (connection != null) {
@@ -325,19 +325,19 @@ public class SqlLibraryDAO implements ISqlLibraryDAO {
                     }
 
                 } catch (SQLException exception) {
-                    MyLogger.log(SqlLibraryDAO.class.getName(), Level.ERROR, exception.toString());
+                    MyLogger.log(SqlLibraryDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
                 } finally {
                     resultSet.close();
                 }
 
             } catch (SQLException exception) {
-                MyLogger.log(SqlLibraryDAO.class.getName(), Level.ERROR, exception.toString());
+                MyLogger.log(SqlLibraryDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
             } finally {
                 preStat.close();
             }
 
         } catch (SQLException exception) {
-            MyLogger.log(SqlLibraryDAO.class.getName(), Level.ERROR, exception.toString());
+            MyLogger.log(SqlLibraryDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
         } finally {
             try {
                 if (connection != null) {
@@ -379,12 +379,12 @@ public class SqlLibraryDAO implements ISqlLibraryDAO {
                 throwExcep = false;
 
             } catch (SQLException exception) {
-                MyLogger.log(SqlLibraryDAO.class.getName(), Level.ERROR, exception.toString());
+                MyLogger.log(SqlLibraryDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(SqlLibraryDAO.class.getName(), Level.ERROR, exception.toString());
+            MyLogger.log(SqlLibraryDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
         } finally {
             try {
                 if (connection != null) {
@@ -443,19 +443,19 @@ public class SqlLibraryDAO implements ISqlLibraryDAO {
                     }
 
                 } catch (SQLException exception) {
-                    MyLogger.log(SqlLibraryDAO.class.getName(), Level.ERROR, exception.toString());
+                    MyLogger.log(SqlLibraryDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
                 } finally {
                     resultSet.close();
                 }
 
             } catch (SQLException exception) {
-                MyLogger.log(SqlLibraryDAO.class.getName(), Level.ERROR, exception.toString());
+                MyLogger.log(SqlLibraryDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
             } finally {
                 preStat.close();
             }
 
         } catch (SQLException exception) {
-            MyLogger.log(SqlLibraryDAO.class.getName(), Level.ERROR, exception.toString());
+            MyLogger.log(SqlLibraryDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
         } finally {
             try {
                 if (connection != null) {

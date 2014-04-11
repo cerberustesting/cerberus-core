@@ -85,12 +85,12 @@ public class TestCaseExecutionWWWDetDAO implements ITestCaseExecutionWWWDetDAO {
                 MyLogger.log(TestCaseExecutionWWWDetDAO.class.getName(), Level.DEBUG, "Inserting detail. " + detail.getUrl());
 
             } catch (SQLException exception) {
-                MyLogger.log(TestCaseExecutionWWWDetDAO.class.getName(), Level.ERROR, exception.toString());
+                MyLogger.log(TestCaseExecutionWWWDetDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(TestCaseExecutionWWWDetDAO.class.getName(), Level.ERROR, exception.toString());
+            MyLogger.log(TestCaseExecutionWWWDetDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
         } finally {
             try {
                 if (connection != null) {
@@ -120,17 +120,17 @@ public class TestCaseExecutionWWWDetDAO implements ITestCaseExecutionWWWDetDAO {
                         list.add(loadStatistic(resultSet));
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(TestCaseStepDAO.class.getName(), Level.ERROR, exception.toString());
+                    MyLogger.log(TestCaseStepDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(TestCaseStepDAO.class.getName(), Level.ERROR, exception.toString());
+                MyLogger.log(TestCaseStepDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(TestCaseStepDAO.class.getName(), Level.ERROR, exception.toString());
+            MyLogger.log(TestCaseStepDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
         } finally {
             try {
                 if (connection != null) {
