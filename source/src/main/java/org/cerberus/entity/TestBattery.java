@@ -29,10 +29,10 @@ import java.io.Serializable;
     @UniqueConstraint(columnNames = {"testbattery"})})
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "TestBattery.findAll", query = "SELECT t FROM TestBattery t"),
-    @NamedQuery(name = "TestBattery.findByTestbatteryID", query = "SELECT t FROM TestBattery t WHERE t.testbatteryID = :testbatteryID"),
-    @NamedQuery(name = "TestBattery.findByTestbattery", query = "SELECT t FROM TestBattery t WHERE t.testbattery = :testbattery"),
-    @NamedQuery(name = "TestBattery.findByDescription", query = "SELECT t FROM TestBattery t WHERE t.description = :description")})
+    @NamedQuery(name = "TestBattery.findAll", query = "SELECT t FROM testbattery t"),
+    @NamedQuery(name = "TestBattery.findByTestbatteryID", query = "SELECT t FROM testbattery t WHERE t.testbatteryID = :testbatteryID"),
+    @NamedQuery(name = "TestBattery.findByTestbattery", query = "SELECT t FROM testbattery t WHERE t.testbattery = :testbattery"),
+    @NamedQuery(name = "TestBattery.findByDescription", query = "SELECT t FROM testbattery t WHERE t.description = :description")})
  */
 public class TestBattery implements Serializable {
     private static final long serialVersionUID = 1L;

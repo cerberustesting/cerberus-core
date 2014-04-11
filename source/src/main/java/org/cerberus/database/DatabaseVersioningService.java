@@ -3159,6 +3159,75 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("ALTER TABLE `testcaseexecution` DROP INDEX `IX_testcaseexecution_04` ,ADD INDEX `IX_testcaseexecution_04` (`Test` ASC, `TestCase` ASC, `Country` ASC, `Browser` ASC, `Start` ASC, `ControlStatus` ASC);");
         SQLInstruction.add(SQLS.toString());
 
+
+//Add Campaing management tables.
+//-- ------------------------ 449
+        SQLS = new StringBuilder();
+        SQLS.append("CREATE TABLE `testbattery` (");
+        SQLS.append("  `testbatteryID` int(10) unsigned NOT NULL AUTO_INCREMENT,");
+        SQLS.append("  `testbattery` varchar(45) NOT NULL,");
+        SQLS.append("  `Description` varchar(300) NOT NULL DEFAULT '',");
+        SQLS.append("  PRIMARY KEY (`testbatteryID`),");
+        SQLS.append("  UNIQUE KEY `IX_testbattery_01` (`testbattery`)");
+        SQLS.append(") ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;");
+        SQLInstruction.add(SQLS.toString());
+
+//-- ------------------------ 450
+        SQLS = new StringBuilder();
+        SQLS.append("CREATE TABLE `testbatterycontent` (");
+        SQLS.append("  `testbatterycontentID` int(10) unsigned NOT NULL AUTO_INCREMENT,");
+        SQLS.append("  `testbattery` varchar(45) NOT NULL,");
+        SQLS.append("  `Test` varchar(45) NOT NULL,");
+        SQLS.append("  `TestCase` varchar(45) NOT NULL,");
+        SQLS.append("  PRIMARY KEY (`testbatterycontentID`),");
+        SQLS.append("  UNIQUE KEY `IX_testbatterycontent_01` (`testbattery`, `Test`, `TestCase`),");
+        SQLS.append("  KEY `IX_testbatterycontent_02` (`testbattery`),");
+        SQLS.append("  KEY `IX_testbatterycontent_03` (`Test`, `TestCase`),");
+        SQLS.append("  CONSTRAINT `FK_testbatterycontent_01` FOREIGN KEY (`testbattery`) REFERENCES `testbattery` (`testbattery`) ON DELETE CASCADE ON UPDATE CASCADE,");
+        SQLS.append("  CONSTRAINT `FK_testbatterycontent_02` FOREIGN KEY (`Test`,`TestCase`) REFERENCES `testcase` (`Test`,`TestCase`) ON DELETE CASCADE ON UPDATE CASCADE");
+        SQLS.append(") ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;");
+        SQLInstruction.add(SQLS.toString());
+
+//-- ------------------------ 451
+        SQLS = new StringBuilder();
+        SQLS.append("CREATE TABLE `campaign` (");
+        SQLS.append("  `campaignID` int(10) unsigned NOT NULL AUTO_INCREMENT,");
+        SQLS.append("  `campaign` varchar(45) NOT NULL,");
+        SQLS.append("  `Description` varchar(300) NOT NULL DEFAULT '',");
+        SQLS.append("  PRIMARY KEY (`campaignID`),");
+        SQLS.append("  UNIQUE KEY `IX_campaign_01` (`campaign`)");
+        SQLS.append(") ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;");
+        SQLInstruction.add(SQLS.toString());
+
+//-- ------------------------ 452
+        SQLS = new StringBuilder();
+        SQLS.append("CREATE TABLE `campaignparameter` (");
+        SQLS.append("  `campaignparameterID` int(10) unsigned NOT NULL AUTO_INCREMENT,");
+        SQLS.append("  `campaign` varchar(45) NOT NULL,");
+        SQLS.append("  `Parameter` varchar(100) NOT NULL,");
+        SQLS.append("  `Value` varchar(100) NOT NULL,");
+        SQLS.append("  PRIMARY KEY (`campaignparameterID`),");
+        SQLS.append("  UNIQUE KEY `IX_campaignparameter_01` (`campaign`, `Parameter`),");
+        SQLS.append("  KEY `IX_campaignparameter_02` (`campaign`),");
+        SQLS.append("  CONSTRAINT `FK_campaignparameter_01` FOREIGN KEY (`campaign`) REFERENCES `campaign` (`campaign`) ON DELETE CASCADE ON UPDATE CASCADE");
+        SQLS.append(") ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;");
+        SQLInstruction.add(SQLS.toString());
+
+//-- ------------------------ 453
+        SQLS = new StringBuilder();
+        SQLS.append("CREATE TABLE `campaigncontent` (");
+        SQLS.append("  `campaigncontentID` int(10) unsigned NOT NULL AUTO_INCREMENT,");
+        SQLS.append("  `campaign` varchar(45) NOT NULL,");
+        SQLS.append("  `testbattery` varchar(45) NOT NULL,");
+        SQLS.append("  PRIMARY KEY (`campaigncontentID`),");
+        SQLS.append("  UNIQUE KEY `IX_campaigncontent_01` (`campaign`, `testbattery`),");
+        SQLS.append("  KEY `IX_campaigncontent_02` (`campaign`),");
+        SQLS.append("  CONSTRAINT `FK_campaigncontent_01` FOREIGN KEY (`campaign`) REFERENCES `campaign` (`campaign`) ON DELETE CASCADE ON UPDATE CASCADE,");
+        SQLS.append("  CONSTRAINT `FK_campaigncontent_02` FOREIGN KEY (`testbattery`) REFERENCES `testbattery` (`testbattery`) ON DELETE CASCADE ON UPDATE CASCADE");
+        SQLS.append(") ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;");
+        SQLInstruction.add(SQLS.toString());
+
+
         return SQLInstruction;
     }
 }

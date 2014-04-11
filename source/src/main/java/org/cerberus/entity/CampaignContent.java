@@ -29,8 +29,8 @@ import java.io.Serializable;
     @UniqueConstraint(columnNames = {"campaign", "testbattery"})})
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "CampaignContent.findAll", query = "SELECT c FROM CampaignContent c"),
-    @NamedQuery(name = "CampaignContent.findByCampaigncontentID", query = "SELECT c FROM CampaignContent c WHERE c.campaigncontentID = :campaigncontentID")})
+    @NamedQuery(name = "CampaignContent.findAll", query = "SELECT c FROM campaigncontent c"),
+    @NamedQuery(name = "CampaignContent.findByCampaigncontentID", query = "SELECT c FROM campaigncontent c WHERE c.campaigncontentID = :campaigncontentID")})
  */
 public class CampaignContent implements Serializable {
     private static final long serialVersionUID = 1L;

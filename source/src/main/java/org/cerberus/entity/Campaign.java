@@ -32,10 +32,10 @@ import org.codehaus.jackson.annotate.JsonIgnore;
     @UniqueConstraint(columnNames = {"campaign"})})
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Campaign.findAll", query = "SELECT c FROM Campaign c"),
-    @NamedQuery(name = "Campaign.findByCampaignID", query = "SELECT c FROM Campaign c WHERE c.campaignID = :campaignID"),
-    @NamedQuery(name = "Campaign.findByCampaign", query = "SELECT c FROM Campaign c WHERE c.campaign = :campaign"),
-    @NamedQuery(name = "Campaign.findByDescription", query = "SELECT c FROM Campaign c WHERE c.description = :description")})
+    @NamedQuery(name = "Campaign.findAll", query = "SELECT c FROM campaign c"),
+    @NamedQuery(name = "Campaign.findByCampaignID", query = "SELECT c FROM campaign c WHERE c.campaignID = :campaignID"),
+    @NamedQuery(name = "Campaign.findByCampaign", query = "SELECT c FROM campaign c WHERE c.campaign = :campaign"),
+    @NamedQuery(name = "Campaign.findByDescription", query = "SELECT c FROM campaign c WHERE c.description = :description")})
  */
 public class Campaign implements Serializable {
     private static final long serialVersionUID = 1L;
