@@ -3156,7 +3156,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
 //Add browser in an index of testcaseexecution table.
 //-- ------------------------ 448
         SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `cerberus`.`testcaseexecution` DROP INDEX `IX_testcaseexecution_04` ,ADD INDEX `IX_testcaseexecution_04` (`Test` ASC, `TestCase` ASC, `Country` ASC, `Browser` ASC, `Start` ASC, `ControlStatus` ASC);");
+        SQLS.append("ALTER TABLE `testcaseexecution` DROP INDEX `IX_testcaseexecution_04` ,ADD INDEX `IX_testcaseexecution_04` (`Test` ASC, `TestCase` ASC, `Country` ASC, `Browser` ASC, `Start` ASC, `ControlStatus` ASC);");
         SQLInstruction.add(SQLS.toString());
 
         return SQLInstruction;
