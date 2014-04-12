@@ -52,5 +52,5 @@ You can use the start-selenium.sh script in tools/selenium/ folder. Update it in
 
 Script execution automation can be done using the scripts located in tools/batchexecution/.
  
-NB1 : don't forget to update the cerberus parameters according to your Environment --> parameter table needs to be changed according to your need (See CerberusPicturesConfig file inside docs folder).
+NB1 : don't forget to update the cerberus parameters according to your Environment --> parameter page in Admin menu needs to be changed according to your local config (See CerberusPicturesConfig file inside docs folder).
 NB2 : The provided scripts install the application on default single instance server of Glassfish. You can of course change that to install it inside a cluster environment.
