@@ -370,7 +370,7 @@ public class ApplicationDAO implements IApplicationDAO {
     @Override
     public void deleteApplication(Application application) throws CerberusException {
         boolean throwExcep = false;
-        final String query = "DELETE FROM application WHERE aplication = ? ";
+        final String query = "DELETE FROM application WHERE application = ? ";
 
         Connection connection = this.databaseSpring.connect();
         try {
