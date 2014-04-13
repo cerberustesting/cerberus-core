@@ -3227,6 +3227,12 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(") ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;");
         SQLInstruction.add(SQLS.toString());
 
+//Add Database inside SQL Library table.
+//-- ------------------------ 454
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `sqllibrary` CHANGE COLUMN `Name` `Name` VARCHAR(45) NOT NULL FIRST,");
+        SQLS.append("  ADD COLUMN `Database` VARCHAR(45) NULL DEFAULT '' AFTER `Type` ;");
+        SQLInstruction.add(SQLS.toString());
 
         return SQLInstruction;
     }

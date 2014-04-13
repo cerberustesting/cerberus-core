@@ -49,8 +49,9 @@ public class CreateSqlLibrary extends HttpServlet {
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
         
         try {
-        String type = policy.sanitize(request.getParameter("Type"));
         String name = policy.sanitize(request.getParameter("Name"));
+        String type = policy.sanitize(request.getParameter("Type"));
+        String database = policy.sanitize(request.getParameter("Database"));
         String script = policy.sanitize(request.getParameter("Script"));
         String description = policy.sanitize(request.getParameter("Description"));
 
@@ -58,7 +59,7 @@ public class CreateSqlLibrary extends HttpServlet {
         ISqlLibraryService sqlLibraryService = appContext.getBean(ISqlLibraryService.class);
         IFactorySqlLibrary factorySqlLibrary = appContext.getBean(IFactorySqlLibrary.class);
         
-        SqlLibrary sqlLib = factorySqlLibrary.create(type, name, script, description);
+        SqlLibrary sqlLib = factorySqlLibrary.create(name, type, database, script, description);
         sqlLibraryService.createSqlLibrary(sqlLib);
         
             /**

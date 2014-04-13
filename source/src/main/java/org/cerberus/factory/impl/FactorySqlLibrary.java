@@ -30,11 +30,12 @@ import org.springframework.stereotype.Service;
 public class FactorySqlLibrary implements IFactorySqlLibrary {
 
     @Override
-    public SqlLibrary create(String type, String name, String script, String description) {
+    public SqlLibrary create(String name, String type, String database, String script, String description) {
         SqlLibrary sqlLibrary = new SqlLibrary();
         sqlLibrary.setName(name);
-        sqlLibrary.setScript(script);
         sqlLibrary.setType(type);
+        sqlLibrary.setDatabase(database);
+        sqlLibrary.setScript(script);
         sqlLibrary.setDescription(description);
         return sqlLibrary;
     }
