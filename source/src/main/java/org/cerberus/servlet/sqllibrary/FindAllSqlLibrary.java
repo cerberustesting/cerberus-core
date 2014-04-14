@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package org.cerberus.servlet.sqllibrary;
 
 import java.io.IOException;
@@ -33,8 +32,9 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 public class FindAllSqlLibrary extends HttpServlet {
 
     /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
+     * Processes requests for both HTTP
+     * <code>GET</code> and
+     * <code>POST</code> methods.
      *
      * @param request servlet request
      * @param response servlet response
@@ -46,7 +46,7 @@ public class FindAllSqlLibrary extends HttpServlet {
         response.setContentType("text/html;charset=UTF-8");
         PrintWriter out = response.getWriter();
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
-        
+
         try {
             String echo = policy.sanitize(request.getParameter("sEcho"));
             String sStart = policy.sanitize(request.getParameter("iDisplayStart"));
@@ -54,33 +54,39 @@ public class FindAllSqlLibrary extends HttpServlet {
             String sCol = policy.sanitize(request.getParameter("iSortCol_0"));
             String sdir = policy.sanitize(request.getParameter("sSortDir_0"));
             String dir = "asc";
-            String[] cols = { "Name", "Type","Script", "Description"};
+            String[] cols = {"Name", "Type", "Database", "Script", "Description"};
 
-/*            JSONObject result = new JSONObject();
-            JSONArray array = new JSONArray();*/
-            
+            /*            JSONObject result = new JSONObject();
+             JSONArray array = new JSONArray();*/
+
             int amount = 10;
             int start = 0;
             int col = 0;
 
-            String type = "";
             String name = "";
+            String type = "";
+            String database = "";
             String script = "";
             String description = "";
 
             name = policy.sanitize(request.getParameter("sSearch_0"));
             type = policy.sanitize(request.getParameter("sSearch_1"));
-            script = policy.sanitize(request.getParameter("sSearch_2"));
-            description = policy.sanitize(request.getParameter("sSearch_3"));
+            database = policy.sanitize(request.getParameter("sSearch_2"));
+            script = policy.sanitize(request.getParameter("sSearch_3"));
+            description = policy.sanitize(request.getParameter("sSearch_4"));
 
             List<String> sArray = new ArrayList<String>();
+            if (!name.equals("")) {
+                String sName = " `name` like '%" + name + "%'";
+                sArray.add(sName);
+            }
             if (!type.equals("")) {
                 String sType = " `type` like '%" + type + "%'";
                 sArray.add(sType);
             }
-            if (!name.equals("")) {
-                String sName = " `name` like '%" + name + "%'";
-                sArray.add(sName);
+            if (!database.equals("")) {
+                String sDatabase = " `database` like '%" + database + "%'";
+                sArray.add(sDatabase);
             }
             if (!script.equals("")) {
                 String sScript = " `script` like '%" + script + "%'";
@@ -148,24 +154,25 @@ public class FindAllSqlLibrary extends HttpServlet {
                 JSONArray row = new JSONArray();
                 row.put(sqlLib.getName())
                         .put(sqlLib.getType())
+                        .put(sqlLib.getDatabase())
                         .put(sqlLib.getScript())
                         .put(sqlLib.getDescription());
 
                 data.put(row);
             }
-            
+
             Integer iTotalRecords = sqlLibService.getNumberOfSqlLibraryPerCriteria("", "");
             Integer iTotalDisplayRecords = sqlLibService.getNumberOfSqlLibraryPerCriteria(searchTerm, inds);
-            
+
             jsonResponse.put("aaData", data);
             jsonResponse.put("sEcho", echo);
             jsonResponse.put("iTotalRecords", iTotalRecords);
             jsonResponse.put("iTotalDisplayRecords", iTotalDisplayRecords);
-            
+
 
             response.setContentType("application/json");
             response.getWriter().print(jsonResponse.toString());
-            
+
         } catch (JSONException ex) {
             MyLogger.log(FindAllSqlLibrary.class.getName(), Level.FATAL, ex.toString());
         } finally {
@@ -175,7 +182,8 @@ public class FindAllSqlLibrary extends HttpServlet {
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
-     * Handles the HTTP <code>GET</code> method.
+     * Handles the HTTP
+     * <code>GET</code> method.
      *
      * @param request servlet request
      * @param response servlet response
@@ -189,7 +197,8 @@ public class FindAllSqlLibrary extends HttpServlet {
     }
 
     /**
-     * Handles the HTTP <code>POST</code> method.
+     * Handles the HTTP
+     * <code>POST</code> method.
      *
      * @param request servlet request
      * @param response servlet response
@@ -211,5 +220,4 @@ public class FindAllSqlLibrary extends HttpServlet {
     public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
-
 }

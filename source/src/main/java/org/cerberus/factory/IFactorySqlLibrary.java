@@ -26,6 +26,6 @@ import org.cerberus.entity.SqlLibrary;
  * @author bcivel
  */
 public interface IFactorySqlLibrary {
-    
-    SqlLibrary create(String type,String name,String script,String description);
+
+    SqlLibrary create(String name, String type, String database, String script, String description);
 }

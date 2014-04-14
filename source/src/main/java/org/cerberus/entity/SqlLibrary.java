@@ -23,8 +23,9 @@ package org.cerberus.entity;
  */
 public class SqlLibrary {
 
-    private String type;
     private String name;
+    private String type;
+    private String database;
     private String script;
     private String description;
 
@@ -59,4 +60,14 @@ public class SqlLibrary {
     public void setType(String type) {
         this.type = type;
     }
+
+    public String getDatabase() {
+        return database;
+    }
+
+    public void setDatabase(String Database) {
+        this.database = Database;
+    }
+    
+    
 }

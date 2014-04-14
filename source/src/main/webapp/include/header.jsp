@@ -148,14 +148,14 @@
                     // We access and update the user object only if database is uptodate. This is to prenvent 500 error 
                     //   when adding new column on user table and trying to access this column even if it does not exist yet.
                     //   Than means that system cannot be saved until database has been updated by administrator.
-                    if ((DatabaseVersioningService.isDatabaseUptodate()) && request.isUserInRole("Administrator")) {
+                    if (DatabaseVersioningService.isDatabaseUptodate()) {
                         if (!(MyUser.equals(""))) {
 
                             // We load the user object.
                             User MyUserobj = myUserService.findUserByKey(MyUser);
 
-                            MyLogger.log("DatabaseMaintenance.jsp", Level.INFO, request.getRequestURI());
-                            // If user needs to change its password, we redirect to Change Password page.
+                            // If we are not already in changepassword page and user needs to change its password,
+                            //    --> we redirect to Change Password page.
                             if (!(request.getRequestURI().contains("ChangePassword.jsp"))) {
                                 if (MyUserobj.getRequest().equalsIgnoreCase("Y")) {
                                     request.getRequestDispatcher("/ChangePassword.jsp").forward(request, response);
@@ -174,18 +174,6 @@
 
                         }
                     }
-
-                    if (!(MyUser.equals(""))) {
-                        User MyUserobj = myUserService.findUserByKey(MyUser);
-                        if (MySystem.equals("")) {
-                                    MySystem = MyUserobj.getDefaultSystem();
-                                } else {
-                                    if (!(MyUserobj.getDefaultSystem().equals(MySystem))) {
-                                        MyUserobj.setDefaultSystem(MySystem);
-                                        myUserService.updateUser(MyUserobj);
-                                    }
-                                }
-                        }
 
                     request.setAttribute("MySystem", MySystem);
                 %>                

@@ -17,6 +17,7 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
+<%@page import="org.cerberus.service.IDocumentationService"%>
 <% Date DatePageStart = new Date();%>
 
 <!DOCTYPE html>
@@ -53,8 +54,9 @@
                     "aoColumns": [
                         {"sName": "Name", "sWidth": "10%"},
                         {"sName": "Type", "sWidth": "10%"},
-                        {"sName": "Script", "sWidth": "40%"},
-                        {"sName": "Description", "sWidth": "40%"}
+                        {"sName": "Database", "sWidth": "10%"},
+                        {"sName": "Script", "sWidth": "35%"},
+                        {"sName": "Description", "sWidth": "35%"}
                         
                     ]
                 }
@@ -87,6 +89,13 @@
                         null,
                         {onblur: 'submit',
                             placeholder: ''}, 
+                        {
+                            loadtext: 'loading...',
+                            type: 'select',
+                            loadurl: 'GetInvariantList?idName=PROPERTYDATABASE',
+                            loadtype: 'GET',
+                            submit:'Save changes'
+                        },
                         {onblur: 'submit',
                             placeholder: ''},
                         {onblur: 'submit',
@@ -103,6 +112,15 @@
     <body  id="wrapper">
         <%@ include file="include/function.jsp" %>
         <%@ include file="include/header.jsp" %>
+        <%
+            /*
+             * Database connexion
+             */
+            Connection conn = db.connect();
+            try {
+                IDocumentationService docService = appContext.getBean(IDocumentationService.class);
+
+        %>
 
         <p class="dttTitle">SQL Library</p>
         <div style="width: 100%; font: 90% sans-serif">
@@ -111,6 +129,7 @@
                     <tr>
                         <th>Name</th>
                         <th>Type</th>
+                        <th>Database</th>
                         <th>Script</th>
                         <th>Description</th>
                     </tr>
@@ -123,20 +142,23 @@
             <form id="formAddNewRow" action="#" title="Add SQL Data" style="width:350px" method="post">
                 <label for="Name" style="font-weight:bold">Name</label>
                 <input id="Name" name="Name" style="width:350px;" 
-                       class="ncdetailstext" rel="1" >
+                       class="ncdetailstext" rel="0" >
                 <label for="Type" style="font-weight:bold">Type</label>
                 <input id="Type" name="Type" style="width:350px;" 
-                       class="ncdetailstext" rel="0" >
+                       class="ncdetailstext" rel="1" >
                 <br />
                 <br />
                 <label for="Description" style="font-weight:bold">Description</label>
                 <input id="Description" name="Description" style="width:750px;" 
-                       class="ncdetailstext" rel="3" >
+                       class="ncdetailstext" rel="4" >
                 <br />
+                <br />
+                <label for="Database" style="font-weight:bold">Database</label>
+                <%=ComboInvariantAjax(conn, "Database", "", "Database", "2", "PROPERTYDATABASE", "", "", false)%>
                 <br />
                 <label for="Script" style="font-weight:bold">Script</label>
                 <textarea id="Script" name="Script" style="width:800px;" rows="5" 
-                       class="ncdetailstext" rel="2" ></textarea>
+                       class="ncdetailstext" rel="3" ></textarea>
                 <br />
                 <br />
                 <div style="width: 250px; float:right">
@@ -144,6 +166,16 @@
                     <button id="btnAddNewRowCancel">Cancel</button>
                 </div>
             </form>
+            <%
+                } catch (Exception e) {
+                    out.println(e);
+                } finally {
+                    try {
+                        conn.close();
+                    } catch (Exception ex) {
+                    }
+                }
+            %>
         </div>
         <br><%
             out.print(display_footer(DatePageStart));

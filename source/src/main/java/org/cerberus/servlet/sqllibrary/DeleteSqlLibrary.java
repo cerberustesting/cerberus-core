@@ -55,7 +55,7 @@ public class DeleteSqlLibrary extends HttpServlet {
             ISqlLibraryService sqlLibraryService = appContext.getBean(ISqlLibraryService.class);
             IFactorySqlLibrary factorySqlLibrary = appContext.getBean(IFactorySqlLibrary.class);
 
-            SqlLibrary sqlLib = factorySqlLibrary.create(null, name, null,  null);
+            SqlLibrary sqlLib = factorySqlLibrary.create(name, null, null, null,  null);
             sqlLibraryService.deleteSqlLibrary(sqlLib);
 
             /**
