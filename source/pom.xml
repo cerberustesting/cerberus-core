@@ -10,12 +10,12 @@
 
     <name>Cerberus</name>
 
-   <properties>
+    <properties>
         <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <netbeans.hint.deploy.server>gfv3ee6</netbeans.hint.deploy.server>
         <powermock.version>1.5.2</powermock.version>
-   </properties>
+    </properties>
 
     <dependencies>
         <dependency>
@@ -98,12 +98,12 @@
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
             <artifactId>selenium-java</artifactId>
-            <version>2.35.0</version>
+            <version>2.41.0</version>
         </dependency>
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
             <artifactId>selenium-support</artifactId>
-            <version>2.35.0</version>
+            <version>2.41.0</version>
         </dependency>
         <dependency>
             <groupId>com.googlecode.owasp-java-html-sanitizer</groupId>
@@ -159,9 +159,9 @@
             <version>1.7.1</version>
         </dependency>
         <dependency>
-	<groupId>commons-net</groupId>
-	<artifactId>commons-net</artifactId>
-	<version>2.0</version>
+            <groupId>commons-net</groupId>
+            <artifactId>commons-net</artifactId>
+            <version>2.0</version>
         </dependency>
     </dependencies>
 
