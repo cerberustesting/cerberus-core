@@ -61,6 +61,7 @@ import org.openqa.selenium.Keys;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.NoSuchWindowException;
 import org.openqa.selenium.OutputType;
+import org.openqa.selenium.Platform;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
@@ -277,24 +278,14 @@ public class SeleniumService implements ISeleniumService {
 
         DesiredCapabilities capabilities = null;
 
-        if (browser.equalsIgnoreCase("firefox")) {
-            capabilities = DesiredCapabilities.firefox();
-            FirefoxProfile profile = setFirefoxProfile(runId, record, country);
-            capabilities.setCapability(FirefoxDriver.PROFILE, profile);
-        } else if (browser.equalsIgnoreCase("IE9")) {
-            capabilities = DesiredCapabilities.internetExplorer();
-            capabilities.setCapability(CapabilityType.VERSION, "9");
-        } else if (browser.equalsIgnoreCase("IE10")) {
-            capabilities = DesiredCapabilities.internetExplorer();
-            capabilities.setCapability(CapabilityType.VERSION, "10");
-        } else if (browser.equalsIgnoreCase("IE11")) {
-            capabilities = DesiredCapabilities.internetExplorer();
-            capabilities.setCapability(CapabilityType.VERSION, "11");
-        } else if (browser.equalsIgnoreCase("chrome")) {
-            capabilities = DesiredCapabilities.chrome();
-        }
-
-
+        //TODO : take platform and version from servlet
+        String platform = "";
+        String version = "";
+        
+        capabilities = setCapabilityBrowser(capabilities, browser);
+        capabilities = setCapabilityPlatform(capabilities, platform);
+        capabilities = setCapabilityVersion(capabilities, version);
+        
         try {
             MyLogger.log(SeleniumService.class.getName(), Level.DEBUG, "Set Driver");
             WebDriver driver = new RemoteWebDriver(new URL("http://" + selenium.getHost() + ":" + selenium.getPort() + "/wd/hub"), capabilities);
@@ -313,6 +304,65 @@ public class SeleniumService implements ISeleniumService {
         }
 
         return true;
+    }
+    
+    public DesiredCapabilities setCapabilityBrowser(DesiredCapabilities capabilities, String browser) throws CerberusException {
+            if (browser.equalsIgnoreCase("firefox")) {
+            capabilities = DesiredCapabilities.firefox();
+            } else if (browser.contains("IE")) {
+            capabilities = DesiredCapabilities.internetExplorer();
+            } else if (browser.equalsIgnoreCase("chrome")) {
+            capabilities = DesiredCapabilities.chrome();
+            }else if (browser.contains("android")) {
+            capabilities = DesiredCapabilities.android();
+            }else if (browser.contains("ipad")) {
+            capabilities = DesiredCapabilities.ipad();
+            }else if (browser.contains("iphone")) {
+            capabilities = DesiredCapabilities.iphone();
+            }else if (browser.contains("opera")) {
+            capabilities = DesiredCapabilities.opera();
+            }else if (browser.contains("safari")) {
+            capabilities = DesiredCapabilities.safari();
+            } else {
+            MyLogger.log(Selenium.class.getName(), Level.WARN, "Not supported Browser : "+browser);
+            MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_SELENIUM);
+            mes.setDescription("Not supported Browser : "+browser);
+            throw new CerberusException(mes);
+            }
+     
+     return capabilities;
+    }
+
+    public DesiredCapabilities setCapabilityVersion(DesiredCapabilities capabilities, String version) throws CerberusException {
+            if (!version.equalsIgnoreCase("")) {
+            capabilities.setCapability(CapabilityType.VERSION, version);
+            }
+     
+     return capabilities;
+    }
+    
+    public DesiredCapabilities setCapabilityPlatform(DesiredCapabilities capabilities, String platform) throws CerberusException {
+            if (platform.equalsIgnoreCase("WINDOWS")) {
+            capabilities.setPlatform(Platform.WINDOWS);
+            } else if (platform.equalsIgnoreCase("LINUX")) {
+            capabilities.setPlatform(Platform.LINUX);
+            } else if (platform.equalsIgnoreCase("ANDROID")) {
+            capabilities.setPlatform(Platform.ANDROID);
+            } else if (platform.equalsIgnoreCase("MAC")) {
+            capabilities.setPlatform(Platform.MAC);
+            } else if (platform.equalsIgnoreCase("UNIX")) {
+            capabilities.setPlatform(Platform.UNIX);
+            } else if (platform.equalsIgnoreCase("VISTA")) {
+            capabilities.setPlatform(Platform.VISTA);
+            } else if (platform.equalsIgnoreCase("WIN8")) {
+            capabilities.setPlatform(Platform.WIN8);
+            } else if (platform.equalsIgnoreCase("XP")) {
+            capabilities.setPlatform(Platform.XP);
+            } else {
+            capabilities.setPlatform(Platform.ANY);
+            }
+     
+     return capabilities;
     }
 
     private By getIdentifier(String input) {
