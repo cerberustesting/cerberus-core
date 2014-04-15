@@ -53,7 +53,7 @@ public class CampaignContentDAO implements ICampaignContentDAO {
     @Override
     public List<CampaignContent> findAll() throws CerberusException {
         boolean throwEx = false;
-        final String query = "SELECT * FROM CampaignContent c";
+        final String query = "SELECT * FROM campaigncontent c";
 
         List<CampaignContent> campaignContentList = new ArrayList<CampaignContent>();
         Connection connection = this.databaseSpring.connect();
@@ -98,7 +98,7 @@ public class CampaignContentDAO implements ICampaignContentDAO {
     @Override
     public CampaignContent findCampaignContentByKey(Integer campaigncontentID) throws CerberusException {
         boolean throwEx = false;
-        final String query = "SELECT * FROM CampaignContent c WHERE c.campaigncontentID = ?";
+        final String query = "SELECT * FROM campaigncontent c WHERE c.campaigncontentID = ?";
 
         CampaignContent campaignContent = null;
         Connection connection = this.databaseSpring.connect();
@@ -141,7 +141,7 @@ public class CampaignContentDAO implements ICampaignContentDAO {
     @Override
     public List<CampaignContent> findCampaignContentByCampaignName(String campaign) throws CerberusException {
         boolean throwEx = false;
-        final String query = "SELECT * FROM CampaignContent c WHERE c.campaign = ?";
+        final String query = "SELECT * FROM campaigncontent c WHERE c.campaign = ?";
 
         List<CampaignContent> campaignContentList = new ArrayList<CampaignContent>();
         Connection connection = this.databaseSpring.connect();
@@ -187,7 +187,7 @@ public class CampaignContentDAO implements ICampaignContentDAO {
     @Override
     public List<CampaignContent> findCampaignContentsByTestBattery(String testBattery) throws CerberusException {
         boolean throwEx = false;
-        final String query = "SELECT * FROM CampaignContent c WHERE c.testbattery = ?";
+        final String query = "SELECT * FROM campaigncontent c WHERE c.testbattery = ?";
 
         List<CampaignContent> campaignContentList = new ArrayList<CampaignContent>();
         Connection connection = this.databaseSpring.connect();

@@ -27,10 +27,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Level;
 import org.cerberus.entity.Campaign;
+import org.cerberus.entity.CampaignContent;
+import org.cerberus.entity.CampaignParameter;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.log.MyLogger;
 import org.cerberus.service.ICampaignService;
 import org.cerberus.servlet.invariant.GetInvariantList;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.owasp.html.PolicyFactory;
@@ -54,12 +57,19 @@ public class GetCampaign extends HttpServlet {
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
 
         String action = policy.sanitize(request.getParameter("action"));
+        String campaign = policy.sanitize(request.getParameter("campaign"));
 
         try {
             JSONObject jsonResponse = new JSONObject();
             try {
                 if (action != null && "findAllCampaign".equals(action.trim())) {
-                    jsonResponse = findAllCampaignToJSON();
+                    jsonResponse.put("Campaigns", findAllCampaignToJSON());
+                } else if (action != null && "findAllCampaignContent".equals(action.trim())) {
+                    jsonResponse.put("CampaignContents", findAllCampaignContentToJSON(campaign));
+
+                } else if (action != null && "findAllCampaignParameter".equals(action.trim())) {
+                    jsonResponse.put("CampaignParameters", findAllCampaignParameterToJSON(campaign));
+
                 }
             } catch (CerberusException ex) {
                 response.setContentType("text/html");
@@ -75,10 +85,28 @@ public class GetCampaign extends HttpServlet {
         }
     }
 
-    private JSONObject findAllCampaignToJSON() throws JSONException, CerberusException {
-        JSONObject jsonResponse = new JSONObject();
+    private JSONArray findAllCampaignToJSON() throws JSONException, CerberusException {
+        JSONArray jsonResponse = new JSONArray();
         for (Campaign campaign : campaignService.findAll()) {
-            jsonResponse.put(campaign.getCampaign(), convertCampaignToJSONObject(campaign));
+            jsonResponse.put(convertCampaignToJSONObject(campaign));
+        }
+
+        return jsonResponse;
+    }
+
+    private JSONArray findAllCampaignContentToJSON(String campaign) throws JSONException, CerberusException {
+        JSONArray jsonResponse = new JSONArray();
+        for (CampaignContent campaignContent : campaignService.findCampaignContentsByCampaignName(campaign)) {
+            jsonResponse.put(convertCampaignContentToJSONObject(campaignContent));
+        }
+
+        return jsonResponse;
+    }
+
+    private JSONArray findAllCampaignParameterToJSON(String campaign) throws JSONException, CerberusException {
+        JSONArray jsonResponse = new JSONArray();
+        for (CampaignParameter campaignParameter : campaignService.findCampaignParametersByCampaignName(campaign)) {
+            jsonResponse.put(convertCampaignParameterToJSONObject(campaignParameter));
         }
 
         return jsonResponse;
@@ -89,6 +117,23 @@ public class GetCampaign extends HttpServlet {
         result.put("CampaignID", campaign.getCampaignID());
         result.put("Campaign", campaign.getCampaign());
         result.put("Description", campaign.getDescription());
+        return result;
+    }
+
+    private JSONObject convertCampaignContentToJSONObject(CampaignContent campaignContent) throws JSONException {
+        JSONObject result = new JSONObject();
+        result.put("CampaignContentID", campaignContent.getCampaigncontentID());
+        result.put("Campaign", campaignContent.getCampaign());
+        result.put("Testbattery", campaignContent.getTestbattery());
+        return result;
+    }
+
+    private JSONObject convertCampaignParameterToJSONObject(CampaignParameter campaignParameter) throws JSONException {
+        JSONObject result = new JSONObject();
+        result.put("CampaignParameterID", campaignParameter.getCampaignparameterID());
+        result.put("Campaign", campaignParameter.getCampaign());
+        result.put("Parameter", campaignParameter.getParameter());
+        result.put("Value", campaignParameter.getValue());
         return result;
     }
 }
