@@ -48,4 +48,6 @@ public interface ITestBatteryService {
     boolean createTestBatteryContent(TestBatteryContent testBatteryContent);
 
     List<TestBattery> findTestBatteryByCriteria(Integer testBatteryID, String testBattery, String Description) throws CerberusException;
+
+    List<TestBatteryContent> findTestBatteryContentsByCriteria(Integer testBatteryContentID, String testBattery, String test, String testCase) throws CerberusException;
 }

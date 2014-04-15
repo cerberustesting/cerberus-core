@@ -20,10 +20,13 @@
 package org.cerberus.service.impl;
 
 import java.util.List;
+import org.cerberus.dao.ITestBatteryContentDAO;
+import org.cerberus.dao.ITestBatteryDAO;
 import org.cerberus.entity.TestBattery;
 import org.cerberus.entity.TestBatteryContent;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.service.ITestBatteryService;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  *
@@ -31,49 +34,60 @@ import org.cerberus.service.ITestBatteryService;
  */
 public class TestBatteryService implements ITestBatteryService {
 
+    @Autowired
+    private ITestBatteryDAO testBatteryDAO;
+
+    @Autowired
+    private ITestBatteryContentDAO testBatteryContentDAO;
+
     @Override
     public List<TestBattery> findAll() throws CerberusException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return testBatteryDAO.findAll();
     }
 
     @Override
     public TestBattery findTestBatteryByKey(Integer testBatteryID) throws CerberusException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return testBatteryDAO.findTestBatteryByKey(testBatteryID);
     }
 
     @Override
     public TestBattery findTestBatteryByTestBatteryName(String testBattery) throws CerberusException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return testBatteryDAO.findTestBatteryByTestBatteryName(testBattery);
     }
 
     @Override
     public List<TestBatteryContent> findTestBatteryContentsByTestBatteryName(String testBattery) throws CerberusException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return testBatteryContentDAO.findTestBatteryContentsByTestBatteryName(testBattery);
     }
 
     @Override
     public boolean updateTestBattery(TestBattery testBattery) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return testBatteryDAO.updateTestBattery(testBattery);
     }
 
     @Override
     public boolean createTestBattery(TestBattery testBattery) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return testBatteryDAO.createTestBattery(testBattery);
     }
 
     @Override
     public boolean updateTestBatteryContent(TestBatteryContent testBatteryContent) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return testBatteryContentDAO.updateTestBatteryContent(testBatteryContent);
     }
 
     @Override
     public boolean createTestBatteryContent(TestBatteryContent testBatteryContent) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return testBatteryContentDAO.createTestBatteryContent(testBatteryContent);
     }
 
     @Override
     public List<TestBattery> findTestBatteryByCriteria(Integer testBatteryID, String testBattery, String Description) throws CerberusException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return testBatteryDAO.findTestBatteryByCriteria(testBatteryID, testBattery, Description);
+    }
+
+    @Override
+    public List<TestBatteryContent> findTestBatteryContentsByCriteria(Integer testBatteryContentID, String testBattery, String test, String testCase) throws CerberusException {
+        return testBatteryContentDAO.findTestBatteryContentsByCriteria(testBatteryContentID, testBattery, test, testCase);
     }
 
 }

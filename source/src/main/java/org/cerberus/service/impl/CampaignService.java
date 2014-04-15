@@ -20,11 +20,15 @@
 package org.cerberus.service.impl;
 
 import java.util.List;
+import org.cerberus.dao.ICampaignContentDAO;
+import org.cerberus.dao.ICampaignDAO;
+import org.cerberus.dao.ICampaignParameterDAO;
 import org.cerberus.entity.Campaign;
 import org.cerberus.entity.CampaignContent;
 import org.cerberus.entity.CampaignParameter;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.service.ICampaignService;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  *
@@ -32,64 +36,82 @@ import org.cerberus.service.ICampaignService;
  */
 public class CampaignService implements ICampaignService {
 
+    @Autowired
+    ICampaignDAO campaignDAO;
+
+    @Autowired
+    ICampaignContentDAO campaignContentDAO;
+
+    @Autowired
+    ICampaignParameterDAO campaignParameterDAO;
+
     @Override
     public List<Campaign> findAll() throws CerberusException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return campaignDAO.findAll();
     }
 
     @Override
     public Campaign findCampaignByKey(Integer campaignID) throws CerberusException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return campaignDAO.findCampaignByKey(campaignID);
     }
 
     @Override
     public Campaign findCampaignByCampaignName(String campaign) throws CerberusException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return campaignDAO.findCampaignByCampaignName(campaign);
     }
 
     @Override
     public List<CampaignContent> findCampaignContentsByCampaignName(String campaign) throws CerberusException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return campaignContentDAO.findCampaignContentByCampaignName(campaign);
     }
 
     @Override
     public List<CampaignParameter> findCampaignParametersByCampaignName(String campaign) throws CerberusException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return campaignParameterDAO.findCampaignParametersByCampaign(campaign);
     }
 
     @Override
     public boolean updateCampaign(Campaign campaign) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return campaignDAO.updateCampaign(campaign);
     }
 
     @Override
     public boolean updateCampaignContent(CampaignContent campaignContent) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return campaignContentDAO.updateCampaignContent(campaignContent);
     }
 
     @Override
     public boolean updateCampaignParameter(CampaignParameter campaignParameter) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return campaignParameterDAO.updateCampaignParameter(campaignParameter);
     }
 
     @Override
     public boolean createCampaign(Campaign campaign) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return campaignDAO.createCampaign(campaign);
     }
 
     @Override
     public boolean createCampaignContent(CampaignContent campaignContent) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return campaignContentDAO.createCampaignContent(campaignContent);
     }
 
     @Override
     public boolean createCampaignParameter(CampaignParameter campaignParameter) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return campaignParameterDAO.createCampaignParameter(campaignParameter);
     }
 
     @Override
     public List<Campaign> findCampaignByCriteria(Integer campaignID, String campaign, String description) throws CerberusException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return campaignDAO.findCampaignByCriteria(campaignID, campaign, description);
     }
 
+    @Override
+    public List<CampaignContent> findCampaignContentByCriteria(String campaign, Integer campaignContentID, String testBattery) throws CerberusException {
+        return campaignContentDAO.findCampaignContentByCriteria(campaign, campaignContentID, testBattery);
+    }
+
+    @Override
+    public List<CampaignParameter> findCampaignParameterByCriteria(Integer campaignparameterID, String campaign, String parameter, String value) throws CerberusException {
+        return campaignParameterDAO.findCampaignParameterByCriteria(campaignparameterID, campaign, parameter, value);
+    }
 }
