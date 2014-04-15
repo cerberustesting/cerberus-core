@@ -19,11 +19,31 @@
  */
 package org.cerberus.serviceEngine;
 
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
+import org.apache.log4j.Level;
+import org.cerberus.entity.MessageEvent;
+import org.cerberus.entity.MessageEventEnum;
 import org.cerberus.entity.MessageGeneral;
 import org.cerberus.entity.TestCaseStepActionExecution;
 import org.cerberus.exception.CerberusEventException;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.log.MyLogger;
+import org.cerberus.serviceEngine.impl.SeleniumService;
+import org.cerberus.util.ParameterParserUtil;
+import org.cerberus.util.StringUtil;
+import org.openqa.selenium.Keys;
+import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.NoSuchWindowException;
+import org.openqa.selenium.WebDriverException;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxProfile;
+import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.Select;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 /**
  * {Insert class description here}
@@ -80,6 +100,38 @@ public interface ISeleniumService {
     String getAttributeFromHtml(String locator, String attribute);
 
     void doScreenShot(String runId, String path);
+    
+    MessageEvent doSeleniumActionClick(String string1, String string2);
+    
+    MessageEvent doSeleniumActionMouseDown(String string1, String string2);
 
-    TestCaseStepActionExecution doAction(TestCaseStepActionExecution testCaseStepActionExecution);
+    MessageEvent doSeleniumActionMouseUp(String string1, String string2);
+
+    MessageEvent doSeleniumActionSwitchToWindow(String string1, String string2);
+
+    MessageEvent doSeleniumActionManageDialog(String object, String property);
+    
+    MessageEvent doSeleniumActionClickWait(String actionObject, String actionProperty);
+    
+    MessageEvent doSeleniumActionDoubleClick(String html, String property);
+
+    MessageEvent doSeleniumActionType(String html, String property, String propertyName);
+
+    MessageEvent doSeleniumActionMouseOver(String html, String property);
+    
+    MessageEvent doSeleniumActionMouseOverAndWait(String actionObject, String actionProperty);
+
+    MessageEvent doSeleniumActionWait(String object, String property);
+
+    MessageEvent doSeleniumActionKeyPress(String html, String property);
+    
+    MessageEvent doSeleniumActionOpenURLWithBase(String value, String property);
+
+    MessageEvent doSeleniumActionSelect(String html, String property);
+    
+    MessageEvent doSeleniumActionUrlLogin();
+
+    MessageEvent doSeleniumActionFocusToIframe(String object, String property);
+
+    MessageEvent doSeleniumActionFocusDefaultIframe();
 }

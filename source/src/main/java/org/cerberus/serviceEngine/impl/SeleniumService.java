@@ -79,6 +79,7 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 /**
  * {Insert class description here}
@@ -87,6 +88,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @version 1.0, 10/01/2013
  * @since 2.0.0
  */
+@Service
 public class SeleniumService implements ISeleniumService {
 
     private static final int TIMEOUT_MILLIS = 30000;
@@ -97,8 +99,6 @@ public class SeleniumService implements ISeleniumService {
     private IParameterService parameterService;
     @Autowired
     private IFactorySelenium factorySelenium;
-    @Autowired
-    private IPropertyService propertyService;
     @Autowired
     private IInvariantService invariantService;
 
@@ -623,118 +623,18 @@ public class SeleniumService implements ISeleniumService {
         }
     }
 
+   
     @Override
-    public TestCaseStepActionExecution doAction(TestCaseStepActionExecution testCaseStepActionExecution) {
-        /**
-         * Decode the 2 fields property and values before doing the control.
-         */
-        if (testCaseStepActionExecution.getObject().contains("%")) {
-            String decodedValue = propertyService.decodeValue(testCaseStepActionExecution.getObject(), testCaseStepActionExecution.getTestCaseExecutionDataList(), testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution());
-            testCaseStepActionExecution.setObject(decodedValue);
-        }
-
-        /**
-         * Timestamp starts after the decode. TODO protect when property is
-         * null.
-         */
-        testCaseStepActionExecution.setStart(new Date().getTime());
-
-        String object = testCaseStepActionExecution.getObject();
-        String property = testCaseStepActionExecution.getProperty();
-        String propertyName = testCaseStepActionExecution.getPropertyName();
-        MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Doing Action : " + testCaseStepActionExecution.getAction() + " with object : " + object + " and property : " + property);
-
-        MessageEvent res;
-
-        //TODO On JDK 7 implement switch with string
-        if (testCaseStepActionExecution.getAction().equals("click")) {
-            res = this.doActionClick(object, property);
-
-        } else if (testCaseStepActionExecution.getAction().equals("clickAndWait")) {
-            res = this.doActionClickWait(object, property);
-
-        } else if (testCaseStepActionExecution.getAction().equals("doubleClick")) {
-            res = this.doActionDoubleClick(object, property);
-
-        } else if (testCaseStepActionExecution.getAction().equals("enter")) {
-            res = this.doActionKeyPress(object, "RETURN");
-
-        } else if (testCaseStepActionExecution.getAction().equals("keypress")) {
-            res = this.doActionKeyPress(object, property);
-
-        } else if (testCaseStepActionExecution.getAction().equals("mouseOver")) {
-            res = this.doActionMouseOver(object, property);
-
-        } else if (testCaseStepActionExecution.getAction().equals("mouseOverAndWait")) {
-            res = this.doActionMouseOverAndWait(object, property);
-
-        } else if (testCaseStepActionExecution.getAction().equals("openUrlWithBase")) {
-            res = this.doActionOpenURLWithBase(object, property);
-
-        } else if (testCaseStepActionExecution.getAction().equals("openUrlLogin")) {
-            testCaseStepActionExecution.setObject(this.selenium.getLogin());
-            res = this.doActionUrlLogin();
-
-        } else if (testCaseStepActionExecution.getAction().equals("select")) {
-            res = this.doActionSelect(object, property);
-
-        } else if (testCaseStepActionExecution.getAction().equals("selectAndWait")) {
-            res = this.doActionSelect(object, property);
-            this.doActionWait(StringUtil.NULL, StringUtil.NULL);
-
-        } else if (testCaseStepActionExecution.getAction().equals("focusToIframe")) {
-            res = this.doActionFocusToIframe(object, property);
-
-        } else if (testCaseStepActionExecution.getAction().equals("focusDefaultIframe")) {
-            res = this.doActionFocusDefaultIframe();
-
-        } else if (testCaseStepActionExecution.getAction().equals("type")) {
-            res = this.doActionType(object, property, propertyName);
-
-        } else if (testCaseStepActionExecution.getAction().equals("wait")) {
-            res = this.doActionWait(object, property);
-
-        } else if (testCaseStepActionExecution.getAction().equals("mouseDown")) {
-            res = this.doActionMouseDown(object, property);
-
-        } else if (testCaseStepActionExecution.getAction().equals("mouseUp")) {
-            res = this.doActionMouseUp(object, property);
-
-        } else if (testCaseStepActionExecution.getAction().equals("switchToWindow")) {
-            res = this.doActionSwitchToWindow(object, property);
-
-        } else if (testCaseStepActionExecution.getAction().equals("manageDialog")) {
-            res = this.doActionManageDialog(object, property);
-
-        } else if (testCaseStepActionExecution.getAction().equals("calculateProperty")) {
-            res = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_PROPERTYCALCULATED);
-            res.setDescription(res.getDescription().replaceAll("%PROP%", testCaseStepActionExecution.getPropertyName()));
-        } else if (testCaseStepActionExecution.getAction().equals("takeScreenshot")) {
-            res = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_TAKESCREENSHOT);
-        } else {
-            res = new MessageEvent(MessageEventEnum.ACTION_FAILED_UNKNOWNACTION);
-            res.setDescription(res.getDescription().replaceAll("%ACTION%", testCaseStepActionExecution.getAction()));
-        }
-
-        MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Result of the action : " + res.getCodeString() + " " + res.getDescription());
-        testCaseStepActionExecution.setActionResultMessage(res);
-
-        /**
-         * Determine here the impact of the Action on the full test return code
-         * from the ResultMessage of the Action.
-         */
-        testCaseStepActionExecution.setExecutionResultMessage(new MessageGeneral(res.getMessage()));
-        /**
-         * Determine here if we stop the test from the ResultMessage of the
-         * Action.
-         */
-        testCaseStepActionExecution.setStopExecution(res.isStopTest());
-
-        testCaseStepActionExecution.setEnd(new Date().getTime());
-        return testCaseStepActionExecution;
+    public boolean isElementInElement(String element, String childElement) {
+        By elementLocator = this.getIdentifier(element);
+        By childElementLocator = this.getIdentifier(childElement);
+        
+        return (this.selenium.getDriver().findElement(elementLocator) != null 
+            && this.selenium.getDriver().findElement(elementLocator).findElement(childElementLocator) != null);
     }
-
-    private MessageEvent doActionClick(String string1, String string2) {
+    
+    @Override
+    public MessageEvent doSeleniumActionClick(String string1, String string2) {
         MessageEvent message;
         try {
             if (!StringUtil.isNull(string1)) {
@@ -769,8 +669,9 @@ public class SeleniumService implements ISeleniumService {
         }
         return new MessageEvent(MessageEventEnum.ACTION_FAILED_NO_ELEMENT_TO_CLICK);
     }
-
-    private MessageEvent doActionMouseDown(String string1, String string2) {
+    
+    @Override
+    public MessageEvent doSeleniumActionMouseDown(String string1, String string2) {
         MessageEvent message;
         try {
             if (!StringUtil.isNull(string1)) {
@@ -810,7 +711,8 @@ public class SeleniumService implements ISeleniumService {
         return new MessageEvent(MessageEventEnum.ACTION_FAILED_NO_ELEMENT_TO_CLICK);
     }
 
-    private MessageEvent doActionMouseUp(String string1, String string2) {
+    @Override
+    public MessageEvent doSeleniumActionMouseUp(String string1, String string2) {
         MessageEvent message;
         try {
             if (!StringUtil.isNull(string1)) {
@@ -850,7 +752,8 @@ public class SeleniumService implements ISeleniumService {
         return new MessageEvent(MessageEventEnum.ACTION_FAILED_NO_ELEMENT_TO_CLICK);
     }
 
-    private MessageEvent doActionSwitchToWindow(String string1, String string2) {
+    @Override
+    public MessageEvent doSeleniumActionSwitchToWindow(String string1, String string2) {
         MessageEvent message;
         String windowTitle;
         try {
@@ -894,7 +797,7 @@ public class SeleniumService implements ISeleniumService {
                     for (String windowHandle : handles) {
                         if (!windowHandle.equals(currentHandle)) {
                             this.selenium.getDriver().switchTo().window(windowHandle);
-                            if (testTitleOfWindow(this.selenium.getDriver().getTitle(), identifier, value)) {
+                            if (seleniumTestTitleOfWindow(this.selenium.getDriver().getTitle(), identifier, value)) {
                                 message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_SWITCHTOWINDOW);
                                 message.setDescription(message.getDescription().replaceAll("%WINDOW%", windowTitle));
                                 return message;
@@ -916,7 +819,8 @@ public class SeleniumService implements ISeleniumService {
         return message;
     }
 
-    private MessageEvent doActionManageDialog(String object, String property) {
+    @Override
+    public MessageEvent doSeleniumActionManageDialog(String object, String property) {
         try {
             String value = object;
             if (value == null || value.trim().length() == 0) {
@@ -941,7 +845,7 @@ public class SeleniumService implements ISeleniumService {
         return new MessageEvent(MessageEventEnum.ACTION_FAILED_CLOSE_ALERT);
     }
 
-    private boolean testTitleOfWindow(String title, String identifier, String value) {
+    private boolean seleniumTestTitleOfWindow(String title, String identifier, String value) {
         if (value != null && title != null) {
             if ("title".equals(identifier) && value.equals(title)) {
                 return true;
@@ -957,7 +861,8 @@ public class SeleniumService implements ISeleniumService {
         return false;
     }
 
-    private MessageEvent doActionClickWait(String actionObject, String actionProperty) {
+    @Override
+    public MessageEvent doSeleniumActionClickWait(String actionObject, String actionProperty) {
         MessageEvent message;
         try {
             if (!StringUtil.isNull(actionProperty) && !StringUtil.isNull(actionObject)) {
@@ -1021,7 +926,8 @@ public class SeleniumService implements ISeleniumService {
         return new MessageEvent(MessageEventEnum.ACTION_FAILED_CLICKANDWAIT_GENERIC);
     }
 
-    private MessageEvent doActionDoubleClick(String html, String property) {
+    @Override
+    public MessageEvent doSeleniumActionDoubleClick(String html, String property) {
         MessageEvent message;
         try {
             Actions actions = new Actions(this.selenium.getDriver());
@@ -1058,7 +964,8 @@ public class SeleniumService implements ISeleniumService {
         return new MessageEvent(MessageEventEnum.ACTION_FAILED_DOUBLECLICK);
     }
 
-    private MessageEvent doActionType(String html, String property, String propertyName) {
+    @Override
+    public MessageEvent doSeleniumActionType(String html, String property, String propertyName) {
         MessageEvent message;
         try {
             if (!StringUtil.isNull(html)) {
@@ -1091,7 +998,8 @@ public class SeleniumService implements ISeleniumService {
         return new MessageEvent(MessageEventEnum.ACTION_FAILED_TYPE);
     }
 
-    private MessageEvent doActionMouseOver(String html, String property) {
+    @Override
+    public MessageEvent doSeleniumActionMouseOver(String html, String property) {
         MessageEvent message;
         try {
             if (!StringUtil.isNull(html)) {
@@ -1133,7 +1041,8 @@ public class SeleniumService implements ISeleniumService {
         return new MessageEvent(MessageEventEnum.ACTION_FAILED_MOUSEOVER);
     }
 
-    private MessageEvent doActionMouseOverAndWait(String actionObject, String actionProperty) {
+    @Override
+    public MessageEvent doSeleniumActionMouseOverAndWait(String actionObject, String actionProperty) {
         MessageEvent message;
         try {
             if (!StringUtil.isNull(actionProperty) && !StringUtil.isNull(actionObject)) {
@@ -1191,7 +1100,8 @@ public class SeleniumService implements ISeleniumService {
         return new MessageEvent(MessageEventEnum.ACTION_FAILED_MOUSEOVERANDWAIT_GENERIC);
     }
 
-    private MessageEvent doActionWait(String object, String property) {
+    @Override
+    public MessageEvent doSeleniumActionWait(String object, String property) {
         MessageEvent message;
         try {
             if (!StringUtil.isNull(property)) {
@@ -1268,7 +1178,8 @@ public class SeleniumService implements ISeleniumService {
         }
     }
 
-    private MessageEvent doActionKeyPress(String html, String property) {
+    @Override
+    public MessageEvent doSeleniumActionKeyPress(String html, String property) {
         MessageEvent message;
         try {
             if (!StringUtil.isNull(html) && !StringUtil.isNull(property)) {
@@ -1294,7 +1205,8 @@ public class SeleniumService implements ISeleniumService {
         return new MessageEvent(MessageEventEnum.ACTION_FAILED_KEYPRESS);
     }
 
-    private MessageEvent doActionOpenURLWithBase(String value, String property) {
+    @Override
+    public MessageEvent doSeleniumActionOpenURLWithBase(String value, String property) {
         MessageEvent message;
         String url = "null";
         try {
@@ -1319,7 +1231,8 @@ public class SeleniumService implements ISeleniumService {
         return message;
     }
 
-    private MessageEvent doActionSelect(String html, String property) {
+    @Override
+    public MessageEvent doSeleniumActionSelect(String html, String property) {
         MessageEvent message;
         String identifier;
         String value = "";
@@ -1435,7 +1348,8 @@ public class SeleniumService implements ISeleniumService {
         return new MessageEvent(MessageEventEnum.ACTION_FAILED_SELECT);
     }
 
-    private MessageEvent doActionUrlLogin() {
+    @Override
+    public MessageEvent doSeleniumActionUrlLogin() {
         MessageEvent message;
         String url = "http://" + this.selenium.getIp() + this.selenium.getLogin();
         try {
@@ -1450,7 +1364,8 @@ public class SeleniumService implements ISeleniumService {
         }
     }
 
-    private MessageEvent doActionFocusToIframe(String object, String property) {
+    @Override
+    public MessageEvent doSeleniumActionFocusToIframe(String object, String property) {
         MessageEvent message;
 
         try {
@@ -1485,7 +1400,8 @@ public class SeleniumService implements ISeleniumService {
         return message;
     }
 
-    private MessageEvent doActionFocusDefaultIframe() {
+    @Override
+    public MessageEvent doSeleniumActionFocusDefaultIframe() {
         MessageEvent message;
 
         try {
@@ -1500,12 +1416,4 @@ public class SeleniumService implements ISeleniumService {
         return message;
     }
 
-    @Override
-    public boolean isElementInElement(String element, String childElement) {
-        By elementLocator = this.getIdentifier(element);
-        By childElementLocator = this.getIdentifier(childElement);
-        
-        return (this.selenium.getDriver().findElement(elementLocator) != null 
-            && this.selenium.getDriver().findElement(elementLocator).findElement(childElementLocator) != null);
-    }
 }

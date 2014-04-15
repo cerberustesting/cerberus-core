@@ -23,6 +23,7 @@ package org.cerberus.service;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 import junit.framework.Assert;
+import org.cerberus.entity.MessageEvent;
 
 import org.cerberus.entity.Selenium;
 import org.cerberus.entity.TestCaseStepActionExecution;
@@ -84,15 +85,10 @@ public class SeleniumServiceTest {
         String object = "null";
         String property = "null";
         String msg = "Object and Property are ‘null’. At least one is mandatory in order to perform the action click.";
+     
+        MessageEvent message = this.seleniumService.doSeleniumActionClick(object, property);
 
-        TestCaseStepActionExecution tcsae = new TestCaseStepActionExecution();
-        tcsae.setAction("click");
-        tcsae.setObject(object);
-        tcsae.setProperty(property);
-
-        this.seleniumService.doAction(tcsae);
-
-        Assert.assertEquals(msg, tcsae.getActionResultMessage().getDescription());
+        Assert.assertEquals(msg, message.getDescription());
     }
 
     @Test
@@ -100,12 +96,7 @@ public class SeleniumServiceTest {
         String object = "id=test";
         String property = "null";
         String msg = "Element '" + object + "' clicked.";
-
-        TestCaseStepActionExecution tcsae = new TestCaseStepActionExecution();
-        tcsae.setAction("click");
-        tcsae.setObject(object);
-        tcsae.setProperty(property);
-
+   
         PowerMockito.mockStatic(ExpectedConditions.class);
         PowerMockito.mockStatic(By.class);
 
@@ -116,9 +107,9 @@ public class SeleniumServiceTest {
         when(fluentWait.until(expectedCondition)).thenReturn(element);
         when(driver.findElement(by)).thenReturn(element);
 
-        this.seleniumService.doAction(tcsae);
+        MessageEvent message = this.seleniumService.doSeleniumActionClick(object, property);
 
-        Assert.assertEquals(msg, tcsae.getActionResultMessage().getDescription());
+        Assert.assertEquals(msg, message.getDescription());
     }
 
     @Test
@@ -127,17 +118,13 @@ public class SeleniumServiceTest {
         String property = "null";
         String msg = "Failed to click because could not find element '" + object + "'!";
 
-        TestCaseStepActionExecution tcsae = new TestCaseStepActionExecution();
-        tcsae.setAction("click");
-        tcsae.setObject(object);
-        tcsae.setProperty(property);
-
+    
         when(selenium.getDriver()).thenReturn(driver);
         when(driver.findElement(By.id(anyString()))).thenThrow(new NoSuchElementException(""));
 
-        this.seleniumService.doAction(tcsae);
+        MessageEvent message = this.seleniumService.doSeleniumActionClick(object, property);
 
-        Assert.assertEquals(msg, tcsae.getActionResultMessage().getDescription());
+        Assert.assertEquals(msg, message.getDescription());
     }
 
     @Test
@@ -145,11 +132,6 @@ public class SeleniumServiceTest {
         String object = "null";
         String property = "id=test";
         String msg = "Element '" + property + "' clicked.";
-
-        TestCaseStepActionExecution tcsae = new TestCaseStepActionExecution();
-        tcsae.setAction("click");
-        tcsae.setObject(object);
-        tcsae.setProperty(property);
 
         PowerMockito.mockStatic(ExpectedConditions.class);
         PowerMockito.mockStatic(By.class);
@@ -161,9 +143,9 @@ public class SeleniumServiceTest {
         when(fluentWait.until(ExpectedConditions.visibilityOfElementLocated(by))).thenReturn(element);
         when(driver.findElement(by)).thenReturn(element);
 
-        this.seleniumService.doAction(tcsae);
+        MessageEvent message = this.seleniumService.doSeleniumActionClick(object, property);
 
-        Assert.assertEquals(msg, tcsae.getActionResultMessage().getDescription());
+        Assert.assertEquals(msg, message.getDescription());
     }
 
     @Test
@@ -172,17 +154,12 @@ public class SeleniumServiceTest {
         String property = "id=test";
         String msg = "Failed to click because could not find element '" + property + "'!";
 
-        TestCaseStepActionExecution tcsae = new TestCaseStepActionExecution();
-        tcsae.setAction("click");
-        tcsae.setObject(object);
-        tcsae.setProperty(property);
-
         when(selenium.getDriver()).thenReturn(driver);
         when(driver.findElement(By.id(anyString()))).thenThrow(new NoSuchElementException(""));
 
-        this.seleniumService.doAction(tcsae);
+        MessageEvent message = this.seleniumService.doSeleniumActionClick(object, property);
 
-        Assert.assertEquals(msg, tcsae.getActionResultMessage().getDescription());
+        Assert.assertEquals(msg, message.getDescription());
     }
 
     @Test
@@ -191,16 +168,11 @@ public class SeleniumServiceTest {
         String property = "null";
         String msg = "The test case is canceled due to lost connection to Selenium Server!";
 
-        TestCaseStepActionExecution tcsae = new TestCaseStepActionExecution();
-        tcsae.setAction("click");
-        tcsae.setObject(object);
-        tcsae.setProperty(property);
-
         when(selenium.getDriver()).thenThrow(new WebDriverException());
 
-        this.seleniumService.doAction(tcsae);
+        MessageEvent message = this.seleniumService.doSeleniumActionClick(object, property);
 
-        Assert.assertEquals(msg, tcsae.getActionResultMessage().getDescription());
+        Assert.assertEquals(msg, message.getDescription());
     }
 
     /**
@@ -212,11 +184,6 @@ public class SeleniumServiceTest {
         String property = "100";
         String msg = "Element '" + object + "' clicked and waited " + property + " ms.";
 
-        TestCaseStepActionExecution tcsae = new TestCaseStepActionExecution();
-        tcsae.setAction("clickAndWait");
-        tcsae.setObject(object);
-        tcsae.setProperty(property);
-
         PowerMockito.mockStatic(ExpectedConditions.class);
         PowerMockito.mockStatic(By.class);
 
@@ -227,9 +194,9 @@ public class SeleniumServiceTest {
         when(webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(by))).thenReturn(element);
         when(driver.findElement(by)).thenReturn(element);
 
-        this.seleniumService.doAction(tcsae);
+        MessageEvent message = this.seleniumService.doSeleniumActionClickWait(object, property);
 
-        Assert.assertEquals(msg, tcsae.getActionResultMessage().getDescription());
+        Assert.assertEquals(msg, message.getDescription());
     }
 
     //TODO testDoActionClickWaitWhenInterruptedException
@@ -239,19 +206,14 @@ public class SeleniumServiceTest {
         String property = "100";
         String msg = "Element '" + object + "' clicked but failed to wait '" + property + "' ms.";
 
-        TestCaseStepActionExecution tcsae = new TestCaseStepActionExecution();
-        tcsae.setAction("clickAndWait");
-        tcsae.setObject(object);
-        tcsae.setProperty(property);
-
         when(selenium.getDriver()).thenReturn(driver);
         when(driver.findElement(By.id(anyString()))).thenReturn(element);
 //        doThrow(new InterruptedException()).when(Thread);
 //        when(Thread.sleep(anyLong())).thenThrow(new InterruptedException());
 
-        this.seleniumService.doAction(tcsae);
+        MessageEvent message = this.seleniumService.doSeleniumActionClickWait(object, property);
 
-        Assert.assertEquals(msg, tcsae.getActionResultMessage().getDescription());
+        Assert.assertEquals(msg, message.getDescription());
     }
 
     @Test
@@ -260,11 +222,6 @@ public class SeleniumServiceTest {
         String property = "dez";
         String msg = "Failed to wait because '" + property + "' in not numeric!";
 
-        TestCaseStepActionExecution tcsae = new TestCaseStepActionExecution();
-        tcsae.setAction("clickAndWait");
-        tcsae.setObject(object);
-        tcsae.setProperty(property);
-
         PowerMockito.mockStatic(ExpectedConditions.class);
         PowerMockito.mockStatic(By.class);
 
@@ -275,9 +232,9 @@ public class SeleniumServiceTest {
         when(webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(by))).thenReturn(element);
         when(driver.findElement(by)).thenReturn(element);
 
-        this.seleniumService.doAction(tcsae);
+        MessageEvent message = this.seleniumService.doSeleniumActionClickWait(object, property);
 
-        Assert.assertEquals(msg, tcsae.getActionResultMessage().getDescription());
+        Assert.assertEquals(msg, message.getDescription());
     }
 
     @Test
@@ -286,17 +243,12 @@ public class SeleniumServiceTest {
         String property = "5000";
         String msg = "Failed to click because could not find element '" + object + "'!";
 
-        TestCaseStepActionExecution tcsae = new TestCaseStepActionExecution();
-        tcsae.setAction("clickAndWait");
-        tcsae.setObject(object);
-        tcsae.setProperty(property);
-
         when(selenium.getDriver()).thenReturn(driver);
         when(driver.findElement(By.id(anyString()))).thenThrow(new NoSuchElementException(""));
 
-        this.seleniumService.doAction(tcsae);
+        MessageEvent message = this.seleniumService.doSeleniumActionClickWait(object, property);
 
-        Assert.assertEquals(msg, tcsae.getActionResultMessage().getDescription());
+        Assert.assertEquals(msg, message.getDescription());
     }
 
     @Test
@@ -305,14 +257,9 @@ public class SeleniumServiceTest {
         String property = "null";
         String msg = "Object is 'null'. This is mandatory in order to perform the action click and wait.";
 
-        TestCaseStepActionExecution tcsae = new TestCaseStepActionExecution();
-        tcsae.setAction("clickAndWait");
-        tcsae.setObject(object);
-        tcsae.setProperty(property);
+        MessageEvent message = this.seleniumService.doSeleniumActionClickWait(object, property);
 
-        this.seleniumService.doAction(tcsae);
-
-        Assert.assertEquals(msg, tcsae.getActionResultMessage().getDescription());
+        Assert.assertEquals(msg, message.getDescription());
     }
 
     @Test
@@ -320,11 +267,6 @@ public class SeleniumServiceTest {
         String object = "id=test";
         String property = "null";
         String msg = "Element '" + object + "' clicked and waited for page to load";
-
-        TestCaseStepActionExecution tcsae = new TestCaseStepActionExecution();
-        tcsae.setAction("clickAndWait");
-        tcsae.setObject(object);
-        tcsae.setProperty(property);
 
         PowerMockito.mockStatic(ExpectedConditions.class);
         PowerMockito.mockStatic(By.class);
@@ -336,9 +278,9 @@ public class SeleniumServiceTest {
         when(webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(by))).thenReturn(element);
         when(driver.findElement(by)).thenReturn(element);
 
-        this.seleniumService.doAction(tcsae);
+        MessageEvent message = this.seleniumService.doSeleniumActionClickWait(object, property);
 
-        Assert.assertEquals(msg, tcsae.getActionResultMessage().getDescription());
+        Assert.assertEquals(msg, message.getDescription());
     }
 
     @Test
@@ -347,17 +289,12 @@ public class SeleniumServiceTest {
         String property = "null";
         String msg = "Failed to click because could not find element '" + object + "'!";
 
-        TestCaseStepActionExecution tcsae = new TestCaseStepActionExecution();
-        tcsae.setAction("clickAndWait");
-        tcsae.setObject(object);
-        tcsae.setProperty(property);
-
         when(selenium.getDriver()).thenReturn(driver);
         when(driver.findElement(By.id(anyString()))).thenThrow(new NoSuchElementException(""));
 
-        this.seleniumService.doAction(tcsae);
+        MessageEvent message = this.seleniumService.doSeleniumActionClickWait(object, property);
 
-        Assert.assertEquals(msg, tcsae.getActionResultMessage().getDescription());
+        Assert.assertEquals(msg, message.getDescription());
     }
 
     @Test
@@ -366,16 +303,11 @@ public class SeleniumServiceTest {
         String property = "null";
         String msg = "The test case is canceled due to lost connection to Selenium Server!";
 
-        TestCaseStepActionExecution tcsae = new TestCaseStepActionExecution();
-        tcsae.setAction("clickAndWait");
-        tcsae.setObject(object);
-        tcsae.setProperty(property);
-
         when(selenium.getDriver()).thenThrow(new WebDriverException());
 
-        this.seleniumService.doAction(tcsae);
+        MessageEvent message = this.seleniumService.doSeleniumActionClickWait(object, property);
 
-        Assert.assertEquals(msg, tcsae.getActionResultMessage().getDescription());
+        Assert.assertEquals(msg, message.getDescription());
     }
 
 
@@ -385,16 +317,11 @@ public class SeleniumServiceTest {
         String property = "null";
         String msg = "Opened URL '" + object + "'.";
 
-        TestCaseStepActionExecution tcsae = new TestCaseStepActionExecution();
-        tcsae.setAction("openUrlWithBase");
-        tcsae.setObject(object);
-        tcsae.setProperty(property);
-
         when(selenium.getDriver()).thenReturn(driver);
 
-        this.seleniumService.doAction(tcsae);
+        MessageEvent message = this.seleniumService.doSeleniumActionOpenURLWithBase(object, property);
 
-        Assert.assertEquals(msg, tcsae.getActionResultMessage().getDescription());
+        Assert.assertEquals(msg, message.getDescription());
     }
 
     @Test
@@ -403,16 +330,11 @@ public class SeleniumServiceTest {
         String property = "/test";
         String msg = "Opened URL '" + property + "'.";
 
-        TestCaseStepActionExecution tcsae = new TestCaseStepActionExecution();
-        tcsae.setAction("openUrlWithBase");
-        tcsae.setObject(object);
-        tcsae.setProperty(property);
-
         when(selenium.getDriver()).thenReturn(driver);
 
-        this.seleniumService.doAction(tcsae);
+        MessageEvent message = this.seleniumService.doSeleniumActionOpenURLWithBase(object, property);
 
-        Assert.assertEquals(msg, tcsae.getActionResultMessage().getDescription());
+        Assert.assertEquals(msg, message.getDescription());
     }
 
     @Test
@@ -421,16 +343,11 @@ public class SeleniumServiceTest {
         String property = "null";
         String msg = "Failed to open '" + object + "'.";
 
-        TestCaseStepActionExecution tcsae = new TestCaseStepActionExecution();
-        tcsae.setAction("openUrlWithBase");
-        tcsae.setObject(object);
-        tcsae.setProperty(property);
-
         when(selenium.getDriver()).thenReturn(driver);
 
-        this.seleniumService.doAction(tcsae);
+        MessageEvent message = this.seleniumService.doSeleniumActionOpenURLWithBase(object, property);
 
-        Assert.assertEquals(msg, tcsae.getActionResultMessage().getDescription());
+        Assert.assertEquals(msg, message.getDescription());
     }
         
 }

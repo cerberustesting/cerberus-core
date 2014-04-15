@@ -128,6 +128,7 @@ public enum MessageEventEnum {
     ACTION_FAILED_SWITCHTOWINDOW_NO_SUCH_ELEMENT(280, "FA", "Failed to switch to window because could not find element '%WINDOW%'!", true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_CLOSE_ALERT(280, "FA", "Failed to close to alert popup !", true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_NOTEXECUTED_NO_PROPERTY_DEFINITION(290, "NA", "Not executed because Property '%PROP%' is not defined for the country '%COUNTRY%'.", false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
+    ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION(291, "FA", "Not executed because Action '%ACTION%' is not supported for application type '%APPLICATIONTYPE%'.", true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_PENDING(299, "PE", "Doing Action...", false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     CONTROL_SUCCESS(300, "OK", "", false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     CONTROL_SUCCESS_EQUAL(300, "OK", "'%STRING1%' is equal to '%STRING2%'.", false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
