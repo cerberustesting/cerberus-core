@@ -89,7 +89,7 @@ public interface ISeleniumService {
      * be agnostic of the environment. ex :
      * http://redoute.com/mypathlevel1/mypathlevel2/file.aspx will return
      * /mypathlevel1/mypathlevel2/file.aspx
-     * @throws CerberusException in case the URL does not contain the host of
+     * @throws org.cerberus.exception.CerberusEventException in case the URL does not contain the host of
      * the application beeing tested. That could happen if the application
      * redirect to a different host during the testcase execution.
      */
