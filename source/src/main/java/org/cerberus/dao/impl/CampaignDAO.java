@@ -269,7 +269,33 @@ public class CampaignDAO implements ICampaignDAO {
 
     @Override
     public boolean createCampaign(Campaign campaign) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        final StringBuffer query = new StringBuffer("INSERT INTO `campaign` (`campaign`, `Description`) VALUES (?, ?)");
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query.toString());
+            preStat.setString(1, campaign.getCampaign());
+            preStat.setString(2, campaign.getDescription());
+
+            try {
+                return (preStat.executeUpdate() == 1);
+            } catch (SQLException exception) {
+                MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(ApplicationDAO.class.getName(), Level.WARN, e.toString());
+            }
+        }
+        return false;
     }
 
     private Campaign loadCampaignFromResultSet(ResultSet rs) throws SQLException {
