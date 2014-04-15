@@ -17,9 +17,11 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.dao;
+package org.cerberus.service;
 
 import java.util.List;
+import org.cerberus.entity.Campaign;
+import org.cerberus.entity.CampaignContent;
 import org.cerberus.entity.CampaignParameter;
 import org.cerberus.exception.CerberusException;
 
@@ -27,17 +29,33 @@ import org.cerberus.exception.CerberusException;
  *
  * @author memiks
  */
-public interface ICampaignParameterDAO {
+public interface ICampaignService {
 
-    List<CampaignParameter> findAll() throws CerberusException;
+    List<Campaign> findAll() throws CerberusException;
 
-    CampaignParameter findCampaignParameterByKey(Integer campaignparameterID) throws CerberusException;
+    Campaign findCampaignByKey(Integer campaignID) throws CerberusException;
 
-    List<CampaignParameter> findCampaignParametersByCampaign(String campaign) throws CerberusException;
+    Campaign findCampaignByCampaignName(String campaign) throws CerberusException;
+
+    List<CampaignContent> findCampaignContentsByCampaignName(String campaign) throws CerberusException;
+
+    List<CampaignParameter> findCampaignParametersByCampaignName(String campaign) throws CerberusException;
+
+    boolean updateCampaign(Campaign campaign);
+
+    boolean updateCampaignContent(CampaignContent campaignContent);
 
     boolean updateCampaignParameter(CampaignParameter campaignParameter);
 
+    boolean createCampaign(Campaign campaign);
+
+    boolean createCampaignContent(CampaignContent campaignContent);
+
     boolean createCampaignParameter(CampaignParameter campaignParameter);
+
+    List<Campaign> findCampaignByCriteria(Integer campaignID, String campaign, String description) throws CerberusException;
+
+    List<CampaignContent> findCampaignContentByCriteria(String campaign, Integer campaignContentID, String testBattery) throws CerberusException;
 
     List<CampaignParameter> findCampaignParameterByCriteria(Integer campaignparameterID, String campaign, String parameter, String value) throws CerberusException;
 }

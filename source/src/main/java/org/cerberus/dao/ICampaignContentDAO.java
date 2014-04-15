@@ -38,13 +38,9 @@ public interface ICampaignContentDAO {
 
     List<CampaignContent> findCampaignContentsByTestBattery(String testBattery) throws CerberusException;
 
-    boolean updateCampaignName(CampaignContent campaign);
-
-    boolean updateTestBattery(CampaignContent campaign);
+    boolean updateCampaignContent(CampaignContent campaign);
 
     boolean createCampaignContent(CampaignContent campaign);
 
     List<CampaignContent> findCampaignContentByCriteria(String campaign, Integer campaignContentID, String testBattery) throws CerberusException;
-
-//    List<String> findUniqueDataOfColumn(String column);
 }

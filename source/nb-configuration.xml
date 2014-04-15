@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?><project-shared-configuration>
+<?xml version="1.0" encoding="UTF-8"?>
+<project-shared-configuration>
     <!--
 This file contains additional configuration written by modules in the NetBeans IDE.
 The configuration is intended to be shared among all the users of project and
@@ -14,5 +15,6 @@ Any value defined here will override the pom.xml file value but is only applicab
 -->
         <netbeans.compile.on.save>all</netbeans.compile.on.save>
         <netbeans.hint.jdkPlatform>JDK_1.6</netbeans.hint.jdkPlatform>
+        <netbeans.hint.licensePath>${project.basedir}/licenseheader.txt</netbeans.hint.licensePath>
     </properties>
 </project-shared-configuration>

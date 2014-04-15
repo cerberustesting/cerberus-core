@@ -24,38 +24,36 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import org.cerberus.entity.TestBatteryContent;
 import java.util.List;
 import org.apache.log4j.Level;
-import org.cerberus.dao.ICampaignContentDAO;
+import org.cerberus.dao.ITestBatteryContentDAO;
 import org.cerberus.database.DatabaseSpring;
-import org.cerberus.entity.CampaignContent;
 import org.cerberus.entity.MessageGeneral;
 import org.cerberus.entity.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.factory.IFactoryCampaignContent;
+import org.cerberus.factory.IFactoryTestBatteryContent;
 import org.cerberus.log.MyLogger;
 import org.cerberus.util.ParameterParserUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
 
 /**
  *
  * @author memiks
  */
-@Repository
-public class CampaignContentDAO implements ICampaignContentDAO {
+public class TestBatteryContentDAO implements ITestBatteryContentDAO {
 
     @Autowired
     private DatabaseSpring databaseSpring;
     @Autowired
-    private IFactoryCampaignContent factoryCampaignContent;
+    private IFactoryTestBatteryContent factoryTestBatteryContent;
 
     @Override
-    public List<CampaignContent> findAll() throws CerberusException {
+    public List<TestBatteryContent> findAll() throws CerberusException {
         boolean throwEx = false;
-        final String query = "SELECT c FROM CampaignContent c";
+        final String query = "SELECT t FROM TestBatteryContent t";
 
-        List<CampaignContent> campaignContentList = new ArrayList<CampaignContent>();
+        List<TestBatteryContent> testBatteryContentsList = new ArrayList<TestBatteryContent>();
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
@@ -63,23 +61,23 @@ public class CampaignContentDAO implements ICampaignContentDAO {
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     while (resultSet.next()) {
-                        campaignContentList.add(this.loadCampaignContentFromResultSet(resultSet));
+                        testBatteryContentsList.add(this.loadTestBatteryContentFromResultSet(resultSet));
                     }
                 } catch (SQLException exception) {
                     MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
-                    campaignContentList = null;
+                    testBatteryContentsList = null;
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
                 MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
-                campaignContentList = null;
+                testBatteryContentsList = null;
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
             MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
-            campaignContentList = null;
+            testBatteryContentsList = null;
         } finally {
             try {
                 if (connection != null) {
@@ -92,24 +90,24 @@ public class CampaignContentDAO implements ICampaignContentDAO {
         if (throwEx) {
             throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
         }
-        return campaignContentList;
+        return testBatteryContentsList;
     }
 
     @Override
-    public CampaignContent findCampaignContentByKey(Integer campaigncontentID) throws CerberusException {
+    public TestBatteryContent findTestBatteryContentByKey(Integer testBatteryContentID) throws CerberusException {
         boolean throwEx = false;
-        final String query = "SELECT c FROM CampaignContent c WHERE c.campaigncontentID = ?";
+        final String query = "SELECT t FROM TestBatteryContent t WHERE t.testbatterycontentID = ?";
 
-        CampaignContent campaignContent = null;
+        TestBatteryContent testBatteryContent = null;
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
-            preStat.setInt(1, campaigncontentID);
+            preStat.setInt(1, testBatteryContentID);
             try {
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     if (resultSet.first()) {
-                        campaignContent = this.loadCampaignContentFromResultSet(resultSet);
+                        testBatteryContent = this.loadTestBatteryContentFromResultSet(resultSet);
                     }
                 } catch (SQLException exception) {
                     MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
@@ -135,40 +133,40 @@ public class CampaignContentDAO implements ICampaignContentDAO {
         if (throwEx) {
             throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
         }
-        return campaignContent;
+        return testBatteryContent;
     }
 
     @Override
-    public List<CampaignContent> findCampaignContentByCampaignName(String campaign) throws CerberusException {
+    public List<TestBatteryContent> findTestBatteryContentsByTestBatteryName(String testBattery) throws CerberusException {
         boolean throwEx = false;
-        final String query = "SELECT c FROM CampaignContent c WHERE c.campaign = ?";
+        final String query = "SELECT t FROM TestBatteryContent t where t.testbattery = ?";
 
-        List<CampaignContent> campaignContentList = new ArrayList<CampaignContent>();
+        List<TestBatteryContent> testBatteryContentsList = new ArrayList<TestBatteryContent>();
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
-            preStat.setString(1, campaign);
             try {
+                preStat.setString(1, testBattery);
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     while (resultSet.next()) {
-                        campaignContentList.add(this.loadCampaignContentFromResultSet(resultSet));
+                        testBatteryContentsList.add(this.loadTestBatteryContentFromResultSet(resultSet));
                     }
                 } catch (SQLException exception) {
                     MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
-                    campaignContentList = null;
+                    testBatteryContentsList = null;
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
                 MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
-                campaignContentList = null;
+                testBatteryContentsList = null;
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
             MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
-            campaignContentList = null;
+            testBatteryContentsList = null;
         } finally {
             try {
                 if (connection != null) {
@@ -181,40 +179,30 @@ public class CampaignContentDAO implements ICampaignContentDAO {
         if (throwEx) {
             throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
         }
-        return campaignContentList;
+        return testBatteryContentsList;
     }
 
     @Override
-    public List<CampaignContent> findCampaignContentsByTestBattery(String testBattery) throws CerberusException {
-        boolean throwEx = false;
-        final String query = "SELECT c FROM CampaignContent c WHERE c.testbattery = ?";
+    public boolean updateTestBatteryContent(TestBatteryContent testBatteryContent) {
+        final StringBuffer query = new StringBuffer("UPDATE `testbatterycontent` set `testbattery` = ?, `Test` = ?, `TestCase` = ? WHERE `testbatterycontentID` = ?");
 
-        List<CampaignContent> campaignContentList = new ArrayList<CampaignContent>();
         Connection connection = this.databaseSpring.connect();
         try {
-            PreparedStatement preStat = connection.prepareStatement(query);
-            preStat.setString(1, testBattery);
+            PreparedStatement preStat = connection.prepareStatement(query.toString());
+            preStat.setString(1, testBatteryContent.getTestbattery());
+            preStat.setString(2, testBatteryContent.getTest());
+            preStat.setString(3, testBatteryContent.getTestCase());
+            preStat.setInt(4, testBatteryContent.getTestbatterycontentID());
+
             try {
-                ResultSet resultSet = preStat.executeQuery();
-                try {
-                    while (resultSet.next()) {
-                        campaignContentList.add(this.loadCampaignContentFromResultSet(resultSet));
-                    }
-                } catch (SQLException exception) {
-                    MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
-                    campaignContentList = null;
-                } finally {
-                    resultSet.close();
-                }
+                return (preStat.executeUpdate() == 1);
             } catch (SQLException exception) {
                 MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
-                campaignContentList = null;
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
             MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
-            campaignContentList = null;
         } finally {
             try {
                 if (connection != null) {
@@ -224,67 +212,70 @@ public class CampaignContentDAO implements ICampaignContentDAO {
                 MyLogger.log(ApplicationDAO.class.getName(), Level.WARN, e.toString());
             }
         }
-        if (throwEx) {
-            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
-        }
-        return campaignContentList;
+        return false;
     }
 
     @Override
-    public List<CampaignContent> findCampaignContentByCriteria(String campaign, Integer campaignContentID, String testBattery) throws CerberusException {
+    public List<TestBatteryContent> findTestBatteryContentsByCriteria(Integer testBatteryContentID, String testBattery, String test, String testCase) throws CerberusException {
         boolean throwEx = false;
-        final StringBuffer query = new StringBuffer("SELECT c FROM CampaignParameter c WHERE ");
+        final StringBuffer query = new StringBuffer("SELECT t FROM testbatterycontent t WHERE ");
 
-        if (campaignContentID != null) {
-            query.append(" c.campaignContentID = ?");
-        }
-        if (campaign != null && !"".equals(campaign.trim())) {
-            query.append(" c.campaign LIKE ?");
+        if (testBatteryContentID != null) {
+            query.append(" t.testBatterycontentID = ?");
         }
         if (testBattery != null && !"".equals(testBattery.trim())) {
-            query.append(" c.testBattery LIKE ?");
+            query.append(" t.testBattery LIKE ?");
+        }
+        if (test != null && !"".equals(test.trim())) {
+            query.append(" t.Test LIKE ?");
+        }
+        if (testCase != null && !"".equals(testCase.trim())) {
+            query.append(" t.TestCase LIKE ?");
         }
 
-        // " c.campaignID = ? AND c.campaign LIKE ? AND c.description LIKE ?";
-        List<CampaignContent> campaignContentsList = new ArrayList<CampaignContent>();
+        List<TestBatteryContent> testBatteryContentsList = new ArrayList<TestBatteryContent>();
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
             int index = 1;
-            if (campaignContentID != null) {
-                preStat.setInt(index, campaignContentID);
-                index++;
-            }
-            if (campaign != null && !"".equals(campaign.trim())) {
-                preStat.setString(index, "%" + campaign.trim() + "%");
+            if (testBatteryContentID != null) {
+                preStat.setInt(index, testBatteryContentID);
                 index++;
             }
             if (testBattery != null && !"".equals(testBattery.trim())) {
                 preStat.setString(index, "%" + testBattery.trim() + "%");
                 index++;
             }
+            if (test != null && !"".equals(test.trim())) {
+                preStat.setString(index, "%" + test.trim() + "%");
+                index++;
+            }
+            if (testCase != null && !"".equals(testCase.trim())) {
+                preStat.setString(index, "%" + testCase.trim() + "%");
+                index++;
+            }
 
             try {
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     while (resultSet.next()) {
-                        campaignContentsList.add(this.loadCampaignContentFromResultSet(resultSet));
+                        testBatteryContentsList.add(this.loadTestBatteryContentFromResultSet(resultSet));
                     }
                 } catch (SQLException exception) {
                     MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
-                    campaignContentsList = null;
+                    testBatteryContentsList = null;
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
                 MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
-                campaignContentsList = null;
+                testBatteryContentsList = null;
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
             MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
-            campaignContentsList = null;
+            testBatteryContentsList = null;
         } finally {
             try {
                 if (connection != null) {
@@ -297,19 +288,19 @@ public class CampaignContentDAO implements ICampaignContentDAO {
         if (throwEx) {
             throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
         }
-        return campaignContentsList;
+        return testBatteryContentsList;
     }
 
     @Override
-    public boolean updateCampaignContent(CampaignContent campaignContent) {
-        final StringBuffer query = new StringBuffer("UPDATE `campaigncontent` SET campaign=?, testbattery=? WHERE campaigncontentID=?");
+    public boolean createTestBatteryContent(TestBatteryContent testBatteryContent) {
+        final StringBuffer query = new StringBuffer("INSERT INTO `testbatterycontent` (`testbattery`, `Test`, `TestCase`) VALUES (?, ?, ?)");
 
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
-            preStat.setString(1, campaignContent.getCampaign());
-            preStat.setString(2, campaignContent.getTestbattery());
-            preStat.setInt(3, campaignContent.getCampaigncontentID());
+            preStat.setString(1, testBatteryContent.getTestbattery());
+            preStat.setString(2, testBatteryContent.getTest());
+            preStat.setString(3, testBatteryContent.getTestCase());
 
             try {
                 return (preStat.executeUpdate() == 1);
@@ -332,43 +323,13 @@ public class CampaignContentDAO implements ICampaignContentDAO {
         return false;
     }
 
-    @Override
-    public boolean createCampaignContent(CampaignContent campaignContent) {
-        final StringBuffer query = new StringBuffer("INSERT INTO `campaigncontent` (`campaign`, `testbattery`) VALUES (?, ?)");
-
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query.toString());
-            preStat.setString(1, campaignContent.getCampaign());
-            preStat.setString(2, campaignContent.getTestbattery());
-
-            try {
-                return (preStat.executeUpdate() == 1);
-            } catch (SQLException exception) {
-                MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
-            } finally {
-                preStat.close();
-            }
-        } catch (SQLException exception) {
-            MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                MyLogger.log(ApplicationDAO.class.getName(), Level.WARN, e.toString());
-            }
-        }
-        return false;
-    }
-
-    private CampaignContent loadCampaignContentFromResultSet(ResultSet rs) throws SQLException {
-        Integer campaigncontentID = ParameterParserUtil.parseIntegerParam(rs.getString("campaigncontentID"), -1);
+    private TestBatteryContent loadTestBatteryContentFromResultSet(ResultSet rs) throws SQLException {
+        Integer testbatterycontentID = ParameterParserUtil.parseIntegerParam(rs.getString("testbatterycontentID"), -1);
         String testbattery = ParameterParserUtil.parseStringParam(rs.getString("testbattery"), "");
-        String campaign = ParameterParserUtil.parseStringParam(rs.getString("campaign"), "");
+        String test = ParameterParserUtil.parseStringParam(rs.getString("Test"), "");
+        String testCase = ParameterParserUtil.parseStringParam(rs.getString("TestCase"), "");
 
-        return factoryCampaignContent.create(campaigncontentID, testbattery, campaign);
+        return factoryTestBatteryContent.create(testbatterycontentID, testbattery, test, testCase);
     }
 
 }

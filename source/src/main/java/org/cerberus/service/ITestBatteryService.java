@@ -17,17 +17,18 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.dao;
+package org.cerberus.service;
 
 import java.util.List;
 import org.cerberus.entity.TestBattery;
+import org.cerberus.entity.TestBatteryContent;
 import org.cerberus.exception.CerberusException;
 
 /**
  *
  * @author memiks
  */
-public interface ITestBatteryDAO {
+public interface ITestBatteryService {
 
 
     List<TestBattery> findAll() throws CerberusException;
@@ -36,11 +37,17 @@ public interface ITestBatteryDAO {
 
     TestBattery findTestBatteryByTestBatteryName(String testBattery) throws CerberusException;
 
-    List<TestBattery> findTestBatteriesByDescription(String description) throws CerberusException;
+    List<TestBatteryContent> findTestBatteryContentsByTestBatteryName(String testBattery) throws CerberusException;
 
     boolean updateTestBattery(TestBattery testBattery);
 
     boolean createTestBattery(TestBattery testBattery);
 
+    boolean updateTestBatteryContent(TestBatteryContent testBatteryContent);
+
+    boolean createTestBatteryContent(TestBatteryContent testBatteryContent);
+
     List<TestBattery> findTestBatteryByCriteria(Integer testBatteryID, String testBattery, String Description) throws CerberusException;
+
+    List<TestBatteryContent> findTestBatteryContentsByCriteria(Integer testBatteryContentID, String testBattery, String test, String testCase) throws CerberusException;
 }
