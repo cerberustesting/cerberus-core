@@ -36,11 +36,13 @@ import org.cerberus.factory.IFactoryTestBatteryContent;
 import org.cerberus.log.MyLogger;
 import org.cerberus.util.ParameterParserUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
 /**
  *
  * @author memiks
  */
+@Repository
 public class TestBatteryContentDAO implements ITestBatteryContentDAO {
 
     @Autowired
@@ -51,7 +53,7 @@ public class TestBatteryContentDAO implements ITestBatteryContentDAO {
     @Override
     public List<TestBatteryContent> findAll() throws CerberusException {
         boolean throwEx = false;
-        final String query = "SELECT t FROM TestBatteryContent t";
+        final String query = "SELECT * FROM TestBatteryContent t";
 
         List<TestBatteryContent> testBatteryContentsList = new ArrayList<TestBatteryContent>();
         Connection connection = this.databaseSpring.connect();
@@ -96,7 +98,7 @@ public class TestBatteryContentDAO implements ITestBatteryContentDAO {
     @Override
     public TestBatteryContent findTestBatteryContentByKey(Integer testBatteryContentID) throws CerberusException {
         boolean throwEx = false;
-        final String query = "SELECT t FROM TestBatteryContent t WHERE t.testbatterycontentID = ?";
+        final String query = "SELECT * FROM TestBatteryContent t WHERE t.testbatterycontentID = ?";
 
         TestBatteryContent testBatteryContent = null;
         Connection connection = this.databaseSpring.connect();
@@ -139,7 +141,7 @@ public class TestBatteryContentDAO implements ITestBatteryContentDAO {
     @Override
     public List<TestBatteryContent> findTestBatteryContentsByTestBatteryName(String testBattery) throws CerberusException {
         boolean throwEx = false;
-        final String query = "SELECT t FROM TestBatteryContent t where t.testbattery = ?";
+        final String query = "SELECT * FROM TestBatteryContent t where t.testbattery = ?";
 
         List<TestBatteryContent> testBatteryContentsList = new ArrayList<TestBatteryContent>();
         Connection connection = this.databaseSpring.connect();
@@ -218,7 +220,7 @@ public class TestBatteryContentDAO implements ITestBatteryContentDAO {
     @Override
     public List<TestBatteryContent> findTestBatteryContentsByCriteria(Integer testBatteryContentID, String testBattery, String test, String testCase) throws CerberusException {
         boolean throwEx = false;
-        final StringBuffer query = new StringBuffer("SELECT t FROM testbatterycontent t WHERE ");
+        final StringBuffer query = new StringBuffer("SELECT * FROM testbatterycontent t WHERE ");
 
         if (testBatteryContentID != null) {
             query.append(" t.testBatterycontentID = ?");

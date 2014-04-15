@@ -36,11 +36,13 @@ import org.cerberus.factory.IFactoryCampaignParameter;
 import org.cerberus.log.MyLogger;
 import org.cerberus.util.ParameterParserUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
 /**
  *
  * @author memiks
  */
+@Repository
 public class CampaignParameterDAO implements ICampaignParameterDAO {
 
     @Autowired
@@ -51,7 +53,7 @@ public class CampaignParameterDAO implements ICampaignParameterDAO {
     @Override
     public List<CampaignParameter> findAll() throws CerberusException {
         boolean throwEx = false;
-        final String query = "SELECT c FROM CampaignParameter c";
+        final String query = "SELECT * FROM CampaignParameter c";
 
         List<CampaignParameter> campaignParameterList = new ArrayList<CampaignParameter>();
         Connection connection = this.databaseSpring.connect();
@@ -96,7 +98,7 @@ public class CampaignParameterDAO implements ICampaignParameterDAO {
     @Override
     public CampaignParameter findCampaignParameterByKey(Integer campaignparameterID) throws CerberusException {
         boolean throwEx = false;
-        final String query = "SELECT c FROM CampaignParameter c WHERE c.campaignparameterID = ?";
+        final String query = "SELECT * FROM CampaignParameter c WHERE c.campaignparameterID = ?";
 
         CampaignParameter campaignParameterResult = null;
         Connection connection = this.databaseSpring.connect();
@@ -139,7 +141,7 @@ public class CampaignParameterDAO implements ICampaignParameterDAO {
     @Override
     public List<CampaignParameter> findCampaignParametersByCampaign(String campaign) throws CerberusException {
         boolean throwEx = false;
-        final String query = "SELECT c FROM CampaignParameter c WHERE c.campaign = ?";
+        final String query = "SELECT * FROM CampaignParameter c WHERE c.campaign = ?";
 
         List<CampaignParameter> campaignParameterList = new ArrayList<CampaignParameter>();
         Connection connection = this.databaseSpring.connect();
@@ -250,7 +252,7 @@ public class CampaignParameterDAO implements ICampaignParameterDAO {
     @Override
     public List<CampaignParameter> findCampaignParameterByCriteria(Integer campaignparameterID, String campaign, String parameter, String value) throws CerberusException {
         boolean throwEx = false;
-        final StringBuffer query = new StringBuffer("SELECT c FROM CampaignParameter c WHERE ");
+        final StringBuffer query = new StringBuffer("SELECT * FROM CampaignParameter c WHERE ");
 
         if (campaignparameterID != null) {
             query.append(" c.campaignparameterID = ?");

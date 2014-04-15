@@ -29,11 +29,13 @@ import org.cerberus.entity.CampaignParameter;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.service.ICampaignService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 /**
  *
  * @author memiks
  */
+@Service
 public class CampaignService implements ICampaignService {
 
     @Autowired
