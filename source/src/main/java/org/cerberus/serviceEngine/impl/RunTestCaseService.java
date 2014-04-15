@@ -69,6 +69,7 @@ import org.cerberus.service.ITestCaseService;
 import org.cerberus.service.ITestCaseStepActionControlExecutionService;
 import org.cerberus.service.ITestCaseStepActionExecutionService;
 import org.cerberus.service.ITestCaseStepExecutionService;
+import org.cerberus.serviceEngine.IActionService;
 import org.cerberus.serviceEngine.IControlService;
 import org.cerberus.serviceEngine.IExecutionCheckService;
 import org.cerberus.serviceEngine.IPropertyService;
@@ -94,6 +95,8 @@ public class RunTestCaseService implements IRunTestCaseService {
     private IExecutionCheckService executionCheckService;
     @Autowired
     private ISeleniumService seleniumService;
+    @Autowired
+    private IActionService actionService;
     @Autowired
     private IPropertyService propertyService;
     @Autowired
@@ -779,7 +782,7 @@ public class RunTestCaseService implements IRunTestCaseService {
 
     private TestCaseStepActionExecution executeAction(TestCaseStepActionExecution testCaseStepActionExecution) {
 
-        testCaseStepActionExecution = this.seleniumService.doAction(testCaseStepActionExecution);
+        testCaseStepActionExecution = this.actionService.doAction(testCaseStepActionExecution);
 
         /**
          * Screenshot only done when : screenshot parameter is eq to 2 or
