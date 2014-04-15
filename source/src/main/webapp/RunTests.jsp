@@ -60,9 +60,9 @@
                         conn = db.connect();
 
                         Statement stmt = conn.createStatement();
-                        
+
                         User usr = userService.findUserByKey(request.getUserPrincipal().getName());
-                        
+
                         if (StringUtils.isNotBlank(request.getParameter("DefaultIP"))) {
                             if (request.getParameter("ss_ip") != null && request.getParameter("ss_ip").compareTo("") != 0) {
                                 usr.setDefaultIP(request.getParameter("ss_ip"));
@@ -97,8 +97,6 @@
                             response.sendRedirect(params.toString());
                         }
 
-
-
                         String ssIP;
                         if (request.getParameter("ss_ip") != null && request.getParameter("ss_ip").compareTo("") != 0) {
                             ssIP = request.getParameter("ss_ip");
@@ -127,7 +125,6 @@
 
                         StringBuilder sqlOpts = new StringBuilder();
 
-
                         String environment;
                         if (request.getParameter(
                                 "Environment") != null && request.getParameter("Environment").compareTo("All") != 0) {
@@ -135,7 +132,6 @@
                         } else {
                             environment = new String("%%");
                         }
-
 
                         String test;
                         if (request.getParameter(
@@ -203,233 +199,229 @@
                         }
 
                 %>
+                <div class="filters" style="clear:both; width:100%">
+                    <p style="float:left" class="dttTitle">Choose Test</p>
+                    <div id="dropDownDownArrow" style="float:left"><a onclick="javascript:switchDivVisibleInvisible('testParameterDetail', 'testParameterSummary');
+                            switchDivVisibleInvisible('dropDownUpArrow', 'dropDownDownArrow')"><img src="images/dropdown.gif"/></a>
+                    </div>
+                    <div id="dropDownUpArrow" style="display:none; float:left"><a onclick="javascript:switchDivVisibleInvisible('testParameterSummary', 'testParameterDetail');
+                            switchDivVisibleInvisible('dropDownDownArrow', 'dropDownUpArrow')"><img style="transform: rotate(180deg);" src="images/dropdown.gif"/></a>
+                    </div>
+                    <div  id="testParameterDetail" style="clear:both; width:100%">
+                        <div style="float:left">
+                            <div style="clear:both; width:150px; text-align: left"><% out.print(docService.findLabelHTML("test", "Test", "Test"));%></div>
+                            <div style="clear:both"><select size="16" id="test" name="Test"
+                                                            style="width: 200px" onchange="document.RunTest.submit()">
+                                    <%
+                                        ResultSet rsTest = stmt.executeQuery("SELECT DISTINCT t.Test FROM test t, testcase tc WHERE tc.test=t.test AND tc.tcactive='Y' AND t.active='Y' AND tc.application " + appliInSQL + " AND tc.group is not NULL AND tc.group not in ('PRIVATE') AND length(tc.group) > 1 ");
+                                        while (rsTest.next()) {%>
+                                    <option style="width: 300px" value="<%= rsTest.getString(1)%>"
+                                            <%=test.compareTo(rsTest.getString(1)) == 0 ? " SELECTED " : ""%>><%= rsTest.getString(1)%></option>
+                                    <% }%>
+                                </select></div>
+                        </div>
+                        <div style="float:left">
+                            <div style="clear:both; width:150px; text-align: left"><% out.print(docService.findLabelHTML("testcase", "TestCase", "Test Case"));%></div>
+                            <div style="clear:both"><select size="16" id="testcase"
+                                                            name="TestCase" style="width: 600px"
+                                                            onchange="document.RunTest.submit()">
+                                    <% ResultSet rsTestCase = stmt.executeQuery("SELECT DISTINCT tc.TestCase, tc.Description, tc.application FROM testcase tc WHERE tc.test = '" + test + "' AND tc.application " + appliInSQL + " AND tc.group is not NULL AND tc.group not in ('PRIVATE') AND length(tc.group) > 1 AND TcActive = 'Y'");
+                                        while (rsTestCase.next()) {
+                                    %>
+                                    <option style="width: 600px"
+                                            value="<%= rsTestCase.getString(1)%>"
+                                            <%=testcase.compareTo(rsTestCase.getString(1)) == 0 ? "SELECTED " : ""%>>
+                                        <%= rsTestCase.getString(1)%> [<%= rsTestCase.getString(3)%>]
+                                        :
+                                        <%= rsTestCase.getString(2)%></option>
+                                        <%
+                                                if (testcase.compareTo(rsTestCase.getString(1)) == 0) {
+                                                    testcaseApplication = rsTestCase.getString(3);
+                                                }
+                                            }%>
+                                </select></div>
+                        </div>
+                        <div style="float:left">
+                            <div style="clear:both; width:60px; text-align: left"><% out.print(docService.findLabelHTML("invariant", "Country", "Country"));%></div>
+                            <div style="clear:both"><select size="16" id="country"
+                                                            name="Country" style="width: 60px"
+                                                            onchange="document.RunTest.submit()">
+                                    <% ResultSet rsCountry = stmt.executeQuery("SELECT DISTINCT c.Country FROM testcasecountry c "
+                                                + " join invariant i on i.value=c.country and i.idname='COUNTRY' "
+                                                + " WHERE c.test = '" + test + "' AND c.testcase = '" + testcase + "'"
+                                                + " order by sort;");
+                                        while (rsCountry.next()) {%>
+                                    <option style="width: 300px" value="<%= rsCountry.getString(1)%>"
+                                            <%=country.compareTo(rsCountry.getString(1)) == 0 ? " SELECTED " : ""%>><%= rsCountry.getString(1)%></option>
+                                    <% }%>
+                                </select></div>
+                        </div></div><div  style="clear:both; width:100%"></div></div><br><br>
+                <div class="filters" style="clear:both; width:100%">
+                    <div  style="clear:both; width:100%">
+                        <div style="clear:both">
+                            <div style="float:left; width:100%; text-align: left">
+                                <p style="float:left" class="dttTitle">Choose Environment</p>  
+                                <div style="float:left; width:100px; text-align: left"><input type="radio" name="manualURL" value="N" onclick="setEnvAutomatic();
+                                        switchDivVisibleInvisible('automatedEnvironmentDiv', 'manualEnvironmentDiv')" checked>Automatic</div>
+                                <div style="float:left"><input type="radio" name="manualURL" value="Y" onclick="setEnvManual();
+                                            switchDivVisibleInvisible('manualEnvironmentDiv', 'automatedEnvironmentDiv')">Manual</div>
+
+                            </div>
+
+                            <div style="clear:both">
 
 
-                <table>
-                    <tr><td id="arrond"  ><h3 style="color: blue">Tool Parameters</h3>
-
-                            <table border="0px">
-                                <tr>                                         
-                                    <td id="wob" style="font-weight: bold; width: 150px"><% out.print(docService.findLabelHTML("page_runtests", "SeleniumServerIP", "Selenium Server IP "));%></td>
-                                    <td id="wob">
-                                        <input type="text" name="ss_ip" value="<%= ssIP%>" />
-                                        <input id="button" type="submit" <%=enable%> name="DefaultIP" value="Set As My Default IP" >
-                                    </td>
-                                    <td id="wob" style="width: 20px">
-                                    </td>
-                                    <td>
-                                        INSTRUCTIONS ON HOW TO RUN YOUR LOCAL SELENIUM SERVER :
-                                    </td>
-
-                                </tr>
-                                <tr>
-                                    <td id="wob" style="font-weight: bold; width: 150px"><% out.print(docService.findLabelHTML("page_runtests", "SeleniumServerPort", "Selenium Server Port "));%></td>
-                                    <td id="wob">
-                                        <input type="text" name="ss_p" value="<%= ssPort%>" />
-                                    </td>
-                                    <td id="wob" style="width: 20px">
-                                    </td>
-                                    <td>
-                                        Download the compatible version of Selenium <a href="<%=seleniumUrl%>">here</a>. Drivers : <a href="<%=seleniumIEUrl%>">IE</a> <a href="<%=seleniumChromeUrl%>">Chrome</a>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td id="wob" style="font-weight: bold; width: 150px"><% out.print(docService.findLabelHTML("page_runtests", "Browser", "Browser"));%></td>
-                                    <td id="wob">
-                                        <%=ComboInvariant(conn, "browser", "width: 90px", "browser", "browser", "BROWSER", browser, "", null)%>
-                                    </td>
-                                    <td id="wob"></td>
-                                    <td>
-                                        Example scripts to start your local selenium server : <a href="ressources/start-selenium.sh">Linux</a> / <a href="ressources/start-selenium.bat">Windows</a>
-                                    </td>
-                                </tr>
-                            </table>
-                        </td>
-                    </tr>
-                </table>
-
-                <br>
-
-                <table>
-                    <tr>
-                        <td id="arrond">
-                            <h3 style="color: blue">Test Parameters</h3>
-
-                            <table id="testParameters" border="0px">
-                                <tr>
-                                    <td id="wob" style="font-weight: bold; width: 100px"><% out.print(docService.findLabelHTML("test", "Test", "Test"));%></td>
-                                    <td id="wob" style="font-weight: bold; width: 100px"><% out.print(docService.findLabelHTML("testcase", "TestCase", "Test Case"));%></td>
-                                    <td id="wob" style="font-weight: bold; width: 100px"><% out.print(docService.findLabelHTML("invariant", "Country", "Country"));%></td>
-                                </tr>
-                                <tr>
-                                    <td id="wob"><select size="16" id="test" name="Test"
-                                                         style="width: 200px" onchange="document.RunTest.submit()">
+                                <div id="automatedEnvironmentDiv" style="float:left">
+                                    <div style="float:left; width:60px; text-align: left"><span style="font-weight: normal;font-size: smaller"><% out.print(docService.findLabelHTML("invariant", "Environment", "Environment"));%></span></div>
+                                    <div style="float:left"><select id="environment" name="Environment" style="width: 400px">
                                             <%
-                                                ResultSet rsTest = stmt.executeQuery("SELECT DISTINCT t.Test FROM test t, testcase tc WHERE tc.test=t.test AND tc.tcactive='Y' AND t.active='Y' AND tc.application " + appliInSQL + " AND tc.group is not NULL AND tc.group not in ('PRIVATE') AND length(tc.group) > 1 ");
-                                                while (rsTest.next()) {%>
-                                            <option style="width: 300px" value="<%= rsTest.getString(1)%>"
-                                                    <%=test.compareTo(rsTest.getString(1)) == 0 ? " SELECTED " : ""%>><%= rsTest.getString(1)%></option>
-                                            <% }%>
-                                        </select>
-                                    </td>
-                                    <td id="wob"><select size="16" id="testcase"
-                                                         name="TestCase" style="width: 600px"
-                                                         onchange="document.RunTest.submit()">
-                                            <% ResultSet rsTestCase = stmt.executeQuery("SELECT DISTINCT tc.TestCase, tc.Description, tc.application FROM testcase tc WHERE tc.test = '" + test + "' AND tc.application " + appliInSQL + " AND tc.group is not NULL AND tc.group not in ('PRIVATE') AND length(tc.group) > 1 AND TcActive = 'Y'");
-                                                while (rsTestCase.next()) {
+                                                StringBuilder sql = new StringBuilder();
+                                                sql.append("SELECT DISTINCT ce.Environment Environment, ce.Build Build, ");
+                                                sql.append("    ce.Revision Revisionv ");
+                                                sql.append("FROM countryenvironmentparameters cea, countryenvparam ce, invariant i ");
+                                                sql.append("WHERE ce.system = cea.system AND ce.country = cea.country AND ce.environment = cea.environment ");
+                                                sql.append("    AND cea.Application = '");
+                                                sql.append(testcaseApplication);
+                                                sql.append("' AND cea.country='");
+                                                sql.append(country);
+                                                sql.append("'");
+                                                sql.append("    AND ce.active='Y' ");
+                                                sql.append("    AND ce.system='" + MySystem + "' ");
+                                                sql.append("    AND i.idname = 'ENVIRONMENT' AND i.Value = ce.Environment ");
+                                                sql.append("ORDER BY i.sort ");
+
+                                                if (!(testcaseApplication == null) && !(country.isEmpty()) && !(country.equalsIgnoreCase("%%"))) {
+                                                    ResultSet rsEnv = stmt.executeQuery(sql.toString());
+                                                    while (rsEnv.next()) {
                                             %>
-                                            <option style="width: 600px"
-                                                    value="<%= rsTestCase.getString(1)%>"
-                                                    <%=testcase.compareTo(rsTestCase.getString(1)) == 0 ? "SELECTED " : ""%>>
-                                                <%= rsTestCase.getString(1)%> [<%= rsTestCase.getString(3)%>]
-                                                :
-                                                <%= rsTestCase.getString(2)%></option>
+                                            <option style="width: 400px" value="<%= rsEnv.getString(1)%>"
+                                                    <%=environment.compareTo("%%") == 0 && rsEnv.getString(1).contains("UAT") ? " SELECTED " : ""%>
+                                                    <%=environment.compareTo(rsEnv.getString(1)) == 0 ? " SELECTED " : ""%>><%= rsEnv.getString(1)%>
+                                                With Build : <%= rsEnv.getString(2)%> And Revision : <%= rsEnv.getString(3)%></option>
                                                 <%
-                                                        if (testcase.compareTo(rsTestCase.getString(1)) == 0) {
-                                                            testcaseApplication = rsTestCase.getString(3);
+                                                    }
+                                                } else {
+                                                %>
+                                            <option style="width: 400px; text-decoration-color:lightgray">Select Test, Testcase and Country first</option><%}%></select></div>
+                                </div>
+                                <div id="manualEnvironmentDiv" style="float:left; display:none">
+                                    <div style="clear:both"><span style="font-weight: normal;font-size: smaller">My Host</span>
+                                        <input type="text" style="width: 100px" name="myhost" id="myhost" disabled value="localhost:8080">
+                                        <span style="font-weight: normal;font-size: smaller">My Context Root</span>
+                                        <input type="text" style="width: 200px" name="mycontextroot" id="mycontextroot" disabled value="/myapp/">
+                                        <span style="font-weight: normal;font-size: smaller">My Login Relative URL</span>
+                                        <input type="text" style="width: 200px" name="myloginrelativeurl" id="myloginrelativeurl" disabled value="login.jsp?comcode=200">
+                                        <span style="font-weight: normal;font-size: smaller">Data Environment</span>
+                                        <select id="myenvdata" name="myenvdata" style="width: 200px" disabled>
+                                            <%
+                                                if (!(testcaseApplication == null) && !(country.isEmpty()) && !(country.equalsIgnoreCase("%%"))) {
+                                                    ResultSet rsEnv = stmt.executeQuery(sql.toString());
+                                                    while (rsEnv.next()) {
+                                            %>
+                                            <option style="width: 400px" value="<%= rsEnv.getString(1)%>"
+                                                    <%=environment.compareTo("%%") == 0 && rsEnv.getString(1).contains("UAT") ? " SELECTED " : ""%>
+                                                    <%=environment.compareTo(rsEnv.getString(1)) == 0 ? " SELECTED " : ""%>><%= rsEnv.getString(1)%>
+                                                With Build : <%= rsEnv.getString(2)%> And Revision : <%= rsEnv.getString(3)%></option>
+                                                <%
                                                         }
                                                     }%>
                                         </select>
-                                    </td>
-                                    <td id="wob"><select size="16" id="country"
-                                                         name="Country" style="width: 50px"
-                                                         onchange="document.RunTest.submit()">
-                                            <% ResultSet rsCountry = stmt.executeQuery("SELECT DISTINCT c.Country FROM testcasecountry c "
-                                                        + " join invariant i on i.value=c.country and i.idname='COUNTRY' "
-                                                        + " WHERE c.test = '" + test + "' AND c.testcase = '" + testcase + "'"
-                                                        + " order by sort;");
-                                                while (rsCountry.next()) {%>
-                                            <option style="width: 300px" value="<%= rsCountry.getString(1)%>"
-                                                    <%=country.compareTo(rsCountry.getString(1)) == 0 ? " SELECTED " : ""%>><%= rsCountry.getString(1)%></option>
-                                            <% }%>
-                                        </select>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td id="wob" style="font-weight: bold; width: 150px"><% out.print(docService.findLabelHTML("invariant", "Environment", "Environment"));%></td>
-                                </tr>
-                                <tr>
-                                    <td colspan="3">
-                                        <table>
-                                            <tr id="trmanualconfig">
-                                                <td id="wob">
-                                                    <input type="radio" name="manualURL" value="N" onclick="setEnvAutomatic()" checked>Automatic
-                                                    <input type="radio" name="manualURL" value="Y" onclick="setEnvManual()">Manual<br>
-                                                </td>
-                                                <td>
-                                                    <table>
-                                                        <tr>
-                                                            <td id="wob" colspan="2"><span style="font-weight: normal;">Environment</span></td>
-                                                            <td id="wob" colspan="6">
-                                                                <select id="environment" name="Environment" style="width: 400px">
-                                                                    <%
-                                                                        StringBuilder sql = new StringBuilder();
-                                                                        sql.append("SELECT DISTINCT ce.Environment Environment, ce.Build Build, ");
-                                                                        sql.append("    ce.Revision Revisionv ");
-                                                                        sql.append("FROM countryenvironmentparameters cea, countryenvparam ce, invariant i ");
-                                                                        sql.append("WHERE ce.system = cea.system AND ce.country = cea.country AND ce.environment = cea.environment ");
-                                                                        sql.append("    AND cea.Application = '");
-                                                                        sql.append(testcaseApplication);
-                                                                        sql.append("' AND cea.country='");
-                                                                        sql.append(country);
-                                                                        sql.append("'");
-                                                                        sql.append("    AND ce.active='Y' ");
-                                                                        sql.append("    AND ce.system='" + MySystem + "' ");
-                                                                        sql.append("    AND i.idname = 'ENVIRONMENT' AND i.Value = ce.Environment ");
-                                                                        sql.append("ORDER BY i.sort ");
 
-                                                                        if (!(testcaseApplication == null) && !(country.isEmpty()) && !(country.equalsIgnoreCase("%%"))) {
-                                                                            ResultSet rsEnv = stmt.executeQuery(sql.toString());
-                                                                            while (rsEnv.next()) {
-                                                                    %>
-                                                                    <option style="width: 400px" value="<%= rsEnv.getString(1)%>"
-                                                                            <%=environment.compareTo("%%") == 0 && rsEnv.getString(1).contains("UAT") ? " SELECTED " : ""%>
-                                                                            <%=environment.compareTo(rsEnv.getString(1)) == 0 ? " SELECTED " : ""%>><%= rsEnv.getString(1)%>
-                                                                        With Build : <%= rsEnv.getString(2)%> And Revision : <%= rsEnv.getString(3)%></option>
-                                                                        <%
-                                                                                }
-                                                                            }
-                                                                        %>
-                                                                </select>
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td id="wob"><span style="font-weight: normal;font-size: smaller">My Host</span></td>
-                                                            <td id="wob"><input type="text" style="width: 100px" name="myhost" id="myhost" disabled value="localhost:8080"></td>
-                                                            <td id="wob"><span style="font-weight: normal;font-size: smaller">My Context Root</span></td>
-                                                            <td id="wob"><input type="text" style="width: 200px" name="mycontextroot" id="mycontextroot" disabled value="/myapp/"></td>
-                                                            <td id="wob"><span style="font-weight: normal;font-size: smaller">My Login Relative URL</span></td>
-                                                            <td id="wob"><input type="text" style="width: 200px" name="myloginrelativeurl" id="myloginrelativeurl" disabled value="login.jsp?comcode=200"></td>
-                                                            <td id="wob"><span style="font-weight: normal;font-size: smaller">Data Environment</span></td>
-                                                            <td id="wob">
-                                                                <select id="myenvdata" name="myenvdata" style="width: 200px" disabled>
-                                                                    <%
-                                                                        if (!(testcaseApplication == null) && !(country.isEmpty()) && !(country.equalsIgnoreCase("%%"))) {
-                                                                            ResultSet rsEnv = stmt.executeQuery(sql.toString());
-                                                                            while (rsEnv.next()) {
-                                                                    %>
-                                                                    <option style="width: 400px" value="<%= rsEnv.getString(1)%>"
-                                                                            <%=environment.compareTo("%%") == 0 && rsEnv.getString(1).contains("UAT") ? " SELECTED " : ""%>
-                                                                            <%=environment.compareTo(rsEnv.getString(1)) == 0 ? " SELECTED " : ""%>><%= rsEnv.getString(1)%>
-                                                                        With Build : <%= rsEnv.getString(2)%> And Revision : <%= rsEnv.getString(3)%></option>
-                                                                        <%
-                                                                                }
-                                                                            }%>
-                                                                </select>
-                                                            </td>
-                                                        </tr>
-                                                    </table>
-                                                </td>
-                                            </tr>
-                                        </table>
-                                    </td>
-                                </tr>
-                            </table>
-                        </td>
-                    </tr>
-                </table>
+                                    </div>
+                                </div>
 
-                <br>                                        
+                            </div>
+                        </div>
+                    </div>
+                    <div  style="clear:both; width:100%"></div>
+                </div>
 
-                <table>
-                    <tr>
-                        <td id="arrond">
-                            <h3 style="color: blue">Execution Parameters</h3>
-                            <table>
-                                <tr>
-                                    <td id="wob" style="font-weight: bold; width: 100px"><% out.print(docService.findLabelHTML("testcaseexecution", "tag", "Tag"));%></td>
-                                    <td class="wob" colspan="4">
-                                        <input id="tag" name="Tag" style="width: 200px">
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td id="wob" style="font-weight: bold; width: 100px"><% out.print(docService.findLabelHTML("page_runtests", "outputformat", ""));%></td>
-                                    <td class="wob">
-                                        <%=ComboInvariant(conn, "outputformat", "width: 90px", "Format", "Format", "OUTPUTFORMAT", "gui", "", null)%>
-                                    </td>
-                                    <td id="wob" style="font-weight: bold; width: 100px"><% out.print(docService.findLabelHTML("testcaseexecution", "verbose", ""));%></td>
-                                    <td class="wob">
-                                        <%=ComboInvariant(conn, "verbose", "width: 90px", "Verbose", "Verbose", "VERBOSE", "0", "", null)%>
-                                    </td>
-                                    <td id="wob" style="font-weight: bold; width: 100px"><% out.print(docService.findLabelHTML("page_runtests", "screenshot", ""));%></td>
-                                    <td class="wob">
-                                        <%=ComboInvariant(conn, "screenshot", "width: 90px", "Screenshot", "Screenshot", "SCREENSHOT", "1", "", null)%>
-                                    </td>
-                                    <td class="wob" id="button"><input type="submit" id="buttonRun" style="font-size: large" name="statusPage" value="Run"></td>
-                                </tr>
-                            </table>
-                        </td>
-                    </tr>
-                </table>
+                <br><br> 
 
-                <br>
+                <div class="filters" style="float:left; width:45%;height:180px">
+                    <div style="clear:both">
+                    <p style="float:left" class="dttTitle">Choose Robot</p>
+                    <div style="float:left; width:100px; text-align: left"><input type="radio" name="manualURL" value="N" onclick="switchDivVisibleInvisible('automatedEnvironmentDiv', 'manualEnvironmentDiv')" checked>Automatic</div>
+                    <div style="float:left"><input type="radio" name="manualURL" value="Y" onclick="switchDivVisibleInvisible('manualEnvironmentDiv', 'automatedEnvironmentDiv')">Manual</div>
+                    </div>
+                    <div style="clear:both">
+                         <div style="float:left; width:150px; text-align:left"><% out.print(docService.findLabelHTML("page_runtests", "SeleniumServerIP", "Selenium Server IP "));%></div>
+                         <div style="float:left">
+                        <input type="text" name="ss_ip" value="<%= ssIP%>" />
+                        </div>
+                    </div>
+                    <div style="clear:both">
+                    <div style="float:left; width:150px; text-align:left"><% out.print(docService.findLabelHTML("page_runtests", "SeleniumServerPort", "Selenium Server Port "));%></div>
+                    <div style="float:left">
+                            <input type="text" name="ss_p" value="<%= ssPort%>" />
+                        </div>
+                        </div>
+                    <div style="clear:both">
+                   <div style="float:left; width:150px; text-align:left"><% out.print(docService.findLabelHTML("page_runtests", "Browser", "Browser"));%></div>
+                   <div style="float:left">
+                            <%=ComboInvariant(conn, "browser", "width: 90px", "browser", "browser", "BROWSER", browser, "", null)%>
+                        </div></div>
+                    <div style="clear:both">
+                        <div style="float:left; width:150px; text-align:left">BrowserVersion</div>
+                        <div style="float:left">
+                            <%=ComboInvariant(conn, "browser", "width: 90px", "browser", "browser", "BROWSER", browser, "", null)%>
+                        </div></div>
+                    <div style="clear:both"></div>
+                    <div style="clear:both">
+                        <div style="float:left; width:150px; text-align:left">Platform</div>
+                        <div style="float:left">
+                            <%=ComboInvariant(conn, "browser", "width: 90px", "browser", "browser", "BROWSER", browser, "", null)%>
+                        </div></div>
+                        <div style="clear:both">
+                        <input id="button" class="button" type="submit" <%=enable%> name="DefaultIP" value="Set As My Default IP" >
+                        </div>
+                        <div style="clear:both; text-align:left;font-size: smaller">
+                        INSTRUCTIONS ON HOW TO RUN YOUR LOCAL SELENIUM SERVER :<br>
+                    Download the compatible version of Selenium <a href="<%=seleniumUrl%>">here</a>. Drivers : <a href="<%=seleniumIEUrl%>">IE</a> <a href="<%=seleniumChromeUrl%>">Chrome</a>
+                     <br>Example scripts to start your local selenium server : <a href="ressources/start-selenium.sh">Linux</a> / <a href="ressources/start-selenium.bat">Windows</a>
+                        </div>  
+                    
+                </div>
+                        <div class="filters" style="float:right; width:45%;height:180px">
+                             <p style="float:left" class="dttTitle">Set Execution Parameter</p>
+                             <div style="clear:both">
+                                        <div style="float:left; width:150px; text-align:left"><% out.print(docService.findLabelHTML("testcaseexecution", "tag", "Tag"));%></div>
+                                        <div style="float:left">
+                                            <input id="tag" name="Tag" style="width: 200px">
+                                        </div></div>
+                                        <div style="clear:both">
+                                    <div style="float:left;width:150px; text-align:left"><% out.print(docService.findLabelHTML("page_runtests", "outputformat", ""));%></div>
+                                        <div style="float:left">
+                                            <%=ComboInvariant(conn, "outputformat", "width: 90px", "Format", "Format", "OUTPUTFORMAT", "gui", "", null)%>
+                                        </div></div>
+                                        <div style="clear:both">
+                                        <div style="float:left;width:150px;text-align:left "><% out.print(docService.findLabelHTML("testcaseexecution", "verbose", ""));%></div>
+                                        <div style="float:left">
+                                            <%=ComboInvariant(conn, "verbose", "width: 90px", "Verbose", "Verbose", "VERBOSE", "0", "", null)%>
+                                        </div></div>
+                                        <div style="clear:both">
+                                        <div style="float:left;width:150px; text-align:left"><% out.print(docService.findLabelHTML("page_runtests", "screenshot", ""));%></div>
+                                        <div style="float:left">
+                                            <%=ComboInvariant(conn, "screenshot", "width: 90px", "Screenshot", "Screenshot", "SCREENSHOT", "1", "", null)%>
+                                        </div></div>
+                                        
+                        </div>
+                                        <div style="clear:both">          
+
+                    <br>
+                                        </div>
+                                        <div style="float:left"><input type="submit" class="buttonPlay" id="buttonRun" style="font-size: large;" name="statusPage" value="Run"></div>
+                                   
+                    
+
+                    <br>
 
 
-                <% if (test.compareTo("%%") != 0 && testcase.compareTo("%%") != 0 && country.compareTo("%%") != 0) {
-                %>
+                    <% if (test.compareTo("%%") != 0 && testcase.compareTo("%%") != 0 && country.compareTo("%%") != 0) {
+                    %>
 
-                <table border="0px">
-                </table>
+                    <table border="0px">
+                    </table>
             </form>
 
             <%                    }
@@ -450,8 +442,8 @@
         <br><% out.print(display_footer(DatePageStart));%>
 
         <script type="text/javascript">
-            function validateForm(){
-                if($("#myloginrelativeurl").val()){
+            function validateForm() {
+                if ($("#myloginrelativeurl").val()) {
                     var val = $("#myloginrelativeurl").val().replace("&", "%26");
                     $("#myloginrelativeurl").val(val);
                 }
