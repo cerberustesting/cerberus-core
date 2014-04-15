@@ -253,18 +253,35 @@ public class CampaignDAO implements ICampaignDAO {
     }
 
     @Override
-    public List<Campaign> findCampaignsByCampaignDescription(String description) throws CerberusException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+    public boolean updateCampaign(Campaign campaign) {
+        final StringBuffer query = new StringBuffer("UPDATE `campaign` SET campaign=?, Description=? WHERE campaignID=?");
 
-    @Override
-    public boolean updateCampaignName(Campaign campaign) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query.toString());
+            preStat.setString(1, campaign.getCampaign());
+            preStat.setString(2, campaign.getDescription());
+            preStat.setInt(3, campaign.getCampaignID());
 
-    @Override
-    public boolean updateCampaignDescription(Campaign campaign) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            try {
+                return (preStat.executeUpdate() == 1);
+            } catch (SQLException exception) {
+                MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(ApplicationDAO.class.getName(), Level.WARN, e.toString());
+            }
+        }
+        return false;
     }
 
     @Override

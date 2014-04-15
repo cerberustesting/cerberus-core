@@ -40,11 +40,7 @@ public interface ITestBatteryDAO {
 
     boolean updateTestBattery(TestBattery testBattery);
 
-    boolean updateDescription(TestBattery testBattery);
-
     boolean createTestBattery(TestBattery testBattery);
 
     List<TestBattery> findTestBatteryByCriteria(Integer testBatteryID, String testBattery, String Description) throws CerberusException;
-
-//    List<String> findUniqueDataOfColumn(String column);
 }

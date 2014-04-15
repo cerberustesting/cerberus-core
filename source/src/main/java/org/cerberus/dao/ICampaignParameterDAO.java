@@ -35,15 +35,9 @@ public interface ICampaignParameterDAO {
 
     List<CampaignParameter> findCampaignParametersByCampaign(String campaign) throws CerberusException;
 
-    boolean updateCampaignName(CampaignParameter campaignParameter);
-
-    boolean updateParameter(CampaignParameter campaignParameter);
-
-    boolean updateValue(CampaignParameter campaignParameter);
+    boolean updateCampaignParameter(CampaignParameter campaignParameter);
 
     boolean createCampaignParameter(CampaignParameter campaignParameter);
 
     List<CampaignParameter> findCampaignParameterByCriteria(Integer campaignparameterID, String campaign, String parameter, String value) throws CerberusException;
-
-//    List<String> findUniqueDataOfColumn(String column);
 }

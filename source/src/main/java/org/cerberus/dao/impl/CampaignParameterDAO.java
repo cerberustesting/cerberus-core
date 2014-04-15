@@ -183,18 +183,36 @@ public class CampaignParameterDAO implements ICampaignParameterDAO {
     }
 
     @Override
-    public boolean updateCampaignName(CampaignParameter campaignParameter) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+    public boolean updateCampaignParameter(CampaignParameter campaignParameter) {
+        final StringBuffer query = new StringBuffer("UPDATE `campaignparameter` SET campaign=?, `Parameter`=?, `Value`=? WHERE campaignparameterID=?");
 
-    @Override
-    public boolean updateParameter(CampaignParameter campaignParameter) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query.toString());
+            preStat.setString(1, campaignParameter.getCampaign());
+            preStat.setString(2, campaignParameter.getParameter());
+            preStat.setString(3, campaignParameter.getValue());
+            preStat.setInt(4, campaignParameter.getCampaignparameterID());
 
-    @Override
-    public boolean updateValue(CampaignParameter campaignParameter) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            try {
+                return (preStat.executeUpdate() == 1);
+            } catch (SQLException exception) {
+                MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(ApplicationDAO.class.getName(), Level.WARN, e.toString());
+            }
+        }
+        return false;
     }
 
     @Override

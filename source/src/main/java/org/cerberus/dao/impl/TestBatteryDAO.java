@@ -98,7 +98,7 @@ public class TestBatteryDAO implements ITestBatteryDAO {
     @Override
     public TestBattery findTestBatteryByKey(Integer testBatteryID) throws CerberusException {
         boolean throwEx = false;
-        final String query = "SELECT c FROM TestBattery t WHERE t.testbatteryID = ?";
+        final String query = "SELECT t FROM TestBattery t WHERE t.testbatteryID = ?";
 
         TestBattery testBattery = null;
         Connection connection = this.databaseSpring.connect();
@@ -141,7 +141,7 @@ public class TestBatteryDAO implements ITestBatteryDAO {
     @Override
     public TestBattery findTestBatteryByTestBatteryName(String testBattery) throws CerberusException {
         boolean throwEx = false;
-        final String query = "SELECT c FROM TestBattery t WHERE t.testbattery = ?";
+        final String query = "SELECT t FROM TestBattery t WHERE t.testbattery = ?";
 
         TestBattery testBatteryResult = null;
         Connection connection = this.databaseSpring.connect();
@@ -298,12 +298,34 @@ public class TestBatteryDAO implements ITestBatteryDAO {
 
     @Override
     public boolean updateTestBattery(TestBattery testBattery) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+        final StringBuffer query = new StringBuffer("UPDATE `testbattery` set `testbattery` = ?, `Description` = ? WHERE `testbatteryID` = ?");
 
-    @Override
-    public boolean updateDescription(TestBattery testBattery) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query.toString());
+            preStat.setString(1, testBattery.getTestbattery());
+            preStat.setString(2, testBattery.getDescription());
+            preStat.setInt(3, testBattery.getTestbatteryID());
+
+            try {
+                return (preStat.executeUpdate() == 1);
+            } catch (SQLException exception) {
+                MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(ApplicationDAO.class.getName(), Level.WARN, e.toString());
+            }
+        }
+        return false;
     }
 
     @Override

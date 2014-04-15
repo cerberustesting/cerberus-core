@@ -35,15 +35,10 @@ public interface ICampaignDAO {
 
     Campaign findCampaignByCampaignName(String campaign) throws CerberusException;
 
-    List<Campaign> findCampaignsByCampaignDescription(String description) throws CerberusException;
-
-    boolean updateCampaignName(Campaign campaign);
-
-    boolean updateCampaignDescription(Campaign campaign);
+    boolean updateCampaign(Campaign campaign);
 
     boolean createCampaign(Campaign campaign);
 
     List<Campaign> findCampaignByCriteria(Integer campaignID, String campaign, String description) throws CerberusException;
 
-//    List<String> findUniqueDataOfColumn(String column);
 }
