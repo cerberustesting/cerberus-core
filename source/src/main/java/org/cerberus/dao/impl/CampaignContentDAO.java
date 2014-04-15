@@ -311,8 +311,34 @@ public class CampaignContentDAO implements ICampaignContentDAO {
     }
 
     @Override
-    public boolean createCampaignContent(CampaignContent campaign) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public boolean createCampaignContent(CampaignContent campaignContent) {
+        final StringBuffer query = new StringBuffer("INSERT INTO `campaigncontent` (`campaign`, `testbattery`) VALUES (?, ?)");
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query.toString());
+            preStat.setString(1, campaignContent.getCampaign());
+            preStat.setString(2, campaignContent.getTestbattery());
+
+            try {
+                return (preStat.executeUpdate() == 1);
+            } catch (SQLException exception) {
+                MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(ApplicationDAO.class.getName(), Level.WARN, e.toString());
+            }
+        }
+        return false;
     }
 
     private CampaignContent loadCampaignContentFromResultSet(ResultSet rs) throws SQLException {
