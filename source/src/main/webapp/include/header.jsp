@@ -62,6 +62,7 @@
                     <li id="subactive"><a name="menu" id="menuCreateTest" href="TestCreate.jsp" style="width:160px">Create Test</a></li>
                     <% }%>
                     <li id="subactive"><a name="menu" id="menuTestPerApplication" href="TestPerApplication.jsp" style="width:160px">Test Per Application</a></li>
+                    <li id="subactive"><a name="menu" id="menuTestCampaign" href="TestCampaign.jsp" style="width:160px">Test Campaign</a></li>
                 </ul>
             </li>
             <li id="active"><a id="menu-TestCase" name="menu" href="#" style="width:100px">TestCase

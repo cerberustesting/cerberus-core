@@ -177,6 +177,18 @@
         <servlet-class>org.cerberus.servlet.campaign.GetCampaign</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>UpdateCampaign</servlet-name>
+        <servlet-class>org.cerberus.servlet.campaign.UpdateCampaign</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>AddCampaign</servlet-name>
+        <servlet-class>org.cerberus.servlet.campaign.AddCampaign</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>DeleteCampaign</servlet-name>
+        <servlet-class>org.cerberus.servlet.campaign.DeleteCampaign</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>GetTestBattery</servlet-name>
         <servlet-class>org.cerberus.servlet.testBattery.GetTestBattery</servlet-class>
     </servlet>
@@ -539,6 +551,18 @@
     <servlet-mapping>
         <servlet-name>GetCampaign</servlet-name>
         <url-pattern>/GetCampaign</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>UpdateCampaign</servlet-name>
+        <url-pattern>/UpdateCampaign</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>AddCampaign</servlet-name>
+        <url-pattern>/AddCampaign</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DeleteCampaign</servlet-name>
+        <url-pattern>/DeleteCampaign</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>GetTestBattery</servlet-name>
@@ -1025,6 +1049,9 @@
             <url-pattern>/DocumentationField</url-pattern>
             <url-pattern>/GetInvariantList</url-pattern>
             <url-pattern>/GetCampaign</url-pattern>
+            <url-pattern>/UpdateCampaign</url-pattern>
+            <url-pattern>/AddCampaign</url-pattern>
+            <url-pattern>/DeleteCampaign</url-pattern>
             <url-pattern>/GetTestBattery</url-pattern>
             <url-pattern>/importXML</url-pattern>
             <url-pattern>/importFile</url-pattern>
