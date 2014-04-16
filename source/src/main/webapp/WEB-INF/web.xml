@@ -177,6 +177,10 @@
         <servlet-class>org.cerberus.servlet.campaign.GetCampaign</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>GetTestBattery</servlet-name>
+        <servlet-class>org.cerberus.servlet.testBattery.GetTestBattery</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>GetApplication</servlet-name>
         <servlet-class>org.cerberus.servlet.application.GetApplication</servlet-class>
     </servlet>
@@ -535,6 +539,10 @@
     <servlet-mapping>
         <servlet-name>GetCampaign</servlet-name>
         <url-pattern>/GetCampaign</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>GetTestBattery</servlet-name>
+        <url-pattern>/GetTestBattery</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>GetApplication</servlet-name>
@@ -1017,6 +1025,7 @@
             <url-pattern>/DocumentationField</url-pattern>
             <url-pattern>/GetInvariantList</url-pattern>
             <url-pattern>/GetCampaign</url-pattern>
+            <url-pattern>/GetTestBattery</url-pattern>
             <url-pattern>/importXML</url-pattern>
             <url-pattern>/importFile</url-pattern>
             <url-pattern>/NewRelease</url-pattern>

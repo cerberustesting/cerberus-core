@@ -53,7 +53,7 @@ public class TestBatteryContentDAO implements ITestBatteryContentDAO {
     @Override
     public List<TestBatteryContent> findAll() throws CerberusException {
         boolean throwEx = false;
-        final String query = "SELECT * FROM TestBatteryContent t";
+        final String query = "SELECT * FROM testbatterycontent t";
 
         List<TestBatteryContent> testBatteryContentsList = new ArrayList<TestBatteryContent>();
         Connection connection = this.databaseSpring.connect();
@@ -98,7 +98,7 @@ public class TestBatteryContentDAO implements ITestBatteryContentDAO {
     @Override
     public TestBatteryContent findTestBatteryContentByKey(Integer testBatteryContentID) throws CerberusException {
         boolean throwEx = false;
-        final String query = "SELECT * FROM TestBatteryContent t WHERE t.testbatterycontentID = ?";
+        final String query = "SELECT * FROM testbatterycontent t WHERE t.testbatterycontentID = ?";
 
         TestBatteryContent testBatteryContent = null;
         Connection connection = this.databaseSpring.connect();
@@ -141,7 +141,7 @@ public class TestBatteryContentDAO implements ITestBatteryContentDAO {
     @Override
     public List<TestBatteryContent> findTestBatteryContentsByTestBatteryName(String testBattery) throws CerberusException {
         boolean throwEx = false;
-        final String query = "SELECT * FROM TestBatteryContent t where t.testbattery = ?";
+        final String query = "SELECT * FROM testbatterycontent t where t.testbattery = ?";
 
         List<TestBatteryContent> testBatteryContentsList = new ArrayList<TestBatteryContent>();
         Connection connection = this.databaseSpring.connect();
@@ -331,7 +331,7 @@ public class TestBatteryContentDAO implements ITestBatteryContentDAO {
         String test = ParameterParserUtil.parseStringParam(rs.getString("Test"), "");
         String testCase = ParameterParserUtil.parseStringParam(rs.getString("TestCase"), "");
 
-        return factoryTestBatteryContent.create(testbatterycontentID, testbattery, test, testCase);
+        return factoryTestBatteryContent.create(testbatterycontentID, test, testCase, testbattery);
     }
 
 }
