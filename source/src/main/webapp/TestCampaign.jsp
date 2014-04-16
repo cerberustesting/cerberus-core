@@ -58,7 +58,7 @@
             $(document).ready(function(){
                 var oTable = $('#listOfCampaigns').dataTable({
                     "aaSorting": [[0, "asc"]],
-                    "bServerSide": false,
+                    "bServerSide": true,
                     "sAjaxSource": "GetCampaign?action=findAllCampaign",
                     "sAjaxDataProp": "Campaigns",
                     "bJQueryUI": true,
@@ -68,7 +68,12 @@
                     "sPaginationType": "full_numbers",
                     "bSearchable": true,
                     "aTargets": [0],
-                    "iDisplayLength": 25
+                    "iDisplayLength": 25,
+                    "aoColumns": [
+                        {"sName": "ID", "bVisible": false},
+                        {"sName": "Campaign", "sWidth": "30%"},
+                        {"sName": "Description", "sWidth": "70%"}
+                    ]
                 }).makeEditable({
                     sAddURL: "AddCampaign",
                     sAddHttpMethod: "POST",
@@ -119,6 +124,9 @@
                 <br><br>
                 <label for="Description" style="font-weight:bold">Description</label>
                 <input id="Description" name="Description" class="ncdetailstext" rel="2" >
+                <br><br>
+                <button id="btnAddNewRowOk">Add</button>
+                <button id="btnAddNewRowCancel">Cancel</button>
             </form>
      </body>
 </html>
