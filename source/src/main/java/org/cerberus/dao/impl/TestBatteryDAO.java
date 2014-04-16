@@ -53,7 +53,7 @@ public class TestBatteryDAO implements ITestBatteryDAO {
     @Override
     public List<TestBattery> findAll() throws CerberusException {
         boolean throwEx = false;
-        final String query = "SELECT t FROM TestBattery t";
+        final String query = "SELECT * FROM testbattery t";
 
         List<TestBattery> testBatteryList = new ArrayList<TestBattery>();
         Connection connection = this.databaseSpring.connect();
@@ -98,7 +98,7 @@ public class TestBatteryDAO implements ITestBatteryDAO {
     @Override
     public TestBattery findTestBatteryByKey(Integer testBatteryID) throws CerberusException {
         boolean throwEx = false;
-        final String query = "SELECT t FROM TestBattery t WHERE t.testbatteryID = ?";
+        final String query = "SELECT * FROM testbattery t WHERE t.testbatteryID = ?";
 
         TestBattery testBattery = null;
         Connection connection = this.databaseSpring.connect();
@@ -141,7 +141,7 @@ public class TestBatteryDAO implements ITestBatteryDAO {
     @Override
     public TestBattery findTestBatteryByTestBatteryName(String testBattery) throws CerberusException {
         boolean throwEx = false;
-        final String query = "SELECT t FROM TestBattery t WHERE t.testbattery = ?";
+        final String query = "SELECT * FROM testbattery t WHERE t.testbattery = ?";
 
         TestBattery testBatteryResult = null;
         Connection connection = this.databaseSpring.connect();
@@ -184,7 +184,7 @@ public class TestBatteryDAO implements ITestBatteryDAO {
     @Override
     public List<TestBattery> findTestBatteriesByDescription(String description) throws CerberusException {
         boolean throwEx = false;
-        final String query = "SELECT t FROM TestBattery t WHERE t.description = ?";
+        final String query = "SELECT * FROM testbattery t WHERE t.description = ?";
 
         List<TestBattery> testBatteryList = new ArrayList<TestBattery>();
         Connection connection = this.databaseSpring.connect();
@@ -230,7 +230,7 @@ public class TestBatteryDAO implements ITestBatteryDAO {
     @Override
     public List<TestBattery> findTestBatteryByCriteria(Integer testBatteryID, String testBattery, String Description) throws CerberusException {
         boolean throwEx = false;
-        final StringBuffer query = new StringBuffer("SELECT t FROM testbattery t WHERE ");
+        final StringBuffer query = new StringBuffer("SELECT * FROM testbattery t WHERE ");
 
         if (testBatteryID != null) {
             query.append(" t.testBatteryID = ?");

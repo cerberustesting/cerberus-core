@@ -54,7 +54,7 @@ public class CampaignDAO implements ICampaignDAO {
     @Override
     public List<Campaign> findAll() throws CerberusException {
         boolean throwEx = false;
-        final String query = "SELECT c FROM Campaign c";
+        final String query = "SELECT * FROM campaign c";
 
         List<Campaign> campaignList = new ArrayList<Campaign>();
         Connection connection = this.databaseSpring.connect();
@@ -99,7 +99,7 @@ public class CampaignDAO implements ICampaignDAO {
     @Override
     public Campaign findCampaignByKey(Integer campaignID) throws CerberusException {
         boolean throwEx = false;
-        final String query = "SELECT c FROM Campaign c WHERE c.campaignID = ?";
+        final String query = "SELECT * FROM campaign c WHERE c.campaignID = ?";
 
         Campaign campaign = null;
         Connection connection = this.databaseSpring.connect();
@@ -142,7 +142,7 @@ public class CampaignDAO implements ICampaignDAO {
     @Override
     public Campaign findCampaignByCampaignName(String campaign) throws CerberusException {
         boolean throwEx = false;
-        final String query = "SELECT c FROM Campaign c WHERE c.campaign = ?";
+        final String query = "SELECT * FROM campaign c WHERE c.campaign = ?";
 
         Campaign campaignResult = null;
         Connection connection = this.databaseSpring.connect();
@@ -185,7 +185,7 @@ public class CampaignDAO implements ICampaignDAO {
     @Override
     public List<Campaign> findCampaignByCriteria(Integer campaignID, String campaign, String description) throws CerberusException {
         boolean throwEx = false;
-        final StringBuffer query = new StringBuffer("SELECT c FROM Campaign c WHERE ");
+        final StringBuffer query = new StringBuffer("SELECT * FROM campaign c WHERE ");
 
         if (campaignID != null) {
             query.append(" c.campaignID = ?");
