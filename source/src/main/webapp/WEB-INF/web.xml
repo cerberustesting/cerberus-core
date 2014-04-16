@@ -392,6 +392,22 @@
         <servlet-name>FindTestImplementationStatusPerApplication</servlet-name>
         <servlet-class>org.cerberus.servlet.guiPages.FindTestImplementationStatusPerApplication</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>CreateRobot</servlet-name>
+        <servlet-class>org.cerberus.servlet.robot.CreateRobot</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>DeleteRobot</servlet-name>
+        <servlet-class>org.cerberus.servlet.robot.DeleteRobot</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>FindAllRobot</servlet-name>
+        <servlet-class>org.cerberus.servlet.robot.FindAllRobot</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>UpdateRobot</servlet-name>
+        <servlet-class>org.cerberus.servlet.robot.UpdateRobot</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>RunTestCase</servlet-name>
         <url-pattern>/RunTestCase</url-pattern>
@@ -764,6 +780,22 @@
         <servlet-name>FindTestImplementationStatusPerApplication</servlet-name>
         <url-pattern>/FindTestImplementationStatusPerApplication</url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>CreateRobot</servlet-name>
+        <url-pattern>/CreateRobot</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DeleteRobot</servlet-name>
+        <url-pattern>/DeleteRobot</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>FindAllRobot</servlet-name>
+        <url-pattern>/FindAllRobot</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>UpdateRobot</servlet-name>
+        <url-pattern>/UpdateRobot</url-pattern>
+    </servlet-mapping>
     <session-config>
         <session-timeout>
             60
@@ -1049,14 +1081,14 @@
             <url-pattern>/DocumentationField</url-pattern>
             <url-pattern>/GetInvariantList</url-pattern>
             <url-pattern>/GetCampaign</url-pattern>
-            <url-pattern>/UpdateCampaign</url-pattern>
-            <url-pattern>/AddCampaign</url-pattern>
-            <url-pattern>/DeleteCampaign</url-pattern>
             <url-pattern>/GetTestBattery</url-pattern>
             <url-pattern>/importXML</url-pattern>
             <url-pattern>/importFile</url-pattern>
             <url-pattern>/NewRelease</url-pattern>
             <url-pattern>/TestcaseListGrid</url-pattern>
+            <url-pattern>/UpdateCampaign</url-pattern>
+            <url-pattern>/AddCampaign</url-pattern>
+            <url-pattern>/DeleteCampaign</url-pattern>
         </web-resource-collection>
     </security-constraint>
     <security-constraint>

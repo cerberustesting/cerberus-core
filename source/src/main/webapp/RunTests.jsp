@@ -338,7 +338,7 @@
 
                 <br><br> 
 
-                <div class="filters" style="float:left; width:45%;height:180px">
+                <div class="filters" style="float:left; width:49%;height:180px">
                     <div style="clear:both">
                     <p style="float:left" class="dttTitle">Choose Robot</p>
                     <div style="float:left; width:100px; text-align: left"><input type="radio" name="manualURL" value="N" onclick="switchDivVisibleInvisible('automatedEnvironmentDiv', 'manualEnvironmentDiv')" checked>Automatic</div>
@@ -382,7 +382,7 @@
                         </div>  
                     
                 </div>
-                        <div class="filters" style="float:right; width:45%;height:180px">
+                        <div class="filters" style="float:right; width:49%;height:180px">
                              <p style="float:left" class="dttTitle">Set Execution Parameter</p>
                              <div style="clear:both">
                                         <div style="float:left; width:150px; text-align:left"><% out.print(docService.findLabelHTML("testcaseexecution", "tag", "Tag"));%></div>
