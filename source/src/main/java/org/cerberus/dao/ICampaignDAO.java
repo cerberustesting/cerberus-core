@@ -39,6 +39,8 @@ public interface ICampaignDAO {
 
     boolean createCampaign(Campaign campaign);
 
+    boolean deleteCampaign(Campaign campaign);
+
     List<Campaign> findCampaignByCriteria(Integer campaignID, String campaign, String description) throws CerberusException;
 
 }

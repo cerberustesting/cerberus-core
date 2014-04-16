@@ -116,4 +116,9 @@ public class CampaignService implements ICampaignService {
     public List<CampaignParameter> findCampaignParameterByCriteria(Integer campaignparameterID, String campaign, String parameter, String value) throws CerberusException {
         return campaignParameterDAO.findCampaignParameterByCriteria(campaignparameterID, campaign, parameter, value);
     }
+
+    @Override
+    public boolean deleteCampaign(Campaign campaign) {
+        return campaignDAO.deleteCampaign(campaign);
+    }
 }

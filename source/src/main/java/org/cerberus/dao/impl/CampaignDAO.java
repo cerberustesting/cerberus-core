@@ -315,6 +315,36 @@ public class CampaignDAO implements ICampaignDAO {
         return false;
     }
 
+    @Override
+    public boolean deleteCampaign(Campaign campaign) {
+        final StringBuffer query = new StringBuffer("DELETE FROM `campaign` WHERE campaignID=?");
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query.toString());
+            preStat.setInt(1, campaign.getCampaignID());
+
+            try {
+                return (preStat.executeUpdate() == 1);
+            } catch (SQLException exception) {
+                MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(ApplicationDAO.class.getName(), Level.WARN, e.toString());
+            }
+        }
+        return false;
+    }
+
     private Campaign loadCampaignFromResultSet(ResultSet rs) throws SQLException {
         Integer campaignId = ParameterParserUtil.parseIntegerParam(rs.getString("campaignID"), -1);
         String campaign = ParameterParserUtil.parseStringParam(rs.getString("campaign"), "");
@@ -322,5 +352,4 @@ public class CampaignDAO implements ICampaignDAO {
 
         return factoryCampaign.create(campaignId, campaign, description);
     }
-
 }

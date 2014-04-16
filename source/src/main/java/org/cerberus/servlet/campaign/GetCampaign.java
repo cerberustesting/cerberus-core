@@ -112,11 +112,11 @@ public class GetCampaign extends HttpServlet {
         return jsonResponse;
     }
 
-    private JSONObject convertCampaignToJSONObject(Campaign campaign) throws JSONException {
-        JSONObject result = new JSONObject();
-        result.put("CampaignID", campaign.getCampaignID());
-        result.put("Campaign", campaign.getCampaign());
-        result.put("Description", campaign.getDescription());
+    private JSONArray convertCampaignToJSONObject(Campaign campaign) throws JSONException {
+        JSONArray result = new JSONArray();
+        result.put(campaign.getCampaignID());
+        result.put(campaign.getCampaign());
+        result.put(campaign.getDescription());
         return result;
     }
 
