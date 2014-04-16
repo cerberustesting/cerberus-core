@@ -49,7 +49,7 @@
                         [20, 50, 100, 200, "All"]
                     ], 
                     "iDisplayLength" : 50,
-                    "bServerSide": false,
+                    "bServerSide": true,
                     "sAjaxSource": "GetUsers",
                     "bJQueryUI": true,
                     "bProcessing": true,

@@ -59,7 +59,7 @@
                         [20, 50, 100, 200, "All"]
                     ], 
                     "iDisplayLength" : 20,
-                    "bServerSide": false,
+                    "bServerSide": true,
                     "sAjaxSource": "GetApplication?System=<%=request.getAttribute("MySystem")%>",
                     "bJQueryUI": true,
                     "bProcessing": true,
