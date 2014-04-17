@@ -58,6 +58,16 @@ public class CampaignService implements ICampaignService {
     }
 
     @Override
+    public CampaignParameter findCampaignParameterByKey(Integer campaignParameterID) throws CerberusException {
+        return campaignParameterDAO.findCampaignParameterByKey(campaignParameterID);
+    }
+
+    @Override
+    public CampaignContent findCampaignContentByKey(Integer campaignContentID) throws CerberusException {
+        return campaignContentDAO.findCampaignContentByKey(campaignContentID);
+    }
+
+    @Override
     public Campaign findCampaignByCampaignName(String campaign) throws CerberusException {
         return campaignDAO.findCampaignByCampaignName(campaign);
     }

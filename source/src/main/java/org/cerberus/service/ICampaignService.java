@@ -35,6 +35,10 @@ public interface ICampaignService {
 
     Campaign findCampaignByKey(Integer campaignID) throws CerberusException;
 
+    CampaignParameter findCampaignParameterByKey(Integer campaignParameterID) throws CerberusException;
+
+    CampaignContent findCampaignContentByKey(Integer campaignContentID) throws CerberusException;
+
     Campaign findCampaignByCampaignName(String campaign) throws CerberusException;
 
     List<CampaignContent> findCampaignContentsByCampaignName(String campaign) throws CerberusException;
