@@ -68,9 +68,8 @@ public class GetCampaign extends HttpServlet {
                     jsonResponse.put("CampaignContents", findAllCampaignContentToJSON(campaignService.findCampaignByKey(Integer.parseInt(campaign)).getCampaign()));
 
                 } else if (action != null && "findAllCampaignParameter".equals(action.trim())) {
-                    jsonResponse.put("CampaignParameters", findAllCampaignParameterToJSON(campaignService.findCampaignByKey(Integer.parseInt(campaign)).getCampaign()))
-                );
-
+                    jsonResponse.put("CampaignParameters", findAllCampaignParameterToJSON(campaignService.findCampaignByKey(Integer.parseInt(campaign)).getCampaign()));
+                
                 }
             } catch (CerberusException ex) {
                 response.setContentType("text/html");
