@@ -99,12 +99,12 @@ public class TestBatteryService implements ITestBatteryService {
 
     @Override
     public boolean deleteTestBattery(TestBattery testBattery) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return testBatteryDAO.deleteTestBattery(testBattery);
     }
 
     @Override
     public boolean deleteTestBatteryContent(TestBatteryContent testBatteryContent) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return testBatteryContentDAO.deleteTestBatteryContent(testBatteryContent);
     }
 
 }
