@@ -98,20 +98,20 @@ public class GetTestBattery extends HttpServlet {
         return jsonResponse;
     }
 
-    private JSONObject convertTestBatteryToJSONObject(TestBattery testBattery) throws JSONException {
-        JSONObject result = new JSONObject();
-        result.put("TestbatteryID", testBattery.getTestbatteryID());
-        result.put("Testbattery", testBattery.getTestbattery());
-        result.put("Description", testBattery.getDescription());
+    private JSONArray convertTestBatteryToJSONObject(TestBattery testBattery) throws JSONException {
+        JSONArray result = new JSONArray();
+        result.put(testBattery.getTestbatteryID());
+        result.put(testBattery.getTestbattery());
+        result.put(testBattery.getDescription());
         return result;
     }
 
-    private JSONObject convertTestBatteryContentToJSONObject(TestBatteryContent testBatteryContent) throws JSONException {
-        JSONObject result = new JSONObject();
-        result.put("TestbatterycontentID", testBatteryContent.getTestbatterycontentID());
-        result.put("Testbattery", testBatteryContent.getTestbattery());
-        result.put("Test", testBatteryContent.getTest());
-        result.put("TestCase", testBatteryContent.getTestCase());
+    private JSONArray convertTestBatteryContentToJSONObject(TestBatteryContent testBatteryContent) throws JSONException {
+        JSONArray result = new JSONArray();
+        result.put(testBatteryContent.getTestbatterycontentID());
+        result.put(testBatteryContent.getTestbattery());
+        result.put(testBatteryContent.getTest());
+        result.put(testBatteryContent.getTestCase());
         return result;
     }
 
