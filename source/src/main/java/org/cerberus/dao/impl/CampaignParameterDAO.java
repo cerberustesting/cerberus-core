@@ -326,6 +326,36 @@ public class CampaignParameterDAO implements ICampaignParameterDAO {
         return campaignParametersList;
     }
 
+    @Override
+    public boolean deleteCampaignParameter(CampaignParameter campaignParameter) {
+        final StringBuffer query = new StringBuffer("DELETE FROM `campaignparameter` WHERE campaignparameterID=?");
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query.toString());
+            preStat.setInt(1, campaignParameter.getCampaignparameterID());
+
+            try {
+                return (preStat.executeUpdate() == 1);
+            } catch (SQLException exception) {
+                MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(ApplicationDAO.class.getName(), Level.WARN, e.toString());
+            }
+        }
+        return false;
+    }
+
     private CampaignParameter loadCampaignParameterFromResultSet(ResultSet rs) throws SQLException {
         Integer campaignparameterID = ParameterParserUtil.parseIntegerParam(rs.getString("campaignparameterID"), -1);
         String campaign = ParameterParserUtil.parseStringParam(rs.getString("campaign"), "");
@@ -334,5 +364,4 @@ public class CampaignParameterDAO implements ICampaignParameterDAO {
 
         return factoryCampaignParameter.create(campaignparameterID, campaign, parameter, value);
     }
-
 }

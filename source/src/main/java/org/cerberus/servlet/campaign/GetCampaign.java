@@ -65,10 +65,11 @@ public class GetCampaign extends HttpServlet {
                 if (action != null && "findAllCampaign".equals(action.trim())) {
                     jsonResponse.put("Campaigns", findAllCampaignToJSON());
                 } else if (action != null && "findAllCampaignContent".equals(action.trim())) {
-                    jsonResponse.put("CampaignContents", findAllCampaignContentToJSON(campaign));
+                    jsonResponse.put("CampaignContents", findAllCampaignContentToJSON(campaignService.findCampaignByKey(Integer.parseInt(campaign)).getCampaign()));
 
                 } else if (action != null && "findAllCampaignParameter".equals(action.trim())) {
-                    jsonResponse.put("CampaignParameters", findAllCampaignParameterToJSON(campaign));
+                    jsonResponse.put("CampaignParameters", findAllCampaignParameterToJSON(campaignService.findCampaignByKey(Integer.parseInt(campaign)).getCampaign()))
+                );
 
                 }
             } catch (CerberusException ex) {
@@ -120,20 +121,20 @@ public class GetCampaign extends HttpServlet {
         return result;
     }
 
-    private JSONObject convertCampaignContentToJSONObject(CampaignContent campaignContent) throws JSONException {
-        JSONObject result = new JSONObject();
-        result.put("CampaignContentID", campaignContent.getCampaigncontentID());
-        result.put("Campaign", campaignContent.getCampaign());
-        result.put("Testbattery", campaignContent.getTestbattery());
+    private JSONArray convertCampaignContentToJSONObject(CampaignContent campaignContent) throws JSONException {
+        JSONArray result = new JSONArray();
+        result.put(campaignContent.getCampaigncontentID());
+        result.put(campaignContent.getCampaign());
+        result.put(campaignContent.getTestbattery());
         return result;
     }
 
-    private JSONObject convertCampaignParameterToJSONObject(CampaignParameter campaignParameter) throws JSONException {
-        JSONObject result = new JSONObject();
-        result.put("CampaignParameterID", campaignParameter.getCampaignparameterID());
-        result.put("Campaign", campaignParameter.getCampaign());
-        result.put("Parameter", campaignParameter.getParameter());
-        result.put("Value", campaignParameter.getValue());
+    private JSONArray convertCampaignParameterToJSONObject(CampaignParameter campaignParameter) throws JSONException {
+        JSONArray result = new JSONArray();
+        result.put(campaignParameter.getCampaignparameterID());
+        result.put(campaignParameter.getCampaign());
+        result.put(campaignParameter.getParameter());
+        result.put(campaignParameter.getValue());
         return result;
     }
 }

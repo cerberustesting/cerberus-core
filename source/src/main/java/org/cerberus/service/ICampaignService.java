@@ -55,6 +55,10 @@ public interface ICampaignService {
 
     boolean deleteCampaign(Campaign campaign);
 
+    boolean deleteCampaignContent(CampaignContent campaignContent);
+
+    boolean deleteCampaignParameter(CampaignParameter campaignParameter);
+
     List<Campaign> findCampaignByCriteria(Integer campaignID, String campaign, String description) throws CerberusException;
 
     List<CampaignContent> findCampaignContentByCriteria(String campaign, Integer campaignContentID, String testBattery) throws CerberusException;

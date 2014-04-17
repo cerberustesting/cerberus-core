@@ -39,5 +39,7 @@ public interface ICampaignParameterDAO {
 
     boolean createCampaignParameter(CampaignParameter campaignParameter);
 
+    boolean deleteCampaignParameter(CampaignParameter campaignParameter);
+
     List<CampaignParameter> findCampaignParameterByCriteria(Integer campaignparameterID, String campaign, String parameter, String value) throws CerberusException;
 }

@@ -42,5 +42,7 @@ public interface ICampaignContentDAO {
 
     boolean createCampaignContent(CampaignContent campaign);
 
+    boolean deleteCampaignContent(CampaignContent campaignContent);
+
     List<CampaignContent> findCampaignContentByCriteria(String campaign, Integer campaignContentID, String testBattery) throws CerberusException;
 }

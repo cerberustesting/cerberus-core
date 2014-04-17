@@ -363,6 +363,36 @@ public class CampaignContentDAO implements ICampaignContentDAO {
         return false;
     }
 
+    @Override
+    public boolean deleteCampaignContent(CampaignContent campaignContent) {
+        final StringBuffer query = new StringBuffer("DELETE FROM `campaigncontent` WHERE campaigncontentID=?");
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query.toString());
+            preStat.setInt(1, campaignContent.getCampaigncontentID());
+
+            try {
+                return (preStat.executeUpdate() == 1);
+            } catch (SQLException exception) {
+                MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(ApplicationDAO.class.getName(), Level.WARN, e.toString());
+            }
+        }
+        return false;
+    }
+
     private CampaignContent loadCampaignContentFromResultSet(ResultSet rs) throws SQLException {
         Integer campaigncontentID = ParameterParserUtil.parseIntegerParam(rs.getString("campaigncontentID"), -1);
         String testbattery = ParameterParserUtil.parseStringParam(rs.getString("testbattery"), "");
