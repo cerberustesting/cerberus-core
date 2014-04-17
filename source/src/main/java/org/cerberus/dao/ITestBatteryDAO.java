@@ -42,5 +42,7 @@ public interface ITestBatteryDAO {
 
     boolean createTestBattery(TestBattery testBattery);
 
+    boolean deleteTestBattery(TestBattery testBattery);
+
     List<TestBattery> findTestBatteryByCriteria(Integer testBatteryID, String testBattery, String Description) throws CerberusException;
 }

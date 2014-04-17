@@ -92,4 +92,19 @@ public class TestBatteryService implements ITestBatteryService {
         return testBatteryContentDAO.findTestBatteryContentsByCriteria(testBatteryContentID, testBattery, test, testCase);
     }
 
+    @Override
+    public TestBatteryContent findTestBatteryContentByKey(Integer testBatteryContentID) throws CerberusException {
+        return testBatteryContentDAO.findTestBatteryContentByKey(testBatteryContentID);
+    }
+
+    @Override
+    public boolean deleteTestBattery(TestBattery testBattery) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public boolean deleteTestBatteryContent(TestBatteryContent testBatteryContent) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
 }

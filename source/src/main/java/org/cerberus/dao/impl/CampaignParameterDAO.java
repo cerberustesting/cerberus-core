@@ -66,19 +66,19 @@ public class CampaignParameterDAO implements ICampaignParameterDAO {
                         campaignParameterList.add(this.loadCampaignParameterFromResultSet(resultSet));
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                    MyLogger.log(CampaignParameterDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
                     campaignParameterList = null;
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                MyLogger.log(CampaignParameterDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
                 campaignParameterList = null;
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            MyLogger.log(CampaignParameterDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
             campaignParameterList = null;
         } finally {
             try {
@@ -86,7 +86,7 @@ public class CampaignParameterDAO implements ICampaignParameterDAO {
                     connection.close();
                 }
             } catch (SQLException e) {
-                MyLogger.log(ApplicationDAO.class.getName(), Level.WARN, e.toString());
+                MyLogger.log(CampaignParameterDAO.class.getName(), Level.WARN, e.toString());
             }
         }
         if (throwEx) {
@@ -112,24 +112,24 @@ public class CampaignParameterDAO implements ICampaignParameterDAO {
                         campaignParameterResult = this.loadCampaignParameterFromResultSet(resultSet);
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                    MyLogger.log(CampaignParameterDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                MyLogger.log(CampaignParameterDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            MyLogger.log(CampaignParameterDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
         } finally {
             try {
                 if (connection != null) {
                     connection.close();
                 }
             } catch (SQLException e) {
-                MyLogger.log(ApplicationDAO.class.getName(), Level.WARN, e.toString());
+                MyLogger.log(CampaignParameterDAO.class.getName(), Level.WARN, e.toString());
             }
         }
         if (throwEx) {
@@ -155,19 +155,19 @@ public class CampaignParameterDAO implements ICampaignParameterDAO {
                         campaignParameterList.add(this.loadCampaignParameterFromResultSet(resultSet));
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                    MyLogger.log(CampaignParameterDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
                     campaignParameterList = null;
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                MyLogger.log(CampaignParameterDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
                 campaignParameterList = null;
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            MyLogger.log(CampaignParameterDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
             campaignParameterList = null;
         } finally {
             try {
@@ -175,7 +175,7 @@ public class CampaignParameterDAO implements ICampaignParameterDAO {
                     connection.close();
                 }
             } catch (SQLException e) {
-                MyLogger.log(ApplicationDAO.class.getName(), Level.WARN, e.toString());
+                MyLogger.log(CampaignParameterDAO.class.getName(), Level.WARN, e.toString());
             }
         }
         if (throwEx) {
@@ -199,19 +199,19 @@ public class CampaignParameterDAO implements ICampaignParameterDAO {
             try {
                 return (preStat.executeUpdate() == 1);
             } catch (SQLException exception) {
-                MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                MyLogger.log(CampaignParameterDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            MyLogger.log(CampaignParameterDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
         } finally {
             try {
                 if (connection != null) {
                     connection.close();
                 }
             } catch (SQLException e) {
-                MyLogger.log(ApplicationDAO.class.getName(), Level.WARN, e.toString());
+                MyLogger.log(CampaignParameterDAO.class.getName(), Level.WARN, e.toString());
             }
         }
         return false;
@@ -231,19 +231,19 @@ public class CampaignParameterDAO implements ICampaignParameterDAO {
             try {
                 return (preStat.executeUpdate() == 1);
             } catch (SQLException exception) {
-                MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                MyLogger.log(CampaignParameterDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            MyLogger.log(CampaignParameterDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
         } finally {
             try {
                 if (connection != null) {
                     connection.close();
                 }
             } catch (SQLException e) {
-                MyLogger.log(ApplicationDAO.class.getName(), Level.WARN, e.toString());
+                MyLogger.log(CampaignParameterDAO.class.getName(), Level.WARN, e.toString());
             }
         }
         return false;
@@ -297,19 +297,19 @@ public class CampaignParameterDAO implements ICampaignParameterDAO {
                         campaignParametersList.add(this.loadCampaignParameterFromResultSet(resultSet));
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                    MyLogger.log(CampaignParameterDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
                     campaignParametersList = null;
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                MyLogger.log(CampaignParameterDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
                 campaignParametersList = null;
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            MyLogger.log(CampaignParameterDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
             campaignParametersList = null;
         } finally {
             try {
@@ -317,7 +317,7 @@ public class CampaignParameterDAO implements ICampaignParameterDAO {
                     connection.close();
                 }
             } catch (SQLException e) {
-                MyLogger.log(ApplicationDAO.class.getName(), Level.WARN, e.toString());
+                MyLogger.log(CampaignParameterDAO.class.getName(), Level.WARN, e.toString());
             }
         }
         if (throwEx) {
@@ -338,19 +338,19 @@ public class CampaignParameterDAO implements ICampaignParameterDAO {
             try {
                 return (preStat.executeUpdate() == 1);
             } catch (SQLException exception) {
-                MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                MyLogger.log(CampaignParameterDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            MyLogger.log(CampaignParameterDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
         } finally {
             try {
                 if (connection != null) {
                     connection.close();
                 }
             } catch (SQLException e) {
-                MyLogger.log(ApplicationDAO.class.getName(), Level.WARN, e.toString());
+                MyLogger.log(CampaignParameterDAO.class.getName(), Level.WARN, e.toString());
             }
         }
         return false;
