@@ -19,7 +19,10 @@
  */
 package org.cerberus.service.impl;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import org.cerberus.dao.IProjectDAO;
 import org.cerberus.dao.IRobotDAO;
 import org.cerberus.entity.Robot;
@@ -33,7 +36,7 @@ import org.springframework.stereotype.Service;
  * @author bcivel
  */
 @Service
-public class RobotService implements IRobotService{
+public class RobotService implements IRobotService {
 
     @Autowired
     private IRobotDAO robotDao;
@@ -72,5 +75,68 @@ public class RobotService implements IRobotService{
     public Integer getNumberOfRobotPerCriteria(String searchTerm, String inds) {
         return robotDao.getNumberOfRobotPerCriteria(searchTerm, inds);
     }
-    
+
+    @Override
+    public List<String> getDistinctValues(String columnName, String PlatformChosen,
+            String BrowserChosen, String VersionChosen) throws CerberusException {
+        List<Robot> robots = this.findAllRobot();
+        List<String> result = new ArrayList();
+        for (Robot robot : robots) {
+            if (columnName.equals("Platform")) {
+                if (robot.getBrowser().equals(BrowserChosen)
+                        && robot.getVersion().equals(VersionChosen)) {
+                    result.add(robot.getPlatform());
+                } else if (robot.getBrowser().equals(BrowserChosen)
+                        && VersionChosen.equals("")) {
+                    result.add(robot.getPlatform());
+                } else if (robot.getVersion().equals(VersionChosen)
+                        && BrowserChosen.equals("")) {
+                    result.add(robot.getPlatform());
+                } else if (VersionChosen.equals("")
+                        && BrowserChosen.equals("")) {
+                    result.add(robot.getPlatform());
+                }
+            }
+            if (columnName.equals("Browser")) {
+                if (robot.getVersion().equals(VersionChosen)
+                        && robot.getPlatform().equals(PlatformChosen)) {
+                    result.add(robot.getBrowser());
+                } else if (robot.getPlatform().equals(PlatformChosen)
+                        && VersionChosen.equals("")) {
+                    result.add(robot.getBrowser());
+                } else if (robot.getVersion().equals(VersionChosen)
+                        && PlatformChosen.equals("")) {
+                    result.add(robot.getBrowser());
+                } else if (VersionChosen.equals("")
+                        && PlatformChosen.equals("")) {
+                    result.add(robot.getBrowser());
+                }
+            }
+            if (columnName.equals("Version")) {
+                if (robot.getBrowser().equals(BrowserChosen)
+                        && robot.getPlatform().equals(PlatformChosen)) {
+                    result.add(robot.getVersion());
+                } else if (robot.getBrowser().equals(BrowserChosen)
+                        && PlatformChosen.equals("")) {
+                    result.add(robot.getVersion());
+                } else if (robot.getPlatform().equals(PlatformChosen)
+                        && BrowserChosen.equals("")) {
+                    result.add(robot.getVersion());
+                } else if (PlatformChosen.equals("")
+                        && BrowserChosen.equals("")) {
+                    result.add(robot.getVersion());
+                }
+            }
+        }
+        Set<String> uniqueResult = new HashSet<String>(result);
+        result = new ArrayList();
+        result.addAll(uniqueResult);
+        if (columnName.equals("Version")){
+        java.util.Collections.sort(result);
+        }else{
+        java.util.Collections.sort(result);
+        }
+        return result;
+    }
+
 }

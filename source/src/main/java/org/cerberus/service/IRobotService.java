@@ -96,5 +96,8 @@ public interface IRobotService {
      * @since 0.9.2
      */
     Integer getNumberOfRobotPerCriteria(String searchTerm, String inds);
+    
+    List<String> getDistinctValues(String columnName, String PlatformChosen,
+            String BrowserChosen, String VersionChosen) throws CerberusException;
 
 }

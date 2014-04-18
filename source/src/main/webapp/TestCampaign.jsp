@@ -59,56 +59,11 @@
                 margin: 10px 0;
             }
         </style>
-    </head>
-    <body>
-        <%@ include file="include/function.jsp"%>
-        <%@ include file="include/header.jsp"%>
-        <div id="campaigns">
-        List of Test Campaigns :
-        <table  class="display" id="listOfCampaigns" name="listOfCampaigns">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Campaign</th>
-                    <th>Description</th>
-                </tr>
-            </thead>
-        </table>
-        </div>
-        <div>
-            <div id="parameters" class="halfsize">
-                <table  class="display" id="listOfParameters" name="listOfParameters">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Campaign</th>
-                            <th>Parameter</th>
-                            <th>Value</th>
-                        </tr>
-                    </thead>
-                </table>
-            </div>
-            <div id="contents" class="halfsize">
-                <table  class="display" id="listOfContents" name="listOfContents">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Campaign</th>
-                            <th>Test Battery</th>
-                        </tr>
-                    </thead>
-                </table>
-            </div>
-        </div>
         <script>
-            var oTable, oTableParameter, oTableContent;
-            function refreshCampaigns() {
-                $('#parameters').hide();
-                $('#contents').hide();
-                
-                oTable = $('#listOfCampaigns').dataTable({
+            $(document).ready(function() {
+                var oTable = $('#listOfCampaigns').dataTable({
                     "aaSorting": [[0, "asc"]],
-                    "bServerSide": false,
+                    "bServerSide": true,
                     "sAjaxSource": "GetCampaign?action=findAllCampaign",
                     "sAjaxDataProp": "Campaigns",
                     "bJQueryUI": true,
@@ -173,26 +128,25 @@
                 
                 /* Add a click handler to the rows - this could be used as a callback */
                 $('#listOfCampaigns tbody').click(function(event) {
-                        refreshParameters($(event.target.parentNode).attr("id"));
-                        refreshContents($(event.target.parentNode).attr("id"));
+                document.getElementById("IdForFilters").value = $(event.target.parentNode).attr("id");
                 });
-            };
-            
-            function refreshParameters(id) {
-                $('#parameters').hide();
-                
-                $('#CampaignIdForParameter').attr('value',id);
-                
-                // This example is fairly pointless in reality, but shows how fnDestroy can be used
-                if(oTableParameter) {
-                    $('#listOfParameters tbody').empty();
-                    $('#listOfParameters').dataTable().fnDestroy();
-                }
-
-                $.getJSON("GetCampaign","action=findAllCampaignParameter&campaign="+id,function(data){
-                    oTableParameter = $('#listOfParameters').dataTable({
+            });
+            </script>
+            <script>
+            function getValue()
+            {
+                var x = document.getElementById("IdForFilters").value;
+                return x;
+            }
+        </script>
+           <script>
+            $(document).ready(function() {
+                var id = getValue();
+                var oTableParameter = $('#listOfParameters').dataTable({
                         "aaSorting": [[0, "asc"]],
-                        "bServerSide": false,
+                        "bServerSide": true,
+                        "sAjaxSource": "GetCampaign?action=findAllCampaignParameter&campaign=" +id,
+                        "sAjaxDataProp": "CampaignParameters",
                         "bJQueryUI": true,
                         "bProcessing": true,
                         "bDestroy": true,
@@ -207,9 +161,8 @@
                             {"sName": "Campaign", "bVisible": false},
                             {"sName": "Parameter", "sWidth": "50%"},
                             {"sName": "Value", "sWidth": "50%"}
-                        ],
-                        "aaData" : data.CampaignParameters
-                    }).makeEditable({
+                        ]
+                        }).makeEditable({
                         sAddURL: "AddCampaignParameter",
                         sAddNewRowFormId: "formAddNewParameter",
                         sAddNewRowButtonId: "btnAddNewParameter",
@@ -243,7 +196,12 @@
                         "aoColumns": [
                             null,
                             null,
-                            null,
+                            {
+                                indicator   : 'Saving...',
+                                tooltip     : 'Double Click to edit...',
+                                style       : 'display: inline',
+                                onblur      : 'submit'
+                            },
                             {
                                 indicator   : 'Saving...',
                                 tooltip     : 'Double Click to edit...',
@@ -252,28 +210,18 @@
                             }
                         ]
                     });
-                    $('#parameters').show();
+                    
                 });
-                
-
-
-            };
-            
-            function refreshContents(id) {
-                $('#contents').hide();
-
-                $('#CampaignIdForContent').attr('value',id);
-                
-                // This example is fairly pointless in reality, but shows how fnDestroy can be used
-                if(oTableContent) {
-                    $('#listOfContents tbody').empty();
-                    $('#listOfContents').dataTable().fnDestroy();
-                }
-
-                $.getJSON("GetCampaign","action=findAllCampaignContent&campaign="+id,function(data){
-                    oTableContent = $('#listOfContents').dataTable({
+             
+            </script>
+            <script>
+             $(document).ready(function(){
+                var id = getValue();
+                var oTableContent = $('#listOfContents').dataTable({
                         "aaSorting": [[0, "asc"]],
-                        "bServerSide": false,
+                        "bServerSide": true,
+                        "sAjaxSource": "GetCampaign?action=findAllCampaignContent&campaign="+id,
+                        "sAjaxDataProp": "CampaignContents",
                         "bJQueryUI": true,
                         "bProcessing": true,
                         "bDestroy": true,
@@ -287,8 +235,7 @@
                             {"sName": "ID", "bVisible": false},
                             {"sName": "Campaign", "bVisible": false},
                             {"sName": "Test Battery"}
-                        ],
-                        "aaData" : data.CampaignContents
+                        ]
                     }).makeEditable({
                         sAddURL: "AddCampaignContent",
                         sAddNewRowFormId: "formAddNewContent",
@@ -331,20 +278,53 @@
                             }
                         ]
                     });
-                    $('#contents').show();
                 });
-                
-
-
-            };
             
-            
-            $(document).ready(function(){
-                refreshCampaigns();
-            });
         </script>
+    </head>
+    <body>
+        <%@ include file="include/function.jsp"%>
+        <%@ include file="include/header.jsp"%>
+        <div id="campaigns">
+        List of Test Campaigns :
+        <table  class="display" id="listOfCampaigns" name="listOfCampaigns">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Campaign</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+        </table>
+        </div>
+        <div>
+            <div id="parameters" class="halfsize">
+                <table  class="display" id="listOfParameters" name="listOfParameters">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Campaign</th>
+                            <th>Parameter</th>
+                            <th>Value</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+            <div id="contents" class="halfsize">
+                <table  class="display" id="listOfContents" name="listOfContents">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Campaign</th>
+                            <th>Test Battery</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+        <input type="hidden" value="2" id="IdForFilters" name="IdForFilters">
             <form id="formAddNewCampaign" class="formForDataTable" action="#" title="Add Campaign Entry" style="width:600px" method="post">
-                <input type="hidden" value="-1" id="ID" name="ID" class="ncdetailstext" rel="0" >
+                <input type="hidden" value="1" id="ID" name="ID" class="ncdetailstext" rel="0" >
                 <label for="Campaign" style="font-weight:bold">Campaign</label>
                 <input id="Campaign" name="Campaign" class="ncdetailstext" rel="1" >
                 <br><br>
@@ -352,8 +332,8 @@
                 <input id="Description" name="Description" class="ncdetailstext" rel="2" >
             </form>
             <form id="formAddNewParameter" class="formForDataTable" action="#" title="Add Parameter Entry" style="width:600px" method="post">
-                <input type="hidden" value="-1" id="IDParameter" name="ID" class="ncdetailstext" rel="0" >
-                <input type="hidden" value="-1" id="CampaignIdForParameter" name="Campaign" class="ncdetailstext" rel="1">
+                <input type="hidden" value="1" id="IDParameter" name="ID" class="ncdetailstext" rel="0" >
+                <input type="hidden" value="1" id="CampaignIdForParameter" name="Campaign" class="ncdetailstext" rel="1">
                 <br><br>
                 <label for="Parameter" style="font-weight:bold">Parameter</label>
                 <input id="Parameter" name="Parameter" class="ncdetailstext" rel="2" >
@@ -362,8 +342,8 @@
                 <input id="Value" name="Value" class="ncdetailstext" rel="3" >
             </form>
             <form id="formAddNewContent" class="formForDataTable" action="#" title="Add Content Entry" style="width:600px" method="post">
-                <input type="hidden" value="-1" id="IDContent" name="ID" class="ncdetailstext" rel="0" >
-                <input type="hidden" value="-1" id="CampaignIdForContent" name="Campaign" class="ncdetailstext" rel="1">
+                <input type="hidden" value="1" id="IDContent" name="ID" class="ncdetailstext" rel="0" >
+                <input type="hidden" value="1" id="CampaignIdForContent" name="Campaign" class="ncdetailstext" rel="1">
                 <br><br>
                 <label for="TestBattery" style="font-weight:bold">TestBattery</label>
                 <input id="TestBattery" name="TestBattery" class="ncdetailstext" rel="2" >

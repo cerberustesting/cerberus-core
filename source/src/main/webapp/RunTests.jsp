@@ -17,6 +17,8 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
+<%@page import="org.cerberus.entity.Robot"%>
+<%@page import="org.cerberus.service.IRobotService"%>
 <%@page import="java.util.Enumeration"%>
 <%@page import="org.apache.log4j.Level"%>
 <%@page import="org.apache.commons.lang3.StringUtils"%>
@@ -54,6 +56,7 @@
                     Connection conn = null;
                     IDocumentationService docService = appContext.getBean(IDocumentationService.class);
                     IUserService userService = appContext.getBean(IUserService.class);
+                    IRobotService robotService = appContext.getBean(IRobotService.class);
 
                     try {
 
@@ -115,13 +118,22 @@
                             ssPort = "5555";
                         }
 
-                        String browser;
+                        String browser = "";
                         if (request.getParameter(
                                 "browser") != null && request.getParameter("browser").compareTo("") != 0) {
                             browser = request.getParameter("browser");;
-                        } else {
-                            browser = new String("firefox");
-                        }
+                        } 
+                        
+                        String platform = "";
+                        if (request.getParameter(
+                                "platform") != null && request.getParameter("platform").compareTo("") != 0) {
+                            platform = request.getParameter("platform");;
+                        } 
+                        String version = "";
+                        if (request.getParameter(
+                                "version") != null && request.getParameter("version").compareTo("") != 0) {
+                            version = request.getParameter("version");;
+                        } 
 
                         StringBuilder sqlOpts = new StringBuilder();
 
@@ -357,21 +369,53 @@
                         </div>
                         </div>
                     <div style="clear:both">
-                   <div style="float:left; width:150px; text-align:left"><% out.print(docService.findLabelHTML("page_runtests", "Browser", "Browser"));%></div>
+                   <div style="float:left; width:150px; text-align:left">Platform</div>
                    <div style="float:left">
-                            <%=ComboInvariant(conn, "browser", "width: 90px", "browser", "browser", "BROWSER", browser, "", null)%>
-                        </div></div>
+                       <select id="platform" name="platform" style="width: 100px"  onchange="updateHidden(this.value,'','');getBrowserValues();getVersionValues()">
+                            <option style="width: 100px" value="none">-- Optional --</option>
+                            <%
+                                for (String aPlatform : robotService.getDistinctValues("Platform","","","")) {
+                                    
+                            %><option style="width: 500px;" <%
+                                if (platform.equalsIgnoreCase(aPlatform)) {
+                                    out.print("selected=\"selected\"");
+                                }
+                                    %> value="<%=aPlatform%>"> <%=aPlatform%> </option>
+                            <%
+                                }
+                            %></select></div></div>
                     <div style="clear:both">
-                        <div style="float:left; width:150px; text-align:left">BrowserVersion</div>
+                        <div style="float:left; width:150px; text-align:left"><% out.print(docService.findLabelHTML("page_runtests", "Browser", "Browser"));%></div>
                         <div style="float:left">
-                            <%=ComboInvariant(conn, "browser", "width: 90px", "browser", "browser", "BROWSER", browser, "", null)%>
-                        </div></div>
+                            <select id="browser" name="browser" style="width: 100px" onchange="updateHidden('',this.value,'');getPlatformValues();getVersionValues()">
+                            <option style="width: 100px" value="none">-- Optional --</option>
+                            <%
+                                for (String aBrowser : robotService.getDistinctValues("Browser","","","")) {
+                                    
+                            %><option style="width: 500px;" <%
+                                if (browser.equalsIgnoreCase(aBrowser)) {
+                                    out.print("selected=\"selected\"");
+                                }
+                                    %> value="<%=aBrowser%>"> <%=aBrowser%> </option>
+                            <%
+                                }
+                            %></select></div></div>
                     <div style="clear:both"></div>
                     <div style="clear:both">
-                        <div style="float:left; width:150px; text-align:left">Platform</div>
-                        <div style="float:left">
-                            <%=ComboInvariant(conn, "browser", "width: 90px", "browser", "browser", "BROWSER", browser, "", null)%>
-                        </div></div>
+                        <div style="float:left; width:150px; text-align:left">Version</div>
+                        <div style="float:left"><select id="version" name="version" style="width: 100px" onchange="updateHidden('','',this.value);getPlatformValues();getBrowserValues()">
+                            <option style="width: 100px" value="none">-- Optional --</option>
+                            <%
+                                for (String aVersion : robotService.getDistinctValues("Version","","Firefox","")) {
+                                    
+                            %><option style="width: 500px;" <%
+                                if (version.equalsIgnoreCase(aVersion)) {
+                                    out.print("selected=\"selected\"");
+                                }
+                                    %> value="<%=aVersion%>"> <%=aVersion%> </option>
+                            <%
+                                }
+                            %></select></div></div>
                         <div style="clear:both">
                         <input id="button" class="button" type="submit" <%=enable%> name="DefaultIP" value="Set As My Default IP" >
                         </div>
@@ -438,7 +482,9 @@
             %>
 
         </div>
-
+            <input id="platformChoosed" name="platformChoosed" hidden="hidden" value="none">
+            <input id="browserChoosed" name="browserChoosed" hidden="hidden" value="none">
+            <input id="versionChoosed" name="versionChoosed" hidden="hidden" value="none">
         <br><% out.print(display_footer(DatePageStart));%>
 
         <script type="text/javascript">
@@ -450,5 +496,87 @@
                 return true;
             }
         </script>
+        <script>
+            function updateHidden(platformChoosed,browserChoosed,versionChoosed){
+             if (browserChoosed===('') && versionChoosed===('')){
+                 document.getElementById("platformChoosed").value = platformChoosed;
+             } 
+             if (platformChoosed===('') && versionChoosed===('')){
+                 document.getElementById("browserChoosed").value = browserChoosed;
+             }
+             if (platformChoosed===('') && browserChoosed===('')){
+                 document.getElementById("versionChoosed").value = versionChoosed;
+             }
+            }
+        </script>
+        <script type="text/javascript">
+        function getPlatformValues(){
+            var browserSelected = document.getElementById("browserChoosed").value === "none" ? "" : document.getElementById("browserChoosed").value;
+            var versionSelected = document.getElementById("versionChoosed").value === "none" ? "" : document.getElementById("versionChoosed").value;
+            var platformSelected = document.getElementById("platformChoosed").value === "none" ? "" : document.getElementById("platformChoosed").value;
+            $.getJSON( 'GetDistinctRobotValues?field=Platform&browserSelected='+browserSelected+'&versionSelected='+versionSelected, function( data ) {
+            $("#platform").empty();
+            $("#platform").append($("<option></option>")
+                        .attr("value", "none")
+                        .text("-- Optional --"));
+            for (var i = 0; i < data.length; i++) {
+                $("#platform").append($("<option></option>")
+                        .attr("value", data[i])
+                        .text(data[i]));
+                
+            }
+            $("#platform").find('option').each(function( i, opt ) {
+                if( opt.value === platformSelected ) 
+                $(opt).attr('selected', 'selected');
+});
+        });
+        };
+    </script>
+    <script type="text/javascript">
+        function getBrowserValues(){
+            var browserSelected = document.getElementById("browserChoosed").value === "none" ? "" : document.getElementById("browserChoosed").value;
+            var versionSelected = document.getElementById("versionChoosed").value === "none" ? "" : document.getElementById("versionChoosed").value;
+            var platformSelected = document.getElementById("platformChoosed").value === "none" ? "" : document.getElementById("platformChoosed").value;
+            
+            $.getJSON( 'GetDistinctRobotValues?field=Browser&platformSelected='+platformSelected+'&versionSelected='+versionSelected, function( data ) {
+            $("#browser").empty();
+            $("#browser").append($("<option></option>")
+                        .attr("value", "none")
+                        .text("-- Optional --"));
+            for (var i = 0; i < data.length; i++) {
+                $("#browser").append($("<option></option>")
+                        .attr("value", data[i])
+                        .text(data[i]));
+            }
+            $("#browser").find('option').each(function( i, opt ) {
+                if( opt.value === browserSelected ) 
+                $(opt).attr('selected', 'selected');
+});
+        });
+        };
+    </script>
+    <script type="text/javascript">
+        function getVersionValues(){
+            var browserSelected = document.getElementById("browserChoosed").value === "none" ? "" : document.getElementById("browserChoosed").value;
+            var versionSelected = document.getElementById("versionChoosed").value === "none" ? "" : document.getElementById("versionChoosed").value;
+            var platformSelected = document.getElementById("platformChoosed").value === "none" ? "" : document.getElementById("platformChoosed").value;
+            
+            $.getJSON( 'GetDistinctRobotValues?field=Version&platformSelected='+platformSelected+'&browserSelected='+browserSelected, function( data ) {
+            $("#version").empty();
+            $("#version").append($("<option></option>")
+                        .attr("value", "none")
+                        .text("-- Optional --"));
+            for (var i = 0; i < data.length; i++) {
+                $("#version").append($("<option></option>")
+                        .attr("value", data[i])
+                        .text(data[i]));
+            }
+            $("#version").find('option').each(function( i, opt ) {
+                if( opt.value === versionSelected ) 
+                $(opt).attr('selected', 'selected');
+});
+        });
+        };
+    </script>
     </body>
 </html>
