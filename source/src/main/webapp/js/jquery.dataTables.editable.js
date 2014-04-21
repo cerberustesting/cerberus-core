@@ -1079,6 +1079,7 @@ returns true if plugin should continue with sending AJAX request, false will abo
                         $(oTable.fnGetNodes()).each(function () {
                             var position = oTable.fnGetPosition(this);
                             var id = oTable.fnGetData(position)[0];
+                          //  console.log("datatable jeditable="+id);
                             properties.fnSetRowID($(this), id);
                         }
                         );
@@ -1089,6 +1090,12 @@ returns true if plugin should continue with sending AJAX request, false will abo
             } else {
                 //Apply jEditable plugin on the table cells
                 fnApplyEditable(oTable.fnGetNodes());
+                $(oTable.fnGetNodes()).each(function () {
+                    var position = oTable.fnGetPosition(this);
+                    var id = oTable.fnGetData(position)[0];
+                   // console.log("datatable jeditable="+id);
+                    properties.fnSetRowID($(this), id);
+                });
             }
 
             //Setup form to open in dialog

@@ -36,7 +36,7 @@
         <link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico">
         <script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>
         <script type="text/javascript" src="js/jquery-ui-1.10.2.js"></script>
-        <script type="text/javascript" src="js/jquery.dataTables.min.js"></script>
+        <script type="text/javascript" src="js/jquery.dataTables.js"></script>
         <script type="text/javascript" src="js/jquery.jeditable.mini.js"></script>
         <script type="text/javascript" src="js/jquery.dataTables.editable.js"></script>
         <script type="text/javascript" src="js/jquery.validate.min.js"></script>

@@ -139,6 +139,6 @@ public class CampaignService implements ICampaignService {
 
     @Override
     public boolean deleteCampaignParameter(CampaignParameter campaignParameter) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return campaignParameterDAO.deleteCampaignParameter(campaignParameter);
     }
 }
