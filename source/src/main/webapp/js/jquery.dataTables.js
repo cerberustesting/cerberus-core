@@ -5479,22 +5479,25 @@
 		 */
 		this.fnGetPosition = function( node )
 		{
-			var api = this.api( true );
-			var nodeName = node.nodeName.toUpperCase();
-		
-			if ( nodeName == 'TR' ) {
-				return api.row( node ).index();
-			}
-			else if ( nodeName == 'TD' || nodeName == 'TH' ) {
-				var cell = api.cell( node ).index();
-		
-				return [
-					cell.row,
-					cell.columnVisible,
-					cell.column
-				];
-			}
-			return null;
+                    if(!node || !node.nodeName) {
+                        return undefined;
+                    }
+                    var api = this.api( true );
+                    var nodeName = node.nodeName.toUpperCase();
+
+                    if ( nodeName == 'TR' ) {
+                            return api.row( node ).index();
+                    }
+                    else if ( nodeName == 'TD' || nodeName == 'TH' ) {
+                            var cell = api.cell( node ).index();
+
+                            return [
+                                    cell.row,
+                                    cell.columnVisible,
+                                    cell.column
+                            ];
+                    }
+                    return null;
 		};
 		
 		
