@@ -48,8 +48,9 @@
                 display: inline-block;
                 *zoom: 1;
                 *display: inline;
+                width: 100%;
             }
-            
+
             .formForDataTable {
                 display: none;
             }
