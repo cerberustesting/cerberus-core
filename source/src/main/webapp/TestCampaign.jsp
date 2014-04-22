@@ -242,8 +242,6 @@
                         },
                         "aoColumns": [
                             null,
-                            null,
-                            null,
                             {
                                 indicator   : 'Saving...',
                                 tooltip     : 'Double Click to edit...',
@@ -321,8 +319,6 @@
                             $(".dataTables_processing").css('visibility', 'hidden');
                         },
                         "aoColumns": [
-                            null,
-                            null,
                             {
                                 indicator   : 'Saving...',
                                 tooltip     : 'Double Click to edit...',
