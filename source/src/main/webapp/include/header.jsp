@@ -73,6 +73,7 @@
                     <li id="subactive"><a name="menu" id="menuCreateTestCase" href="TestCaseCreate.jsp" style="width:130px">Create TestCase</a></li>
                     <% }%>
                     <li id="subactive"><a name="menu" id="menuSearchTestCase" href="TestCaseSearch.jsp" style="width:130px">Search TestCase</a></li>
+                    <li id="subactive"><a name="menu" id="menuTestBattery" href="TestBattery.jsp" style="width:160px">Test Battery</a></li>
                 </ul>
             </li>
             <% }%>
