@@ -29,17 +29,22 @@
     <head>
         <meta content="text/html; charset=UTF-8" http-equiv="content-type">
         <title>Test Battery</title>
+        <link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico">
+
         <link rel="stylesheet" type="text/css" href="css/crb_style.css">
         <link rel="stylesheet" type="text/css" href="css/jquery.dataTables.css">
         <link rel="stylesheet" type="text/css" href="css/jquery-ui.css">
         <link rel="stylesheet" type="text/css" href="css/dataTables_jui.css">
-        <link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico">
+        <link type="text/css" rel="stylesheet" href="css/jquery.multiselect.css">
+
         <script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>
         <script type="text/javascript" src="js/jquery-ui-1.10.2.js"></script>
         <script type="text/javascript" src="js/jquery.dataTables.js"></script>
         <script type="text/javascript" src="js/jquery.jeditable.mini.js"></script>
         <script type="text/javascript" src="js/jquery.dataTables.editable.js"></script>
         <script type="text/javascript" src="js/jquery.validate.min.js"></script>
+        <script type="text/javascript" src="js/jquery.multiselect.js" charset="utf-8"></script>
+        <script type="text/javascript" src="js/jquery.form.js"></script>
         
         <style>
             #contents {
@@ -199,7 +204,7 @@
 
                         sAddHttpMethod: "POST",
                         oAddNewRowButtonOptions: {
-                            label: "<b>Create Content</b>",
+                            label: "<b>Add Content</b>",
                             background: "#AAAAAA",
                             icons: {primary: 'ui-icon-plus'}
                         },
@@ -220,18 +225,8 @@
                             $(".dataTables_processing").css('visibility', 'hidden');
                         },
                         "aoColumns": [
-                            {
-                                indicator   : 'Saving...',
-                                tooltip     : 'Double Click to edit...',
-                                style       : 'display: inline',
-                                onblur      : 'submit'
-                            },
-                            {
-                                indicator   : 'Saving...',
-                                tooltip     : 'Double Click to edit...',
-                                style       : 'display: inline',
-                                onblur      : 'submit'
-                            }
+                            null,
+                            null
                         ]
                     });
                     $('#contents').show();
@@ -240,6 +235,8 @@
 
             $(document).ready(function(){
                 refreshTestBatteries();
+                
+                $('#testcasesearchdiv').load("TestBatteryTestCaseSearch.jsp");
             });
         </script>
             <form id="formAddNewTestBattery" class="formForDataTable" action="#" title="Add TestBattery Entry" style="width:600px" method="post">
@@ -253,12 +250,9 @@
             <form id="formAddNewContent" class="formForDataTable" action="#" title="Add Content Entry" style="width:600px" method="post">
                 <input type="hidden" value="-1" id="IDContent" name="ID" class="ncdetailstext" rel="0" >
                 <input type="hidden" value="-1" id="TestBatteryIdForContent" name="TestBattery" class="ncdetailstext" rel="1">
-                <br><br>
-                <label for="Test" style="font-weight:bold">Test</label>
-                <input id="Test" name="Test" class="ncdetailstext" rel="2" >
-                <br><br>
-                <label for="TestCase" style="font-weight:bold">TestCase</label>
-                <input id="TestCase" name="Test" class="ncdetailstext" rel="3" >
+                <input type="hidden" id="Test" name="Test" class="ncdetailstext" rel="2" >
+                <input type="hidden" id="TestCase" name="TestCase" class="ncdetailstext" rel="3" >
+                <div id="testcasesearchdiv"></div>
             </form>
      </body>
 </html>
