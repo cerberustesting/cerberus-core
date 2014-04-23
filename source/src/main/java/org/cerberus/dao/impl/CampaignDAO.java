@@ -185,16 +185,16 @@ public class CampaignDAO implements ICampaignDAO {
     @Override
     public List<Campaign> findCampaignByCriteria(Integer campaignID, String campaign, String description) throws CerberusException {
         boolean throwEx = false;
-        final StringBuffer query = new StringBuffer("SELECT * FROM campaign c WHERE ");
+        final StringBuffer query = new StringBuffer("SELECT * FROM campaign c WHERE 1=1 ");
 
         if (campaignID != null) {
-            query.append(" c.campaignID = ?");
+            query.append(" AND c.campaignID = ?");
         }
         if (campaign != null && !"".equals(campaign.trim())) {
-            query.append(" c.campaign LIKE ?");
+            query.append(" AND c.campaign LIKE ?");
         }
         if (description != null && !"".equals(description.trim())) {
-            query.append(" c.description LIKE ?");
+            query.append(" AND c.description LIKE ?");
         }
 
         // " c.campaignID = ? AND c.campaign LIKE ? AND c.description LIKE ?";
