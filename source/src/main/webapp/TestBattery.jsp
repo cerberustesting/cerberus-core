@@ -132,7 +132,7 @@
                     oAddNewRowFormOptions: {
                         title: 'Add TestBattery Entry',
                         show: "blind",
-                        hide: "explode",
+                        hide: "blind",
                         width: "700px"
                     },
                     sDeleteHttpMethod: "POST",
@@ -211,8 +211,8 @@
                         oAddNewRowFormOptions: {
                             title: 'Add Content',
                             show: "blind",
-                            hide: "explode",
-                            width: "700px"
+                            hide: "blind",
+                            width: "900px"
                         },
                         sDeleteHttpMethod: "POST",
                         sDeleteURL: "DeleteTestBatteryContent",
@@ -247,7 +247,7 @@
                 <label for="Description" style="font-weight:bold">Description</label>
                 <input id="Description" name="Description" class="ncdetailstext" rel="2" >
             </form>
-            <form id="formAddNewContent" class="formForDataTable" action="#" title="Add Content Entry" style="width:600px" method="post">
+            <form id="formAddNewContent" class="formForDataTable" action="TestBatteryTestCaseResult.jsp" title="Add Content Entry" style="width:900px; height:600px" method="post">
                 <input type="hidden" value="-1" id="IDContent" name="ID" class="ncdetailstext" rel="0" >
                 <input type="hidden" value="-1" id="TestBatteryIdForContent" name="TestBattery" class="ncdetailstext" rel="1">
                 <input type="hidden" id="Test" name="Test" class="ncdetailstext" rel="2" >
