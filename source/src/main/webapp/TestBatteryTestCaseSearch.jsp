@@ -46,6 +46,7 @@
 <%@page import="org.apache.log4j.Level"%>
 <%@page import="org.apache.commons.lang3.StringUtils"%>
 <% Date DatePageStart = new Date();%>
+            <div id="filtersList" style="clear:both;">
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 
@@ -70,8 +71,8 @@
                     List<Invariant> invariantTCStatus = invariantService.findListOfInvariantById("TCSTATUS");
 
             %>
-            <!--form method="GET" name="Apply" id="Apply" action="ReportingExecutionResult.jsp"-->
-                    <div id="filtersList" style="clear:both;">
+
+                <form id="formAddNewContentSearch" action="TestBatteryTestCaseResult.jsp" method="post">
                     <br><div class="underlinedDiv"></div>
                         <p style="text-align:left" class="dttTitle">Testcase Filters (Displayed Rows)</p>
                         <div style="float:left">
@@ -245,7 +246,9 @@
                                 </div>
                             </div>
                         </div>
-                           
+                                <br><br>
+                                <button id="submit" name="submit" type="submit">Search</button>
+                </form>
                 <div id="displayResult">
                     <br>
                     <br>
@@ -266,7 +269,6 @@
                 %>
                 
             </div>
-        <!--/form-->
 
         <script type="text/javascript">
             $(document).ready(function() {
@@ -281,31 +283,15 @@
                         selectedList: currentElement.data('selected-list')
                     });
                 });
-            });
-        </script>
-
-        <script type="text/javascript">
-            $(document).ready(function() {
 
                 // prepare all forms for ajax submission
-                $('#Apply').on('submit', function(e) {
+                $('#formAddNewContentSearch').on('submit', function(e) {
                     $('#displayResult').html('<img src="./images/loading.gif"> loading...');
                     e.preventDefault(); // <-- important
                     $(this).ajaxSubmit({
                         target: '#displayResult'
                     });
                 });
-
-            <%                    if ("Apply".equals(request.getParameter("Apply"))) {
-            %>
-                $('#Apply').submit();
-            <%
-                }
-            %>
-
-                
-
             });
         </script>
-
         
