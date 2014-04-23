@@ -67,6 +67,14 @@ public class AddCampaignParameter extends HttpServlet {
         try {
             campaign = campaignService.findCampaignByKey(Integer.parseInt(campaignId));
             campaignService.createCampaignParameter(factoryCampaignParameter.create(null, campaign.getCampaign(), parameter, value));
+
+            String newCampaignParameterId = String.valueOf(
+                    campaignService.findCampaignParameterByCriteria(null, campaign.getCampaign(), parameter, value)
+                    .get(0).getCampaignparameterID()
+            );
+
+            response.getWriter().append(newCampaignParameterId).close();
+
             logEventService.insertLogEvent(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/AddCampaignParameter", "CREATE", "Create Campaign Parameter : " + campaignId + "/" + parameter + "/" + value, "", ""));
         } catch (CerberusException ex) {
             response.setContentType("text/html");

@@ -20,11 +20,14 @@
 package org.cerberus.servlet.testBattery;
 
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.cerberus.exception.CerberusException;
 import org.cerberus.factory.IFactoryTestBattery;
 import org.cerberus.service.ITestBatteryService;
 import org.owasp.html.PolicyFactory;
@@ -44,15 +47,24 @@ public class AddTestBattery extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-        testBatteryService = appContext.getBean(ITestBatteryService.class);
-        factoryTestBattery = appContext.getBean(IFactoryTestBattery.class);
-        PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
+        try {
+            ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+            testBatteryService = appContext.getBean(ITestBatteryService.class);
+            factoryTestBattery = appContext.getBean(IFactoryTestBattery.class);
+            PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
 
-        String testbattery = policy.sanitize(request.getParameter("TestBattery"));
-        String description = policy.sanitize(request.getParameter("Description"));
+            String testbattery = policy.sanitize(request.getParameter("TestBattery"));
+            String description = policy.sanitize(request.getParameter("Description"));
 
-        response.setContentType("text/html");
-        testBatteryService.createTestBattery(factoryTestBattery.create(null, testbattery, description));
+            response.setContentType("text/html");
+            testBatteryService.createTestBattery(factoryTestBattery.create(null, testbattery, description));
+
+            String newTestBatteryId = String.valueOf(testBatteryService.findTestBatteryByTestBatteryName(testbattery).getTestbatteryID());
+            response.getWriter().append(newTestBatteryId).close();
+        } catch (CerberusException ex) {
+            Logger.getLogger(AddTestBattery.class.getName()).log(Level.SEVERE, null, ex);
+            response.getWriter().append("-1").close();
+        }
+
     }
 }

@@ -58,9 +58,17 @@ public class AddTestBatteryContent extends HttpServlet {
 
         response.setContentType("text/html");
         try {
-            testBatteryService.createTestBatteryContent(factoryTestBatteryContent.create(null, test, testcase, testBatteryService.findTestBatteryByKey(Integer.parseInt(testbattery)).getTestbattery()));
+            String testBatteryName = testBatteryService.findTestBatteryByKey(Integer.parseInt(testbattery)).getTestbattery();
+
+            testBatteryService.createTestBatteryContent(factoryTestBatteryContent.create(null, test, testcase, testBatteryName));
+            String newTestBatteryContentId = String.valueOf(
+                    testBatteryService.findTestBatteryContentsByCriteria(null, testBatteryName, test, testcase)
+                    .get(0).getTestbatterycontentID()
+            );
+            response.getWriter().append(newTestBatteryContentId).close();
         } catch (CerberusException ex) {
             Logger.getLogger(AddTestBatteryContent.class.getName()).log(Level.SEVERE, null, ex);
+            response.getWriter().append("-1").close();
         }
     }
 }

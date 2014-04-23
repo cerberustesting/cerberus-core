@@ -20,11 +20,14 @@
 package org.cerberus.servlet.campaign;
 
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.cerberus.exception.CerberusException;
 import org.cerberus.factory.IFactoryCampaign;
 import org.cerberus.service.ICampaignService;
 import org.owasp.html.PolicyFactory;
@@ -54,5 +57,13 @@ public class AddCampaign extends HttpServlet {
 
         response.setContentType("text/html");
         campaignService.createCampaign(factoryCampaign.create(null, campaign, description));
+
+        try {
+            String newCapaignId = String.valueOf(campaignService.findCampaignByCampaignName(campaign).getCampaignID());
+            response.getWriter().append(newCapaignId).close();
+        } catch (CerberusException ex) {
+            Logger.getLogger(AddCampaign.class.getName()).log(Level.SEVERE, null, ex);
+            response.getWriter().append("-1").close();
+        }
     }
 }

@@ -66,6 +66,14 @@ public class AddCampaignContent extends HttpServlet {
         try {
             campaign = campaignService.findCampaignByKey(Integer.parseInt(campaignId));
             campaignService.createCampaignContent(factoryCampaignContent.create(null, testbattery, campaign.getCampaign()));
+
+            String newCampaignContentId = String.valueOf(
+                    campaignService.findCampaignContentByCriteria(campaign.getCampaign(), null, testbattery)
+                    .get(0).getCampaigncontentID()
+            );
+
+            response.getWriter().append(newCampaignContentId).close();
+
             logEventService.insertLogEvent(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/AddCampaignContent", "CREATE", "Create Campaign Content : " + campaignId + "/" + testbattery, "", ""));
         } catch (CerberusException ex) {
             response.setContentType("text/html");
