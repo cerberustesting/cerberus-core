@@ -1310,7 +1310,7 @@
 
                                                     int testcase_stepaction_maxlength_sequence = 10; // Default max length values for javascript adding if any actions set by default
                                                     int testcase_stepaction_maxlength_action = 45;
-                                                    int testcase_stepaction_maxlength_object = 100;
+                                                    int testcase_stepaction_maxlength_object = 200;
                                                     int testcase_stepaction_maxlength_property = 45;
                                                     int testcase_stepaction_maxlength_description = 1000;
                                                     Integer i1 = 0;
