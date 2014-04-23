@@ -141,7 +141,7 @@
                     oAddNewRowFormOptions: {
                         title: 'Add Campaign Entry',
                         show: "blind",
-                        hide: "explode",
+                        hide: "blind",
                         width: "700px"
                     },
                     sDeleteHttpMethod: "POST",
@@ -227,7 +227,7 @@
                         oAddNewRowFormOptions: {
                             title: 'Add Parameter',
                             show: "blind",
-                            hide: "explode",
+                            hide: "blind",
                             width: "700px"
                         },
                         sDeleteHttpMethod: "POST",
@@ -305,7 +305,7 @@
                         oAddNewRowFormOptions: {
                             title: 'Add Content',
                             show: "blind",
-                            hide: "explode",
+                            hide: "blind",
                             width: "700px"
                         },
                         sDeleteHttpMethod: "POST",
