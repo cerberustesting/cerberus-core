@@ -3,6 +3,18 @@
     <welcome-file-list>
         <welcome-file>Homepage.jsp</welcome-file>
     </welcome-file-list>
+    <context-param>
+        <param-name>THUMBNAIL</param-name>
+        <param-value>thumbnailer?p=</param-value>
+    </context-param>
+    <context-param>
+        <param-name>REALOBJECTURL</param-name>
+        <param-value>virtualproxy?p=</param-value>
+    </context-param>
+    <context-param>
+        <param-name>SHARED_DOCS</param-name>
+        <param-value>Shared docs</param-value>
+    </context-param>
     <servlet>
         <servlet-name>Homepage</servlet-name>
         <servlet-class>org.cerberus.servlet.guiPages.Homepage</servlet-class>
@@ -48,10 +60,6 @@
     <servlet>
         <servlet-name>AddTest</servlet-name>
         <servlet-class>org.cerberus.refactor.TestcaseList</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>UpdateTestCase1</servlet-name>
-        <servlet-class>org.cerberus.refactor.UpdateTestCase1</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>UpdateTest</servlet-name>
@@ -431,6 +439,21 @@
     <servlet>
         <servlet-name>FindTestImplementationStatusPerApplication</servlet-name>
         <servlet-class>org.cerberus.servlet.guiPages.FindTestImplementationStatusPerApplication</servlet-class>
+    </servlet>
+    <servlet>
+        <display-name>Connector for ElFinder</display-name>
+        <servlet-name>PictureConnector</servlet-name>
+        <servlet-class>org.cerberus.servlet.testCase.SavePicture</servlet-class>
+    </servlet>
+    <servlet>
+        <display-name>Generic Thumbnailer</display-name>
+        <servlet-name>thumbnailer</servlet-name>
+        <servlet-class>org.cerberus.servlet.Thumbnailer</servlet-class>
+    </servlet>
+    <servlet>
+        <display-name>Generic Proxy</display-name>
+        <servlet-name>virtualproxy</servlet-name>
+        <servlet-class>org.cerberus.servlet.VirtualProxy</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>RunTestCase</servlet-name>
@@ -844,6 +867,18 @@
         <servlet-name>FindTestImplementationStatusPerApplication</servlet-name>
         <url-pattern>/FindTestImplementationStatusPerApplication</url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>PictureConnector</servlet-name>
+        <url-pattern>/PictureConnector</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>thumbnailer</servlet-name>
+        <url-pattern>/thumbnailer</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>virtualproxy</servlet-name>
+        <url-pattern>/virtualproxy</url-pattern>
+    </servlet-mapping>
     <session-config>
         <session-timeout>
             60
@@ -955,6 +990,7 @@
             <url-pattern>/UpdateTestData</url-pattern>
             <url-pattern>/FindAllTestData</url-pattern>
             <url-pattern>/FindAllSqlLibrary</url-pattern>
+            <url-pattern>/PictureConnector</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <description>Test</description>
