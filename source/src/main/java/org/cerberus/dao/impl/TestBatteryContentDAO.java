@@ -220,19 +220,19 @@ public class TestBatteryContentDAO implements ITestBatteryContentDAO {
     @Override
     public List<TestBatteryContent> findTestBatteryContentsByCriteria(Integer testBatteryContentID, String testBattery, String test, String testCase) throws CerberusException {
         boolean throwEx = false;
-        final StringBuffer query = new StringBuffer("SELECT * FROM testbatterycontent t WHERE ");
+        final StringBuffer query = new StringBuffer("SELECT * FROM testbatterycontent t WHERE 1=1");
 
         if (testBatteryContentID != null) {
-            query.append(" t.testBatterycontentID = ?");
+            query.append(" AND t.testBatterycontentID = ?");
         }
         if (testBattery != null && !"".equals(testBattery.trim())) {
-            query.append(" t.testBattery LIKE ?");
+            query.append(" AND t.testBattery LIKE ?");
         }
         if (test != null && !"".equals(test.trim())) {
-            query.append(" t.Test LIKE ?");
+            query.append(" AND t.Test LIKE ?");
         }
         if (testCase != null && !"".equals(testCase.trim())) {
-            query.append(" t.TestCase LIKE ?");
+            query.append(" AND t.TestCase LIKE ?");
         }
 
         List<TestBatteryContent> testBatteryContentsList = new ArrayList<TestBatteryContent>();

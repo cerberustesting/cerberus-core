@@ -252,19 +252,20 @@ public class CampaignParameterDAO implements ICampaignParameterDAO {
     @Override
     public List<CampaignParameter> findCampaignParameterByCriteria(Integer campaignparameterID, String campaign, String parameter, String value) throws CerberusException {
         boolean throwEx = false;
-        final StringBuffer query = new StringBuffer("SELECT * FROM campaignparameter c WHERE ");
+        final StringBuffer query = new StringBuffer("SELECT * FROM campaignparameter c WHERE 1=1 ");
 
         if (campaignparameterID != null) {
-            query.append(" c.campaignparameterID = ?");
+            query.append(" AND c.campaignparameterID = ?");
         }
         if (campaign != null && !"".equals(campaign.trim())) {
-            query.append(" c.campaign LIKE ?");
+            query.append(" AND c.campaign LIKE ?");
         }
         if (parameter != null && !"".equals(parameter.trim())) {
-            query.append(" c.parameter LIKE ?");
+            query.append(" AND c.parameter LIKE ?");
         }
+
         if (value != null && !"".equals(value.trim())) {
-            query.append(" c.value LIKE ?");
+            query.append(" AND c.value LIKE ?");
         }
 
         // " c.campaignID = ? AND c.campaign LIKE ? AND c.description LIKE ?";

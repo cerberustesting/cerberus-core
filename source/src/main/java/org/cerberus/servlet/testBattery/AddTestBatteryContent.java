@@ -20,11 +20,14 @@
 package org.cerberus.servlet.testBattery;
 
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.cerberus.exception.CerberusException;
 import org.cerberus.factory.IFactoryTestBatteryContent;
 import org.cerberus.service.ITestBatteryService;
 import org.owasp.html.PolicyFactory;
@@ -54,6 +57,18 @@ public class AddTestBatteryContent extends HttpServlet {
         String testbattery = policy.sanitize(request.getParameter("TestBattery"));
 
         response.setContentType("text/html");
-        testBatteryService.createTestBatteryContent(factoryTestBatteryContent.create(null, test, testcase, testbattery));
+        try {
+            String testBatteryName = testBatteryService.findTestBatteryByKey(Integer.parseInt(testbattery)).getTestbattery();
+
+            testBatteryService.createTestBatteryContent(factoryTestBatteryContent.create(null, test, testcase, testBatteryName));
+            String newTestBatteryContentId = String.valueOf(
+                    testBatteryService.findTestBatteryContentsByCriteria(null, testBatteryName, test, testcase)
+                    .get(0).getTestbatterycontentID()
+            );
+            response.getWriter().append(newTestBatteryContentId).close();
+        } catch (CerberusException ex) {
+            Logger.getLogger(AddTestBatteryContent.class.getName()).log(Level.SEVERE, null, ex);
+            response.getWriter().append("-1").close();
+        }
     }
 }

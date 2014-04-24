@@ -64,7 +64,7 @@ public class GetTestBattery extends HttpServlet {
                 if (action != null && "findAllTestBattery".equals(action.trim())) {
                     jsonResponse.put("TestBatteries", findAllTestBatteryToJSON());
                 } else if (action != null && "findAllTestBatteryContent".equals(action.trim())) {
-                    jsonResponse.put("TestBatteryContents", findAllTestBatteryContentToJSON(testBattery));
+                    jsonResponse.put("TestBatteryContents", findAllTestBatteryContentToJSON(testBatteryService.findTestBatteryByKey(Integer.parseInt(testBattery)).getTestbattery()));
                 }
             } catch (CerberusException ex) {
                 response.setContentType("text/html");

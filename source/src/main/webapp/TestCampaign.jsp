@@ -141,7 +141,7 @@
                     oAddNewRowFormOptions: {
                         title: 'Add Campaign Entry',
                         show: "blind",
-                        hide: "explode",
+                        hide: "blind",
                         width: "700px"
                     },
                     sDeleteHttpMethod: "POST",
@@ -227,7 +227,7 @@
                         oAddNewRowFormOptions: {
                             title: 'Add Parameter',
                             show: "blind",
-                            hide: "explode",
+                            hide: "blind",
                             width: "700px"
                         },
                         sDeleteHttpMethod: "POST",
@@ -298,14 +298,14 @@
 
                         sAddHttpMethod: "POST",
                         oAddNewRowButtonOptions: {
-                            label: "<b>Create Content</b>",
+                            label: "<b>Add Content</b>",
                             background: "#AAAAAA",
                             icons: {primary: 'ui-icon-plus'}
                         },
                         oAddNewRowFormOptions: {
                             title: 'Add Content',
                             show: "blind",
-                            hide: "explode",
+                            hide: "blind",
                             width: "700px"
                         },
                         sDeleteHttpMethod: "POST",
@@ -337,6 +337,19 @@
             
             $(document).ready(function(){
                 refreshCampaigns();
+                
+                $.get("GetTestBattery", "action=findAllTestBattery", function(data) {
+                    var index, testbattery;
+                    var select = $("#TestBattery");
+                    for(index=0; index<data.TestBatteries.length; index++) {
+                        testbattery = data.TestBatteries[index];
+                        console.log(testbattery);
+                        select.append(
+                                $("<option></option>").attr('value', testbattery[1])
+                                .text(testbattery[1] + " - "+testbattery[2])
+                            );
+                    }
+                });
             });
         </script>
             <form id="formAddNewCampaign" class="formForDataTable" action="#" title="Add Campaign Entry" style="width:600px" method="post">
@@ -362,7 +375,7 @@
                 <input type="hidden" value="-1" id="CampaignIdForContent" name="Campaign" class="ncdetailstext" rel="1">
                 <br><br>
                 <label for="TestBattery" style="font-weight:bold">TestBattery</label>
-                <input id="TestBattery" name="TestBattery" class="ncdetailstext" rel="2" >
+                <select id="TestBattery" name="TestBattery" class="ncdetailstext" rel="2" ></select>
             </form>
      </body>
 </html>

@@ -230,16 +230,16 @@ public class TestBatteryDAO implements ITestBatteryDAO {
     @Override
     public List<TestBattery> findTestBatteryByCriteria(Integer testBatteryID, String testBattery, String Description) throws CerberusException {
         boolean throwEx = false;
-        final StringBuffer query = new StringBuffer("SELECT * FROM testbattery t WHERE ");
+        final StringBuffer query = new StringBuffer("SELECT * FROM testbattery t WHERE 1=1");
 
         if (testBatteryID != null) {
-            query.append(" t.testBatteryID = ?");
+            query.append(" AND t.testBatteryID = ?");
         }
         if (testBattery != null && !"".equals(testBattery.trim())) {
-            query.append(" t.testBattery LIKE ?");
+            query.append(" AND t.testBattery LIKE ?");
         }
         if (Description != null && !"".equals(Description.trim())) {
-            query.append(" t.Description LIKE ?");
+            query.append(" AND t.Description LIKE ?");
         }
 
         List<TestBattery> testBatteriesList = new ArrayList<TestBattery>();
