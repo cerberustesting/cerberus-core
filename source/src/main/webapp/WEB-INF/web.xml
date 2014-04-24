@@ -576,10 +576,6 @@
         <url-pattern>/DuplicateTestCase</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>UpdateTestCase1</servlet-name>
-        <url-pattern>/UpdateTestCase1</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
         <servlet-name>UpdateTestCase</servlet-name>
         <url-pattern>/UpdateTestCase</url-pattern>
     </servlet-mapping>
@@ -974,7 +970,6 @@
             <web-resource-name>servlet</web-resource-name>
             <description>servlet</description>
             <url-pattern>/AddTest</url-pattern>
-            <url-pattern>/UpdateTestCase1</url-pattern>
             <url-pattern>/UpdateTest</url-pattern>
             <url-pattern>/DuplicateTestCase</url-pattern>
             <url-pattern>/UpdateTestCase</url-pattern>
