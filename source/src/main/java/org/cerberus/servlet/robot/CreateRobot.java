@@ -14,13 +14,16 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Level;
 import org.cerberus.entity.InvariantRobot;
+import org.cerberus.entity.Robot;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.factory.IFactoryLogEvent;
 import org.cerberus.factory.IFactoryInvariantRobot;
+import org.cerberus.factory.IFactoryRobot;
 import org.cerberus.factory.impl.FactoryLogEvent;
 import org.cerberus.log.MyLogger;
 import org.cerberus.service.IInvariantRobotService;
 import org.cerberus.service.ILogEventService;
+import org.cerberus.service.IRobotService;
 import org.cerberus.service.impl.LogEventService;
 import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;
@@ -31,7 +34,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  *
  * @author bcivel
  */
-public class CreateInvariantRobot extends HttpServlet {
+public class CreateRobot extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -49,17 +52,21 @@ public class CreateInvariantRobot extends HttpServlet {
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
         
         try {
+        String name = policy.sanitize(request.getParameter("Name"));
+        String ip = policy.sanitize(request.getParameter("Ip"));
+        String port = policy.sanitize(request.getParameter("Port"));
+        String description = policy.sanitize(request.getParameter("Description"));
         String platform = policy.sanitize(request.getParameter("Platform"));
         String browser = policy.sanitize(request.getParameter("Browser"));
         String version = policy.sanitize(request.getParameter("Version"));
         String os = policy.sanitize(request.getParameter("Os"));
         
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-        IInvariantRobotService robotService = appContext.getBean(IInvariantRobotService.class);
-        IFactoryInvariantRobot factoryInvariantRobot = appContext.getBean(IFactoryInvariantRobot.class);
+        IRobotService robotService = appContext.getBean(IRobotService.class);
+        IFactoryRobot factoryRobot = appContext.getBean(IFactoryRobot.class);
         
-        InvariantRobot robot = factoryInvariantRobot.create(0, platform, os, browser, version);
-        robotService.createInvariantRobot(robot);
+        Robot robot = factoryRobot.create(0, name, ip, Integer.valueOf(port), platform, os, browser, version, description);
+        robotService.createRobot(robot);
             /**
              * Adding Log entry.
              */
@@ -68,7 +75,7 @@ public class CreateInvariantRobot extends HttpServlet {
             try {
                 logEventService.insertLogEvent(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/CreateRobot", "CREATE", "Create Robot : " + platform + "/"+browser+"/"+version, "", ""));
             } catch (CerberusException ex) {
-                MyLogger.log(CreateInvariantRobot.class.getName(), Level.ERROR, ex.toString());
+                MyLogger.log(CreateRobot.class.getName(), Level.ERROR, ex.toString());
             }
 
         response.sendRedirect("Robot.jsp");
@@ -92,7 +99,7 @@ public class CreateInvariantRobot extends HttpServlet {
         try {
             processRequest(request, response);
         } catch (CerberusException ex) {
-       MyLogger.log(CreateInvariantRobot.class.getName(), Level.FATAL, ex.toString());
+       MyLogger.log(CreateRobot.class.getName(), Level.FATAL, ex.toString());
         }
     }
 
@@ -110,7 +117,7 @@ public class CreateInvariantRobot extends HttpServlet {
         try {
             processRequest(request, response);
         } catch (CerberusException ex) {
-            MyLogger.log(CreateInvariantRobot.class.getName(), Level.FATAL, ex.toString());
+            MyLogger.log(CreateRobot.class.getName(), Level.FATAL, ex.toString());
         }
     }
 

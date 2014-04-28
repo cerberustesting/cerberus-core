@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.cerberus.servlet.robot;
+package org.cerberus.servlet.invariantRobot;
 
 import java.io.IOException;
 import java.io.PrintWriter;
