@@ -152,8 +152,8 @@
         </div>
         <div>
             <form id="formAddNewRow" action="#" title="Add SQL Data" style="width:350px" method="post">
-                <label for="Name" style="font-weight:bold">ID</label>
-                <input id="Name" name="Name" style="width:350px;" 
+                <label for="ID" style="font-weight:bold">ID</label>
+                <input id="ID" name="ID" style="width:350px;" 
                        class="ncdetailstext" rel="0" >
                 <label for="Name" style="font-weight:bold">Name</label>
                 <input id="Name" name="Name" style="width:350px;" 

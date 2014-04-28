@@ -19,6 +19,8 @@
 --%>
 <%@page import="org.cerberus.entity.Robot"%>
 <%@page import="org.cerberus.service.IRobotService"%>
+<%@page import="org.cerberus.service.IInvariantRobotService"%>
+<%@page import="org.cerberus.entity.InvariantRobot"%>
 <%@page import="java.util.Enumeration"%>
 <%@page import="org.apache.log4j.Level"%>
 <%@page import="org.apache.commons.lang3.StringUtils"%>
@@ -56,7 +58,8 @@
                     Connection conn = null;
                     IDocumentationService docService = appContext.getBean(IDocumentationService.class);
                     IUserService userService = appContext.getBean(IUserService.class);
-                    IRobotService robotService = appContext.getBean(IRobotService.class);
+                    IInvariantRobotService robotService = appContext.getBean(IInvariantRobotService.class);
+                    IRobotService robService = appContext.getBean(IRobotService.class);
 
                     try {
 
@@ -67,12 +70,12 @@
                         User usr = userService.findUserByKey(request.getUserPrincipal().getName());
 
                         if (StringUtils.isNotBlank(request.getParameter("DefaultIP"))) {
-                                usr.setDefaultIP(request.getParameter("ss_ip"));
-                                usr.setPreferenceRobotPort(Integer.valueOf(request.getParameter("ss_p")));
-                                usr.setPreferenceRobotPlatform(request.getParameter("platform"));
-                                usr.setPreferenceRobotOS(request.getParameter("os"));
-                                usr.setPreferenceRobotBrowser(request.getParameter("browser"));
-                                usr.setPreferenceRobotVersion(request.getParameter("version"));
+                                usr.setDefaultIP(request.getParameter("ss_ip") == null ? "" : request.getParameter("ss_ip"));
+                                usr.setPreferenceRobotPort(Integer.valueOf(request.getParameter("ss_p")) == 0 ? 0 : Integer.valueOf(request.getParameter("ss_p")));
+                                usr.setPreferenceRobotPlatform(request.getParameter("platform") == null ? "" : request.getParameter("platform"));
+                                usr.setPreferenceRobotOS(request.getParameter("os") == null ? "" : request.getParameter("os"));
+                                usr.setPreferenceRobotBrowser(request.getParameter("browser") == null ? "" : request.getParameter("browser"));
+                                usr.setPreferenceRobotVersion(request.getParameter("version") == null ? "" : request.getParameter("version"));
                                 userService.updateUser(usr);
                             }
 
@@ -119,6 +122,14 @@
                             ssPort = request.getParameter("ss_p");
                         } else {
                             ssPort = String.valueOf(usr.getPreferenceRobotPort());
+                        }
+                        
+                        String robot;
+                        if (request.getParameter(
+                                "robot") != null && request.getParameter("robot").compareTo("") != 0) {
+                            robot = request.getParameter("robot");
+                        } else {
+                            robot = String.valueOf(usr.getPreferenceRobotPort());
                         }
                         
                         String browser = "";
@@ -243,6 +254,9 @@
                         } catch (Exception ex) {
                             MyLogger.log("RunTests.jsp", Level.FATAL, " Exception catched : " + ex);
                         }
+                        
+                        List<Robot> robots = robService.findAllRobot();
+                        
 
                 %>
                 <div class="filters" style="clear:both; width:100%">
@@ -387,9 +401,10 @@
                 <div class="filters" style="float:left; width:49%;height:180px">
                     <div style="clear:both">
                         <p style="float:left;" class="dttTitle">Choose Robot</p>
-                        <!--<div style="float:left; text-align: left"></div><input type="radio" name="manualRobot" value="Y" onclick="switchDivVisibleInvisible('manualRobotDiv', 'automatedRobotDiv')" checked>Manual-->
-<!--                        <div style="float:left"><input type="radio" name="autoRobot" value="N" onclick="switchDivVisibleInvisible('automatedRobotDiv', 'manualRobotDiv')">Automatic</div>-->
+                        <div style="float:left; text-align: left"><input type="radio" name="manualRobot" value="Y" onclick="switchDivVisibleInvisible('manualRobotDiv', 'automatedRobotDiv')" checked>Manual</div>
+                        <div style="float:left"><input type="radio" name="manualRobot" value="N" onclick="switchDivVisibleInvisible('automatedRobotDiv', 'manualRobotDiv')">Automatic</div>
                     </div>
+                    <div id="manualRobotDiv">
                     <div style="clear:both">
                         <div style="float:left; width:150px; text-align:left"><% out.print(docService.findLabelHTML("page_runtests", "SeleniumServerIP", "Selenium Server IP "));%></div>
                         <div style="float:left">
@@ -450,6 +465,20 @@
                                 <%
                                     }
                                 %></select></div></div>
+                    </div>
+                    <div id="automatedRobotDiv" style="display:none">
+                        <div style="float:left"><select id="robot" name="robot" style="width: 150px;" class="<%=versionClass%>">
+                                <%
+                                    for (Robot rob : robots) {
+
+                                %><option style="width: 150px;" <% if (robot.equalsIgnoreCase(rob.getName())) {
+                                        %>selected="selected"
+                                   <% }
+                                        %> value="<%=rob.getName()%>"> <%=rob.getName()+"/"+rob.getIp()+":"+rob.getPort()%> </option>
+                                <%
+                                    }
+                                %></select></div>
+                </div>
                     <div style="clear:both">
                         <input id="button" class="button" type="submit" <%=enable%> name="DefaultIP" value="Record my Robot Preferences" >
                     </div>
@@ -550,7 +579,7 @@
                 var f = document.getElementById(field);
                 var fieldSelected = f.options[f.selectedIndex].value;
                 
-                $.getJSON('GetDistinctRobotValues?field=' + field + '&platformSelected=' + platformSelected + '&browserSelected=' + browserSelected + '&versionSelected=' + versionSelected, function(data) {
+                $.getJSON('GetDistinctInvariantRobotValues?field=' + field + '&platformSelected=' + platformSelected + '&browserSelected=' + browserSelected + '&versionSelected=' + versionSelected, function(data) {
                     $("#" + field).empty();
                     $("#" + field).append($("<option></option>")
                             .attr("value", "")
