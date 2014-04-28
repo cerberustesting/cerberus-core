@@ -41,6 +41,6 @@ public interface IPropertyService {
     
     String decodeValue(String myString, List<TestCaseExecutionData> properties, TestCaseExecution tCExecution);
 
-    String calculatePropertyFromSOAPResponse(final String envelope, final String servicePath, final String parsingAnswer, final String method) throws CerberusException;
+    String calculatePropertyFromSOAPResponse(final String envelope, final String servicePath, final String parsingAnswer, final String method, String nature) throws CerberusException;
 
 }

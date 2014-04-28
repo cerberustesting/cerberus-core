@@ -27,6 +27,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Random;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -102,12 +104,22 @@ public class PropertyService implements IPropertyService {
     private ITestCaseExecutionService testCaseExecutionService;
     @Autowired
     private ITestDataService testDataService;
+    
+    /** Pattern de recherche du String parsingAnswer - permet de modifier au besoin une règle de parsing */
+    private static final Pattern pat = Pattern.compile("(Row\\[\\d{1,9}])");
 
     /** Format de date nécessaire pour interroger les Web services REDOUTE - le timeZone +01:00 est en dur car en java 6 le format par défaut est +0100 */
-    //private static SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS+01:00");
-    
     private static final String SOAP_TIMESTAMP_PATTERN = "yyyy-MM-dd'T'HH:mm:ss.SSS+01:00";
-
+    
+     // XPATH pour déterminer le nombre de résultat retourné par la requête SOAP
+    private static final String XPATH_RULE_COUNT = "count(/Envelope/Body/ExecuteSQLRequestResponse_1.0/Response/Row)";
+    
+    // Builder qui va servir à parser les réponses SOAP 
+    //private final DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
+    //private final DocumentBuilder builder = builderFactory.newDocumentBuilder();	
+    // private DocumentBuilderFactory builderFactory;
+    // private DocumentBuilder builder;
+            
     @Override
     public TestCaseExecutionData calculateProperty(TestCaseExecutionData testCaseExecutionData, TestCaseStepActionExecution testCaseStepActionExecution, TestCaseCountryProperties testCaseCountryProperty) {
         testCaseExecutionData.setStart(new Date().getTime());
@@ -139,8 +151,9 @@ public class PropertyService implements IPropertyService {
             testCaseExecutionData = this.calculateOnDatabase(testCaseExecutionData, testCaseCountryProperty, tCExecution);
 
         } else if (testCaseCountryProperty.getType().equals("text")) {
-            if ((testCaseCountryProperty.getNature().equals("RANDOM"))
-                    || (testCaseCountryProperty.getNature().equals("RANDOM_NEW"))) {
+            if (Property.NATURE_RANDOM.equals(testCaseCountryProperty.getNature())
+                    //TODO CTE Voir avec B. Civel "RANDOM_NEW"
+                    || (testCaseCountryProperty.getNature().equals(Property.NATURE_RANDOMNEW))) {
                 if (testCaseCountryProperty.getLength() == 0) {
                     res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_TEXTRANDOMLENGHT0);
                     testCaseExecutionData.setPropertyResultMessage(res);
@@ -257,7 +270,7 @@ public class PropertyService implements IPropertyService {
             {
                 SoapLibrary soapLib = this.soapLibraryService.findSoapLibraryByKey(testCaseCountryProperty.getValue1());
                 if (soapLib != null) {
-                     String result = calculatePropertyFromSOAPResponse(soapLib.getEnvelope(), soapLib.getServicePath(), soapLib.getParsingAnswer(), soapLib.getMethod());
+                     String result = calculatePropertyFromSOAPResponse(soapLib.getEnvelope(), soapLib.getServicePath(), soapLib.getParsingAnswer(), soapLib.getMethod(), testCaseCountryProperty.getNature());
                      if(result != null) {
                          testCaseExecutionData.setValue(result);
                          testCaseExecutionData.setPropertyResultMessage(new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_SOAP));
@@ -501,9 +514,16 @@ public class PropertyService implements IPropertyService {
     
     /**
      * Calcule d'une propriété depuis une requête SOAP.
+     * @param envelope 
+     * @param servicePath
+     * @param parsingAnswer
+     * @param method
+     * @param nature Nature de la propriété à calculé STATIC/RANDOM
+     * @thorw CerberusException
+     * @return String
      */
     @Override
-    public String calculatePropertyFromSOAPResponse(final String envelope, final String servicePath, final String parsingAnswer, final String method) throws CerberusException {
+    public String calculatePropertyFromSOAPResponse(final String envelope, final String servicePath, final String parsingAnswer, final String method, final String nature) throws CerberusException {
         String result = null;
         // Test des inputs nécessaires.
         if(envelope != null && servicePath != null && parsingAnswer != null && method != null) {
@@ -521,8 +541,8 @@ public class PropertyService implements IPropertyService {
                 // Appel du WS
                 SOAPMessage soapResponse = soapConnection.call(input, servicePath);
 
-                // Traitement de la r the SOAP Response
-                result = parseSOAPResponse(soapResponse, parsingAnswer);
+                // Traitement de la réponse SOAP à l'aide d'une expression Xpath stockée en BDD
+                result = parseSOAPResponse(soapResponse, parsingAnswer, nature);
 
                 soapConnection.close();
             
@@ -551,27 +571,61 @@ public class PropertyService implements IPropertyService {
      * Parse la réponse de la requête SOAP en fonction de la règle XPATH (rule).
      * @param soapResponse Réponse de la requête SOAP
      * @param rule règle de parsing XPATH (table SOAPLIBRARY.PARSINGANSWER)
+     * @param nature si STATIC on prend le premier résultat si RANDOM_NEW on prend une valeur au hasard dans la liste de retour
      * @return String
      */
-    private String parseSOAPResponse(final SOAPMessage soapResponse, final String rule)
+    private String parseSOAPResponse(final SOAPMessage soapResponse, final String rule, String nature)
     {
 	String result = null;
-        DocumentBuilderFactory builderFactory = DocumentBuilderFactory
-				.newInstance();
-	DocumentBuilder builder = null;
+        DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
+             
 	try {
-            builder = builderFactory.newDocumentBuilder();	
-	
+            DocumentBuilder builder = builderFactory.newDocumentBuilder();
+            
             ByteArrayOutputStream out = new ByteArrayOutputStream(); 
+            
             soapResponse.writeTo(out); 
+            
             InputStream is = new ByteArrayInputStream( out.toByteArray() ); 
+            
+            // Parse la réponse SOAP
             Document xmlDocument = builder.parse( is );
 
-            XPath xPath = XPathFactory.newInstance().newXPath();
-		
-            NodeList nodeList2 = (NodeList) xPath.compile(rule)
-					.evaluate(xmlDocument, XPathConstants.NODESET);
+            // La règle de parsing peut changer en fonction de la nature - init avec la règle passée en paramètre
+            String newRule = rule;
             
+            XPath xPath = XPathFactory.newInstance().newXPath();
+            
+            // La nature demande de changer la règle de parsing
+            if (nature != null && Property.NATURE_RANDOM.equals(nature))
+            {
+                Double count = 0.0;            
+            
+                 try {
+                    // Détermine le nombre de résultat retourné par la requete SOAP
+                    count = (Double)xPath.compile(XPATH_RULE_COUNT). evaluate(xmlDocument, XPathConstants.NUMBER);
+                    // On obtient un double (XPathConstants.NUMBER) alors que nous avons besoin d'un int - on garde la partie entière seule
+                    int index = count.intValue();
+
+                    // on parse la règle issue de la BDD pour remplacer la valeur de l'indice Row[1]
+                    Matcher mat = pat.matcher(rule);
+
+                    while(mat.find())
+                    {
+                        // Détermine un nombre entre 1 et index qui est le nombre total de résultat de la requête SOAP
+                        int randomNum = new Random().nextInt(index) + 1;
+                        // Détermine la nouvelle règle de parsing de la réponse
+                        newRule = mat.replaceAll("Row["+randomNum+"]");
+                        break;
+                    }
+                } catch (XPathExpressionException e) {
+                    MyLogger.log(PropertyService.class.getName(), Level.ERROR, e.toString());
+                }
+            }           
+            
+            NodeList nodeList2 = (NodeList) xPath.compile(newRule)
+					.evaluate(xmlDocument, XPathConstants.NODESET);
+                   
             StringBuilder s = new StringBuilder();
             for (int i = 0; i < nodeList2.getLength(); i++) {
                 // On retourne le premier noeud non null trouvé 
@@ -582,7 +636,7 @@ public class PropertyService implements IPropertyService {
                 }
             }
             result = s.toString();
-        } catch (SOAPException e){
+        } catch (SOAPException e) {
             MyLogger.log(PropertyService.class.getName(), Level.ERROR, e.toString());
         } catch (SAXParseException e) {
             MyLogger.log(PropertyService.class.getName(), Level.ERROR, e.toString());
@@ -594,8 +648,7 @@ public class PropertyService implements IPropertyService {
             MyLogger.log(PropertyService.class.getName(), Level.ERROR, e.toString());
         } catch (ParserConfigurationException e) {
             MyLogger.log(PropertyService.class.getName(), Level.ERROR, e.toString());
-	}
-		
+        } 
         return result;
     }
 
@@ -609,7 +662,7 @@ public class PropertyService implements IPropertyService {
      * @throws SAXException
      * @throws ParserConfigurationException 
      */
-    private static  SOAPMessage createSOAPRequest(final String pBody, final String method) throws SOAPException, IOException, SAXException, ParserConfigurationException {
+    private SOAPMessage createSOAPRequest(final String pBody, final String method) throws SOAPException, IOException, SAXException, ParserConfigurationException {
 
         MessageFactory messageFactory = MessageFactory.newInstance();
 
@@ -627,19 +680,18 @@ public class PropertyService implements IPropertyService {
         // convert String into InputStream
 	InputStream is = new ByteArrayInputStream(HtmlUtils.htmlUnescape(pBody).getBytes());
         
-        Document document = null;
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
+        // Important à laisser sinon KO
+        builderFactory.setNamespaceAware(true);
+        try {
+            DocumentBuilder builder = builderFactory.newDocumentBuilder();
         
-        factory.setNamespaceAware(true);
+            Document document = builder.parse(is);
         
-        DocumentBuilder builder;
-           
-        builder = factory.newDocumentBuilder();
-
-        document = builder.parse(is);
-            
-        soapBody.addDocument(document);
-	
+            soapBody.addDocument(document);
+	} catch (ParserConfigurationException e) {
+            MyLogger.log(PropertyService.class.getName(), Level.ERROR, e.toString());
+        }
 	soapMessage.saveChanges();
        
 	return soapMessage;
