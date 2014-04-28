@@ -20,14 +20,13 @@
 package org.cerberus.servlet.robot;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Level;
 import org.cerberus.log.MyLogger;
-import org.cerberus.service.IRobotService;
+import org.cerberus.service.IInvariantRobotService;
 import org.cerberus.util.ParameterParserUtil;
 import org.json.JSONArray;
 import org.owasp.html.PolicyFactory;
@@ -39,7 +38,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  *
  * @author bcivel
  */
-public class GetDistinctRobotValues extends HttpServlet {
+public class GetDistinctInvariantRobotValues extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -63,7 +62,7 @@ public class GetDistinctRobotValues extends HttpServlet {
         versionSelected = ParameterParserUtil.parseStringParam(versionSelected,"");
         
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-        IRobotService robotService = appContext.getBean(IRobotService.class);
+        IInvariantRobotService robotService = appContext.getBean(IInvariantRobotService.class);
         
             
         try {
@@ -80,7 +79,7 @@ public class GetDistinctRobotValues extends HttpServlet {
             response.setContentType("application/json");
             response.getWriter().print(valueList.toString());
         } catch (Exception e) {
-            MyLogger.log(GetDistinctRobotValues.class.getName(), Level.FATAL, "" + e);
+            MyLogger.log(GetDistinctInvariantRobotValues.class.getName(), Level.FATAL, "" + e);
             response.setContentType("text/html");
             response.getWriter().print(e.getMessage());
         }

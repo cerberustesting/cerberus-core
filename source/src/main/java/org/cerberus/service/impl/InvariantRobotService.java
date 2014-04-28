@@ -24,10 +24,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import org.cerberus.dao.IProjectDAO;
-import org.cerberus.dao.IRobotDAO;
-import org.cerberus.entity.Robot;
+import org.cerberus.dao.IInvariantRobotDAO;
+import org.cerberus.entity.InvariantRobot;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.service.IRobotService;
+import org.cerberus.service.IInvariantRobotService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -36,53 +36,53 @@ import org.springframework.stereotype.Service;
  * @author bcivel
  */
 @Service
-public class RobotService implements IRobotService {
+public class InvariantRobotService implements IInvariantRobotService {
 
     @Autowired
-    private IRobotDAO robotDao;
+    private IInvariantRobotDAO robotDao;
 
     @Override
-    public Robot findRobotByKey(Integer id) throws CerberusException {
-        return robotDao.findRobotByKey(id);
+    public InvariantRobot findInvariantRobotByKey(Integer id) throws CerberusException {
+        return robotDao.findInvariantRobotByKey(id);
     }
 
     @Override
-    public List<Robot> findAllRobot() throws CerberusException {
-        return robotDao.findAllRobot();
+    public List<InvariantRobot> findAllInvariantRobot() throws CerberusException {
+        return robotDao.findAllInvariantRobot();
     }
 
     @Override
-    public void updateRobot(Robot robot) throws CerberusException {
-        robotDao.updateRobot(robot);
+    public void updateInvariantRobot(InvariantRobot robot) throws CerberusException {
+        robotDao.updateInvariantRobot(robot);
     }
 
     @Override
-    public void createRobot(Robot robot) throws CerberusException {
-        robotDao.createRobot(robot);
+    public void createInvariantRobot(InvariantRobot robot) throws CerberusException {
+        robotDao.createInvariantRobot(robot);
     }
 
     @Override
-    public void deleteRobot(Robot robot) throws CerberusException {
-        robotDao.deleteRobot(robot);
+    public void deleteInvariantRobot(InvariantRobot robot) throws CerberusException {
+        robotDao.deleteInvariantRobot(robot);
     }
 
     @Override
-    public List<Robot> findRobotListByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
-        return robotDao.findRobotListByCriteria(start, amount, column, dir, searchTerm, individualSearch);
+    public List<InvariantRobot> findInvariantRobotListByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
+        return robotDao.findInvariantRobotListByCriteria(start, amount, column, dir, searchTerm, individualSearch);
     }
 
     @Override
-    public Integer getNumberOfRobotPerCriteria(String searchTerm, String inds) {
-        return robotDao.getNumberOfRobotPerCriteria(searchTerm, inds);
+    public Integer getNumberOfInvariantRobotPerCriteria(String searchTerm, String inds) {
+        return robotDao.getNumberOfInvariantRobotPerCriteria(searchTerm, inds);
     }
 
     @Override
     public List<String> getDistinctValues(String columnName, String PlatformChosen,
             String BrowserChosen, String VersionChosen) throws CerberusException {
-        List<Robot> robots = this.findAllRobot();
+        List<InvariantRobot> robots = this.findAllInvariantRobot();
         List<String> result = new ArrayList();
-        for (Robot robot : robots) {
-            if (columnName.equals("Platform")) {
+        for (InvariantRobot robot : robots) {
+            if (columnName.equals("platform")) {
                 if (robot.getBrowser().equals(BrowserChosen)
                         && robot.getVersion().equals(VersionChosen)) {
                     result.add(robot.getPlatform());
@@ -97,7 +97,7 @@ public class RobotService implements IRobotService {
                     result.add(robot.getPlatform());
                 }
             }
-            if (columnName.equals("Browser")) {
+            if (columnName.equals("browser")) {
                 if (robot.getVersion().equals(VersionChosen)
                         && robot.getPlatform().equals(PlatformChosen)) {
                     result.add(robot.getBrowser());
@@ -112,7 +112,7 @@ public class RobotService implements IRobotService {
                     result.add(robot.getBrowser());
                 }
             }
-            if (columnName.equals("Version")) {
+            if (columnName.equals("version")) {
                 if (robot.getBrowser().equals(BrowserChosen)
                         && robot.getPlatform().equals(PlatformChosen)) {
                     result.add(robot.getVersion());

@@ -19,21 +19,22 @@
  */
 package org.cerberus.factory;
 
-import org.cerberus.entity.Robot;
+import org.cerberus.entity.InvariantRobot;
 
 /**
  * @author bcivel
  */
-public interface IFactoryRobot {
+public interface IFactoryInvariantRobot {
 
     /**
-     * @param id  ID of the robot.
-     * @param platform  Description of the Application.
+     * @param id  ID of the InvariantRobot.
+     * @param platform
+     * @param os
      * @param browser
      * @param version
      * @return
      */
-    Robot create(Integer id, String platform, String browser, String version);
+    InvariantRobot create(Integer id, String platform, String os, String browser, String version);
 
 
 }

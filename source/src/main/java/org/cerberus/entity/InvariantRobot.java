@@ -23,49 +23,13 @@ package org.cerberus.entity;
  *
  * @author bcivel
  */
-public class Robot {
-
+public class InvariantRobot {
+    
     Integer id;
-    String name;
-    String ip;
-    Integer port;
     String platform;
     String os;
     String browser;
     String version;
-    String description;
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getIp() {
-        return ip;
-    }
-
-    public void setIp(String ip) {
-        this.ip = ip;
-    }
-
-    public Integer getPort() {
-        return port;
-    }
-
-    public void setPort(Integer port) {
-        this.port = port;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
 
     public String getOs() {
         return os;
@@ -75,6 +39,7 @@ public class Robot {
         this.os = os;
     }
 
+    
     public Integer getId() {
         return id;
     }
@@ -106,5 +71,6 @@ public class Robot {
     public void setVersion(String version) {
         this.version = version;
     }
-
+    
+    
 }

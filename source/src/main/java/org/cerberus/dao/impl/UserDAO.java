@@ -217,11 +217,15 @@ public class UserDAO implements IUserDAO {
     @Override
     public boolean updateUser(User user) {
         boolean bool = false;
-        final String query = "UPDATE user SET Login = ?, Name = ?, Request = ?, ReportingFavorite = ?, DefaultIP = ?, Team = ?, DefaultSystem = ?, Email= ?  WHERE userid = ?";
+        StringBuilder query = new StringBuilder();
+        query.append("UPDATE user SET Login = ?, Name = ?, Request = ?, ReportingFavorite = ?, DefaultIP = ?,");
+        query.append("Team = ?, DefaultSystem = ?, Email= ? , preferenceRobotPort = ?, ");
+        query.append("preferenceRobotPlatform = ?, preferenceRobotOS = ?, ");
+        query.append("preferenceRobotBrowser = ?, preferenceRobotVersion = ?  WHERE userid = ?");
 
         Connection connection = this.databaseSpring.connect();
         try {
-            PreparedStatement preStat = connection.prepareStatement(query);
+            PreparedStatement preStat = connection.prepareStatement(query.toString());
             try {
                 preStat.setString(1, user.getLogin());
                 preStat.setString(2, user.getName());
@@ -231,7 +235,12 @@ public class UserDAO implements IUserDAO {
                 preStat.setString(6, user.getTeam());
                 preStat.setString(7, user.getDefaultSystem());
                 preStat.setString(8, user.getEmail());
-                preStat.setInt(9, user.getUserID());
+                preStat.setString(9, String.valueOf(user.getPreferenceRobotPort()));
+                preStat.setString(10, user.getPreferenceRobotPlatform());
+                preStat.setString(11, user.getPreferenceRobotOS());
+                preStat.setString(12, user.getPreferenceRobotBrowser());
+                preStat.setString(13, user.getPreferenceRobotVersion());
+                preStat.setInt(14, user.getUserID());
 
                 bool = preStat.executeUpdate() > 0;
             } catch (SQLException exception) {
@@ -344,8 +353,13 @@ public class UserDAO implements IUserDAO {
         String defaultIP = ParameterParserUtil.parseStringParam(rs.getString("defaultIP"), "");
         String defaultSystem = ParameterParserUtil.parseStringParam(rs.getString("defaultSystem"), "");
         String email = ParameterParserUtil.parseStringParam(rs.getString("email"), "");
+        Integer preferenceRobotPort = ParameterParserUtil.parseIntegerParam(rs.getString("preferenceRobotPort"), 0); 
+        String preferenceRobotPlatform = ParameterParserUtil.parseStringParam(rs.getString("preferenceRobotPlatform"), ""); 
+        String preferenceRobotOS = ParameterParserUtil.parseStringParam(rs.getString("preferenceRobotOS"), ""); 
+        String preferenceRobotBrowser = ParameterParserUtil.parseStringParam(rs.getString("preferenceRobotBrowser"), "");
+        String preferenceRobotVersion = ParameterParserUtil.parseStringParam(rs.getString("preferenceRobotVersion"), "");
         //TODO remove when working in test with mockito and autowired
         factoryUser = new FactoryUser();
-        return factoryUser.create(userID, login, password, request, name, team, reportingFavorite, defaultIP, defaultSystem, email);
+        return factoryUser.create(userID, login, password, request, name, team, reportingFavorite, defaultIP, preferenceRobotPort, preferenceRobotPlatform, preferenceRobotOS, preferenceRobotBrowser, preferenceRobotVersion, defaultSystem, email);
     }
 }

@@ -14,11 +14,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Level;
-import org.cerberus.entity.Robot;
-import org.cerberus.entity.SqlLibrary;
+import org.cerberus.entity.InvariantRobot;
 import org.cerberus.log.MyLogger;
-import org.cerberus.service.IRobotService;
-import org.cerberus.service.ISqlLibraryService;
+import org.cerberus.service.IInvariantRobotService;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -31,7 +29,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  *
  * @author bcivel
  */
-public class FindAllRobot extends HttpServlet {
+public class FindAllInvariantRobot extends HttpServlet {
 
     /**
      * Processes requests for both HTTP
@@ -56,7 +54,7 @@ public class FindAllRobot extends HttpServlet {
             String sCol = policy.sanitize(request.getParameter("iSortCol_0"));
             String sdir = policy.sanitize(request.getParameter("sSortDir_0"));
             String dir = "asc";
-            String[] cols = {"Platform", "Browser", "Version"};
+            String[] cols = {"Platform", "Os", "Browser", "Version"};
 
             int amount = 10;
             int start = 0;
@@ -65,15 +63,21 @@ public class FindAllRobot extends HttpServlet {
             String platform = "";
             String browser = "";
             String version = "";
+            String os = "";
             
             platform = policy.sanitize(request.getParameter("sSearch_1"));
-            browser = policy.sanitize(request.getParameter("sSearch_2"));
-            version = policy.sanitize(request.getParameter("sSearch_3"));
+            os = policy.sanitize(request.getParameter("sSearch_2"));
+            browser = policy.sanitize(request.getParameter("sSearch_3"));
+            version = policy.sanitize(request.getParameter("sSearch_4"));
             
             List<String> sArray = new ArrayList<String>();
             if (!platform.equals("")) {
                 String sPlatform = " `platform` like '%" + platform + "%'";
                 sArray.add(sPlatform);
+            }
+            if (!os.equals("")) {
+                String sOs = " `os` like '%" + os + "%'";
+                sArray.add(sOs);
             }
             if (!browser.equals("")) {
                 String sBrowser = " `browser` like '%" + browser + "%'";
@@ -132,24 +136,25 @@ public class FindAllRobot extends HttpServlet {
             JSONArray data = new JSONArray(); //data that will be shown in the table
 
             ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-            IRobotService robotService = appContext.getBean(IRobotService.class);
+            IInvariantRobotService robotService = appContext.getBean(IInvariantRobotService.class);
 
-            List<Robot> robotList = robotService.findRobotListByCriteria(start, amount, colName, dir, searchTerm, inds);
+            List<InvariantRobot> robotList = robotService.findInvariantRobotListByCriteria(start, amount, colName, dir, searchTerm, inds);
 
             JSONObject jsonResponse = new JSONObject();
 
-            for (Robot robot : robotList) {
+            for (InvariantRobot robot : robotList) {
                 JSONArray row = new JSONArray();
                 row.put(robot.getId())
                         .put(robot.getPlatform())
+                        .put(robot.getOs())
                         .put(robot.getBrowser())
                         .put(robot.getVersion());
 
                 data.put(row);
             }
 
-            Integer iTotalRecords = robotService.getNumberOfRobotPerCriteria("", "");
-            Integer iTotalDisplayRecords = robotService.getNumberOfRobotPerCriteria(searchTerm, inds);
+            Integer iTotalRecords = robotService.getNumberOfInvariantRobotPerCriteria("", "");
+            Integer iTotalDisplayRecords = robotService.getNumberOfInvariantRobotPerCriteria(searchTerm, inds);
 
             jsonResponse.put("aaData", data);
             jsonResponse.put("sEcho", echo);
@@ -161,7 +166,7 @@ public class FindAllRobot extends HttpServlet {
             response.getWriter().print(jsonResponse.toString());
 
         } catch (JSONException ex) {
-            MyLogger.log(FindAllRobot.class.getName(), Level.FATAL, ex.toString());
+            MyLogger.log(FindAllInvariantRobot.class.getName(), Level.FATAL, ex.toString());
         } finally {
             out.close();
         }

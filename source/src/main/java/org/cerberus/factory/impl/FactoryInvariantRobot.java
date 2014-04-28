@@ -19,21 +19,22 @@
  */
 package org.cerberus.factory.impl;
 
-import org.cerberus.entity.Robot;
-import org.cerberus.factory.IFactoryRobot;
+import org.cerberus.entity.InvariantRobot;
+import org.cerberus.factory.IFactoryInvariantRobot;
 import org.springframework.stereotype.Service;
 
 /**
  * @author bcivel
  */
 @Service
-public class FactoryRobot implements IFactoryRobot {
+public class FactoryInvariantRobot implements IFactoryInvariantRobot {
 
     @Override
-    public Robot create(Integer id, String platform, String browser, String version) {
-        Robot newRobot = new Robot();
+    public InvariantRobot create(Integer id, String platform, String os, String browser, String version) {
+        InvariantRobot newRobot = new InvariantRobot();
         newRobot.setId(id);
         newRobot.setPlatform(platform);
+        newRobot.setOs(os);
         newRobot.setBrowser(browser);
         newRobot.setVersion(version);
         return newRobot;

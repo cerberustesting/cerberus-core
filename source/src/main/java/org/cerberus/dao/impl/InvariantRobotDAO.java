@@ -26,18 +26,14 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.log4j.Level;
-import org.cerberus.dao.IRobotDAO;
+import org.cerberus.dao.IInvariantRobotDAO;
 import org.cerberus.database.DatabaseSpring;
-import org.cerberus.entity.Application;
+import org.cerberus.entity.InvariantRobot;
 import org.cerberus.entity.MessageGeneral;
 import org.cerberus.entity.MessageGeneralEnum;
-import org.cerberus.entity.Robot;
-import org.cerberus.entity.SqlLibrary;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.factory.IFactoryApplication;
-import org.cerberus.factory.IFactoryRobot;
-import org.cerberus.factory.impl.FactoryApplication;
-import org.cerberus.factory.impl.FactoryRobot;
+import org.cerberus.factory.IFactoryInvariantRobot;
+import org.cerberus.factory.impl.FactoryInvariantRobot;
 import org.cerberus.log.MyLogger;
 import org.cerberus.util.ParameterParserUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,7 +45,7 @@ import org.springframework.stereotype.Repository;
  * @since 0.9.2
  */
 @Repository
-public class RobotDAO implements IRobotDAO{
+public class InvariantRobotDAO implements IInvariantRobotDAO{
 
     /**
      * Bean of the DatabaseSpring, Spring automatically links. Establishes
@@ -60,27 +56,27 @@ public class RobotDAO implements IRobotDAO{
     private DatabaseSpring databaseSpring;
     /**
      * Bean of the IFactoryRobot, Spring automatically links. Creates new
-     * objects {@link Robot}
+     * objects {@link InvariantRobot}
      */
     @Autowired
-    private IFactoryRobot factoryRobot;
+    private IFactoryInvariantRobot factoryInvariantRobot;
     
     /**
-     * Finds the Robot by the name. </p> Access to database to return the
-     * {@link Robot} given by the unique name.<br/> If no robot
+     * Finds the InvariantRobot by the name. </p> Access to database to return the
+     * {@link InvariantRobot} given by the unique name.<br/> If no InvariantRobot
      * found with the given name, returns CerberusException with
      * {@link MessageGeneralEnum#NO_DATA_FOUND}.<br/> If an SQLException occur,
-     * returns null in the robot object and writes the error on the logs.
+     * returns null in the InvariantRobot object and writes the error on the logs.
      *
-     * @param id id of the Robot to find
-     * @return object robot if exist
+     * @param id id of the InvariantRobot to find
+     * @return object InvariantRobot if exist
      * @throws CerberusException when Robot does not exist
      * @since 0.9.2
      */
     @Override
-    public Robot findRobotByKey(Integer id) throws CerberusException {
-       Robot result = null;
-        final String query = "SELECT * FROM robot a WHERE a.id = ? ";
+    public InvariantRobot findInvariantRobotByKey(Integer id) throws CerberusException {
+       InvariantRobot result = null;
+        final String query = "SELECT * FROM invariantrobot a WHERE a.id = ? ";
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -91,48 +87,48 @@ public class RobotDAO implements IRobotDAO{
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     if (resultSet.first()) {
-                        result = this.loadRobotFromResultSet(resultSet);
+                        result = this.loadInvariantRobotFromResultSet(resultSet);
                     } else {
                         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(RobotDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                    MyLogger.log(InvariantRobotDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(RobotDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                MyLogger.log(InvariantRobotDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(RobotDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+            MyLogger.log(InvariantRobotDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
         } finally {
             try {
                 if (connection != null) {
                     connection.close();
                 }
             } catch (SQLException e) {
-                MyLogger.log(RobotDAO.class.getName(), Level.ERROR, e.toString());
+                MyLogger.log(InvariantRobotDAO.class.getName(), Level.ERROR, e.toString());
             }
         }
         return result;
     }
 
     /**
-     * Finds all Robot that exists. </p> Access to database to return all
-     * existing {@link Robot}.<br/> If no robot found, returns a
-     * empty {@literal List<Robot>}.<br/> If an SQLException occur,
+     * Finds all InvariantRobot that exists. </p> Access to database to return all
+     * existing {@link InvariantRobot}.<br/> If no InvariantRobot found, returns a
+     * empty {@literal List<InvariantRobot>}.<br/> If an SQLException occur,
      * returns null in the list object and writes the error on the logs.
      *
-     * @return list of robot
+     * @return list of InvariantRobot
      * @throws CerberusException
      * @since 0.9.2
      */
     @Override
-    public List<Robot> findAllRobot() throws CerberusException {
-        List<Robot> list = null;
-        final String query = "SELECT * FROM robot a";
+    public List<InvariantRobot> findAllInvariantRobot() throws CerberusException {
+        List<InvariantRobot> list = null;
+        final String query = "SELECT * FROM invariantrobot a";
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -141,110 +137,112 @@ public class RobotDAO implements IRobotDAO{
             try {
                 ResultSet resultSet = preStat.executeQuery();
                 try {
-                    list = new ArrayList<Robot>();
+                    list = new ArrayList<InvariantRobot>();
                     while (resultSet.next()) {
-                        Robot robot = this.loadRobotFromResultSet(resultSet);
-                        list.add(robot);
+                        InvariantRobot invariantRobot = this.loadInvariantRobotFromResultSet(resultSet);
+                        list.add(invariantRobot);
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(RobotDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                    MyLogger.log(InvariantRobotDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(RobotDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                MyLogger.log(InvariantRobotDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(RobotDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+            MyLogger.log(InvariantRobotDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
         } finally {
             try {
                 if (connection != null) {
                     connection.close();
                 }
             } catch (SQLException e) {
-                MyLogger.log(RobotDAO.class.getName(), Level.WARN, e.toString());
+                MyLogger.log(InvariantRobotDAO.class.getName(), Level.WARN, e.toString());
             }
         }
         return list;
     }
 
     /**
-     * Updates the information based on the object robot. </p> Access to
-     * database to update robot information given by the object
-     * Robot.
+     * Updates the information based on the object InvariantRobot. </p> Access to
+     * database to update InvariantRobot information given by the object
+     * InvariantRobot.
      * <br/> If an SQLException occur, throw CerberusException.
      *
-     * @param robot object Robot to update
+     * @param invariantRobot object InvariantRobot to update
      * @throws CerberusException
      * @since 0.9.2
      */
     @Override
-    public void updateRobot(Robot robot) throws CerberusException {
-        final String query = "UPDATE robot SET platform = ?, browser = ?, `version` = ? WHERE id = ?";
+    public void updateInvariantRobot(InvariantRobot invariantRobot) throws CerberusException {
+        final String query = "UPDATE invariantrobot SET platform = ?, os=?, browser = ?, `version` = ? WHERE id = ?";
 
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
             try {
-                preStat.setString(1, robot.getPlatform());
-                preStat.setString(2, robot.getBrowser());
-                preStat.setString(3, robot.getVersion());
-                preStat.setInt(4, robot.getId());
+                preStat.setString(1, invariantRobot.getPlatform());
+                preStat.setString(2, invariantRobot.getOs());
+                preStat.setString(3, invariantRobot.getBrowser());
+                preStat.setString(4, invariantRobot.getVersion());
+                preStat.setInt(5, invariantRobot.getId());
                 
                 preStat.executeUpdate();
                 } catch (SQLException exception) {
-                MyLogger.log(RobotDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                MyLogger.log(InvariantRobotDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(RobotDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+            MyLogger.log(InvariantRobotDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
         } finally {
             try {
                 if (connection != null) {
                     connection.close();
                 }
             } catch (SQLException e) {
-                MyLogger.log(RobotDAO.class.getName(), Level.WARN, e.toString());
+                MyLogger.log(InvariantRobotDAO.class.getName(), Level.WARN, e.toString());
             }
         }
         
     }
 
     @Override
-    public void createRobot(Robot robot) throws CerberusException {
+    public void createInvariantRobot(InvariantRobot invariantRobot) throws CerberusException {
         boolean throwExcep = false;
         StringBuilder query = new StringBuilder();
-        query.append("INSERT INTO robot (`platform`, `browser`, `version`) ");
-        query.append("VALUES (?,?,?)");
+        query.append("INSERT INTO invariantrobot (`platform`, `os`, `browser`, `version`) ");
+        query.append("VALUES (?,?,?,?)");
 
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
             try {
-                preStat.setString(1, robot.getPlatform());
-                preStat.setString(2, robot.getBrowser());
-                preStat.setString(3, robot.getVersion());
+                preStat.setString(1, invariantRobot.getPlatform());
+                preStat.setString(2, invariantRobot.getOs());
+                preStat.setString(3, invariantRobot.getBrowser());
+                preStat.setString(4, invariantRobot.getVersion());
                 
                 preStat.executeUpdate();
                 throwExcep = false;
 
             } catch (SQLException exception) {
-                MyLogger.log(RobotDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                MyLogger.log(InvariantRobotDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(RobotDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+            MyLogger.log(InvariantRobotDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
         } finally {
             try {
                 if (connection != null) {
                     connection.close();
                 }
             } catch (SQLException e) {
-                MyLogger.log(RobotDAO.class.getName(), Level.WARN, e.toString());
+                MyLogger.log(InvariantRobotDAO.class.getName(), Level.WARN, e.toString());
             }
         }
         if (throwExcep) {
@@ -253,31 +251,31 @@ public class RobotDAO implements IRobotDAO{
     }
 
     @Override
-    public void deleteRobot(Robot robot) throws CerberusException {
+    public void deleteInvariantRobot(InvariantRobot invariantRobot) throws CerberusException {
         boolean throwExcep = false;
-        final String query = "DELETE FROM robot WHERE id = ? ";
+        final String query = "DELETE FROM invariantrobot WHERE id = ? ";
 
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
             try {
-                preStat.setInt(1, robot.getId());
+                preStat.setInt(1, invariantRobot.getId());
 
                 throwExcep = preStat.executeUpdate() == 0;
             } catch (SQLException exception) {
-                MyLogger.log(RobotDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                MyLogger.log(InvariantRobotDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(RobotDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+            MyLogger.log(InvariantRobotDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
         } finally {
             try {
                 if (connection != null) {
                     connection.close();
                 }
             } catch (SQLException e) {
-                MyLogger.log(RobotDAO.class.getName(), Level.WARN, e.toString());
+                MyLogger.log(InvariantRobotDAO.class.getName(), Level.WARN, e.toString());
             }
         }
         if (throwExcep) {
@@ -286,35 +284,39 @@ public class RobotDAO implements IRobotDAO{
     }
     
     /**
-     * Uses data of ResultSet to create object {@link Robot}
+     * Uses data of ResultSet to create object {@link InvariantRobot}
      *
-     * @param rs ResultSet relative to select from table Robot
-     * @return object {@link Robot}
+     * @param rs ResultSet relative to select from table InvariantRobot
+     * @return object {@link InvariantRobot}
      * @throws SQLException when trying to get value from
      * {@link java.sql.ResultSet#getString(String)}
-     * @see FactoryRobot
+     * @see FactoryInvariantRobot
      */
-    private Robot loadRobotFromResultSet(ResultSet rs) throws SQLException {
+    private InvariantRobot loadInvariantRobotFromResultSet(ResultSet rs) throws SQLException {
         Integer id = ParameterParserUtil.parseIntegerParam(rs.getString("id"), 0);
         String platform = ParameterParserUtil.parseStringParam(rs.getString("platform"), "");
+        String os = ParameterParserUtil.parseStringParam(rs.getString("os"), "");
         String browser = ParameterParserUtil.parseStringParam(rs.getString("browser"), "");
         String version = ParameterParserUtil.parseStringParam(rs.getString("version"), "");
         
         //TODO remove when working in test with mockito and autowired
-        factoryRobot = new FactoryRobot();
-        return factoryRobot.create(id, platform, browser, version);
+        factoryInvariantRobot = new FactoryInvariantRobot();
+        return factoryInvariantRobot.create(id, platform, os, browser, version);
     }
 
     @Override
-    public List<Robot> findRobotListByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
-        List<Robot> robotList = new ArrayList<Robot>();
+    public List<InvariantRobot> findInvariantRobotListByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
+        List<InvariantRobot> invariantRobotList = new ArrayList<InvariantRobot>();
         StringBuilder gSearch = new StringBuilder();
         StringBuilder searchSQL = new StringBuilder();
 
         StringBuilder query = new StringBuilder();
-        query.append("SELECT * FROM robot ");
+        query.append("SELECT * FROM invariantrobot ");
 
         gSearch.append(" where (`platform` like '%");
+        gSearch.append(searchTerm);
+        gSearch.append("%'");
+        gSearch.append(" or `os` like '%");
         gSearch.append(searchTerm);
         gSearch.append("%'");
         gSearch.append(" or `browser` like '%");
@@ -346,8 +348,6 @@ public class RobotDAO implements IRobotDAO{
         query.append(" , ");
         query.append(amount);
 
-        Robot robot;
-
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
@@ -356,46 +356,49 @@ public class RobotDAO implements IRobotDAO{
                 try {
 
                     while (resultSet.next()) {
-                        robotList.add(this.loadRobotFromResultSet(resultSet));
+                        invariantRobotList.add(this.loadInvariantRobotFromResultSet(resultSet));
                     }
 
                 } catch (SQLException exception) {
-                    MyLogger.log(RobotDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                    MyLogger.log(InvariantRobotDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
                 } finally {
                     resultSet.close();
                 }
 
             } catch (SQLException exception) {
-                MyLogger.log(RobotDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                MyLogger.log(InvariantRobotDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
             } finally {
                 preStat.close();
             }
 
         } catch (SQLException exception) {
-            MyLogger.log(RobotDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            MyLogger.log(InvariantRobotDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
         } finally {
             try {
                 if (connection != null) {
                     connection.close();
                 }
             } catch (SQLException e) {
-                MyLogger.log(RobotDAO.class.getName(), Level.ERROR, e.toString());
+                MyLogger.log(InvariantRobotDAO.class.getName(), Level.ERROR, e.toString());
             }
         }
 
-        return robotList;
+        return invariantRobotList;
     }
 
     @Override
-    public Integer getNumberOfRobotPerCriteria(String searchTerm, String inds) {
+    public Integer getNumberOfInvariantRobotPerCriteria(String searchTerm, String inds) {
         Integer result = 0;
         StringBuilder query = new StringBuilder();
         StringBuilder gSearch = new StringBuilder();
         String searchSQL = "";
 
-        query.append("SELECT count(*) FROM robot");
+        query.append("SELECT count(*) FROM invariantrobot");
 
         gSearch.append(" where (`platform` like '%");
+        gSearch.append(searchTerm);
+        gSearch.append("%'");
+        gSearch.append(" or `os` like '%");
         gSearch.append(searchTerm);
         gSearch.append("%'");
         gSearch.append(" or `browser` like '%");
@@ -427,26 +430,26 @@ public class RobotDAO implements IRobotDAO{
                     }
 
                 } catch (SQLException exception) {
-                    MyLogger.log(RobotDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                    MyLogger.log(InvariantRobotDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
                 } finally {
                     resultSet.close();
                 }
 
             } catch (SQLException exception) {
-                MyLogger.log(RobotDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                MyLogger.log(InvariantRobotDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
             } finally {
                 preStat.close();
             }
 
         } catch (SQLException exception) {
-            MyLogger.log(RobotDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            MyLogger.log(InvariantRobotDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
         } finally {
             try {
                 if (connection != null) {
                     connection.close();
                 }
             } catch (SQLException e) {
-                MyLogger.log(RobotDAO.class.getName(), Level.ERROR, e.toString());
+                MyLogger.log(InvariantRobotDAO.class.getName(), Level.ERROR, e.toString());
             }
         }
         return result;

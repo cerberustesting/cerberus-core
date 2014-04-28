@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package org.cerberus.servlet.robot;
 
 import java.io.IOException;
@@ -13,16 +12,15 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Level;
-import org.cerberus.entity.Robot;
-import org.cerberus.entity.SqlLibrary;
+import org.cerberus.entity.MessageGeneral;
+import org.cerberus.entity.MessageGeneralEnum;
+import org.cerberus.entity.InvariantRobot;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.factory.IFactoryLogEvent;
-import org.cerberus.factory.IFactoryRobot;
-import org.cerberus.factory.IFactorySqlLibrary;
 import org.cerberus.factory.impl.FactoryLogEvent;
 import org.cerberus.log.MyLogger;
 import org.cerberus.service.ILogEventService;
-import org.cerberus.service.IRobotService;
+import org.cerberus.service.IInvariantRobotService;
 import org.cerberus.service.ISqlLibraryService;
 import org.cerberus.service.impl.LogEventService;
 import org.owasp.html.PolicyFactory;
@@ -34,11 +32,12 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  *
  * @author bcivel
  */
-public class DeleteRobot extends HttpServlet {
+public class UpdateInvariantRobot extends HttpServlet {
 
-     /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
+    /**
+     * Processes requests for both HTTP
+     * <code>GET</code> and
+     * <code>POST</code> methods.
      *
      * @param request servlet request
      * @param response servlet response
@@ -47,31 +46,44 @@ public class DeleteRobot extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, CerberusException {
+
         response.setContentType("text/html;charset=UTF-8");
         PrintWriter out = response.getWriter();
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
-
         try {
             String id = policy.sanitize(request.getParameter("id"));
-            
-            ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-            IRobotService robotService = appContext.getBean(IRobotService.class);
-            
-            Robot robot = robotService.findRobotByKey(Integer.valueOf(id));
-            robotService.deleteRobot(robot);
+            String columnName = policy.sanitize(request.getParameter("columnName"));
+            String value = policy.sanitize(request.getParameter("value"));
 
+            ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+            IInvariantRobotService robotService = appContext.getBean(IInvariantRobotService.class);
+            InvariantRobot robot = robotService.findInvariantRobotByKey(Integer.valueOf(id));
+
+            if (columnName != null && "Platform".equals(columnName.trim())) {
+                robot.setPlatform(value);
+            } else if (columnName != null && "Os".equals(columnName.trim())) {
+                robot.setOs(value);
+            }else if (columnName != null && "Browser".equals(columnName.trim())) {
+                robot.setBrowser(value);
+            } else if (columnName != null && "Version".equals(columnName.trim())) {
+                robot.setVersion(value);
+            } else {
+                throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NOT_IMPLEMEMTED));
+            }
+            robotService.updateInvariantRobot(robot);
             /**
              * Adding Log entry.
              */
             ILogEventService logEventService = appContext.getBean(LogEventService.class);
             IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
             try {
-                logEventService.insertLogEvent(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/DeleteRobot", "DELETE", "Delete Robot : " + robot.getPlatform() + "/"+robot.getBrowser()+"/"+robot.getVersion(), "", ""));
+                logEventService.insertLogEvent(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/UpdateRobot", "UPDATE", "Updated Robot : " + id, "", ""));
             } catch (CerberusException ex) {
-                org.apache.log4j.Logger.getLogger(DeleteRobot.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex);
+                MyLogger.log(UpdateInvariantRobot.class.getName(), Level.ERROR,  ex.toString());
             }
 
-            
+
+            out.print(value);
         } finally {
             out.close();
         }
@@ -79,7 +91,8 @@ public class DeleteRobot extends HttpServlet {
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
-     * Handles the HTTP <code>GET</code> method.
+     * Handles the HTTP
+     * <code>GET</code> method.
      *
      * @param request servlet request
      * @param response servlet response
@@ -92,12 +105,13 @@ public class DeleteRobot extends HttpServlet {
         try {
             processRequest(request, response);
         } catch (CerberusException ex) {
-            MyLogger.log(DeleteRobot.class.getName(), Level.FATAL, ex.toString());
+       MyLogger.log(UpdateInvariantRobot.class.getName(), Level.ERROR,  ex.toString());
         }
     }
 
     /**
-     * Handles the HTTP <code>POST</code> method.
+     * Handles the HTTP
+     * <code>POST</code> method.
      *
      * @param request servlet request
      * @param response servlet response
@@ -108,9 +122,10 @@ public class DeleteRobot extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         try {
+            String t = request.getParameter("value");
             processRequest(request, response);
         } catch (CerberusException ex) {
-            MyLogger.log(DeleteRobot.class.getName(), Level.FATAL, ex.toString());
+            MyLogger.log(UpdateInvariantRobot.class.getName(), Level.ERROR,  ex.toString());
         }
     }
 
@@ -123,5 +138,4 @@ public class DeleteRobot extends HttpServlet {
     public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
-
 }

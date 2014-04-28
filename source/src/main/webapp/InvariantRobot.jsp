@@ -23,7 +23,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Robot</title>
+        <title>InvariantRobot</title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <link rel="stylesheet" type="text/css" href="css/crb_style.css">
         <link rel="stylesheet" type="text/css" href="css/jquery.dataTables.css">
@@ -42,7 +42,7 @@
                 var oTable = $('#robotList').dataTable({
                     "aaSorting": [[1, "asc"]],
                     "bServerSide": true,
-                    "sAjaxSource": "FindAllRobot",
+                    "sAjaxSource": "FindAllInvariantRobot",
                     "bJQueryUI": true,
                     "bProcessing": true,
                     "bPaginate": true,
@@ -54,13 +54,14 @@
                     "aoColumns": [
                         {"sName": "ID", "sWidth": "10%", "bVisible":false},
                         {"sName": "Platform", "sWidth": "10%"},
+                        {"sName": "Os", "sWidth": "10%"},
                         {"sName": "Browser", "sWidth": "10%"},
                         {"sName": "Version", "sWidth": "10%"},
                         
                     ]
                 }
             ).makeEditable({
-                    sAddURL: "CreateRobot",
+                    sAddURL: "CreateInvariantRobot",
                     sAddHttpMethod: "POST",
                     oAddNewRowButtonOptions: {
                         label: "<b>Create Robot...</b>",
@@ -68,13 +69,13 @@
                         icons: {primary: 'ui-icon-plus'}
                     },
                     sDeleteHttpMethod: "POST",
-                    sDeleteURL: "DeleteRobot",
+                    sDeleteURL: "DeleteInvariantRobot",
                     sAddDeleteToolbarSelector: ".dataTables_length",
                     oDeleteRowButtonOptions: {
                         label: "Remove",
                         icons: {primary: 'ui-icon-trash'}
                     },
-                    sUpdateURL: "UpdateRobot",
+                    sUpdateURL: "UpdateInvariantRobot",
                     fnOnEdited: function(status) {
                         $(".dataTables_processing").css('visibility', 'hidden');
                     },
@@ -86,6 +87,8 @@
                     },
                     "aoColumns": [
                         null,
+                        {onblur: 'submit',
+                            placeholder: ''}, 
                         {onblur: 'submit',
                             placeholder: ''}, 
                         {onblur: 'submit',
@@ -121,6 +124,7 @@
                     <tr>
                         <th>ID</th>
                         <th>Platform</th>
+                        <th>Os</th>
                         <th>Browser</th>
                         <th>Version</th>
                     </tr>
@@ -139,14 +143,19 @@
                        class="ncdetailstext" rel="1" >
                 <br />
                 <br />
+                <label for="Os" style="font-weight:bold">Os</label>
+                <input id="Os" name="Os" style="width:350px;" 
+                       class="ncdetailstext" rel="2" >
+                <br />
+                <br />
                 <label for="Browser" style="font-weight:bold">Browser</label>
                 <input id="Browser" name="Browser" style="width:750px;" 
-                       class="ncdetailstext" rel="2" >
+                       class="ncdetailstext" rel="3" >
                 <br />
                 <br />
                 <label for="Version" style="font-weight:bold">Version</label>
                 <textarea id="Version" name="Version" style="width:800px;" rows="5" 
-                       class="ncdetailstext" rel="3" ></textarea>
+                       class="ncdetailstext" rel="4" ></textarea>
                 <br />
                 <br />
                 <div style="width: 250px; float:right">

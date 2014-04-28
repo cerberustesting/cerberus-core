@@ -36,6 +36,12 @@ textarea{
     border-bottom-color:#555555;
     border-bottom-style:double;
 }
+.selectRobot{
+    color : gray;
+}
+.selectRobotSelected{
+    color : black;
+}
 /* Fields without border (TODO Refactor)*/
 td#wob { 
     border-width:0px;

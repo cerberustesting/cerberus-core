@@ -20,7 +20,7 @@
 package org.cerberus.service;
 
 import java.util.List;
-import org.cerberus.entity.Robot;
+import org.cerberus.entity.InvariantRobot;
 import org.cerberus.entity.SqlLibrary;
 import org.cerberus.exception.CerberusException;
 
@@ -28,51 +28,51 @@ import org.cerberus.exception.CerberusException;
  *
  * @author bcivel
  */
-public interface IRobotService {
+public interface IInvariantRobotService {
 
     /**
-     * Finds the Robot by Key
+     * Finds the InvariantRobot by Key
      *
-     * @param id Key of the Robot to find.
-     * @return Object Robot if exist.
-     * @throws CerberusException when Robot does not exist.
+     * @param id Key of the InvariantRobot to find.
+     * @return Object InvariantRobot if exist.
+     * @throws CerberusException when InvariantRobot does not exist.
      * @since 0.9.2
      */
-    Robot findRobotByKey(Integer id) throws CerberusException;
+    InvariantRobot findInvariantRobotByKey(Integer id) throws CerberusException;
 
     /**
-     * Finds all Robots that exists
+     * Finds all InvariantRobots that exists
      *
-     * @return List of robot.
-     * @throws CerberusException when no robot exist.
+     * @return List of InvariantRobot.
+     * @throws CerberusException when no InvariantRobot exist.
      * @since 0.9.2
      */
-    List<Robot> findAllRobot() throws CerberusException;
+    List<InvariantRobot> findAllInvariantRobot() throws CerberusException;
 
     /**
-     * Update the object robot
+     * Update the object InvariantRobot
      *
-     * @param robot Object Robot to update.
+     * @param robot Object InvariantRobot to update.
      * @throws CerberusException When occur a error on
      * @since 0.9.2
      */
-    void updateRobot(Robot robot) throws CerberusException;
+    void updateInvariantRobot(InvariantRobot robot) throws CerberusException;
 
     /**
      *
-     * @param robot Object Robot to insert
+     * @param invariantRobot Object InvariantRobot to insert
      * @throws CerberusException
      * @since 0.9.2
      */
-    void createRobot(Robot robot) throws CerberusException;
+    void createInvariantRobot(InvariantRobot invariantRobot) throws CerberusException;
 
     /**
      *
-     * @param robot Object Robot to delete
+     * @param invariantRobot Object InvariantRobot to delete
      * @throws CerberusException
      * @since 0.9.2
      */
-    void deleteRobot(Robot robot) throws CerberusException;
+    void deleteInvariantRobot(InvariantRobot invariantRobot) throws CerberusException;
     
     /**
      *
@@ -86,7 +86,7 @@ public interface IRobotService {
      * @return List of robot
      * @since 0.9.2
      */
-    List<Robot> findRobotListByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch);
+    List<InvariantRobot> findInvariantRobotListByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch);
     
     /**
      * 
@@ -95,7 +95,7 @@ public interface IRobotService {
      * @return The number of records for these criterias
      * @since 0.9.2
      */
-    Integer getNumberOfRobotPerCriteria(String searchTerm, String inds);
+    Integer getNumberOfInvariantRobotPerCriteria(String searchTerm, String inds);
     
     List<String> getDistinctValues(String columnName, String PlatformChosen,
             String BrowserChosen, String VersionChosen) throws CerberusException;
