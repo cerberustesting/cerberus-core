@@ -37,6 +37,7 @@ public class SavePicture extends AbstractConnectorServlet {
                 IParameterService parameterService = appContext.getBean(ParameterService.class);
                 Parameter param = parameterService.findParameterByKey("cerberus_image_path", "");
                 HOME_SHARED_DOCS = param.getValue();
+                MyLogger.log(SavePicture.class.getName(), Level.FATAL, "Parameter (cerberus_image_path) => "+param.getValue()+" | "+HOME_SHARED_DOCS);
             } catch (CerberusException e) {
                 MyLogger.log(SavePicture.class.getName(), Level.FATAL, "Parameter (cerberus_image_path) not in Parameter table.");
             }
