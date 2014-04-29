@@ -2,6 +2,7 @@ package org.cerberus.servlet.testCase;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.cerberus.entity.Parameter;
 import org.cerberus.entity.SavePictureConfig;
 import org.cerberus.exception.CerberusException;
@@ -28,6 +29,8 @@ public class SavePicture extends AbstractConnectorServlet {
     public static String HOME_SHARED_DOCS = "";
     public static String REALOBJECTURL = "virtualproxy";
 
+    private static Logger logger = Logger.getLogger(AbstractConnectorServlet.class);
+
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
@@ -37,7 +40,7 @@ public class SavePicture extends AbstractConnectorServlet {
                 IParameterService parameterService = appContext.getBean(ParameterService.class);
                 Parameter param = parameterService.findParameterByKey("cerberus_image_path", "");
                 HOME_SHARED_DOCS = param.getValue();
-                MyLogger.log(SavePicture.class.getName(), Level.FATAL, "Parameter (cerberus_image_path) => "+param.getValue()+" | "+HOME_SHARED_DOCS);
+                logger.info("Parameter (cerberus_image_path) => "+param.getValue()+" | "+HOME_SHARED_DOCS);
             } catch (CerberusException e) {
                 MyLogger.log(SavePicture.class.getName(), Level.FATAL, "Parameter (cerberus_image_path) not in Parameter table.");
             }
