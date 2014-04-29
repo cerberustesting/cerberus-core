@@ -41,10 +41,10 @@ public class SavePicture extends AbstractConnectorServlet {
             } catch (CerberusException e) {
                 MyLogger.log(SavePicture.class.getName(), Level.FATAL, "Parameter (cerberus_image_path) not in Parameter table.");
             }
-            File f=new File(HOME_SHARED_DOCS);
-            if(!f.exists()){
-                f.mkdirs();
-            }
+//            File f=new File(HOME_SHARED_DOCS);
+//            if(!f.exists()){
+//                f.mkdirs();
+//            }
         }
         if(!StringUtils.isBlank(getServletContext().getInitParameter("THUMBNAIL")))
             THUMBNAIL = getServletContext().getInitParameter("THUMBNAIL");
