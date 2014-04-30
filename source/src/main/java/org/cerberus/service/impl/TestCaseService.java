@@ -19,13 +19,18 @@
  */
 package org.cerberus.service.impl;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.cerberus.dao.ITestCaseDAO;
 import org.cerberus.entity.TCase;
 import org.cerberus.entity.TestCase;
 import org.cerberus.entity.TestCaseCountry;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.factory.IFactoryTCase;
 import org.cerberus.service.ITestCaseCountryService;
 import org.cerberus.service.ITestCaseService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +47,8 @@ public class TestCaseService implements ITestCaseService {
     private ITestCaseDAO testCaseDao;
     @Autowired
     private ITestCaseCountryService testCaseCountryService;
+    @Autowired
+    private IFactoryTCase factoryTCase;
 
     @Override
     public TCase findTestCaseByKey(String test, String testCase) throws CerberusException {
@@ -91,10 +98,48 @@ public class TestCaseService implements ITestCaseService {
     }
 
     /**
+     * @param column
+     * @return
      * @since 0.9.1
      */
     @Override
     public List<String> findUniqueDataOfColumn(String column) {
         return this.testCaseDao.findUniqueDataOfColumn(column);
+    }
+
+    @Override
+    public List<String> findTestWithTestCaseActiveAutomatedBySystem(String system) {
+        TCase tCase = factoryTCase.create(null, null, null, null, null, null, null, null, null,
+                null, null, null, null, 0, null, null, null, null, null, "Y",
+                null, null, null, null, null, null, null, null, null, null, null, null, null);
+
+        List<String> result = new ArrayList();
+        List<TCase> testCases = findTestCaseByAllCriteria(tCase, null, system);
+        for (TCase testCase : testCases) {
+            if (!testCase.getGroup().equals("PRIVATE")) {
+                result.add(testCase.getTest());
+            }
+        }
+        Set<String> uniqueResult = new HashSet<String>(result);
+        result = new ArrayList();
+        result.addAll(uniqueResult);
+        Collections.sort(result);
+        return result;
+    }
+
+    @Override
+    public List<TCase> findTestCaseActiveAutomatedBySystem(String test, String system) {
+        TCase tCase = factoryTCase.create(test, null, null, null, null, null, null, null, null,
+                null, null, null, null, -1, null, null, null, null, null, "Y",
+                null, null, null, null, null, null, null, null, null, null, null, null, null);
+
+        List<TCase> result = new ArrayList();
+        List<TCase> testCases = findTestCaseByAllCriteria(tCase, null, system);
+        for (TCase testCase : testCases) {
+            if (!testCase.getGroup().equals("PRIVATE")) {
+                result.add(testCase);
+            }
+        }
+        return result;
     }
 }

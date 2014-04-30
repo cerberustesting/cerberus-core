@@ -56,5 +56,15 @@ public class FactoryCountryEnvParam implements IFactoryCountryEnvParam {
         
         return countryEnvParam;
     }
+
+    @Override
+    public CountryEnvParam create(String system, String country, boolean active) {
+        countryEnvParam = new CountryEnvParam();
+        countryEnvParam.setSystem(system);
+        countryEnvParam.setCountry(country);
+        countryEnvParam.setActive(active);
+        
+        return countryEnvParam;
+    }
     
 }

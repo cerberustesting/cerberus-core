@@ -19,6 +19,7 @@
  */
 package org.cerberus.service;
 
+import java.util.List;
 import org.cerberus.entity.CountryEnvParam;
 import org.cerberus.exception.CerberusException;
 
@@ -29,4 +30,8 @@ import org.cerberus.exception.CerberusException;
 public interface ICountryEnvParamService {
 
     CountryEnvParam findCountryEnvParamByKey(String system, String country, String environment) throws CerberusException;
+
+    List<CountryEnvParam> findCountryEnvParamByCriteria(CountryEnvParam countryEnvParam) throws CerberusException;
+    
+    List<CountryEnvParam> findActiveEnvironmentBySystemCountryApplication(String system, String country, String application) throws CerberusException;
 }

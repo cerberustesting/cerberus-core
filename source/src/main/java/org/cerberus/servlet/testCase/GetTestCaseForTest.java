@@ -20,6 +20,8 @@
 package org.cerberus.servlet.testCase;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -53,6 +55,7 @@ public class GetTestCaseForTest extends HttpServlet {
     protected void doGet(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws ServletException, IOException {
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
         String testName = policy.sanitize(httpServletRequest.getParameter("test"));
+        String system = policy.sanitize(httpServletRequest.getParameter("system"));
 
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         ITestCaseService testService = appContext.getBean(ITestCaseService.class);
@@ -60,20 +63,20 @@ public class GetTestCaseForTest extends HttpServlet {
         JSONArray array = new JSONArray();
         JSONObject jsonObject = new JSONObject();
         try {
-//
-            for (TCase list : testService.findTestCaseByTest(testName)) {
+            List<TCase> tcaseList;
+            if (system == null){
+            tcaseList = testService.findTestCaseByTest(testName);
+            } else{
+            tcaseList = testService.findTestCaseActiveAutomatedBySystem(testName, system);
+            }
+            
+            for (TCase list : tcaseList) {
                 JSONObject testCase = new JSONObject();
                 testCase.put("testCase", list.getTestCase());
                 testCase.put("description", list.getTestCase().concat(" [").concat(list.getApplication()).concat("] : ").concat(list.getShortDescription()));
+                testCase.put("application", list.getApplication());
                 array.put(testCase);
             }
-//            for (TCase testCaseName : testService.findTestCaseByTest(testName)) {
-//                JSONObject testCase = new JSONObject();
-//                testCase.put("testCase", testCaseName.substring(0, testCaseName.indexOf('[') - 1));
-//                testCase.put("description", testCaseName);
-//                array.put(testCase);
-//            }
-
             jsonObject.put("testCaseList", array);
 
             httpServletResponse.setContentType("application/json");

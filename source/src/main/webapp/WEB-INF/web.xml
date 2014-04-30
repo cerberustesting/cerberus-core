@@ -428,6 +428,18 @@
         <servlet-name>GetDistinctInvariantRobotValues</servlet-name>
         <servlet-class>org.cerberus.servlet.invariantRobot.GetDistinctInvariantRobotValues</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>GetTestBySystem</servlet-name>
+        <servlet-class>org.cerberus.servlet.test.GetTestBySystem</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>findEnvironmentByCriteria</servlet-name>
+        <servlet-class>org.cerberus.servlet.environment.findEnvironmentByCriteria</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>FindInvariantByID</servlet-name>
+        <servlet-class>org.cerberus.servlet.invariant.FindInvariantByID</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>RunTestCase</servlet-name>
         <url-pattern>/RunTestCase</url-pattern>
@@ -835,6 +847,18 @@
     <servlet-mapping>
         <servlet-name>GetDistinctInvariantRobotValues</servlet-name>
         <url-pattern>/GetDistinctInvariantRobotValues</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>GetTestBySystem</servlet-name>
+        <url-pattern>/GetTestBySystem</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>findEnvironmentByCriteria</servlet-name>
+        <url-pattern>/findEnvironmentByCriteria</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>FindInvariantByID</servlet-name>
+        <url-pattern>/FindInvariantByID</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>

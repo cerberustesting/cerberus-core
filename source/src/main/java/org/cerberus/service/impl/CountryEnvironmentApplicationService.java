@@ -47,4 +47,10 @@ public class CountryEnvironmentApplicationService implements ICountryEnvironment
     public List<String[]> getEnvironmentAvailable(String country, String application) {
         return countryEnvironmentParametersDao.getEnvironmentAvailable(country, application);
     }
+
+    @Override
+    public List<CountryEnvironmentApplication> findCountryEnvironmentApplicationByCriteria(CountryEnvironmentApplication countryEnvironmentParameter) throws CerberusException {
+        return countryEnvironmentParametersDao.findCountryEnvironmentApplicationByCriteria(countryEnvironmentParameter);
+    }
+    
 }

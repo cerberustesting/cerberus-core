@@ -1134,6 +1134,22 @@ document.getElementById("myloginrelativeurl").disabled=true;
     document.getElementById("myenvdata").disabled=true;
     document.getElementById("environment").disabled=false;
 }
+function setRobotManual() {
+    document.getElementById("robot").disabled=true;
+    document.getElementById("ss_ip").disabled=false;
+    document.getElementById("ss_p").disabled=false;
+    document.getElementById("platform").disabled=false;
+    document.getElementById("browser").disabled=false;
+    document.getElementById("version").disabled=false;
+}
+function setRobotAutomatic() {
+    document.getElementById("robot").disabled=false;
+    document.getElementById("ss_ip").disabled=true;
+    document.getElementById("ss_p").disabled=true;
+    document.getElementById("platform").disabled=true;
+    document.getElementById("browser").disabled=true;
+    document.getElementById("version").disabled=true;
+}
 
 /*
  * Functions used for dynamic tables

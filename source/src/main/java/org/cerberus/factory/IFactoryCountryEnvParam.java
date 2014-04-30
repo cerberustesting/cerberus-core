@@ -30,4 +30,6 @@ public interface IFactoryCountryEnvParam {
     CountryEnvParam create(String system, String country, String environment, String build, String revision, String chain,
             String distribList, String eMailBodyRevision, String type, String eMailBodyChain,
             String eMailBodyDisableEnvironment, boolean active, boolean maintenanceAct, String maintenanceStr, String maintenanceEnd);
+    
+    CountryEnvParam create(String system, String country, boolean active);
 }
