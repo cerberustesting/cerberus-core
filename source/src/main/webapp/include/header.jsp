@@ -130,7 +130,7 @@
                     <li id="subactive"><a name="menu" id="menuParameter" href="Parameter.jsp" style="width:180px">Parameters</a></li>
                     <li id="subactive"><a name="menu" id="menuInvariantPublic" href="InvariantPublic.jsp" style="width:180px">Edit Public Invariants</a></li>
                     <li id="subactive"><a name="menu" id="menuInvariantPrivate" href="InvariantPrivate.jsp" style="width:180px">See Private Invariants</a></li>
-                    <li id="subactive"><a name="menu" id="menuInvariantRobot" href="InvariantRobot.jsp" style="width:180px">Robot Invariants</a></li>
+                    <!--<li id="subactive"><a name="menu" id="menuInvariantRobot" href="InvariantRobot.jsp" style="width:180px">Robot Invariants</a></li>-->
                 </ul>
             </li>
             <% }%>
