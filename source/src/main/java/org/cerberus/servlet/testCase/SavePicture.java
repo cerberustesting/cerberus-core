@@ -26,7 +26,7 @@ public class SavePicture extends AbstractConnectorServlet {
 
     public static String SHARED_DOCS = "Shared docs";
     public static String THUMBNAIL = "thumbnailer?p=";
-    public static String HOME_SHARED_DOCS = "";
+    public static String HOME_SHARED_DOCS = "D:\\CerberusPicturesForTestCasesInfo\\";
     public static String REALOBJECTURL = "virtualproxy";
 
     private static Logger logger = Logger.getLogger(AbstractConnectorServlet.class);
@@ -34,21 +34,22 @@ public class SavePicture extends AbstractConnectorServlet {
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
-        if(!StringUtils.isBlank(getServletContext().getInitParameter("HOME_SHARED_DOCS"))){
-            try {
-                ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-                IParameterService parameterService = appContext.getBean(ParameterService.class);
-                Parameter param = parameterService.findParameterByKey("cerberus_image_path", "");
-                HOME_SHARED_DOCS = param.getValue();
-                logger.info("Parameter (cerberus_image_path) => "+param.getValue()+" | "+HOME_SHARED_DOCS);
-            } catch (CerberusException e) {
-                MyLogger.log(SavePicture.class.getName(), Level.FATAL, "Parameter (cerberus_image_path) not in Parameter table.");
-            }
+//        if(!StringUtils.isBlank(getServletContext().getInitParameter("HOME_SHARED_DOCS"))){
+//            try {
+//                ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+//                IParameterService parameterService = appContext.getBean(ParameterService.class);
+//                Parameter param = parameterService.findParameterByKey("cerberus_image_path", "");
+//                HOME_SHARED_DOCS = param.getValue();
+//                logger.info("Parameter (cerberus_image_path) => "+param.getValue()+" | "+HOME_SHARED_DOCS);
+//            } catch (CerberusException e) {
+//                MyLogger.log(SavePicture.class.getName(), Level.FATAL, "Parameter (cerberus_image_path) not in Parameter table.");
+//                throw new ServletException(e.getMessage());
+//            }
 //            File f=new File(HOME_SHARED_DOCS);
 //            if(!f.exists()){
 //                f.mkdirs();
 //            }
-        }
+//        }
         if(!StringUtils.isBlank(getServletContext().getInitParameter("THUMBNAIL")))
             THUMBNAIL = getServletContext().getInitParameter("THUMBNAIL");
         if(!StringUtils.isBlank(getServletContext().getInitParameter("SHARED_DOCS")))
