@@ -180,7 +180,7 @@ public class RobotDAO implements IRobotDAO{
     public void updateRobot(Robot robot) throws CerberusException {
         StringBuilder query = new StringBuilder();
         query.append("UPDATE robot SET name= ? , ip = ? , port = ? ,");
-        query.append("platform = ?, os = ?, browser = ? , version = ?, description = ? WHERE id = ?");
+        query.append("platform = ?, browser = ? , version = ?, description = ? WHERE id = ?");
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -190,11 +190,10 @@ public class RobotDAO implements IRobotDAO{
                 preStat.setString(2, robot.getIp());
                 preStat.setInt(3, robot.getPort());
                 preStat.setString(4, robot.getPlatform());
-                preStat.setString(5, robot.getOs());
-                preStat.setString(6, robot.getBrowser());
-                preStat.setString(7, robot.getVersion());
-                preStat.setString(8, robot.getDescription());
-                preStat.setInt(9, robot.getId());
+                preStat.setString(5, robot.getBrowser());
+                preStat.setString(6, robot.getVersion());
+                preStat.setString(7, robot.getDescription());
+                preStat.setInt(8, robot.getId());
                 
                 preStat.executeUpdate();
                 } catch (SQLException exception) {
@@ -220,8 +219,8 @@ public class RobotDAO implements IRobotDAO{
     public void createRobot(Robot robot) throws CerberusException {
         boolean throwExcep = false;
         StringBuilder query = new StringBuilder();
-        query.append("INSERT INTO robot (`name`, `ip`, `port`, `platform`, `os`, `browser`, `version`, `description`) ");
-        query.append("VALUES (?,?,?,?,?,?,?,?)");
+        query.append("INSERT INTO robot (`name`, `ip`, `port`, `platform`,`browser`, `version`, `description`) ");
+        query.append("VALUES (?,?,?,?,?,?,?)");
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -231,10 +230,9 @@ public class RobotDAO implements IRobotDAO{
                 preStat.setString(2, robot.getIp());
                 preStat.setInt(3, robot.getPort());
                 preStat.setString(4, robot.getPlatform());
-                preStat.setString(5, robot.getOs());
-                preStat.setString(6, robot.getBrowser());
-                preStat.setString(7, robot.getVersion());
-                preStat.setString(8, robot.getDescription());
+                preStat.setString(5, robot.getBrowser());
+                preStat.setString(6, robot.getVersion());
+                preStat.setString(7, robot.getDescription());
                 
                 preStat.executeUpdate();
                 throwExcep = false;
@@ -308,14 +306,13 @@ public class RobotDAO implements IRobotDAO{
         String ip = ParameterParserUtil.parseStringParam(rs.getString("ip"), "");
         Integer port = ParameterParserUtil.parseIntegerParam(rs.getString("port"), 0);
         String platform = ParameterParserUtil.parseStringParam(rs.getString("platform"), "");
-        String os = ParameterParserUtil.parseStringParam(rs.getString("os"), "");
         String browser = ParameterParserUtil.parseStringParam(rs.getString("browser"), "");
         String version = ParameterParserUtil.parseStringParam(rs.getString("version"), "");
         String description = ParameterParserUtil.parseStringParam(rs.getString("description"), "");
 
         //TODO remove when working in test with mockito and autowired
         factoryRobot = new FactoryRobot();
-        return factoryRobot.create(id, name, ip, port, platform, os, browser, version, description);
+        return factoryRobot.create(id, name, ip, port, platform,browser, version, description);
     }
 
     @Override
@@ -340,9 +337,6 @@ public class RobotDAO implements IRobotDAO{
         gSearch.append(searchTerm);
         gSearch.append("%'");
         gSearch.append(" or `name` like '%");
-        gSearch.append(searchTerm);
-        gSearch.append("%'");
-        gSearch.append(" or `os` like '%");
         gSearch.append(searchTerm);
         gSearch.append("%'");
         gSearch.append(" or `browser` like '%");
@@ -434,9 +428,6 @@ public class RobotDAO implements IRobotDAO{
         gSearch.append(searchTerm);
         gSearch.append("%'");
         gSearch.append(" or `name` like '%");
-        gSearch.append(searchTerm);
-        gSearch.append("%'");
-        gSearch.append(" or `os` like '%");
         gSearch.append(searchTerm);
         gSearch.append("%'");
         gSearch.append(" or `browser` like '%");

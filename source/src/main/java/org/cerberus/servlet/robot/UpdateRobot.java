@@ -61,8 +61,6 @@ public class UpdateRobot extends HttpServlet {
 
             if (columnName != null && "Platform".equals(columnName.trim())) {
                 robot.setPlatform(value);
-            } else if (columnName != null && "Os".equals(columnName.trim())) {
-                robot.setOs(value);
             }else if (columnName != null && "Browser".equals(columnName.trim())) {
                 robot.setBrowser(value);
             } else if (columnName != null && "Version".equals(columnName.trim())) {

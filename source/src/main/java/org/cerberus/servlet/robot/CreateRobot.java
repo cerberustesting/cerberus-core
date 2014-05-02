@@ -13,15 +13,12 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Level;
-import org.cerberus.entity.InvariantRobot;
 import org.cerberus.entity.Robot;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.factory.IFactoryLogEvent;
-import org.cerberus.factory.IFactoryInvariantRobot;
 import org.cerberus.factory.IFactoryRobot;
 import org.cerberus.factory.impl.FactoryLogEvent;
 import org.cerberus.log.MyLogger;
-import org.cerberus.service.IInvariantRobotService;
 import org.cerberus.service.ILogEventService;
 import org.cerberus.service.IRobotService;
 import org.cerberus.service.impl.LogEventService;
@@ -59,13 +56,12 @@ public class CreateRobot extends HttpServlet {
         String platform = policy.sanitize(request.getParameter("Platform"));
         String browser = policy.sanitize(request.getParameter("Browser"));
         String version = policy.sanitize(request.getParameter("Version"));
-        String os = policy.sanitize(request.getParameter("Os"));
         
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         IRobotService robotService = appContext.getBean(IRobotService.class);
         IFactoryRobot factoryRobot = appContext.getBean(IFactoryRobot.class);
         
-        Robot robot = factoryRobot.create(0, name, ip, Integer.valueOf(port), platform, os, browser, version, description);
+        Robot robot = factoryRobot.create(0, name, ip, Integer.valueOf(port), platform, browser, version, description);
         robotService.createRobot(robot);
             /**
              * Adding Log entry.

@@ -54,7 +54,7 @@ public class FindAllRobot extends HttpServlet {
             String sCol = policy.sanitize(request.getParameter("iSortCol_0"));
             String sdir = policy.sanitize(request.getParameter("sSortDir_0"));
             String dir = "asc";
-            String[] cols = {"Name", "IP", "Port", "Platform", "Os", "Browser", "Version", "Description"};
+            String[] cols = {"Name", "IP", "Port", "Platform", "Browser", "Version", "Description"};
 
             int amount = 10;
             int start = 0;
@@ -66,27 +66,21 @@ public class FindAllRobot extends HttpServlet {
             String platform = "";
             String browser = "";
             String version = "";
-            String os = "";
             String description = "";
             
             name = policy.sanitize(request.getParameter("sSearch_1"));
             ip = policy.sanitize(request.getParameter("sSearch_2"));
             port = policy.sanitize(request.getParameter("sSearch_3"));
             platform = policy.sanitize(request.getParameter("sSearch_4"));
-            os = policy.sanitize(request.getParameter("sSearch_5"));
-            browser = policy.sanitize(request.getParameter("sSearch_6"));
-            version = policy.sanitize(request.getParameter("sSearch_7"));
-            description = policy.sanitize(request.getParameter("sSearch_8"));
+            browser = policy.sanitize(request.getParameter("sSearch_5"));
+            version = policy.sanitize(request.getParameter("sSearch_6"));
+            description = policy.sanitize(request.getParameter("sSearch_7"));
             
             
             List<String> sArray = new ArrayList<String>();
             if (!platform.equals("")) {
                 String sPlatform = " `platform` like '%" + platform + "%'";
                 sArray.add(sPlatform);
-            }
-            if (!os.equals("")) {
-                String sOs = " `os` like '%" + os + "%'";
-                sArray.add(sOs);
             }
             if (!browser.equals("")) {
                 String sBrowser = " `browser` like '%" + browser + "%'";
@@ -174,7 +168,6 @@ public class FindAllRobot extends HttpServlet {
                         .put(robot.getIp())
                         .put(robot.getPort())
                         .put(robot.getPlatform())
-                        .put(robot.getOs())
                         .put(robot.getBrowser())
                         .put(robot.getVersion())
                         .put(robot.getDescription());

@@ -57,7 +57,6 @@
                         {"sName": "Ip", "sWidth": "10%"},
                         {"sName": "Port", "sWidth": "10%"},
                         {"sName": "Platform", "sWidth": "10%"},
-                        {"sName": "Os", "sWidth": "10%"},
                         {"sName": "Browser", "sWidth": "10%"},
                         {"sName": "Version", "sWidth": "10%"},
                         {"sName": "Description", "sWidth": "10%"},
@@ -98,8 +97,6 @@
                         {onblur: 'submit',
                             placeholder: ''}, 
                         {onblur: 'submit',
-                            placeholder: ''},
-                        {onblur: 'submit',
                             placeholder: ''}, 
                         {onblur: 'submit',
                             placeholder: ''},
@@ -139,7 +136,6 @@
                         <th>Ip</th>
                         <th>Port</th>
                         <th>Platform</th>
-                        <th>Os</th>
                         <th>Browser</th>
                         <th>Version</th>
                         <th>Description</th>
@@ -175,24 +171,19 @@
                        class="ncdetailstext" rel="4" >
                 <br />
                 <br />
-                <label for="Os" style="font-weight:bold">Os</label>
-                <input id="Os" name="Os" style="width:350px;" 
-                       class="ncdetailstext" rel="5" >
-                <br />
-                <br />
                 <label for="Browser" style="font-weight:bold">Browser</label>
                 <input id="Browser" name="Browser" style="width:750px;" 
-                       class="ncdetailstext" rel="6" >
+                       class="ncdetailstext" rel="5" >
                 <br />
                 <br />
                 <label for="Version" style="font-weight:bold">Version</label>
                 <textarea id="Version" name="Version" style="width:800px;" rows="5" 
-                       class="ncdetailstext" rel="7" ></textarea>
+                       class="ncdetailstext" rel="6" ></textarea>
                 <br />
                 <br />
                 <label for="Description" style="font-weight:bold">Description</label>
                 <input id="Description" name="Description" style="width:350px;" 
-                       class="ncdetailstext" rel="8" >
+                       class="ncdetailstext" rel="7" >
                 <br />
                 <br />
                 <div style="width: 250px; float:right">

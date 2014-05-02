@@ -387,13 +387,6 @@
                                 </div>
                             </div>
                             <div style="clear:both">
-                                <div style="float:left; width:150px; text-align:left">OS (Optional)
-                                </div>
-                                <div style="float:left">
-                                    <input id="os" name="os" placeholder="Example : OS X Mavericks" style="width: 150px;">
-                                </div>
-                            </div>
-                            <div style="clear:both">
                             </div>
 
                         </div>
@@ -406,7 +399,7 @@
                                             selected="selected"
                                             <% }%> 
                                             value="<%=rob.getName()%>"> 
-                                        <%="[ " + rob.getName() + " ] " + rob.getIp() + ":" + rob.getPort() + " " + rob.getBrowser() + " V" + rob.getVersion() + " on " + rob.getOs() + " ( " + rob.getPlatform() + " )"%>
+                                        <%="[ " + rob.getName() + " ] " + rob.getIp() + ":" + rob.getPort() + " " + rob.getBrowser() + " V" + rob.getVersion() + " on " + rob.getPlatform() + "."%>
                                     </option>
                                     <% }%>
                                 </select>

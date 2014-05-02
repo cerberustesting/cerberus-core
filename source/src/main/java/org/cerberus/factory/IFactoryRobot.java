@@ -33,13 +33,12 @@ public interface IFactoryRobot {
      * @param ip IP of the Robot
      * @param port port of the Robot
      * @param platform platform of the Robot
-     * @param os os of the Robot
      * @param browser browser of the Robot
      * @param version version of the Robot
      * @param description description of the Robot
      * @return 
      */
     Robot create(Integer id, String name, String ip, Integer port, String platform ,
-    String os, String browser, String version, String description);
+    String browser, String version, String description);
 
 }

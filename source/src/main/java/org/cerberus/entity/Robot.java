@@ -30,7 +30,6 @@ public class Robot {
     String ip;
     Integer port;
     String platform;
-    String os;
     String browser;
     String version;
     String description;
@@ -65,14 +64,6 @@ public class Robot {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public String getOs() {
-        return os;
-    }
-
-    public void setOs(String os) {
-        this.os = os;
     }
 
     public Integer getId() {

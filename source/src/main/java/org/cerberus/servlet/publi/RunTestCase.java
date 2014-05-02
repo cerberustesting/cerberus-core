@@ -86,7 +86,6 @@ public class RunTestCase extends HttpServlet {
         String browser = "";
         String version = "";
         String platform = "";
-        String os = "";
         String robot = ParameterParserUtil.parseStringParam(policy.sanitize(request.getParameter("robot")), "");
         
         if (robot.equals("")){
@@ -95,7 +94,6 @@ public class RunTestCase extends HttpServlet {
         browser = ParameterParserUtil.parseStringParam(policy.sanitize(request.getParameter("browser")), "firefox");
         version = ParameterParserUtil.parseStringParam(policy.sanitize(request.getParameter("version")), "");
         platform = ParameterParserUtil.parseStringParam(policy.sanitize(request.getParameter("platform")), "");
-        os = ParameterParserUtil.parseStringParam(policy.sanitize(request.getParameter("os")), "");
         } else {
         IRobotService robotService = appContext.getBean(IRobotService.class);
             try {
@@ -105,7 +103,6 @@ public class RunTestCase extends HttpServlet {
                 browser = robObj.getBrowser();
                 version = robObj.getVersion();
                 platform = robObj.getPlatform();
-                os = robObj.getOs();
             } catch (CerberusException ex) {
                 Logger.getLogger(RunTestCase.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
             }
@@ -144,7 +141,6 @@ public class RunTestCase extends HttpServlet {
                 + "- browser : Browser to use for the execution. [" + browser + "]\n"
                 + "- version : Version to use for the execution. [" + version + "]\n"
                 + "- platform : Platform to use for the execution. [" + platform + "]\n"
-                + "- os : Os to use for the execution. [" + os + "]\n"
                 + "- manualURL : Activate or not the Manual URL of the application to execute. If activated the 4 parameters after (myhost, mycontextroot, myloginrelativeurl, myenvdata) are necessary. [" + manualURL + "]\n"
                 + "- myhost : Host of the application to test. [" + myHost + "]\n"
                 + "- mycontextroot : Context root of the application to test. [" + myContextRoot + "]\n"
@@ -215,7 +211,6 @@ public class RunTestCase extends HttpServlet {
                     out.println("<tr><td>Browser</td><td><span id='Browser'>" + browser + "</span></td></tr>");
                     out.println("<tr><td>Version</td><td><span id='Browser'>" + version + "</span></td></tr>");
                     out.println("<tr><td>Platform</td><td><span id='Browser'>" + platform + "</span></td></tr>");
-                    out.println("<tr><td>OS</td><td><span id='Browser'>" + os + "</span></td></tr>");
                     out.println("<tr><td>ManualURL</td><td><span id='ManualURL'>" + tCExecution.isManualURL() + "</span></td></tr>");
                     out.println("<tr><td>MyHost</td><td><span id='MyHost'>" + tCExecution.getMyHost() + "</span></td></tr>");
                     out.println("<tr><td>MyContextRoot</td><td><span id='MyContextRoot'>" + tCExecution.getMyContextRoot() + "</span></td></tr>");

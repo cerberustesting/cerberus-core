@@ -31,14 +31,13 @@ public class FactoryRobot implements IFactoryRobot {
 
     @Override
     public Robot create(Integer id, String name, String ip, Integer port, String platform ,
-    String os, String browser, String version, String description) {
+    String browser, String version, String description) {
         Robot newRobot = new Robot();
         newRobot.setId(id);
         newRobot.setName(name);
         newRobot.setIp(ip);
         newRobot.setPort(port);
         newRobot.setPlatform(platform);
-        newRobot.setOs(os);
         newRobot.setBrowser(browser);
         newRobot.setVersion(version);
         newRobot.setDescription(description);
