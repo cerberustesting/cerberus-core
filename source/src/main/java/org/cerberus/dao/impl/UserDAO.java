@@ -220,7 +220,7 @@ public class UserDAO implements IUserDAO {
         StringBuilder query = new StringBuilder();
         query.append("UPDATE user SET Login = ?, Name = ?, Request = ?, ReportingFavorite = ?, DefaultIP = ?,");
         query.append("Team = ?, DefaultSystem = ?, Email= ? , preferenceRobotPort = ?, ");
-        query.append("preferenceRobotPlatform = ?, preferenceRobotOS = ?, ");
+        query.append("preferenceRobotPlatform = ?, ");
         query.append("preferenceRobotBrowser = ?, preferenceRobotVersion = ?  WHERE userid = ?");
 
         Connection connection = this.databaseSpring.connect();
@@ -237,10 +237,9 @@ public class UserDAO implements IUserDAO {
                 preStat.setString(8, user.getEmail());
                 preStat.setString(9, String.valueOf(user.getPreferenceRobotPort()));
                 preStat.setString(10, user.getPreferenceRobotPlatform());
-                preStat.setString(11, user.getPreferenceRobotOS());
-                preStat.setString(12, user.getPreferenceRobotBrowser());
-                preStat.setString(13, user.getPreferenceRobotVersion());
-                preStat.setInt(14, user.getUserID());
+                preStat.setString(11, user.getPreferenceRobotBrowser());
+                preStat.setString(12, user.getPreferenceRobotVersion());
+                preStat.setInt(13, user.getUserID());
 
                 bool = preStat.executeUpdate() > 0;
             } catch (SQLException exception) {
@@ -355,11 +354,11 @@ public class UserDAO implements IUserDAO {
         String email = ParameterParserUtil.parseStringParam(rs.getString("email"), "");
         Integer preferenceRobotPort = ParameterParserUtil.parseIntegerParam(rs.getString("preferenceRobotPort"), 0); 
         String preferenceRobotPlatform = ParameterParserUtil.parseStringParam(rs.getString("preferenceRobotPlatform"), ""); 
-        String preferenceRobotOS = ParameterParserUtil.parseStringParam(rs.getString("preferenceRobotOS"), ""); 
         String preferenceRobotBrowser = ParameterParserUtil.parseStringParam(rs.getString("preferenceRobotBrowser"), "");
         String preferenceRobotVersion = ParameterParserUtil.parseStringParam(rs.getString("preferenceRobotVersion"), "");
+        String preferenceRobot = ParameterParserUtil.parseStringParam(rs.getString("preferenceRobot"), "");
         //TODO remove when working in test with mockito and autowired
         factoryUser = new FactoryUser();
-        return factoryUser.create(userID, login, password, request, name, team, reportingFavorite, defaultIP, preferenceRobotPort, preferenceRobotPlatform, preferenceRobotOS, preferenceRobotBrowser, preferenceRobotVersion, defaultSystem, email);
+        return factoryUser.create(userID, login, password, request, name, team, reportingFavorite, defaultIP, preferenceRobotPort, preferenceRobotPlatform, preferenceRobotBrowser, preferenceRobotVersion, preferenceRobot, defaultSystem, email);
     }
 }

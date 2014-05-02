@@ -94,10 +94,16 @@
                             placeholder: ''}, 
                         {onblur: 'submit',
                             placeholder: ''},
-                        {onblur: 'submit',
-                            placeholder: ''}, 
-                        {onblur: 'submit',
-                            placeholder: ''}, 
+                        {loadtext: 'loading...',
+                            type: 'select',
+                            onblur: 'submit',
+                            loadurl: 'GetInvariantList?idName=platform',
+                            loadtype:'GET'}, 
+                        {loadtext: 'loading...',
+                            type: 'select',
+                            onblur: 'submit',
+                            loadurl: 'GetInvariantList?idName=browser',
+                            loadtype:'GET'},
                         {onblur: 'submit',
                             placeholder: ''},
                         {onblur: 'submit',
@@ -148,42 +154,42 @@
         </div>
         <div>
             <form id="formAddNewRow" action="#" title="Add SQL Data" style="width:350px" method="post">
-                <label for="ID" style="font-weight:bold">ID</label>
-                <input id="ID" name="ID" style="width:350px;" 
+                <label for="ID" style="font-weight:bold; display:none">ID</label>
+                <input id="ID" name="ID" style="width:350px;display:none" 
                        class="ncdetailstext" rel="0" >
-                <label for="Name" style="font-weight:bold">Name</label>
+                <label for="Name" style="font-weight:bold; width:100px;">Name</label>
                 <input id="Name" name="Name" style="width:350px;" 
-                       class="ncdetailstext" rel="1" >
+                       class="ncdetailstext" rel="1" placeholder="Example : MyRobot">
                 <br />
                 <br />
                 <label for="Ip" style="font-weight:bold">Ip</label>
                 <input id="Ip" name="Ip" style="width:350px;" 
-                       class="ncdetailstext" rel="2" >
+                       class="ncdetailstext" rel="2" placeholder="Example : 127.0.0.1">
                 <br />
                 <br />
                 <label for="Port" style="font-weight:bold">Port</label>
                 <input id="Port" name="Port" style="width:350px;" 
-                       class="ncdetailstext" rel="3" >
+                       class="ncdetailstext" rel="3" placeholder="Example : 5555">
                 <br />
                 <br />
                 <label for="Platform" style="font-weight:bold">Platform</label>
-                <input id="Platform" name="Platform" style="width:350px;" 
-                       class="ncdetailstext" rel="4" >
+                <select id="Platform" name="Platform" style="width:350px;" 
+                        class="ncdetailstext" rel="4"></select>
                 <br />
                 <br />
                 <label for="Browser" style="font-weight:bold">Browser</label>
-                <input id="Browser" name="Browser" style="width:750px;" 
-                       class="ncdetailstext" rel="5" >
+                <select id="Browser" name="Browser" style="width:350px;" 
+                        class="ncdetailstext" rel="5" ></select>
                 <br />
                 <br />
                 <label for="Version" style="font-weight:bold">Version</label>
-                <textarea id="Version" name="Version" style="width:800px;" rows="5" 
-                       class="ncdetailstext" rel="6" ></textarea>
+                <input id="Version" name="Version" style="width:350px;" rows="5" 
+                       class="ncdetailstext" rel="6" placeholder="Browser Version : 27 for example">
                 <br />
                 <br />
                 <label for="Description" style="font-weight:bold">Description</label>
                 <input id="Description" name="Description" style="width:350px;" 
-                       class="ncdetailstext" rel="7" >
+                       class="ncdetailstext" rel="7" placeholder="Example : Used for Regression Testing">
                 <br />
                 <br />
                 <div style="width: 250px; float:right">
@@ -202,8 +208,35 @@
                 }
             %>
         </div>
-        <br><%
+         <br><%
             out.print(display_footer(DatePageStart));
         %>
+    <script type="text/javascript">
+            (document).ready($.getJSON('FindInvariantByID?idName=browser', function(data) {
+                $("#Browser").empty();
+
+                for (var i = 0; i < data.length; i++) {
+                    $("#Browser").append($("<option></option>")
+                            .attr("value", data[i].value)
+                            .text(data[i].value + " ( " + data[i].description + " )"));
+                }
+
+            }));
+
+        </script>
+        <script type="text/javascript">
+            (document).ready($.getJSON('FindInvariantByID?idName=platform', function(data) {
+                $("#Platform").empty();
+
+                    
+                for (var i = 0; i < data.length; i++) {
+                    $("#Platform").append($("<option></option>")
+                            .attr("value", data[i].value)
+                            .text(data[i].value + " ( " + data[i].description + " )"));
+                }
+
+            }));
+
+        </script>
     </body>
 </html>

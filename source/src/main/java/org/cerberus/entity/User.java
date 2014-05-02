@@ -32,11 +32,18 @@ public class User {
     private String defaultIP;
     private Integer preferenceRobotPort;
     private String preferenceRobotPlatform;
-    private String preferenceRobotOS;
     private String preferenceRobotBrowser;
     private String preferenceRobotVersion;
-    
+    private String preferenceRobot;
 
+    public String getPreferenceRobot() {
+        return preferenceRobot;
+    }
+
+    public void setPreferenceRobot(String preferenceRobot) {
+        this.preferenceRobot = preferenceRobot;
+    }
+    
     public Integer getPreferenceRobotPort() {
         return preferenceRobotPort;
     }
@@ -51,14 +58,6 @@ public class User {
 
     public void setPreferenceRobotPlatform(String preferenceRobotPlatform) {
         this.preferenceRobotPlatform = preferenceRobotPlatform;
-    }
-
-    public String getPreferenceRobotOS() {
-        return preferenceRobotOS;
-    }
-
-    public void setPreferenceRobotOS(String preferenceRobotOS) {
-        this.preferenceRobotOS = preferenceRobotOS;
     }
 
     public String getPreferenceRobotBrowser() {
@@ -198,9 +197,6 @@ public class User {
         if ((this.preferenceRobotPlatform == null) ? (other.preferenceRobotPlatform != null) : !this.preferenceRobotPlatform.equals(other.preferenceRobotPlatform)) {
             return false;
         }
-        if ((this.preferenceRobotOS == null) ? (other.preferenceRobotOS != null) : !this.preferenceRobotOS.equals(other.preferenceRobotOS)) {
-            return false;
-        }
         if ((this.preferenceRobotBrowser == null) ? (other.preferenceRobotBrowser != null) : !this.preferenceRobotBrowser.equals(other.preferenceRobotBrowser)) {
             return false;
         }
@@ -229,7 +225,6 @@ public class User {
         hash = 97 * hash + (this.defaultIP != null ? this.defaultIP.hashCode() : 0);
         hash = 97 * hash + (this.preferenceRobotPort != null ? this.preferenceRobotPort.hashCode() : 0);
         hash = 97 * hash + (this.preferenceRobotPlatform != null ? this.preferenceRobotPlatform.hashCode() : 0);
-        hash = 97 * hash + (this.preferenceRobotOS != null ? this.preferenceRobotOS.hashCode() : 0);
         hash = 97 * hash + (this.preferenceRobotBrowser != null ? this.preferenceRobotBrowser.hashCode() : 0);
         hash = 97 * hash + (this.preferenceRobotVersion != null ? this.preferenceRobotVersion.hashCode() : 0);
         hash = 97 * hash + (this.defaultSystem != null ? this.defaultSystem.hashCode() : 0);

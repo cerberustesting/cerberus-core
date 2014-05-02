@@ -67,7 +67,6 @@
                             usr.setDefaultIP(request.getParameter("ss_ip") == null ? "" : request.getParameter("ss_ip"));
                             usr.setPreferenceRobotPort(Integer.valueOf(request.getParameter("ss_p")) == 0 ? 0 : Integer.valueOf(request.getParameter("ss_p")));
                             usr.setPreferenceRobotPlatform(request.getParameter("platform") == null ? "" : request.getParameter("platform"));
-                            usr.setPreferenceRobotOS(request.getParameter("os") == null ? "" : request.getParameter("os"));
                             usr.setPreferenceRobotBrowser(request.getParameter("browser") == null ? "" : request.getParameter("browser"));
                             usr.setPreferenceRobotVersion(request.getParameter("version") == null ? "" : request.getParameter("version"));
                             userService.updateUser(usr);
@@ -146,17 +145,6 @@
                         }
                         if (!platform.equals("")) {
                             platformClass = "selectRobotSelected";
-                        }
-
-                        String os = "";
-                        String osClass = "selectRobot";
-                        if (request.getParameter("os") != null && request.getParameter("os").compareTo("") != 0) {
-                            os = request.getParameter("os");;
-                        } else {
-                            os = usr.getPreferenceRobotOS();
-                        }
-                        if (!os.equals("")) {
-                            osClass = "selectRobotSelected";
                         }
 
                         String version = "";
@@ -388,7 +376,9 @@
                             </div>
                             <div style="clear:both">
                             </div>
-
+<div style="clear:both">
+                            <input id="button" class="button" type="submit" <%=enable%> name="DefaultIP" value="Record my Robot Preferences" >
+                        </div>
                         </div>
                         <div id="automatedRobotDiv" style="display:none; clear:both">
                             <div style="float:left">
@@ -405,9 +395,7 @@
                                 </select>
                             </div>
                         </div>
-                        <div style="clear:both">
-                            <input id="button" class="button" type="submit" <%=enable%> name="DefaultIP" value="Record my Robot Preferences" >
-                        </div>
+                        
                         <div style="clear:both; text-align:left;font-size: smaller">
                             INSTRUCTIONS ON HOW TO RUN YOUR LOCAL SELENIUM SERVER :
                             <br>
