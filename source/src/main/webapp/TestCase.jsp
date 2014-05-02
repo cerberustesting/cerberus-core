@@ -45,6 +45,7 @@
         <script type="text/javascript" src="js/elrte.min.js"></script>
         <script type="text/javascript" src="js/i18n/elrte.en.js"></script>
         <script type="text/javascript" src="js/elfinder.min.js"></script>
+        <script type="text/javascript" src="js/elFinderSupportVer1.js"></script>
         <link rel="stylesheet" type="text/css" href="css/jquery-ui.css">
         <link rel="stylesheet" type="text/css" href="css/elrte.min.css">
         <link rel="stylesheet" type="text/css" href="css/crb_style.css">
@@ -99,7 +100,8 @@
                     cssfiles     : ['css/crb_style.css'],
                     fmOpen : function(callback) {
                         $('<div />').dialogelfinder({
-                            url: '',
+                            url: 'PictureConnector',
+                            transport : new elFinderSupportVer1(),
                             commandsOptions: {
                                 getfile: {
                                     oncomplete: 'destroy' // destroy elFinder after file selection
@@ -117,6 +119,7 @@
                 }
                 $('#howto').elrte(opts);
                 $('#value').elrte(opts);
+                $('.el-rte').css('z-index', 0);
                 //plugin must be added with input visible - error NS_ERROR_FAILURE: Failure
                 if(!bool){
                     $('#generalparameter').hide();
@@ -1310,7 +1313,7 @@
 
                                                     int testcase_stepaction_maxlength_sequence = 10; // Default max length values for javascript adding if any actions set by default
                                                     int testcase_stepaction_maxlength_action = 45;
-                                                    int testcase_stepaction_maxlength_object = 100;
+                                                    int testcase_stepaction_maxlength_object = 200;
                                                     int testcase_stepaction_maxlength_property = 45;
                                                     int testcase_stepaction_maxlength_description = 1000;
                                                     Integer i1 = 0;

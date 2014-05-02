@@ -470,8 +470,9 @@ returns true if plugin should continue with sending AJAX request, false will abo
 
                     var rtn;
                     //Add values from the form into the table
-                    if (oSettings.aoColumns != null && isNaN(parseInt(oSettings.aoColumns[0].mDataProp))) {
-                        rtn = oTable.fnAddData(rowData);
+                    var prop = oSettings.aoColumns[0].mDataProp !== undefined ? oSettings.aoColumns[0].mDataProp : oSettings.aoColumns[0].mData;
+                    if (oSettings.aoColumns != null && isNaN(parseInt(prop))) {
+                        rtn = oTable.fnAddData(data);
                     }
                     else {
                         rtn = oTable.fnAddData(values);
@@ -874,17 +875,20 @@ returns true if plugin should continue with sending AJAX request, false will abo
                     //Deprecated
                     sCellValue = sCellValue.replace("DATAROWID", iDT_RowId);
                     sCellValue = sCellValue.replace(properties.sIDToken, iDT_RowId);
-                    if (oSettings.aoColumns != null
-                                && oSettings.aoColumns[rel] != null
-                                && isNaN(parseInt(oSettings.aoColumns[0].mDataProp))) {
-                        rowData[oSettings.aoColumns[rel].mDataProp] = sCellValue;
+                    var prop = oSettings.aoColumns[rel].mDataProp !== undefined ? oSettings.aoColumns[rel].mDataProp : oSettings.aoColumns[rel].mData;
+
+                    if (oSettings.aoColumns !== null
+                            && oSettings.aoColumns[rel] !== null
+                            && isNaN(parseInt(prop))) {
+                        rowData[prop] = sCellValue;
                     } else {
-                        values[rel] = sCellValue;
+                         values[rel] = sCellValue;
                     }
                 }
             });
 
-            if (oSettings.aoColumns != null && isNaN(parseInt(oSettings.aoColumns[0].mDataProp))) {
+            var prop = oSettings.aoColumns[0].mDataProp !== undefined ? oSettings.aoColumns[0].mDataProp : oSettings.aoColumns[0].mData;
+            if (oSettings.aoColumns !== null && isNaN(parseInt(prop))) {
                 return rowData;
             }
             else {
@@ -1079,6 +1083,7 @@ returns true if plugin should continue with sending AJAX request, false will abo
                         $(oTable.fnGetNodes()).each(function () {
                             var position = oTable.fnGetPosition(this);
                             var id = oTable.fnGetData(position)[0];
+                          //  console.log("datatable jeditable="+id);
                             properties.fnSetRowID($(this), id);
                         }
                         );
@@ -1089,6 +1094,12 @@ returns true if plugin should continue with sending AJAX request, false will abo
             } else {
                 //Apply jEditable plugin on the table cells
                 fnApplyEditable(oTable.fnGetNodes());
+                $(oTable.fnGetNodes()).each(function () {
+                    var position = oTable.fnGetPosition(this);
+                    var id = oTable.fnGetData(position)[0];
+                   // console.log("datatable jeditable="+id);
+                    properties.fnSetRowID($(this), id);
+                });
             }
 
             //Setup form to open in dialog

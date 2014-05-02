@@ -20,15 +20,15 @@
 package org.cerberus.servlet.campaign;
 
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.cerberus.entity.CampaignParameter;
+import org.cerberus.entity.MessageGeneral;
+import org.cerberus.entity.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.factory.IFactoryCampaign;
 import org.cerberus.service.ICampaignService;
 import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;
@@ -39,31 +39,33 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  *
  * @author memiks
  */
-@WebServlet(name = "AddCampaign", urlPatterns = {"/AddCampaign"})
-public class AddCampaign extends HttpServlet {
+@WebServlet(name = "UpdateCampaignParameter", urlPatterns = {"/UpdateCampaignParameter"})
+public class UpdateCampaignParameter extends HttpServlet {
 
     private ICampaignService campaignService;
-    private IFactoryCampaign factoryCampaign;
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         campaignService = appContext.getBean(ICampaignService.class);
-        factoryCampaign = appContext.getBean(IFactoryCampaign.class);
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
 
-        String campaign = policy.sanitize(request.getParameter("Campaign"));
-        String description = policy.sanitize(request.getParameter("Description"));
+        String pk = policy.sanitize(request.getParameter("id"));
+        String name = policy.sanitize(request.getParameter("columnName"));
+        String value = policy.sanitize(request.getParameter("value"));
 
         response.setContentType("text/html");
-        campaignService.createCampaign(factoryCampaign.create(null, campaign, description));
-
         try {
-            String newCapaignId = String.valueOf(campaignService.findCampaignByCampaignName(campaign).getCampaignID());
-            response.getWriter().append(newCapaignId).close();
+            CampaignParameter campaignParameter = campaignService.findCampaignParameterByKey(Integer.parseInt(pk));
+            if (name != null && "Value".equals(name.trim())) {
+                campaignParameter.setValue(value);
+            } else {
+                throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NOT_IMPLEMEMTED));
+            }
+            campaignService.updateCampaignParameter(campaignParameter);
+            response.getWriter().print(value);
         } catch (CerberusException ex) {
-            Logger.getLogger(AddCampaign.class.getName()).log(Level.SEVERE, null, ex);
-            response.getWriter().append("-1").close();
+            response.getWriter().print(ex.getMessageError().getDescription());
         }
     }
 }

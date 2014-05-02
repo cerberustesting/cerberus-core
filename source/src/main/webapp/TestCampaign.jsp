@@ -36,7 +36,7 @@
         <link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico">
         <script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>
         <script type="text/javascript" src="js/jquery-ui-1.10.2.js"></script>
-        <script type="text/javascript" src="js/jquery.dataTables.min.js"></script>
+        <script type="text/javascript" src="js/jquery.dataTables.js"></script>
         <script type="text/javascript" src="js/jquery.jeditable.mini.js"></script>
         <script type="text/javascript" src="js/jquery.dataTables.editable.js"></script>
         <script type="text/javascript" src="js/jquery.validate.min.js"></script>
@@ -96,7 +96,7 @@
                     oAddNewRowFormOptions: {
                         title: 'Add Campaign Entry',
                         show: "blind",
-                        hide: "explode",
+                        hide: "blind",
                         width: "700px"
                     },
                     sDeleteHttpMethod: "POST",
@@ -180,7 +180,7 @@
                         oAddNewRowFormOptions: {
                             title: 'Add Parameter',
                             show: "blind",
-                            hide: "explode",
+                            hide: "blind",
                             width: "700px"
                         },
                         sDeleteHttpMethod: "POST",
@@ -195,13 +195,6 @@
                         },
                         "aoColumns": [
                             null,
-                            null,
-                            {
-                                indicator   : 'Saving...',
-                                tooltip     : 'Double Click to edit...',
-                                style       : 'display: inline',
-                                onblur      : 'submit'
-                            },
                             {
                                 indicator   : 'Saving...',
                                 tooltip     : 'Double Click to edit...',
@@ -247,14 +240,14 @@
 
                         sAddHttpMethod: "POST",
                         oAddNewRowButtonOptions: {
-                            label: "<b>Create Content</b>",
+                            label: "<b>Add Content</b>",
                             background: "#AAAAAA",
                             icons: {primary: 'ui-icon-plus'}
                         },
                         oAddNewRowFormOptions: {
                             title: 'Add Content',
                             show: "blind",
-                            hide: "explode",
+                            hide: "blind",
                             width: "700px"
                         },
                         sDeleteHttpMethod: "POST",
@@ -268,8 +261,6 @@
                             $(".dataTables_processing").css('visibility', 'hidden');
                         },
                         "aoColumns": [
-                            null,
-                            null,
                             {
                                 indicator   : 'Saving...',
                                 tooltip     : 'Double Click to edit...',
@@ -280,6 +271,23 @@
                     });
                 });
             
+            
+            $(document).ready(function(){
+                refreshCampaigns();
+                
+                $.get("GetTestBattery", "action=findAllTestBattery", function(data) {
+                    var index, testbattery;
+                    var select = $("#TestBattery");
+                    for(index=0; index<data.TestBatteries.length; index++) {
+                        testbattery = data.TestBatteries[index];
+                        console.log(testbattery);
+                        select.append(
+                                $("<option></option>").attr('value', testbattery[1])
+                                .text(testbattery[1] + " - "+testbattery[2])
+                            );
+                    }
+                });
+            });
         </script>
     </head>
     <body>
@@ -346,7 +354,7 @@
                 <input type="hidden" value="1" id="CampaignIdForContent" name="Campaign" class="ncdetailstext" rel="1">
                 <br><br>
                 <label for="TestBattery" style="font-weight:bold">TestBattery</label>
-                <input id="TestBattery" name="TestBattery" class="ncdetailstext" rel="2" >
+                <select id="TestBattery" name="TestBattery" class="ncdetailstext" rel="2" ></select>
             </form>
      </body>
 </html>

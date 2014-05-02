@@ -166,12 +166,12 @@ public class RunTestCase extends HttpServlet {
             out.println("Error - Parameter country is mandatory.");
             error = true;
         }
-        if (StringUtils.isBlank(environment)) {
+        if (StringUtils.isBlank(environment) && !manualURL) {
             out.println("Error - Parameter environment is mandatory.");
             error = true;
         }
 
-        if (error == false) {
+        if (!error) {
 
             IRunTestCaseService runTestCaseService = appContext.getBean(RunTestCaseService.class);
             IFactoryTCase factoryTCase = appContext.getBean(IFactoryTCase.class);

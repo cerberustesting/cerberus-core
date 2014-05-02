@@ -92,4 +92,19 @@ public class TestBatteryService implements ITestBatteryService {
         return testBatteryContentDAO.findTestBatteryContentsByCriteria(testBatteryContentID, testBattery, test, testCase);
     }
 
+    @Override
+    public TestBatteryContent findTestBatteryContentByKey(Integer testBatteryContentID) throws CerberusException {
+        return testBatteryContentDAO.findTestBatteryContentByKey(testBatteryContentID);
+    }
+
+    @Override
+    public boolean deleteTestBattery(TestBattery testBattery) {
+        return testBatteryDAO.deleteTestBattery(testBattery);
+    }
+
+    @Override
+    public boolean deleteTestBatteryContent(TestBatteryContent testBatteryContent) {
+        return testBatteryContentDAO.deleteTestBatteryContent(testBatteryContent);
+    }
+
 }

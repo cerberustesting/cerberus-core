@@ -66,19 +66,19 @@ public class TestBatteryDAO implements ITestBatteryDAO {
                         testBatteryList.add(this.loadTestBatteryFromResultSet(resultSet));
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                    MyLogger.log(TestBatteryDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
                     testBatteryList = null;
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                MyLogger.log(TestBatteryDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
                 testBatteryList = null;
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            MyLogger.log(TestBatteryDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
             testBatteryList = null;
         } finally {
             try {
@@ -86,7 +86,7 @@ public class TestBatteryDAO implements ITestBatteryDAO {
                     connection.close();
                 }
             } catch (SQLException e) {
-                MyLogger.log(ApplicationDAO.class.getName(), Level.WARN, e.toString());
+                MyLogger.log(TestBatteryDAO.class.getName(), Level.WARN, e.toString());
             }
         }
         if (throwEx) {
@@ -112,24 +112,24 @@ public class TestBatteryDAO implements ITestBatteryDAO {
                         testBattery = this.loadTestBatteryFromResultSet(resultSet);
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                    MyLogger.log(TestBatteryDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                MyLogger.log(TestBatteryDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            MyLogger.log(TestBatteryDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
         } finally {
             try {
                 if (connection != null) {
                     connection.close();
                 }
             } catch (SQLException e) {
-                MyLogger.log(ApplicationDAO.class.getName(), Level.WARN, e.toString());
+                MyLogger.log(TestBatteryDAO.class.getName(), Level.WARN, e.toString());
             }
         }
         if (throwEx) {
@@ -155,24 +155,24 @@ public class TestBatteryDAO implements ITestBatteryDAO {
                         testBatteryResult = this.loadTestBatteryFromResultSet(resultSet);
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                    MyLogger.log(TestBatteryDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                MyLogger.log(TestBatteryDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            MyLogger.log(TestBatteryDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
         } finally {
             try {
                 if (connection != null) {
                     connection.close();
                 }
             } catch (SQLException e) {
-                MyLogger.log(ApplicationDAO.class.getName(), Level.WARN, e.toString());
+                MyLogger.log(TestBatteryDAO.class.getName(), Level.WARN, e.toString());
             }
         }
         if (throwEx) {
@@ -198,19 +198,19 @@ public class TestBatteryDAO implements ITestBatteryDAO {
                         testBatteryList.add(this.loadTestBatteryFromResultSet(resultSet));
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                    MyLogger.log(TestBatteryDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
                     testBatteryList = null;
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                MyLogger.log(TestBatteryDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
                 testBatteryList = null;
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            MyLogger.log(TestBatteryDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
             testBatteryList = null;
         } finally {
             try {
@@ -218,7 +218,7 @@ public class TestBatteryDAO implements ITestBatteryDAO {
                     connection.close();
                 }
             } catch (SQLException e) {
-                MyLogger.log(ApplicationDAO.class.getName(), Level.WARN, e.toString());
+                MyLogger.log(TestBatteryDAO.class.getName(), Level.WARN, e.toString());
             }
         }
         if (throwEx) {
@@ -230,16 +230,16 @@ public class TestBatteryDAO implements ITestBatteryDAO {
     @Override
     public List<TestBattery> findTestBatteryByCriteria(Integer testBatteryID, String testBattery, String Description) throws CerberusException {
         boolean throwEx = false;
-        final StringBuffer query = new StringBuffer("SELECT * FROM testbattery t WHERE ");
+        final StringBuffer query = new StringBuffer("SELECT * FROM testbattery t WHERE 1=1");
 
         if (testBatteryID != null) {
-            query.append(" t.testBatteryID = ?");
+            query.append(" AND t.testBatteryID = ?");
         }
         if (testBattery != null && !"".equals(testBattery.trim())) {
-            query.append(" t.testBattery LIKE ?");
+            query.append(" AND t.testBattery LIKE ?");
         }
         if (Description != null && !"".equals(Description.trim())) {
-            query.append(" t.Description LIKE ?");
+            query.append(" AND t.Description LIKE ?");
         }
 
         List<TestBattery> testBatteriesList = new ArrayList<TestBattery>();
@@ -267,19 +267,19 @@ public class TestBatteryDAO implements ITestBatteryDAO {
                         testBatteriesList.add(this.loadTestBatteryFromResultSet(resultSet));
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                    MyLogger.log(TestBatteryDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
                     testBatteriesList = null;
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                MyLogger.log(TestBatteryDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
                 testBatteriesList = null;
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            MyLogger.log(TestBatteryDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
             testBatteriesList = null;
         } finally {
             try {
@@ -287,7 +287,7 @@ public class TestBatteryDAO implements ITestBatteryDAO {
                     connection.close();
                 }
             } catch (SQLException e) {
-                MyLogger.log(ApplicationDAO.class.getName(), Level.WARN, e.toString());
+                MyLogger.log(TestBatteryDAO.class.getName(), Level.WARN, e.toString());
             }
         }
         if (throwEx) {
@@ -310,19 +310,19 @@ public class TestBatteryDAO implements ITestBatteryDAO {
             try {
                 return (preStat.executeUpdate() == 1);
             } catch (SQLException exception) {
-                MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                MyLogger.log(TestBatteryDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            MyLogger.log(TestBatteryDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
         } finally {
             try {
                 if (connection != null) {
                     connection.close();
                 }
             } catch (SQLException e) {
-                MyLogger.log(ApplicationDAO.class.getName(), Level.WARN, e.toString());
+                MyLogger.log(TestBatteryDAO.class.getName(), Level.WARN, e.toString());
             }
         }
         return false;
@@ -341,19 +341,19 @@ public class TestBatteryDAO implements ITestBatteryDAO {
             try {
                 return (preStat.executeUpdate() == 1);
             } catch (SQLException exception) {
-                MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                MyLogger.log(TestBatteryDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            MyLogger.log(TestBatteryDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
         } finally {
             try {
                 if (connection != null) {
                     connection.close();
                 }
             } catch (SQLException e) {
-                MyLogger.log(ApplicationDAO.class.getName(), Level.WARN, e.toString());
+                MyLogger.log(TestBatteryDAO.class.getName(), Level.WARN, e.toString());
             }
         }
         return false;
@@ -365,6 +365,36 @@ public class TestBatteryDAO implements ITestBatteryDAO {
         String description = ParameterParserUtil.parseStringParam(rs.getString("description"), "");
 
         return factoryTestBattery.create(testbatteryID, testbattery, description);
+    }
+
+    @Override
+    public boolean deleteTestBattery(TestBattery testBattery) {
+        final StringBuffer query = new StringBuffer("DELETE FROM `testbattery` WHERE testbatteryID=?");
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query.toString());
+            preStat.setInt(1, testBattery.getTestbatteryID());
+
+            try {
+                return (preStat.executeUpdate() == 1);
+            } catch (SQLException exception) {
+                MyLogger.log(TestBatteryDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(TestBatteryDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(TestBatteryDAO.class.getName(), Level.WARN, e.toString());
+            }
+        }
+        return false;
     }
 
 }

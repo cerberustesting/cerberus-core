@@ -17,19 +17,16 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.servlet.campaign;
+package org.cerberus.servlet.testBattery;
 
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.cerberus.exception.CerberusException;
-import org.cerberus.factory.IFactoryCampaign;
-import org.cerberus.service.ICampaignService;
+import org.cerberus.factory.IFactoryTestBattery;
+import org.cerberus.service.ITestBatteryService;
 import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;
 import org.springframework.context.ApplicationContext;
@@ -39,31 +36,22 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  *
  * @author memiks
  */
-@WebServlet(name = "AddCampaign", urlPatterns = {"/AddCampaign"})
-public class AddCampaign extends HttpServlet {
+@WebServlet(name = "DeleteTestBattery", urlPatterns = {"/DeleteTestBattery"})
+public class DeleteTestBattery extends HttpServlet {
 
-    private ICampaignService campaignService;
-    private IFactoryCampaign factoryCampaign;
+    private ITestBatteryService testBatteryService;
+    private IFactoryTestBattery factoryTestBattery;
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-        campaignService = appContext.getBean(ICampaignService.class);
-        factoryCampaign = appContext.getBean(IFactoryCampaign.class);
+        testBatteryService = appContext.getBean(ITestBatteryService.class);
+        factoryTestBattery = appContext.getBean(IFactoryTestBattery.class);
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
 
-        String campaign = policy.sanitize(request.getParameter("Campaign"));
-        String description = policy.sanitize(request.getParameter("Description"));
+        String id = policy.sanitize(request.getParameter("id"));
 
         response.setContentType("text/html");
-        campaignService.createCampaign(factoryCampaign.create(null, campaign, description));
-
-        try {
-            String newCapaignId = String.valueOf(campaignService.findCampaignByCampaignName(campaign).getCampaignID());
-            response.getWriter().append(newCapaignId).close();
-        } catch (CerberusException ex) {
-            Logger.getLogger(AddCampaign.class.getName()).log(Level.SEVERE, null, ex);
-            response.getWriter().append("-1").close();
-        }
+        testBatteryService.deleteTestBattery(factoryTestBattery.create(Integer.parseInt(id), null, null));
     }
 }

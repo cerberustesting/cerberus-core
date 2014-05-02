@@ -35,6 +35,8 @@ public interface ITestBatteryService {
 
     TestBattery findTestBatteryByKey(Integer testBatteryID) throws CerberusException;
 
+    TestBatteryContent findTestBatteryContentByKey(Integer testBatteryContentID) throws CerberusException;
+
     TestBattery findTestBatteryByTestBatteryName(String testBattery) throws CerberusException;
 
     List<TestBatteryContent> findTestBatteryContentsByTestBatteryName(String testBattery) throws CerberusException;
@@ -43,9 +45,13 @@ public interface ITestBatteryService {
 
     boolean createTestBattery(TestBattery testBattery);
 
+    boolean deleteTestBattery(TestBattery testBattery);
+
     boolean updateTestBatteryContent(TestBatteryContent testBatteryContent);
 
     boolean createTestBatteryContent(TestBatteryContent testBatteryContent);
+
+    boolean deleteTestBatteryContent(TestBatteryContent testBatteryContent);
 
     List<TestBattery> findTestBatteryByCriteria(Integer testBatteryID, String testBattery, String Description) throws CerberusException;
 
