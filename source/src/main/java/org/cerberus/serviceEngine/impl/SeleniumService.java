@@ -84,7 +84,6 @@ import org.springframework.stereotype.Service;
  * @version 1.0, 10/01/2013
  * @since 2.0.0
  */
-@Service
 public class SeleniumService implements ISeleniumService {
 
     private static final int TIMEOUT_MILLIS = 30000;
@@ -581,15 +580,12 @@ public class SeleniumService implements ISeleniumService {
     }
 
     @Override
-    public String getFullBrowserVersion() {
+    public Capabilities getUsedCapabilities() {
 
         Capabilities caps = ((RemoteWebDriver) this.selenium.getDriver()).getCapabilities();
-        String VerPlatform = caps.getBrowserName() + " " + caps.getVersion() + " " + caps.getPlatform().toString();
-        MyLogger.log(SeleniumService.class.getName(), Level.DEBUG, "Browser & Platform version : " + VerPlatform);
-
-        return VerPlatform;
+        return caps;
     }
-
+  
     @Override
     public void doScreenShot(String runId, String name) {
         try {

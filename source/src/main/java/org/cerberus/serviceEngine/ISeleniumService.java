@@ -34,6 +34,7 @@ import org.cerberus.log.MyLogger;
 import org.cerberus.serviceEngine.impl.SeleniumService;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
+import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.NoSuchWindowException;
@@ -95,8 +96,8 @@ public interface ISeleniumService {
      */
     String getCurrentUrl() throws CerberusEventException;
 
-    String getFullBrowserVersion();
-    
+    Capabilities getUsedCapabilities();
+     
     String getAttributeFromHtml(String locator, String attribute);
 
     void doScreenShot(String runId, String path);

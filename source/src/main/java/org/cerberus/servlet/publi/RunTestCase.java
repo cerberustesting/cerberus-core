@@ -183,7 +183,7 @@ public class RunTestCase extends HttpServlet {
 
             TCase tCase = factoryTCase.create(test, testCase);
 
-            TestCaseExecution tCExecution = factoryTCExecution.create(0, test, testCase, null, null, environment, country, browser, "",
+            TestCaseExecution tCExecution = factoryTCExecution.create(0, test, testCase, null, null, environment, country, browser,version, platform, "",
                     0, 0, "", "", null, seleniumIP, null, seleniumPort, tag, "N", verbose, screenshot, outputFormat, null,
                     Version.PROJECT_NAME_VERSION, tCase, null, null, manualURL, myHost, myContextRoot, myLoginRelativeURL, myEnvData, seleniumIP, seleniumPort, null, new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_TESTSTARTED));
 
@@ -248,7 +248,10 @@ public class RunTestCase extends HttpServlet {
                 out.println("OutputFormat" + separator + outputFormat);
                 out.println("Verbose" + separator + verbose);
                 out.println("Screenshot" + separator + screenshot);
+                out.println("Robot" + separator + robot);
                 out.println("Browser" + separator + browser);
+                out.println("Version" + separator + version);
+                out.println("Platform" + separator + platform);
                 out.println("ManualURL" + separator + tCExecution.isManualURL());
                 out.println("MyHost" + separator + tCExecution.getMyHost());
                 out.println("MyContextRoot" + separator + tCExecution.getMyContextRoot());
