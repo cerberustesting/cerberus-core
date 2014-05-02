@@ -584,10 +584,10 @@
             if (deferred.state) {
                 return deferred.state();
             }
-            if (deferred.isResolved()) {
+            if (deferred.state()=="resolved") {
                 return 'resolved';
             }
-            if (deferred.isRejected()) {
+            if (deferred.state()=="rejected") {
                 return 'rejected';
             }
             return 'pending';
