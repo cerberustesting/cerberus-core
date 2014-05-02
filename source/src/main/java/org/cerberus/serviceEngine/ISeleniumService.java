@@ -55,7 +55,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
  */
 public interface ISeleniumService {
 
-    MessageGeneral startSeleniumServer(long runId, String host, String port, String browser, String ip, String login, int verbose, String country);
+    MessageGeneral startSeleniumServer(long runId, String host, String port, String browser,  String version, String platform, String ip, String login, int verbose, String country);
 
     boolean isSeleniumServerReachable(String host, String port);
 
@@ -63,7 +63,7 @@ public interface ISeleniumService {
 
     FirefoxProfile setFirefoxProfile(long runId, boolean record, String country) throws CerberusException;
 
-    boolean startSeleniumBrowser(long runId, boolean record, String country, String browser) throws CerberusException;
+    boolean startSeleniumBrowser(long runId, boolean record, String country, String browser, String version, String platform) throws CerberusException;
 
     String getValueFromHTMLVisible(String locator);
 

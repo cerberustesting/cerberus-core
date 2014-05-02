@@ -98,7 +98,7 @@ public class SeleniumService implements ISeleniumService {
     private IInvariantService invariantService;
 
     @Override
-    public MessageGeneral startSeleniumServer(long runId, String host, String port, String browser, String ip, String login, int verbose, String country) {
+    public MessageGeneral startSeleniumServer(long runId, String host, String port, String browser, String version, String platform, String ip, String login, int verbose, String country) {
 
         if (!this.started) {
             /**
@@ -114,13 +114,13 @@ public class SeleniumService implements ISeleniumService {
                 defaultWait = 90;
             }
 
-            this.selenium = factorySelenium.create(host, port, browser, login, ip, null, defaultWait);
+            this.selenium = factorySelenium.create(host, port, browser, version, platform, login, ip, null, defaultWait);
             Logger.getLogger(SeleniumService.class.getName()).log(java.util.logging.Level.WARNING, null, browser);
 
             try {
 
                 if (this.invariantService.isInvariantExist("BROWSER", browser)) {
-                    startSeleniumBrowser(runId, record, country, browser);
+                    startSeleniumBrowser(runId, record, country, browser, version, platform);
                 } else {
                     MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_SELENIUM);
                     mes.setDescription(mes.getDescription().replaceAll("%MES%", "Browser " + browser + " is not supported."));
@@ -267,15 +267,13 @@ public class SeleniumService implements ISeleniumService {
     }
 
     @Override
-    public boolean startSeleniumBrowser(long runId, boolean record, String country, String browser) throws CerberusException {
+    public boolean startSeleniumBrowser(long runId, boolean record, String country, String browser, String version, String platform) throws CerberusException {
 
         MyLogger.log(SeleniumService.class.getName(), Level.DEBUG, "Starting " + browser);
 
         DesiredCapabilities capabilities = null;
 
         //TODO : take platform and version from servlet
-        String platform = "";
-        String version = "";
         
         capabilities = setCapabilityBrowser(capabilities, browser);
         capabilities = setCapabilityPlatform(capabilities, platform);
@@ -304,7 +302,7 @@ public class SeleniumService implements ISeleniumService {
     public DesiredCapabilities setCapabilityBrowser(DesiredCapabilities capabilities, String browser) throws CerberusException {
             if (browser.equalsIgnoreCase("firefox")) {
             capabilities = DesiredCapabilities.firefox();
-            } else if (browser.contains("IE")) {
+            } else if (browser.equalsIgnoreCase("IE")) {
             capabilities = DesiredCapabilities.internetExplorer();
             } else if (browser.equalsIgnoreCase("chrome")) {
             capabilities = DesiredCapabilities.chrome();

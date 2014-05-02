@@ -473,7 +473,7 @@ public class RunTestCaseService implements IRunTestCaseService {
             } catch (CerberusException ex) {
                 Logger.getLogger(RunTestCaseService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
             }
-            tCExecution.setResultMessage(this.seleniumService.startSeleniumServer(runID, tCExecution.getSeleniumIP(), tCExecution.getSeleniumPort(), tCExecution.getBrowser(), url, login, tCExecution.getVerbose(), tCExecution.getCountry()));
+            tCExecution.setResultMessage(this.seleniumService.startSeleniumServer(runID, tCExecution.getSeleniumIP(), tCExecution.getSeleniumPort(), tCExecution.getBrowser(),tCExecution.getVersion(),tCExecution.getPlatform(), url, login, tCExecution.getVerbose(), tCExecution.getCountry()));
             /**
              * We stop if the result is not OK
              */

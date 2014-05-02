@@ -33,10 +33,13 @@ public interface IFactorySelenium {
      * @param host : IP of the Test Machine
      * @param port : Port ued for connection to the test Machine
      * @param browser : Browser Name used for the test
+     * @param version : Version of the browser
+     * @param platform : Platform of the robot (MAC/LINUX/WINDOWS...)
      * @param login
      * @param ip
      * @param driver
+     * @param wait
      * @return 
      */
-    Selenium create(String host, String port, String browser, String login, String ip, WebDriver driver, long wait);
+    Selenium create(String host, String port, String browser, String version, String platform, String login, String ip, WebDriver driver, long wait);
 }
