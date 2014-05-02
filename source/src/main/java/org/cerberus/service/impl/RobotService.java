@@ -75,4 +75,9 @@ public class RobotService implements IRobotService {
         return robotDao.getNumberOfRobotPerCriteria(searchTerm, inds);
     }
 
+    @Override
+    public Robot findRobotByName(String name) throws CerberusException {
+        return robotDao.findRobotByName(name);
+    }
+
 }

@@ -492,5 +492,47 @@ public class RobotDAO implements IRobotDAO{
         }
         return result;
     }
+
+    @Override
+    public Robot findRobotByName(String name) throws CerberusException {
+        Robot result = null;
+        final String query = "SELECT * FROM robot a WHERE a.name = ? ";
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            try {
+                preStat.setString(1, name);
+
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+                    if (resultSet.first()) {
+                        result = this.loadRobotFromResultSet(resultSet);
+                    } else {
+                        throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
+                    }
+                } catch (SQLException exception) {
+                    MyLogger.log(RobotDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                } finally {
+                    resultSet.close();
+                }
+            } catch (SQLException exception) {
+                MyLogger.log(RobotDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(RobotDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(RobotDAO.class.getName(), Level.ERROR, e.toString());
+            }
+        }
+        return result;
+    }
     
 }

@@ -1141,6 +1141,7 @@ function setRobotManual() {
     document.getElementById("platform").disabled=false;
     document.getElementById("browser").disabled=false;
     document.getElementById("version").disabled=false;
+    document.getElementById("os").disabled=false;
 }
 function setRobotAutomatic() {
     document.getElementById("robot").disabled=false;
@@ -1149,6 +1150,7 @@ function setRobotAutomatic() {
     document.getElementById("platform").disabled=true;
     document.getElementById("browser").disabled=true;
     document.getElementById("version").disabled=true;
+    document.getElementById("os").disabled=true;
 }
 
 /*

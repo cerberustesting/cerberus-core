@@ -95,5 +95,13 @@ public interface IRobotDAO {
      * @since 0.9.2
      */
     Integer getNumberOfRobotPerCriteria(String searchTerm, String inds);
+    
+    /**
+     * 
+     * @param name Name of the robot
+     * @return the first robot found
+     * @throws org.cerberus.exception.CerberusException
+     */
+    Robot findRobotByName(String name) throws CerberusException;
 
 }

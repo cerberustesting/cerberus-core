@@ -97,5 +97,12 @@ public interface IRobotService {
      * @since 0.9.2
      */
     Integer getNumberOfRobotPerCriteria(String searchTerm, String inds);
+    
+    /**
+     * 
+     * @param name Name of the robot
+     * @return the first robot found
+     */
+    Robot findRobotByName(String name) throws CerberusException ;
 
 }

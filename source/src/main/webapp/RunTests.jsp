@@ -88,7 +88,9 @@
                                         || sName.compareTo("myhost") == 0 || sName.compareTo("mycontextroot") == 0 || sName.compareTo("myloginrelativeurl") == 0
                                         || sName.compareTo("myenvdata") == 0
                                         || sName.compareTo("Tag") == 0 || sName.compareTo("outputformat") == 0
-                                        || sName.compareTo("verbose") == 0 || sName.compareTo("screenshot") == 0) {
+                                        || sName.compareTo("verbose") == 0 || sName.compareTo("screenshot") == 0
+                                        || sName.compareTo("platform") == 0 || sName.compareTo("os") == 0
+                                        || sName.compareTo("robot") == 0) {
                                     String[] sMultiple = request.getParameterValues(sName);
 
                                     for (int i = 0; i < sMultiple.length; i++) {
@@ -362,14 +364,6 @@
                                 </div>
                             </div>
                             <div style="clear:both">
-                                <div style="float:left; width:150px; text-align:left">Platform
-                                </div>
-                                <div style="float:left">
-                                    <select id="platform" name="platform" class="<%=platformClass%>" style="width: 150px;">
-                                    </select>
-                                </div>
-                            </div>
-                            <div style="clear:both">
                                 <div style="float:left; width:150px; text-align:left"><% out.print(docService.findLabelHTML("page_runtests", "Browser", "Browser"));%>
                                 </div>
                                 <div style="float:left">
@@ -378,18 +372,34 @@
                                 </div>
                             </div>
                             <div style="clear:both">
-                            </div>
-                            <div style="clear:both">
-                                <div style="float:left; width:150px; text-align:left">Version
+                                <div style="float:left; width:150px; text-align:left">Version (Optional)
                                 </div>
                                 <div style="float:left">
-                                    <input id="version" name="version" style="width: 150px;">
+                                    <input id="version" name="version" placeholder="Example : 28.0" style="width: 150px;">
                                 </div>
                             </div>
+                            <div style="clear:both">
+                                <div style="float:left; width:150px; text-align:left">Platform (Optional)
+                                </div>
+                                <div style="float:left">
+                                    <select id="platform" name="platform" class="<%=platformClass%>" style="width: 150px;" onchange="changeStyleWhenSelected('platform')">
+                                    </select>
+                                </div>
+                            </div>
+                            <div style="clear:both">
+                                <div style="float:left; width:150px; text-align:left">OS (Optional)
+                                </div>
+                                <div style="float:left">
+                                    <input id="os" name="os" placeholder="Example : OS X Mavericks" style="width: 150px;">
+                                </div>
+                            </div>
+                            <div style="clear:both">
+                            </div>
+
                         </div>
                         <div id="automatedRobotDiv" style="display:none; clear:both">
                             <div style="float:left">
-                                <select id="robot" name="robot" style="width: 550px;" class="<%=versionClass%>" onchange="setAutomaticRobotParameter()">
+                                <select id="robot" name="robot" style="width: 550px;">
                                     <% for (Robot rob : robots) { %>
                                     <option style="width: 550px;" 
                                             <% if (robot.equalsIgnoreCase(rob.getName())) { %>
@@ -429,7 +439,7 @@
                         <div style="float:left;width:150px; text-align:left"><% out.print(docService.findLabelHTML("page_runtests", "outputformat", ""));%>
                         </div>
                         <div style="float:left">
-                            <select id="outputformat" style="width: 200px">
+                            <select id="outputformat" name="outputformat" style="width: 200px">
                             </select>
                         </div>
                     </div>
@@ -437,7 +447,7 @@
                         <div style="float:left;width:150px;text-align:left "><% out.print(docService.findLabelHTML("testcaseexecution", "verbose", ""));%>
                         </div>
                         <div style="float:left">
-                            <select id="verbose" style="width: 200px">
+                            <select id="verbose" name="verbose" style="width: 200px">
                             </select>
                         </div>
                     </div>
@@ -445,7 +455,7 @@
                         <div style="float:left;width:150px; text-align:left"><% out.print(docService.findLabelHTML("page_runtests", "screenshot", ""));%>
                         </div>
                         <div style="float:left">
-                            <select id="screenshot" style="width: 200px">
+                            <select id="screenshot" name="screenshot" style="width: 200px">
                             </select>
                         </div>
                     </div>
@@ -514,7 +524,7 @@
 
                     for (var i = 0; i < data.testCaseList.length; i++) {
                         $("#testcase").append($("<option></option>")
-                                .attr("value", data.testCaseList[i].description)
+                                .attr("value", data.testCaseList[i].testCase)
                                 .attr("data-testcase", data.testCaseList[i].testCase)
                                 .attr("data-application", data.testCaseList[i].application)
                                 .text(data.testCaseList[i].description));
@@ -636,6 +646,35 @@
 
             }));
 
+        </script>
+        <script type="text/javascript">
+            (document).ready($.getJSON('FindInvariantByID?idName=platform', function(data) {
+                $("#platform").empty();
+
+$("#platform").append($("<option></option>")
+                            .attr("value", "")
+                            .text("Optional"));
+                    
+                for (var i = 0; i < data.length; i++) {
+                    $("#platform").append($("<option></option>")
+                            .attr("value", data[i].value)
+                            .text(data[i].value + " ( " + data[i].description + " )"));
+                }
+
+            }));
+
+        </script>
+        <script>
+            function changeStyleWhenSelected(field) {
+                var b = document.getElementById(field);
+                var c = b.options[b.selectedIndex].value;
+
+                if (c !== '') {
+                    document.getElementById(field).setAttribute('class', 'selectRobotSelected');
+                } else {
+                    document.getElementById(field).setAttribute('class', 'selectRobot');
+                }
+            }
         </script>
     </body>
 </html>
