@@ -19,8 +19,6 @@
 --%>
 <%@page import="org.cerberus.entity.Robot"%>
 <%@page import="org.cerberus.service.IRobotService"%>
-<%@page import="org.cerberus.service.IInvariantRobotService"%>
-<%@page import="org.cerberus.entity.InvariantRobot"%>
 <%@page import="java.util.Enumeration"%>
 <%@page import="org.apache.log4j.Level"%>
 <%@page import="org.apache.commons.lang3.StringUtils"%>
@@ -54,7 +52,6 @@
                 <%
                     IDocumentationService docService = appContext.getBean(IDocumentationService.class);
                     IUserService userService = appContext.getBean(IUserService.class);
-                    IInvariantRobotService robotService = appContext.getBean(IInvariantRobotService.class);
                     IRobotService robService = appContext.getBean(IRobotService.class);
                     IApplicationService applicationService = appContext.getBean(ApplicationService.class);
                     IParameterService myParameterService = appContext.getBean(IParameterService.class);

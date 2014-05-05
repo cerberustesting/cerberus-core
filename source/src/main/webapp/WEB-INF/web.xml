@@ -901,38 +901,18 @@
         <url-pattern>/CreateRobot</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>CreateInvariantRobot</servlet-name>
-        <url-pattern>/CreateInvariantRobot</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
         <servlet-name>DeleteRobot</servlet-name>
         <url-pattern>/DeleteRobot</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>DeleteInvariantRobot</servlet-name>
-        <url-pattern>/DeleteInvariantRobot</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>FindAllRobot</servlet-name>
         <url-pattern>/FindAllRobot</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>FindAllInvariantRobot</servlet-name>
-        <url-pattern>/FindAllInvariantRobot</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
         <servlet-name>UpdateRobot</servlet-name>
         <url-pattern>/UpdateRobot</url-pattern>
     </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>UpdateInvariantRobot</servlet-name>
-        <url-pattern>/UpdateInvariantRobot</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>GetDistinctInvariantRobotValues</servlet-name>
-        <url-pattern>/GetDistinctInvariantRobotValues</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
+   <servlet-mapping>
         <servlet-name>GetTestBySystem</servlet-name>
         <url-pattern>/GetTestBySystem</url-pattern>
     </servlet-mapping>
