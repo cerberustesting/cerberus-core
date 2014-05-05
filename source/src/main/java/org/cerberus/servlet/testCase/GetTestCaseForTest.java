@@ -48,7 +48,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  * @version 1.0, 08/02/2013
  * @since 2.0.0
  */
-@WebServlet(value = "/GetTestCaseForTest")
+@WebServlet(name = "GetTestCaseForTest", urlPatterns =  "/GetTestCaseForTest")
 public class GetTestCaseForTest extends HttpServlet {
 
     @Override

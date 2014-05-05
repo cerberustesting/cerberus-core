@@ -503,6 +503,11 @@
         <servlet-name>virtualproxy</servlet-name>
         <servlet-class>org.cerberus.servlet.VirtualProxy</servlet-class>
     </servlet>
+    <servlet>
+        <display-name>GetTestCaseForTest Proxy</display-name>
+        <servlet-name>GetTestCaseForTest</servlet-name>
+        <servlet-class>org.cerberus.servlet.testCase.GetTestCaseForTest</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>RunTestCase</servlet-name>
         <url-pattern>/RunTestCase</url-pattern>
@@ -971,6 +976,10 @@
         <servlet-name>virtualproxy</servlet-name>
         <url-pattern>/virtualproxy</url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>GetTestCaseForTest</servlet-name>
+        <url-pattern>/GetTestCaseForTest</url-pattern>
+    </servlet-mapping>
     <session-config>
         <session-timeout>
             60
@@ -1082,6 +1091,9 @@
             <url-pattern>/FindAllTestData</url-pattern>
             <url-pattern>/FindAllSqlLibrary</url-pattern>
             <url-pattern>/PictureConnector</url-pattern>
+            <url-pattern>/GetTestBySystem</url-pattern>
+            <url-pattern>/GetCountryForTestCase</url-pattern>
+            <url-pattern>/GetTestCaseForTest</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <description>Test</description>
@@ -1114,6 +1126,11 @@
             <url-pattern>/RunTests.jsp</url-pattern>
             <url-pattern>/V2_RunTests.jsp</url-pattern>
         </web-resource-collection>
+        <web-resource-collection>
+            <web-resource-name>servlet</web-resource-name>
+            <description>servlet</description>
+            <url-pattern>/findEnvironmentByCriteria</url-pattern>
+        </web-resource-collection>
         <auth-constraint>
             <description>RunTest</description>
             <role-name>RunTest</role-name>
@@ -1140,7 +1157,6 @@
             <url-pattern>/GetApplication</url-pattern>
             <url-pattern>/GetShortTests</url-pattern>
             <url-pattern>/GetInvariantsForTest</url-pattern>
-            <url-pattern>/GetCountryForTestCase</url-pattern>
             <url-pattern>/GetEnvironmentAvailable</url-pattern>
             <url-pattern>/GetDeployTypeList</url-pattern>
             <url-pattern>/GetBuildRevisionInvariant</url-pattern>
@@ -1164,6 +1180,10 @@
             <url-pattern>/CreateProject</url-pattern>
             <url-pattern>/DeleteProject</url-pattern>
             <url-pattern>/UpdateProject</url-pattern>
+            <url-pattern>/CreateRobot</url-pattern>
+            <url-pattern>/DeleteRobot</url-pattern>
+            <url-pattern>/UpdateRobot</url-pattern>
+            <url-pattern>/FindAllRobot</url-pattern>
             <url-pattern>/CreateBuildRevisionInvariant</url-pattern>
             <url-pattern>/UpdateBuildRevisionInvariant</url-pattern>
             <url-pattern>/DeleteBuildRevisionInvariant</url-pattern>
