@@ -137,7 +137,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         boolean throwEx = false;
         final String query = "UPDATE testcaseexecution SET test = ?, testcase = ?, build = ?, revision = ?, environment = ?, country = ?"
                 + ", browser = ?, application = ?, ip = ?, url = ?, port = ?, tag = ?, verbose = ?, status = ?"
-                + ", start = ?, end = ? , controlstatus = ?, controlMessage = ?, crbversion = ?, finished = ? , browserFullVersion = ?, version = ?, platform = ?, WHERE id = ?";
+                + ", start = ?, end = ? , controlstatus = ?, controlMessage = ?, crbversion = ?, finished = ? , browserFullVersion = ?, version = ?, platform = ? WHERE id = ?";
 
         Connection connection = this.databaseSpring.connect();
         try {

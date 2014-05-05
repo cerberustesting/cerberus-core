@@ -382,7 +382,7 @@
                         </div>
                         <div id="automatedRobotDiv" style="display:none; clear:both">
                             <div style="float:left">
-                                <select id="robot" name="robot" style="width: 550px;">
+                                <select id="robot" name="robot" disabled="true" style="width: 550px;">
                                     <% for (Robot rob : robots) { %>
                                     <option style="width: 550px;" 
                                             <% if (robot.equalsIgnoreCase(rob.getName())) { %>
