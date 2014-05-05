@@ -504,7 +504,7 @@
         <servlet-class>org.cerberus.servlet.VirtualProxy</servlet-class>
     </servlet>
     <servlet>
-        <display-name>GetTestCaseForTest Proxy</display-name>
+        <display-name>GetTestCaseForTest</display-name>
         <servlet-name>GetTestCaseForTest</servlet-name>
         <servlet-class>org.cerberus.servlet.testCase.GetTestCaseForTest</servlet-class>
     </servlet>
@@ -1149,6 +1149,7 @@
             <url-pattern>/IntegrationStatus.jsp</url-pattern>
             <url-pattern>/Notification.jsp</url-pattern>
             <url-pattern>/Project.jsp</url-pattern>
+            <url-pattern>/Robot.jsp</url-pattern>
         </web-resource-collection>
         <web-resource-collection>
             <web-resource-name>servlet</web-resource-name>
