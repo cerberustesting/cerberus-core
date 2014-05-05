@@ -20,15 +20,18 @@
 package org.cerberus.servlet.testBattery;
 
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.net.URLDecoder;
+import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.log4j.Level;
+import org.cerberus.entity.TestBatteryContent;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.factory.IFactoryTestBatteryContent;
+import org.cerberus.log.MyLogger;
 import org.cerberus.service.ITestBatteryService;
 import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;
@@ -52,23 +55,44 @@ public class AddTestBatteryContent extends HttpServlet {
         factoryTestBatteryContent = appContext.getBean(IFactoryTestBatteryContent.class);
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
 
-        String test = policy.sanitize(request.getParameter("Test"));
-        String testcase = policy.sanitize(request.getParameter("TestCase"));
+        String jsonResponse = "-1";
         String testbattery = policy.sanitize(request.getParameter("TestBattery"));
-
-        response.setContentType("text/html");
+        String testBatteryName;
         try {
-            String testBatteryName = testBatteryService.findTestBatteryByKey(Integer.parseInt(testbattery)).getTestbattery();
-
-            testBatteryService.createTestBatteryContent(factoryTestBatteryContent.create(null, test, testcase, testBatteryName));
-            String newTestBatteryContentId = String.valueOf(
-                    testBatteryService.findTestBatteryContentsByCriteria(null, testBatteryName, test, testcase)
-                    .get(0).getTestbatterycontentID()
-            );
-            response.getWriter().append(newTestBatteryContentId).close();
+            testBatteryName = testBatteryService.findTestBatteryByKey(Integer.parseInt(testbattery)).getTestbattery();
         } catch (CerberusException ex) {
-            Logger.getLogger(AddTestBatteryContent.class.getName()).log(Level.SEVERE, null, ex);
-            response.getWriter().append("-1").close();
+            MyLogger.log(AddTestBatteryContent.class.getName(), Level.DEBUG, ex.getMessage());
+            testBatteryName = null;
         }
+
+        if (testBatteryName != null) {
+            String test;
+            String testcase;
+            String[] testcasesselected = request.getParameterValues("testcaseselected");
+
+
+            response.setContentType("text/html");
+            for (String testcaseselect : testcasesselected) {
+                test = URLDecoder.decode(testcaseselect.split("Test=")[1].split("&TestCase=")[0], "UTF-8");
+                testcase = URLDecoder.decode(testcaseselect.split("&TestCase=")[1], "UTF-8");
+                try {
+
+                    testBatteryService.createTestBatteryContent(factoryTestBatteryContent.create(null, test, testcase, testBatteryName));
+                    List<TestBatteryContent> batteryContent = testBatteryService.findTestBatteryContentsByCriteria(null, testBatteryName, test, testcase);
+
+                    if (batteryContent != null && batteryContent.size() == 1) {
+                        String newTestBatteryContentId = String.valueOf(
+                                testBatteryService.findTestBatteryContentsByCriteria(null, testBatteryName, test, testcase)
+                                .get(0).getTestbatterycontentID()
+                        );
+                        jsonResponse = newTestBatteryContentId;
+                    }
+                } catch (CerberusException ex) {
+                    MyLogger.log(AddTestBatteryContent.class.getName(), Level.DEBUG, ex.getMessage());
+                    jsonResponse = "-1";
+                }
+            }
+        }
+        response.getWriter().append(jsonResponse).close();
     }
 }
