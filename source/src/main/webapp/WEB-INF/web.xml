@@ -445,36 +445,16 @@
         <servlet-class>org.cerberus.servlet.robot.CreateRobot</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>CreateInvariantRobot</servlet-name>
-        <servlet-class>org.cerberus.servlet.invariantRobot.CreateInvariantRobot</servlet-class>
-    </servlet>
-    <servlet>
         <servlet-name>DeleteRobot</servlet-name>
         <servlet-class>org.cerberus.servlet.robot.DeleteRobot</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>DeleteInvariantRobot</servlet-name>
-        <servlet-class>org.cerberus.servlet.invariantRobot.DeleteInvariantRobot</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>FindAllInvariantRobot</servlet-name>
-        <servlet-class>org.cerberus.servlet.invariantRobot.FindAllInvariantRobot</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>FindAllRobot</servlet-name>
         <servlet-class>org.cerberus.servlet.robot.FindAllRobot</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>UpdateInvariantRobot</servlet-name>
-        <servlet-class>org.cerberus.servlet.invariantRobot.UpdateInvariantRobot</servlet-class>
-    </servlet>
-    <servlet>
         <servlet-name>UpdateRobot</servlet-name>
         <servlet-class>org.cerberus.servlet.robot.UpdateRobot</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>GetDistinctInvariantRobotValues</servlet-name>
-        <servlet-class>org.cerberus.servlet.invariantRobot.GetDistinctInvariantRobotValues</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>GetTestBySystem</servlet-name>
