@@ -333,17 +333,33 @@
 
 
             };
-            
-            
+      
             $(document).ready(function(){
                 refreshCampaigns();
+                
+                $.get("ListCampaignParameter",function(data){
+                    var index, parameter;
+                    var select = $("select#Parameter");
+                    select.empty();
+                    select.on("change",refreshParameterValues);
+                    for(index=0; index<data.CampaignsParameters.length; index++) {
+                        parameter = data.CampaignsParameters[index];
+                        //console.log(parameter);
+                        select.append(
+                                $("<option></option>").attr('value', parameter[1])
+                                .text(parameter[4])
+                                .attr("title", parameter[3])
+                            );
+                     }
+                    select.delay(500).change();
+                });
                 
                 $.get("GetTestBattery", "action=findAllTestBattery", function(data) {
                     var index, testbattery;
                     var select = $("#TestBattery");
                     for(index=0; index<data.TestBatteries.length; index++) {
                         testbattery = data.TestBatteries[index];
-                        console.log(testbattery);
+
                         select.append(
                                 $("<option></option>").attr('value', testbattery[1])
                                 .text(testbattery[1] + " - "+testbattery[2])
@@ -351,6 +367,27 @@
                     }
                 });
             });
+            
+            
+            function refreshParameterValues() {
+                var optionSelected = $("select#Parameter option:selected");
+
+                $.get("ListCampaignParameter","invariant="+optionSelected.val(),function(data){
+                    var index, parameter;
+                    var select = $("select#Value");
+                    select.empty();
+                    for(index=0; index<data.ParameterValues.length; index++) {
+                        parameter = data.ParameterValues[index];
+                        //console.log(parameter);
+                        select.append(
+                                $("<option></option>").attr('value', parameter[1])
+                                .text(parameter[3])
+                                .attr("title", parameter[3])
+                            );
+                     }
+                });
+            }
+            
         </script>
             <form id="formAddNewCampaign" class="formForDataTable" action="#" title="Add Campaign Entry" style="width:600px" method="post">
                 <input type="hidden" value="-1" id="ID" name="ID" class="ncdetailstext" rel="0" >
@@ -365,10 +402,12 @@
                 <input type="hidden" value="-1" id="CampaignIdForParameter" name="Campaign" class="ncdetailstext" rel="1">
                 <br><br>
                 <label for="Parameter" style="font-weight:bold">Parameter</label>
-                <input id="Parameter" name="Parameter" class="ncdetailstext" rel="2" >
+                <select id="Parameter" name="Parameter" class="ncdetailstext" rel="2" ></select>
+                <!--input id="Parameter" name="Parameter" class="ncdetailstext" rel="2" -->
                 <br><br>
                 <label for="Value" style="font-weight:bold">Value</label>
-                <input id="Value" name="Value" class="ncdetailstext" rel="3" >
+                <select id="Value" name="Value" class="ncdetailstext" rel="3" ></select>
+                <!--input id="Value" name="Value" class="ncdetailstext" rel="3" -->
             </form>
             <form id="formAddNewContent" class="formForDataTable" action="#" title="Add Content Entry" style="width:600px" method="post">
                 <input type="hidden" value="-1" id="IDContent" name="ID" class="ncdetailstext" rel="0" >
