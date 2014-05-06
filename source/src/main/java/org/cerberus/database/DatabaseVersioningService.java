@@ -3330,9 +3330,20 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
 //Change IP on countryEnvironmentParameters accordingly to other tables (user, testcaseexecution and robot).
 //-- ------------------------ 463        
         SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `cerberus`.`countryenvironmentparameters` "); 
+        SQLS.append("ALTER TABLE `countryenvironmentparameters` "); 
         SQLS.append("CHANGE COLUMN `IP` `IP` VARCHAR(150) NOT NULL DEFAULT '';"); 
         SQLInstruction.add(SQLS.toString());
+        
+//Add Invariant for campaign parameters.
+//-- ------------------------ 464
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`, `gp1`) VALUES ");
+        SQLS.append("('CAMPAIGN_PARAMETER', 'BROWSER', '10', 'Browser use to execute campaign', 'Browser', 'INVARIANTPRIVATE'),");
+        SQLS.append("('CAMPAIGN_PARAMETER', 'COUNTRY', '20', 'Country selected for campaign', 'Country', 'INVARIANTPUBLIC'),");
+        SQLS.append("('CAMPAIGN_PARAMETER', 'ENVIRONMENT', '30', 'Which environment used to execute campaign', 'Environment', 'INVARIANTPUBLIC'),");
+        SQLS.append("('INVARIANTPRIVATE','CAMPAIGN_PARAMETER','440','','',NULL);");
+        SQLInstruction.add(SQLS.toString());
+
         
         return SQLInstruction;
     }
