@@ -113,6 +113,12 @@
                 } else {
                     ip = new String("");
                 }
+                String comment;
+                if (request.getParameter("Comment") != null && request.getParameter("Comment").compareTo("") != 0) {
+                    comment = request.getParameter("Comment");
+                } else {
+                    comment = new String("");
+                }
 
                 String tcActive;
                 if (request.getParameter("TcActive") != null) {
@@ -360,6 +366,10 @@
                                     <%=generateMultiSelect("Implementer", request.getParameterValues("Implementer"), options,
                                             "Select an Implementer", "Select Implementer", "# of # Implementer selected", 1, true)%> 
                                 </div>
+                            </div>
+                            <div style="float:left">
+                                <div style="clear:both; width:150px; text-align: left"><%out.print(docService.findLabelHTML("testcase", "comment", "comment"));%></div>
+                                <div style="clear:both"><input style="font-weight: bold; width: 130px; height:16px" id="Comment" name="Comment" value="<%=comment%>"></div>
                             </div>
                         </div>
                                
