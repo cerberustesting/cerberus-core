@@ -76,7 +76,7 @@ public class RobotDAO implements IRobotDAO{
     @Override
     public Robot findRobotByKey(Integer id) throws CerberusException {
        Robot result = null;
-        final String query = "SELECT * FROM robot a WHERE a.id = ? ";
+        final String query = "SELECT * FROM robot a WHERE a.robotID = ? ";
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -188,7 +188,7 @@ public class RobotDAO implements IRobotDAO{
             try {
                 preStat.setString(1, robot.getRobot());
                 preStat.setString(2, robot.getHost());
-                preStat.setInt(3, robot.getPort());
+                preStat.setString(3, robot.getPort());
                 preStat.setString(4, robot.getPlatform());
                 preStat.setString(5, robot.getBrowser());
                 preStat.setString(6, robot.getVersion());
@@ -229,7 +229,7 @@ public class RobotDAO implements IRobotDAO{
             try {
                 preStat.setString(1, robot.getRobot());
                 preStat.setString(2, robot.getHost());
-                preStat.setInt(3, robot.getPort());
+                preStat.setString(3, robot.getPort());
                 preStat.setString(4, robot.getPlatform());
                 preStat.setString(5, robot.getBrowser());
                 preStat.setString(6, robot.getVersion());
@@ -306,7 +306,7 @@ public class RobotDAO implements IRobotDAO{
         Integer robotID = ParameterParserUtil.parseIntegerParam(rs.getString("robotID"), 0);
         String robot = ParameterParserUtil.parseStringParam(rs.getString("robot"), "");
         String host = ParameterParserUtil.parseStringParam(rs.getString("host"), "");
-        Integer port = ParameterParserUtil.parseIntegerParam(rs.getString("port"), 0);
+        String port = ParameterParserUtil.parseStringParam(rs.getString("port"), "");
         String platform = ParameterParserUtil.parseStringParam(rs.getString("platform"), "");
         String browser = ParameterParserUtil.parseStringParam(rs.getString("browser"), "");
         String version = ParameterParserUtil.parseStringParam(rs.getString("version"), "");
@@ -424,7 +424,7 @@ public class RobotDAO implements IRobotDAO{
         gSearch.append(" where (`platform` like '%");
         gSearch.append(searchTerm);
         gSearch.append("%'");
-        gSearch.append(" or `ip` like '%");
+        gSearch.append(" or `host` like '%");
         gSearch.append(searchTerm);
         gSearch.append("%'");
         gSearch.append(" or `port` like '%");
@@ -433,7 +433,7 @@ public class RobotDAO implements IRobotDAO{
         gSearch.append(" or `description` like '%");
         gSearch.append(searchTerm);
         gSearch.append("%'");
-        gSearch.append(" or `name` like '%");
+        gSearch.append(" or `robot` like '%");
         gSearch.append(searchTerm);
         gSearch.append("%'");
         gSearch.append(" or `browser` like '%");

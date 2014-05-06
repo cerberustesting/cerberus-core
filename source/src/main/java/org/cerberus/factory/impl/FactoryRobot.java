@@ -30,7 +30,7 @@ import org.springframework.stereotype.Service;
 public class FactoryRobot implements IFactoryRobot {
 
     @Override
-    public Robot create(Integer robotID, String robot, String host, Integer port, String platform ,
+    public Robot create(Integer robotID, String robot, String host, String port, String platform ,
     String browser, String version, String active, String description) {
         Robot newRobot = new Robot();
         newRobot.setRoborID(robotID);

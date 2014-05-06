@@ -3234,6 +3234,106 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("  ADD COLUMN `Database` VARCHAR(45) NULL DEFAULT '' AFTER `Type` ;");
         SQLInstruction.add(SQLS.toString());
 
+//Create table Robot.
+//-- ------------------------ 455
+        SQLS = new StringBuilder();
+        SQLS.append("CREATE TABLE `robot` (");
+        SQLS.append("`robotID` int(10) NOT NULL AUTO_INCREMENT,");
+        SQLS.append("`robot` varchar(100) NOT NULL,");
+        SQLS.append("`host` varchar(150) NOT NULL DEFAULT '',");
+        SQLS.append("`port` varchar(20) NOT NULL DEFAULT '',");
+        SQLS.append("`platform` varchar(45) NOT NULL DEFAULT '',");
+        SQLS.append("`browser` varchar(45) NOT NULL DEFAULT '',");
+        SQLS.append("`version` varchar(45) NOT NULL DEFAULT '',");
+        SQLS.append("`active` varchar(1) NOT NULL DEFAULT 'Y',");
+        SQLS.append("`description` varchar(250) NOT NULL DEFAULT '',");
+        SQLS.append(" PRIMARY KEY (`robotID`),");
+        SQLS.append(" UNIQUE KEY IX_robot_01 (`robot`)");
+        SQLS.append(") ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;");
+        SQLInstruction.add(SQLS.toString());
+        
+//Update User set null value of defaultIP to empty.
+//-- ------------------------ 456
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `user` ");
+        SQLS.append("SET `DefaultIP`='' where `DefaultIP` IS NULL;");
+        SQLInstruction.add(SQLS.toString());
+
+//Modify User table adding robot preferences.
+//-- ------------------------ 457
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `user` ");
+        SQLS.append("CHANGE COLUMN `DefaultIP` `robotHost` VARCHAR(150) NOT NULL DEFAULT '',");
+        SQLS.append("ADD COLUMN `robotPort` VARCHAR(20) NOT NULL DEFAULT '' AFTER `robotHost`,");
+        SQLS.append("ADD COLUMN `robotPlatform` VARCHAR(45) NOT NULL DEFAULT '' AFTER `robotPort`,");
+        SQLS.append("ADD COLUMN `robotBrowser` VARCHAR(45) NOT NULL DEFAULT '' AFTER `robotPlatform`,");
+        SQLS.append("ADD COLUMN `robotVersion` VARCHAR(45) NOT NULL DEFAULT '' AFTER `robotBrowser`, ");
+        SQLS.append("ADD COLUMN `robot` VARCHAR(100) NOT NULL DEFAULT '' AFTER `robotVersion`;");
+        SQLInstruction.add(SQLS.toString());
+        
+        
+//Insert Platform invariant.
+//-- ------------------------ 458
+        //TODO Add private invariant
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` ");
+        SQLS.append("(`idname`,`value`,`sort`,`description`,`VeryShortDesc`,`gp1`,`gp2`,`gp3`) VALUES  ");
+        SQLS.append("('PLATFORM','LINUX',30,'Linux Platform','',NULL,NULL,NULL),");
+        SQLS.append("('PLATFORM','MAC',40,'Mac Platform','',NULL,NULL,NULL),");
+        SQLS.append("('PLATFORM','WINDOWS',70,'Windows Platform','',NULL,NULL,NULL),");
+        SQLS.append("('PLATFORM','ANDROID',10,'Android Platform','',NULL,NULL,NULL),");
+        SQLS.append("('PLATFORM','UNIX',50,'Unix Platform','',NULL,NULL,NULL),");
+        SQLS.append("('PLATFORM','VISTA',60,'Windows Vista Platform','',NULL,NULL,NULL),");
+        SQLS.append("('PLATFORM','WIN8',80,'Windows 8 Platform','',NULL,NULL,NULL),");
+        SQLS.append("('PLATFORM','XP',90,'Windows XP Platform','',NULL,NULL,NULL),");
+        SQLS.append("('BROWSER','IE',20,'Internet Explorer Browser','',NULL,NULL,NULL),");
+        SQLS.append("('BROWSER','android',70,'Android browser','',NULL,NULL,NULL),");
+        SQLS.append("('BROWSER','ipad',80,'ipad browser','',NULL,NULL,NULL),");
+        SQLS.append("('BROWSER','iphone',90,'iphone browser','',NULL,NULL,NULL),");
+        SQLS.append("('BROWSER','opera',60,'Opera browser','',NULL,NULL,NULL),");
+        SQLS.append("('BROWSER','safari',60,'Safari browser','',NULL,NULL,NULL),");
+        SQLS.append("('ROBOTACTIVE','N',2,'Disable','',NULL,NULL,NULL),");
+        SQLS.append("('ROBOTACTIVE','Y',1,'Active','',NULL,NULL,NULL),");
+        SQLS.append("('INVARIANTPRIVATE','ROBOTACTIVE',430,'','',NULL,NULL,NULL),");
+        SQLS.append("('INVARIANTPRIVATE','PLATFORM','35','','',NULL,NULL,NULL);");
+        SQLInstruction.add(SQLS.toString());
+
+//DELETE old browser invariant.
+//-- ------------------------ 459
+        SQLS = new StringBuilder();
+        SQLS.append("DELETE FROM `invariant` where `idname`='BROWSER' and `value` in ('IE9','IE10','IE11');");
+        SQLInstruction.add(SQLS.toString());
+            
+//Add Version and Platform column in testcaseExecution table.
+//-- ------------------------ 460
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcaseexecution` ");
+        SQLS.append("ADD COLUMN `Version` VARCHAR(20) NOT NULL DEFAULT '' AFTER `Browser`,");
+        SQLS.append("ADD COLUMN `Platform` VARCHAR(20) NOT NULL DEFAULT '' AFTER `Version`,");
+        SQLS.append("CHANGE COLUMN `IP` `IP` VARCHAR(150) NULL DEFAULT NULL ;");
+        SQLInstruction.add(SQLS.toString());
+        
+//Insert Default Robot.
+//-- ------------------------ 461
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `robot` (`robot` ,`host` ,`port` ,`platform` ,`browser` ,`version` , `active` ,`description`)");
+        SQLS.append("VALUES ('MyRobot', '127.0.0.1', '5555', 'LINUX', 'firefox', '28', 'Y', 'My Robot');");
+        SQLInstruction.add(SQLS.toString());
+        
+//Insert parameter cerberus_picture_testcase_path.
+//-- ------------------------ 462
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) VALUES ");
+        SQLS.append("('', 'cerberus_picture_testcase_path', '', 'Path to store the Cerberus Value and HowTo pictures of TestCase page');");
+        SQLInstruction.add(SQLS.toString());
+        
+//Change IP on countryEnvironmentParameters accordingly to other tables (user, testcaseexecution and robot).
+//-- ------------------------ 463        
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `cerberus`.`countryenvironmentparameters` "); 
+        SQLS.append("CHANGE COLUMN `IP` `IP` VARCHAR(150) NOT NULL DEFAULT '';"); 
+        SQLInstruction.add(SQLS.toString());
+        
         return SQLInstruction;
     }
 }

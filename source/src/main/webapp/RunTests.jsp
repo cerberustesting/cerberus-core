@@ -62,7 +62,7 @@
                         //Update User Preferences
                         if (StringUtils.isNotBlank(request.getParameter("RobotHost"))) {
                             usr.setRobotHost(request.getParameter("ss_ip") == null ? "" : request.getParameter("ss_ip"));
-                            usr.setRobotPort(Integer.valueOf(request.getParameter("ss_p")) == 0 ? 0 : Integer.valueOf(request.getParameter("ss_p")));
+                            usr.setRobotPort(request.getParameter("ss_p") == null ? "" : request.getParameter("ss_p"));
                             usr.setRobotPlatform(request.getParameter("platform") == null ? "" : request.getParameter("platform"));
                             usr.setRobotBrowser(request.getParameter("browser") == null ? "" : request.getParameter("browser"));
                             usr.setRobotVersion(request.getParameter("version") == null ? "" : request.getParameter("version"));
@@ -112,7 +112,7 @@
                         if (request.getParameter("ss_p") != null && request.getParameter("ss_p").compareTo("") != 0) {
                             ssPort = request.getParameter("ss_p");
                         } else {
-                            ssPort = String.valueOf(usr.getRobotPort());
+                            ssPort = usr.getRobotPort();
                         }
 
                         String robot;
@@ -229,6 +229,8 @@
 
 
                 %>
+                <input hidden="hidden" id="defPlatform" value="<%=platform%>">
+                <input hidden="hidden" id="defBrowser" value="<%=browser%>">
                 <div class="filters" style="clear:both; width:100%">
                     <p style="float:left" class="dttTitle">Choose Test</p>
                     <div id="dropDownDownArrow" style="float:left">
@@ -360,7 +362,7 @@
                                 <div style="float:left; width:150px; text-align:left">Version (Optional)
                                 </div>
                                 <div style="float:left">
-                                    <input id="version" name="version" placeholder="Example : 28.0" style="width: 150px;">
+                                    <input id="version" name="version" placeholder="Example : 28.0" value="<%=version%>" style="width: 150px;">
                                 </div>
                             </div>
                             <div style="clear:both">
@@ -618,19 +620,27 @@
         <script type="text/javascript">
             (document).ready($.getJSON('FindInvariantByID?idName=browser', function(data) {
                 $("#browser").empty();
+                var pl = document.getElementById("defBrowser").value;
 
                 for (var i = 0; i < data.length; i++) {
                     $("#browser").append($("<option></option>")
                             .attr("value", data[i].value)
                             .text(data[i].value + " ( " + data[i].description + " )"));
                 }
+$("#browser").find('option').each(function(i, opt) {
+                       if (opt.value === pl){
+                            $(opt).attr('selected', 'selected');
+                    }
+                
 
-            }));
+            });
+        }));
 
         </script>
         <script type="text/javascript">
             (document).ready($.getJSON('FindInvariantByID?idName=platform', function(data) {
                 $("#platform").empty();
+                var pl = document.getElementById("defPlatform").value;
 
 $("#platform").append($("<option></option>")
                             .attr("value", "")
@@ -641,8 +651,15 @@ $("#platform").append($("<option></option>")
                             .attr("value", data[i].value)
                             .text(data[i].value + " ( " + data[i].description + " )"));
                 }
+                
+                $("#platform").find('option').each(function(i, opt) {
+                       if (opt.value === pl){
+                            $(opt).attr('selected', 'selected');
+                    }
+                
 
-            }));
+            });
+        }));
 
         </script>
         <script>

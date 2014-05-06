@@ -28,12 +28,20 @@ public class Robot {
     Integer roborID;
     String robot;
     String host;
-    Integer port;
+    String port;
     String platform;
     String browser;
     String version;
     String active;
     String description;
+
+    public String getPort() {
+        return port;
+    }
+
+    public void setPort(String port) {
+        this.port = port;
+    }
 
     public Integer getRoborID() {
         return roborID;
@@ -65,14 +73,6 @@ public class Robot {
 
     public void setActive(String active) {
         this.active = active;
-    }
-
-    public Integer getPort() {
-        return port;
-    }
-
-    public void setPort(Integer port) {
-        this.port = port;
     }
 
     public String getDescription() {

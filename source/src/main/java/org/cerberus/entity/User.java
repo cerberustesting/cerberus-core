@@ -30,7 +30,7 @@ public class User {
     private String team;
     private String reportingFavorite;
     private String robotHost;
-    private Integer robotPort;
+    private String robotPort;
     private String robotPlatform;
     private String robotBrowser;
     private String robotVersion;
@@ -39,11 +39,11 @@ public class User {
     private String defaultSystem;
     private String email;
 
-    public Integer getRobotPort() {
+    public String getRobotPort() {
         return robotPort;
     }
 
-    public void setRobotPort(Integer robotPort) {
+    public void setRobotPort(String robotPort) {
         this.robotPort = robotPort;
     }
 

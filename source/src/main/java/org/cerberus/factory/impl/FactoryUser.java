@@ -31,7 +31,7 @@ public class FactoryUser implements IFactoryUser {
 
     @Override
     public User create(int userID, String login, String password, String request, String name, String team,
-            String reportingFavorite, String robotHost,Integer robotPort, 
+            String reportingFavorite, String robotHost,String robotPort, 
             String robotPlatform, String robotBrowser
             ,String robotVersion, String robot, String defaultSystem, String email) {
         User newUser = new User();

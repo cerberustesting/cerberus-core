@@ -67,7 +67,7 @@ public class UpdateRobot extends HttpServlet {
             } else if (columnName != null && "Host".equals(columnName.trim())) {
                 robot.setHost(value);
             }else if (columnName != null && "Port".equals(columnName.trim())) {
-                robot.setPort(Integer.valueOf(value));
+                robot.setPort(value);
             } else if (columnName != null && "Robot".equals(columnName.trim())) {
                 robot.setRobot(value);
             } else if (columnName != null && "Active".equals(columnName.trim())) {

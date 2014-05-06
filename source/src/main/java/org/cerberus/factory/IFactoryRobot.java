@@ -39,7 +39,7 @@ public interface IFactoryRobot {
      * @param description description of the Robot
      * @return 
      */
-    Robot create(Integer robotID, String robot, String host, Integer port, String platform ,
+    Robot create(Integer robotID, String robot, String host, String port, String platform ,
     String browser, String version, String active, String description);
 
 }

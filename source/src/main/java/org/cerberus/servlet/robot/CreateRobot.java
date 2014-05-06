@@ -62,7 +62,7 @@ public class CreateRobot extends HttpServlet {
         IRobotService robotService = appContext.getBean(IRobotService.class);
         IFactoryRobot factoryRobot = appContext.getBean(IFactoryRobot.class);
         
-        Robot robotObj = factoryRobot.create(0, robot, host, Integer.valueOf(port), platform, browser, version, active, description);
+        Robot robotObj = factoryRobot.create(0, robot, host, port, platform, browser, version, active, description);
         robotService.createRobot(robotObj);
             /**
              * Adding Log entry.

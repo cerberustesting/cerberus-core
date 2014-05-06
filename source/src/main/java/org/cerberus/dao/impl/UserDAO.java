@@ -353,7 +353,7 @@ public class UserDAO implements IUserDAO {
         String robotHost = ParameterParserUtil.parseStringParam(rs.getString("robotHost"), "");
         String defaultSystem = ParameterParserUtil.parseStringParam(rs.getString("defaultSystem"), "");
         String email = ParameterParserUtil.parseStringParam(rs.getString("email"), "");
-        Integer robotPort = ParameterParserUtil.parseIntegerParam(rs.getString("robotPort"), 0); 
+        String robotPort = ParameterParserUtil.parseStringParam(rs.getString("robotPort"), ""); 
         String robotPlatform = ParameterParserUtil.parseStringParam(rs.getString("robotPlatform"), ""); 
         String robotBrowser = ParameterParserUtil.parseStringParam(rs.getString("robotBrowser"), "");
         String robotVersion = ParameterParserUtil.parseStringParam(rs.getString("robotVersion"), "");

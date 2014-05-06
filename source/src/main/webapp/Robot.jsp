@@ -107,8 +107,11 @@
                             loadtype:'GET'},
                         {onblur: 'submit',
                             placeholder: ''},
-                        {onblur: 'submit',
-                            placeholder: ''},
+                        {loadtext: 'loading...',
+                            type: 'select',
+                            onblur: 'submit',
+                            loadurl: 'GetInvariantList?idName=robotactive',
+                            loadtype:'GET'},
                         {onblur: 'submit',
                             placeholder: ''},
                         {onblur: 'submit',
@@ -192,8 +195,8 @@
                 <br />
                 <br />
                 <label for="Active" style="font-weight:bold">Active</label>
-                <input id="Active" name="Active" style="width:350px;"  
-                       class="ncdetailstext" rel="7" placeholder="Y / N">
+                <select id="Active" name="Active" style="width:350px;" 
+                        class="ncdetailstext" rel="7" ></select>
                 <br />
                 <br />
                 <label for="Description" style="font-weight:bold">Description</label>
@@ -240,6 +243,20 @@
                     
                 for (var i = 0; i < data.length; i++) {
                     $("#Platform").append($("<option></option>")
+                            .attr("value", data[i].value)
+                            .text(data[i].value + " ( " + data[i].description + " )"));
+                }
+
+            }));
+
+        </script>
+        <script type="text/javascript">
+            (document).ready($.getJSON('FindInvariantByID?idName=robotactive', function(data) {
+                $("#Active").empty();
+
+                    
+                for (var i = 0; i < data.length; i++) {
+                    $("#Active").append($("<option></option>")
                             .attr("value", data[i].value)
                             .text(data[i].value + " ( " + data[i].description + " )"));
                 }
