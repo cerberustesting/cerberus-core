@@ -1492,6 +1492,7 @@ function calculateProperty() {
 
         if(data !== null && data.resultList !== null) {
             $("#result").empty().text(data.resultList);
+            $("#propdesc").empty().text(data.description);
         } else {
             $("#result").empty().append("<b>Unable to retrieve property in database !</b>");
         }

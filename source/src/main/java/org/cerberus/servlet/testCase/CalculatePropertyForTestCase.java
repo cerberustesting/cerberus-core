@@ -29,7 +29,9 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Level;
 import org.cerberus.entity.CountryEnvironmentDatabase;
 import org.cerberus.entity.SoapLibrary;
+import org.cerberus.entity.SqlLibrary;
 import org.cerberus.entity.TCase;
+import org.cerberus.entity.TestData;
 import org.cerberus.exception.CerberusEventException;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.log.MyLogger;
@@ -75,11 +77,14 @@ public class CalculatePropertyForTestCase extends HttpServlet {
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
 
         String result = null;
+        String description = null;
         String property = httpServletRequest.getParameter("property");
         try {
             if (type.equals("getFromTestData")) {
                 ITestDataService testDataService = appContext.getBean(TestDataService.class);
-                result = testDataService.findTestDataByKey(policy.sanitize(property)).getValue();
+                TestData td = testDataService.findTestDataByKey(policy.sanitize(property));
+                result = td.getValue();
+                description = td.getDescription();
 
             } else if (type.equals("executeSoapFromLib")) {
                 ISoapLibraryService soapLibraryService = appContext.getBean(SoapLibraryService.class);
@@ -87,6 +92,7 @@ public class CalculatePropertyForTestCase extends HttpServlet {
                 if (soapLib != null) {
                     IPropertyService propertyService = appContext.getBean(PropertyService.class);
                     result = propertyService.calculatePropertyFromSOAPResponse(soapLib.getEnvelope(), soapLib.getServicePath(), soapLib.getParsingAnswer(), soapLib.getMethod(), null);
+                    description = soapLib.getDescription();
                 }
             } else {
                 String system = null;
@@ -116,22 +122,26 @@ public class CalculatePropertyForTestCase extends HttpServlet {
 
                     if (type.equals("executeSqlFromLib")) {
                         ISqlLibraryService sqlLibraryService = appContext.getBean(SqlLibraryService.class);
-                        property = sqlLibraryService.findSqlLibraryByKey(policy.sanitize(property)).getScript();
-                    }
+                        SqlLibrary sl = sqlLibraryService.findSqlLibraryByKey(policy.sanitize(property));
+                        property = sl.getScript();
+                    
                     if (!(StringUtil.isNullOrEmpty(connectionName)) && !(StringUtil.isNullOrEmpty(policy.sanitize(property)))) {
                         IConnectionPoolDAO connectionPoolDAO = appContext.getBean(ConnectionPoolDAO.class);
                         result = connectionPoolDAO.queryDatabase(connectionName, policy.sanitize(property), 1).get(0);
-                    }
-                }
+                        description = sl.getDescription();
+                        }
+                }}
             }
 
 
         } catch (CerberusException ex) {
             Logger.getLogger(CalculatePropertyForTestCase.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
             result = ex.getMessageError().getDescription();
+            description = ex.getMessageError().getDescription();
         } catch (CerberusEventException ex) {
             Logger.getLogger(CalculatePropertyForTestCase.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
             result = ex.getMessageError().getDescription();
+            description = ex.getMessageError().getDescription();
         }
 
         if (result != null) {
@@ -140,6 +150,7 @@ public class CalculatePropertyForTestCase extends HttpServlet {
                 JSONObject jsonObject = new JSONObject();
 
                 jsonObject.put("resultList", result);
+                jsonObject.put("description", description);
 
                 httpServletResponse.setContentType("application/json");
                 httpServletResponse.getWriter().print(jsonObject.toString());
