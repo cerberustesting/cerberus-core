@@ -81,16 +81,17 @@ public class RunTestCase extends HttpServlet {
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
 
         //Tool
-        String seleniumIP = "";
-        String seleniumPort = "";
+        String robotHost = "";
+        String robotPort = "";
         String browser = "";
         String version = "";
         String platform = "";
         String robot = ParameterParserUtil.parseStringParam(policy.sanitize(request.getParameter("robot")), "");
+        String active = "";
         
         if (robot.equals("")){
-        seleniumIP = ParameterParserUtil.parseStringParam(policy.sanitize(request.getParameter("ss_ip")), "");
-        seleniumPort = ParameterParserUtil.parseStringParam(policy.sanitize(request.getParameter("ss_p")), "");
+        robotHost = ParameterParserUtil.parseStringParam(policy.sanitize(request.getParameter("ss_ip")), "");
+        robotPort = ParameterParserUtil.parseStringParam(policy.sanitize(request.getParameter("ss_p")), "");
         browser = ParameterParserUtil.parseStringParam(policy.sanitize(request.getParameter("browser")), "firefox");
         version = ParameterParserUtil.parseStringParam(policy.sanitize(request.getParameter("version")), "");
         platform = ParameterParserUtil.parseStringParam(policy.sanitize(request.getParameter("platform")), "");
@@ -98,11 +99,12 @@ public class RunTestCase extends HttpServlet {
         IRobotService robotService = appContext.getBean(IRobotService.class);
             try {
                 Robot robObj = robotService.findRobotByName(robot);
-                seleniumIP = robObj.getIp();
-                seleniumPort = String.valueOf(robObj.getPort());
+                robotHost = robObj.getHost();
+                robotPort = String.valueOf(robObj.getPort());
                 browser = robObj.getBrowser();
                 version = robObj.getVersion();
                 platform = robObj.getPlatform();
+                active = robObj.getActive();
             } catch (CerberusException ex) {
                 Logger.getLogger(RunTestCase.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
             }
@@ -136,8 +138,8 @@ public class RunTestCase extends HttpServlet {
                 + "- Country [mandatory] : Country where the test case will execute. [" + country + "]\n"
                 + "- Environment [mandatory] : Environment where the test case will execute. [" + environment + "]\n"
                 + "- robot : robot name on which the test will be executed. [" + robot + "]\n"
-                + "- ss_ip : IP of the Selenium Server where the test will be executed. [" + seleniumIP + "]\n"
-                + "- ss_p : Port of the Selenium server. [" + seleniumPort + "]\n"
+                + "- ss_ip : Host of the Robot where the test will be executed. [" + robotHost + "]\n"
+                + "- ss_p : Port of the Robot. [" + robotPort + "]\n"
                 + "- browser : Browser to use for the execution. [" + browser + "]\n"
                 + "- version : Version to use for the execution. [" + version + "]\n"
                 + "- platform : Platform to use for the execution. [" + platform + "]\n"
@@ -170,6 +172,10 @@ public class RunTestCase extends HttpServlet {
             out.println("Error - Parameter environment is mandatory.");
             error = true;
         }
+        if (!active.equals("Y") && !manualURL) {
+            out.println("Error - Robot is not Active.");
+            error = true;
+        }
 
         if (!error) {
 
@@ -180,8 +186,8 @@ public class RunTestCase extends HttpServlet {
             TCase tCase = factoryTCase.create(test, testCase);
 
             TestCaseExecution tCExecution = factoryTCExecution.create(0, test, testCase, null, null, environment, country, browser,version, platform, "",
-                    0, 0, "", "", null, seleniumIP, null, seleniumPort, tag, "N", verbose, screenshot, outputFormat, null,
-                    Version.PROJECT_NAME_VERSION, tCase, null, null, manualURL, myHost, myContextRoot, myLoginRelativeURL, myEnvData, seleniumIP, seleniumPort, null, new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_TESTSTARTED));
+                    0, 0, "", "", null, robotHost, null, robotPort, tag, "N", verbose, screenshot, outputFormat, null,
+                    Version.PROJECT_NAME_VERSION, tCase, null, null, manualURL, myHost, myContextRoot, myLoginRelativeURL, myEnvData, robotHost, robotPort, null, new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_TESTSTARTED));
 
             try {
                 tCExecution = runTestCaseService.runTestCase(tCExecution);

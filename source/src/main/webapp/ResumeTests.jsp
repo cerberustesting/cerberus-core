@@ -127,12 +127,12 @@
                             ssIP = request.getHeader("X-FORWARDED-FOR");
                             if (ssIP == null) {
 
-                                String defaultIP = "SELECT DefaultIP from user where login = '"
+                                String robotHost = "SELECT robotHost from user where login = '"
                                         + request.getUserPrincipal().getName() + "'";
 
-                                ResultSet rs_Ip = stmt2.executeQuery(defaultIP);
-                                if (rs_Ip.first() && StringUtils.isNotBlank(rs_Ip.getString("DefaultIP"))) {
-                                    ssIP = rs_Ip.getString("DefaultIP");
+                                ResultSet rs_Ip = stmt2.executeQuery(robotHost);
+                                if (rs_Ip.first() && StringUtils.isNotBlank(rs_Ip.getString("robotHost"))) {
+                                    ssIP = rs_Ip.getString("robotHost");
                                 } else {
                                     ssIP = "";
                                 }

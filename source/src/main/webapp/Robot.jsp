@@ -53,12 +53,13 @@
                     "iDisplayLength": 25,
                     "aoColumns": [
                         {"sName": "ID", "sWidth": "10%", "bVisible":false},
-                        {"sName": "Name", "sWidth": "10%"},
-                        {"sName": "Ip", "sWidth": "10%"},
+                        {"sName": "Robot", "sWidth": "10%"},
+                        {"sName": "Host", "sWidth": "10%"},
                         {"sName": "Port", "sWidth": "10%"},
                         {"sName": "Platform", "sWidth": "10%"},
                         {"sName": "Browser", "sWidth": "10%"},
                         {"sName": "Version", "sWidth": "10%"},
+                        {"sName": "Active", "sWidth": "1%"},
                         {"sName": "Description", "sWidth": "10%"},
                         
                     ]
@@ -109,6 +110,8 @@
                         {onblur: 'submit',
                             placeholder: ''},
                         {onblur: 'submit',
+                            placeholder: ''},
+                        {onblur: 'submit',
                             placeholder: ''}
 
                     ]
@@ -138,12 +141,13 @@
                 <thead>
                     <tr>
                         <th>ID</th>
-                        <th>Name</th>
-                        <th>Ip</th>
+                        <th>Robot</th>
+                        <th>Host</th>
                         <th>Port</th>
                         <th>Platform</th>
                         <th>Browser</th>
                         <th>Version</th>
+                        <th>Active</th>
                         <th>Description</th>
                         
                     </tr>
@@ -157,13 +161,13 @@
                 <label for="ID" style="font-weight:bold; display:none">ID</label>
                 <input id="ID" name="ID" style="width:350px;display:none" 
                        class="ncdetailstext" rel="0" >
-                <label for="Name" style="font-weight:bold; width:100px;">Name</label>
-                <input id="Name" name="Name" style="width:350px;" 
+                <label for="Robot" style="font-weight:bold; width:100px;">Robot</label>
+                <input id="Robot" name="Robot" style="width:350px;" 
                        class="ncdetailstext" rel="1" placeholder="Example : MyRobot">
                 <br />
                 <br />
-                <label for="Ip" style="font-weight:bold">Ip</label>
-                <input id="Ip" name="Ip" style="width:350px;" 
+                <label for="Host" style="font-weight:bold">Host</label>
+                <input id="Host" name="Host" style="width:350px;" 
                        class="ncdetailstext" rel="2" placeholder="Example : 127.0.0.1">
                 <br />
                 <br />
@@ -183,13 +187,18 @@
                 <br />
                 <br />
                 <label for="Version" style="font-weight:bold">Version</label>
-                <input id="Version" name="Version" style="width:350px;" rows="5" 
+                <input id="Version" name="Version" style="width:350px;" 
                        class="ncdetailstext" rel="6" placeholder="Browser Version : 27 for example">
+                <br />
+                <br />
+                <label for="Active" style="font-weight:bold">Active</label>
+                <input id="Active" name="Active" style="width:350px;"  
+                       class="ncdetailstext" rel="7" placeholder="Y / N">
                 <br />
                 <br />
                 <label for="Description" style="font-weight:bold">Description</label>
                 <input id="Description" name="Description" style="width:350px;" 
-                       class="ncdetailstext" rel="7" placeholder="Example : Used for Regression Testing">
+                       class="ncdetailstext" rel="8" placeholder="Example : Used for Regression Testing">
                 <br />
                 <br />
                 <div style="width: 250px; float:right">

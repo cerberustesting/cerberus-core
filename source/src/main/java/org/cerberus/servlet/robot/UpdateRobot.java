@@ -21,7 +21,6 @@ import org.cerberus.factory.impl.FactoryLogEvent;
 import org.cerberus.log.MyLogger;
 import org.cerberus.service.ILogEventService;
 import org.cerberus.service.IRobotService;
-import org.cerberus.service.ISqlLibraryService;
 import org.cerberus.service.impl.LogEventService;
 import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;
@@ -65,12 +64,14 @@ public class UpdateRobot extends HttpServlet {
                 robot.setBrowser(value);
             } else if (columnName != null && "Version".equals(columnName.trim())) {
                 robot.setVersion(value);
-            } else if (columnName != null && "Ip".equals(columnName.trim())) {
-                robot.setIp(value);
+            } else if (columnName != null && "Host".equals(columnName.trim())) {
+                robot.setHost(value);
             }else if (columnName != null && "Port".equals(columnName.trim())) {
                 robot.setPort(Integer.valueOf(value));
-            } else if (columnName != null && "Name".equals(columnName.trim())) {
-                robot.setName(value);
+            } else if (columnName != null && "Robot".equals(columnName.trim())) {
+                robot.setRobot(value);
+            } else if (columnName != null && "Active".equals(columnName.trim())) {
+                robot.setActive(value);
             } else if (columnName != null && "Description".equals(columnName.trim())) {
                 robot.setDescription(value);
             } else {

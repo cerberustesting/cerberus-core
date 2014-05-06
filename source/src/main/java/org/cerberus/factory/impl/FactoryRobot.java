@@ -30,16 +30,17 @@ import org.springframework.stereotype.Service;
 public class FactoryRobot implements IFactoryRobot {
 
     @Override
-    public Robot create(Integer id, String name, String ip, Integer port, String platform ,
-    String browser, String version, String description) {
+    public Robot create(Integer robotID, String robot, String host, Integer port, String platform ,
+    String browser, String version, String active, String description) {
         Robot newRobot = new Robot();
-        newRobot.setId(id);
-        newRobot.setName(name);
-        newRobot.setIp(ip);
+        newRobot.setRoborID(robotID);
+        newRobot.setRobot(robot);
+        newRobot.setHost(host);
         newRobot.setPort(port);
         newRobot.setPlatform(platform);
         newRobot.setBrowser(browser);
         newRobot.setVersion(version);
+        newRobot.setActive(active);
         newRobot.setDescription(description);
         return newRobot;
     }

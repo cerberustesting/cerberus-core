@@ -54,27 +54,29 @@ public class FindAllRobot extends HttpServlet {
             String sCol = policy.sanitize(request.getParameter("iSortCol_0"));
             String sdir = policy.sanitize(request.getParameter("sSortDir_0"));
             String dir = "asc";
-            String[] cols = {"Name", "IP", "Port", "Platform", "Browser", "Version", "Description"};
+            String[] cols = {"Robot", "Host", "Port", "Platform", "Browser", "Version", "Active", "Description"};
 
             int amount = 10;
             int start = 0;
             int col = 0;
 
-            String name = "";
-            String ip = "";
+            String robot = "";
+            String host = "";
             String port = "";
             String platform = "";
             String browser = "";
             String version = "";
+            String active = "";
             String description = "";
             
-            name = policy.sanitize(request.getParameter("sSearch_1"));
-            ip = policy.sanitize(request.getParameter("sSearch_2"));
+            robot = policy.sanitize(request.getParameter("sSearch_1"));
+            host = policy.sanitize(request.getParameter("sSearch_2"));
             port = policy.sanitize(request.getParameter("sSearch_3"));
             platform = policy.sanitize(request.getParameter("sSearch_4"));
             browser = policy.sanitize(request.getParameter("sSearch_5"));
             version = policy.sanitize(request.getParameter("sSearch_6"));
-            description = policy.sanitize(request.getParameter("sSearch_7"));
+            active = policy.sanitize(request.getParameter("sSearch_7"));
+            description = policy.sanitize(request.getParameter("sSearch_8"));
             
             
             List<String> sArray = new ArrayList<String>();
@@ -90,17 +92,21 @@ public class FindAllRobot extends HttpServlet {
                 String sVersion = " `version` like '%" + version + "%'";
                 sArray.add(sVersion);
             }
-            if (!ip.equals("")) {
-                String sIp = " `ip` like '%" + ip + "%'";
+            if (!host.equals("")) {
+                String sIp = " `host` like '%" + host + "%'";
                 sArray.add(sIp);
             }
             if (!port.equals("")) {
                 String sPort = " `port` like '%" + port + "%'";
                 sArray.add(sPort);
             }
-            if (!name.equals("")) {
-                String sName = " `name` like '%" + name + "%'";
+            if (!robot.equals("")) {
+                String sName = " `robot` like '%" + robot + "%'";
                 sArray.add(sName);
+            }
+            if (!active.equals("")) {
+                String sactive = " `active` like '%" + active + "%'";
+                sArray.add(sactive);
             }
             if (!description.equals("")) {
                 String sDescription = " `description` like '%" + description + "%'";
@@ -161,16 +167,17 @@ public class FindAllRobot extends HttpServlet {
 
             JSONObject jsonResponse = new JSONObject();
 
-            for (Robot robot : robotList) {
+            for (Robot robotInv : robotList) {
                 JSONArray row = new JSONArray();
-                row.put(robot.getId())
-                        .put(robot.getName())
-                        .put(robot.getIp())
-                        .put(robot.getPort())
-                        .put(robot.getPlatform())
-                        .put(robot.getBrowser())
-                        .put(robot.getVersion())
-                        .put(robot.getDescription());
+                row.put(robotInv.getRoborID())
+                        .put(robotInv.getRobot())
+                        .put(robotInv.getHost())
+                        .put(robotInv.getPort())
+                        .put(robotInv.getPlatform())
+                        .put(robotInv.getBrowser())
+                        .put(robotInv.getVersion())
+                        .put(robotInv.getActive())
+                        .put(robotInv.getDescription());
                         
 
                 data.put(row);

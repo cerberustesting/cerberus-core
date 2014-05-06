@@ -25,29 +25,46 @@ package org.cerberus.entity;
  */
 public class Robot {
 
-    Integer id;
-    String name;
-    String ip;
+    Integer roborID;
+    String robot;
+    String host;
     Integer port;
     String platform;
     String browser;
     String version;
+    String active;
     String description;
 
-    public String getName() {
-        return name;
+    public Integer getRoborID() {
+        return roborID;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setRoborID(Integer roborID) {
+        this.roborID = roborID;
     }
 
-    public String getIp() {
-        return ip;
+    public String getRobot() {
+        return robot;
     }
 
-    public void setIp(String ip) {
-        this.ip = ip;
+    public void setRobot(String robot) {
+        this.robot = robot;
+    }
+
+    public String getHost() {
+        return host;
+    }
+
+    public void setHost(String host) {
+        this.host = host;
+    }
+
+    public String getActive() {
+        return active;
+    }
+
+    public void setActive(String active) {
+        this.active = active;
     }
 
     public Integer getPort() {
@@ -64,14 +81,6 @@ public class Robot {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
     }
 
     public String getPlatform() {

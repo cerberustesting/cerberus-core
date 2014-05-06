@@ -30,12 +30,12 @@ public interface IRobotDAO {
     /**
      * Finds the Robot by Key
      *
-     * @param id Key of the Robot to find.
+     * @param robotID Key of the Robot to find.
      * @return Object Robot if exist.
      * @throws CerberusException when Robot does not exist.
      * @since 0.9.2
      */
-    Robot findRobotByKey(Integer id) throws CerberusException;
+    Robot findRobotByKey(Integer robotID) throws CerberusException;
 
     /**
      * Finds all Robot that exists

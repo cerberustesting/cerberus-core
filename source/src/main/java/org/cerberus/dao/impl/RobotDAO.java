@@ -179,21 +179,22 @@ public class RobotDAO implements IRobotDAO{
     @Override
     public void updateRobot(Robot robot) throws CerberusException {
         StringBuilder query = new StringBuilder();
-        query.append("UPDATE robot SET name= ? , ip = ? , port = ? ,");
-        query.append("platform = ?, browser = ? , version = ?, description = ? WHERE id = ?");
+        query.append("UPDATE robot SET robot= ? , host = ? , port = ? ,");
+        query.append("platform = ?, browser = ? , version = ?, active=?, description = ? WHERE robotID = ?");
 
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
             try {
-                preStat.setString(1, robot.getName());
-                preStat.setString(2, robot.getIp());
+                preStat.setString(1, robot.getRobot());
+                preStat.setString(2, robot.getHost());
                 preStat.setInt(3, robot.getPort());
                 preStat.setString(4, robot.getPlatform());
                 preStat.setString(5, robot.getBrowser());
                 preStat.setString(6, robot.getVersion());
-                preStat.setString(7, robot.getDescription());
-                preStat.setInt(8, robot.getId());
+                preStat.setString(7, robot.getActive());
+                preStat.setString(8, robot.getDescription());
+                preStat.setInt(9, robot.getRoborID());
                 
                 preStat.executeUpdate();
                 } catch (SQLException exception) {
@@ -219,20 +220,21 @@ public class RobotDAO implements IRobotDAO{
     public void createRobot(Robot robot) throws CerberusException {
         boolean throwExcep = false;
         StringBuilder query = new StringBuilder();
-        query.append("INSERT INTO robot (`name`, `ip`, `port`, `platform`,`browser`, `version`, `description`) ");
-        query.append("VALUES (?,?,?,?,?,?,?)");
+        query.append("INSERT INTO robot (`robot`, `host`, `port`, `platform`,`browser`, `version`,`active` , `description`) ");
+        query.append("VALUES (?,?,?,?,?,?,?,?)");
 
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
             try {
-                preStat.setString(1, robot.getName());
-                preStat.setString(2, robot.getIp());
+                preStat.setString(1, robot.getRobot());
+                preStat.setString(2, robot.getHost());
                 preStat.setInt(3, robot.getPort());
                 preStat.setString(4, robot.getPlatform());
                 preStat.setString(5, robot.getBrowser());
                 preStat.setString(6, robot.getVersion());
-                preStat.setString(7, robot.getDescription());
+                preStat.setString(7, robot.getActive());
+                preStat.setString(8, robot.getDescription());
                 
                 preStat.executeUpdate();
                 throwExcep = false;
@@ -261,13 +263,13 @@ public class RobotDAO implements IRobotDAO{
     @Override
     public void deleteRobot(Robot robot) throws CerberusException {
         boolean throwExcep = false;
-        final String query = "DELETE FROM robot WHERE id = ? ";
+        final String query = "DELETE FROM robot WHERE robotID = ? ";
 
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
             try {
-                preStat.setInt(1, robot.getId());
+                preStat.setInt(1, robot.getRoborID());
 
                 throwExcep = preStat.executeUpdate() == 0;
             } catch (SQLException exception) {
@@ -301,18 +303,19 @@ public class RobotDAO implements IRobotDAO{
      * @see FactoryRobot
      */
     private Robot loadRobotFromResultSet(ResultSet rs) throws SQLException {
-        Integer id = ParameterParserUtil.parseIntegerParam(rs.getString("id"), 0);
-        String name = ParameterParserUtil.parseStringParam(rs.getString("name"), "");
-        String ip = ParameterParserUtil.parseStringParam(rs.getString("ip"), "");
+        Integer robotID = ParameterParserUtil.parseIntegerParam(rs.getString("robotID"), 0);
+        String robot = ParameterParserUtil.parseStringParam(rs.getString("robot"), "");
+        String host = ParameterParserUtil.parseStringParam(rs.getString("host"), "");
         Integer port = ParameterParserUtil.parseIntegerParam(rs.getString("port"), 0);
         String platform = ParameterParserUtil.parseStringParam(rs.getString("platform"), "");
         String browser = ParameterParserUtil.parseStringParam(rs.getString("browser"), "");
         String version = ParameterParserUtil.parseStringParam(rs.getString("version"), "");
+        String active = ParameterParserUtil.parseStringParam(rs.getString("active"), "");
         String description = ParameterParserUtil.parseStringParam(rs.getString("description"), "");
 
         //TODO remove when working in test with mockito and autowired
         factoryRobot = new FactoryRobot();
-        return factoryRobot.create(id, name, ip, port, platform,browser, version, description);
+        return factoryRobot.create(robotID, robot, host, port, platform, browser, version, active, description);
     }
 
     @Override
@@ -327,7 +330,7 @@ public class RobotDAO implements IRobotDAO{
         gSearch.append(" where (`platform` like '%");
         gSearch.append(searchTerm);
         gSearch.append("%'");
-        gSearch.append(" or `ip` like '%");
+        gSearch.append(" or `host` like '%");
         gSearch.append(searchTerm);
         gSearch.append("%'");
         gSearch.append(" or `port` like '%");
@@ -336,10 +339,13 @@ public class RobotDAO implements IRobotDAO{
         gSearch.append(" or `description` like '%");
         gSearch.append(searchTerm);
         gSearch.append("%'");
-        gSearch.append(" or `name` like '%");
+        gSearch.append(" or `robot` like '%");
         gSearch.append(searchTerm);
         gSearch.append("%'");
         gSearch.append(" or `browser` like '%");
+        gSearch.append(searchTerm);
+        gSearch.append("%'");
+        gSearch.append(" or `active` like '%");
         gSearch.append(searchTerm);
         gSearch.append("%'");
         gSearch.append(" or `version` like '%");
@@ -433,6 +439,9 @@ public class RobotDAO implements IRobotDAO{
         gSearch.append(" or `browser` like '%");
         gSearch.append(searchTerm);
         gSearch.append("%'");
+        gSearch.append(" or `active` like '%");
+        gSearch.append(searchTerm);
+        gSearch.append("%'");
         gSearch.append(" or `version` like '%");
         gSearch.append(searchTerm);
         gSearch.append("%')");
@@ -487,7 +496,7 @@ public class RobotDAO implements IRobotDAO{
     @Override
     public Robot findRobotByName(String name) throws CerberusException {
         Robot result = null;
-        final String query = "SELECT * FROM robot a WHERE a.name = ? ";
+        final String query = "SELECT * FROM robot a WHERE a.robot = ? ";
 
         Connection connection = this.databaseSpring.connect();
         try {

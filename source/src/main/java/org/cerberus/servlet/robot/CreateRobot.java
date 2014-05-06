@@ -49,20 +49,21 @@ public class CreateRobot extends HttpServlet {
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
         
         try {
-        String name = policy.sanitize(request.getParameter("Name"));
-        String ip = policy.sanitize(request.getParameter("Ip"));
+        String robot = policy.sanitize(request.getParameter("Robot"));
+        String host = policy.sanitize(request.getParameter("Host"));
         String port = policy.sanitize(request.getParameter("Port"));
         String description = policy.sanitize(request.getParameter("Description"));
         String platform = policy.sanitize(request.getParameter("Platform"));
         String browser = policy.sanitize(request.getParameter("Browser"));
+        String active = policy.sanitize(request.getParameter("Active"));
         String version = policy.sanitize(request.getParameter("Version"));
         
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         IRobotService robotService = appContext.getBean(IRobotService.class);
         IFactoryRobot factoryRobot = appContext.getBean(IFactoryRobot.class);
         
-        Robot robot = factoryRobot.create(0, name, ip, Integer.valueOf(port), platform, browser, version, description);
-        robotService.createRobot(robot);
+        Robot robotObj = factoryRobot.create(0, robot, host, Integer.valueOf(port), platform, browser, version, active, description);
+        robotService.createRobot(robotObj);
             /**
              * Adding Log entry.
              */

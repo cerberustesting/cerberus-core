@@ -28,17 +28,18 @@ public interface IFactoryRobot {
 
     /**
      * 
-     * @param id Autoincrement Id
-     * @param name Name of the Robot
-     * @param ip IP of the Robot
+     * @param robotID Autoincrement Id
+     * @param robot Name of the Robot
+     * @param host Host of the Robot
      * @param port port of the Robot
      * @param platform platform of the Robot
      * @param browser browser of the Robot
      * @param version version of the Robot
+     * @param active Robot active
      * @param description description of the Robot
      * @return 
      */
-    Robot create(Integer id, String name, String ip, Integer port, String platform ,
-    String browser, String version, String description);
+    Robot create(Integer robotID, String robot, String host, Integer port, String platform ,
+    String browser, String version, String active, String description);
 
 }
