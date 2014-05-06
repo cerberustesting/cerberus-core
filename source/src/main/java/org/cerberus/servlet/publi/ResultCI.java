@@ -98,7 +98,7 @@ public class ResultCI extends HttpServlet {
                         + "JOIN "
                         + "(SELECT Test,TestCase, Priority FROM testcase)b "
                         + "ON b.test= t.test AND b.testcase=t.testcase "
-                        + "WHERE controlStatus in ('KO', 'FA', 'NA', 'PE') AND priority = '1' "
+                        + "WHERE controlStatus not in ('OK') AND priority = '1' "
                         + "AND tag = ?");
 
                 int nbkop1 = 0;
@@ -122,7 +122,7 @@ public class ResultCI extends HttpServlet {
                         + "JOIN "
                         + "(SELECT Test,TestCase, Priority FROM testcase)b "
                         + "ON b.test= t.test AND b.testcase=t.testcase "
-                        + "WHERE controlStatus in ('KO', 'FA', 'NA', 'PE') AND priority = '2' "
+                        + "WHERE controlStatus not in ('OK') AND priority = '2' "
                         + "AND tag = ?");
                 int nbkop2 = 0;
                 try {
@@ -144,7 +144,7 @@ public class ResultCI extends HttpServlet {
                         + "JOIN "
                         + "(SELECT Test,TestCase, Priority FROM testcase)b "
                         + "ON b.test= t.test AND b.testcase=t.testcase "
-                        + "WHERE controlStatus in ('KO', 'FA', 'NA', 'PE') AND priority = '3' "
+                        + "WHERE controlStatus not in ('OK') AND priority = '3' "
                         + "AND tag = ?");
                 int nbkop3 = 0;
                 try {
@@ -166,7 +166,7 @@ public class ResultCI extends HttpServlet {
                         + "JOIN "
                         + "(SELECT Test,TestCase, Priority FROM testcase)b "
                         + "ON b.test= t.test AND b.testcase=t.testcase "
-                        + "WHERE controlStatus in ('KO', 'FA', 'NA', 'PE') AND priority = '4' "
+                        + "WHERE controlStatus not in ('OK') AND priority = '4' "
                         + "AND tag = ?");
                 int nbkop4 = 0;
                 try {
