@@ -73,8 +73,8 @@ public class AddTestBatteryContent extends HttpServlet {
 
             response.setContentType("text/html");
             for (String testcaseselect : testcasesselected) {
-                test = URLDecoder.decode(testcaseselect.split("Test=")[1].split("&TestCase=")[0], "UTF-8");
-                testcase = URLDecoder.decode(testcaseselect.split("&TestCase=")[1], "UTF-8");
+                test = policy.sanitize(URLDecoder.decode(testcaseselect.split("Test=")[1].split("&TestCase=")[0], "UTF-8"));
+                testcase = policy.sanitize(URLDecoder.decode(testcaseselect.split("&TestCase=")[1], "UTF-8"));
                 try {
 
                     testBatteryService.createTestBatteryContent(factoryTestBatteryContent.create(null, test, testcase, testBatteryName));
