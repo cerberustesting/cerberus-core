@@ -29,54 +29,55 @@ public class User {
     private String name;
     private String team;
     private String reportingFavorite;
-    private String defaultIP;
-    private Integer preferenceRobotPort;
-    private String preferenceRobotPlatform;
-    private String preferenceRobotBrowser;
-    private String preferenceRobotVersion;
-    private String preferenceRobot;
+    private String robotHost;
+    private Integer robotPort;
+    private String robotPlatform;
+    private String robotBrowser;
+    private String robotVersion;
+    private String robot;
 
-    public String getPreferenceRobot() {
-        return preferenceRobot;
-    }
-
-    public void setPreferenceRobot(String preferenceRobot) {
-        this.preferenceRobot = preferenceRobot;
-    }
-    
-    public Integer getPreferenceRobotPort() {
-        return preferenceRobotPort;
-    }
-
-    public void setPreferenceRobotPort(Integer preferenceRobotPort) {
-        this.preferenceRobotPort = preferenceRobotPort;
-    }
-
-    public String getPreferenceRobotPlatform() {
-        return preferenceRobotPlatform;
-    }
-
-    public void setPreferenceRobotPlatform(String preferenceRobotPlatform) {
-        this.preferenceRobotPlatform = preferenceRobotPlatform;
-    }
-
-    public String getPreferenceRobotBrowser() {
-        return preferenceRobotBrowser;
-    }
-
-    public void setPreferenceRobotBrowser(String preferenceRobotBrowser) {
-        this.preferenceRobotBrowser = preferenceRobotBrowser;
-    }
-
-    public String getPreferenceRobotVersion() {
-        return preferenceRobotVersion;
-    }
-
-    public void setPreferenceRobotVersion(String preferenceRobotVersion) {
-        this.preferenceRobotVersion = preferenceRobotVersion;
-    }
     private String defaultSystem;
     private String email;
+
+    public Integer getRobotPort() {
+        return robotPort;
+    }
+
+    public void setRobotPort(Integer robotPort) {
+        this.robotPort = robotPort;
+    }
+
+    public String getRobotPlatform() {
+        return robotPlatform;
+    }
+
+    public void setRobotPlatform(String robotPlatform) {
+        this.robotPlatform = robotPlatform;
+    }
+
+    public String getRobotBrowser() {
+        return robotBrowser;
+    }
+
+    public void setRobotBrowser(String robotBrowser) {
+        this.robotBrowser = robotBrowser;
+    }
+
+    public String getRobotVersion() {
+        return robotVersion;
+    }
+
+    public void setRobotVersion(String robotVersion) {
+        this.robotVersion = robotVersion;
+    }
+
+    public String getRobot() {
+        return robot;
+    }
+
+    public void setRobot(String robot) {
+        this.robot = robot;
+    }
 
     public String getEmail() {
         return email;
@@ -142,12 +143,12 @@ public class User {
         this.reportingFavorite = reportingFavorite;
     }
 
-    public String getDefaultIP() {
-        return defaultIP;
+    public String getRobotHost() {
+        return robotHost;
     }
 
-    public void setDefaultIP(String defaultIP) {
-        this.defaultIP = defaultIP;
+    public void setRobotHost(String robotHost) {
+        this.robotHost = robotHost;
     }
 
     public String getDefaultSystem() {
@@ -188,19 +189,22 @@ public class User {
         if ((this.reportingFavorite == null) ? (other.reportingFavorite != null) : !this.reportingFavorite.equals(other.reportingFavorite)) {
             return false;
         }
-        if ((this.defaultIP == null) ? (other.defaultIP != null) : !this.defaultIP.equals(other.defaultIP)) {
+        if ((this.robotHost == null) ? (other.robotHost != null) : !this.robotHost.equals(other.robotHost)) {
             return false;
         }
-        if (this.preferenceRobotPort != other.preferenceRobotPort && (this.preferenceRobotPort == null || !this.preferenceRobotPort.equals(other.preferenceRobotPort))) {
+        if (this.robotPort != other.robotPort && (this.robotPort == null || !this.robotPort.equals(other.robotPort))) {
             return false;
         }
-        if ((this.preferenceRobotPlatform == null) ? (other.preferenceRobotPlatform != null) : !this.preferenceRobotPlatform.equals(other.preferenceRobotPlatform)) {
+        if ((this.robotPlatform == null) ? (other.robotPlatform != null) : !this.robotPlatform.equals(other.robotPlatform)) {
             return false;
         }
-        if ((this.preferenceRobotBrowser == null) ? (other.preferenceRobotBrowser != null) : !this.preferenceRobotBrowser.equals(other.preferenceRobotBrowser)) {
+        if ((this.robotBrowser == null) ? (other.robotBrowser != null) : !this.robotBrowser.equals(other.robotBrowser)) {
             return false;
         }
-        if ((this.preferenceRobotVersion == null) ? (other.preferenceRobotVersion != null) : !this.preferenceRobotVersion.equals(other.preferenceRobotVersion)) {
+        if ((this.robotVersion == null) ? (other.robotVersion != null) : !this.robotVersion.equals(other.robotVersion)) {
+            return false;
+        }
+        if ((this.robot == null) ? (other.robot != null) : !this.robot.equals(other.robot)) {
             return false;
         }
         if ((this.defaultSystem == null) ? (other.defaultSystem != null) : !this.defaultSystem.equals(other.defaultSystem)) {
@@ -222,11 +226,11 @@ public class User {
         hash = 97 * hash + (this.name != null ? this.name.hashCode() : 0);
         hash = 97 * hash + (this.team != null ? this.team.hashCode() : 0);
         hash = 97 * hash + (this.reportingFavorite != null ? this.reportingFavorite.hashCode() : 0);
-        hash = 97 * hash + (this.defaultIP != null ? this.defaultIP.hashCode() : 0);
-        hash = 97 * hash + (this.preferenceRobotPort != null ? this.preferenceRobotPort.hashCode() : 0);
-        hash = 97 * hash + (this.preferenceRobotPlatform != null ? this.preferenceRobotPlatform.hashCode() : 0);
-        hash = 97 * hash + (this.preferenceRobotBrowser != null ? this.preferenceRobotBrowser.hashCode() : 0);
-        hash = 97 * hash + (this.preferenceRobotVersion != null ? this.preferenceRobotVersion.hashCode() : 0);
+        hash = 97 * hash + (this.robotHost != null ? this.robotHost.hashCode() : 0);
+        hash = 97 * hash + (this.robotPort != null ? this.robotPort.hashCode() : 0);
+        hash = 97 * hash + (this.robotPlatform != null ? this.robotPlatform.hashCode() : 0);
+        hash = 97 * hash + (this.robotBrowser != null ? this.robotBrowser.hashCode() : 0);
+        hash = 97 * hash + (this.robotVersion != null ? this.robotVersion.hashCode() : 0);
         hash = 97 * hash + (this.defaultSystem != null ? this.defaultSystem.hashCode() : 0);
         hash = 97 * hash + (this.email != null ? this.email.hashCode() : 0);
         return hash;

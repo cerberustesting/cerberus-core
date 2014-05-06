@@ -34,19 +34,19 @@ public interface IFactoryUser {
      * @param name              Name of the user
      * @param team              Team the user belong to.
      * @param reportingFavorite Default parameters for reporting.
-     * @param defaultIP         Default IP used for Selenium sApplicationerver.
-     * @param preferenceRobotPort Preference Robot Port recorded
-     * @param preferenceRobotPlatform Preference Platform Port recorded
-     * @param preferenceRobotBrowser Preference Browser Port recorded
-     * @param preferenceRobotVersion Preference Version Port recorded
-     * @param preferenceRobot Preference Robot Name
+     * @param robotHost         Host used by Robot.
+     * @param robotPort
+     * @param robotPlatform
+     * @param robotBrowser
      * @param defaultSystem     Default System of the user.
+     * @param robotVersion
+     * @param robot
      * @param email             email of the user
      * @return A User.
      */
     User create(int userID, String login, String password, String request, String name, 
-            String team, String reportingFavorite, String defaultIP,Integer preferenceRobotPort, 
-            String preferenceRobotPlatform, String preferenceRobotBrowser
-            ,String preferenceRobotVersion, String preferenceRobot, String defaultSystem, String email);
+            String team, String reportingFavorite, String robotHost,Integer robotPort, 
+            String robotPlatform, String robotBrowser
+            ,String robotVersion, String robot, String defaultSystem, String email);
 
 }

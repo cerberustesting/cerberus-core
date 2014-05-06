@@ -31,9 +31,9 @@ public class FactoryUser implements IFactoryUser {
 
     @Override
     public User create(int userID, String login, String password, String request, String name, String team,
-            String reportingFavorite, String defaultIP,Integer preferenceRobotPort, 
-            String preferenceRobotPlatform, String preferenceRobotBrowser
-            ,String preferenceRobotVersion, String preferenceRobot, String defaultSystem, String email) {
+            String reportingFavorite, String robotHost,Integer robotPort, 
+            String robotPlatform, String robotBrowser
+            ,String robotVersion, String robot, String defaultSystem, String email) {
         User newUser = new User();
         newUser.setUserID(userID);
         newUser.setLogin(login);
@@ -42,14 +42,14 @@ public class FactoryUser implements IFactoryUser {
         newUser.setName(name);
         newUser.setTeam(team);
         newUser.setReportingFavorite(reportingFavorite);
-        newUser.setDefaultIP(defaultIP);
+        newUser.setRobotHost(robotHost);
         newUser.setDefaultSystem(defaultSystem);
         newUser.setEmail(email);
-        newUser.setPreferenceRobotBrowser(preferenceRobotBrowser);
-        newUser.setPreferenceRobotPlatform(preferenceRobotPlatform);
-        newUser.setPreferenceRobotPort(preferenceRobotPort);
-        newUser.setPreferenceRobotVersion(preferenceRobotVersion);
-        newUser.setPreferenceRobot(preferenceRobot);
+        newUser.setRobotBrowser(robotBrowser);
+        newUser.setRobotPlatform(robotPlatform);
+        newUser.setRobotPort(robotPort);
+        newUser.setRobotVersion(robotVersion);
+        newUser.setRobot(robot);
         return newUser;
     }
 }

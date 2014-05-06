@@ -136,7 +136,7 @@ public class UserDAO implements IUserDAO {
     @Override
     public boolean insertUser(User user) {
         boolean bool = false;
-        final String query = "INSERT INTO user (Login, Password, Name, Request, ReportingFavorite, DefaultIP, DefaultSystem, Team, Email) VALUES (?, SHA(?), ?, ?, ?, ?, ?, ?, ?)";
+        final String query = "INSERT INTO user (Login, Password, Name, Request, ReportingFavorite, RobotHost, DefaultSystem, Team, Email) VALUES (?, SHA(?), ?, ?, ?, ?, ?, ?, ?)";
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -147,7 +147,7 @@ public class UserDAO implements IUserDAO {
                 preStat.setString(3, user.getName());
                 preStat.setString(4, user.getRequest());
                 preStat.setString(5, user.getReportingFavorite());
-                preStat.setString(6, user.getDefaultIP());
+                preStat.setString(6, user.getRobotHost());
                 preStat.setString(7, user.getDefaultSystem());
                 preStat.setString(8, user.getTeam());
                 preStat.setString(9, user.getEmail());
@@ -218,10 +218,10 @@ public class UserDAO implements IUserDAO {
     public boolean updateUser(User user) {
         boolean bool = false;
         StringBuilder query = new StringBuilder();
-        query.append("UPDATE user SET Login = ?, Name = ?, Request = ?, ReportingFavorite = ?, DefaultIP = ?,");
-        query.append("Team = ?, DefaultSystem = ?, Email= ? , preferenceRobotPort = ?, ");
-        query.append("preferenceRobotPlatform = ?, ");
-        query.append("preferenceRobotBrowser = ?, preferenceRobotVersion = ?  WHERE userid = ?");
+        query.append("UPDATE user SET Login = ?, Name = ?, Request = ?, ReportingFavorite = ?, RobotHost = ?,");
+        query.append("Team = ?, DefaultSystem = ?, Email= ? , robotPort = ?, ");
+        query.append("robotPlatform = ?, ");
+        query.append("robotBrowser = ?, robotVersion = ? , robot = ?   WHERE userid = ?");
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -231,15 +231,16 @@ public class UserDAO implements IUserDAO {
                 preStat.setString(2, user.getName());
                 preStat.setString(3, user.getRequest());
                 preStat.setString(4, user.getReportingFavorite());
-                preStat.setString(5, user.getDefaultIP());
+                preStat.setString(5, user.getRobotHost());
                 preStat.setString(6, user.getTeam());
                 preStat.setString(7, user.getDefaultSystem());
                 preStat.setString(8, user.getEmail());
-                preStat.setString(9, String.valueOf(user.getPreferenceRobotPort()));
-                preStat.setString(10, user.getPreferenceRobotPlatform());
-                preStat.setString(11, user.getPreferenceRobotBrowser());
-                preStat.setString(12, user.getPreferenceRobotVersion());
-                preStat.setInt(13, user.getUserID());
+                preStat.setString(9, String.valueOf(user.getRobotPort()));
+                preStat.setString(10, user.getRobotPlatform());
+                preStat.setString(11, user.getRobotBrowser());
+                preStat.setString(12, user.getRobotVersion());
+                preStat.setString(13, user.getRobot());
+                preStat.setInt(14, user.getUserID());
 
                 bool = preStat.executeUpdate() > 0;
             } catch (SQLException exception) {
@@ -349,16 +350,16 @@ public class UserDAO implements IUserDAO {
         String name = ParameterParserUtil.parseStringParam(rs.getString("name"), "");
         String team = ParameterParserUtil.parseStringParam(rs.getString("team"), "");
         String reportingFavorite = ParameterParserUtil.parseStringParam(rs.getString("reportingFavorite"), "");
-        String defaultIP = ParameterParserUtil.parseStringParam(rs.getString("defaultIP"), "");
+        String robotHost = ParameterParserUtil.parseStringParam(rs.getString("robotHost"), "");
         String defaultSystem = ParameterParserUtil.parseStringParam(rs.getString("defaultSystem"), "");
         String email = ParameterParserUtil.parseStringParam(rs.getString("email"), "");
-        Integer preferenceRobotPort = ParameterParserUtil.parseIntegerParam(rs.getString("preferenceRobotPort"), 0); 
-        String preferenceRobotPlatform = ParameterParserUtil.parseStringParam(rs.getString("preferenceRobotPlatform"), ""); 
-        String preferenceRobotBrowser = ParameterParserUtil.parseStringParam(rs.getString("preferenceRobotBrowser"), "");
-        String preferenceRobotVersion = ParameterParserUtil.parseStringParam(rs.getString("preferenceRobotVersion"), "");
-        String preferenceRobot = ParameterParserUtil.parseStringParam(rs.getString("preferenceRobot"), "");
+        Integer robotPort = ParameterParserUtil.parseIntegerParam(rs.getString("robotPort"), 0); 
+        String robotPlatform = ParameterParserUtil.parseStringParam(rs.getString("robotPlatform"), ""); 
+        String robotBrowser = ParameterParserUtil.parseStringParam(rs.getString("robotBrowser"), "");
+        String robotVersion = ParameterParserUtil.parseStringParam(rs.getString("robotVersion"), "");
+        String robot = ParameterParserUtil.parseStringParam(rs.getString("robot"), "");
         //TODO remove when working in test with mockito and autowired
         factoryUser = new FactoryUser();
-        return factoryUser.create(userID, login, password, request, name, team, reportingFavorite, defaultIP, preferenceRobotPort, preferenceRobotPlatform, preferenceRobotBrowser, preferenceRobotVersion, preferenceRobot, defaultSystem, email);
+        return factoryUser.create(userID, login, password, request, name, team, reportingFavorite, robotHost, robotPort, robotPlatform, robotBrowser, robotVersion, robot, defaultSystem, email);
     }
 }

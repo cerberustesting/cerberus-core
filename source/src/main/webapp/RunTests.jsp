@@ -60,12 +60,12 @@
                         User usr = userService.findUserByKey(request.getUserPrincipal().getName());
 
                         //Update User Preferences
-                        if (StringUtils.isNotBlank(request.getParameter("DefaultIP"))) {
-                            usr.setDefaultIP(request.getParameter("ss_ip") == null ? "" : request.getParameter("ss_ip"));
-                            usr.setPreferenceRobotPort(Integer.valueOf(request.getParameter("ss_p")) == 0 ? 0 : Integer.valueOf(request.getParameter("ss_p")));
-                            usr.setPreferenceRobotPlatform(request.getParameter("platform") == null ? "" : request.getParameter("platform"));
-                            usr.setPreferenceRobotBrowser(request.getParameter("browser") == null ? "" : request.getParameter("browser"));
-                            usr.setPreferenceRobotVersion(request.getParameter("version") == null ? "" : request.getParameter("version"));
+                        if (StringUtils.isNotBlank(request.getParameter("RobotHost"))) {
+                            usr.setRobotHost(request.getParameter("ss_ip") == null ? "" : request.getParameter("ss_ip"));
+                            usr.setRobotPort(Integer.valueOf(request.getParameter("ss_p")) == 0 ? 0 : Integer.valueOf(request.getParameter("ss_p")));
+                            usr.setRobotPlatform(request.getParameter("platform") == null ? "" : request.getParameter("platform"));
+                            usr.setRobotBrowser(request.getParameter("browser") == null ? "" : request.getParameter("browser"));
+                            usr.setRobotVersion(request.getParameter("version") == null ? "" : request.getParameter("version"));
                             userService.updateUser(usr);
                         }
 
@@ -104,7 +104,7 @@
                         } else {
                             ssIP = request.getHeader("X-FORWARDED-FOR");
                             if (ssIP == null) {
-                                ssIP = usr.getDefaultIP();
+                                ssIP = usr.getRobotHost();
                             }
                         }
 
@@ -112,14 +112,14 @@
                         if (request.getParameter("ss_p") != null && request.getParameter("ss_p").compareTo("") != 0) {
                             ssPort = request.getParameter("ss_p");
                         } else {
-                            ssPort = String.valueOf(usr.getPreferenceRobotPort());
+                            ssPort = String.valueOf(usr.getRobotPort());
                         }
 
                         String robot;
                         if (request.getParameter("robot") != null && request.getParameter("robot").compareTo("") != 0) {
                             robot = request.getParameter("robot");
                         } else {
-                            robot = String.valueOf(usr.getPreferenceRobotPort());
+                            robot = String.valueOf(usr.getRobotPort());
                         }
 
                         String browser = "";
@@ -127,7 +127,7 @@
                         if (request.getParameter("browser") != null && request.getParameter("browser").compareTo("") != 0) {
                             browser = request.getParameter("browser");;
                         } else {
-                            browser = usr.getPreferenceRobotBrowser();
+                            browser = usr.getRobotBrowser();
                         }
                         if (!browser.equals("")) {
                             browserClass = "selectRobotSelected";
@@ -138,7 +138,7 @@
                         if (request.getParameter("platform") != null && request.getParameter("platform").compareTo("") != 0) {
                             platform = request.getParameter("platform");;
                         } else {
-                            platform = usr.getPreferenceRobotPlatform();
+                            platform = usr.getRobotPlatform();
                         }
                         if (!platform.equals("")) {
                             platformClass = "selectRobotSelected";
@@ -149,7 +149,7 @@
                         if (request.getParameter("version") != null && request.getParameter("version").compareTo("") != 0) {
                             version = request.getParameter("version");;
                         } else {
-                            version = usr.getPreferenceRobotVersion();
+                            version = usr.getRobotVersion();
                         }
                         if (!version.equals("")) {
                             versionClass = "selectRobotSelected";
@@ -374,7 +374,7 @@
                             <div style="clear:both">
                             </div>
 <div style="clear:both">
-                            <input id="button" class="button" type="submit" <%=enable%> name="DefaultIP" value="Record my Robot Preferences" >
+                            <input id="button" class="button" type="submit" <%=enable%> name="RobotHost" value="Record my Robot Preferences" >
                         </div>
                         </div>
                         <div id="automatedRobotDiv" style="display:none; clear:both">
@@ -382,11 +382,14 @@
                                 <select id="robot" name="robot" disabled="true" style="width: 550px;">
                                     <% for (Robot rob : robots) { %>
                                     <option style="width: 550px;" 
-                                            <% if (robot.equalsIgnoreCase(rob.getName())) { %>
+                                            <% if (robot.equalsIgnoreCase(rob.getRobot())) { %>
                                             selected="selected"
                                             <% }%> 
-                                            value="<%=rob.getName()%>"> 
-                                        <%="[ " + rob.getName() + " ] " + rob.getIp() + ":" + rob.getPort() + " " + rob.getBrowser() + " V" + rob.getVersion() + " on " + rob.getPlatform() + "."%>
+                                            <% if (rob.getRobot().equals("Y")) { %>
+                                            style="font-weight:bolder"
+                                            <% }%> 
+                                            value="<%=rob.getRobot()%>"> 
+                                        <%="[ " + rob.getRobot() + " ] " + rob.getHost() + ":" + rob.getPort() + " " + rob.getBrowser() + " V" + rob.getVersion() + " on " + rob.getPlatform() + "."%>
                                     </option>
                                     <% }%>
                                 </select>
