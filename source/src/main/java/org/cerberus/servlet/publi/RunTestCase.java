@@ -172,7 +172,7 @@ public class RunTestCase extends HttpServlet {
             out.println("Error - Parameter environment is mandatory.");
             error = true;
         }
-        if (!active.equals("Y") && !manualURL) {
+        if (active.equals("N") && !manualURL) {
             out.println("Error - Robot is not Active.");
             error = true;
         }
