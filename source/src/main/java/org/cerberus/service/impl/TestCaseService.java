@@ -142,4 +142,9 @@ public class TestCaseService implements ITestCaseService {
         }
         return result;
     }
+    
+    @Override
+    public boolean deleteTestCase(TCase testCase) {
+    return testCaseDao.deleteTestCase(testCase);
+    }
 }

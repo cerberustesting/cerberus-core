@@ -56,4 +56,11 @@ public interface ITestCaseDAO {
     List<TCase> findTestCaseByCriteria(TCase testCase, String text, String system);
 
     List<String> findUniqueDataOfColumn(String column);
+    
+    /**
+     * 
+     * @param testCase
+     * @return true if delete is OK
+     */
+    boolean deleteTestCase(TCase testCase);
 }

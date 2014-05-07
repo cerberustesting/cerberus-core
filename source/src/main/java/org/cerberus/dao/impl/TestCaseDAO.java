@@ -593,4 +593,36 @@ public class TestCaseDAO implements ITestCaseDAO {
         }
         return list;
     }
+    
+    @Override
+    public boolean deleteTestCase(TCase testCase) {
+        boolean bool = false;
+        final String query = "DELETE FROM testcase WHERE test = ? and testcase = ?";
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            try {
+                preStat.setString(1, testCase.getTest());
+                preStat.setString(2, testCase.getTestCase());
+
+                bool = preStat.executeUpdate() > 0;
+            } catch (SQLException exception) {
+                MyLogger.log(UserDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(UserDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(UserDAO.class.getName(), Level.WARN, e.toString());
+            }
+        }
+        return bool;
+    }
 }

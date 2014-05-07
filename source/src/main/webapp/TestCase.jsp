@@ -398,6 +398,11 @@
                     if (request.getUserPrincipal() != null && request.isUserInRole("Test")) {
                         canDuplicate = true;
                     }
+                    
+                    boolean canDelete = false;
+                    if (request.getUserPrincipal() != null && request.isUserInRole("TestAdmin")) {
+                        canDelete = true;
+                    }
 
             %>
 
@@ -439,7 +444,12 @@
                             <%  if (canDuplicate) {%>
                             <input type="hidden" id="Test" name="Test" value="<%=test%>"> <input type="hidden" id="TestCase" name="TestCase"
                                                                                                  value="<%=testcase%>">
+                            
                         </form>
+                        <% }%>
+                        <%  if (canDelete) {%>
+                        <input type="button" id="deleteTC" name="deleteTC" value="delete" onclick="javascript:deleteTestCase('<%=test%>','<%=testcase%>','TestCase.jsp')">
+                        <div id="deleteTCDiv"></div>
                         <% }%>
                     </td>
                 </tr>

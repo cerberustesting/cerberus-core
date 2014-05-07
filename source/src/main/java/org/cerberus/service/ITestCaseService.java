@@ -76,6 +76,13 @@ public interface ITestCaseService {
      * @since 0.9.2
      */
     List<TCase> findTestCaseActiveAutomatedBySystem(String test, String system);
+    
+    /**
+     * 
+     * @param testCase
+     * @return true if delete is OK
+     */
+    boolean deleteTestCase(TCase testCase);
 
     
 }

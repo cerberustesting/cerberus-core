@@ -3344,7 +3344,21 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("('INVARIANTPRIVATE','CAMPAIGN_PARAMETER','440','','',NULL);");
         SQLInstruction.add(SQLS.toString());
 
+//Add Invariant for new control verify element in element.
+//-- ------------------------ 465 
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`, `gp1`, `gp2`, `gp3`) VALUES ");
+        SQLS.append("('CONTROL', 'verifyElementInElement', 32, 'verifyElementInElement', '', NULL, NULL, NULL);");
+        SQLInstruction.add(SQLS.toString());
         
+        
+//Add Documentation for new control verify element in element.
+//-- ------------------------ 466 
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `DocLabel`, `DocDesc`) VALUES ");
+        SQLS.append("('testcasestepactioncontrol', 'Type', 'verifyElementInElement', 'True if the ControlProp contains an element ControlValue.', '<b>verifyElementInElement</b><br><br>Verify if an element is contained in another on the webpage.<br><br><i>Control Property :</i> Element container<br><br><i>Control Value :</i> Element contained in the element Container<br><br>');");
+        SQLInstruction.add(SQLS.toString());
+ 
         return SQLInstruction;
     }
 }

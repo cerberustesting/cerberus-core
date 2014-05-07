@@ -21,9 +21,6 @@ package org.cerberus.servlet.testCase;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -33,14 +30,11 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.cerberus.database.DatabaseSpring;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.factory.IFactoryLogEvent;
-import org.cerberus.factory.impl.FactoryLogEvent;
-import org.cerberus.log.MyLogger;
-import org.cerberus.service.ILogEventService;
-import org.cerberus.service.impl.LogEventService;
+import org.cerberus.service.ITestCaseService;
 import org.cerberus.service.impl.UserService;
+import org.owasp.html.PolicyFactory;
+import org.owasp.html.Sanitizers;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -51,155 +45,43 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 public class DeleteTestCase extends HttpServlet {
 
     /**
-     * Processes requests for both HTTP
-     * <code>GET</code> and
-     * <code>POST</code> methods.
+     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
+     * methods.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         PrintWriter out = response.getWriter();
+        PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
+        String test = policy.sanitize(request.getParameter("test"));
+        String testcase = policy.sanitize(request.getParameter("testcase"));
+        String fromPage = policy.sanitize(request.getParameter("fromPage"));
+
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-        DatabaseSpring database = appContext.getBean(DatabaseSpring.class);
-
-        Connection connection = database.connect();
+        ITestCaseService tcService = appContext.getBean(ITestCaseService.class);
         try {
-            /*
-             * Test Insert
-             */
-            String testcasedeleted[] = request.getParameterValues("test_testcase_delete");
-            String test = "";
-            PreparedStatement prepStmt;
-
-            if (testcasedeleted != null) {
-
-                for (int i = 0; i < testcasedeleted.length; i++) {
-                    String testcasesplited[] = testcasedeleted[i].split(" - ");
-                    test = testcasesplited[0];
-
-                    String deleteTestCaseExecutionStatement = "DELETE FROM testcaseexecution WHERE Test = ? AND testcase = ? ";
-                    prepStmt = connection.prepareStatement(deleteTestCaseExecutionStatement);
-                    try {
-                        prepStmt.setString(1, testcasesplited[0]);
-                        prepStmt.setString(2, testcasesplited[1]);
-                        prepStmt.executeUpdate();
-                    } finally {
-                        prepStmt.close();
-                    }
-
-                    String deleteTestCasestepactioncontrolStatement = "DELETE FROM testcasestepactioncontrol WHERE Test = ? AND testcase = ? ";
-                    prepStmt = connection.prepareStatement(deleteTestCasestepactioncontrolStatement);
-                    try {
-                        prepStmt.setString(1, testcasesplited[0]);
-                        prepStmt.setString(2, testcasesplited[1]);
-                        prepStmt.executeUpdate();
-                    } finally {
-                        prepStmt.close();
-                    }
-                    //stmt.execute("DELETE FROM testcasestepactioncontrol where Test = '" + testcasesplited[0] + "'" + " and testcase = '" + testcasesplited[1] + "'");
-
-                    String deleteTestCasestepactionStatement = "DELETE FROM testcasestepaction WHERE Test = ? AND testcase = ? ";
-                    prepStmt = connection.prepareStatement(deleteTestCasestepactionStatement);
-                    try {
-                        prepStmt.setString(1, testcasesplited[0]);
-                        prepStmt.setString(2, testcasesplited[1]);
-                        prepStmt.executeUpdate();
-                    } finally {
-                        prepStmt.close();
-                    }
-                    //stmt.execute("DELETE FROM testcasestepaction where Test = '" + testcasesplited[0] + "'" + " and testcase = '" + testcasesplited[1] + "'");
-
-                    String deleteTestCasestepbatchStatement = "DELETE FROM testcasestepbatch WHERE Test = ? AND testcase = ? ";
-                    prepStmt = connection.prepareStatement(deleteTestCasestepbatchStatement);
-                    try {
-                        prepStmt.setString(1, testcasesplited[0]);
-                        prepStmt.setString(2, testcasesplited[1]);
-                        prepStmt.executeUpdate();
-                    } finally {
-                        prepStmt.close();
-                    }
-                    //stmt.execute("DELETE FROM testcasestepbatch where Test = '" + testcasesplited[0] + "'" + " and testcase = '" + testcasesplited[1] + "'");
-
-                    String deleteTestCasecountrypropertiesStatement = "DELETE FROM testcasecountryproperties WHERE Test = ? AND testcase = ? ";
-                    prepStmt = connection.prepareStatement(deleteTestCasecountrypropertiesStatement);
-                    try {
-                        prepStmt.setString(1, testcasesplited[0]);
-                        prepStmt.setString(2, testcasesplited[1]);
-                        prepStmt.executeUpdate();
-                    } finally {
-                        prepStmt.close();
-                    }
-                    //stmt.execute("DELETE FROM testcasecountryproperties where Test = '" + testcasesplited[0] + "'" + " and testcase = '" + testcasesplited[1] + "'");
-
-                    String deleteTestCasecountryStatement = "DELETE FROM testcasecountry WHERE Test = ? AND testcase = ? ";
-                    prepStmt = connection.prepareStatement(deleteTestCasecountryStatement);
-                    try {
-                        prepStmt.setString(1, testcasesplited[0]);
-                        prepStmt.setString(2, testcasesplited[1]);
-                        prepStmt.executeUpdate();
-                    } finally {
-                        prepStmt.close();
-                    }
-                    //stmt.execute("DELETE FROM testcasecountry where Test = '" + testcasesplited[0] + "'" + " and testcase = '" + testcasesplited[1] + "'");
-
-                    String deleteTestCaseStatement = "DELETE FROM testcase WHERE Test = ? AND testcase = ? ";
-                    prepStmt = connection.prepareStatement(deleteTestCaseStatement);
-                    try {
-                        prepStmt.setString(1, testcasesplited[0]);
-                        prepStmt.setString(2, testcasesplited[1]);
-                        prepStmt.executeUpdate();
-                    } finally {
-                        prepStmt.close();
-                    }
-                    //stmt.execute("DELETE FROM testcase where Test = '" + testcasesplited[0] + "'" + " and testcase = '" + testcasesplited[1] + "'");
-
-                    /**
-                     * Adding Log entry.
-                     */
-                    ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                    IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
-                    try {
-                        logEventService.insertLogEvent(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/DeleteTestCase", "DELETE", "Delete testcase : ['" + testcasesplited[0] + "'|'" + testcasesplited[1] + "']", "", ""));
-                    } catch (CerberusException ex) {
-                        Logger.getLogger(UserService.class.getName()).log(Level.ERROR, null, ex);
-                    }
-
-
-                }
-            }
-
-            response.sendRedirect("Test.jsp?stestbox=" + test);
-
-
-        } catch (SQLException ex) {
-            MyLogger.log(DeleteTestCase.class.getName(), Level.FATAL, ex.toString());
-        } finally {
-            out.close();
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                MyLogger.log(DeleteTestCase.class.getName(), Level.WARN, e.toString());
-            }
+            tcService.deleteTestCase(tcService.findTestCaseByKey(test, testcase));
+        } catch (CerberusException ex) {
+            Logger.getLogger(UserService.class.getName()).log(Level.ERROR, null, ex);
         }
+
+        response.sendRedirect(fromPage);
+
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-
     /**
-     * Handles the HTTP
-     * <code>GET</code> method.
+     * Handles the HTTP <code>GET</code> method.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -208,13 +90,12 @@ public class DeleteTestCase extends HttpServlet {
     }
 
     /**
-     * Handles the HTTP
-     * <code>POST</code> method.
+     * Handles the HTTP <code>POST</code> method.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
