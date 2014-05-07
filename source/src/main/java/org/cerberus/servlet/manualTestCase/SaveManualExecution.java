@@ -98,7 +98,7 @@ public class SaveManualExecution extends HttpServlet {
             long now = new Date().getTime();
             String version = "Cerberus-"+Version.VERSION;
 
-            TestCaseExecution execution = factoryTCExecution.create(0, test, testCase, build, revision, env, country, browser, browserVersion, now, now,
+            TestCaseExecution execution = factoryTCExecution.create(0, test, testCase, build, revision, env, country, browser, "", "", browserVersion, now, now,
                     controlStatus, controlMessage, application, "", "", "", tag, "Y", 0, 0, "", tCase.getStatus(), version,
                     null, null, null, false, "", "", "", "", "", "", null, null);
 

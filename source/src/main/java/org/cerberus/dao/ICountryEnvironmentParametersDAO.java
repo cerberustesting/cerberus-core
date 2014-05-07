@@ -34,4 +34,6 @@ public interface ICountryEnvironmentParametersDAO {
     CountryEnvironmentApplication findCountryEnvironmentParameterByKey(String system, String country, String environment, String application) throws CerberusException;
 
     public List<String[]> getEnvironmentAvailable(String country, String application);
+    
+    List<CountryEnvironmentApplication> findCountryEnvironmentApplicationByCriteria(CountryEnvironmentApplication countryEnvironmentParameter) throws CerberusException;
 }

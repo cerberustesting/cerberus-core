@@ -51,7 +51,7 @@ public interface ITestCaseService {
     boolean updateTestCaseInformationCountries(TestCase tc);
 
     boolean createTestCase(TestCase testCase);
-
+    
     /**
      * @since 0.9.1
      */
@@ -61,4 +61,21 @@ public interface ITestCaseService {
      * @since 0.9.1
      */
     List<String> findUniqueDataOfColumn(String column);
+    
+    /**
+     * @param system
+     * @return List of String formated like this >> Test
+     * @since 0.9.2
+     */
+    List<String> findTestWithTestCaseActiveAutomatedBySystem(String system);
+    
+    /**
+     * @param test
+     * @param system 
+     * @return  List of TCase object
+     * @since 0.9.2
+     */
+    List<TCase> findTestCaseActiveAutomatedBySystem(String test, String system);
+
+    
 }

@@ -117,6 +117,7 @@
                     <li id="subactive"><a name="menu" id="menuEnvironments" href="EnvironmentList.jsp" style="width:150px">Environments</a></li>
                     <li id="subactive"><a name="menu" id="menuBuildRevision" href="BuildRevDefinition.jsp" style="width:150px">Build/Rev Definition</a></li>
                     <li id="subactive"><a name="menu" id="menuBuildContent" href="BuildContent.jsp" style="width:150px">Build Content</a></li>
+                    <li id="subactive"><a name="menu" id="menuRobot" href="Robot.jsp" style="width:150px">Robot</a></li>
                 </ul>
             </li>
             <% }%>

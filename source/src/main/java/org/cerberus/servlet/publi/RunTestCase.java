@@ -24,6 +24,7 @@ import java.io.PrintWriter;
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -35,12 +36,15 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Level;
 import org.cerberus.entity.MessageGeneral;
 import org.cerberus.entity.MessageGeneralEnum;
+import org.cerberus.entity.Robot;
 import org.cerberus.entity.TestCaseExecution;
 import org.cerberus.entity.TCase;
+import org.cerberus.exception.CerberusException;
 import org.cerberus.factory.IFactoryTestCaseExecution;
 import org.cerberus.factory.IFactoryTCase;
 import org.cerberus.log.MyLogger;
 import org.cerberus.service.ILogEventService;
+import org.cerberus.service.IRobotService;
 import org.cerberus.service.impl.LogEventService;
 import org.cerberus.serviceEngine.IRunTestCaseService;
 import org.cerberus.serviceEngine.impl.RunTestCaseService;
@@ -77,9 +81,34 @@ public class RunTestCase extends HttpServlet {
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
 
         //Tool
-        String seleniumIP = ParameterParserUtil.parseStringParam(policy.sanitize(request.getParameter("ss_ip")), "");
-        String seleniumPort = ParameterParserUtil.parseStringParam(policy.sanitize(request.getParameter("ss_p")), "");
-        String browser = ParameterParserUtil.parseStringParam(policy.sanitize(request.getParameter("browser")), "firefox");
+        String robotHost = "";
+        String robotPort = "";
+        String browser = "";
+        String version = "";
+        String platform = "";
+        String robot = ParameterParserUtil.parseStringParam(policy.sanitize(request.getParameter("robot")), "");
+        String active = "";
+        
+        if (robot.equals("")){
+        robotHost = ParameterParserUtil.parseStringParam(policy.sanitize(request.getParameter("ss_ip")), "");
+        robotPort = ParameterParserUtil.parseStringParam(policy.sanitize(request.getParameter("ss_p")), "");
+        browser = ParameterParserUtil.parseStringParam(policy.sanitize(request.getParameter("browser")), "firefox");
+        version = ParameterParserUtil.parseStringParam(policy.sanitize(request.getParameter("version")), "");
+        platform = ParameterParserUtil.parseStringParam(policy.sanitize(request.getParameter("platform")), "");
+        } else {
+        IRobotService robotService = appContext.getBean(IRobotService.class);
+            try {
+                Robot robObj = robotService.findRobotByName(robot);
+                robotHost = robObj.getHost();
+                robotPort = String.valueOf(robObj.getPort());
+                browser = robObj.getBrowser();
+                version = robObj.getVersion();
+                platform = robObj.getPlatform();
+                active = robObj.getActive();
+            } catch (CerberusException ex) {
+                Logger.getLogger(RunTestCase.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            }
+        }
 
         //Test
         String test = ParameterParserUtil.parseStringParam(policy.sanitize(request.getParameter("Test")), "");
@@ -108,9 +137,12 @@ public class RunTestCase extends HttpServlet {
                 + "- TestCase [mandatory] : Test Case reference to execute. [" + testCase + "]\n"
                 + "- Country [mandatory] : Country where the test case will execute. [" + country + "]\n"
                 + "- Environment [mandatory] : Environment where the test case will execute. [" + environment + "]\n"
-                + "- ss_ip : IP of the Selenium Server where the test will be executed. [" + seleniumIP + "]\n"
-                + "- ss_p : Port of the Selenium server. [" + seleniumPort + "]\n"
+                + "- robot : robot name on which the test will be executed. [" + robot + "]\n"
+                + "- ss_ip : Host of the Robot where the test will be executed. [" + robotHost + "]\n"
+                + "- ss_p : Port of the Robot. [" + robotPort + "]\n"
                 + "- browser : Browser to use for the execution. [" + browser + "]\n"
+                + "- version : Version to use for the execution. [" + version + "]\n"
+                + "- platform : Platform to use for the execution. [" + platform + "]\n"
                 + "- manualURL : Activate or not the Manual URL of the application to execute. If activated the 4 parameters after (myhost, mycontextroot, myloginrelativeurl, myenvdata) are necessary. [" + manualURL + "]\n"
                 + "- myhost : Host of the application to test. [" + myHost + "]\n"
                 + "- mycontextroot : Context root of the application to test. [" + myContextRoot + "]\n"
@@ -140,6 +172,10 @@ public class RunTestCase extends HttpServlet {
             out.println("Error - Parameter environment is mandatory.");
             error = true;
         }
+        if (!active.equals("Y") && !manualURL) {
+            out.println("Error - Robot is not Active.");
+            error = true;
+        }
 
         if (!error) {
 
@@ -149,9 +185,9 @@ public class RunTestCase extends HttpServlet {
 
             TCase tCase = factoryTCase.create(test, testCase);
 
-            TestCaseExecution tCExecution = factoryTCExecution.create(0, test, testCase, null, null, environment, country, browser, "",
-                    0, 0, "", "", null, seleniumIP, null, seleniumPort, tag, "N", verbose, screenshot, outputFormat, null,
-                    Version.PROJECT_NAME_VERSION, tCase, null, null, manualURL, myHost, myContextRoot, myLoginRelativeURL, myEnvData, seleniumIP, seleniumPort, null, new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_TESTSTARTED));
+            TestCaseExecution tCExecution = factoryTCExecution.create(0, test, testCase, null, null, environment, country, browser,version, platform, "",
+                    0, 0, "", "", null, robotHost, null, robotPort, tag, "N", verbose, screenshot, outputFormat, null,
+                    Version.PROJECT_NAME_VERSION, tCase, null, null, manualURL, myHost, myContextRoot, myLoginRelativeURL, myEnvData, robotHost, robotPort, null, new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_TESTSTARTED));
 
             try {
                 tCExecution = runTestCaseService.runTestCase(tCExecution);
@@ -177,7 +213,10 @@ public class RunTestCase extends HttpServlet {
                     out.println("<tr><td>OutputFormat</td><td><span id='OutputFormat'>" + outputFormat + "</span></td></tr>");
                     out.println("<tr><td>Verbose</td><td><span id='Verbose'>" + verbose + "</span></td></tr>");
                     out.println("<tr><td>Screenshot</td><td><span id='Screenshot'>" + screenshot + "</span></td></tr>");
+                    out.println("<tr><td>Robot</td><td><span id='Browser'>" + robot + "</span></td></tr>");
                     out.println("<tr><td>Browser</td><td><span id='Browser'>" + browser + "</span></td></tr>");
+                    out.println("<tr><td>Version</td><td><span id='Browser'>" + version + "</span></td></tr>");
+                    out.println("<tr><td>Platform</td><td><span id='Browser'>" + platform + "</span></td></tr>");
                     out.println("<tr><td>ManualURL</td><td><span id='ManualURL'>" + tCExecution.isManualURL() + "</span></td></tr>");
                     out.println("<tr><td>MyHost</td><td><span id='MyHost'>" + tCExecution.getMyHost() + "</span></td></tr>");
                     out.println("<tr><td>MyContextRoot</td><td><span id='MyContextRoot'>" + tCExecution.getMyContextRoot() + "</span></td></tr>");
@@ -210,7 +249,10 @@ public class RunTestCase extends HttpServlet {
                 out.println("OutputFormat" + separator + outputFormat);
                 out.println("Verbose" + separator + verbose);
                 out.println("Screenshot" + separator + screenshot);
+                out.println("Robot" + separator + robot);
                 out.println("Browser" + separator + browser);
+                out.println("Version" + separator + version);
+                out.println("Platform" + separator + platform);
                 out.println("ManualURL" + separator + tCExecution.isManualURL());
                 out.println("MyHost" + separator + tCExecution.getMyHost());
                 out.println("MyContextRoot" + separator + tCExecution.getMyContextRoot());

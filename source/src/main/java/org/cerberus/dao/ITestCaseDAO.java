@@ -47,6 +47,10 @@ public interface ITestCaseDAO {
     List<TCase> findTestCaseByCriteria(String test, String application, String country, String active);
 
     /**
+     * @param testCase
+     * @param text
+     * @param system
+     * @return 
      * @since 0.9.1
      */
     List<TCase> findTestCaseByCriteria(TCase testCase, String text, String system);

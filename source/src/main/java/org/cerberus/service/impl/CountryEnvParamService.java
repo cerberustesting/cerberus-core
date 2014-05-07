@@ -19,10 +19,16 @@
  */
 package org.cerberus.service.impl;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.cerberus.dao.ICountryEnvParamDAO;
 import org.cerberus.entity.CountryEnvParam;
+import org.cerberus.entity.CountryEnvironmentApplication;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.factory.IFactoryCountryEnvParam;
+import org.cerberus.factory.IFactoryCountryEnvironmentApplication;
 import org.cerberus.service.ICountryEnvParamService;
+import org.cerberus.service.ICountryEnvironmentApplicationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -35,9 +41,40 @@ public class CountryEnvParamService implements ICountryEnvParamService {
 
     @Autowired
     ICountryEnvParamDAO countryEnvParamDao;
+    @Autowired
+    IFactoryCountryEnvParam countryEnvParamFactory;
+    @Autowired
+    IFactoryCountryEnvironmentApplication countryEnvironmentApplicationFactory;
+    @Autowired
+    ICountryEnvironmentApplicationService countryEnvironmentApplicationService;
 
     @Override
     public CountryEnvParam findCountryEnvParamByKey(String system, String country, String environment) throws CerberusException {
         return countryEnvParamDao.findCountryEnvParamByKey(system, country, environment);
+    }
+
+    @Override
+    public List<CountryEnvParam> findCountryEnvParamByCriteria(CountryEnvParam countryEnvParam) throws CerberusException {
+        return countryEnvParamDao.findCountryEnvParamByCriteria(countryEnvParam);
+        
+    }
+
+    @Override
+    public List<CountryEnvParam> findActiveEnvironmentBySystemCountryApplication(String system, String country, String application) throws CerberusException {
+        List<CountryEnvParam> result = new ArrayList();
+        CountryEnvParam countryEnvParam = countryEnvParamFactory.create(system, country, true);
+        CountryEnvironmentApplication countryEnvironmentApplication = countryEnvironmentApplicationFactory.create(system, country, null, application, null, null, null);
+
+        List<CountryEnvironmentApplication> ceaList = countryEnvironmentApplicationService.findCountryEnvironmentApplicationByCriteria(countryEnvironmentApplication);
+        List<CountryEnvParam> ceList = this.findCountryEnvParamByCriteria(countryEnvParam);
+
+        for (CountryEnvironmentApplication cea : ceaList) {
+            for (CountryEnvParam ce : ceList) {
+                if (cea.getEnvironment().equals(ce.getEnvironment())) {
+                    result.add(ce);
+                }
+            }
+        }
+        return result;
     }
 }

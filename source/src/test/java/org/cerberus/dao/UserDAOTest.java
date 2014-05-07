@@ -128,7 +128,7 @@ public class UserDAOTest {
     @Test
     public void testUpdateUser() throws SQLException {
         when(databaseSpring.connect()).thenReturn(connection);
-        when(connection.prepareStatement(anyString())).thenReturn(statement);
+        when(connection.prepareStatement(anyString().toString())).thenReturn(statement);
         when(statement.executeUpdate()).thenReturn(1);
 
         User user = new User();

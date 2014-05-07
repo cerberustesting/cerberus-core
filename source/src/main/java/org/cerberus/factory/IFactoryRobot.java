@@ -17,21 +17,29 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.service;
+package org.cerberus.factory;
 
-import java.util.List;
-import org.cerberus.entity.CountryEnvParam;
-import org.cerberus.exception.CerberusException;
+import org.cerberus.entity.Robot;
 
 /**
- *
  * @author bcivel
  */
-public interface ICountryEnvParamService {
+public interface IFactoryRobot {
 
-    CountryEnvParam findCountryEnvParamByKey(String system, String country, String environment) throws CerberusException;
+    /**
+     * 
+     * @param robotID Autoincrement Id
+     * @param robot Name of the Robot
+     * @param host Host of the Robot
+     * @param port port of the Robot
+     * @param platform platform of the Robot
+     * @param browser browser of the Robot
+     * @param version version of the Robot
+     * @param active Robot active
+     * @param description description of the Robot
+     * @return 
+     */
+    Robot create(Integer robotID, String robot, String host, String port, String platform ,
+    String browser, String version, String active, String description);
 
-    List<CountryEnvParam> findCountryEnvParamByCriteria(CountryEnvParam countryEnvParam) throws CerberusException;
-    
-    List<CountryEnvParam> findActiveEnvironmentBySystemCountryApplication(String system, String country, String application) throws CerberusException;
 }

@@ -33,6 +33,7 @@ import org.cerberus.entity.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.factory.IFactoryCountryEnvironmentApplication;
 import org.cerberus.log.MyLogger;
+import org.cerberus.util.ParameterParserUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -171,5 +172,65 @@ public class CountryEnvironmentParametersDAO implements ICountryEnvironmentParam
             }
         }
         return list;
+    }
+
+    @Override
+    public List<CountryEnvironmentApplication> findCountryEnvironmentApplicationByCriteria(CountryEnvironmentApplication countryEnvironmentParameter) throws CerberusException {
+        List<CountryEnvironmentApplication> result = new ArrayList();
+        boolean throwex = false;
+        StringBuilder query = new StringBuilder();
+        query.append("SELECT `system`, country, environment, Application, IP,URL, URLLOGIN FROM countryenvironmentparameters ");
+        query.append(" WHERE `system` LIKE ? AND country LIKE ? AND environment LIKE ? AND Application LIKE ? ");
+        query.append("AND IP LIKE ? AND URL LIKE ? AND URLLOGIN LIKE ?");
+        
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query.toString());
+            try {
+                preStat.setString(1, ParameterParserUtil.wildcardIfEmpty(countryEnvironmentParameter.getSystem()));
+                preStat.setString(2, ParameterParserUtil.wildcardIfEmpty(countryEnvironmentParameter.getCountry()));
+                preStat.setString(3, ParameterParserUtil.wildcardIfEmpty(countryEnvironmentParameter.getEnvironment()));
+                preStat.setString(4, ParameterParserUtil.wildcardIfEmpty(countryEnvironmentParameter.getApplication()));
+                preStat.setString(5, ParameterParserUtil.wildcardIfEmpty(countryEnvironmentParameter.getIp()));
+                preStat.setString(6, ParameterParserUtil.wildcardIfEmpty(countryEnvironmentParameter.getUrl()));
+                preStat.setString(7, ParameterParserUtil.wildcardIfEmpty(countryEnvironmentParameter.getUrlLogin()));
+                
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+                    while (resultSet.next()) {
+                        String system = resultSet.getString("system");
+                        String country = resultSet.getString("country");
+                        String application = resultSet.getString("application");
+                        String environment = resultSet.getString("environment");
+                        String ip = ip = resultSet.getString("IP");
+                        String url = resultSet.getString("URL");
+                        String urlLogin = resultSet.getString("URLLOGIN");
+                        result.add(factoryCountryEnvironmentApplication.create(system, country, environment, application, ip, url, urlLogin));
+                    } 
+                } catch (SQLException exception) {
+                    MyLogger.log(CountryEnvironmentParametersDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                } finally {
+                    resultSet.close();
+                }
+            } catch (SQLException exception) {
+                MyLogger.log(CountryEnvironmentParametersDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(CountryEnvironmentParametersDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(CountryEnvironmentParametersDAO.class.getName(), Level.WARN, e.toString());
+            }
+        }
+        if (throwex) {
+            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
+        }
+        return result;
     }
 }

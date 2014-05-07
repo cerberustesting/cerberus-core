@@ -432,6 +432,7 @@ public class TestCaseDAO implements ITestCaseDAO {
     /**
      * @since 0.9.1
      */
+    @Override
     public List<TCase> findTestCaseByCriteria(TCase testCase, String text, String system) {
         List<TCase> list = null;
         final String query = "SELECT * FROM testcase t2 LEFT OUTER JOIN application a ON a.application=t2.application "

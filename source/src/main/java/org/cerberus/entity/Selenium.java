@@ -32,11 +32,28 @@ public class Selenium {
     private String host;
     private String port;
     private String browser;
+    private String version;
+    private String platform;
     private String login;
     private String ip;
     private WebDriver driver;
     private long defaultWait;
 
+    public String getVersion() {
+        return version;
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
+    }
+
+    public String getPlatform() {
+        return platform;
+    }
+
+    public void setPlatform(String platform) {
+        this.platform = platform;
+    }
 
     public String getHost() {
         return this.host;

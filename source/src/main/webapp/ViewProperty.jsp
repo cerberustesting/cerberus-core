@@ -62,6 +62,8 @@
             <br>
             <input type="button" name="calculate" id="calculate" value="Calculate property" onclick="calculateProperty()">
             <div id="result"></div>
+            <br>
+            <div id="propdesc"></div>
 
 <% } %>
 </form>

@@ -445,6 +445,34 @@
         <servlet-class>org.cerberus.servlet.guiPages.FindTestImplementationStatusPerApplication</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>CreateRobot</servlet-name>
+        <servlet-class>org.cerberus.servlet.robot.CreateRobot</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>DeleteRobot</servlet-name>
+        <servlet-class>org.cerberus.servlet.robot.DeleteRobot</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>FindAllRobot</servlet-name>
+        <servlet-class>org.cerberus.servlet.robot.FindAllRobot</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>UpdateRobot</servlet-name>
+        <servlet-class>org.cerberus.servlet.robot.UpdateRobot</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>GetTestBySystem</servlet-name>
+        <servlet-class>org.cerberus.servlet.test.GetTestBySystem</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>findEnvironmentByCriteria</servlet-name>
+        <servlet-class>org.cerberus.servlet.environment.findEnvironmentByCriteria</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>FindInvariantByID</servlet-name>
+        <servlet-class>org.cerberus.servlet.invariant.FindInvariantByID</servlet-class>
+</servlet>
+    <servlet>
         <display-name>Connector for ElFinder</display-name>
         <servlet-name>PictureConnector</servlet-name>
         <servlet-class>org.cerberus.servlet.testCase.SavePicture</servlet-class>
@@ -458,6 +486,11 @@
         <display-name>Generic Proxy</display-name>
         <servlet-name>virtualproxy</servlet-name>
         <servlet-class>org.cerberus.servlet.VirtualProxy</servlet-class>
+    </servlet>
+    <servlet>
+        <display-name>GetTestCaseForTest</display-name>
+        <servlet-name>GetTestCaseForTest</servlet-name>
+        <servlet-class>org.cerberus.servlet.testCase.GetTestCaseForTest</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>RunTestCase</servlet-name>
@@ -872,6 +905,34 @@
         <url-pattern>/FindTestImplementationStatusPerApplication</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
+        <servlet-name>CreateRobot</servlet-name>
+        <url-pattern>/CreateRobot</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DeleteRobot</servlet-name>
+        <url-pattern>/DeleteRobot</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>FindAllRobot</servlet-name>
+        <url-pattern>/FindAllRobot</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>UpdateRobot</servlet-name>
+        <url-pattern>/UpdateRobot</url-pattern>
+    </servlet-mapping>
+   <servlet-mapping>
+        <servlet-name>GetTestBySystem</servlet-name>
+        <url-pattern>/GetTestBySystem</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>findEnvironmentByCriteria</servlet-name>
+        <url-pattern>/findEnvironmentByCriteria</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>FindInvariantByID</servlet-name>
+        <url-pattern>/FindInvariantByID</url-pattern>
+        </servlet-mapping>
+    <servlet-mapping>
         <servlet-name>PictureConnector</servlet-name>
         <url-pattern>/PictureConnector</url-pattern>
     </servlet-mapping>
@@ -882,6 +943,10 @@
     <servlet-mapping>
         <servlet-name>virtualproxy</servlet-name>
         <url-pattern>/virtualproxy</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>GetTestCaseForTest</servlet-name>
+        <url-pattern>/GetTestCaseForTest</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>
@@ -994,6 +1059,9 @@
             <url-pattern>/FindAllTestData</url-pattern>
             <url-pattern>/FindAllSqlLibrary</url-pattern>
             <url-pattern>/PictureConnector</url-pattern>
+            <url-pattern>/GetTestBySystem</url-pattern>
+            <url-pattern>/GetCountryForTestCase</url-pattern>
+            <url-pattern>/GetTestCaseForTest</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <description>Test</description>
@@ -1026,6 +1094,11 @@
             <url-pattern>/RunTests.jsp</url-pattern>
             <url-pattern>/V2_RunTests.jsp</url-pattern>
         </web-resource-collection>
+        <web-resource-collection>
+            <web-resource-name>servlet</web-resource-name>
+            <description>servlet</description>
+            <url-pattern>/findEnvironmentByCriteria</url-pattern>
+        </web-resource-collection>
         <auth-constraint>
             <description>RunTest</description>
             <role-name>RunTest</role-name>
@@ -1044,6 +1117,7 @@
             <url-pattern>/IntegrationStatus.jsp</url-pattern>
             <url-pattern>/Notification.jsp</url-pattern>
             <url-pattern>/Project.jsp</url-pattern>
+            <url-pattern>/Robot.jsp</url-pattern>
         </web-resource-collection>
         <web-resource-collection>
             <web-resource-name>servlet</web-resource-name>
@@ -1076,6 +1150,10 @@
             <url-pattern>/CreateProject</url-pattern>
             <url-pattern>/DeleteProject</url-pattern>
             <url-pattern>/UpdateProject</url-pattern>
+            <url-pattern>/CreateRobot</url-pattern>
+            <url-pattern>/DeleteRobot</url-pattern>
+            <url-pattern>/UpdateRobot</url-pattern>
+            <url-pattern>/FindAllRobot</url-pattern>
             <url-pattern>/CreateBuildRevisionInvariant</url-pattern>
             <url-pattern>/UpdateBuildRevisionInvariant</url-pattern>
             <url-pattern>/DeleteBuildRevisionInvariant</url-pattern>

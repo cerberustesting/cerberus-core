@@ -35,7 +35,7 @@ import org.cerberus.entity.TestCaseStepExecution;
 public interface IFactoryTestCaseExecution {
 
     TestCaseExecution create(long id, String test, String testCase, String build, String revision, String environment,
-                       String country, String browser, String browserFullVersion, long start, long end, String controlStatus, String controlMessage,
+                       String country, String browser, String version, String platform, String browserFullVersion, long start, long end, String controlStatus, String controlMessage,
                        Application application, String ip, String url, String port, String tag, String finished, int verbose, int screenshot,
                        String outputFormat, String status, String crbVersion, TCase tCase, CountryEnvParam countryEnvParam,
                        CountryEnvironmentApplication countryEnvironmentApplication, boolean manualURL, String myHost, String myContextRoot, String myLoginRelativeURL, String myEnvData,

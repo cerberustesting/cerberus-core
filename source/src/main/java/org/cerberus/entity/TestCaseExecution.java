@@ -32,6 +32,8 @@ public class TestCaseExecution {
     private String environment;
     private String country;
     private String browser;
+    private String version;
+    private String platform;
     private String browserFullVersion;
     private long start;
     private long end;
@@ -67,6 +69,22 @@ public class TestCaseExecution {
     private List<TestCaseStepExecution> testCaseStepExecutionList; // Host the list of Steps that will be executed (both pre tests and main test)
     private List<TestCaseExecutionData> testCaseExecutionDataList; // Host the full list of data calculated during the execution.
     private MessageGeneral resultMessage;
+
+    public String getVersion() {
+        return version;
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
+    }
+
+    public String getPlatform() {
+        return platform;
+    }
+
+    public void setPlatform(String platform) {
+        this.platform = platform;
+    }
 
     public Invariant getCountryObj() {
         return CountryObj;

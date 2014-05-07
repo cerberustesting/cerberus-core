@@ -17,6 +17,7 @@
  */
 package org.cerberus.dao;
 
+import java.util.List;
 import org.cerberus.entity.CountryEnvParam;
 import org.cerberus.exception.CerberusException;
 
@@ -26,4 +27,6 @@ import org.cerberus.exception.CerberusException;
 public interface ICountryEnvParamDAO {
 
     CountryEnvParam findCountryEnvParamByKey(String system, String country, String environment) throws CerberusException;
+    
+    List<CountryEnvParam> findCountryEnvParamByCriteria(CountryEnvParam countryEnvParam) throws CerberusException;
 }

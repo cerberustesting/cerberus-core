@@ -135,6 +135,9 @@
                 if (request.getParameter("ReadOnly") != null && request.getParameter("ReadOnly").compareTo("A") != 0) {
                     tcclauses = tcclauses + " AND ReadOnly = '" + request.getParameter("ReadOnly") + "'";
                 }
+                if (request.getParameter("Comment") != null && request.getParameter("Comment").compareTo("") != 0) {
+                    tcclauses = tcclauses + " AND Comment LIKE '%" + request.getParameter("Comment") + "%'";
+                }
 
                 String[] country_list = null;
                 if (request.getParameter("Country") != null) {

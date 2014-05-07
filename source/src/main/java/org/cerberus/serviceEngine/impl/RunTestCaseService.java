@@ -77,6 +77,7 @@ import org.cerberus.serviceEngine.IRunTestCaseService;
 import org.cerberus.serviceEngine.ISeleniumService;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
+import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.remote.UnreachableBrowserException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -472,7 +473,7 @@ public class RunTestCaseService implements IRunTestCaseService {
             } catch (CerberusException ex) {
                 Logger.getLogger(RunTestCaseService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
             }
-            tCExecution.setResultMessage(this.seleniumService.startSeleniumServer(runID, tCExecution.getSeleniumIP(), tCExecution.getSeleniumPort(), tCExecution.getBrowser(), url, login, tCExecution.getVerbose(), tCExecution.getCountry()));
+            tCExecution.setResultMessage(this.seleniumService.startSeleniumServer(runID, tCExecution.getSeleniumIP(), tCExecution.getSeleniumPort(), tCExecution.getBrowser(),tCExecution.getVersion(),tCExecution.getPlatform(), url, login, tCExecution.getVerbose(), tCExecution.getCountry()));
             /**
              * We stop if the result is not OK
              */
@@ -485,13 +486,18 @@ public class RunTestCaseService implements IRunTestCaseService {
                 }
                 return tCExecution;
             } else {
-                tCExecution.setBrowserFullVersion(this.seleniumService.getFullBrowserVersion());
+                Capabilities caps = this.seleniumService.getUsedCapabilities();
+                tCExecution.setBrowserFullVersion(caps.getBrowserName() + " " + caps.getVersion() + " " + caps.getPlatform().toString());
+                tCExecution.setVersion(caps.getVersion());
+                tCExecution.setPlatform(caps.getPlatform().toString());
             }
         } else {
             // If Selenium is not needed, the selenium and browser info is set to empty.
             tCExecution.setSeleniumIP("");
             tCExecution.setSeleniumPort("");
             tCExecution.setBrowser("");
+            tCExecution.setVersion("");
+            tCExecution.setPlatform("");
         }
 
 

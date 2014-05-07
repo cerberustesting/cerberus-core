@@ -29,9 +29,55 @@ public class User {
     private String name;
     private String team;
     private String reportingFavorite;
-    private String defaultIP;
+    private String robotHost;
+    private String robotPort;
+    private String robotPlatform;
+    private String robotBrowser;
+    private String robotVersion;
+    private String robot;
+
     private String defaultSystem;
     private String email;
+
+    public String getRobotPort() {
+        return robotPort;
+    }
+
+    public void setRobotPort(String robotPort) {
+        this.robotPort = robotPort;
+    }
+
+    public String getRobotPlatform() {
+        return robotPlatform;
+    }
+
+    public void setRobotPlatform(String robotPlatform) {
+        this.robotPlatform = robotPlatform;
+    }
+
+    public String getRobotBrowser() {
+        return robotBrowser;
+    }
+
+    public void setRobotBrowser(String robotBrowser) {
+        this.robotBrowser = robotBrowser;
+    }
+
+    public String getRobotVersion() {
+        return robotVersion;
+    }
+
+    public void setRobotVersion(String robotVersion) {
+        this.robotVersion = robotVersion;
+    }
+
+    public String getRobot() {
+        return robot;
+    }
+
+    public void setRobot(String robot) {
+        this.robot = robot;
+    }
 
     public String getEmail() {
         return email;
@@ -97,12 +143,12 @@ public class User {
         this.reportingFavorite = reportingFavorite;
     }
 
-    public String getDefaultIP() {
-        return defaultIP;
+    public String getRobotHost() {
+        return robotHost;
     }
 
-    public void setDefaultIP(String defaultIP) {
-        this.defaultIP = defaultIP;
+    public void setRobotHost(String robotHost) {
+        this.robotHost = robotHost;
     }
 
     public String getDefaultSystem() {
@@ -114,38 +160,83 @@ public class User {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof User)) return false;
-
-        User user = (User) o;
-
-        if (userID != user.userID) return false;
-        if (defaultIP != null ? !defaultIP.equals(user.defaultIP) : user.defaultIP != null) return false;
-        if (defaultSystem != null ? !defaultSystem.equals(user.defaultSystem) : user.defaultSystem != null)
+    public boolean equals(Object obj) {
+        if (obj == null) {
             return false;
-        if (login != null ? !login.equals(user.login) : user.login != null) return false;
-        if (name != null ? !name.equals(user.name) : user.name != null) return false;
-        if (password != null ? !password.equals(user.password) : user.password != null) return false;
-        if (reportingFavorite != null ? !reportingFavorite.equals(user.reportingFavorite) : user.reportingFavorite != null)
+        }
+        if (getClass() != obj.getClass()) {
             return false;
-        if (request != null ? !request.equals(user.request) : user.request != null) return false;
-        if (team != null ? !team.equals(user.team) : user.team != null) return false;
-
+        }
+        final User other = (User) obj;
+        if (this.userID != other.userID) {
+            return false;
+        }
+        if ((this.login == null) ? (other.login != null) : !this.login.equals(other.login)) {
+            return false;
+        }
+        if ((this.password == null) ? (other.password != null) : !this.password.equals(other.password)) {
+            return false;
+        }
+        if ((this.request == null) ? (other.request != null) : !this.request.equals(other.request)) {
+            return false;
+        }
+        if ((this.name == null) ? (other.name != null) : !this.name.equals(other.name)) {
+            return false;
+        }
+        if ((this.team == null) ? (other.team != null) : !this.team.equals(other.team)) {
+            return false;
+        }
+        if ((this.reportingFavorite == null) ? (other.reportingFavorite != null) : !this.reportingFavorite.equals(other.reportingFavorite)) {
+            return false;
+        }
+        if ((this.robotHost == null) ? (other.robotHost != null) : !this.robotHost.equals(other.robotHost)) {
+            return false;
+        }
+        if (this.robotPort != other.robotPort && (this.robotPort == null || !this.robotPort.equals(other.robotPort))) {
+            return false;
+        }
+        if ((this.robotPlatform == null) ? (other.robotPlatform != null) : !this.robotPlatform.equals(other.robotPlatform)) {
+            return false;
+        }
+        if ((this.robotBrowser == null) ? (other.robotBrowser != null) : !this.robotBrowser.equals(other.robotBrowser)) {
+            return false;
+        }
+        if ((this.robotVersion == null) ? (other.robotVersion != null) : !this.robotVersion.equals(other.robotVersion)) {
+            return false;
+        }
+        if ((this.robot == null) ? (other.robot != null) : !this.robot.equals(other.robot)) {
+            return false;
+        }
+        if ((this.defaultSystem == null) ? (other.defaultSystem != null) : !this.defaultSystem.equals(other.defaultSystem)) {
+            return false;
+        }
+        if ((this.email == null) ? (other.email != null) : !this.email.equals(other.email)) {
+            return false;
+        }
         return true;
     }
 
     @Override
     public int hashCode() {
-        int result = userID;
-        result = 31 * result + (login != null ? login.hashCode() : 0);
-        result = 31 * result + (password != null ? password.hashCode() : 0);
-        result = 31 * result + (request != null ? request.hashCode() : 0);
-        result = 31 * result + (name != null ? name.hashCode() : 0);
-        result = 31 * result + (team != null ? team.hashCode() : 0);
-        result = 31 * result + (reportingFavorite != null ? reportingFavorite.hashCode() : 0);
-        result = 31 * result + (defaultIP != null ? defaultIP.hashCode() : 0);
-        result = 31 * result + (defaultSystem != null ? defaultSystem.hashCode() : 0);
-        return result;
+        int hash = 7;
+        hash = 97 * hash + this.userID;
+        hash = 97 * hash + (this.login != null ? this.login.hashCode() : 0);
+        hash = 97 * hash + (this.password != null ? this.password.hashCode() : 0);
+        hash = 97 * hash + (this.request != null ? this.request.hashCode() : 0);
+        hash = 97 * hash + (this.name != null ? this.name.hashCode() : 0);
+        hash = 97 * hash + (this.team != null ? this.team.hashCode() : 0);
+        hash = 97 * hash + (this.reportingFavorite != null ? this.reportingFavorite.hashCode() : 0);
+        hash = 97 * hash + (this.robotHost != null ? this.robotHost.hashCode() : 0);
+        hash = 97 * hash + (this.robotPort != null ? this.robotPort.hashCode() : 0);
+        hash = 97 * hash + (this.robotPlatform != null ? this.robotPlatform.hashCode() : 0);
+        hash = 97 * hash + (this.robotBrowser != null ? this.robotBrowser.hashCode() : 0);
+        hash = 97 * hash + (this.robotVersion != null ? this.robotVersion.hashCode() : 0);
+        hash = 97 * hash + (this.defaultSystem != null ? this.defaultSystem.hashCode() : 0);
+        hash = 97 * hash + (this.email != null ? this.email.hashCode() : 0);
+        return hash;
     }
+
+    
+
+    
 }
