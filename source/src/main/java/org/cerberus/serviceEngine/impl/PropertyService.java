@@ -226,12 +226,21 @@ public class PropertyService implements IPropertyService {
         } else if (testCaseCountryProperty.getType().equals("getFromJS")) {
             try {
                 String script = testCaseCountryProperty.getValue1();
-                String valueFromJS = this.seleniumService.getValueFromJS(script);
+                String valueFromJS;
+                try {
+                    valueFromJS = this.seleniumService.getValueFromJS(script);
+                } catch (Exception e) {
+                    MyLogger.log(PropertyService.class.getName(), Level.ERROR, e.toString());
+                    valueFromJS = null;
+                }
                 if (valueFromJS != null) {
                     testCaseExecutionData.setValue(valueFromJS);
                     res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_HTML);
                     res.setDescription(res.getDescription().replaceAll("%ELEMENT%", testCaseCountryProperty.getValue1()));
                     res.setDescription(res.getDescription().replaceAll("%VALUE%", script));
+                    testCaseExecutionData.setPropertyResultMessage(res);
+                } else {
+                    res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED);
                     testCaseExecutionData.setPropertyResultMessage(res);
                 }
             } catch (NoSuchElementException exception) {
