@@ -375,8 +375,8 @@
                             </div>
                             <div style="clear:both">
                             </div>
-<div style="clear:both">
-                            <input id="button" class="button" type="submit" <%=enable%> name="RobotHost" value="Record my Robot Preferences" >
+<div id="recordButtonDiv" style="clear:both">
+                            <input id="button" class="button" type="button" onclick="recordRobotPreference()" <%=enable%> name="RobotHost" value="Record my Robot Preferences" >
                         </div>
                         </div>
                         <div id="automatedRobotDiv" style="display:none; clear:both">
@@ -673,6 +673,23 @@ $("#platform").append($("<option></option>")
                     document.getElementById(field).setAttribute('class', 'selectRobot');
                 }
             }
+        </script>
+        <script>
+        function recordRobotPreference(){
+            var ip = document.getElementById("ss_ip").value;
+            var p = document.getElementById("ss_p").value;
+            var br = document.getElementById("browser");
+            var b = br.options[br.selectedIndex].value;
+            var v = document.getElementById("version").value;
+            var pla = document.getElementById("platform");
+            var pl = pla.options[pla.selectedIndex].value;
+            $("#recordButtonDiv").append('<img id="loader" src="images/loading.gif">');
+        var xhttp = new XMLHttpRequest();
+        xhttp.open("GET", "UpdateUserRobotPreference?ss_ip=" + ip + "&ss_p=" + p + "&browser=" + b + "&version=" + v + "&platform=" + pl, false);
+        xhttp.send();
+        var xmlDoc = xhttp.responseText;
+        $("#loader").remove();
+        }
         </script>
     </body>
 </html>

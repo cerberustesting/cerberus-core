@@ -471,7 +471,7 @@
     <servlet>
         <servlet-name>FindInvariantByID</servlet-name>
         <servlet-class>org.cerberus.servlet.invariant.FindInvariantByID</servlet-class>
-</servlet>
+    </servlet>
     <servlet>
         <display-name>Connector for ElFinder</display-name>
         <servlet-name>PictureConnector</servlet-name>
@@ -491,6 +491,10 @@
         <display-name>GetTestCaseForTest</display-name>
         <servlet-name>GetTestCaseForTest</servlet-name>
         <servlet-class>org.cerberus.servlet.testCase.GetTestCaseForTest</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>UpdateUserRobotPreference</servlet-name>
+        <servlet-class>org.cerberus.servlet.user.UpdateUserRobotPreference</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>RunTestCase</servlet-name>
@@ -920,7 +924,7 @@
         <servlet-name>UpdateRobot</servlet-name>
         <url-pattern>/UpdateRobot</url-pattern>
     </servlet-mapping>
-   <servlet-mapping>
+    <servlet-mapping>
         <servlet-name>GetTestBySystem</servlet-name>
         <url-pattern>/GetTestBySystem</url-pattern>
     </servlet-mapping>
@@ -931,7 +935,7 @@
     <servlet-mapping>
         <servlet-name>FindInvariantByID</servlet-name>
         <url-pattern>/FindInvariantByID</url-pattern>
-        </servlet-mapping>
+    </servlet-mapping>
     <servlet-mapping>
         <servlet-name>PictureConnector</servlet-name>
         <url-pattern>/PictureConnector</url-pattern>
@@ -947,6 +951,10 @@
     <servlet-mapping>
         <servlet-name>GetTestCaseForTest</servlet-name>
         <url-pattern>/GetTestCaseForTest</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>UpdateUserRobotPreference</servlet-name>
+        <url-pattern>/UpdateUserRobotPreference</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>
@@ -1098,6 +1106,7 @@
             <web-resource-name>servlet</web-resource-name>
             <description>servlet</description>
             <url-pattern>/findEnvironmentByCriteria</url-pattern>
+            <url-pattern>/UpdateUserRobotPreference</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <description>RunTest</description>
@@ -1150,13 +1159,13 @@
             <url-pattern>/CreateProject</url-pattern>
             <url-pattern>/DeleteProject</url-pattern>
             <url-pattern>/UpdateProject</url-pattern>
+            <url-pattern>/CreateBuildRevisionInvariant</url-pattern>
+            <url-pattern>/UpdateBuildRevisionInvariant</url-pattern>
+            <url-pattern>/DeleteBuildRevisionInvariant</url-pattern>
             <url-pattern>/CreateRobot</url-pattern>
             <url-pattern>/DeleteRobot</url-pattern>
             <url-pattern>/UpdateRobot</url-pattern>
             <url-pattern>/FindAllRobot</url-pattern>
-            <url-pattern>/CreateBuildRevisionInvariant</url-pattern>
-            <url-pattern>/UpdateBuildRevisionInvariant</url-pattern>
-            <url-pattern>/DeleteBuildRevisionInvariant</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <description>Integrator</description>
