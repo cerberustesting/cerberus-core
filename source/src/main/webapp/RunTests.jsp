@@ -191,6 +191,20 @@
                         } else {
                             tag = new String("None");
                         }
+                        
+                        String verbose;
+                        if (request.getParameter("verbose") != null && request.getParameter("verbose").compareTo("") != 0) {
+                            verbose = request.getParameter("verbose");
+                        } else {
+                            verbose = new String("1");
+                        }
+                        
+                        String screenshot;
+                        if (request.getParameter("screenshot") != null && request.getParameter("screenshot").compareTo("") != 0) {
+                            screenshot = request.getParameter("screenshot");
+                        } else {
+                            screenshot = new String("1");
+                        }
 
                         String enable = "";
 
@@ -231,6 +245,8 @@
                 %>
                 <input hidden="hidden" id="defPlatform" value="<%=platform%>">
                 <input hidden="hidden" id="defBrowser" value="<%=browser%>">
+                <input hidden="hidden" id="defVerbose" value="<%=verbose%>">
+                <input hidden="hidden" id="defScreenshot" value="<%=screenshot%>">
                 <div class="filters" style="clear:both; width:100%">
                     <p style="float:left" class="dttTitle">Choose Test</p>
                     <div id="dropDownDownArrow" style="float:left">
@@ -375,9 +391,9 @@
                             </div>
                             <div style="clear:both">
                             </div>
-<div id="recordButtonDiv" style="clear:both">
-                            <input id="button" class="button" type="button" onclick="recordRobotPreference()" <%=enable%> name="RobotHost" value="Record my Robot Preferences" >
-                        </div>
+                            <div id="recordButtonDiv" style="clear:both">
+                                <input id="button" class="button" type="button" onclick="recordRobotPreference()" <%=enable%> name="RobotHost" value="Record my Robot Preferences" >
+                            </div>
                         </div>
                         <div id="automatedRobotDiv" style="display:none; clear:both">
                             <div style="float:left">
@@ -397,7 +413,7 @@
                                 </select>
                             </div>
                         </div>
-                        
+
                         <div style="clear:both; text-align:left;font-size: smaller">
                             INSTRUCTIONS ON HOW TO RUN YOUR LOCAL SELENIUM SERVER :
                             <br>
@@ -594,12 +610,21 @@
         <script type="text/javascript">
             (document).ready($.getJSON('FindInvariantByID?idName=verbose', function(data) {
                 $("#verbose").empty();
-
+                var pl = document.getElementById("defVerbose").value;
+                
                 for (var i = 0; i < data.length; i++) {
                     $("#verbose").append($("<option></option>")
                             .attr("value", data[i].value)
                             .text(data[i].value + " ( " + data[i].description + " )"));
                 }
+                
+                $("#verbose").find('option').each(function(i, opt) {
+                    if (opt.value === pl) {
+                        $(opt).attr('selected', 'selected');
+                    }
+
+
+                });
 
             }));
 
@@ -607,6 +632,7 @@
         <script type="text/javascript">
             (document).ready($.getJSON('FindInvariantByID?idName=screenshot', function(data) {
                 $("#screenshot").empty();
+                var pl = document.getElementById("defScreenshot").value;
 
                 for (var i = 0; i < data.length; i++) {
                     $("#screenshot").append($("<option></option>")
@@ -614,6 +640,13 @@
                             .text(data[i].value + " ( " + data[i].description + " )"));
                 }
 
+$("#screenshot").find('option').each(function(i, opt) {
+                    if (opt.value === pl) {
+                        $(opt).attr('selected', 'selected');
+                    }
+
+
+                });
             }));
 
         </script>
@@ -627,14 +660,14 @@
                             .attr("value", data[i].value)
                             .text(data[i].value + " ( " + data[i].description + " )"));
                 }
-$("#browser").find('option').each(function(i, opt) {
-                       if (opt.value === pl){
-                            $(opt).attr('selected', 'selected');
+                $("#browser").find('option').each(function(i, opt) {
+                    if (opt.value === pl) {
+                        $(opt).attr('selected', 'selected');
                     }
-                
 
-            });
-        }));
+
+                });
+            }));
 
         </script>
         <script type="text/javascript">
@@ -642,24 +675,24 @@ $("#browser").find('option').each(function(i, opt) {
                 $("#platform").empty();
                 var pl = document.getElementById("defPlatform").value;
 
-$("#platform").append($("<option></option>")
-                            .attr("value", "")
-                            .text("Optional"));
-                    
+                $("#platform").append($("<option></option>")
+                        .attr("value", "")
+                        .text("Optional"));
+
                 for (var i = 0; i < data.length; i++) {
                     $("#platform").append($("<option></option>")
                             .attr("value", data[i].value)
                             .text(data[i].value + " ( " + data[i].description + " )"));
                 }
-                
-                $("#platform").find('option').each(function(i, opt) {
-                       if (opt.value === pl){
-                            $(opt).attr('selected', 'selected');
-                    }
-                
 
-            });
-        }));
+                $("#platform").find('option').each(function(i, opt) {
+                    if (opt.value === pl) {
+                        $(opt).attr('selected', 'selected');
+                    }
+
+
+                });
+            }));
 
         </script>
         <script>
@@ -675,21 +708,21 @@ $("#platform").append($("<option></option>")
             }
         </script>
         <script>
-        function recordRobotPreference(){
-            var ip = document.getElementById("ss_ip").value;
-            var p = document.getElementById("ss_p").value;
-            var br = document.getElementById("browser");
-            var b = br.options[br.selectedIndex].value;
-            var v = document.getElementById("version").value;
-            var pla = document.getElementById("platform");
-            var pl = pla.options[pla.selectedIndex].value;
-            $("#recordButtonDiv").append('<img id="loader" src="images/loading.gif">');
-        var xhttp = new XMLHttpRequest();
-        xhttp.open("GET", "UpdateUserRobotPreference?ss_ip=" + ip + "&ss_p=" + p + "&browser=" + b + "&version=" + v + "&platform=" + pl, false);
-        xhttp.send();
-        var xmlDoc = xhttp.responseText;
-        $("#loader").remove();
-        }
+            function recordRobotPreference() {
+                var ip = document.getElementById("ss_ip").value;
+                var p = document.getElementById("ss_p").value;
+                var br = document.getElementById("browser");
+                var b = br.options[br.selectedIndex].value;
+                var v = document.getElementById("version").value;
+                var pla = document.getElementById("platform");
+                var pl = pla.options[pla.selectedIndex].value;
+                $("#recordButtonDiv").append('<img id="loader" src="images/loading.gif">');
+                var xhttp = new XMLHttpRequest();
+                xhttp.open("GET", "UpdateUserRobotPreference?ss_ip=" + ip + "&ss_p=" + p + "&browser=" + b + "&version=" + v + "&platform=" + pl, false);
+                xhttp.send();
+                var xmlDoc = xhttp.responseText;
+                $("#loader").remove();
+            }
         </script>
     </body>
 </html>
