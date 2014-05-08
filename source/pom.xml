@@ -108,7 +108,7 @@
         <dependency>
             <groupId>com.googlecode.owasp-java-html-sanitizer</groupId>
             <artifactId>owasp-java-html-sanitizer</artifactId>
-            <version>r209</version>
+            <version>r223</version>
         </dependency>
         <dependency>
             <groupId>log4j</groupId>
@@ -177,6 +177,14 @@
             <groupId>org.elfinder</groupId>
             <artifactId>elfinder-servlet</artifactId>
             <version>1.2.0</version>
+        </dependency>
+        <dependency>
+            <!-- http://repo2.maven.org/maven2/com/google/guava/guava/ -->
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <!-- We depend on 11 because it is the last which works with JDK 5
+            which we want to link against. -->
+            <version>17.0</version>
         </dependency>
     </dependencies>
 
