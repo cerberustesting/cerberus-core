@@ -57,6 +57,7 @@
     <head>
 
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta name="refresh" HTTP-EQUIV="Refresh">
         <link rel="stylesheet" type="text/css" href="css/crb_style.css">
         <link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico" />
         <link rel="stylesheet" type="text/css" href="js/jqplot/jquery.jqplot.min.css" >
@@ -182,7 +183,7 @@
             %>
             <br>
             <div id="table">
-
+<input id="statushidden" value="<%=rs_inf.getString("ControlStatus")%>" hidden="hidden">
                 <table id="arrond" style="text-align: left" border="1" >
                     <tr id="header" style="font-style: italic">
                         <td style="font-weight: bold; width: 140px"><%out.print(docService.findLabelHTML("testcaseexecution", "id", "ID"));%></td>
@@ -781,6 +782,14 @@
 
                 // Image links displayed as a group
                 //$('a.zoombox').zoombox();
+            </script>
+            <script>
+    $(document).ready(function() {
+        var stat = document.getElementById("statushidden").value;
+     if (stat === "PE"){
+     $('meta[name="refresh"]').attr('content', '2');
+     }
+ });
             </script>
             <br><% out.print(display_footer(DatePageStart));%>
             </body>

@@ -19,6 +19,10 @@
 
     <bean id="runTestCaseService" class="org.cerberus.serviceEngine.impl.RunTestCaseService">
     </bean>
+    
+    <bean id="executionStartService" class="org.cerberus.serviceEngine.impl.ExecutionStartService">
+    </bean>
+
 
     <context:annotation-config/>
 
