@@ -108,7 +108,7 @@
         <dependency>
             <groupId>com.googlecode.owasp-java-html-sanitizer</groupId>
             <artifactId>owasp-java-html-sanitizer</artifactId>
-            <version>r209</version>
+            <version>r223</version>
         </dependency>
         <dependency>
             <groupId>log4j</groupId>
