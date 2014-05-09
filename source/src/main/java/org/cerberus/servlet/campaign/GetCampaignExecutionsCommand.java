@@ -76,6 +76,9 @@ public class GetCampaignExecutionsCommand extends HttpServlet {
 
         String robotName = policy.sanitize(request.getParameter("robot"));
 
+        String fromStr = policy.sanitize(request.getParameter("from"));
+        String toStr = policy.sanitize(request.getParameter("to"));
+
         String url;
 
         try {
@@ -138,6 +141,15 @@ public class GetCampaignExecutionsCommand extends HttpServlet {
 
             List<String> queries = convertListOfContentToListOfQueries(campaignContentList);
             List<String> listOfQueriesForCampaignParameters = convertParametersListToListOfQueries(campaignParameterList, queries);
+
+            if (fromStr != null && !"".equals(fromStr.trim()) && toStr != null && !"".equals(toStr.trim())) {
+                Integer from = Integer.valueOf(fromStr);
+                Integer to = Integer.valueOf(toStr);
+
+                if (from <= to && from > 0) {
+                    listOfQueriesForCampaignParameters = splitQueriesFromTo(listOfQueriesForCampaignParameters, from, to);
+                }
+            }
 
             for (String query : listOfQueriesForCampaignParameters) {
                 printWriter.append(url.replaceAll("__QUERY__", query)).append("\r\n");
@@ -230,5 +242,19 @@ public class GetCampaignExecutionsCommand extends HttpServlet {
         }
 
         return queriesTmp;
+    }
+
+    private List<String> splitQueriesFromTo(List<String> queries, int from, int to) {
+        int interval = queries.size() / to;
+
+        if (from < to) {
+            to = from * interval;
+        } else {
+            to = queries.size();
+        }
+
+        from = (from - 1) * interval;
+
+        return queries.subList(from, to);
     }
 }
