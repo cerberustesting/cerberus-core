@@ -630,3 +630,13 @@ input#submitButtonDuplicate {
     margin: 10px;
     text-align: center;
 }
+
+.sqlLib {
+    display: inline-block;
+    *display: inline;
+    margin: 2px;
+    padding: 2px;
+    border: 1px solid lightgray;
+    width: 130px;
+    cursor: pointer;
+}
