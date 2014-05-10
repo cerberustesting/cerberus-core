@@ -474,7 +474,7 @@ function addTestCaseProperties(tableau, max_tcp_country,
     form52.setAttribute('class', 'smallbutton');
     form52.setAttribute('type', 'button');
     form52.setAttribute('value', 'L');
-    form52.setAttribute('onclick', 'openSqlLibraryPopup(\'SqlLib.jsp?Lign=\', \'new_properties_value\')');
+    form52.setAttribute('onclick', 'openSqlLibraryPopin(\'new_properties_value\')');
 
     var TD52 = document.createElement('td');
     TD52.setAttribute('style', 'background-color:white');
