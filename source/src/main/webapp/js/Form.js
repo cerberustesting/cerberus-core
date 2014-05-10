@@ -369,9 +369,7 @@ function addTestCaseProperties(tableau, max_tcp_country,
     form2
             .setAttribute('style',
                     'width: 130px; font-weight: bold;font-style: italic; color: #FF0000;');
-    form2.setAttribute('onfocus', 'keyOnFocus(this)');
-    form2.setAttribute('onblur', 'keyOnBlur(this)');
-    form2.setAttribute('value', 'Mandatory, KEY');
+    form2.setAttribute('placeholder', 'Feed Property Name');
     form2.setAttribute('maxlength', max_tcp_property);
     var TD2 = document.createElement('td');
     TD2.setAttribute('style', 'background-color:white');
