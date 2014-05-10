@@ -463,8 +463,11 @@
                                     <%   } }   
                                         }
                                     %>
-                                    <td ><%
-                                        if (rs_time.getString("tc.Comment") != null) {%><%=rs_time.getString("tc.Comment")%><%}%></td>
+                                    <td ondblclick="editComment('commentField_<%=rs_time.getString("tc.test")%>_<%=rs_time.getString("tc.testcase")%>', 'commentSpan_<%=rs_time.getString("tc.test")%>_<%=rs_time.getString("tc.testcase")%>')"><% String com = rs_time.getString("tc.Comment") == null ? "" : rs_time.getString("tc.Comment");%>
+                                        <span id="commentSpan_<%=rs_time.getString("tc.test")%>_<%=rs_time.getString("tc.testcase")%>" 
+                                              ><%=com%></span>
+                                        <textarea id="commentField_<%=rs_time.getString("tc.test")%>_<%=rs_time.getString("tc.testcase")%>" style="background-color:transparent;width:100%;height:100%; display:none" value="<%=com%>"
+                                                  onblur="saveCommentChanges('<%=rs_time.getString("tc.test")%>','<%=rs_time.getString("tc.testcase")%>')"><%=com%></textarea></td>
                                     <td ><%
                                         if ((rs_time.getString("tc.BugID") != null)
                                                 && (rs_time.getString("tc.BugID").compareToIgnoreCase("") != 0)

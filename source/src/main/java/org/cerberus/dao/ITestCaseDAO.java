@@ -63,4 +63,12 @@ public interface ITestCaseDAO {
      * @return true if delete is OK
      */
     boolean deleteTestCase(TCase testCase);
+    
+    /**
+     * 
+     * @param name Key of the table
+     * @param columnName Name of the column to update
+     * @param value New value of the field columnName for the key name 
+     */
+    void updateTestCaseField(TCase tc, String columnName, String value);
 }

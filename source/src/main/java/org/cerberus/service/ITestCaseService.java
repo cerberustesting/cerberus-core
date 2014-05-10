@@ -84,5 +84,12 @@ public interface ITestCaseService {
      */
     boolean deleteTestCase(TCase testCase);
 
+     /**
+     * 
+     * @param name Key of the table
+     * @param columnName Name of the column
+     * @param value New value of the columnName
+     */
+    void updateTestCaseField(TCase tc, String columnName, String value);
     
 }

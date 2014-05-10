@@ -1083,7 +1083,7 @@ function hideSqlDetails(valueId, buttonOneId, buttonTwoId) {
 }
 
 function activateDatabaseBox(value, fieldOneId, fieldTwoId) {
-    if (value == "executeSql" || value == "executeSqlFromLib") {
+    if (value === "executeSql" || value === "executeSqlFromLib") {
         document.getElementById(fieldOneId).style.display = "inline";
         document.getElementById(fieldTwoId).style.display = "none";
     } else

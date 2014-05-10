@@ -147,4 +147,9 @@ public class TestCaseService implements ITestCaseService {
     public boolean deleteTestCase(TCase testCase) {
     return testCaseDao.deleteTestCase(testCase);
     }
+
+    @Override
+    public void updateTestCaseField(TCase tc, String columnName, String value) {
+    testCaseDao.updateTestCaseField(tc, columnName, value);
+    }
 }

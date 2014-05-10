@@ -581,6 +581,29 @@
                     $('#Apply').submit();
                 }
             </script>
+            <script>
+  function saveCommentChanges(test,tc) {
+  
+  var value = document.getElementById('commentField_'+test+'_'+tc).value;
+          
+    var xhttp = new XMLHttpRequest();
+                xhttp.open("GET", "UpdateTestCaseField?test=" + test + "&testcase=" + tc + "&columnName=comment&value=" + value, false);
+                xhttp.send();
+                var xmlDoc = xhttp.responseText;
+    
+    switchDivVisibleInvisible('commentSpan_'+test+'_'+tc,'commentField_'+test+'_'+tc);
+    
+    document.getElementById('commentSpan_'+test+'_'+tc).innerHTML = value;
+         
+  }
+            </script>
+            <script>
+                function editComment(field1, field2){
+    
+        switchDivVisibleInvisible(field1, field2);
+        document.getElementById(field1).focus();
+         }
+            </script>
         <br><% out.print(display_footer(DatePageStart));%>
     </body>
 </html>

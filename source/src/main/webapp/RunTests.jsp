@@ -243,6 +243,9 @@
 
 
                 %>
+                <input hidden="hidden" id="defTest" value="<%=test%>">
+                <input hidden="hidden" id="defTestCase" value="<%=testcase%>">
+                <input hidden="hidden" id="defCountry" value="<%=country%>">
                 <input hidden="hidden" id="defPlatform" value="<%=platform%>">
                 <input hidden="hidden" id="defBrowser" value="<%=browser%>">
                 <input hidden="hidden" id="defVerbose" value="<%=verbose%>">
@@ -491,6 +494,9 @@
 
             var sys = document.getElementById("MySystem");
             var systemSelected = sys.options[sys.selectedIndex].value;
+            var testS = document.getElementById("defTest").value;
+            var tcS = document.getElementById("defTestCase").value;
+            var countryS = document.getElementById("defCountry").value;
 
             (document).ready($.getJSON('GetTestBySystem?system=' + systemSelected, function(data) {
                 $("#test").empty();
@@ -500,10 +506,11 @@
                             .attr("value", data.testsList[i])
                             .text(data.testsList[i]));
                 }
-//                    $("#test").find('option').each(function(i, opt) {
-//                        if (opt.value === fieldSelected)
-//                            $(opt).attr('selected', 'selected');
-//                    }
+                    $("#test").find('option').each(function(i, opt) {
+                        if (opt.value === testS)
+                            $(opt).attr('selected', 'selected');
+                    });
+
 
             }));
 

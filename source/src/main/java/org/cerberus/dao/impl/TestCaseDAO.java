@@ -625,4 +625,42 @@ public class TestCaseDAO implements ITestCaseDAO {
         }
         return bool;
     }
+    
+    @Override
+    public void updateTestCaseField(TCase tc, String columnName, String value) {
+        boolean throwExcep = false;
+        StringBuilder query = new StringBuilder();
+        query.append("update testcase set `");
+        query.append(columnName);
+        query.append("`=? where `test`=? and `testcase`=? ");
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query.toString());
+            try {
+                preStat.setString(1, value);
+                preStat.setString(2, tc.getTest());
+                preStat.setString(3, tc.getTestCase());
+
+                preStat.executeUpdate();
+                throwExcep = false;
+
+            } catch (SQLException exception) {
+                MyLogger.log(TestCaseDAO.class.getName(), Level.ERROR, exception.toString());
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(TestCaseDAO.class.getName(), Level.ERROR, exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(TestCaseDAO.class.getName(), Level.WARN, e.toString());
+            }
+        }
+        
+    }
 }

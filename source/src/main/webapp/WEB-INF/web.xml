@@ -496,6 +496,10 @@
         <servlet-name>UpdateUserRobotPreference</servlet-name>
         <servlet-class>org.cerberus.servlet.user.UpdateUserRobotPreference</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>UpdateTestCaseField</servlet-name>
+        <servlet-class>org.cerberus.servlet.testCase.UpdateTestCaseField</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>RunTestCase</servlet-name>
         <url-pattern>/RunTestCase</url-pattern>
@@ -955,6 +959,10 @@
     <servlet-mapping>
         <servlet-name>UpdateUserRobotPreference</servlet-name>
         <url-pattern>/UpdateUserRobotPreference</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>UpdateTestCaseField</servlet-name>
+        <url-pattern>/UpdateTestCaseField</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>
