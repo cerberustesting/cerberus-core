@@ -1393,7 +1393,7 @@
                                                                     + rs_property.getString("Country") + "')b"
                                                                     + j + " on a.Property=b"
                                                                     + j + ".Property and a.Type=b"
-                                                                    + j + ".Type and a.Value1=b"
+                                                                    + j + ".Type and binary a.Value1= binary b"
                                                                     + j + ".Value1 and a.Value2=b"
                                                                     + j + ".Value2 ";
                                                             j++;
@@ -1403,7 +1403,7 @@
 
                                                         coun = coun + " WHERE Test='" + rs_property.getString("Test")
                                                                 + "' and TestCase='"
-                                                                + rs_property.getString("TestCase") + "' group by Property, Type, Value1, Value2 ";
+                                                                + rs_property.getString("TestCase") + "' group by Property, Type, binary a.Value1, Value2 ";
                                                         //out.print(coun);
                                                         ResultSet rs_properties = stmt7.executeQuery(coun);
 
