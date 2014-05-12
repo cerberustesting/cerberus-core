@@ -185,6 +185,10 @@
         <servlet-class>org.cerberus.servlet.campaign.GetCampaign</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>GetCampaignExecutionsCommand</servlet-name>
+        <servlet-class>org.cerberus.servlet.campaign.GetCampaignExecutionsCommand</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>ListCampaignParameter</servlet-name>
         <servlet-class>org.cerberus.servlet.campaign.ListCampaignParameter</servlet-class>
     </servlet>
@@ -655,6 +659,10 @@
     <servlet-mapping>
         <servlet-name>GetCampaign</servlet-name>
         <url-pattern>/GetCampaign</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>GetCampaignExecutionsCommand</servlet-name>
+        <url-pattern>/GetCampaignExecutionsCommand</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>ListCampaignParameter</servlet-name>
@@ -1263,6 +1271,7 @@
             <url-pattern>/DocumentationField</url-pattern>
             <url-pattern>/GetInvariantList</url-pattern>
             <url-pattern>/GetCampaign</url-pattern>
+            <url-pattern>/GetCampaignExecutionsCommand</url-pattern>
             <url-pattern>/ListCampaignParameter</url-pattern>
             <url-pattern>/UpdateCampaign</url-pattern>
             <url-pattern>/UpdateCampaignParameter</url-pattern>
