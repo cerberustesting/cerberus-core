@@ -3416,7 +3416,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
 //Alter table countryenvparam to put default value empty instead of NULL
 //-- ------------------------ 479       
         SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `cerberus`.`campaignparameter` DROP INDEX `IX_campaignparameter_01` , ");
+        SQLS.append("ALTER TABLE `campaignparameter` DROP INDEX `IX_campaignparameter_01` , ");
         SQLS.append("ADD UNIQUE INDEX `IX_campaignparameter_01` (`campaign` ASC, `Parameter` ASC, `Value` ASC);"); 
         SQLInstruction.add(SQLS.toString());
 
