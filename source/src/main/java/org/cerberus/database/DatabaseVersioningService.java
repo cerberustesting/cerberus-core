@@ -3359,6 +3359,67 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("('testcasestepactioncontrol', 'Type', 'verifyElementInElement', 'True if the ControlProp contains an element ControlValue.', '<b>verifyElementInElement</b><br><br>Verify if an element is contained in another on the webpage.<br><br><i>Control Property :</i> Element container<br><br><i>Control Value :</i> Element contained in the element Container<br><br>');");
         SQLInstruction.add(SQLS.toString());
  
+        
+//Remove null on each field of countryenvparam.
+//-- ------------------------ 467 >  477
+        SQLS = new StringBuilder();
+        SQLS.append("update `countryenvparam` set  `Build` = '' where `Build` is null;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("update `countryenvparam` set  `Revision` = '' where `Revision` is null;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("update `countryenvparam` set  `Chain` = '' where `Chain` is null;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("update `countryenvparam` set  `DistribList` = '' where `DistribList` is null;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("update `countryenvparam` set  `EMailBodyRevision` = '' where `EMailBodyRevision` is null;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("update `countryenvparam` set  `Type` = '' where `Type` is null;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("update `countryenvparam` set  `EMailBodyChain` = '' where `EMailBodyChain` is null;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("update `countryenvparam` set  `EMailBodyDisableEnvironment` = '' where `EMailBodyDisableEnvironment` is null;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("update `countryenvparam` set  `maintenanceact` = '' where `maintenanceact` is null;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("update `countryenvparam` set  `maintenanceend` = '0' where `maintenanceend` is null;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("update `countryenvparam` set `maintenancestr` = '0' where `maintenancestr` is null;");
+        SQLInstruction.add(SQLS.toString());
+
+//Alter table countryenvparam to put default value empty instead of NULL
+//-- ------------------------ 478
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `countryenvparam`"); 
+        SQLS.append("CHANGE COLUMN `Build` `Build` VARCHAR(10) NOT NULL DEFAULT '' ,"); 
+        SQLS.append("CHANGE COLUMN `Revision` `Revision` VARCHAR(20) NOT NULL DEFAULT '' ,"); 
+        SQLS.append("CHANGE COLUMN `Chain` `Chain` VARCHAR(20) NOT NULL DEFAULT '' ,"); 
+        SQLS.append("CHANGE COLUMN `DistribList` `DistribList` TEXT NOT NULL ,"); 
+        SQLS.append("CHANGE COLUMN `EMailBodyRevision` `EMailBodyRevision` TEXT NOT NULL  ,"); 
+        SQLS.append("CHANGE COLUMN `Type` `Type` VARCHAR(20) NOT NULL DEFAULT '' ,"); 
+        SQLS.append("CHANGE COLUMN `EMailBodyChain` `EMailBodyChain` TEXT NOT NULL ,"); 
+        SQLS.append("CHANGE COLUMN `EMailBodyDisableEnvironment` `EMailBodyDisableEnvironment` TEXT NOT NULL ,"); 
+        SQLS.append("CHANGE COLUMN `maintenanceact` `maintenanceact` VARCHAR(1) NOT NULL DEFAULT 'N' ,"); 
+        SQLS.append("CHANGE COLUMN `maintenancestr` `maintenancestr` TIME NOT NULL DEFAULT 0 ,"); 
+        SQLS.append("CHANGE COLUMN `maintenanceend` `maintenanceend` TIME NOT NULL DEFAULT 0 ;"); 
+        SQLInstruction.add(SQLS.toString());
+
+//Alter table countryenvparam to put default value empty instead of NULL
+//-- ------------------------ 478       
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `cerberus`.`campaignparameter` DROP INDEX `IX_campaignparameter_01` , ");
+        SQLS.append("ADD UNIQUE INDEX `IX_campaignparameter_01` (`campaign` ASC, `Parameter` ASC, `Value` ASC);"); 
+        SQLInstruction.add(SQLS.toString());
+
         return SQLInstruction;
     }
 }
