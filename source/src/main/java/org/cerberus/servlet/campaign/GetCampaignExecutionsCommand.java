@@ -77,7 +77,7 @@ public class GetCampaignExecutionsCommand extends HttpServlet {
         String robotName = policy.sanitize(request.getParameter("robot"));
 
         String fromStr = policy.sanitize(request.getParameter("from"));
-        String toStr = policy.sanitize(request.getParameter("to"));
+        String onStr = policy.sanitize(request.getParameter("on"));
 
         String url;
 
@@ -142,12 +142,12 @@ public class GetCampaignExecutionsCommand extends HttpServlet {
             List<String> queries = convertListOfContentToListOfQueries(campaignContentList);
             List<String> listOfQueriesForCampaignParameters = convertParametersListToListOfQueries(campaignParameterList, queries);
 
-            if (fromStr != null && !"".equals(fromStr.trim()) && toStr != null && !"".equals(toStr.trim())) {
+            if (fromStr != null && !"".equals(fromStr.trim()) && onStr != null && !"".equals(onStr.trim())) {
                 Integer from = Integer.valueOf(fromStr);
-                Integer to = Integer.valueOf(toStr);
+                Integer on = Integer.valueOf(onStr);
 
-                if (from <= to && from > 0) {
-                    listOfQueriesForCampaignParameters = splitQueriesFromTo(listOfQueriesForCampaignParameters, from, to);
+                if (from <= on && from > 0) {
+                    listOfQueriesForCampaignParameters = splitQueriesFromTo(listOfQueriesForCampaignParameters, from, on);
                 }
             }
 
@@ -244,17 +244,17 @@ public class GetCampaignExecutionsCommand extends HttpServlet {
         return queriesTmp;
     }
 
-    private List<String> splitQueriesFromTo(List<String> queries, int from, int to) {
-        int interval = queries.size() / to;
+    private List<String> splitQueriesFromTo(List<String> queries, int from, int on) {
+        int interval = queries.size() / on;
 
-        if (from < to) {
-            to = from * interval;
+        if (from < on) {
+            on = from * interval;
         } else {
-            to = queries.size();
+            on = queries.size();
         }
 
         from = (from - 1) * interval;
 
-        return queries.subList(from, to);
+        return queries.subList(from, on);
     }
 }
