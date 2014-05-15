@@ -246,6 +246,7 @@
                 <input hidden="hidden" id="defTest" value="<%=test%>">
                 <input hidden="hidden" id="defTestCase" value="<%=testcase%>">
                 <input hidden="hidden" id="defCountry" value="<%=country%>">
+                <input hidden="hidden" id="defEnvironment" value="<%=environment%>">
                 <input hidden="hidden" id="defPlatform" value="<%=platform%>">
                 <input hidden="hidden" id="defBrowser" value="<%=browser%>">
                 <input hidden="hidden" id="defVerbose" value="<%=verbose%>">
@@ -496,8 +497,8 @@
             var systemSelected = sys.options[sys.selectedIndex].value;
             var testS = document.getElementById("defTest").value;
             var tcS = document.getElementById("defTestCase").value;
-            var countryS = document.getElementById("defCountry").value;
-
+            
+            
             (document).ready($.getJSON('GetTestBySystem?system=' + systemSelected, function(data) {
                 $("#test").empty();
 
@@ -510,9 +511,12 @@
                         if (opt.value === testS)
                             $(opt).attr('selected', 'selected');
                     });
-
-
+              if (tcS !== "%%"){
+              getTestCaseList();}
+              
             }));
+            
+             
 
         </script>
         <script type="text/javascript">
@@ -521,6 +525,8 @@
                 var systemSelected = sys.options[sys.selectedIndex].value;
                 var b = document.getElementById("test");
                 var testSelected = b.options[b.selectedIndex].value;
+                var tcS = document.getElementById("defTestCase").value;
+                var countryS = document.getElementById("defCountry").value;
 
                 $.getJSON('GetTestCaseForTest?system=' + systemSelected + '&test=' + testSelected, function(data) {
                     $("#testcase").empty();
@@ -535,14 +541,15 @@
                                 .attr("data-application", data.testCaseList[i].application)
                                 .text(data.testCaseList[i].description));
                     }
-//                    $("#test").find('option').each(function(i, opt) {
-//                        if (opt.value === fieldSelected)
-//                            $(opt).attr('selected', 'selected');
-//                    }
-
+                    $("#testcase").find('option').each(function(i, opt) {
+                        if (opt.value === tcS)
+                            $(opt).attr('selected', 'selected');
+                    });
+                    if (countryS !== "%%"){
+             getCountryList();}
+                        
                 });
-            }
-            ;
+            };
         </script>
         <script type="text/javascript">
             function getCountryList() {
@@ -550,6 +557,8 @@
                 var testSelected = b.options[b.selectedIndex].value;
                 var c = document.getElementById("testcase");
                 var testCaseSelected = c.options[c.selectedIndex].getAttribute('data-testcase');
+                var countryS = document.getElementById("defCountry").value;
+                var env = document.getElementById("defEnvironment").value;
 
                 $.getJSON('GetCountryForTestCase?test=' + testSelected + '&testCase=' + testCaseSelected, function(data) {
                     $("#country").empty();
@@ -561,14 +570,15 @@
                                 .attr("value", data.countriesList[i])
                                 .text(data.countriesList[i]));
                     }
-//                    $("#test").find('option').each(function(i, opt) {
-//                        if (opt.value === fieldSelected)
-//                            $(opt).attr('selected', 'selected');
-//                    }
-
+                    $("#country").find('option').each(function(i, opt) {
+                        if (opt.value === countryS)
+                            $(opt).attr('selected', 'selected');
+                    });
+                    if (env !== "%%"){
+             getApplicationList();}
+                    
                 });
-            }
-            ;
+            };
         </script>
 
         <script type="text/javascript">
@@ -579,6 +589,7 @@
                 var applicationSelected = app.options[app.selectedIndex].getAttribute('data-application');
                 var cou = document.getElementById("country");
                 var countrySelected = cou.options[cou.selectedIndex].value;
+                var env = document.getElementById("defEnvironment").value;
 
                 $.getJSON('findEnvironmentByCriteria?system=' + systemSelected + '&country=' + countrySelected + '&application=' + applicationSelected, function(data) {
                     $("#environment").empty();
@@ -592,10 +603,10 @@
                                 .attr("value", data[i].environment)
                                 .text(data[i].environment + " with Build :" + data[i].build + " and Revision :" + data[i].revision));
                     }
-//                    $("#environment").find('option').each(function(i, opt) {
-//                        if (opt.value === fieldSelected)
-//                            $(opt).attr('selected', 'selected');
-//                    }
+                    $("#environment").find('option').each(function(i, opt) {
+                        if (opt.value === env)
+                            $(opt).attr('selected', 'selected');
+                    });
 
                 });
             }
