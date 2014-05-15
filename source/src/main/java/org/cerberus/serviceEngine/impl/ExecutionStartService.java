@@ -66,6 +66,7 @@ import org.springframework.stereotype.Service;
  *
  * @author bcivel
  */
+@Service
 public class ExecutionStartService implements IExecutionStartService{
 
     @Autowired

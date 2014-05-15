@@ -110,7 +110,7 @@ public class TestCaseService implements ITestCaseService {
     @Override
     public List<String> findTestWithTestCaseActiveAutomatedBySystem(String system) {
         TCase tCase = factoryTCase.create(null, null, null, null, null, null, null, null, null,
-                null, null, null, null, 0, null, null, null, null, null, "Y",
+                null, null, null, null, -1, null, null, null, null, null, "Y",
                 null, null, null, null, null, null, null, null, null, null, null, null, null);
 
         List<String> result = new ArrayList();

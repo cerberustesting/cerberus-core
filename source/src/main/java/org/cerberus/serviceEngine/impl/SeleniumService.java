@@ -84,7 +84,6 @@ import org.springframework.stereotype.Service;
  * @version 1.0, 10/01/2013
  * @since 2.0.0
  */
-@Service
 public class SeleniumService implements ISeleniumService {
 
     private static final int TIMEOUT_MILLIS = 30000;

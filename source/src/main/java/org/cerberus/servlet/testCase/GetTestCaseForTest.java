@@ -20,7 +20,6 @@
 package org.cerberus.servlet.testCase;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -65,9 +64,9 @@ public class GetTestCaseForTest extends HttpServlet {
         try {
             List<TCase> tcaseList;
             if (system == null){
-            tcaseList = testService.findTestCaseByTest(testName);
+                tcaseList = testService.findTestCaseByTest(testName);
             } else{
-            tcaseList = testService.findTestCaseActiveAutomatedBySystem(testName, system);
+                tcaseList = testService.findTestCaseActiveAutomatedBySystem(testName, system);
             }
             
             for (TCase list : tcaseList) {
