@@ -71,7 +71,7 @@ public class ExecutionStartService implements IExecutionStartService{
 
     @Autowired
     private IExecutionCheckService executionCheckService;
-
+    @Autowired
     private ISeleniumService seleniumService;
     @Autowired
     private IActionService actionService;
