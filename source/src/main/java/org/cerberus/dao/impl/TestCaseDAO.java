@@ -435,7 +435,7 @@ public class TestCaseDAO implements ITestCaseDAO {
     @Override
     public List<TCase> findTestCaseByCriteria(TCase testCase, String text, String system) {
         List<TCase> list = null;
-        final String query = "SELECT * FROM testcase t2 LEFT OUTER JOIN application a ON a.application=t2.application "
+        final String query = "SELECT t2.* FROM testcase t2 LEFT OUTER JOIN application a ON a.application=t2.application "
                 + "WHERE t2.test LIKE ? AND t2.project LIKE ? AND t2.ticket LIKE ? AND t2.bugid LIKE ? AND t2.origine LIKE ? "
                 + "AND t2.creator LIKE ? AND a.system LIKE ? AND t2.application LIKE ? AND t2.priority LIKE ? AND t2.status LIKE ? "
                 + "AND t2.group LIKE ? AND t2.activePROD LIKE ? AND t2.activeUAT LIKE ? AND t2.activeQA LIKE ? AND "
