@@ -14,15 +14,7 @@
         <property name="order" value="1"/>
     </bean>
 
-<!--    <bean id="seleniumService" class="org.cerberus.serviceEngine.impl.SeleniumService" scope="prototype">
-        <aop:scoped-proxy proxy-target-class="true"/>
-    </bean>-->
-    
-    <bean id="executionRunService" class="org.cerberus.serviceEngine.impl.ExecutionRunService" scope="prototype">
-        <aop:scoped-proxy proxy-target-class="true"/>
-    </bean>
-    
-    <bean id="executionStartService" class="org.cerberus.serviceEngine.impl.ExecutionStartService" scope="prototype">
+    <bean id="seleniumService" class="org.cerberus.serviceEngine.impl.SeleniumService" scope="request">
         <aop:scoped-proxy proxy-target-class="true"/>
     </bean>
 
