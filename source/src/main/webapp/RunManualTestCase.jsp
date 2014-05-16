@@ -280,30 +280,32 @@
                 return url;
             }
 
-            function saveManualTest(res, row) {
-                var data = oTable.fnGetNodes(row);
-                var message = data.cells[6].children[0].value;
-                if (message == "" && res == "KO") {
+            function saveManualTest(res, input) {
+                var input = $(input);
+                var tr = input.parent().parent().parent();
+                var cells = tr.children();
+                var message = $($(cells[6]).children()[0]).val();
+                if (message === "" && res === "KO") {
                     alert("TestCase is KO and a reason is mandatory.\nPlease edit Control Message before update Result!");
-                } else if ($('#executionEnv').val() == "") {
+                } else if ($('#executionEnv').val() === "") {
                     alert("Please choose Environment before update Result!");
-                } else if ($('#executionCountry').val() == "") {
+                } else if ($('#executionCountry').val() === "") {
                     alert("Please choose Country before update Result!");
                 } else {
-                    var test = data.cells[0].textContent;
-                    var testCase = data.cells[1].textContent;
+                    var test = $(cells[0]).text();
+                    var testCase = $(cells[1]).text();
                     var env = $('#executionEnv').val();
                     var country = $('#executionCountry').val();
                     var tag = $('#executionTag').val();
-                    var browser = data.cells[5].children[0].value;
-                    var browserVersion = data.cells[5].children[1].value;
+                    var browser = $($(cells[5]).children()[0]).val();
+                    var browserVersion = $($(cells[5]).children()[1]).val();
 
                     var d = {test: test, testCase: testCase, env: env, country: country, controlStatus: res,
                         controlMessage: message, tag: tag, browser: browser, browserVersion: browserVersion};
 
                     $.post("SaveManualExecution", d,function (run) {
                         $("#resultMessage").html("Manual Execution of Test Case <i>" + test + " - " + testCase + "</i> created");
-                        data.hidden = true;
+                        tr.hide();
                         $("#runId").val(run);
                         $("#picTest").val(test);
                         $("#picTestCase").val(testCase);
@@ -372,9 +374,9 @@
                         aoColumnDefs: [
                             {
                                 "aTargets": [7],
-                                "fnRender": function (o, v) {
-                                    return "<p style='text-align: center'><input type='button' style='background-image: url(images/ok.png); width: 20px; height: 20px; border: 0 none; top: 0px' onclick='saveManualTest(\"OK\"," + o.iDataRow + ")'/></p><br/><br/>" +
-                                        "<p style='text-align: center'><input type='button' style='background-image: url(images/ko.png); width: 20px; height: 20px; border: 0 none; bottom: 0px' onclick='saveManualTest(\"KO\"," + o.iDataRow + ")'/></p>"
+                                "mRender": function ( data, type, full ){
+                                    return "<p style='text-align: center'><input type='button' style='background-image: url(images/ok.png); width: 20px; height: 20px; border: 0 none; top: 0px' onclick='saveManualTest(\"OK\",this)'/></p><br/><br/>" +
+                                        "<p style='text-align: center'><input type='button' style='background-image: url(images/ko.png); width: 20px; height: 20px; border: 0 none; bottom: 0px' onclick='saveManualTest(\"KO\",this)'/></p>"
                                 }
                             },
                             {
