@@ -25,6 +25,11 @@
         <servlet-class>org.cerberus.servlet.publi.RunTestCase</servlet-class>
     </servlet>
     <servlet>
+        <display-name>RunTestCaseManually</display-name>
+        <servlet-name>RunTestCaseManually</servlet-name>
+        <servlet-class>org.cerberus.servlet.publi.RunTestCaseManually</servlet-class>
+    </servlet>
+    <servlet>
         <display-name>SaveStatistic</display-name>
         <servlet-name>SaveStatistic</servlet-name>
         <servlet-class>org.cerberus.servlet.engine.SaveStatistic</servlet-class>
@@ -507,6 +512,10 @@
     <servlet-mapping>
         <servlet-name>RunTestCase</servlet-name>
         <url-pattern>/RunTestCase</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>RunTestCaseManually</servlet-name>
+        <url-pattern>/RunTestCaseManually</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>DocumentationField</servlet-name>
@@ -1116,6 +1125,7 @@
             <url-pattern>/RunManualTestCase.jsp</url-pattern>
             <url-pattern>/ResumeTests.jsp</url-pattern>
             <url-pattern>/RunTests.jsp</url-pattern>
+            <url-pattern>/RunTestsManually.jsp</url-pattern>
             <url-pattern>/V2_RunTests.jsp</url-pattern>
         </web-resource-collection>
         <web-resource-collection>
@@ -1262,6 +1272,7 @@
             <web-resource-name>servlet</web-resource-name>
             <description>servlet</description>
             <url-pattern>/RunTestCase</url-pattern>
+            <url-pattern>/RunTestCaseManually</url-pattern>
             <url-pattern>/SaveStatistic</url-pattern>
             <url-pattern>/GetNumberOfExecutions</url-pattern>
             <url-pattern>/ResultCI</url-pattern>
