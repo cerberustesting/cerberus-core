@@ -64,6 +64,7 @@ import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.remote.Augmenter;
@@ -75,7 +76,6 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 /**
  * {Insert class description here}
@@ -157,8 +157,7 @@ public class SeleniumService implements ISeleniumService {
         return false;
     }
 
-    @Override
-    public FirefoxProfile setFirefoxProfile(long runId, boolean record, String country) throws CerberusException {
+    private DesiredCapabilities setFirefoxProfile(long runId, boolean record, String country) throws CerberusException {
         FirefoxProfile profile = new FirefoxProfile();
         profile.setEnableNativeEvents(true);
         profile.setAcceptUntrustedCertificates(true);
@@ -263,7 +262,10 @@ public class SeleniumService implements ISeleniumService {
 
         }
 
-        return profile;
+        DesiredCapabilities dc = DesiredCapabilities.firefox();
+        dc.setCapability(FirefoxDriver.PROFILE, profile);
+
+        return dc;
     }
 
     @Override
@@ -274,8 +276,8 @@ public class SeleniumService implements ISeleniumService {
         DesiredCapabilities capabilities = null;
 
         //TODO : take platform and version from servlet
-        
-        capabilities = setCapabilityBrowser(capabilities, browser);
+
+        capabilities = setCapabilityBrowser(capabilities, browser, runId, record, country);
         capabilities = setCapabilityPlatform(capabilities, platform);
         capabilities = setCapabilityVersion(capabilities, version);
         
@@ -299,9 +301,9 @@ public class SeleniumService implements ISeleniumService {
         return true;
     }
     
-    public DesiredCapabilities setCapabilityBrowser(DesiredCapabilities capabilities, String browser) throws CerberusException {
+    public DesiredCapabilities setCapabilityBrowser(DesiredCapabilities capabilities, String browser, long runId, boolean record, String country) throws CerberusException {
             if (browser.equalsIgnoreCase("firefox")) {
-            capabilities = DesiredCapabilities.firefox();
+            capabilities = this.setFirefoxProfile(runId, record ,country);
             } else if (browser.equalsIgnoreCase("IE")) {
             capabilities = DesiredCapabilities.internetExplorer();
             } else if (browser.equalsIgnoreCase("chrome")) {

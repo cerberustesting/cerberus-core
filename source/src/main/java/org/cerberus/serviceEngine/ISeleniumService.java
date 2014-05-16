@@ -61,8 +61,6 @@ public interface ISeleniumService {
 
     boolean stopSeleniumServer();
 
-    FirefoxProfile setFirefoxProfile(long runId, boolean record, String country) throws CerberusException;
-
     boolean startSeleniumBrowser(long runId, boolean record, String country, String browser, String version, String platform) throws CerberusException;
 
     String getValueFromHTMLVisible(String locator);
