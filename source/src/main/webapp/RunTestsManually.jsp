@@ -68,6 +68,17 @@
                 top: 0;
             }
             
+            .testCaseValue,
+            .testCaseProperty {
+                border: 1px dashed;
+                color: lightblue;
+                font-size: 0.8em;
+                font-style: italic;
+                margin: 5px;
+                padding: 5px;
+            }
+
+            
             .executionStatusBlock {
                 display: inline-block;
                 position: fixed;
@@ -79,7 +90,9 @@
     <body>
         <%@ include file="include/function.jsp"%>
         <div id="body" class="manualExecution">
-            <span class='testCaseDescription'>ceci est une description d'action</span>
+            <span class='testCaseDescription'></span>
+            <span class='testCaseProperty'></span>
+            <span class='testCaseValue'></span>
             <div class="executionStatusBlock">
                 <form>
                     <input type='hidden' id='Test' value='<%=request.getParameter("Test")%>'>
@@ -107,13 +120,17 @@
                     steps = 0;
                     currentAction = TestCaseData.Steps[steps].Actions[0][actions];
                     $(".testCaseDescription").text(currentAction.Description);
+                    $(".testCaseProperty").text(currentAction.Object);
+                    $(".testCaseValue").text(currentAction.Property);
                     
                     $("#body").removeClass("control").addClass("action");
                 });
                 
                 $("#okbutton").on("click",function() {
-                   if(currentAction.Controls[0] && currentAction.Controls[0].length > (currentControl+1)) {
+                   if(currentAction.Controls[0] && currentAction.Controls[0].length > (currentControl)) {
                         $(".testCaseDescription").text(currentAction.Controls[0][currentControl].Description);
+                        $(".testCaseProperty").text(currentAction.Controls[0][currentControl].Property);
+                        $(".testCaseValue").text(currentAction.Controls[0][currentControl].Value);
                         currentControl++;
                         $("#body").removeClass("action").addClass("control");
                    } else if (TestCaseData.Steps[steps].Actions[0] && TestCaseData.Steps[steps].Actions[0].length > (actions+1)) {
@@ -121,6 +138,8 @@
                         currentControl = 0;
                         currentAction = TestCaseData.Steps[steps].Actions[0][actions];
                         $(".testCaseDescription").text(currentAction.Description);
+                        $(".testCaseProperty").text(currentAction.Object);
+                        $(".testCaseValue").text(currentAction.Property);
                         $("#body").removeClass("control").addClass("action");
                    } else if (TestCaseData.Steps && TestCaseData.Steps.length > (steps+1)) {
                         steps++;
@@ -128,6 +147,8 @@
                         actions = 0;
                         currentAction = TestCaseData.Steps[steps].Actions[0][actions];
                         $(".testCaseDescription").text(currentAction.Description);
+                        $(".testCaseProperty").text(currentAction.Object);
+                        $(".testCaseValue").text(currentAction.Property);
                         $("#body").removeClass("control").addClass("action");
                    }
                 });
