@@ -1198,7 +1198,7 @@ public class SeleniumService implements ISeleniumService {
     }
 
     @Override
-    public MessageEvent doSeleniumActionOpenURLWithBase(String value, String property) {
+    public MessageEvent doSeleniumActionOpenURL(String value, String property, boolean withBase) {
         MessageEvent message;
         String url = "null";
         try {
@@ -1208,7 +1208,11 @@ public class SeleniumService implements ISeleniumService {
                 url = property;
             }
             if (!StringUtil.isNull(url)) {
+                if (withBase){
                 this.selenium.getDriver().get("http://" + this.selenium.getIp() + url);
+                } else {
+                this.selenium.getDriver().get(url);
+                }
                 message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_OPENURL);
                 message.setDescription(message.getDescription().replaceAll("%URL%", url));
                 return message;

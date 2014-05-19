@@ -95,6 +95,9 @@ public class ActionService implements IActionService{
         } else if (testCaseStepActionExecution.getAction().equals("openUrlWithBase")) {
             res = this.doActionOpenURLWithBase(applicationType, object, property);
 
+        } else if (testCaseStepActionExecution.getAction().equals("openUrl")) {
+            res = this.doActionOpenURL(applicationType, object, property);
+
         } else if (testCaseStepActionExecution.getAction().equals("openUrlLogin")) {
             testCaseStepActionExecution.setObject(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getCountryEnvironmentApplication().getUrlLogin());
             res = this.doActionUrlLogin(applicationType);
@@ -293,10 +296,21 @@ public class ActionService implements IActionService{
     private MessageEvent doActionOpenURLWithBase(String applicationType, String value, String property) {
          MessageEvent message;
         if (applicationType.equalsIgnoreCase("GUI")){
-        return seleniumService.doSeleniumActionOpenURLWithBase(value, property);
+        return seleniumService.doSeleniumActionOpenURL(value, property, true);
         }
         message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
         message.setDescription(message.getDescription().replaceAll("%ACTION%", "OpenURLWithBase"));
+        message.setDescription(message.getDescription().replaceAll("%APPLICATIONTYPE%", applicationType));
+        return message;
+    }
+    
+    private MessageEvent doActionOpenURL(String applicationType, String value, String property) {
+         MessageEvent message;
+        if (applicationType.equalsIgnoreCase("GUI")){
+        return seleniumService.doSeleniumActionOpenURL(value, property, false);
+        }
+        message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
+        message.setDescription(message.getDescription().replaceAll("%ACTION%", "OpenURL"));
         message.setDescription(message.getDescription().replaceAll("%APPLICATIONTYPE%", applicationType));
         return message;
     }

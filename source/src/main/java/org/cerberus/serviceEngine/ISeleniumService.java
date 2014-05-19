@@ -124,7 +124,7 @@ public interface ISeleniumService {
 
     MessageEvent doSeleniumActionKeyPress(String html, String property);
     
-    MessageEvent doSeleniumActionOpenURLWithBase(String value, String property);
+    MessageEvent doSeleniumActionOpenURL(String value, String property, boolean withBase);
 
     MessageEvent doSeleniumActionSelect(String html, String property);
     

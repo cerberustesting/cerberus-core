@@ -26,7 +26,6 @@ import junit.framework.Assert;
 import org.cerberus.entity.MessageEvent;
 
 import org.cerberus.entity.Selenium;
-import org.cerberus.entity.TestCaseStepActionExecution;
 import org.cerberus.serviceEngine.impl.SeleniumService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -319,7 +318,7 @@ public class SeleniumServiceTest {
 
         when(selenium.getDriver()).thenReturn(driver);
 
-        MessageEvent message = this.seleniumService.doSeleniumActionOpenURLWithBase(object, property);
+        MessageEvent message = this.seleniumService.doSeleniumActionOpenURL(object, property, true);
 
         Assert.assertEquals(msg, message.getDescription());
     }
@@ -332,7 +331,7 @@ public class SeleniumServiceTest {
 
         when(selenium.getDriver()).thenReturn(driver);
 
-        MessageEvent message = this.seleniumService.doSeleniumActionOpenURLWithBase(object, property);
+        MessageEvent message = this.seleniumService.doSeleniumActionOpenURL(object, property, true);
 
         Assert.assertEquals(msg, message.getDescription());
     }
@@ -345,7 +344,7 @@ public class SeleniumServiceTest {
 
         when(selenium.getDriver()).thenReturn(driver);
 
-        MessageEvent message = this.seleniumService.doSeleniumActionOpenURLWithBase(object, property);
+        MessageEvent message = this.seleniumService.doSeleniumActionOpenURL(object, property, true);
 
         Assert.assertEquals(msg, message.getDescription());
     }

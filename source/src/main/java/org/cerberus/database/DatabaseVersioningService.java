@@ -3419,7 +3419,21 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("ALTER TABLE `campaignparameter` DROP INDEX `IX_campaignparameter_01` , ");
         SQLS.append("ADD UNIQUE INDEX `IX_campaignparameter_01` (`campaign` ASC, `Parameter` ASC, `Value` ASC);"); 
         SQLInstruction.add(SQLS.toString());
-
+        
+//Add invariant action openURL
+//-- ------------------------ 480       
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` ");
+        SQLS.append(" VALUES ('ACTION', 'openUrl', '65', 'openUrl', '', NULL,NULL,NULL);");
+        SQLInstruction.add(SQLS.toString());
+    
+//Add documentation related to action openURL
+//-- ------------------------ 481       
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `DocLabel`, `DocDesc`) VALUES ");
+        SQLS.append("('testcasestepaction','Action','openUrl','Open a URL','<code class=\\'doc-fixed\\'>openUrl</code> will allow you to open a specific URL.<br><br>Usage :<br><doc class=\"usage\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Field</th><th class=\\'ex\\'>Usage</th><tr><td class=\\'ex\\'>Object</td><td class=\\'ex\\'>Absolute URL to open. </td></tr><tr><td class=\\'ex\\'>Property</td><td class=\\'ex\\'>Property name (only used to activate or not double click depending on if the property exist for the country).</td></tr></table></doc><br><br>Examples :<br><doc class=\"examples\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Object</th><th class=\\'ex\\'>Property</th><th class=\\'ex\\'>Result</th><tr><td class=\\'ex\\'>http://www.cerberus-testing.org/contextroot/login/login.aspx</td><td class=\\'ex\\'></td><td class=\\'ex\\'>www.cerberus-testing.org/contextroot/login/login.aspx URL will be open.</td></tr></table></doc>')");
+        SQLInstruction.add(SQLS.toString());
+   
         return SQLInstruction;
     }
 }
