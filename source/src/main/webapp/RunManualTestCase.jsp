@@ -227,6 +227,15 @@
             <div class="fields">
                 <h4>Execution Parameters</h4>
                 <div class="field">
+                    <label for="executionBrowser" style="width: 250px">Browser Information</label><br/>
+                    <select id="executionBrowser" style="font-size: 100%">
+                        <% for(Invariant i : invariants) { %>
+                        <option value="<%=i.getValue()%>"><%=i.getValue()%></option>;
+                        <% } %>
+                    </select>
+                    <input id="executionBrowserVersion" type="text" placeholder="Browser Full Version"/>
+                </div>
+                <div class="field">
                     <label for="executionTag" style="width: 500px">Tag</label><br/>
                     <input type="text" id="executionTag" name="executionTag" style="width: 500px"/>
                 </div>
@@ -240,7 +249,6 @@
                             <th>Value Expected</th>
                             <th>How To</th>
                             <th>Detail</th>
-                            <th>Browser</th>
                             <th>Control Message</th>
                             <th>Result</th>
                         </tr>
@@ -284,7 +292,7 @@
                 var input = $(input);
                 var tr = input.parent().parent().parent();
                 var cells = tr.children();
-                var message = $($(cells[6]).children()[0]).val();
+                var message = $($(cells[5]).children()[0]).val();
                 if (message === "" && res === "KO") {
                     alert("TestCase is KO and a reason is mandatory.\nPlease edit Control Message before update Result!");
                 } else if ($('#executionEnv').val() === "") {
@@ -297,8 +305,8 @@
                     var env = $('#executionEnv').val();
                     var country = $('#executionCountry').val();
                     var tag = $('#executionTag').val();
-                    var browser = $($(cells[5]).children()[0]).val();
-                    var browserVersion = $($(cells[5]).children()[1]).val();
+                    var browser = $('#executionBrowser').val();
+                    var browserVersion = $('#executionBrowserVersion').val();
 
                     var d = {test: test, testCase: testCase, env: env, country: country, controlStatus: res,
                         controlMessage: message, tag: tag, browser: browser, browserVersion: browserVersion};
@@ -360,27 +368,19 @@
                                 }
                                 return detail;
                             }, "sName": "detail", "bSortable": false, sWidth: "140px", sClass: "center"},
-                            {"mDataProp": function(tCase, type, val){
-                                var browser = "<select style='font-size: 100%'>";
-                                <% for(Invariant i : invariants) { %>
-                                    browser += "<option value='<%=i.getValue()%>'><%=i.getValue()%></option>";
-                                <% } %>
-                                browser += "</select><input type='text' placeholder='Browser Full Version'/>";
-                                return browser;
-                            }, "sDefaultContent": '', "bSortable": false, sWidth: "100px"},
                             {"mDataProp": null, "sDefaultContent": '', "bSortable": false, sWidth: "140px"},
                             {"mDataProp": null, "sDefaultContent": '', "bSortable": false, sWidth: "30px"}
                         ],
                         aoColumnDefs: [
                             {
-                                "aTargets": [7],
+                                "aTargets": [6],
                                 "mRender": function ( data, type, full ){
                                     return "<p style='text-align: center'><input type='button' style='background-image: url(images/ok.png); width: 20px; height: 20px; border: 0 none; top: 0px' onclick='saveManualTest(\"OK\",this)'/></p><br/><br/>" +
                                         "<p style='text-align: center'><input type='button' style='background-image: url(images/ko.png); width: 20px; height: 20px; border: 0 none; bottom: 0px' onclick='saveManualTest(\"KO\",this)'/></p>"
                                 }
                             },
                             {
-                                "aTargets": [6],
+                                "aTargets": [5],
                                 "mRender": function ( data, type, full ){
                                     return "<textarea placeholder='Give reason in case of KO'></textarea>";
                                 }
