@@ -279,7 +279,7 @@ public class SeleniumService implements ISeleniumService {
 
         capabilities = setCapabilityBrowser(capabilities, browser, runId, record, country);
         capabilities = setCapabilityPlatform(capabilities, platform);
-        capabilities = setCapabilityVersion(capabilities, version);
+        //capabilities = setCapabilityVersion(capabilities, version);
         
         try {
             MyLogger.log(SeleniumService.class.getName(), Level.DEBUG, "Set Driver");
