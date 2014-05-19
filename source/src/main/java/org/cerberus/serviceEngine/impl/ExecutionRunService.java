@@ -67,7 +67,6 @@ import org.cerberus.service.ITestCaseStepActionExecutionService;
 import org.cerberus.service.ITestCaseStepExecutionService;
 import org.cerberus.serviceEngine.IActionService;
 import org.cerberus.serviceEngine.IControlService;
-import org.cerberus.serviceEngine.IExecutionCheckService;
 import org.cerberus.serviceEngine.IExecutionRunService;
 import org.cerberus.serviceEngine.IExecutionStartService;
 import org.cerberus.serviceEngine.IPropertyService;
@@ -330,11 +329,16 @@ public class ExecutionRunService implements IExecutionRunService {
                 break;
             }
         }
+        return tCExecution;
+    }
+
+    @Override
+    public TestCaseExecution stopTestCase(TestCaseExecution tCExecution) {
 
         /**
          * Stop Execution
          */
-        MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, runID + " - Stop the execution.");
+        MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, tCExecution.getId() + " - Stop the execution.");
         this.stopRunTestCase(tCExecution);
 
         /**

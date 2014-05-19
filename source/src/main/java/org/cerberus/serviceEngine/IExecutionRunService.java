@@ -27,5 +27,19 @@ import org.cerberus.entity.TestCaseExecution;
  */
 public interface IExecutionRunService {
     
+    /**
+     * Run the Test Case Execution
+     *
+     * @param tCExecution
+     * @return
+     */
     TestCaseExecution executeTestCase(TestCaseExecution tCExecution);
+
+    /**
+     * Stop the Test Case Execution
+     *
+     * @param tCExecution
+     * @return
+     */
+    TestCaseExecution stopTestCase(TestCaseExecution tCExecution);
 }

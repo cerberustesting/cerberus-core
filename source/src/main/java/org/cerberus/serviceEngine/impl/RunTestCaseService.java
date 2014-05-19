@@ -54,11 +54,15 @@ public class RunTestCaseService implements IRunTestCaseService {
 //        }else{
         tCExecution = executionRunService.executeTestCase(tCExecution); 
 //        }
+
+        // stop execution of the test case and collect data in all case.
+        tCExecution = executionRunService.stopTestCase(tCExecution);
         
         return tCExecution;
     }
 
-    public void start(TestCaseExecution tCExecution) {
+    /*
+     public void start(TestCaseExecution tCExecution) {
         Thread t = new Thread(new RunInNewThread(tCExecution));
         t.start();
     }
@@ -79,4 +83,5 @@ public class RunTestCaseService implements IRunTestCaseService {
             executionRunService.executeTestCase(tce);   
         }
     }
+    */
 }
