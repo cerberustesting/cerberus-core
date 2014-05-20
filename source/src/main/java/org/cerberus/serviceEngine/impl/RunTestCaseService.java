@@ -20,6 +20,8 @@
 package org.cerberus.serviceEngine.impl;
 
 import java.util.logging.Logger;
+import org.cerberus.entity.MessageGeneral;
+import org.cerberus.entity.MessageGeneralEnum;
 import org.cerberus.entity.TestCaseExecution;
 import org.cerberus.serviceEngine.IExecutionRunService;
 import org.cerberus.serviceEngine.IExecutionStartService;
@@ -45,23 +47,34 @@ public class RunTestCaseService implements IRunTestCaseService {
     @Override
     public TestCaseExecution runTestCase(TestCaseExecution tCExecution) {
 
-        //Start Execution (Checks and Creation of ID)
-        tCExecution = executionStartService.startExecution(tCExecution);
+        try {
+            //Start Execution (Checks and Creation of ID)
+            tCExecution = executionStartService.startExecution(tCExecution);
 
-        //Execute TestCase in new thread if automated test with outputformat gui
+            //Execute TestCase in new thread if automated test with outputformat gui
 //        if (tCExecution.gettCase().getGroup().equals("AUTOMATED") &&
 //                tCExecution.getOutputFormat().equals("gui")){
 //        start(tCExecution);
 //        }else{
-        try {
             tCExecution = executionRunService.executeTestCase(tCExecution);
-        } catch (Exception ex) {
-            Logger.getLogger(RunTestCaseService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
 //        }
+        } catch (Exception ex) {
+            MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_CERBERUS);
+            mes.setDescription(mes.getDescription().replaceAll("%MES%", "Exception " + ex.getMessage()));
 
-        // stop execution of the test case and collect data in all case.
-        tCExecution = executionRunService.stopTestCase(tCExecution);
+            tCExecution.setResultMessage(mes);
+            Logger.getLogger(RunTestCaseService.class.getName()).log(java.util.logging.Level.SEVERE, "CERBERUS FATAL ERROR Exception ", ex);
+        } catch (Throwable t) {
+            MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_CERBERUS);
+            mes.setDescription(mes.getDescription().replaceAll("%MES%", "Throwable Exception " + t.getMessage()));
+
+            tCExecution.setResultMessage(mes);
+            Logger.getLogger(RunTestCaseService.class.getName()).log(java.util.logging.Level.SEVERE, "CERBERUS FATAL ERROR Throwable Exception ", t);
+        } finally {
+            // stop execution of the test case and collect data in all case.
+            tCExecution = executionRunService.stopTestCase(tCExecution);
+        }
+
 
         return tCExecution;
     }
