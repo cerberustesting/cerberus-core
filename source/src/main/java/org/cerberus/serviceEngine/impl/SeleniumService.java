@@ -496,6 +496,10 @@ public class SeleniumService implements ISeleniumService {
             return "";
         }
 
+        if (response instanceof String) {
+            return (String) response;
+        }
+
         return String.valueOf(response);
     }
     
