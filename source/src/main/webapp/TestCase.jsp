@@ -1449,7 +1449,7 @@
                                                                     }
                                                                 }
 
-                                                                if (rs_properties.getString("a.Type").equals("executeSqlFromLib") || rs_properties.getString("a.Type").equals("executeSql")) {
+                                                                if (rs_properties.getString("a.Type").equals("executeSqlFromLib") || rs_properties.getString("a.Type").equals("executeSql") || rs_properties.getString("a.Type").equals("executeSoapFromLib")) {
                                                                     properties_dtbdisplay = "inline";
                                                                     properties_dtb_display = "none";
                                                                 } else {

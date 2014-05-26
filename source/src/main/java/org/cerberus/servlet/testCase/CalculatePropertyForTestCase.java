@@ -91,7 +91,7 @@ public class CalculatePropertyForTestCase extends HttpServlet {
                 SoapLibrary soapLib = soapLibraryService.findSoapLibraryByKey(property);
                 if (soapLib != null) {
                     IPropertyService propertyService = appContext.getBean(PropertyService.class);
-                    result = propertyService.calculatePropertyFromSOAPResponse(soapLib.getEnvelope(), soapLib.getServicePath(), soapLib.getParsingAnswer(), soapLib.getMethod(), null);
+                    result = propertyService.calculatePropertyFromSOAPResponse(soapLib, null, null);
                     description = soapLib.getDescription();
                 }
             } else {
