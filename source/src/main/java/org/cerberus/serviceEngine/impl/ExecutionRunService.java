@@ -43,18 +43,14 @@ import org.cerberus.entity.TestCaseStepActionControlExecution;
 import org.cerberus.entity.TestCaseStepActionExecution;
 import org.cerberus.entity.TestCaseStepExecution;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.factory.IFactoryCountryEnvironmentApplication;
 import org.cerberus.factory.IFactoryTestCaseExecutionData;
 import org.cerberus.factory.IFactoryTestCaseExecutionSysVer;
 import org.cerberus.factory.IFactoryTestCaseStepActionControlExecution;
 import org.cerberus.factory.IFactoryTestCaseStepActionExecution;
 import org.cerberus.factory.IFactoryTestCaseStepExecution;
 import org.cerberus.log.MyLogger;
-import org.cerberus.service.IApplicationService;
 import org.cerberus.service.ICountryEnvLinkService;
 import org.cerberus.service.ICountryEnvParamService;
-import org.cerberus.service.ICountryEnvironmentApplicationService;
-import org.cerberus.service.IInvariantService;
 import org.cerberus.service.ILoadTestCaseService;
 import org.cerberus.service.ITestCaseCountryPropertiesService;
 import org.cerberus.service.ITestCaseExecutionDataService;
@@ -68,7 +64,6 @@ import org.cerberus.service.ITestCaseStepExecutionService;
 import org.cerberus.serviceEngine.IActionService;
 import org.cerberus.serviceEngine.IControlService;
 import org.cerberus.serviceEngine.IExecutionRunService;
-import org.cerberus.serviceEngine.IExecutionStartService;
 import org.cerberus.serviceEngine.IPropertyService;
 import org.cerberus.serviceEngine.ISeleniumService;
 import org.cerberus.util.ParameterParserUtil;
@@ -116,10 +111,6 @@ public class ExecutionRunService implements IExecutionRunService {
     @Autowired
     private ICountryEnvParamService countryEnvParamService;
     @Autowired
-    private ICountryEnvironmentApplicationService countryEnvironmentApplicationService;
-    @Autowired
-    private IApplicationService applicationService;
-    @Autowired
     private ILoadTestCaseService loadTestCaseService;
     @Autowired
     private IFactoryTestCaseStepExecution factoryTestCaseStepExecution;
@@ -131,12 +122,6 @@ public class ExecutionRunService implements IExecutionRunService {
     private IFactoryTestCaseExecutionData factoryTestCaseExecutionData;
     @Autowired
     private IFactoryTestCaseExecutionSysVer factoryTestCaseExecutionSysVer;
-    @Autowired
-    private IFactoryCountryEnvironmentApplication factorycountryEnvironmentApplication;
-    @Autowired
-    private IInvariantService invariantService;
-    @Autowired
-    private IExecutionStartService executionStartService;
     
     @Override
     public TestCaseExecution executeTestCase(TestCaseExecution tCExecution) {

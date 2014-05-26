@@ -31,32 +31,15 @@ import org.cerberus.entity.TCase;
 import org.cerberus.entity.TestCaseExecution;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.factory.IFactoryCountryEnvironmentApplication;
-import org.cerberus.factory.IFactoryTestCaseExecutionData;
-import org.cerberus.factory.IFactoryTestCaseExecutionSysVer;
-import org.cerberus.factory.IFactoryTestCaseStepActionControlExecution;
-import org.cerberus.factory.IFactoryTestCaseStepActionExecution;
-import org.cerberus.factory.IFactoryTestCaseStepExecution;
 import org.cerberus.log.MyLogger;
 import org.cerberus.service.IApplicationService;
-import org.cerberus.service.ICountryEnvLinkService;
 import org.cerberus.service.ICountryEnvParamService;
 import org.cerberus.service.ICountryEnvironmentApplicationService;
 import org.cerberus.service.IInvariantService;
-import org.cerberus.service.ILoadTestCaseService;
-import org.cerberus.service.ITestCaseCountryPropertiesService;
-import org.cerberus.service.ITestCaseExecutionDataService;
 import org.cerberus.service.ITestCaseExecutionService;
-import org.cerberus.service.ITestCaseExecutionSysVerService;
-import org.cerberus.service.ITestCaseExecutionWWWService;
 import org.cerberus.service.ITestCaseService;
-import org.cerberus.service.ITestCaseStepActionControlExecutionService;
-import org.cerberus.service.ITestCaseStepActionExecutionService;
-import org.cerberus.service.ITestCaseStepExecutionService;
-import org.cerberus.serviceEngine.IActionService;
-import org.cerberus.serviceEngine.IControlService;
 import org.cerberus.serviceEngine.IExecutionCheckService;
 import org.cerberus.serviceEngine.IExecutionStartService;
-import org.cerberus.serviceEngine.IPropertyService;
 import org.cerberus.serviceEngine.ISeleniumService;
 import org.cerberus.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,31 +57,9 @@ public class ExecutionStartService implements IExecutionStartService{
     @Autowired
     private ISeleniumService seleniumService;
     @Autowired
-    private IActionService actionService;
-    @Autowired
-    private IPropertyService propertyService;
-    @Autowired
-    private IControlService controlService;
-    @Autowired
     private ITestCaseService testCaseService;
     @Autowired
-    private ITestCaseStepExecutionService testCaseStepExecutionService;
-    @Autowired
-    private ITestCaseStepActionExecutionService testCaseStepActionExecutionService;
-    @Autowired
-    private ITestCaseStepActionControlExecutionService testCaseStepActionControlExecutionService;
-    @Autowired
     private ITestCaseExecutionService testCaseExecutionService;
-    @Autowired
-    private ITestCaseExecutionSysVerService testCaseExecutionSysVerService;
-    @Autowired
-    private ICountryEnvLinkService countryEnvLinkService;
-    @Autowired
-    private ITestCaseExecutionWWWService testCaseExecutionWWWService;
-    @Autowired
-    private ITestCaseCountryPropertiesService testCaseCountryPropertiesService;
-    @Autowired
-    private ITestCaseExecutionDataService testCaseExecutionDataService;
     @Autowired
     private ICountryEnvParamService countryEnvParamService;
     @Autowired
@@ -106,22 +67,9 @@ public class ExecutionStartService implements IExecutionStartService{
     @Autowired
     private IApplicationService applicationService;
     @Autowired
-    private ILoadTestCaseService loadTestCaseService;
-    @Autowired
-    private IFactoryTestCaseStepExecution factoryTestCaseStepExecution;
-    @Autowired
-    private IFactoryTestCaseStepActionExecution factoryTestCaseStepActionExecution;
-    @Autowired
-    private IFactoryTestCaseStepActionControlExecution factoryTestCaseStepActionControlExecution;
-    @Autowired
-    private IFactoryTestCaseExecutionData factoryTestCaseExecutionData;
-    @Autowired
-    private IFactoryTestCaseExecutionSysVer factoryTestCaseExecutionSysVer;
-    @Autowired
     private IFactoryCountryEnvironmentApplication factorycountryEnvironmentApplication;
     @Autowired
     private IInvariantService invariantService;
-    
     
     @Override
     public TestCaseExecution startExecution(TestCaseExecution tCExecution) {

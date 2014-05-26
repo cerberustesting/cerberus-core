@@ -19,32 +19,11 @@
  */
 package org.cerberus.serviceEngine;
 
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
-import org.apache.log4j.Level;
 import org.cerberus.entity.MessageEvent;
-import org.cerberus.entity.MessageEventEnum;
 import org.cerberus.entity.MessageGeneral;
-import org.cerberus.entity.TestCaseStepActionExecution;
 import org.cerberus.exception.CerberusEventException;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.log.MyLogger;
-import org.cerberus.serviceEngine.impl.SeleniumService;
-import org.cerberus.util.ParameterParserUtil;
-import org.cerberus.util.StringUtil;
 import org.openqa.selenium.Capabilities;
-import org.openqa.selenium.Keys;
-import org.openqa.selenium.NoSuchElementException;
-import org.openqa.selenium.NoSuchWindowException;
-import org.openqa.selenium.WebDriverException;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.firefox.FirefoxProfile;
-import org.openqa.selenium.interactions.Actions;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.Select;
-import org.openqa.selenium.support.ui.WebDriverWait;
 
 /**
  * {Insert class description here}
