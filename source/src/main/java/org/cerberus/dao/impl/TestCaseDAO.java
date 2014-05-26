@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.cerberus.dao.impl;
 
 import java.sql.Connection;
@@ -87,17 +86,17 @@ public class TestCaseDAO implements ITestCaseDAO {
                         list.add(this.loadTestCaseFromResultSet(resultSet));
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(TestCaseDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                    MyLogger.log(TestCaseDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(TestCaseDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                MyLogger.log(TestCaseDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(TestCaseDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+            MyLogger.log(TestCaseDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
         } finally {
             try {
                 if (connection != null) {
@@ -140,17 +139,17 @@ public class TestCaseDAO implements ITestCaseDAO {
                         throwExcep = true;
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(TestCaseDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                    MyLogger.log(TestCaseDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(TestCaseDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                MyLogger.log(TestCaseDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(TestCaseDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+            MyLogger.log(TestCaseDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
         } finally {
             try {
                 if (connection != null) {
@@ -206,12 +205,12 @@ public class TestCaseDAO implements ITestCaseDAO {
 
                 res = preStat.executeUpdate() > 0;
             } catch (SQLException exception) {
-                MyLogger.log(TestCaseDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                MyLogger.log(TestCaseDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(TestCaseDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+            MyLogger.log(TestCaseDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
         } finally {
             try {
                 if (connection != null) {
@@ -252,19 +251,19 @@ public class TestCaseDAO implements ITestCaseDAO {
 
                                 preStat2.executeUpdate();
                             } catch (SQLException exception) {
-                                MyLogger.log(TestCaseDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                                MyLogger.log(TestCaseDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
                             } finally {
                                 preStat2.close();
                             }
                         }
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(TestCaseDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                    MyLogger.log(TestCaseDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
                 } finally {
                     rsCount.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(TestCaseDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                MyLogger.log(TestCaseDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
             } finally {
                 preStat.close();
             }
@@ -282,14 +281,14 @@ public class TestCaseDAO implements ITestCaseDAO {
 
                         res = preStat2.executeUpdate() > 0;
                     } catch (SQLException exception) {
-                        MyLogger.log(TestCaseDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                        MyLogger.log(TestCaseDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
                     } finally {
                         preStat2.close();
                     }
                 }
             }
         } catch (SQLException exception) {
-            MyLogger.log(TestCaseDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+            MyLogger.log(TestCaseDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
         } finally {
             try {
                 if (connection != null) {
@@ -361,12 +360,12 @@ public class TestCaseDAO implements ITestCaseDAO {
                  */
                 res = preStat.executeUpdate() > 0;
             } catch (SQLException exception) {
-                MyLogger.log(TestCaseDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                MyLogger.log(TestCaseDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(TestCaseDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+            MyLogger.log(TestCaseDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
         } finally {
             try {
                 if (connection != null) {
@@ -405,17 +404,17 @@ public class TestCaseDAO implements ITestCaseDAO {
                         list.add(this.loadTestCaseFromResultSet(resultSet));
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(TestCaseDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                    MyLogger.log(TestCaseDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(TestCaseDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                MyLogger.log(TestCaseDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(TestCaseDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+            MyLogger.log(TestCaseDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
         } finally {
             try {
                 if (connection != null) {
@@ -435,56 +434,86 @@ public class TestCaseDAO implements ITestCaseDAO {
     @Override
     public List<TCase> findTestCaseByCriteria(TCase testCase, String text, String system) {
         List<TCase> list = null;
-        final String query = "SELECT t2.* FROM testcase t2 LEFT OUTER JOIN application a ON a.application=t2.application "
-                + "WHERE t2.test LIKE ? AND t2.project LIKE ? AND t2.ticket LIKE ? AND t2.bugid LIKE ? AND t2.origine LIKE ? "
-                + "AND t2.creator LIKE ? AND a.system LIKE ? AND t2.application LIKE ? AND t2.priority LIKE ? AND t2.status LIKE ? "
-                + "AND t2.group LIKE ? AND t2.activePROD LIKE ? AND t2.activeUAT LIKE ? AND t2.activeQA LIKE ? AND "
-                + "( t2.description LIKE ? OR t2.howto LIKE ? OR t2.behaviororvalueexpected LIKE ? OR t2.comment LIKE ?) "
-                + "AND t2.TcActive LIKE ? AND t2.frombuild LIKE ? AND t2.fromrev LIKE ? AND t2.tobuild LIKE ? "
-                + "AND t2.torev LIKE ? AND t2.targetbuild LIKE ? AND t2.targetrev LIKE ? AND t2.testcase LIKE ?";
-
+        StringBuilder query = new StringBuilder();
+        query.append("SELECT t2.* FROM testcase t2 LEFT OUTER JOIN application a ON a.application=t2.application ");
+        query.append(" WHERE (t2.test LIKE ");
+        query.append(ParameterParserUtil.wildcardOrIsNullIfEmpty("t2.test", testCase.getTest()));
+        query.append(") AND (t2.project LIKE ");
+        query.append(ParameterParserUtil.wildcardOrIsNullIfEmpty("t2.project", testCase.getProject()));
+        query.append(") AND (t2.ticket LIKE ");
+        query.append(ParameterParserUtil.wildcardOrIsNullIfEmpty("t2.ticket", testCase.getTicket()));
+        query.append(") AND (t2.bugid LIKE ");
+        query.append(ParameterParserUtil.wildcardOrIsNullIfEmpty("t2.bugid", testCase.getBugID()));
+        query.append(") AND (t2.origine LIKE ");
+        query.append(ParameterParserUtil.wildcardOrIsNullIfEmpty("t2.origine", testCase.getOrigin()));
+        query.append(") AND (a.system LIKE ");
+        query.append(ParameterParserUtil.wildcardOrIsNullIfEmpty("a.system", system));
+        query.append(") AND (t2.application LIKE ");
+        query.append(ParameterParserUtil.wildcardOrIsNullIfEmpty("t2.application", testCase.getApplication()));
+        query.append(") AND (t2.priority LIKE ");
+        if (testCase.getPriority() != -1) {
+            query.append("'");
+            query.append(testCase.getPriority());
+            query.append("'");
+        } else {
+            query.append("'%' or t2.priority is null");
+        }
+        query.append(") AND (t2.status LIKE ");
+        query.append(ParameterParserUtil.wildcardOrIsNullIfEmpty("t2.status", testCase.getStatus()));
+        query.append(") AND (t2.group LIKE ");
+        query.append(ParameterParserUtil.wildcardOrIsNullIfEmpty("t2.group", testCase.getGroup()));
+        query.append(") AND (t2.activePROD LIKE ");
+        query.append(ParameterParserUtil.wildcardOrIsNullIfEmpty("t2.activePROD", testCase.getRunPROD()));
+        query.append(") AND (t2.activeUAT LIKE ");
+        query.append(ParameterParserUtil.wildcardOrIsNullIfEmpty("t2.activeUAT", testCase.getRunUAT()));
+        query.append(") AND (t2.activeQA LIKE ");
+        query.append(ParameterParserUtil.wildcardOrIsNullIfEmpty("t2.activeQA", testCase.getRunQA()));
+        query.append(") AND (t2.description LIKE '");
+        if (text != null && !text.equalsIgnoreCase("")) {
+            query.append(text);
+        } else {
+            query.append("%");
+        }
+        query.append("' OR t2.howto LIKE '");
+        if (text != null && !text.equalsIgnoreCase("")) {
+            query.append(text);
+        } else {
+            query.append("%");
+        }
+        query.append("' OR t2.behaviororvalueexpected LIKE '");
+        if (text != null && !text.equalsIgnoreCase("")) {
+            query.append(text);
+        } else {
+            query.append("%");
+        }
+        query.append("' OR t2.comment LIKE '");
+        if (text != null && !text.equalsIgnoreCase("")) {
+            query.append(text);
+        } else {
+            query.append("%");
+        }
+        query.append("') AND (t2.TcActive LIKE ");
+        query.append(ParameterParserUtil.wildcardOrIsNullIfEmpty("t2.TcActive", testCase.getActive()));
+        query.append(") AND (t2.frombuild LIKE ");
+        query.append(ParameterParserUtil.wildcardOrIsNullIfEmpty("t2.frombuild", testCase.getFromSprint()));
+        query.append(") AND (t2.fromrev LIKE ");
+        query.append(ParameterParserUtil.wildcardOrIsNullIfEmpty("t2.fromrev", testCase.getFromRevision()));
+        query.append(") AND (t2.tobuild LIKE ");
+        query.append(ParameterParserUtil.wildcardOrIsNullIfEmpty("t2.tobuild", testCase.getToSprint()));
+        query.append(") AND (t2.torev LIKE ");
+        query.append(ParameterParserUtil.wildcardOrIsNullIfEmpty("t2.torev", testCase.getToRevision()));
+        query.append(") AND (t2.targetbuild LIKE ");
+        query.append(ParameterParserUtil.wildcardOrIsNullIfEmpty("t2.targetbuild", testCase.getTargetSprint()));
+        query.append(") AND (t2.targetrev LIKE ");
+        query.append(ParameterParserUtil.wildcardOrIsNullIfEmpty("t2.targetrev", testCase.getTargetRevision()));
+        query.append(") AND (t2.testcase LIKE ");
+        query.append(ParameterParserUtil.wildcardOrIsNullIfEmpty("t2.testcase", testCase.getTestCase()));
+        query.append(")");
+        
         Connection connection = this.databaseSpring.connect();
         try {
-            PreparedStatement preStat = connection.prepareStatement(query);
+            PreparedStatement preStat = connection.prepareStatement(query.toString());
             try {
-                preStat.setString(1, ParameterParserUtil.wildcardIfEmpty(testCase.getTest()));
-                preStat.setString(2, ParameterParserUtil.wildcardIfEmpty(testCase.getProject()));
-                preStat.setString(3, ParameterParserUtil.wildcardIfEmpty(testCase.getTicket()));
-                preStat.setString(4, ParameterParserUtil.wildcardIfEmpty(testCase.getBugID()));
-                preStat.setString(5, ParameterParserUtil.wildcardIfEmpty(testCase.getOrigin()));
-                preStat.setString(6, ParameterParserUtil.wildcardIfEmpty(testCase.getCreator()));
-                preStat.setString(7, ParameterParserUtil.wildcardIfEmpty(system));
-                preStat.setString(8, ParameterParserUtil.wildcardIfEmpty(testCase.getApplication()));
-                if (testCase.getPriority() != -1) {
-                    preStat.setInt(9, testCase.getPriority());
-                } else {
-                    preStat.setString(9, "%");
-                }
-                preStat.setString(10, ParameterParserUtil.wildcardIfEmpty(testCase.getStatus()));
-                preStat.setString(11, ParameterParserUtil.wildcardIfEmpty(testCase.getGroup()));
-                preStat.setString(12, ParameterParserUtil.wildcardIfEmpty(testCase.getRunPROD()));
-                preStat.setString(13, ParameterParserUtil.wildcardIfEmpty(testCase.getRunUAT()));
-                preStat.setString(14, ParameterParserUtil.wildcardIfEmpty(testCase.getRunQA()));
-                if (text != null && !text.equalsIgnoreCase("")) {
-                    preStat.setString(15, text);
-                    preStat.setString(16, text);
-                    preStat.setString(17, text);
-                    preStat.setString(18, text);
-                } else {
-                    preStat.setString(15, "%");
-                    preStat.setString(16, "%");
-                    preStat.setString(17, "%");
-                    preStat.setString(18, "%");
-                }
-                preStat.setString(19, ParameterParserUtil.wildcardIfEmpty(testCase.getActive()));
-                preStat.setString(20, ParameterParserUtil.wildcardIfEmpty(testCase.getFromSprint()));
-                preStat.setString(21, ParameterParserUtil.wildcardIfEmpty(testCase.getFromRevision()));
-                preStat.setString(22, ParameterParserUtil.wildcardIfEmpty(testCase.getToSprint()));
-                preStat.setString(23, ParameterParserUtil.wildcardIfEmpty(testCase.getToRevision()));
-                preStat.setString(24, ParameterParserUtil.wildcardIfEmpty(testCase.getTargetSprint()));
-                preStat.setString(25, ParameterParserUtil.wildcardIfEmpty(testCase.getTargetRevision()));
-                preStat.setString(26, ParameterParserUtil.wildcardIfEmpty(testCase.getTestCase()));
-
                 ResultSet resultSet = preStat.executeQuery();
                 list = new ArrayList<TCase>();
                 try {
@@ -492,17 +521,17 @@ public class TestCaseDAO implements ITestCaseDAO {
                         list.add(this.loadTestCaseFromResultSet(resultSet));
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(TestCaseDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                    MyLogger.log(TestCaseDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(TestCaseDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                MyLogger.log(TestCaseDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(TestCaseDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+            MyLogger.log(TestCaseDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
         } finally {
             try {
                 if (connection != null) {
@@ -569,31 +598,39 @@ public class TestCaseDAO implements ITestCaseDAO {
                 try {
                     while (resultSet.next()) {
                         list.add(resultSet.getString(1));
+
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(TestCaseDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                    MyLogger.log(TestCaseDAO.class
+                            .getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
                 } finally {
                     resultSet.close();
+
                 }
             } catch (SQLException exception) {
-                MyLogger.log(TestCaseDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                MyLogger.log(TestCaseDAO.class
+                        .getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
             } finally {
                 preStat.close();
+
             }
         } catch (SQLException exception) {
-            MyLogger.log(TestCaseDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+            MyLogger.log(TestCaseDAO.class
+                    .getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
         } finally {
             try {
                 if (connection != null) {
                     connection.close();
+
                 }
             } catch (SQLException e) {
-                MyLogger.log(TestCaseDAO.class.getName(), Level.WARN, e.toString());
+                MyLogger.log(TestCaseDAO.class
+                        .getName(), Level.WARN, e.toString());
             }
         }
         return list;
     }
-    
+
     @Override
     public boolean deleteTestCase(TCase testCase) {
         boolean bool = false;
@@ -607,25 +644,31 @@ public class TestCaseDAO implements ITestCaseDAO {
                 preStat.setString(2, testCase.getTestCase());
 
                 bool = preStat.executeUpdate() > 0;
+
             } catch (SQLException exception) {
-                MyLogger.log(UserDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                MyLogger.log(UserDAO.class
+                        .getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
             } finally {
                 preStat.close();
+
             }
         } catch (SQLException exception) {
-            MyLogger.log(UserDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+            MyLogger.log(UserDAO.class
+                    .getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
         } finally {
             try {
                 if (connection != null) {
                     connection.close();
+
                 }
             } catch (SQLException e) {
-                MyLogger.log(UserDAO.class.getName(), Level.WARN, e.toString());
+                MyLogger.log(UserDAO.class
+                        .getName(), Level.WARN, e.toString());
             }
         }
         return bool;
     }
-    
+
     @Override
     public void updateTestCaseField(TCase tc, String columnName, String value) {
         boolean throwExcep = false;
@@ -646,21 +689,26 @@ public class TestCaseDAO implements ITestCaseDAO {
                 throwExcep = false;
 
             } catch (SQLException exception) {
-                MyLogger.log(TestCaseDAO.class.getName(), Level.ERROR, exception.toString());
+                MyLogger.log(TestCaseDAO.class
+                        .getName(), Level.ERROR, exception.toString());
             } finally {
                 preStat.close();
+
             }
         } catch (SQLException exception) {
-            MyLogger.log(TestCaseDAO.class.getName(), Level.ERROR, exception.toString());
+            MyLogger.log(TestCaseDAO.class
+                    .getName(), Level.ERROR, exception.toString());
         } finally {
             try {
                 if (connection != null) {
                     connection.close();
+
                 }
             } catch (SQLException e) {
-                MyLogger.log(TestCaseDAO.class.getName(), Level.WARN, e.toString());
+                MyLogger.log(TestCaseDAO.class
+                        .getName(), Level.WARN, e.toString());
             }
         }
-        
+
     }
 }

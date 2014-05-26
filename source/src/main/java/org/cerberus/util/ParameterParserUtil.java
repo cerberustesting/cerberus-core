@@ -44,8 +44,22 @@ public final class ParameterParserUtil {
         }
         return inString;
     }
-
-    /**
+    
+    public static String wildcardOrIsNullIfEmpty(String column, String inString) {
+        StringBuilder sb = new StringBuilder();
+        if ((inString == null) || (inString.equalsIgnoreCase(""))) {
+            sb.append("'%' or ");
+            sb.append(column);
+            sb.append(" is null");
+            return sb.toString();
+        }
+        sb.append("'");
+        sb.append(inString);
+        sb.append("'");
+        return sb.toString();
+    }
+    
+   /**
      * @param inParam
      * @return an empty string if the inParam is empty or null. It returns
      * inParam if OK.
