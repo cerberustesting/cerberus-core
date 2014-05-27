@@ -318,7 +318,7 @@
                                                 </td>
                                                 <td class="wob" style="width: 70px; font-weight: bold;"><%out.print(docService.findLabelHTML("testcase", "testcase", "TestCase"));%></td>
                                                 <td  class="wob">
-                                                    <select id="filtertestcase" name="TestCase" style="width: 500px" OnChange="document.selectTestCase.submit()">
+                                                    <select id="filtertestcase" name="TestCase" style="width: 850px" OnChange="document.selectTestCase.submit()">
                                                         <%
                                                             if (test.compareTo("%%") == 0) {
                                                         %><option style="width: 200px" value="All">-- Choose Test First --</option>
