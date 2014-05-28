@@ -36,6 +36,10 @@ public interface ITestCaseExecutionService {
     TestCaseExecution findLastTCExecutionByCriteria(String test, String testCase, String environment, String country,
                                               String build, String revision) throws CerberusException;
 
+    TestCaseExecution findLastTCExecutionByCriteria(String test, String testCase, String environment, String country,
+                                                    String build, String revision, String browser, String browserVersion,
+                                                    String ip, String port, String tag);
+
     /**
      * @param dateLimitFrom The limit start date of the executions from which
      *                      the selection is done. Mandatory parameter.

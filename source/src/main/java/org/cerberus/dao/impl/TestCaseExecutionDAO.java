@@ -35,6 +35,7 @@ import org.cerberus.entity.TestCaseExecution;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.factory.IFactoryTestCaseExecution;
 import org.cerberus.log.MyLogger;
+import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -268,6 +269,60 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                         result = this.loadFromResultSet(resultSet);
                     } else {
                         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
+                    }
+                } catch (SQLException exception) {
+                    MyLogger.log(TestCaseExecutionDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                } finally {
+                    resultSet.close();
+                }
+            } catch (SQLException exception) {
+                MyLogger.log(TestCaseExecutionDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(TestCaseExecutionDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(TestCaseExecutionDAO.class.getName(), Level.WARN, e.toString());
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public TestCaseExecution findLastTCExecutionByCriteria(String test, String testCase, String environment, String country,
+                                                           String build, String revision, String browser, String browserVersion,
+                                                           String ip, String port, String tag) {
+        TestCaseExecution result = null;
+        final String query = "SELECT * FROM testcaseexecution WHERE test = ? AND testcase = ? AND environment LIKE ? AND " +
+                "country = ? AND build LIKE ? AND revision LIKE ? AND browser = ? AND browserfullversion LIKE ? AND ip LIKE ? AND " +
+                "port LIKE ? AND tag LIKE ? ORDER BY id DESC";
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            preStat.setString(1, test);
+            preStat.setString(2, testCase);
+            preStat.setString(3, ParameterParserUtil.wildcardIfEmpty(environment));
+            preStat.setString(4, country);
+            preStat.setString(5, ParameterParserUtil.wildcardIfEmpty(build));
+            preStat.setString(6, ParameterParserUtil.wildcardIfEmpty(revision));
+            preStat.setString(7, browser);
+            preStat.setString(8, ParameterParserUtil.wildcardIfEmpty(browserVersion));
+            preStat.setString(9, ParameterParserUtil.wildcardIfEmpty(ip));
+            preStat.setString(10, ParameterParserUtil.wildcardIfEmpty(port));
+            preStat.setString(11, ParameterParserUtil.wildcardIfEmpty(tag));
+
+            try {
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+                    if (resultSet.first()) {
+                        result = this.loadFromResultSet(resultSet);
                     }
                 } catch (SQLException exception) {
                     MyLogger.log(TestCaseExecutionDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
