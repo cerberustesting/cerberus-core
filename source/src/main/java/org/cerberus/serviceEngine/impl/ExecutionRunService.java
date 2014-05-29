@@ -66,11 +66,11 @@ import org.cerberus.serviceEngine.IControlService;
 import org.cerberus.serviceEngine.IExecutionRunService;
 import org.cerberus.serviceEngine.IPropertyService;
 import org.cerberus.serviceEngine.ISeleniumService;
-import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
 import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.remote.UnreachableBrowserException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 /**
@@ -130,6 +130,7 @@ public class ExecutionRunService implements IExecutionRunService {
          * Feeding Build Rev of main Application system to
          * testcaseexecutionsysver table. Only if execution is not manual.
          */
+        run: {
         if (!(tCExecution.isManualURL())) {
             TestCaseExecutionSysVer myExeSysVer = factoryTestCaseExecutionSysVer.create(runID, tCExecution.getApplication().getSystem(), tCExecution.getBuild(), tCExecution.getRevision());
             testCaseExecutionSysVerService.insertTestCaseExecutionSysVer(myExeSysVer);
@@ -153,7 +154,7 @@ public class ExecutionRunService implements IExecutionRunService {
                     } catch (CerberusException ex) {
                         // Referencial Integrity link between countryEnvLink and CountryEnvParam table should secure that exception to never happen.
                         Logger.getLogger(RunTestCaseService.class.getName()).log(java.util.logging.Level.SEVERE, ex.getMessage());
-                        return tCExecution;
+                        break run;
                     }
                 }
             } catch (CerberusException ex) {
@@ -162,38 +163,14 @@ public class ExecutionRunService implements IExecutionRunService {
         }
 
 
-
         /**
-         * Start Selenium server
+         * Get used SeleniumCapabilities (empty if application is not GUI)
          */
         if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")) {
-            String url = ParameterParserUtil.parseStringParam(tCExecution.getCountryEnvironmentApplication().getIp() + tCExecution.getCountryEnvironmentApplication().getUrl(), "");
-            String login = ParameterParserUtil.parseStringParam(tCExecution.getCountryEnvironmentApplication().getUrlLogin(), "");
-            MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, runID + " - Starting Selenium Server.");
-            tCExecution.setResultMessage(new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_SELENIUMSTARTING));
-            try {
-                testCaseExecutionService.updateTCExecution(tCExecution);
-            } catch (CerberusException ex) {
-                Logger.getLogger(RunTestCaseService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-            }
-            tCExecution.setResultMessage(this.seleniumService.startSeleniumServer(runID, tCExecution.getSeleniumIP(), tCExecution.getSeleniumPort(), tCExecution.getBrowser(),tCExecution.getVersion(),tCExecution.getPlatform(), url, login, tCExecution.getVerbose(), tCExecution.getCountry()));
-            /**
-             * We stop if the result is not OK
-             */
-            if (!(tCExecution.getResultMessage().equals(new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_TESTEXECUTING)))) {
-                tCExecution.setEnd(new Date().getTime());
-                try {
-                    testCaseExecutionService.updateTCExecution(tCExecution);
-                } catch (CerberusException ex) {
-                    Logger.getLogger(RunTestCaseService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-                }
-                return tCExecution;
-            } else {
-                Capabilities caps = this.seleniumService.getUsedCapabilities();
+            Capabilities caps = this.seleniumService.getUsedCapabilities(tCExecution.getSelenium());
                 tCExecution.setBrowserFullVersion(caps.getBrowserName() + " " + caps.getVersion() + " " + caps.getPlatform().toString());
                 tCExecution.setVersion(caps.getVersion());
                 tCExecution.setPlatform(caps.getPlatform().toString());
-            }
         } else {
             // If Selenium is not needed, the selenium and browser info is set to empty.
             tCExecution.setSeleniumIP("");
@@ -314,7 +291,10 @@ public class ExecutionRunService implements IExecutionRunService {
                 break;
             }
         }
+        }
+        tCExecution = this.stopTestCase(tCExecution);
         return tCExecution;
+        
     }
 
     @Override
@@ -445,7 +425,7 @@ public class ExecutionRunService implements IExecutionRunService {
                                 + "-St" + testCaseStepActionExecution.getStep()
                                 + "Sq" + testCaseStepActionExecution.getSequence() + ".jpg";
                         screenshotFilename = screenshotFilename.replaceAll(" ", "");
-                        this.seleniumService.doScreenShot(Long.toString(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getId()), screenshotFilename);
+                        this.seleniumService.doScreenShot(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getSelenium(), Long.toString(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getId()), screenshotFilename);
                         testCaseStepActionExecution.setScreenshotFilename(Long.toString(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getId()) + File.separator + screenshotFilename);
                         MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Screenshot done in : " + testCaseStepActionExecution.getScreenshotFilename());
                     }
@@ -513,7 +493,7 @@ public class ExecutionRunService implements IExecutionRunService {
                     + "-St" + testCaseStepActionExecution.getStep()
                     + "Sq" + testCaseStepActionExecution.getSequence() + ".jpg";
             screenshotFilename = screenshotFilename.replaceAll(" ", "");
-            this.seleniumService.doScreenShot(Long.toString(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getId()), screenshotFilename);
+            this.seleniumService.doScreenShot(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getSelenium(), Long.toString(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getId()), screenshotFilename);
             testCaseStepActionExecution.setScreenshotFilename(Long.toString(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getId()) + File.separator + screenshotFilename);
             MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Screenshot done in : " + testCaseStepActionExecution.getScreenshotFilename());
         } else {
@@ -602,7 +582,7 @@ public class ExecutionRunService implements IExecutionRunService {
                     + "Sq" + testCaseStepActionControlExecution.getSequence()
                     + "Ct" + testCaseStepActionControlExecution.getControl() + ".jpg";
             screenshotFilename = screenshotFilename.replaceAll(" ", "");
-            this.seleniumService.doScreenShot(Long.toString(myExecution.getId()), screenshotFilename);
+            this.seleniumService.doScreenShot(myExecution.getSelenium(), Long.toString(myExecution.getId()), screenshotFilename);
             testCaseStepActionControlExecution.setScreenshotFilename(Long.toString(myExecution.getId()) + File.separator + screenshotFilename);
             MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Screenshot done in : " + testCaseStepActionControlExecution.getScreenshotFilename());
         } else {
@@ -621,7 +601,7 @@ public class ExecutionRunService implements IExecutionRunService {
     private TestCaseExecution stopRunTestCase(TestCaseExecution tCExecution) {
         if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")) {
             try {
-                this.seleniumService.stopSeleniumServer();
+                this.seleniumService.stopSeleniumServer(tCExecution.getSelenium());
             } catch (UnreachableBrowserException exception) {
                 MyLogger.log(RunTestCaseService.class.getName(), Level.FATAL, "Selenium didn't manage to close browser - " + exception.toString());
             }
@@ -671,6 +651,7 @@ public class ExecutionRunService implements IExecutionRunService {
             testCaseExecutionData.setType(testCaseCountryProperty.getType());
             testCaseExecutionData.setValue1(testCaseCountryProperty.getValue1());
             testCaseExecutionData.setValue2(testCaseCountryProperty.getValue2());
+            testCaseExecutionData.setTestCaseCountryProperties(testCaseCountryProperty);
             MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Calculating property : " + testCaseCountryProperty.getProperty());
             testCaseExecutionData = this.propertyService.calculateProperty(testCaseExecutionData, testCaseStepActionExecution, testCaseCountryProperty);
             try {
@@ -696,6 +677,12 @@ public class ExecutionRunService implements IExecutionRunService {
         }
 
         return testCaseExecutionData;
+    }
+
+    @Override
+    @Async
+    public TestCaseExecution executeAsynchroneouslyTestCase(TestCaseExecution tCExecution) {
+        return executeTestCase(tCExecution);
     }
     
 }

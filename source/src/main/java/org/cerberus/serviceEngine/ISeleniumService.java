@@ -19,8 +19,11 @@
  */
 package org.cerberus.serviceEngine;
 
+import java.util.UUID;
 import org.cerberus.entity.MessageEvent;
 import org.cerberus.entity.MessageGeneral;
+import org.cerberus.entity.Selenium;
+import org.cerberus.entity.TestCaseExecution;
 import org.cerberus.exception.CerberusEventException;
 import org.cerberus.exception.CerberusException;
 import org.openqa.selenium.Capabilities;
@@ -34,33 +37,31 @@ import org.openqa.selenium.Capabilities;
  */
 public interface ISeleniumService {
 
-    MessageGeneral startSeleniumServer(long runId, String host, String port, String browser,  String version, String platform, String ip, String login, int verbose, String country);
+    TestCaseExecution startSeleniumServer(TestCaseExecution tCExecution, String host, String port, String browser,  String version, String platform, String ip, String login, int verbose, String country) throws CerberusException;
 
-    boolean isSeleniumServerReachable(String host, String port);
+    boolean stopSeleniumServer(Selenium selenium);
 
-    boolean stopSeleniumServer();
+    boolean startSeleniumBrowser(TestCaseExecution tCExecution, boolean record, String country, String browser, String version, String platform) throws CerberusException;
 
-    boolean startSeleniumBrowser(long runId, boolean record, String country, String browser, String version, String platform) throws CerberusException;
+    String getValueFromHTMLVisible(Selenium selenium, String locator);
 
-    String getValueFromHTMLVisible(String locator);
+    String getValueFromHTML(Selenium selenium, String locator);
 
-    String getValueFromHTML(String locator);
+    String getAlertText(Selenium selenium);
 
-    String getAlertText();
-
-    String getValueFromJS(String script);
+    String getValueFromJS(Selenium selenium, String script);
     
-    boolean isElementPresent(String locator);
+    boolean isElementPresent(Selenium selenium, String locator);
 
-    boolean isElementVisible(String locator);
+    boolean isElementVisible(Selenium selenium, String locator);
 
-    boolean isElementNotVisible(String locator);
+    boolean isElementNotVisible(Selenium selenium, String locator);
     
-    boolean isElementInElement(String element, String childElement);
+    boolean isElementInElement(Selenium selenium, String element, String childElement);
 
-    String getPageSource();
+    String getPageSource(Selenium selenium);
 
-    String getTitle();
+    String getTitle(Selenium selenium);
 
     /**
      * @return Method return a string with the right part of the URL in order to
@@ -71,45 +72,45 @@ public interface ISeleniumService {
      * the application beeing tested. That could happen if the application
      * redirect to a different host during the testcase execution.
      */
-    String getCurrentUrl() throws CerberusEventException;
+    String getCurrentUrl(Selenium selenium) throws CerberusEventException;
 
-    Capabilities getUsedCapabilities();
+    Capabilities getUsedCapabilities(Selenium selenium);
      
-    String getAttributeFromHtml(String locator, String attribute);
+    String getAttributeFromHtml(Selenium selenium, String locator, String attribute);
 
-    void doScreenShot(String runId, String path);
+    void doScreenShot(Selenium selenium, String runId, String path);
     
-    MessageEvent doSeleniumActionClick(String string1, String string2);
+    MessageEvent doSeleniumActionClick(Selenium selenium, String string1, String string2);
     
-    MessageEvent doSeleniumActionMouseDown(String string1, String string2);
+    MessageEvent doSeleniumActionMouseDown(Selenium selenium, String string1, String string2);
 
-    MessageEvent doSeleniumActionMouseUp(String string1, String string2);
+    MessageEvent doSeleniumActionMouseUp(Selenium selenium, String string1, String string2);
 
-    MessageEvent doSeleniumActionSwitchToWindow(String string1, String string2);
+    MessageEvent doSeleniumActionSwitchToWindow(Selenium selenium, String string1, String string2);
 
-    MessageEvent doSeleniumActionManageDialog(String object, String property);
+    MessageEvent doSeleniumActionManageDialog(Selenium selenium, String object, String property);
     
-    MessageEvent doSeleniumActionClickWait(String actionObject, String actionProperty);
+    MessageEvent doSeleniumActionClickWait(Selenium selenium, String actionObject, String actionProperty);
     
-    MessageEvent doSeleniumActionDoubleClick(String html, String property);
+    MessageEvent doSeleniumActionDoubleClick(Selenium selenium, String html, String property);
 
-    MessageEvent doSeleniumActionType(String html, String property, String propertyName);
+    MessageEvent doSeleniumActionType(Selenium selenium, String html, String property, String propertyName);
 
-    MessageEvent doSeleniumActionMouseOver(String html, String property);
+    MessageEvent doSeleniumActionMouseOver(Selenium selenium, String html, String property);
     
-    MessageEvent doSeleniumActionMouseOverAndWait(String actionObject, String actionProperty);
+    MessageEvent doSeleniumActionMouseOverAndWait(Selenium selenium, String actionObject, String actionProperty);
 
-    MessageEvent doSeleniumActionWait(String object, String property);
+    MessageEvent doSeleniumActionWait(Selenium selenium, String object, String property);
 
-    MessageEvent doSeleniumActionKeyPress(String html, String property);
+    MessageEvent doSeleniumActionKeyPress(Selenium selenium, String html, String property);
     
-    MessageEvent doSeleniumActionOpenURL(String value, String property, boolean withBase);
+    MessageEvent doSeleniumActionOpenURL(Selenium selenium, String value, String property, boolean withBase);
 
-    MessageEvent doSeleniumActionSelect(String html, String property);
+    MessageEvent doSeleniumActionSelect(Selenium selenium, String html, String property);
     
-    MessageEvent doSeleniumActionUrlLogin();
+    MessageEvent doSeleniumActionUrlLogin(Selenium selenium);
 
-    MessageEvent doSeleniumActionFocusToIframe(String object, String property);
+    MessageEvent doSeleniumActionFocusToIframe(Selenium selenium, String object, String property);
 
-    MessageEvent doSeleniumActionFocusDefaultIframe();
+    MessageEvent doSeleniumActionFocusDefaultIframe(Selenium selenium);
 }

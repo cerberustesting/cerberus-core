@@ -69,6 +69,24 @@ public class TestCaseExecution {
     private List<TestCaseStepExecution> testCaseStepExecutionList; // Host the list of Steps that will be executed (both pre tests and main test)
     private List<TestCaseExecutionData> testCaseExecutionDataList; // Host the full list of data calculated during the execution.
     private MessageGeneral resultMessage;
+    private Selenium selenium;
+    private String executionUUID;
+
+    public String getExecutionUUID() {
+        return executionUUID;
+    }
+
+    public void setExecutionUUID(String executionUUID) {
+        this.executionUUID = executionUUID;
+    }
+    
+    public Selenium getSelenium() {
+        return selenium;
+    }
+
+    public void setSelenium(Selenium selenium) {
+        this.selenium = selenium;
+    }
 
     public String getVersion() {
         return version;

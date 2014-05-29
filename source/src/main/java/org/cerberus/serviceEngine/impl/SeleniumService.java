@@ -27,6 +27,7 @@ import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
 import java.util.Set;
+import java.util.UUID;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -41,6 +42,7 @@ import org.cerberus.entity.MessageGeneral;
 import org.cerberus.entity.MessageGeneralEnum;
 import org.cerberus.entity.Parameter;
 import org.cerberus.entity.Selenium;
+import org.cerberus.entity.TestCaseExecution;
 import org.cerberus.exception.CerberusEventException;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.factory.IFactorySelenium;
@@ -76,6 +78,7 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 /**
  * {Insert class description here}
@@ -84,12 +87,11 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @version 1.0, 10/01/2013
  * @since 2.0.0
  */
+@Service
 public class SeleniumService implements ISeleniumService {
 
     private static final int TIMEOUT_MILLIS = 30000;
     private static final int TIMEOUT_WEBELEMENT = 300;
-    private Selenium selenium;
-    private boolean started;
     @Autowired
     private IParameterService parameterService;
     @Autowired
@@ -98,9 +100,10 @@ public class SeleniumService implements ISeleniumService {
     private IInvariantService invariantService;
 
     @Override
-    public MessageGeneral startSeleniumServer(long runId, String host, String port, String browser, String version, String platform, String ip, String login, int verbose, String country) {
+    public TestCaseExecution startSeleniumServer(TestCaseExecution tCExecution, String host, String port, String browser, String version, String platform, String ip, String login, int verbose, String country) throws CerberusException {
 
-        if (!this.started) {
+//        if (tCExecution.getSelenium()==null || !tCExecution.getSelenium().isStarted()) {
+            Selenium selenium = new Selenium();
             /**
              * We activate Network Traffic for verbose 1 and 2.
              */
@@ -114,50 +117,34 @@ public class SeleniumService implements ISeleniumService {
                 defaultWait = 90;
             }
 
-            this.selenium = factorySelenium.create(host, port, browser, version, platform, login, ip, null, defaultWait);
-            Logger.getLogger(SeleniumService.class.getName()).log(java.util.logging.Level.WARNING, null, browser);
-
+            selenium = factorySelenium.create(host, port, browser, version, platform, login, ip, null, defaultWait);
+            tCExecution.setSelenium(selenium);
             try {
 
                 if (this.invariantService.isInvariantExist("BROWSER", browser)) {
-                    startSeleniumBrowser(runId, record, country, browser, version, platform);
+                    startSeleniumBrowser(tCExecution, record, country, browser, version, platform);
                 } else {
                     MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_SELENIUM);
                     mes.setDescription(mes.getDescription().replaceAll("%MES%", "Browser " + browser + " is not supported."));
-                    return mes;
+                    throw new CerberusException(mes);
                 }
 
-                this.selenium.getDriver().manage().window().maximize();
-                this.started = true;
-                return new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_CHECKINGPARAMETERS);
+                selenium.getDriver().manage().window().maximize();
+                selenium.setStarted(true);
+                tCExecution.setSelenium(selenium);
+                return tCExecution;
             } catch (CerberusException ex) {
+                MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_SELENIUM);
+                mes.setDescription(mes.getDescription().replaceAll("%MES%", ex.toString()));
                 Logger.getLogger(SeleniumService.class.getName()).log(java.util.logging.Level.WARNING, null, ex.getMessage());
-                return ex.getMessageError();
+                throw new CerberusException(mes);
             }
-        }
-        return new MessageGeneral(MessageGeneralEnum.EXECUTION_FA);
+//        } else {
+//            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.EXECUTION_FA));
+//        }
     }
 
-    @Override
-    public boolean isSeleniumServerReachable(String host, String port) {
-        try {
-            TelnetClient tc = new TelnetClient();
-            tc.connect(host, Integer.valueOf(port));
-            if (tc.isConnected()) {
-                tc.disconnect();
-                return true;
-            }
-        } catch (MalformedURLException exception) {
-            MyLogger.log(SeleniumService.class.getName(), Level.WARN, exception.toString());
-        } catch (ProtocolException exception) {
-            MyLogger.log(SeleniumService.class.getName(), Level.WARN, exception.toString());
-        } catch (IOException exception) {
-            MyLogger.log(SeleniumService.class.getName(), Level.WARN, exception.toString());
-        }
-        return false;
-    }
-
-    private DesiredCapabilities setFirefoxProfile(long runId, boolean record, String country) throws CerberusException {
+    private DesiredCapabilities setFirefoxProfile(String executionUUID, boolean record, String country) throws CerberusException {
         FirefoxProfile profile = new FirefoxProfile();
         profile.setEnableNativeEvents(true);
         profile.setAcceptUntrustedCertificates(true);
@@ -232,7 +219,6 @@ public class SeleniumService implements ISeleniumService {
                 throw new CerberusException(mes);
             }
 
-
             // Set default Firefox preferences
             profile.setPreference("app.update.enabled", false);
 
@@ -245,7 +231,7 @@ public class SeleniumService implements ISeleniumService {
             // Set default NetExport preferences
             profile.setPreference("extensions.firebug.netexport.alwaysEnableAutoExport", true);
             // Export to Server.
-            String url = cerberusUrl + "/SaveStatistic?logId=" + runId;
+            String url = cerberusUrl + "/SaveStatistic?logId=" + executionUUID;
             profile.setPreference("extensions.firebug.netexport.autoExportToServer", true);
             profile.setPreference("extensions.firebug.netexport.beaconServerURL", url);
             MyLogger.log(SeleniumService.class.getName(), Level.DEBUG, "Selenium netexport.beaconServerURL : " + url);
@@ -269,95 +255,107 @@ public class SeleniumService implements ISeleniumService {
     }
 
     @Override
-    public boolean startSeleniumBrowser(long runId, boolean record, String country, String browser, String version, String platform) throws CerberusException {
+    public boolean startSeleniumBrowser(TestCaseExecution tCExecution, boolean record, String country, String browser, String version, String platform) throws CerberusException {
 
         MyLogger.log(SeleniumService.class.getName(), Level.DEBUG, "Starting " + browser);
 
         DesiredCapabilities capabilities = null;
 
         //TODO : take platform and version from servlet
-
-        capabilities = setCapabilityBrowser(capabilities, browser, runId, record, country);
-        capabilities = setCapabilityPlatform(capabilities, platform);
-        //capabilities = setCapabilityVersion(capabilities, version);
-        
         try {
+            Selenium selenium = tCExecution.getSelenium();
+            capabilities = setCapabilityBrowser(capabilities, browser, tCExecution.getExecutionUUID(), record, country);
+            capabilities = setCapabilityPlatform(capabilities, platform);
+        //capabilities = setCapabilityVersion(capabilities, version);
+
             MyLogger.log(SeleniumService.class.getName(), Level.DEBUG, "Set Driver");
             WebDriver driver = new RemoteWebDriver(new URL("http://" + selenium.getHost() + ":" + selenium.getPort() + "/wd/hub"), capabilities);
             selenium.setDriver(driver);
+            tCExecution.setSelenium(selenium);
+            //MyLogger.log(SeleniumService.class.getName(), Level.ERROR, driver.manage().logs().get(LogType.SERVER).toString());
+        } catch (CerberusException exception) {
+            MyLogger.log(Selenium.class.getName(), Level.ERROR, exception.toString());
+            throw new CerberusException(exception.getMessageError());
         } catch (MalformedURLException exception) {
             MyLogger.log(Selenium.class.getName(), Level.ERROR, exception.toString());
             return false;
         } catch (UnreachableBrowserException exception) {
-            MyLogger.log(Selenium.class.getName(), Level.WARN, exception.toString());
-            return false;
-        } catch (Exception exception) {
-            MyLogger.log(Selenium.class.getName(), Level.WARN, exception.toString());
+            MyLogger.log(Selenium.class.getName(), Level.ERROR, exception.toString());
             MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_SELENIUM);
-            mes.setDescription(mes.getDescription().replaceAll("%MES%", "Selenium error : " + exception.getMessage().split("\n")[0]));
+            mes.setDescription(mes.getDescription().replace("%MES%", exception.getMessage()));
+            throw new CerberusException(mes);
+        } catch (Exception exception) {
+            MyLogger.log(Selenium.class.getName(), Level.ERROR, exception.toString());
+            MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_SELENIUM);
+            mes.setDescription(mes.getDescription().replace("%MES%", exception.toString()));
             throw new CerberusException(mes);
         }
 
         return true;
     }
-    
-    public DesiredCapabilities setCapabilityBrowser(DesiredCapabilities capabilities, String browser, long runId, boolean record, String country) throws CerberusException {
+
+    public DesiredCapabilities setCapabilityBrowser(DesiredCapabilities capabilities, String browser, String executionUUID, boolean record, String country) throws CerberusException {
+        try {
             if (browser.equalsIgnoreCase("firefox")) {
-            capabilities = this.setFirefoxProfile(runId, record ,country);
+                capabilities = this.setFirefoxProfile(executionUUID, record, country);
             } else if (browser.equalsIgnoreCase("IE")) {
-            capabilities = DesiredCapabilities.internetExplorer();
+                capabilities = DesiredCapabilities.internetExplorer();
             } else if (browser.equalsIgnoreCase("chrome")) {
-            capabilities = DesiredCapabilities.chrome();
-            }else if (browser.contains("android")) {
-            capabilities = DesiredCapabilities.android();
-            }else if (browser.contains("ipad")) {
-            capabilities = DesiredCapabilities.ipad();
-            }else if (browser.contains("iphone")) {
-            capabilities = DesiredCapabilities.iphone();
-            }else if (browser.contains("opera")) {
-            capabilities = DesiredCapabilities.opera();
-            }else if (browser.contains("safari")) {
-            capabilities = DesiredCapabilities.safari();
+                capabilities = DesiredCapabilities.chrome();
+            } else if (browser.contains("android")) {
+                capabilities = DesiredCapabilities.android();
+            } else if (browser.contains("ipad")) {
+                capabilities = DesiredCapabilities.ipad();
+            } else if (browser.contains("iphone")) {
+                capabilities = DesiredCapabilities.iphone();
+            } else if (browser.contains("opera")) {
+                capabilities = DesiredCapabilities.opera();
+            } else if (browser.contains("safari")) {
+                capabilities = DesiredCapabilities.safari();
             } else {
-            MyLogger.log(Selenium.class.getName(), Level.WARN, "Not supported Browser : "+browser);
-            MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_SELENIUM);
-            mes.setDescription("Not supported Browser : "+browser);
-            throw new CerberusException(mes);
+                MyLogger.log(Selenium.class.getName(), Level.WARN, "Not supported Browser : " + browser);
+                MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_SELENIUM);
+                mes.setDescription("Not supported Browser : " + browser);
+                throw new CerberusException(mes);
             }
-     
-     return capabilities;
+        } catch (CerberusException ex) {
+            MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_SELENIUM);
+            throw new CerberusException(mes);
+        }
+
+        return capabilities;
     }
 
     public DesiredCapabilities setCapabilityVersion(DesiredCapabilities capabilities, String version) throws CerberusException {
-            if (!version.equalsIgnoreCase("")) {
+        if (!version.equalsIgnoreCase("")) {
             capabilities.setCapability(CapabilityType.VERSION, version);
-            }
-     
-     return capabilities;
+        }
+
+        return capabilities;
     }
-    
+
     public DesiredCapabilities setCapabilityPlatform(DesiredCapabilities capabilities, String platform) throws CerberusException {
-            if (platform.equalsIgnoreCase("WINDOWS")) {
+        if (platform.equalsIgnoreCase("WINDOWS")) {
             capabilities.setPlatform(Platform.WINDOWS);
-            } else if (platform.equalsIgnoreCase("LINUX")) {
+        } else if (platform.equalsIgnoreCase("LINUX")) {
             capabilities.setPlatform(Platform.LINUX);
-            } else if (platform.equalsIgnoreCase("ANDROID")) {
+        } else if (platform.equalsIgnoreCase("ANDROID")) {
             capabilities.setPlatform(Platform.ANDROID);
-            } else if (platform.equalsIgnoreCase("MAC")) {
+        } else if (platform.equalsIgnoreCase("MAC")) {
             capabilities.setPlatform(Platform.MAC);
-            } else if (platform.equalsIgnoreCase("UNIX")) {
+        } else if (platform.equalsIgnoreCase("UNIX")) {
             capabilities.setPlatform(Platform.UNIX);
-            } else if (platform.equalsIgnoreCase("VISTA")) {
+        } else if (platform.equalsIgnoreCase("VISTA")) {
             capabilities.setPlatform(Platform.VISTA);
-            } else if (platform.equalsIgnoreCase("WIN8")) {
+        } else if (platform.equalsIgnoreCase("WIN8")) {
             capabilities.setPlatform(Platform.WIN8);
-            } else if (platform.equalsIgnoreCase("XP")) {
+        } else if (platform.equalsIgnoreCase("XP")) {
             capabilities.setPlatform(Platform.XP);
-            } else {
+        } else {
             capabilities.setPlatform(Platform.ANY);
-            }
-     
-     return capabilities;
+        }
+
+        return capabilities;
     }
 
     private By getIdentifier(String input) {
@@ -401,11 +399,11 @@ public class SeleniumService implements ISeleniumService {
         }
     }
 
-    private WebElement getSeleniumElement(String input, boolean visible) {
+    private WebElement getSeleniumElement(Selenium selenium, String input, boolean visible) {
         By locator = this.getIdentifier(input);
         MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Waiting for Element : " + input);
         try {
-            WebDriverWait wait = new WebDriverWait(this.selenium.getDriver(), this.selenium.getDefaultWait());
+            WebDriverWait wait = new WebDriverWait(selenium.getDriver(), selenium.getDefaultWait());
             if (visible) {
                 wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
             } else {
@@ -415,13 +413,12 @@ public class SeleniumService implements ISeleniumService {
             throw new NoSuchElementException(input);
         }
         MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Finding selenium Element : " + input);
-        return this.selenium.getDriver().findElement(locator);
+        return selenium.getDriver().findElement(locator);
     }
 
     @Override
-    public boolean stopSeleniumServer() {
-        if (this.started) {
-
+    public boolean stopSeleniumServer(Selenium selenium) {
+        if (selenium.isStarted()) {
             try {
                 // Wait 2 sec till HAR is exported
                 Thread.sleep(2000);
@@ -429,8 +426,8 @@ public class SeleniumService implements ISeleniumService {
                 Logger.getLogger(SeleniumService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
             }
 
-            this.selenium.getDriver().quit();
-            this.started = false;
+            selenium.getDriver().quit();
+            selenium.setStarted(false);
             return true;
         }
 
@@ -438,8 +435,8 @@ public class SeleniumService implements ISeleniumService {
     }
 
     @Override
-    public String getValueFromHTMLVisible(String locator) {
-        WebElement webElement = this.getSeleniumElement(locator, true);
+    public String getValueFromHTMLVisible(Selenium selenium, String locator) {
+        WebElement webElement = this.getSeleniumElement(selenium, locator, true);
         String result;
 
         if (webElement.getTagName().equalsIgnoreCase("select")) {
@@ -454,8 +451,8 @@ public class SeleniumService implements ISeleniumService {
     }
 
     @Override
-    public String getValueFromHTML(String locator) {
-        WebElement webElement = this.getSeleniumElement(locator, false);
+    public String getValueFromHTML(Selenium selenium, String locator) {
+        WebElement webElement = this.getSeleniumElement(selenium, locator, false);
         String result;
 
         if (webElement.getTagName().equalsIgnoreCase("select")) {
@@ -471,24 +468,24 @@ public class SeleniumService implements ISeleniumService {
          */
         if (StringUtil.isNullOrEmpty(result)) {
             String script = "return arguments[0].innerHTML";
-            result = (String) ((JavascriptExecutor) this.selenium.getDriver()).executeScript(script, webElement);
+            result = (String) ((JavascriptExecutor) selenium.getDriver()).executeScript(script, webElement);
         }
 
         return result;
     }
 
     @Override
-    public String getAlertText() {
-        Alert alert = this.selenium.getDriver().switchTo().alert();
-        if(alert != null) {
+    public String getAlertText(Selenium selenium) {
+        Alert alert = selenium.getDriver().switchTo().alert();
+        if (alert != null) {
             return alert.getText();
         }
-        
+
         return null;
     }
 
     @Override
-    public String getValueFromJS(String script) {
+    public String getValueFromJS(Selenium selenium, String script) {
         JavascriptExecutor js = (JavascriptExecutor) selenium.getDriver();
         Object response = js.executeScript(script);
 
@@ -502,14 +499,13 @@ public class SeleniumService implements ISeleniumService {
 
         return String.valueOf(response);
     }
-    
-    
+
     @Override
-    public String getAttributeFromHtml(String locator, String attribute) {
+    public String getAttributeFromHtml(Selenium selenium, String locator, String attribute) {
         String result = null;
         try {
-        WebElement webElement = this.getSeleniumElement(locator, true);
-        result = webElement.getAttribute(attribute);
+            WebElement webElement = this.getSeleniumElement(selenium, locator, true);
+            result = webElement.getAttribute(attribute);
         } catch (WebDriverException exception) {
             MyLogger.log(SeleniumService.class.getName(), Level.FATAL, exception.toString());
         }
@@ -517,9 +513,9 @@ public class SeleniumService implements ISeleniumService {
     }
 
     @Override
-    public boolean isElementPresent(String locator) {
+    public boolean isElementPresent(Selenium selenium, String locator) {
         try {
-            WebElement webElement = this.getSeleniumElement(locator, false);
+            WebElement webElement = this.getSeleniumElement(selenium, locator, false);
             return webElement != null;
         } catch (NoSuchElementException exception) {
             return false;
@@ -527,9 +523,9 @@ public class SeleniumService implements ISeleniumService {
     }
 
     @Override
-    public boolean isElementVisible(String locator) {
+    public boolean isElementVisible(Selenium selenium, String locator) {
         try {
-            WebElement webElement = this.getSeleniumElement(locator, true);
+            WebElement webElement = this.getSeleniumElement(selenium, locator, true);
             return webElement != null && webElement.isDisplayed();
         } catch (NoSuchElementException exception) {
             return false;
@@ -537,9 +533,9 @@ public class SeleniumService implements ISeleniumService {
     }
 
     @Override
-    public boolean isElementNotVisible(String locator) {
+    public boolean isElementNotVisible(Selenium selenium, String locator) {
         try {
-            WebElement webElement = this.getSeleniumElement(locator, false);
+            WebElement webElement = this.getSeleniumElement(selenium, locator, false);
             return webElement != null && !webElement.isDisplayed();
         } catch (NoSuchElementException exception) {
             return false;
@@ -547,13 +543,13 @@ public class SeleniumService implements ISeleniumService {
     }
 
     @Override
-    public String getPageSource() {
-        return this.selenium.getDriver().getPageSource();
+    public String getPageSource(Selenium selenium) {
+        return selenium.getDriver().getPageSource();
     }
 
     @Override
-    public String getTitle() {
-        return this.selenium.getDriver().getTitle();
+    public String getTitle(Selenium selenium) {
+        return selenium.getDriver().getTitle();
     }
 
     /**
@@ -564,7 +560,7 @@ public class SeleniumService implements ISeleniumService {
      * Database) inside current URL (from Selenium)
      */
     @Override
-    public String getCurrentUrl() throws CerberusEventException {
+    public String getCurrentUrl(Selenium selenium) throws CerberusEventException {
         /*
          * Example: URL (http://mypage/page/index.jsp), IP (mypage)
          * URL.split(IP, 2)
@@ -572,11 +568,11 @@ public class SeleniumService implements ISeleniumService {
          *  0  |    http://
          *  1  |    /page/index.jsp
          */
-        String strings[] = this.selenium.getDriver().getCurrentUrl().split(this.selenium.getIp(), 2);
+        String strings[] = selenium.getDriver().getCurrentUrl().split(selenium.getIp(), 2);
         if (strings.length < 2) {
             MessageEvent msg = new MessageEvent(MessageEventEnum.CONTROL_FAILED_URL_NOT_MATCH_APPLICATION);
-            msg.setDescription(msg.getDescription().replaceAll("%HOST%", this.selenium.getDriver().getCurrentUrl()));
-            msg.setDescription(msg.getDescription().replaceAll("%URL%", this.selenium.getIp()));
+            msg.setDescription(msg.getDescription().replaceAll("%HOST%", selenium.getDriver().getCurrentUrl()));
+            msg.setDescription(msg.getDescription().replaceAll("%URL%", selenium.getIp()));
             MyLogger.log(SeleniumService.class.getName(), Level.WARN, msg.toString());
             throw new CerberusEventException(msg);
         }
@@ -584,16 +580,16 @@ public class SeleniumService implements ISeleniumService {
     }
 
     @Override
-    public Capabilities getUsedCapabilities() {
+    public Capabilities getUsedCapabilities(Selenium selenium) {
 
-        Capabilities caps = ((RemoteWebDriver) this.selenium.getDriver()).getCapabilities();
+        Capabilities caps = ((RemoteWebDriver) selenium.getDriver()).getCapabilities();
         return caps;
     }
-  
+
     @Override
-    public void doScreenShot(String runId, String name) {
+    public void doScreenShot(Selenium selenium, String runId, String name) {
         try {
-            WebDriver augmentedDriver = new Augmenter().augment(this.selenium.getDriver());
+            WebDriver augmentedDriver = new Augmenter().augment(selenium.getDriver());
             File image = ((TakesScreenshot) augmentedDriver).getScreenshotAs(OutputType.FILE);
             BufferedImage bufferedImage = ImageIO.read(image);
 
@@ -619,23 +615,22 @@ public class SeleniumService implements ISeleniumService {
         }
     }
 
-   
     @Override
-    public boolean isElementInElement(String element, String childElement) {
+    public boolean isElementInElement(Selenium selenium, String element, String childElement) {
         By elementLocator = this.getIdentifier(element);
         By childElementLocator = this.getIdentifier(childElement);
-        
-        return (this.selenium.getDriver().findElement(elementLocator) != null 
-            && this.selenium.getDriver().findElement(elementLocator).findElement(childElementLocator) != null);
+
+        return (selenium.getDriver().findElement(elementLocator) != null
+                && selenium.getDriver().findElement(elementLocator).findElement(childElementLocator) != null);
     }
-    
+
     @Override
-    public MessageEvent doSeleniumActionClick(String string1, String string2) {
+    public MessageEvent doSeleniumActionClick(Selenium selenium, String string1, String string2) {
         MessageEvent message;
         try {
             if (!StringUtil.isNull(string1)) {
                 try {
-                    this.getSeleniumElement(string1, true).click();
+                    this.getSeleniumElement(selenium, string1, true).click();
                     message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CLICK);
                     message.setDescription(message.getDescription().replaceAll("%ELEMENT%", string1));
                     return message;
@@ -647,7 +642,7 @@ public class SeleniumService implements ISeleniumService {
                 }
             } else if (!StringUtil.isNull(string2)) {
                 try {
-                    this.getSeleniumElement(string2, true).click();
+                    this.getSeleniumElement(selenium, string2, true).click();
                     message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CLICK);
                     message.setDescription(message.getDescription().replaceAll("%ELEMENT%", string2));
                     return message;
@@ -665,15 +660,15 @@ public class SeleniumService implements ISeleniumService {
         }
         return new MessageEvent(MessageEventEnum.ACTION_FAILED_NO_ELEMENT_TO_CLICK);
     }
-    
+
     @Override
-    public MessageEvent doSeleniumActionMouseDown(String string1, String string2) {
+    public MessageEvent doSeleniumActionMouseDown(Selenium selenium, String string1, String string2) {
         MessageEvent message;
         try {
             if (!StringUtil.isNull(string1)) {
                 try {
-                    Actions actions = new Actions(this.selenium.getDriver());
-                    actions.clickAndHold(this.getSeleniumElement(string1, true));
+                    Actions actions = new Actions(selenium.getDriver());
+                    actions.clickAndHold(this.getSeleniumElement(selenium, string1, true));
                     actions.build().perform();
                     message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_MOUSEDOWN);
                     message.setDescription(message.getDescription().replaceAll("%ELEMENT%", string1));
@@ -686,8 +681,8 @@ public class SeleniumService implements ISeleniumService {
                 }
             } else if (!StringUtil.isNull(string2)) {
                 try {
-                    Actions actions = new Actions(this.selenium.getDriver());
-                    actions.clickAndHold(this.getSeleniumElement(string2, true));
+                    Actions actions = new Actions(selenium.getDriver());
+                    actions.clickAndHold(this.getSeleniumElement(selenium, string2, true));
                     actions.build().perform();
                     message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_MOUSEDOWN);
                     message.setDescription(message.getDescription().replaceAll("%ELEMENT%", string2));
@@ -708,13 +703,13 @@ public class SeleniumService implements ISeleniumService {
     }
 
     @Override
-    public MessageEvent doSeleniumActionMouseUp(String string1, String string2) {
+    public MessageEvent doSeleniumActionMouseUp(Selenium selenium, String string1, String string2) {
         MessageEvent message;
         try {
             if (!StringUtil.isNull(string1)) {
                 try {
-                    Actions actions = new Actions(this.selenium.getDriver());
-                    actions.release(this.getSeleniumElement(string1, true));
+                    Actions actions = new Actions(selenium.getDriver());
+                    actions.release(this.getSeleniumElement(selenium, string1, true));
                     actions.build().perform();
                     message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_MOUSEUP);
                     message.setDescription(message.getDescription().replaceAll("%ELEMENT%", string1));
@@ -727,8 +722,8 @@ public class SeleniumService implements ISeleniumService {
                 }
             } else if (!StringUtil.isNull(string2)) {
                 try {
-                    Actions actions = new Actions(this.selenium.getDriver());
-                    actions.release(this.getSeleniumElement(string2, true));
+                    Actions actions = new Actions(selenium.getDriver());
+                    actions.release(this.getSeleniumElement(selenium, string2, true));
                     actions.build().perform();
                     message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_MOUSEUP);
                     message.setDescription(message.getDescription().replaceAll("%ELEMENT%", string2));
@@ -749,7 +744,7 @@ public class SeleniumService implements ISeleniumService {
     }
 
     @Override
-    public MessageEvent doSeleniumActionSwitchToWindow(String string1, String string2) {
+    public MessageEvent doSeleniumActionSwitchToWindow(Selenium selenium, String string1, String string2) {
         MessageEvent message;
         String windowTitle;
         try {
@@ -774,11 +769,11 @@ public class SeleniumService implements ISeleniumService {
                     identifier = strings[0];
                     value = strings[1];
                 }
-                
+
                 String currentHandle;
                 try {
                     // Current serial handle of the window.
-                    currentHandle = this.selenium.getDriver().getWindowHandle();
+                    currentHandle = selenium.getDriver().getWindowHandle();
                 } catch (NoSuchWindowException exception) {
                     // Add try catch to handle not exist anymore window (like when popup is closed).
                     currentHandle = null;
@@ -787,13 +782,13 @@ public class SeleniumService implements ISeleniumService {
 
                 try {
                     // Get serials handles list of all browser windows
-                    Set<String> handles = this.selenium.getDriver().getWindowHandles();
+                    Set<String> handles = selenium.getDriver().getWindowHandles();
 
                     // Loop into each of them
                     for (String windowHandle : handles) {
                         if (!windowHandle.equals(currentHandle)) {
-                            this.selenium.getDriver().switchTo().window(windowHandle);
-                            if (seleniumTestTitleOfWindow(this.selenium.getDriver().getTitle(), identifier, value)) {
+                            selenium.getDriver().switchTo().window(windowHandle);
+                            if (seleniumTestTitleOfWindow(selenium, selenium.getDriver().getTitle(), identifier, value)) {
                                 message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_SWITCHTOWINDOW);
                                 message.setDescription(message.getDescription().replaceAll("%WINDOW%", windowTitle));
                                 return message;
@@ -816,7 +811,7 @@ public class SeleniumService implements ISeleniumService {
     }
 
     @Override
-    public MessageEvent doSeleniumActionManageDialog(String object, String property) {
+    public MessageEvent doSeleniumActionManageDialog(Selenium selenium, String object, String property) {
         try {
             String value = object;
             if (value == null || value.trim().length() == 0) {
@@ -824,11 +819,11 @@ public class SeleniumService implements ISeleniumService {
             }
             if ("ok".equalsIgnoreCase(value)) {
                 // Accept javascript popup dialog.
-                this.selenium.getDriver().switchTo().alert().accept();
+                selenium.getDriver().switchTo().alert().accept();
                 return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CLOSE_ALERT);
             } else if ("cancel".equalsIgnoreCase(value)) {
                 // Dismiss javascript popup dialog.
-                this.selenium.getDriver().switchTo().alert().dismiss();
+                selenium.getDriver().switchTo().alert().dismiss();
                 return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CLOSE_ALERT);
             }
 
@@ -841,7 +836,7 @@ public class SeleniumService implements ISeleniumService {
         return new MessageEvent(MessageEventEnum.ACTION_FAILED_CLOSE_ALERT);
     }
 
-    private boolean seleniumTestTitleOfWindow(String title, String identifier, String value) {
+    private boolean seleniumTestTitleOfWindow(Selenium selenium, String title, String identifier, String value) {
         if (value != null && title != null) {
             if ("title".equals(identifier) && value.equals(title)) {
                 return true;
@@ -849,7 +844,7 @@ public class SeleniumService implements ISeleniumService {
 
             if ("regexTitle".equals(identifier)) {
                 Pattern pattern = Pattern.compile(value);
-                Matcher matcher = pattern.matcher(this.selenium.getDriver().getTitle());
+                Matcher matcher = pattern.matcher(selenium.getDriver().getTitle());
 
                 return matcher.find();
             }
@@ -858,12 +853,12 @@ public class SeleniumService implements ISeleniumService {
     }
 
     @Override
-    public MessageEvent doSeleniumActionClickWait(String actionObject, String actionProperty) {
+    public MessageEvent doSeleniumActionClickWait(Selenium selenium, String actionObject, String actionProperty) {
         MessageEvent message;
         try {
             if (!StringUtil.isNull(actionProperty) && !StringUtil.isNull(actionObject)) {
                 try {
-                    this.getSeleniumElement(actionObject, true).click();
+                    this.getSeleniumElement(selenium, actionObject, true).click();
                 } catch (NoSuchElementException exception) {
                     message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CLICK_NO_SUCH_ELEMENT);
                     message.setDescription(message.getDescription().replaceAll("%ELEMENT%", actionObject));
@@ -891,7 +886,7 @@ public class SeleniumService implements ISeleniumService {
                 return message;
             } else if (StringUtil.isNull(actionProperty) && !StringUtil.isNull(actionObject)) {
                 try {
-                    this.getSeleniumElement(actionObject, true).click();
+                    this.getSeleniumElement(selenium, actionObject, true).click();
                 } catch (NoSuchElementException exception) {
                     message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CLICK_NO_SUCH_ELEMENT);
                     message.setDescription(message.getDescription().replaceAll("%ELEMENT%", actionObject));
@@ -903,7 +898,7 @@ public class SeleniumService implements ISeleniumService {
                 return message;
             } else if (!StringUtil.isNull(actionProperty) && StringUtil.isNull(actionObject)) {
                 try {
-                    this.getSeleniumElement(actionProperty, true).click();
+                    this.getSeleniumElement(selenium, actionProperty, true).click();
                 } catch (NoSuchElementException exception) {
                     message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CLICK_NO_SUCH_ELEMENT);
                     message.setDescription(message.getDescription().replaceAll("%ELEMENT%", actionProperty));
@@ -923,13 +918,13 @@ public class SeleniumService implements ISeleniumService {
     }
 
     @Override
-    public MessageEvent doSeleniumActionDoubleClick(String html, String property) {
+    public MessageEvent doSeleniumActionDoubleClick(Selenium selenium, String html, String property) {
         MessageEvent message;
         try {
-            Actions actions = new Actions(this.selenium.getDriver());
+            Actions actions = new Actions(selenium.getDriver());
             if (!StringUtil.isNull(property)) {
                 try {
-                    actions.doubleClick(this.getSeleniumElement(property, true));
+                    actions.doubleClick(this.getSeleniumElement(selenium, property, true));
                     message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_DOUBLECLICK);
                     message.setDescription(message.getDescription().replaceAll("%ELEMENT%", property));
                     return message;
@@ -941,7 +936,7 @@ public class SeleniumService implements ISeleniumService {
                 }
             } else if (!StringUtil.isNull(html)) {
                 try {
-                    actions.doubleClick(this.getSeleniumElement(html, true));
+                    actions.doubleClick(this.getSeleniumElement(selenium, html, true));
                     message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_DOUBLECLICK);
                     message.setDescription(message.getDescription().replaceAll("%ELEMENT%", html));
                     return message;
@@ -961,12 +956,12 @@ public class SeleniumService implements ISeleniumService {
     }
 
     @Override
-    public MessageEvent doSeleniumActionType(String html, String property, String propertyName) {
+    public MessageEvent doSeleniumActionType(Selenium selenium, String html, String property, String propertyName) {
         MessageEvent message;
         try {
             if (!StringUtil.isNull(html)) {
                 try {
-                    WebElement webElement = this.getSeleniumElement(html, true);
+                    WebElement webElement = this.getSeleniumElement(selenium, html, true);
                     webElement.clear();
                     if (!StringUtil.isNull(property)) {
                         webElement.sendKeys(property);
@@ -995,13 +990,13 @@ public class SeleniumService implements ISeleniumService {
     }
 
     @Override
-    public MessageEvent doSeleniumActionMouseOver(String html, String property) {
+    public MessageEvent doSeleniumActionMouseOver(Selenium selenium, String html, String property) {
         MessageEvent message;
         try {
             if (!StringUtil.isNull(html)) {
                 try {
-                    Actions actions = new Actions(this.selenium.getDriver());
-                    WebElement menuHoverLink = this.getSeleniumElement(html, true);
+                    Actions actions = new Actions(selenium.getDriver());
+                    WebElement menuHoverLink = this.getSeleniumElement(selenium, html, true);
                     actions.moveToElement(menuHoverLink);
                     actions.build().perform();
                     message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_MOUSEOVER);
@@ -1015,8 +1010,8 @@ public class SeleniumService implements ISeleniumService {
                 }
             } else if (!StringUtil.isNull(property)) {
                 try {
-                    Actions actions = new Actions(this.selenium.getDriver());
-                    WebElement menuHoverLink = this.getSeleniumElement(property, true);
+                    Actions actions = new Actions(selenium.getDriver());
+                    WebElement menuHoverLink = this.getSeleniumElement(selenium, property, true);
                     actions.moveToElement(menuHoverLink);
                     actions.build().perform();
                     message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_MOUSEOVER);
@@ -1038,14 +1033,14 @@ public class SeleniumService implements ISeleniumService {
     }
 
     @Override
-    public MessageEvent doSeleniumActionMouseOverAndWait(String actionObject, String actionProperty) {
+    public MessageEvent doSeleniumActionMouseOverAndWait(Selenium selenium, String actionObject, String actionProperty) {
         MessageEvent message;
         try {
             if (!StringUtil.isNull(actionProperty) && !StringUtil.isNull(actionObject)) {
                 if (StringUtil.isNumeric(actionProperty)) {
                     try {
-                        Actions actions = new Actions(this.selenium.getDriver());
-                        WebElement menuHoverLink = this.getSeleniumElement(actionObject, true);
+                        Actions actions = new Actions(selenium.getDriver());
+                        WebElement menuHoverLink = this.getSeleniumElement(selenium, actionObject, true);
                         actions.moveToElement(menuHoverLink);
                         actions.build().perform();
                         int sleep = Integer.parseInt(actionProperty);
@@ -1074,8 +1069,8 @@ public class SeleniumService implements ISeleniumService {
                 return message;
             } else if (StringUtil.isNull(actionProperty) && !StringUtil.isNull(actionObject)) {
                 try {
-                    Actions actions = new Actions(this.selenium.getDriver());
-                    WebElement menuHoverLink = this.getSeleniumElement(actionObject, true);
+                    Actions actions = new Actions(selenium.getDriver());
+                    WebElement menuHoverLink = this.getSeleniumElement(selenium, actionObject, true);
                     actions.moveToElement(menuHoverLink);
                     actions.build().perform();
                 } catch (NoSuchElementException exception) {
@@ -1097,7 +1092,7 @@ public class SeleniumService implements ISeleniumService {
     }
 
     @Override
-    public MessageEvent doSeleniumActionWait(String object, String property) {
+    public MessageEvent doSeleniumActionWait(Selenium selenium, String object, String property) {
         MessageEvent message;
         try {
             if (!StringUtil.isNull(property)) {
@@ -1115,7 +1110,7 @@ public class SeleniumService implements ISeleniumService {
                     return message;
                 } else {
                     try {
-                        WebDriverWait wait = new WebDriverWait(this.selenium.getDriver(), TIMEOUT_WEBELEMENT);
+                        WebDriverWait wait = new WebDriverWait(selenium.getDriver(), TIMEOUT_WEBELEMENT);
                         wait.until(ExpectedConditions.presenceOfElementLocated(this.getIdentifier(property)));
                         message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_WAIT_ELEMENT);
                         message.setDescription(message.getDescription().replaceAll("%ELEMENT%", property));
@@ -1142,7 +1137,7 @@ public class SeleniumService implements ISeleniumService {
                     return message;
                 } else {
                     try {
-                        WebDriverWait wait = new WebDriverWait(this.selenium.getDriver(), TIMEOUT_WEBELEMENT);
+                        WebDriverWait wait = new WebDriverWait(selenium.getDriver(), TIMEOUT_WEBELEMENT);
                         wait.until(ExpectedConditions.presenceOfElementLocated(this.getIdentifier(object)));
                         message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_WAIT_ELEMENT);
                         message.setDescription(message.getDescription().replaceAll("%ELEMENT%", object));
@@ -1175,12 +1170,12 @@ public class SeleniumService implements ISeleniumService {
     }
 
     @Override
-    public MessageEvent doSeleniumActionKeyPress(String html, String property) {
+    public MessageEvent doSeleniumActionKeyPress(Selenium selenium, String html, String property) {
         MessageEvent message;
         try {
             if (!StringUtil.isNull(html) && !StringUtil.isNull(property)) {
                 try {
-                    WebElement element = this.getSeleniumElement(html, true);
+                    WebElement element = this.getSeleniumElement(selenium, html, true);
                     element.sendKeys(Keys.valueOf(property));
                     message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_KEYPRESS);
                     message.setDescription(message.getDescription().replaceAll("%ELEMENT%", html));
@@ -1202,7 +1197,7 @@ public class SeleniumService implements ISeleniumService {
     }
 
     @Override
-    public MessageEvent doSeleniumActionOpenURL(String value, String property, boolean withBase) {
+    public MessageEvent doSeleniumActionOpenURL(Selenium selenium, String value, String property, boolean withBase) {
         MessageEvent message;
         String url = "null";
         try {
@@ -1212,10 +1207,10 @@ public class SeleniumService implements ISeleniumService {
                 url = property;
             }
             if (!StringUtil.isNull(url)) {
-                if (withBase){
-                this.selenium.getDriver().get("http://" + this.selenium.getIp() + url);
+                if (withBase) {
+                    selenium.getDriver().get("http://" + selenium.getIp() + url);
                 } else {
-                this.selenium.getDriver().get(url);
+                    selenium.getDriver().get(url);
                 }
                 message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_OPENURL);
                 message.setDescription(message.getDescription().replaceAll("%URL%", url));
@@ -1232,7 +1227,7 @@ public class SeleniumService implements ISeleniumService {
     }
 
     @Override
-    public MessageEvent doSeleniumActionSelect(String html, String property) {
+    public MessageEvent doSeleniumActionSelect(Selenium selenium, String html, String property) {
         MessageEvent message;
         String identifier;
         String value = "";
@@ -1251,7 +1246,7 @@ public class SeleniumService implements ISeleniumService {
 
                 Select select;
                 try {
-                    select = new Select(this.getSeleniumElement(html, true));
+                    select = new Select(this.getSeleniumElement(selenium, html, true));
                 } catch (NoSuchElementException exception) {
                     message = new MessageEvent(MessageEventEnum.ACTION_FAILED_SELECT_NO_SUCH_ELEMENT);
                     message.setDescription(message.getDescription().replaceAll("%ELEMENT%", html));
@@ -1349,11 +1344,11 @@ public class SeleniumService implements ISeleniumService {
     }
 
     @Override
-    public MessageEvent doSeleniumActionUrlLogin() {
+    public MessageEvent doSeleniumActionUrlLogin(Selenium selenium) {
         MessageEvent message;
-        String url = "http://" + this.selenium.getIp() + this.selenium.getLogin();
+        String url = "http://" + selenium.getIp() + selenium.getLogin();
         try {
-            this.selenium.getDriver().get(url);
+            selenium.getDriver().get(url);
             message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_URLLOGIN);
             message.setDescription(message.getDescription().replaceAll("%URL%", url));
             return message;
@@ -1365,13 +1360,13 @@ public class SeleniumService implements ISeleniumService {
     }
 
     @Override
-    public MessageEvent doSeleniumActionFocusToIframe(String object, String property) {
+    public MessageEvent doSeleniumActionFocusToIframe(Selenium selenium, String object, String property) {
         MessageEvent message;
 
         try {
             if (!StringUtil.isNullOrEmpty(property)) {
                 try {
-                    this.selenium.getDriver().switchTo().frame(this.getSeleniumElement(property, false));
+                    selenium.getDriver().switchTo().frame(this.getSeleniumElement(selenium, property, false));
                     message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_FOCUSTOIFRAME);
                     message.setDescription(message.getDescription().replaceAll("%IFRAME%", property));
                 } catch (NoSuchElementException exception) {
@@ -1381,7 +1376,7 @@ public class SeleniumService implements ISeleniumService {
                 }
             } else {
                 try {
-                    this.selenium.getDriver().switchTo().frame(this.getSeleniumElement(object, false));
+                    selenium.getDriver().switchTo().frame(this.getSeleniumElement(selenium, object, false));
                     message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_FOCUSTOIFRAME);
                     message.setDescription(message.getDescription().replaceAll("%IFRAME%", object));
                 } catch (NoSuchElementException exception) {
@@ -1401,11 +1396,11 @@ public class SeleniumService implements ISeleniumService {
     }
 
     @Override
-    public MessageEvent doSeleniumActionFocusDefaultIframe() {
+    public MessageEvent doSeleniumActionFocusDefaultIframe(Selenium selenium) {
         MessageEvent message;
 
         try {
-            this.selenium.getDriver().switchTo().defaultContent();
+            selenium.getDriver().switchTo().defaultContent();
             message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_FOCUSDEFAULTIFRAME);
         } catch (WebDriverException exception) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_SELENIUM_CONNECTIVITY);

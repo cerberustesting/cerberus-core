@@ -42,6 +42,15 @@ public class TestCaseExecutionData {
     private MessageEvent propertyResultMessage;
     private MessageGeneral executionResultMessage;
     private boolean stopExecution;
+    private TestCaseCountryProperties testCaseCountryProperties;
+
+    public TestCaseCountryProperties getTestCaseCountryProperties() {
+        return testCaseCountryProperties;
+    }
+
+    public void setTestCaseCountryProperties(TestCaseCountryProperties testCaseCountryProperties) {
+        this.testCaseCountryProperties = testCaseCountryProperties;
+    }
 
     public String getrMessage() {
         return rMessage;

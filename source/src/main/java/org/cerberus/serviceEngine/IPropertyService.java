@@ -41,7 +41,5 @@ public interface IPropertyService {
     TestCaseExecutionData calculateProperty(TestCaseExecutionData testCaseExecutionData, TestCaseStepActionExecution testCaseStepActionExecution, TestCaseCountryProperties testCaseCountryProperty);
     
     String decodeValue(String myString, List<TestCaseExecutionData> properties, TestCaseExecution tCExecution);
-
-    String calculatePropertyFromSOAPResponse(final SoapLibrary pSoapLibrary, org.cerberus.entity.TestCaseCountryProperties pTestCaseCountry, org.cerberus.entity.TestCaseExecution pTestCaseExecution) throws CerberusException;
-
+    
 }

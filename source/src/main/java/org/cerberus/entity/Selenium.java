@@ -38,7 +38,16 @@ public class Selenium {
     private String ip;
     private WebDriver driver;
     private long defaultWait;
+    private boolean started;
 
+    public boolean isStarted() {
+        return started;
+    }
+
+    public void setStarted(boolean started) {
+        this.started = started;
+    }
+    
     public String getVersion() {
         return version;
     }

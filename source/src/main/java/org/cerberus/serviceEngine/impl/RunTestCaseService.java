@@ -19,10 +19,11 @@
  */
 package org.cerberus.serviceEngine.impl;
 
-import java.util.logging.Logger;
+import org.cerberus.entity.ExecutionUUID;
 import org.cerberus.entity.MessageGeneral;
 import org.cerberus.entity.MessageGeneralEnum;
 import org.cerberus.entity.TestCaseExecution;
+import org.cerberus.exception.CerberusException;
 import org.cerberus.serviceEngine.IExecutionRunService;
 import org.cerberus.serviceEngine.IExecutionStartService;
 import org.cerberus.serviceEngine.IRunTestCaseService;
@@ -43,6 +44,8 @@ public class RunTestCaseService implements IRunTestCaseService {
     private IExecutionStartService executionStartService;
     @Autowired
     private IExecutionRunService executionRunService;
+    @Autowired 
+    private ExecutionUUID executionUUID;
 
     @Override
     public TestCaseExecution runTestCase(TestCaseExecution tCExecution) {
@@ -51,55 +54,25 @@ public class RunTestCaseService implements IRunTestCaseService {
             //Start Execution (Checks and Creation of ID)
             tCExecution = executionStartService.startExecution(tCExecution);
 
-            //Execute TestCase in new thread if automated test with outputformat gui
-//        if (tCExecution.gettCase().getGroup().equals("AUTOMATED") &&
-//                tCExecution.getOutputFormat().equals("gui")){
-//        start(tCExecution);
-//        }else{
+//          Execute TestCase in new thread if automated test with outputformat gui
+          if (tCExecution.gettCase().getGroup().equals("AUTOMATED") &&
+                tCExecution.getOutputFormat().equals("gui")){
+          tCExecution = executionRunService.executeAsynchroneouslyTestCase(tCExecution);
+          }else{
             tCExecution = executionRunService.executeTestCase(tCExecution);
-//        }
-        } catch (Exception ex) {
+          }
+        } catch (CerberusException ex) {
             MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_CERBERUS);
-            mes.setDescription(mes.getDescription().replaceAll("%MES%", "Exception " + ex.getMessage()));
-
+            mes.setDescription(mes.getDescription().replaceAll("%MES%", "Exception " + ex.getMessageError().getDescription()));
             tCExecution.setResultMessage(mes);
-            Logger.getLogger(RunTestCaseService.class.getName()).log(java.util.logging.Level.SEVERE, "CERBERUS FATAL ERROR Exception ", ex);
-        } catch (Throwable t) {
-            MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_CERBERUS);
-            mes.setDescription(mes.getDescription().replaceAll("%MES%", "Throwable Exception " + t.getMessage()));
-
-            tCExecution.setResultMessage(mes);
-            Logger.getLogger(RunTestCaseService.class.getName()).log(java.util.logging.Level.SEVERE, "CERBERUS FATAL ERROR Throwable Exception ", t);
         } finally {
             // stop execution of the test case and collect data in all case.
-            tCExecution = executionRunService.stopTestCase(tCExecution);
+            //System.out.print(tCExecution.getExecutionUUID());
+            executionUUID.removeExecutionUUID(tCExecution.getExecutionUUID());
+            //tCExecution = executionRunService.stopTestCase(tCExecution);
         }
 
 
         return tCExecution;
     }
-
-    /*
-     public void start(TestCaseExecution tCExecution) {
-     Thread t = new Thread(new RunInNewThread(tCExecution));
-     t.start();
-     }
-
-     public class RunInNewThread implements Runnable {
-
-     TestCaseExecution tce;
-     public RunInNewThread(TestCaseExecution tce) {
-     this.tce = tce;
-     }
-
-     public void start() {
-     executionRunService.executeTestCase(tce);
-     }
-
-     @Override
-     public void run() {
-     executionRunService.executeTestCase(tce);
-     }
-     }
-     */
 }

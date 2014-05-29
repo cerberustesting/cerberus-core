@@ -24,6 +24,7 @@ import java.util.logging.Logger;
 import org.apache.log4j.Level;
 import org.cerberus.entity.CountryEnvParam;
 import org.cerberus.entity.CountryEnvironmentApplication;
+import org.cerberus.entity.ExecutionUUID;
 import org.cerberus.entity.Invariant;
 import org.cerberus.entity.MessageGeneral;
 import org.cerberus.entity.MessageGeneralEnum;
@@ -41,6 +42,7 @@ import org.cerberus.service.ITestCaseService;
 import org.cerberus.serviceEngine.IExecutionCheckService;
 import org.cerberus.serviceEngine.IExecutionStartService;
 import org.cerberus.serviceEngine.ISeleniumService;
+import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -70,20 +72,23 @@ public class ExecutionStartService implements IExecutionStartService{
     private IFactoryCountryEnvironmentApplication factorycountryEnvironmentApplication;
     @Autowired
     private IInvariantService invariantService;
+    @Autowired
+    ExecutionUUID executionUUIDObject;
+    
     
     @Override
-    public TestCaseExecution startExecution(TestCaseExecution tCExecution) {
+    public TestCaseExecution startExecution(TestCaseExecution tCExecution) throws CerberusException {
         /**
          * Start timestamp.
          */
         long executionStart = new Date().getTime();
         MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Initializing Start Timestamp : " + executionStart);
         tCExecution.setStart(executionStart);
+        
 
         /**
          * Checking the parameters.
          */
-        tCExecution.setResultMessage(new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_CHECKINGPARAMETERS));
         MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Checking the parameters.");
         Invariant myInvariant;
         try {
@@ -328,12 +333,24 @@ public class ExecutionStartService implements IExecutionStartService{
             }
 
             MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Application is GUI. Trying to reach selenium server.");
-            if (!this.seleniumService.isSeleniumServerReachable(tCExecution.getIp(), tCExecution.getPort())) {
-                tCExecution.setResultMessage(new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_SELENIUM_COULDNOTCONNECT));
-                tCExecution.getResultMessage().setDescription(tCExecution.getResultMessage().getDescription().replaceAll("%SSIP%", tCExecution.getIp()));
-                tCExecution.getResultMessage().setDescription(tCExecution.getResultMessage().getDescription().replaceAll("%SSPORT%", tCExecution.getPort()));
-                return tCExecution;
+         
+         /**
+         * Start Selenium server
+         */
+            String url = ParameterParserUtil.parseStringParam(tCExecution.getCountryEnvironmentApplication().getIp() + tCExecution.getCountryEnvironmentApplication().getUrl(), "");
+            String login = ParameterParserUtil.parseStringParam(tCExecution.getCountryEnvironmentApplication().getUrlLogin(), "");
+            MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Starting Selenium Server.");
+            
+            try{
+            this.seleniumService.startSeleniumServer(tCExecution, tCExecution.getSeleniumIP(), tCExecution.getSeleniumPort(), tCExecution.getBrowser(),tCExecution.getVersion(),tCExecution.getPlatform(), url, login, tCExecution.getVerbose(), tCExecution.getCountry());
+            } catch (CerberusException ex) {
+                MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_BROWSER_NOT_SUPPORTED);
+                mes.setDescription(mes.getDescription().replaceAll("%BROWSER%", ex.getMessage()));
+                tCExecution.setResultMessage(mes);
+                Logger.getLogger(RunTestCaseService.class.getName()).log(java.util.logging.Level.WARNING, mes.getDescription());
+                throw new CerberusException(ex.getMessageError());
             }
+            
         }
 
         /**
@@ -342,12 +359,14 @@ public class ExecutionStartService implements IExecutionStartService{
         tCExecution.setResultMessage(new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_CREATINGRUNID));
         MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Registering Execution ID on database");
         long runID = this.testCaseExecutionService.registerRunID(tCExecution);
+        executionUUIDObject.setExecutionUUID(tCExecution.getExecutionUUID(), runID);
         MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, tCExecution.getId() + " - RunID Registered on database.");
         if (runID <= 0) {
             tCExecution.setResultMessage(new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_COULDNOTCREATE_RUNID));
             return tCExecution;
         }
     
+        tCExecution.setResultMessage(new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_APPLICATION_NOT_FOUND));
         return tCExecution;
     }
     

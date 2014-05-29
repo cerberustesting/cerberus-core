@@ -19,67 +19,33 @@
  */
 package org.cerberus.serviceEngine.impl;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.Date;
 import java.util.List;
-import java.util.Random;
 import java.util.logging.Logger;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.soap.MessageFactory;
-import javax.xml.soap.MimeHeaders;
-import javax.xml.soap.SOAPBody;
-import javax.xml.soap.SOAPConnection;
-import javax.xml.soap.SOAPConnectionFactory;
-import javax.xml.soap.SOAPConstants;
-import javax.xml.soap.SOAPException;
-import javax.xml.soap.SOAPMessage;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
 import org.apache.log4j.Level;
-import org.cerberus.dao.ITestCaseExecutionDataDAO;
-import org.cerberus.entity.CountryEnvironmentDatabase;
 import org.cerberus.entity.MessageEvent;
 import org.cerberus.entity.MessageEventEnum;
-import org.cerberus.entity.MessageGeneral;
-import org.cerberus.entity.MessageGeneralEnum;
 import org.cerberus.entity.Property;
 import org.cerberus.entity.TestCaseCountryProperties;
 import org.cerberus.entity.TestCaseExecution;
 import org.cerberus.entity.TestCaseExecutionData;
 import org.cerberus.entity.TestCaseStepActionExecution;
 import org.cerberus.entity.SoapLibrary;
-import org.cerberus.exception.CerberusEventException;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.log.MyLogger;
-import org.cerberus.refactor.GetConnectionPoolName;
-import org.cerberus.service.ICountryEnvironmentDatabaseService;
 import org.cerberus.service.ISoapLibraryService;
 import org.cerberus.service.ISqlLibraryService;
-import org.cerberus.service.ITestCaseExecutionService;
 import org.cerberus.service.ITestDataService;
-import org.cerberus.serviceEngine.IConnectionPoolDAO;
 import org.cerberus.serviceEngine.IPropertyService;
+import org.cerberus.serviceEngine.ISQLService;
 import org.cerberus.serviceEngine.ISeleniumService;
+import org.cerberus.serviceEngine.ISoapService;
 import org.cerberus.util.DateUtil;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
 import org.openqa.selenium.NoSuchElementException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.util.HtmlUtils;
-import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
 
 /**
  * {Insert class description here}
@@ -97,41 +63,11 @@ public class PropertyService implements IPropertyService {
     @Autowired
     private ISoapLibraryService soapLibraryService;
     @Autowired
-    private IConnectionPoolDAO connectionPoolDAO;
-    @Autowired
-    private ICountryEnvironmentDatabaseService countryEnvironmentDatabaseService;
-    @Autowired
-    private ITestCaseExecutionDataDAO testCaseExecutionDataDAO;
-    @Autowired
-    private ITestCaseExecutionService testCaseExecutionService;
-    @Autowired
     private ITestDataService testDataService;
-
-    /**
-     * On chercher le premier chiffre entre crochet le ? dans le premier groupe
-     * permet de s'arrêter à la première regexp trouvée
-     */
-    private final static Pattern patCount = Pattern.compile("(.*?)(\\[\\d*\\]+)(.*)");
-
-    private final static Pattern patReplace = Pattern.compile("(\\[\\d*\\]+)");
-
-    /**
-     * Pattern pour détecter le début d'une requête SOAP REDOUTE qui lance une
-     * requête sur le MF
-     */
-    private final static Pattern patExec = Pattern.compile("(?s)<(.*)(ExecuteSQLRequestRequest_1.0)(.*)ExecuteSQLRequestRequest_1.0>");
-
-    /**
-     * Pattern pour détecter le header d'une requête SOAP REDOUTE qui lance une
-     * requête sur le MF
-     */
-    private final static Pattern patHead = Pattern.compile("(?s)<(.*)(Header)(.*)</Header>");
-
-    /**
-     * Pattern pour détecter la balise Environment à l'intérieur d'une requête
-     * SOAP REDOUTE qui lance une requête sur le MF
-     */
-    private final static Pattern patEnvi = Pattern.compile("<Environment>(.*)</Environment>");
+    @Autowired
+    private ISoapService soapService;
+    @Autowired
+    private ISQLService sQLService;
 
     @Override
     public TestCaseExecutionData calculateProperty(TestCaseExecutionData testCaseExecutionData, TestCaseStepActionExecution testCaseStepActionExecution, TestCaseCountryProperties testCaseCountryProperty) {
@@ -140,171 +76,45 @@ public class PropertyService implements IPropertyService {
 
         TestCaseExecution tCExecution = testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution();
 
+        /**
+         * Decode Property replacing properties encaplsulated with %
+         */
         if (testCaseCountryProperty.getValue1().contains("%")) {
             String decodedValue = this.decodeValue(testCaseCountryProperty.getValue1(), testCaseStepActionExecution.getTestCaseExecutionDataList(), tCExecution);
             testCaseExecutionData.setValue(decodedValue);
             testCaseCountryProperty.setValue1(decodedValue);
         }
 
-        if ((testCaseCountryProperty.getType().equals("executeSqlFromLib")) || (testCaseCountryProperty.getType().equals("executeSql"))) {
-            if (testCaseCountryProperty.getType().equals("executeSqlFromLib")) {
-                try {
-                    String script = this.sqlLibraryService.findSqlLibraryByKey(testCaseCountryProperty.getValue1()).getScript();
-                    testCaseExecutionData.setValue(script);
-                } catch (CerberusException ex) {
-                    Logger.getLogger(PropertyService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-                    res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_SQL_SQLLIB_NOTEXIT);
-                    res.setDescription(res.getDescription().replaceAll("%SQLLIB%", testCaseCountryProperty.getValue1()));
-                    testCaseExecutionData.setPropertyResultMessage(res);
-                    testCaseExecutionData.setEnd(new Date().getTime());
-                    return testCaseExecutionData;
-                }
-            }
-
-            testCaseExecutionData = this.calculateOnDatabase(testCaseExecutionData, testCaseCountryProperty, tCExecution);
-
-        } else if (testCaseCountryProperty.getType().equals("text")) {
-            if (Property.NATURE_RANDOM.equals(testCaseCountryProperty.getNature())
-                    //TODO CTE Voir avec B. Civel "RANDOM_NEW"
-                    || (testCaseCountryProperty.getNature().equals(Property.NATURE_RANDOMNEW))) {
-                if (testCaseCountryProperty.getLength() == 0) {
-                    res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_TEXTRANDOMLENGHT0);
-                    testCaseExecutionData.setPropertyResultMessage(res);
-                } else {
-                    String charset;
-                    if (testCaseCountryProperty.getValue1() != null && !"".equals(testCaseCountryProperty.getValue1().trim())) {
-                        charset = testCaseCountryProperty.getValue1();
-                    } else {
-                        charset = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-                    }
-                    String value = StringUtil.getRandomString(testCaseCountryProperty.getLength(), charset);
-                    testCaseExecutionData.setValue(value);
-                    res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_RANDOM);
-                    res.setDescription(res.getDescription().replaceAll("%VALUE%", ParameterParserUtil.securePassword(value, testCaseCountryProperty.getProperty())));
-                    testCaseExecutionData.setPropertyResultMessage(res);
-//                    if (testCaseCountryProperty.getNature().equals("RANDOM_NEW")) {
-//                        //TODO check if value exist on DB ( used in another test case of the revision )
-//                    }
-                }
-            } else {
-                MyLogger.log(PropertyService.class.getName(), Level.DEBUG, "Setting value : " + testCaseCountryProperty.getValue1());
-                String value = testCaseCountryProperty.getValue1();
-                testCaseExecutionData.setValue(value);
-                res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_TEXT);
-                res.setDescription(res.getDescription().replaceAll("%VALUE%", ParameterParserUtil.securePassword(value, testCaseCountryProperty.getProperty())));
-                testCaseExecutionData.setPropertyResultMessage(res);
-            }
-
-        } else if (testCaseCountryProperty.getType().equals("getFromHtmlVisible")) {
-            try {
-                String valueFromHTML = this.seleniumService.getValueFromHTMLVisible(testCaseCountryProperty.getValue1());
-                if (valueFromHTML != null) {
-                    testCaseExecutionData.setValue(valueFromHTML);
-                    res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_HTMLVISIBLE);
-                    res.setDescription(res.getDescription().replaceAll("%ELEMENT%", testCaseCountryProperty.getValue1()));
-                    res.setDescription(res.getDescription().replaceAll("%VALUE%", valueFromHTML));
-                    testCaseExecutionData.setPropertyResultMessage(res);
-                }
-            } catch (NoSuchElementException exception) {
-                MyLogger.log(PropertyService.class.getName(), Level.ERROR, exception.toString());
-                res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_HTMLVISIBLE_ELEMENTDONOTEXIST);
-                res.setDescription(res.getDescription().replaceAll("%ELEMENT%", testCaseCountryProperty.getValue1()));
-                testCaseExecutionData.setPropertyResultMessage(res);
-            }
-        } else if (testCaseCountryProperty.getType().equals("getFromHtml")) {
-            try {
-                String valueFromHTML = this.seleniumService.getValueFromHTML(testCaseCountryProperty.getValue1());
-                if (valueFromHTML != null) {
-                    testCaseExecutionData.setValue(valueFromHTML);
-                    res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_HTML);
-                    res.setDescription(res.getDescription().replaceAll("%ELEMENT%", testCaseCountryProperty.getValue1()));
-                    res.setDescription(res.getDescription().replaceAll("%VALUE%", valueFromHTML));
-                    testCaseExecutionData.setPropertyResultMessage(res);
-                }
-            } catch (NoSuchElementException exception) {
-                MyLogger.log(PropertyService.class.getName(), Level.ERROR, exception.toString());
-                res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_HTML_ELEMENTDONOTEXIST);
-                res.setDescription(res.getDescription().replaceAll("%ELEMENT%", testCaseCountryProperty.getValue1()));
-                testCaseExecutionData.setPropertyResultMessage(res);
-            }
-        } else if (testCaseCountryProperty.getType().equals("getFromJS")) {
-            try {
-                String script = testCaseCountryProperty.getValue1();
-                String valueFromJS;
-                try {
-                    valueFromJS = this.seleniumService.getValueFromJS(script);
-                } catch (Exception e) {
-                    MyLogger.log(PropertyService.class.getName(), Level.ERROR, e.toString());
-                    valueFromJS = null;
-                }
-                if (valueFromJS != null) {
-                    testCaseExecutionData.setValue(valueFromJS);
-                    res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_HTML);
-                    res.setDescription(res.getDescription().replaceAll("%ELEMENT%", testCaseCountryProperty.getValue1()));
-                    res.setDescription(res.getDescription().replaceAll("%VALUE%", script));
-                    testCaseExecutionData.setPropertyResultMessage(res);
-                } else {
-                    res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED);
-                    testCaseExecutionData.setPropertyResultMessage(res);
-                }
-            } catch (NoSuchElementException exception) {
-                MyLogger.log(PropertyService.class.getName(), Level.ERROR, exception.toString());
-                res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_HTML_ELEMENTDONOTEXIST);
-                res.setDescription(res.getDescription().replaceAll("%ELEMENT%", testCaseCountryProperty.getValue1()));
-                testCaseExecutionData.setPropertyResultMessage(res);
-            }
-        } else if (testCaseCountryProperty.getType().equals("getFromTestData")) {
-            try {
-                String propertyValue = testCaseCountryProperty.getValue1();
-                String valueFromTestData = testDataService.findTestDataByKey(propertyValue).getValue();
-                if (valueFromTestData != null) {
-                    testCaseExecutionData.setValue(valueFromTestData);
-                    res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_TESTDATA);
-                    res.setDescription(res.getDescription().replaceAll("%PROPERTY%", propertyValue));
-                    res.setDescription(res.getDescription().replaceAll("%VALUE%", valueFromTestData));
-                    testCaseExecutionData.setPropertyResultMessage(res);
-                }
-            } catch (CerberusException exception) {
-                MyLogger.log(PropertyService.class.getName(), Level.ERROR, exception.toString());
-                res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_TESTDATA_PROPERTYDONOTEXIST);
-                res.setDescription(res.getDescription().replaceAll("%PROPERTY%", testCaseCountryProperty.getValue1()));
-                testCaseExecutionData.setPropertyResultMessage(res);
-            }
-        } else if (testCaseCountryProperty.getType().equals("getAttributeFromHtml")) {
-            try {
-                String valueFromHTML = this.seleniumService.getAttributeFromHtml(testCaseCountryProperty.getValue1(), testCaseCountryProperty.getValue2());
-                if (valueFromHTML != null) {
-                    testCaseExecutionData.setValue(valueFromHTML);
-                    res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETATTRIBUTEFROMHTML);
-                    res.setDescription(res.getDescription().replaceAll("%ELEMENT%", testCaseCountryProperty.getValue1()));
-                    res.setDescription(res.getDescription().replaceAll("%ATTRIBUTE%", testCaseCountryProperty.getValue2()));
-                    res.setDescription(res.getDescription().replaceAll("%VALUE%", valueFromHTML));
-                    testCaseExecutionData.setPropertyResultMessage(res);
-                }
-            } catch (NoSuchElementException exception) {
-                MyLogger.log(PropertyService.class.getName(), Level.ERROR, exception.toString());
-                res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_HTMLVISIBLE_ELEMENTDONOTEXIST);
-                res.setDescription(res.getDescription().replaceAll("%ELEMENT%", testCaseCountryProperty.getValue1()));
-                testCaseExecutionData.setPropertyResultMessage(res);
-            }
-        } else if ("executeSoapFromLib".equals(testCaseCountryProperty.getType())) {
-            try {
-                SoapLibrary soapLib = this.soapLibraryService.findSoapLibraryByKey(testCaseCountryProperty.getValue1());
-                if (soapLib != null) {
-
-                    String result = calculatePropertyFromSOAPResponse(soapLib, testCaseCountryProperty, tCExecution);
-                    if (result != null) {
-                        testCaseExecutionData.setValue(result);
-                        testCaseExecutionData.setPropertyResultMessage(new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_SOAP));
-                    }
-                }
-            } catch (CerberusException exception) {
-                MyLogger.log(PropertyService.class.getName(), Level.ERROR, exception.toString());
-                res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_TESTDATA_PROPERTYDONOTEXIST);
-                res.setDescription(res.getDescription().replaceAll("%PROPERTY%", testCaseCountryProperty.getValue1()));
-                testCaseExecutionData.setPropertyResultMessage(res);
-            }
-        } else {
+        /**
+         * Calculate Property regarding the type
+         */
+        if (testCaseCountryProperty.getType().equals("executeSqlFromLib")){
+            testCaseExecutionData = this.executeSqlFromLib(testCaseExecutionData, testCaseCountryProperty, tCExecution);
+        } 
+        else if (testCaseCountryProperty.getType().equals("executeSql")){
+            testCaseExecutionData = this.executeSql(testCaseExecutionData, testCaseCountryProperty, tCExecution);
+        }
+        else if (testCaseCountryProperty.getType().equals("text")) {
+            testCaseExecutionData = this.calculateText(testCaseExecutionData, testCaseCountryProperty);
+        }
+        else if (testCaseCountryProperty.getType().equals("getFromHtmlVisible")) {
+            testCaseExecutionData = this.getFromHtmlVIsible(testCaseExecutionData, tCExecution, testCaseCountryProperty);
+        }
+        else if (testCaseCountryProperty.getType().equals("getFromHtml")) {
+            testCaseExecutionData = this.getFromHTML(testCaseExecutionData, tCExecution, testCaseCountryProperty);
+        } 
+         else if (testCaseCountryProperty.getType().equals("getFromJS")) {
+             testCaseExecutionData = this.getFromJS(testCaseExecutionData, tCExecution, testCaseCountryProperty);
+         }
+         else if (testCaseCountryProperty.getType().equals("getFromTestData")) {
+             testCaseExecutionData = this.getFromTestData(testCaseExecutionData, tCExecution, testCaseCountryProperty);
+         }
+         else if (testCaseCountryProperty.getType().equals("getAttributeFromHtml")) {
+             testCaseExecutionData = this.getAttributeFromHtml(testCaseExecutionData, tCExecution, testCaseCountryProperty);
+         }
+         else if ("executeSoapFromLib".equals(testCaseCountryProperty.getType())) {
+             testCaseExecutionData = this.executeSoapFromLib(testCaseExecutionData, tCExecution, testCaseCountryProperty);
+         }else {
             res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_UNKNOWNPROPERTY);
             res.setDescription(res.getDescription().replaceAll("%PROPERTY%", testCaseCountryProperty.getType()));
         }
@@ -312,6 +122,7 @@ public class PropertyService implements IPropertyService {
         testCaseExecutionData.setEnd(new Date().getTime());
         return testCaseExecutionData;
     }
+    
 
     @Override
     public String decodeValue(String myString, List<TestCaseExecutionData> properties, TestCaseExecution tCExecution) {
@@ -357,401 +168,187 @@ public class PropertyService implements IPropertyService {
         return myString;
     }
 
-    private TestCaseExecutionData calculateOnDatabase(TestCaseExecutionData testCaseExecutionData, TestCaseCountryProperties testCaseProperties, TestCaseExecution tCExecution) {
-        String sql = testCaseProperties.getValue1();
-        String db = testCaseProperties.getDatabase();
-
-        String connectionName;
-        CountryEnvironmentDatabase countryEnvironmentDatabase;
-
+private TestCaseExecutionData executeSqlFromLib(TestCaseExecutionData testCaseExecutionData, TestCaseCountryProperties testCaseCountryProperty, TestCaseExecution tCExecution) {
         try {
-            countryEnvironmentDatabase = this.countryEnvironmentDatabaseService.findCountryEnvironmentDatabaseByKey(tCExecution.getApplication().getSystem(), testCaseProperties.getCountry(), tCExecution.getEnvironmentData(), db);
-            connectionName = countryEnvironmentDatabase.getConnectionPoolName();
+                    String script = this.sqlLibraryService.findSqlLibraryByKey(testCaseCountryProperty.getValue1()).getScript();
+                    testCaseExecutionData.setValue(script);
+                } catch (CerberusException ex) {
+                    Logger.getLogger(PropertyService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+                    MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_SQL_SQLLIB_NOTEXIT);
+                    res.setDescription(res.getDescription().replaceAll("%SQLLIB%", testCaseCountryProperty.getValue1()));
+                    testCaseExecutionData.setPropertyResultMessage(res);
+                    testCaseExecutionData.setEnd(new Date().getTime());
+                    return testCaseExecutionData;
+                }
+    testCaseExecutionData = this.executeSql(testCaseExecutionData, testCaseCountryProperty, tCExecution);
+    return testCaseExecutionData;    
+    }
 
-            if (!(StringUtil.isNullOrEmpty(connectionName))) {
-                try {
-                    List<String> list = this.connectionPoolDAO.queryDatabase(connectionName, sql, testCaseProperties.getRowLimit());
+    private TestCaseExecutionData executeSql(TestCaseExecutionData testCaseExecutionData, TestCaseCountryProperties testCaseCountryProperty, TestCaseExecution tCExecution) {
+        return sQLService.calculateOnDatabase(testCaseExecutionData, testCaseCountryProperty, tCExecution);
+}
 
-                    if (list != null && !list.isEmpty()) {
-                        if (testCaseProperties.getNature().equalsIgnoreCase(Property.NATURE_STATIC)) {
-                            MessageEvent mes = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_SQL);
-                            mes.setDescription(mes.getDescription().replaceAll("%DB%", db));
-                            mes.setDescription(mes.getDescription().replaceAll("%SQL%", sql));
-                            mes.setDescription(mes.getDescription().replaceAll("%JDBCPOOLNAME%", connectionName));
-                            testCaseExecutionData.setPropertyResultMessage(mes);
-                            testCaseExecutionData.setValue(list.get(0));
-
-                        } else if (testCaseProperties.getNature().equalsIgnoreCase(Property.NATURE_RANDOM)) {
-                            testCaseExecutionData.setValue(this.calculateNatureRandom(list, testCaseProperties.getRowLimit()));
-                            MessageEvent mes = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_SQL_RANDOM);
-                            mes.setDescription(mes.getDescription().replaceAll("%DB%", db));
-                            mes.setDescription(mes.getDescription().replaceAll("%SQL%", sql));
-                            mes.setDescription(mes.getDescription().replaceAll("%JDBCPOOLNAME%", connectionName));
-                            testCaseExecutionData.setPropertyResultMessage(mes);
-
-                        } else if (testCaseProperties.getNature().equalsIgnoreCase(Property.NATURE_RANDOMNEW)) {
-                            testCaseExecutionData.setValue(this.calculateNatureRandomNew(list, testCaseProperties.getProperty(), tCExecution));
-                            MessageEvent mes = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_SQL_RANDOM_NEW);
-                            mes.setDescription(mes.getDescription().replaceAll("%DB%", db));
-                            mes.setDescription(mes.getDescription().replaceAll("%SQL%", sql));
-                            mes.setDescription(mes.getDescription().replaceAll("%JDBCPOOLNAME%", connectionName));
-                            testCaseExecutionData.setPropertyResultMessage(mes);
-
-                        } else if (testCaseProperties.getNature().equalsIgnoreCase(Property.NATURE_NOTINUSE)) {
-                            testCaseExecutionData.setValue(this.calculateNatureNotInUse(list, testCaseProperties.getProperty(), tCExecution));
-                            MessageEvent mes = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_SQL_NOTINUSE);
-                            mes.setDescription(mes.getDescription().replaceAll("%DB%", db));
-                            mes.setDescription(mes.getDescription().replaceAll("%SQL%", sql));
-                            mes.setDescription(mes.getDescription().replaceAll("%JDBCPOOLNAME%", connectionName));
-                            testCaseExecutionData.setPropertyResultMessage(mes);
-
-                        }
+    private TestCaseExecutionData calculateText(TestCaseExecutionData testCaseExecutionData, TestCaseCountryProperties testCaseCountryProperty) {
+        if (Property.NATURE_RANDOM.equals(testCaseCountryProperty.getNature())
+                    //TODO CTE Voir avec B. Civel "RANDOM_NEW"
+                    || (testCaseCountryProperty.getNature().equals(Property.NATURE_RANDOMNEW))) {
+                if (testCaseCountryProperty.getLength() == 0) {
+                    MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_TEXTRANDOMLENGHT0);
+                    testCaseExecutionData.setPropertyResultMessage(res);
+                } else {
+                    String charset;
+                    if (testCaseCountryProperty.getValue1() != null && !"".equals(testCaseCountryProperty.getValue1().trim())) {
+                        charset = testCaseCountryProperty.getValue1();
                     } else {
-                        MessageEvent mes = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_SQL_NODATA);
-                        mes.setDescription(mes.getDescription().replaceAll("%DB%", db));
-                        mes.setDescription(mes.getDescription().replaceAll("%SQL%", sql));
-                        mes.setDescription(mes.getDescription().replaceAll("%JDBCPOOLNAME%", connectionName));
-                        testCaseExecutionData.setPropertyResultMessage(mes);
+                        charset = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
                     }
-                } catch (CerberusEventException ex) {
-                    MessageEvent mes = ex.getMessageError();
-                    testCaseExecutionData.setPropertyResultMessage(mes);
+                    String value = StringUtil.getRandomString(testCaseCountryProperty.getLength(), charset);
+                    testCaseExecutionData.setValue(value);
+                    MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_RANDOM);
+                    res.setDescription(res.getDescription().replaceAll("%VALUE%", ParameterParserUtil.securePassword(value, testCaseCountryProperty.getProperty())));
+                    testCaseExecutionData.setPropertyResultMessage(res);
+//                    if (testCaseCountryProperty.getNature().equals("RANDOM_NEW")) {
+//                        //TODO check if value exist on DB ( used in another test case of the revision )
+//                    }
                 }
-
             } else {
-                MessageEvent mes = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_SQL_EMPTYJDBCPOOL);
-                mes.setDescription(mes.getDescription().replaceAll("%SYSTEM%", tCExecution.getApplication().getSystem()));
-                mes.setDescription(mes.getDescription().replaceAll("%COUNTRY%", testCaseProperties.getCountry()));
-                mes.setDescription(mes.getDescription().replaceAll("%ENV%", tCExecution.getEnvironmentData()));
-                mes.setDescription(mes.getDescription().replaceAll("%DB%", db));
-                testCaseExecutionData.setPropertyResultMessage(mes);
+                MyLogger.log(PropertyService.class.getName(), Level.DEBUG, "Setting value : " + testCaseCountryProperty.getValue1());
+                String value = testCaseCountryProperty.getValue1();
+                testCaseExecutionData.setValue(value);
+                MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_TEXT);
+                res.setDescription(res.getDescription().replaceAll("%VALUE%", ParameterParserUtil.securePassword(value, testCaseCountryProperty.getProperty())));
+                testCaseExecutionData.setPropertyResultMessage(res);
             }
-        } catch (CerberusException ex) {
-            MessageEvent mes = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_SQL_JDBCPOOLNOTCONFIGURED);
-            mes.setDescription(mes.getDescription().replaceAll("%SYSTEM%", tCExecution.getApplication().getSystem()));
-            mes.setDescription(mes.getDescription().replaceAll("%COUNTRY%", testCaseProperties.getCountry()));
-            mes.setDescription(mes.getDescription().replaceAll("%ENV%", tCExecution.getEnvironmentData()));
-            mes.setDescription(mes.getDescription().replaceAll("%DB%", db));
-            testCaseExecutionData.setPropertyResultMessage(mes);
-        }
-
-        return testCaseExecutionData;
+    return testCaseExecutionData;  
     }
 
-    private String calculateNatureRandom(List<String> list, int rowLimit) {
-        /* Limit | List Size  =>  Used in Random
-         0   |    10      =>    10
-         5   |    10      =>     5
-         10  |     7      =>     7
-         */
-        Random random = new Random();
-        if (!list.isEmpty()) {
-            if (rowLimit == 0) {
-                return list.get(random.nextInt(list.size()));
-            } else {
-                int index = Math.min(list.size(), rowLimit);
-                return list.get(random.nextInt(index));
-            }
-        }
-        return null;
-    }
-
-    private String calculateNatureRandomNew(List<String> list, String propName, TestCaseExecution tCExecution) {
-        //TODO clean code
-        List<String> pastValues = this.testCaseExecutionDataDAO.getPastValuesOfProperty(propName, tCExecution.getTest(),
-                tCExecution.getTestCase(), tCExecution.getCountryEnvParam().getBuild(), tCExecution.getEnvironmentData(),
-                tCExecution.getCountry());
-
-        if (pastValues.size() > 0) {
-            for (String value : list) {
-                if (!pastValues.contains(value)) {
-                    return value;
-                }
-            }
-        } else {
-            return list.get(0);
-        }
-        return null;
-    }
-
-    private String calculateNatureNotInUse(List<String> list, String propName, TestCaseExecution tCExecution) {
+    private TestCaseExecutionData getFromHTML(TestCaseExecutionData testCaseExecutionData, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseCountryProperty) {
         try {
-//            List<TCExecution> exelist = this.testCaseExecutionService.findTCExecutionbyCriteria1(DateUtil.getMySQLTimestampTodayDeltaMinutes(10), "%", "%", "%", "%", "%", "PE", "%");
-            this.testCaseExecutionService.findTCExecutionbyCriteria1(DateUtil.getMySQLTimestampTodayDeltaMinutes(10), "%", "%", "%", "%", "%", "PE", "%");
-            // boucle sur list
-            for (String value : list) {
-                /**
-                 * TODO
-                 */
-//        List<TestCaseExecutionData> pastValues = this.testCaseExecutionDataService.findTestCaseExecutionDataByCriteria1(propName, value, exelist);
+                String valueFromHTML = this.seleniumService.getValueFromHTML(tCExecution.getSelenium(), testCaseCountryProperty.getValue1());
+                if (valueFromHTML != null) {
+                    testCaseExecutionData.setValue(valueFromHTML);
+                    MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_HTML);
+                    res.setDescription(res.getDescription().replaceAll("%ELEMENT%", testCaseCountryProperty.getValue1()));
+                    res.setDescription(res.getDescription().replaceAll("%VALUE%", valueFromHTML));
+                    testCaseExecutionData.setPropertyResultMessage(res);
+                }
+            } catch (NoSuchElementException exception) {
+                MyLogger.log(PropertyService.class.getName(), Level.ERROR, exception.toString());
+                MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_HTML_ELEMENTDONOTEXIST);
+                res.setDescription(res.getDescription().replaceAll("%ELEMENT%", testCaseCountryProperty.getValue1()));
+                testCaseExecutionData.setPropertyResultMessage(res);
             }
-        } catch (CerberusException ex) {
-            return list.get(0);
-        }
-
-        return null;
+        return testCaseExecutionData;  
     }
 
-    private String calculateNatureNotInUseNew(List<String> list, String propName, TestCaseExecution tCExecution) {
-        boolean notFound = true;
-        TestCaseExecutionData pastValue;
-
+    private TestCaseExecutionData getFromJS(TestCaseExecutionData testCaseExecutionData, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseCountryProperty) {
         try {
-            List<TestCaseExecution> testCaseExecutionsLastTenMinutes = this.testCaseExecutionService.findTCExecutionbyCriteria1(DateUtil.getMySQLTimestampTodayDeltaMinutes(10), "%", "%", "%", "%", "%", "PE", "%");
+                String script = testCaseCountryProperty.getValue1();
+                String valueFromJS;
+                try {
+                    valueFromJS = this.seleniumService.getValueFromJS(tCExecution.getSelenium(), script);
+                } catch (Exception e) {
+                    MyLogger.log(PropertyService.class.getName(), Level.ERROR, e.toString());
+                    valueFromJS = null;
+                }
+                if (valueFromJS != null) {
+                    testCaseExecutionData.setValue(valueFromJS);
+                    MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_HTML);
+                    res.setDescription(res.getDescription().replaceAll("%ELEMENT%", testCaseCountryProperty.getValue1()));
+                    res.setDescription(res.getDescription().replaceAll("%VALUE%", script));
+                    testCaseExecutionData.setPropertyResultMessage(res);
+                } else {
+                    MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED);
+                    testCaseExecutionData.setPropertyResultMessage(res);
+                }
+            } catch (NoSuchElementException exception) {
+                MyLogger.log(PropertyService.class.getName(), Level.ERROR, exception.toString());
+                MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_HTML_ELEMENTDONOTEXIST);
+                res.setDescription(res.getDescription().replaceAll("%ELEMENT%", testCaseCountryProperty.getValue1()));
+                testCaseExecutionData.setPropertyResultMessage(res);
+            }
+        return testCaseExecutionData;  
+    }
 
-            // loop on list
-            for (String value : list) {
-                if (value != null) {
-                    // loop on past execution.
-                    for (TestCaseExecution testCaseExecution : testCaseExecutionsLastTenMinutes) {
-                        // retrieve past value
-                        pastValue = this.testCaseExecutionDataDAO.findTestCaseExecutionDataByKey(testCaseExecution.getId(), propName);
+    private TestCaseExecutionData getFromTestData(TestCaseExecutionData testCaseExecutionData, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseCountryProperty) {
+        try {
+                String propertyValue = testCaseCountryProperty.getValue1();
+                String valueFromTestData = testDataService.findTestDataByKey(propertyValue).getValue();
+                if (valueFromTestData != null) {
+                    testCaseExecutionData.setValue(valueFromTestData);
+                    MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_TESTDATA);
+                    res.setDescription(res.getDescription().replaceAll("%PROPERTY%", propertyValue));
+                    res.setDescription(res.getDescription().replaceAll("%VALUE%", valueFromTestData));
+                    testCaseExecutionData.setPropertyResultMessage(res);
+                }
+            } catch (CerberusException exception) {
+                MyLogger.log(PropertyService.class.getName(), Level.ERROR, exception.toString());
+                MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_TESTDATA_PROPERTYDONOTEXIST);
+                res.setDescription(res.getDescription().replaceAll("%PROPERTY%", testCaseCountryProperty.getValue1()));
+                testCaseExecutionData.setPropertyResultMessage(res);
+            }
+        return testCaseExecutionData;  
+    }
 
-                        // compare it, if equal
-                        if (value.equals(pastValue.getValue())) {
-                            // modify notFound boolean
-                            notFound = false;
+    private TestCaseExecutionData getAttributeFromHtml(TestCaseExecutionData testCaseExecutionData, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseCountryProperty) {
+        try {
+                String valueFromHTML = this.seleniumService.getAttributeFromHtml(tCExecution.getSelenium(), testCaseCountryProperty.getValue1(), testCaseCountryProperty.getValue2());
+                if (valueFromHTML != null) {
+                    testCaseExecutionData.setValue(valueFromHTML);
+                    MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETATTRIBUTEFROMHTML);
+                    res.setDescription(res.getDescription().replaceAll("%ELEMENT%", testCaseCountryProperty.getValue1()));
+                    res.setDescription(res.getDescription().replaceAll("%ATTRIBUTE%", testCaseCountryProperty.getValue2()));
+                    res.setDescription(res.getDescription().replaceAll("%VALUE%", valueFromHTML));
+                    testCaseExecutionData.setPropertyResultMessage(res);
+                }
+            } catch (NoSuchElementException exception) {
+                MyLogger.log(PropertyService.class.getName(), Level.ERROR, exception.toString());
+                MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_HTMLVISIBLE_ELEMENTDONOTEXIST);
+                res.setDescription(res.getDescription().replaceAll("%ELEMENT%", testCaseCountryProperty.getValue1()));
+                testCaseExecutionData.setPropertyResultMessage(res);
+            }
+        return testCaseExecutionData;  
+    }
 
-                            // and break loop
-                            break;
-                        }
-                    }
+    private TestCaseExecutionData executeSoapFromLib(TestCaseExecutionData testCaseExecutionData, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseCountryProperty) {
+        try {
+                SoapLibrary soapLib = this.soapLibraryService.findSoapLibraryByKey(testCaseCountryProperty.getValue1());
+                if (soapLib != null) {
 
-                    // if value not found in the last 10 minutes execution, we use it now !
-                    if (notFound) {
-                        return value;
+                    String result = soapService.calculatePropertyFromSOAPResponse(soapLib, testCaseCountryProperty, tCExecution);
+                    if (result != null) {
+                        testCaseExecutionData.setValue(result);
+                        testCaseExecutionData.setPropertyResultMessage(new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_SOAP));
                     }
                 }
+            } catch (CerberusException exception) {
+                MyLogger.log(PropertyService.class.getName(), Level.ERROR, exception.toString());
+                MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_TESTDATA_PROPERTYDONOTEXIST);
+                res.setDescription(res.getDescription().replaceAll("%PROPERTY%", testCaseCountryProperty.getValue1()));
+                testCaseExecutionData.setPropertyResultMessage(res);
             }
-        } catch (CerberusException exception) {
-            MyLogger.log(PropertyService.class.getName(), Level.ERROR, exception.toString());
-        }
-
-        // if issue during search or if all are already used, we use the first
-        return list.get(0);
+        return testCaseExecutionData;  
     }
-
-    /**
-     * Calcule d'une propriété depuis une requête SOAP.
-     *
-     * @param pSoapLibrary La librarie SOAP à exécuter
-     * @param pNature Nature de la propriété à calculé STATIC/RANDOM
-     * @thorw CerberusException
-     * @return String
-     */
-    @Override
-    public String calculatePropertyFromSOAPResponse(final SoapLibrary pSoapLibrary, TestCaseCountryProperties pTestCaseCountry, TestCaseExecution pTestCaseExecution) throws CerberusException {
-        String result = null;
-        // Test des inputs nécessaires.
-        if (pSoapLibrary != null && pSoapLibrary.getEnvelope() != null && pSoapLibrary.getServicePath() != null && pSoapLibrary.getParsingAnswer() != null && pSoapLibrary.getMethod() != null) {
-
-            SOAPConnectionFactory soapConnectionFactory;
-
-            SOAPConnection soapConnection;
-            try {
-                soapConnectionFactory = SOAPConnectionFactory
-                        .newInstance();
-                soapConnection = soapConnectionFactory.createConnection();
-
-                // Création de la requete SOAP
-                SOAPMessage input = createSOAPRequest(pSoapLibrary, pTestCaseCountry, pTestCaseExecution);
-
-                // Appel du WS
-                SOAPMessage soapResponse = soapConnection.call(input, pSoapLibrary.getServicePath());
-
-                // Traitement de la réponse SOAP à l'aide d'une expression Xpath stockée en BDD
-                result = parseSOAPResponse(soapResponse, pSoapLibrary.getParsingAnswer(), pTestCaseCountry.getNature());
-
-                soapConnection.close();
-
-            } catch (SOAPException e) {
-                MyLogger.log(PropertyService.class.getName(), Level.ERROR, e.toString());
-                throw new CerberusException(new MessageGeneral(MessageGeneralEnum.EXECUTION_FA));
-            } catch (IOException e) {
-                MyLogger.log(PropertyService.class.getName(), Level.ERROR, e.toString());
-                throw new CerberusException(new MessageGeneral(MessageGeneralEnum.EXECUTION_FA));
-            } catch (SAXException e) {
-                MyLogger.log(PropertyService.class.getName(), Level.ERROR, e.toString());
-                throw new CerberusException(new MessageGeneral(MessageGeneralEnum.EXECUTION_FA));
-            } catch (ParserConfigurationException e) {
-                MyLogger.log(PropertyService.class.getName(), Level.ERROR, e.toString());
-                throw new CerberusException(new MessageGeneral(MessageGeneralEnum.EXECUTION_FA));
-            }
-        }
-        return result;
-    }
-
-    /**
-     * Méthode qui parse la réponse d'une requête soap.
-     * Retourne la première bonne réponse ou la nième (en fonction de la nature).
-     * @param pSoapResponse réponse de la requête SOAP
-     * @param pRule règle de parsing de la réponse
-     * @param pNature STATIC ou RANDOM
-     * @return String
-     */
-    private String parseSOAPResponse(final SOAPMessage pSoapResponse, final String pRule, String pNature) {
-        String result = null;
-        if (pSoapResponse != null) {
-            DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
-
-            try {
-                DocumentBuilder builder = builderFactory.newDocumentBuilder();
-
-                ByteArrayOutputStream out = new ByteArrayOutputStream();
-
-                pSoapResponse.writeTo(out);
-
-                InputStream is = new ByteArrayInputStream(out.toByteArray());
-
-                // Parse la réponse SOAP
-                Document xmlDocument = builder.parse(is);
-
-                XPath xPath = XPathFactory.newInstance().newXPath();
-
-                // Pour le cas où la règle de parsing ne change pas
-                String newRule = pRule;
-
-                // La nature demande de changer la règle de parsing
-                if (pNature != null && Property.NATURE_RANDOM.equals(pNature)) {
-                    Double count = 0.0;
-
-                    Matcher mat = patCount.matcher(pRule);
-
-                    String ruleCount = "";
-
-                    while (mat.find()) {
-                        // On prend le premier groupe pour compter le nombre de résultat dans la réponse SOAP
-                        ruleCount = mat.group(1);
-
-                        // Détermine le nombre de résultat retourné par la requete SOAP
-                        count = (Double) xPath.compile("count(" + ruleCount + ")").evaluate(xmlDocument, XPathConstants.NUMBER);
-                    
-                        // Détermine un nombre entre 1 et index qui est le nombre total de résultat de la requête SOAP
-                        int randomNum = new Random().nextInt(count.intValue()) + 1;
-                        // Détermine la nouvelle règle de parsing de la réponse
-                        Matcher mat2 = patReplace.matcher(pRule);
-                        while (mat2.find()) {
-                            newRule = mat2.replaceFirst("[" + randomNum + "]");
-                            
-                            break;
-                        }
-
-                        break;
-                    }
+    
+    private TestCaseExecutionData getFromHtmlVIsible(TestCaseExecutionData testCaseExecutionData, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseCountryProperty) {
+        try {
+                String valueFromHTML = this.seleniumService.getValueFromHTMLVisible(tCExecution.getSelenium(), testCaseCountryProperty.getValue1());
+                if (valueFromHTML != null) {
+                    testCaseExecutionData.setValue(valueFromHTML);
+                    MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_HTMLVISIBLE);
+                    res.setDescription(res.getDescription().replaceAll("%ELEMENT%", testCaseCountryProperty.getValue1()));
+                    res.setDescription(res.getDescription().replaceAll("%VALUE%", valueFromHTML));
+                    testCaseExecutionData.setPropertyResultMessage(res);
                 }
-                NodeList nodeList2 = (NodeList) xPath.compile(newRule)
-                        .evaluate(xmlDocument, XPathConstants.NODESET);
-
-                StringBuilder s = new StringBuilder();
-                for (int i = 0; i < nodeList2.getLength(); i++) {
-                    // On retourne le premier noeud non null trouvé 
-                    if (nodeList2.item(i).getFirstChild().getNodeValue() != null) {
-                        s.append(nodeList2.item(i).getFirstChild().getNodeValue());
-                    }
-                }
-
-                result = s.toString();
-                out.close();
-                is.close();
-            } catch (SOAPException e) {
-                MyLogger.log(PropertyService.class.getName(), Level.ERROR, e.toString());
-            } catch (SAXParseException e) {
-                MyLogger.log(PropertyService.class.getName(), Level.ERROR, e.toString());
-            } catch (SAXException e) {
-                MyLogger.log(PropertyService.class.getName(), Level.ERROR, e.toString());
-            } catch (IOException e) {
-                MyLogger.log(PropertyService.class.getName(), Level.ERROR, e.toString());
-            } catch (XPathExpressionException e) {
-                MyLogger.log(PropertyService.class.getName(), Level.ERROR, e.toString());
-            } catch (ParserConfigurationException e) {
-                MyLogger.log(PropertyService.class.getName(), Level.ERROR, e.toString());
+            } catch (NoSuchElementException exception) {
+                MyLogger.log(PropertyService.class.getName(), Level.ERROR, exception.toString());
+                MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_HTMLVISIBLE_ELEMENTDONOTEXIST);
+                res.setDescription(res.getDescription().replaceAll("%ELEMENT%", testCaseCountryProperty.getValue1()));
+                testCaseExecutionData.setPropertyResultMessage(res);
             }
-        }
-        return result;
+        return testCaseExecutionData;  
     }
 
-    /**
-     * Contruction dynamique de la requête SOAP
-     *
-     * @param pBody
-     * @param method
-     * @return SOAPMessage
-     * @throws SOAPException
-     * @throws IOException
-     * @throws SAXException
-     * @throws ParserConfigurationException
-     */
-    private SOAPMessage createSOAPRequest(final SoapLibrary pSoapLibrary, TestCaseCountryProperties pTestCaseCountry, TestCaseExecution pTestCaseExecution) throws SOAPException, IOException, SAXException, ParserConfigurationException {
+    
 
-        // Précise la version du protocole SOAP à utiliser (nécessaire pour les appels de WS Externe)
-        MessageFactory messageFactory = MessageFactory.newInstance(SOAPConstants.SOAP_1_2_PROTOCOL);
-
-        SOAPMessage soapMessage = messageFactory.createMessage();
-
-        MimeHeaders headers = soapMessage.getMimeHeaders();
-
-        // Précise la méthode du WSDL à interroger
-        headers.addHeader("SOAPAction", pSoapLibrary.getMethod());
-        // Encodage UTF-8
-        headers.addHeader("Content-Type", "text/xml;charset=UTF-8");
-
-        final SOAPBody soapBody = soapMessage.getSOAPBody();
-
-        // convert String into InputStream - traitement des caracères escapés > < ... (contraintes de l'affichage IHM)
-        String unescaped = HtmlUtils.htmlUnescape(pSoapLibrary.getEnvelope());
-
-        String unescapedEnv = checkEnvironment(unescaped, pTestCaseCountry, pTestCaseExecution);
-
-        InputStream is;
-
-        if (unescapedEnv != null) {
-            is = new ByteArrayInputStream(unescapedEnv.getBytes());
-            DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
-
-            // Important à laisser sinon KO
-            builderFactory.setNamespaceAware(true);
-            try {
-                DocumentBuilder builder = builderFactory.newDocumentBuilder();
-
-                Document document = builder.parse(is);
-
-                soapBody.addDocument(document);
-            } catch (ParserConfigurationException e) {
-                MyLogger.log(PropertyService.class.getName(), Level.ERROR, e.toString());
-            }
-            soapMessage.saveChanges();
-        }
-        return soapMessage;
-    }
-
-    private String checkEnvironment(final String pBody, TestCaseCountryProperties pTestCaseCountry, TestCaseExecution pTestCaseExecution) {
-        String result = null;
-        if (pBody != null) {
-            result = pBody;
-            Matcher matExec = patExec.matcher(pBody);
-            while (matExec.find()) {
-
-                Matcher matHead = patHead.matcher(pBody);
-                while (matHead.find()) {
-
-                    Matcher matEnvi = patEnvi.matcher(pBody);
-                    while (matEnvi.find()) {
-
-                        try {
-                            String s = countryEnvironmentDatabaseService.findCountryEnvironmentDatabaseByKey(pTestCaseExecution.getApplication().getSystem(), pTestCaseCountry.getCountry(), pTestCaseExecution.getEnvironment(), pTestCaseCountry.getDatabase()).getConnectionPoolName();
-                            String newString = matEnvi.replaceAll("<Environment>" + s + "</Environment>");
-                            result = newString;
-                        } catch (CerberusException ex) {
-                            Logger.getLogger(GetConnectionPoolName.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-                            result = null;
-                        }
-                        break;
-                    }
-                    break;
-                }
-                break;
-            }
-        }
-        return result;
-    }
 }

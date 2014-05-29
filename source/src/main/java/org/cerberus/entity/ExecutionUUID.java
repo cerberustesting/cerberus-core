@@ -17,17 +17,35 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.serviceEngine;
+package org.cerberus.entity;
 
-import org.cerberus.entity.TestCaseExecution;
-import org.cerberus.exception.CerberusException;
+import java.util.HashMap;
+import javax.annotation.PostConstruct;
+import org.springframework.stereotype.Component;
 
 /**
  *
  * @author bcivel
  */
-public interface IExecutionStartService {
+@Component
+public class ExecutionUUID {
+    private HashMap executionHashMap;
     
-    TestCaseExecution startExecution(TestCaseExecution tCExecution) throws CerberusException;
+    @PostConstruct
+    public void init(){
+    executionHashMap = new HashMap();
+    }
     
+    
+    public void setExecutionUUID(String UUID, long executionID){
+    executionHashMap.put(UUID, executionID);
+    }
+    
+    public void removeExecutionUUID(String uuid) {
+        executionHashMap.remove(uuid);
+    }
+
+    public Integer getExecutionID(String uuid) {
+        return (Integer) executionHashMap.get(uuid);
+    }
 }

@@ -47,9 +47,9 @@ import org.cerberus.service.impl.SoapLibraryService;
 import org.cerberus.service.impl.SqlLibraryService;
 import org.cerberus.service.impl.TestCaseService;
 import org.cerberus.service.impl.TestDataService;
-import org.cerberus.serviceEngine.IConnectionPoolDAO;
 import org.cerberus.serviceEngine.IPropertyService;
-import org.cerberus.serviceEngine.impl.ConnectionPoolDAO;
+import org.cerberus.serviceEngine.ISQLService;
+import org.cerberus.serviceEngine.ISoapService;
 import org.cerberus.serviceEngine.impl.PropertyService;
 import org.cerberus.util.StringUtil;
 import org.json.JSONArray;
@@ -88,10 +88,11 @@ public class CalculatePropertyForTestCase extends HttpServlet {
 
             } else if (type.equals("executeSoapFromLib")) {
                 ISoapLibraryService soapLibraryService = appContext.getBean(SoapLibraryService.class);
+                ISoapService soapService = appContext.getBean(ISoapService.class);
                 SoapLibrary soapLib = soapLibraryService.findSoapLibraryByKey(property);
                 if (soapLib != null) {
                     IPropertyService propertyService = appContext.getBean(PropertyService.class);
-                    result = propertyService.calculatePropertyFromSOAPResponse(soapLib, null, null);
+                    result = soapService.calculatePropertyFromSOAPResponse(soapLib, null, null);
                     description = soapLib.getDescription();
                 }
             } else {
@@ -126,8 +127,8 @@ public class CalculatePropertyForTestCase extends HttpServlet {
                         property = sl.getScript();
                     
                     if (!(StringUtil.isNullOrEmpty(connectionName)) && !(StringUtil.isNullOrEmpty(policy.sanitize(property)))) {
-                        IConnectionPoolDAO connectionPoolDAO = appContext.getBean(ConnectionPoolDAO.class);
-                        result = connectionPoolDAO.queryDatabase(connectionName, policy.sanitize(property), 1).get(0);
+                        ISQLService sqlService = appContext.getBean(ISQLService.class);
+                        result = sqlService.queryDatabase(connectionName, policy.sanitize(property), 1).get(0);
                         description = sl.getDescription();
                         }
                 }}

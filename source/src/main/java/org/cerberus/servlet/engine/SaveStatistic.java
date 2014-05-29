@@ -29,6 +29,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Level;
+import org.cerberus.entity.ExecutionUUID;
 import org.cerberus.log.MyLogger;
 import org.cerberus.service.ITestCaseExecutionWWWService;
 import org.cerberus.service.impl.TestCaseExecutionWWWService;
@@ -51,7 +52,7 @@ public class SaveStatistic extends HttpServlet {
         MyLogger.log(SaveStatistic.class.getName(), Level.DEBUG, "Starting to save statistics Servlet.");
         
         int i = request.getParameter("logId").indexOf('?');
-        long runId = Integer.parseInt(request.getParameter("logId").substring(0, i));
+        String runId = request.getParameter("logId");
         String page = request.getParameter("logId").substring(i).split("=")[1];
 
         MyLogger.log(SaveStatistic.class.getName(), Level.INFO, " --> save statistics servlet parameters : runid=" + runId + " page=" + page);
@@ -65,8 +66,10 @@ public class SaveStatistic extends HttpServlet {
 
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         ITestCaseExecutionWWWService testCaseExecutionWWWService = appContext.getBean(TestCaseExecutionWWWService.class);
-
-        testCaseExecutionWWWService.registerDetail(runId, sb.toString(), page);
+        ExecutionUUID executionUUID = appContext.getBean(ExecutionUUID.class);
+        Integer executionId = executionUUID.getExecutionID(runId);
+        
+        testCaseExecutionWWWService.registerDetail(executionId, sb.toString(), page);
 
     }
 

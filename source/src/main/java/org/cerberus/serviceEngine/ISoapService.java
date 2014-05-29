@@ -19,15 +19,23 @@
  */
 package org.cerberus.serviceEngine;
 
-import org.cerberus.entity.TestCaseExecution;
+import java.io.IOException;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.soap.SOAPException;
+import javax.xml.soap.SOAPMessage;
+import org.cerberus.entity.SoapLibrary;
 import org.cerberus.exception.CerberusException;
+import org.xml.sax.SAXException;
 
 /**
  *
  * @author bcivel
  */
-public interface IExecutionStartService {
+public interface ISoapService {
+
+    SOAPMessage createSoapRequest(final String pBody, final String method) throws SOAPException, IOException, SAXException, ParserConfigurationException;
     
-    TestCaseExecution startExecution(TestCaseExecution tCExecution) throws CerberusException;
+    String getSOAPResponse(final String envelope, final String servicePath, final String method);
     
+    String calculatePropertyFromSOAPResponse(final SoapLibrary pSoapLibrary, org.cerberus.entity.TestCaseCountryProperties pTestCaseCountry, org.cerberus.entity.TestCaseExecution pTestCaseExecution) throws CerberusException;
 }

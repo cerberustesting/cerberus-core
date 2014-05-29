@@ -19,6 +19,7 @@
  */
 package org.cerberus.serviceEngine;
 
+import java.util.concurrent.Future;
 import org.cerberus.entity.TestCaseExecution;
 
 /**
@@ -31,10 +32,12 @@ public interface IExecutionRunService {
      * Run the Test Case Execution
      *
      * @param tCExecution
-     * @return
+     * @return 
      */
     TestCaseExecution executeTestCase(TestCaseExecution tCExecution);
 
+    TestCaseExecution executeAsynchroneouslyTestCase(TestCaseExecution tCExecution);
+    
     /**
      * Stop the Test Case Execution
      *

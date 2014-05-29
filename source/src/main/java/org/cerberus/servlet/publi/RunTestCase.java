@@ -24,6 +24,7 @@ import java.io.PrintWriter;
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.UUID;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
@@ -34,6 +35,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 
 import org.apache.log4j.Level;
+import org.cerberus.entity.ExecutionUUID;
 import org.cerberus.entity.MessageGeneral;
 import org.cerberus.entity.MessageGeneralEnum;
 import org.cerberus.entity.Robot;
@@ -188,7 +190,16 @@ public class RunTestCase extends HttpServlet {
             TestCaseExecution tCExecution = factoryTCExecution.create(0, test, testCase, null, null, environment, country, browser,version, platform, "",
                     0, 0, "", "", null, robotHost, null, robotPort, tag, "N", verbose, screenshot, outputFormat, null,
                     Version.PROJECT_NAME_VERSION, tCase, null, null, manualURL, myHost, myContextRoot, myLoginRelativeURL, myEnvData, robotHost, robotPort, null, new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_TESTSTARTED));
-
+            
+            /**
+             * Set UUID
+             */
+            ExecutionUUID executionUUIDObject = appContext.getBean(ExecutionUUID.class);
+            UUID executionUUID = UUID.randomUUID();
+            executionUUIDObject.setExecutionUUID(executionUUID.toString(), 0);
+            tCExecution.setExecutionUUID(executionUUID.toString());
+            MyLogger.log(RunTestCase.class.getName(), Level.DEBUG, "Execution Key : " + executionUUID);
+        
             try {
                 tCExecution = runTestCaseService.runTestCase(tCExecution);
             } catch (Exception ex) {

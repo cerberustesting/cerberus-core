@@ -27,6 +27,7 @@ import org.apache.log4j.Level;
 import org.cerberus.entity.MessageEvent;
 import org.cerberus.entity.MessageEventEnum;
 import org.cerberus.entity.MessageGeneral;
+import org.cerberus.entity.TestCaseExecution;
 import org.cerberus.entity.TestCaseStepActionControlExecution;
 import org.cerberus.exception.CerberusEventException;
 import org.cerberus.log.MyLogger;
@@ -75,6 +76,7 @@ public class ControlService implements IControlService {
         testCaseStepActionControlExecution.setStart(new Date().getTime());
 
         MessageEvent res;
+        TestCaseExecution tCExecution = testCaseStepActionControlExecution.getTestCaseStepActionExecution().getTestCaseStepExecution().gettCExecution();
 
         try {
             //TODO On JDK 7 implement switch with string
@@ -98,44 +100,44 @@ public class ControlService implements IControlService {
 
             } else if (testCaseStepActionControlExecution.getControlType().equals("verifyElementPresent")) {
                 //TODO validate properties
-                res = this.verifyElementPresent(testCaseStepActionControlExecution.getControlProperty());
+                res = this.verifyElementPresent(tCExecution, testCaseStepActionControlExecution.getControlProperty());
 
             } else if (testCaseStepActionControlExecution.getControlType().equals("verifyElementNotPresent")) {
                 //TODO validate properties
-                res = this.verifyElementNotPresent(testCaseStepActionControlExecution.getControlProperty());
+                res = this.verifyElementNotPresent(tCExecution, testCaseStepActionControlExecution.getControlProperty());
 
             } else if (testCaseStepActionControlExecution.getControlType().equals("verifyElementInElement")) {
                 //TODO validate properties
-                res = this.verifyElementInElement(testCaseStepActionControlExecution.getControlProperty(), testCaseStepActionControlExecution.getControlValue());
+                res = this.verifyElementInElement(tCExecution, testCaseStepActionControlExecution.getControlProperty(), testCaseStepActionControlExecution.getControlValue());
 
             } else if (testCaseStepActionControlExecution.getControlType().equals("verifyElementVisible")) {
                 //TODO validate properties
-                res = this.verifyElementVisible(testCaseStepActionControlExecution.getControlProperty());
+                res = this.verifyElementVisible(tCExecution, testCaseStepActionControlExecution.getControlProperty());
 
             } else if (testCaseStepActionControlExecution.getControlType().equals("verifyElementNotVisible")) {
                 //TODO validate properties
-                res = this.verifyElementNotVisible(testCaseStepActionControlExecution.getControlProperty());
+                res = this.verifyElementNotVisible(tCExecution, testCaseStepActionControlExecution.getControlProperty());
 
             } else if (testCaseStepActionControlExecution.getControlType().equals("verifyTextInElement")) {
-                res = this.VerifyTextInElement(testCaseStepActionControlExecution.getControlProperty(), testCaseStepActionControlExecution.getControlValue());
+                res = this.VerifyTextInElement(tCExecution, testCaseStepActionControlExecution.getControlProperty(), testCaseStepActionControlExecution.getControlValue());
 
             } else if (testCaseStepActionControlExecution.getControlType().equals("verifyTextInDialog")) {
-                res = this.verifyTextInDialog(testCaseStepActionControlExecution.getControlProperty(), testCaseStepActionControlExecution.getControlValue());
+                res = this.verifyTextInDialog(tCExecution, testCaseStepActionControlExecution.getControlProperty(), testCaseStepActionControlExecution.getControlValue());
 
             } else if (testCaseStepActionControlExecution.getControlType().equals("verifyRegexInElement")) {
-                res = this.VerifyRegexInElement(testCaseStepActionControlExecution.getControlProperty(), testCaseStepActionControlExecution.getControlValue());
+                res = this.VerifyRegexInElement(tCExecution, testCaseStepActionControlExecution.getControlProperty(), testCaseStepActionControlExecution.getControlValue());
 
             } else if (testCaseStepActionControlExecution.getControlType().equals("verifyTextInPage")) {
-                res = this.VerifyTextInPage(testCaseStepActionControlExecution.getControlProperty());
+                res = this.VerifyTextInPage(tCExecution, testCaseStepActionControlExecution.getControlProperty());
 
             } else if (testCaseStepActionControlExecution.getControlType().equals("verifyTextNotInPage")) {
-                res = this.VerifyTextNotInPage(testCaseStepActionControlExecution.getControlProperty());
+                res = this.VerifyTextNotInPage(tCExecution, testCaseStepActionControlExecution.getControlProperty());
 
             } else if (testCaseStepActionControlExecution.getControlType().equals("verifyTitle")) {
-                res = this.verifyTitle(testCaseStepActionControlExecution.getControlProperty());
+                res = this.verifyTitle(tCExecution, testCaseStepActionControlExecution.getControlProperty());
 
             } else if (testCaseStepActionControlExecution.getControlType().equals("verifyUrl")) {
-                res = this.verifyUrl(testCaseStepActionControlExecution.getControlProperty());
+                res = this.verifyUrl(tCExecution, testCaseStepActionControlExecution.getControlProperty());
             } else if (testCaseStepActionControlExecution.getControlType().equals("verifyStringContains")) {
                 res = this.verifyStringContains(testCaseStepActionControlExecution.getControlProperty(),
                         testCaseStepActionControlExecution.getControlValue());
@@ -286,12 +288,12 @@ public class ControlService implements IControlService {
         return new MessageEvent(MessageEventEnum.CONTROL_FAILED_PROPERTY_NOTNUMERIC);
     }
 
-    private MessageEvent verifyElementPresent(String html) {
+    private MessageEvent verifyElementPresent(TestCaseExecution tCExecution, String html) {
         MyLogger.log(ControlService.class.getName(), Level.DEBUG, "Control : verifyElementPresent on : " + html);
         MessageEvent mes;
         if (!StringUtil.isNull(html)) {
             try {
-                if (this.seleniumService.isElementPresent(html)) {
+                if (this.seleniumService.isElementPresent(tCExecution.getSelenium(), html)) {
                     mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_PRESENT);
                     mes.setDescription(mes.getDescription().replaceAll("%STRING1%", html));
                     return mes;
@@ -308,12 +310,12 @@ public class ControlService implements IControlService {
         }
     }
 
-    private MessageEvent verifyElementInElement(String element, String childElement) {
+    private MessageEvent verifyElementInElement(TestCaseExecution tCExecution, String element, String childElement) {
         MyLogger.log(ControlService.class.getName(), Level.DEBUG, "Control : verifyElementInElement on : '" + element + "' is child of '" + childElement + "'");
         MessageEvent mes;
         if (!StringUtil.isNull(element) && !StringUtil.isNull(childElement)) {
             try {
-                if (this.seleniumService.isElementInElement(element, childElement)) {
+                if (this.seleniumService.isElementInElement(tCExecution.getSelenium(), element, childElement)) {
                     mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_ELEMENTINELEMENT);
                     mes.setDescription(mes.getDescription().replaceAll("%STRING2%", element).replaceAll("%STRING1%", childElement));
                     return mes;
@@ -332,12 +334,12 @@ public class ControlService implements IControlService {
         }
     }
 
-    private MessageEvent verifyElementNotPresent(String html) {
+    private MessageEvent verifyElementNotPresent(TestCaseExecution tCExecution, String html) {
         MyLogger.log(ControlService.class.getName(), Level.DEBUG, "Control : verifyElementNotPresent on : " + html);
         MessageEvent mes;
         if (!StringUtil.isNull(html)) {
             try {
-                if (!this.seleniumService.isElementPresent(html)) {
+                if (!this.seleniumService.isElementPresent(tCExecution.getSelenium(),html)) {
                     mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_NOTPRESENT);
                     mes.setDescription(mes.getDescription().replaceAll("%STRING1%", html));
                     return mes;
@@ -354,12 +356,12 @@ public class ControlService implements IControlService {
         }
     }
 
-    private MessageEvent verifyElementVisible(String html) {
+    private MessageEvent verifyElementVisible(TestCaseExecution tCExecution, String html) {
         MyLogger.log(ControlService.class.getName(), Level.DEBUG, "Control : verifyElementVisible on : " + html);
         MessageEvent mes;
         if (!StringUtil.isNull(html)) {
             try {
-                if (this.seleniumService.isElementVisible(html)) {
+                if (this.seleniumService.isElementVisible(tCExecution.getSelenium(),html)) {
                     mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_VISIBLE);
                     mes.setDescription(mes.getDescription().replaceAll("%STRING1%", html));
                     return mes;
@@ -376,13 +378,13 @@ public class ControlService implements IControlService {
         }
     }
 
-    private MessageEvent verifyElementNotVisible(String html) {
+    private MessageEvent verifyElementNotVisible(TestCaseExecution tCExecution, String html) {
         MyLogger.log(ControlService.class.getName(), Level.DEBUG, "Control : verifyElementNotVisible on : " + html);
         MessageEvent mes;
         if (!StringUtil.isNull(html)) {
             try {
-                if (this.seleniumService.isElementPresent(html)) {
-                    if (this.seleniumService.isElementNotVisible(html)) {
+                if (this.seleniumService.isElementPresent(tCExecution.getSelenium(),html)) {
+                    if (this.seleniumService.isElementNotVisible(tCExecution.getSelenium(),html)) {
                         mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_NOTVISIBLE);
                         mes.setDescription(mes.getDescription().replaceAll("%STRING1%", html));
                         return mes;
@@ -404,11 +406,11 @@ public class ControlService implements IControlService {
         }
     }
 
-    private MessageEvent VerifyTextInElement(String html, String value) {
+    private MessageEvent VerifyTextInElement(TestCaseExecution tCExecution, String html, String value) {
         MyLogger.log(ControlService.class.getName(), Level.DEBUG, "Control : VerifyTextInElement on : " + html + " element against value : " + value);
         MessageEvent mes;
         try {
-            String str = this.seleniumService.getValueFromHTML(html);
+            String str = this.seleniumService.getValueFromHTML(tCExecution.getSelenium(),html);
             MyLogger.log(ControlService.class.getName(), Level.DEBUG, "Control : VerifyTextInElement element : " + html + " has value : " + str);
             if (str != null) {
                 if (str.equalsIgnoreCase(value)) {
@@ -439,11 +441,11 @@ public class ControlService implements IControlService {
         }
     }
 
-    private MessageEvent verifyTextInDialog(String property, String value) {
+    private MessageEvent verifyTextInDialog(TestCaseExecution tCExecution, String property, String value) {
         MyLogger.log(ControlService.class.getName(), Level.DEBUG, "Control : verifyTextInAlertPopup against value : " + value);
         MessageEvent mes;
         try {
-            String str = this.seleniumService.getAlertText();
+            String str = this.seleniumService.getAlertText(tCExecution.getSelenium());
             MyLogger.log(ControlService.class.getName(), Level.DEBUG, "Control : verifyTextInAlertPopup has value : " + str);
             if (str != null) {
                 String valueToTest = property;
@@ -471,11 +473,11 @@ public class ControlService implements IControlService {
         }
     }
 
-    private MessageEvent VerifyRegexInElement(String html, String regex) {
+    private MessageEvent VerifyRegexInElement(TestCaseExecution tCExecution, String html, String regex) {
         MyLogger.log(ControlService.class.getName(), Level.DEBUG, "Control : verifyRegexInElement on : " + html + " element against value : " + regex);
         MessageEvent mes;
         try {
-            String str = this.seleniumService.getValueFromHTML(html);
+            String str = this.seleniumService.getValueFromHTML(tCExecution.getSelenium(),html);
             MyLogger.log(ControlService.class.getName(), Level.DEBUG, "Control : verifyRegexInElement element : " + html + " has value : " + str);
             if (html != null) {
                 try {
@@ -514,12 +516,12 @@ public class ControlService implements IControlService {
         }
     }
 
-    private MessageEvent VerifyTextInPage(String regex) {
+    private MessageEvent VerifyTextInPage(TestCaseExecution tCExecution, String regex) {
         MyLogger.log(ControlService.class.getName(), Level.DEBUG, "Control : verifyTextInPage on : " + regex);
         MessageEvent mes;
         String pageSource;
         try {
-            pageSource = this.seleniumService.getPageSource();
+            pageSource = this.seleniumService.getPageSource(tCExecution.getSelenium());
             MyLogger.log(SeleniumService.class.getName(), Level.DEBUG, pageSource);
             try {
                 Pattern pattern = Pattern.compile(regex);
@@ -544,12 +546,12 @@ public class ControlService implements IControlService {
         }
     }
 
-    private MessageEvent VerifyTextNotInPage(String regex) {
+    private MessageEvent VerifyTextNotInPage(TestCaseExecution tCExecution, String regex) {
         MyLogger.log(ControlService.class.getName(), Level.DEBUG, "Control : VerifyTextNotInPage on : " + regex);
         MessageEvent mes;
         String pageSource;
         try {
-            pageSource = this.seleniumService.getPageSource();
+            pageSource = this.seleniumService.getPageSource(tCExecution.getSelenium());
             MyLogger.log(SeleniumService.class.getName(), Level.DEBUG, pageSource);
             try {
                 Pattern pattern = Pattern.compile(regex);
@@ -574,11 +576,11 @@ public class ControlService implements IControlService {
         }
     }
 
-    private MessageEvent verifyUrl(String page) throws CerberusEventException {
+    private MessageEvent verifyUrl(TestCaseExecution tCExecution, String page) throws CerberusEventException {
         MyLogger.log(ControlService.class.getName(), Level.DEBUG, "Control : verifyUrl on : " + page);
         MessageEvent mes;
         try {
-            String url = this.seleniumService.getCurrentUrl();
+            String url = this.seleniumService.getCurrentUrl(tCExecution.getSelenium());
 
             if (url.equalsIgnoreCase(page)) {
                 mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_URL);
@@ -596,11 +598,11 @@ public class ControlService implements IControlService {
         }
     }
 
-    private MessageEvent verifyTitle(String title) {
+    private MessageEvent verifyTitle(TestCaseExecution tCExecution, String title) {
         MyLogger.log(ControlService.class.getName(), Level.DEBUG, "Control : verifyTitle on : " + title);
         MessageEvent mes;
         try {
-            String pageTitle = this.seleniumService.getTitle();
+            String pageTitle = this.seleniumService.getTitle(tCExecution.getSelenium());
             if (pageTitle.equalsIgnoreCase(title)) {
                 mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_TITLE);
                 mes.setDescription(mes.getDescription().replaceAll("%STRING1%", pageTitle));
