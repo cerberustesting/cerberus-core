@@ -1433,11 +1433,12 @@ function openViewPropertyPopin(propertyID, test, testcase) {
 
 function loadPropertyPopin(propertyID, test, testcase) {
 //    $('#popin').hide().empty();
-    var value = $('#' + propertyID).val();
+    ;
+    var value = $(document.getElementById(propertyID)).val();
     var db = $('select#properties_dtb' + propertyID + '[name=\'properties_dtb\']').val();
-    var type = $('select#type' + propertyID).val();
+    var type = $(document.getElementById('type'+propertyID)).val();
 
-    $('#popin').load('ViewProperty.jsp?type=' + escape(type) + '&db=' + escape(db) + '&test=' + escape(test) + '&testcase=' + escape(testcase) + '&property=' + escape(value));
+    $('#popin').load('ViewProperty.jsp?type=' + encodeURI(type) + '&db=' + encodeURI(db) + '&test=' + encodeURI(test) + '&testcase=' + encodeURI(testcase) + '&property=' + encodeURI(value));
 //    $('#popin').show();
 }
 
