@@ -140,6 +140,11 @@ public class FindAllTestData extends HttpServlet {
             Integer iTotalRecords = testDataService.getNumberOfTestDataPerCriteria("", "");
             Integer iTotalDisplayRecords = testDataService.getNumberOfTestDataPerCriteria(searchTerm, inds);
 
+            if (data.length() <= 0) {
+                JSONArray row = new JSONArray();
+                row.put("").put("").put("");
+                data.put(row);
+            }
             jsonResponse.put("aaData", data);
             jsonResponse.put("sEcho", echo);
             jsonResponse.put("iTotalRecords", iTotalRecords);
