@@ -82,7 +82,7 @@ public class CalculatePropertyForTestCase extends HttpServlet {
         try {
             if (type.equals("getFromTestData")) {
                 ITestDataService testDataService = appContext.getBean(TestDataService.class);
-                TestData td = testDataService.findTestDataByKey(policy.sanitize(property));
+                TestData td = testDataService.findTestDataByKey(property);
                 result = td.getValue();
                 description = td.getDescription();
 

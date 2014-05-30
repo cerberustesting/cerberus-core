@@ -456,8 +456,13 @@ public class SeleniumService implements ISeleniumService {
         String result;
 
         if (webElement.getTagName().equalsIgnoreCase("select")) {
-            Select select = (Select) webElement;
-            result = select.getFirstSelectedOption().getText();
+            if (webElement.getAttribute("disabled") == null || webElement.getAttribute("disabled").isEmpty()) {
+                Select select = (Select) webElement;
+                result = select.getFirstSelectedOption().getText();
+            } else {
+                result = webElement.getText();
+                //result = "Unable to retrieve, element disabled ?";
+            }
         } else if (webElement.getTagName().equalsIgnoreCase("option") || webElement.getTagName().equalsIgnoreCase("input")) {
             result = webElement.getAttribute("value");
         } else {

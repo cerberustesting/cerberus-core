@@ -196,7 +196,7 @@
                         if (request.getParameter("verbose") != null && request.getParameter("verbose").compareTo("") != 0) {
                             verbose = request.getParameter("verbose");
                         } else {
-                            verbose = new String("1");
+                            verbose = new String("0");
                         }
                         
                         String screenshot;
@@ -499,7 +499,7 @@
             var tcS = document.getElementById("defTestCase").value;
             
             
-            (document).ready($.getJSON('GetTestBySystem?system=' + systemSelected, function(data) {
+            $(document).ready(function(){$.getJSON('GetTestBySystem?system=' + systemSelected, function(data) {
                 $("#test").empty();
 
                 for (var i = 0; i < data.testsList.length; i++) {
@@ -514,7 +514,7 @@
               if (tcS !== "%%"){
               getTestCaseList();}
               
-            }));
+            })});
             
              
 
@@ -545,9 +545,8 @@
                         if (opt.value === tcS)
                             $(opt).attr('selected', 'selected');
                     });
-                    if (countryS !== "%%"){
-             getCountryList();}
-                        
+                    
+                    getCountryList();
                 });
             };
         </script>
@@ -575,7 +574,8 @@
                             $(opt).attr('selected', 'selected');
                     });
                     if (env !== "%%"){
-             getApplicationList();}
+                        getApplicationList();
+                    }
                     
                 });
             };
@@ -613,7 +613,7 @@
             ;
         </script>
         <script type="text/javascript">
-            (document).ready($.getJSON('FindInvariantByID?idName=outputformat', function(data) {
+            $(document).ready(function(){$.getJSON('FindInvariantByID?idName=outputformat', function(data) {
                 $("#outputformat").empty();
 
                 for (var i = 0; i < data.length; i++) {
@@ -622,11 +622,11 @@
                             .text(data[i].value + " ( " + data[i].description + " )"));
                 }
 
-            }));
+            })});
 
         </script>
         <script type="text/javascript">
-            (document).ready($.getJSON('FindInvariantByID?idName=verbose', function(data) {
+            $(document).ready(function(){$.getJSON('FindInvariantByID?idName=verbose', function(data) {
                 $("#verbose").empty();
                 var pl = document.getElementById("defVerbose").value;
                 
@@ -644,11 +644,11 @@
 
                 });
 
-            }));
+            })});
 
         </script>
         <script type="text/javascript">
-            (document).ready($.getJSON('FindInvariantByID?idName=screenshot', function(data) {
+            $(document).ready(function(){$.getJSON('FindInvariantByID?idName=screenshot', function(data) {
                 $("#screenshot").empty();
                 var pl = document.getElementById("defScreenshot").value;
 
@@ -658,18 +658,18 @@
                             .text(data[i].value + " ( " + data[i].description + " )"));
                 }
 
-$("#screenshot").find('option').each(function(i, opt) {
+                $("#screenshot").find('option').each(function(i, opt) {
                     if (opt.value === pl) {
                         $(opt).attr('selected', 'selected');
                     }
 
 
                 });
-            }));
+            })});
 
         </script>
         <script type="text/javascript">
-            (document).ready($.getJSON('FindInvariantByID?idName=browser', function(data) {
+            $(document).ready(function(){$.getJSON('FindInvariantByID?idName=browser', function(data) {
                 $("#browser").empty();
                 var pl = document.getElementById("defBrowser").value;
 
@@ -685,11 +685,11 @@ $("#screenshot").find('option').each(function(i, opt) {
 
 
                 });
-            }));
+            })});
 
         </script>
         <script type="text/javascript">
-            (document).ready($.getJSON('FindInvariantByID?idName=platform', function(data) {
+            $(document).ready(function(){$.getJSON('FindInvariantByID?idName=platform', function(data) {
                 $("#platform").empty();
                 var pl = document.getElementById("defPlatform").value;
 
@@ -710,7 +710,7 @@ $("#screenshot").find('option').each(function(i, opt) {
 
 
                 });
-            }));
+            })});
 
         </script>
         <script>

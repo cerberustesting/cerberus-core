@@ -60,7 +60,16 @@
                         {"mDataProp": "action", "sName": "Action", "sWidth": "10%"},
                         {"mDataProp": "log", "sName": "Log", "sWidth": "50%"}
                     ]
-                })
+                });
+                
+                <%
+                if(request.getParameter("Test") != null && request.getParameter("TestCase") != null) {
+                    String search = request.getParameter("Test") + "'|'"+request.getParameter("TestCase");
+                    %>$("#logsTable_filter input[type='search']").delay(1000).val("<%=search%>").trigger( "change" );<%
+                }
+                %>
+                        
+                
             });
         </script>
     </head>

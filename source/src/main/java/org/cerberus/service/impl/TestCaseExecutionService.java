@@ -57,6 +57,13 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
     }
 
     @Override
+    public TestCaseExecution findLastTCExecutionByCriteria(String test, String testCase, String environment, String country,
+                                                           String build, String revision, String browser, String browserVersion,
+                                                           String ip, String port, String tag) {
+        return this.testCaseExecutionDao.findLastTCExecutionByCriteria(test, testCase, environment, country, build, revision, browser, browserVersion, ip, port, tag);
+    }
+
+    @Override
     public List<TestCaseExecution> findTCExecutionbyCriteria1(String dateLimitFrom, String test, String testCase, String application, String country, String environment, String controlStatus, String status) throws CerberusException {
         // Transform empty parameter in % in order to remove from SQL filter (thanks to the like operator).
         test = ParameterParserUtil.wildcardIfEmpty(test);

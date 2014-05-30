@@ -1649,7 +1649,7 @@
         <br>
 
         <table id="arrond" style="text-align: left" border="1" >
-            <tr><td colspan="2"><h4>Contextual Actions</h4></td></tr>
+            <tr><td colspan="3"><h4>Contextual Actions</h4></td></tr>
             <tr>
 
                 <% if (rs_testcase_general_info.getString("Group").equalsIgnoreCase("AUTOMATED")) {%>
@@ -1660,6 +1660,12 @@
                 <td>
                     <a href="ExecutionDetailList.jsp?test=<%=rs_testcase_general_info.getString("Test")%>&testcase=<%=rs_testcase_general_info.getString("TestCase")%>&MySystem=<%=appSystem%>">See Last Executions..</a>
                 </td>
+                <%if (request.getUserPrincipal() != null && request.isUserInRole("TestAdmin")) {
+                    %>
+                <td>
+                    <a href="LogViewer.jsp?Test=<%=rs_testcase_general_info.getString("Test")%>&TestCase=<%=rs_testcase_general_info.getString("TestCase")%>">See Log Viewer...</a>
+                </td>
+                <% } %>
             </tr>
         </table>
         <%
