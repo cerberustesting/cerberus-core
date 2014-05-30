@@ -196,7 +196,7 @@
                         if (request.getParameter("verbose") != null && request.getParameter("verbose").compareTo("") != 0) {
                             verbose = request.getParameter("verbose");
                         } else {
-                            verbose = new String("1");
+                            verbose = new String("0");
                         }
                         
                         String screenshot;
