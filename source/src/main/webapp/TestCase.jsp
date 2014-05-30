@@ -1649,7 +1649,7 @@
         <br>
 
         <table id="arrond" style="text-align: left" border="1" >
-            <tr><td colspan="2"><h4>Contextual Actions</h4></td></tr>
+            <tr><td colspan="3"><h4>Contextual Actions</h4></td></tr>
             <tr>
 
                 <% if (rs_testcase_general_info.getString("Group").equalsIgnoreCase("AUTOMATED")) {%>
