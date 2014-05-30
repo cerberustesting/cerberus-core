@@ -64,8 +64,8 @@
                 
                 <%
                 if(request.getParameter("Test") != null && request.getParameter("TestCase") != null) {
-                    String search = request.getParameter("Test") + " "+request.getParameter("TestCase");
-                    %>$("#logsTable_filter input[type='search']").delay(500).val("<%=search%>").trigger( "change" );<%
+                    String search = request.getParameter("Test") + "'|'"+request.getParameter("TestCase");
+                    %>$("#logsTable_filter input[type='search']").delay(1000).val("<%=search%>").trigger( "change" );<%
                 }
                 %>
                         
