@@ -24,7 +24,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>Execution Reporting : Status</title>
 
-    <link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico" />
+    <link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico"/>
 
     <link rel="stylesheet" type="text/css" href="css/crb_style.css">
     <link rel="stylesheet" type="text/css" href="css/jquery.dataTables.css">
@@ -39,16 +39,17 @@
         var oTable;
 
 //        var country = ["BE", "CH", "ES", "FR", "IT", "PT", "RU", "UK", "VI"];
-        var country = ["PT"];
+        <% int countries = 3; %>
+        var country = ["PT", "ES", "BE"];
         var browser = ["firefox"];
-        $(document).ready(function(){
+        $(document).ready(function () {
             //columns will be added based on the form
-            $.each(country, function(index, elem){
+            $.each(country, function (index, elem) {
 //                $('#Comment').before("<th colspan='"+browser.length+"'>"+elem+"</th>");
-                $('#Comment').before("<th colspan='"+(browser.length*2)+"'>"+elem+"</th>");
-                $.each(browser, function(i ,e){
+                $('#Comment').before("<th colspan='" + (browser.length * 2) + "'>" + elem + "</th>");
+                $.each(browser, function (i, e) {
 //                    $('#Country').append("<th>"+e+"</th>");
-                    $('#Country').append("<th colspan='2'>"+e+"</th>");
+                    $('#Country').append("<th colspan='2'>" + e + "</th>");
                     $('#teste').append("<th></th><th></th>");
                 });
             });
@@ -60,13 +61,31 @@
                 "bProcessing": true,
                 "bFilter": false,
                 "bInfo": false,
-                "iDisplayLength" : -1,
-                "fnServerParams": function ( aoData ) {
-                    aoData.push( { "name": "country", "value": country },{ "name": "browser", "value": browser } );
+                "bSort": false,
+                "bPaginate": false,
+                "iDisplayLength": -1,
+                "aoColumnDefs": [
+                    <% for(int i = 0; i < countries; i++){ %>
+                    {"aTargets": [<%=6+i*2%>],
+                        "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
+                            if (oData[<%=6+i*2%>] === "") {
+                                $(nTd).addClass('NOINF');
+                            } else {
+                                $(nTd).addClass(oData[<%=6+i*2%>]);
+                            }
+                        },
+                        "mRender": function (data, type, full) {
+                            return "<a class='" + data + "F' href='ExecutionDetail.jsp?id_tc='>" + data + "</a>";
+                        }
+                    },
+                    <% } %>
+                ],
+                "fnServerParams": function (aoData) {
+                    aoData.push({ "name": "country", "value": country }, { "name": "browser", "value": browser });
                 },
                 "fnInitComplete": function () {
-                    new FixedHeader( oTable, {
-                        left:   true,
+                    new FixedHeader(oTable, {
+                        left: true,
                         zTop: 98
                     });
 
@@ -84,51 +103,51 @@
     </style>
 </head>
 <body>
-    <%@ include file="include/header.jsp" %>
+<%@ include file="include/header.jsp" %>
 
-    <div id="body">
-        <%--<%!--%>
-            <%--String getParam(String param){--%>
-                <%--return (param != null && !param.isEmpty()) ? param : "";--%>
-            <%--}--%>
-        <%--%>--%>
-        <%--<%--%>
-            <%--String tag = getParam(request.getParameter("Tag"));--%>
-            <%--String browserFullVersion = getParam(request.getParameter("BrowserFullVersion"));--%>
-            <%--String port = getParam(request.getParameter("Port"));--%>
-            <%--String ip = getParam(request.getParameter("Ip"));--%>
-            <%--String comment = getParam(request.getParameter("Comment"));--%>
+<div id="body">
+    <%--<%!--%>
+    <%--String getParam(String param){--%>
+    <%--return (param != null && !param.isEmpty()) ? param : "";--%>
+    <%--}--%>
+    <%--%>--%>
+    <%--<%--%>
+    <%--String tag = getParam(request.getParameter("Tag"));--%>
+    <%--String browserFullVersion = getParam(request.getParameter("BrowserFullVersion"));--%>
+    <%--String port = getParam(request.getParameter("Port"));--%>
+    <%--String ip = getParam(request.getParameter("Ip"));--%>
+    <%--String comment = getParam(request.getParameter("Comment"));--%>
 
-            <%--String systemBR; // Used for filtering Build and Revision.--%>
-            <%--if (request.getParameter("SystemExe") != null && request.getParameter("SystemExe").compareTo("All") != 0) {--%>
-                <%--systemBR = request.getParameter("SystemExe");--%>
-            <%--} else {--%>
-                <%--if (request.getParameter("system") != null && !request.getParameter("system").isEmpty()) {--%>
-                    <%--systemBR = request.getParameter("system");--%>
-                <%--} else{--%>
-                    <%--systemBR = request.getAttribute("MySystem").toString();--%>
-                <%--}--%>
-            <%--}--%>
+    <%--String systemBR; // Used for filtering Build and Revision.--%>
+    <%--if (request.getParameter("SystemExe") != null && request.getParameter("SystemExe").compareTo("All") != 0) {--%>
+    <%--systemBR = request.getParameter("SystemExe");--%>
+    <%--} else {--%>
+    <%--if (request.getParameter("system") != null && !request.getParameter("system").isEmpty()) {--%>
+    <%--systemBR = request.getParameter("system");--%>
+    <%--} else{--%>
+    <%--systemBR = request.getAttribute("MySystem").toString();--%>
+    <%--}--%>
+    <%--}--%>
 
-        <%--%>--%>
-        <table id="reporting" class="display">
-            <thead>
-                <tr>
-                    <th rowspan="3">Test</th>
-                    <th rowspan="3">TestCase</th>
-                    <th rowspan="3">Application</th>
-                    <th rowspan="3">Description</th>
-                    <th rowspan="3">Priority</th>
-                    <th rowspan="3">Status</th>
-                    <th rowspan="3" id="Comment">Comment</th>
-                    <th rowspan="3">Bug ID</th>
-                    <th rowspan="3">Group</th>
-                </tr>
-                <tr id="Country"></tr>
-                <tr id="teste"></tr>
-            </thead>
-            <tbody></tbody>
-        </table>
-    </div>
+    <%--%>--%>
+    <table id="reporting" class="display" style="color: #555555;font-family: Trebuchet MS;font-weight: bold;">
+        <thead>
+        <tr>
+            <th rowspan="3">Test</th>
+            <th rowspan="3">TestCase</th>
+            <th rowspan="3">Application</th>
+            <th rowspan="3">Description</th>
+            <th rowspan="3">Priority</th>
+            <th rowspan="3">Status</th>
+            <th rowspan="3" id="Comment">Comment</th>
+            <th rowspan="3">Bug ID</th>
+            <th rowspan="3">Group</th>
+        </tr>
+        <tr id="Country"></tr>
+        <tr id="teste"></tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</div>
 </body>
 </html>
