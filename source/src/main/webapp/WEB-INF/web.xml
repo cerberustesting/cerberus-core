@@ -191,7 +191,7 @@
     </servlet>
     <servlet>
         <servlet-name>GetCampaignExecutionsCommand</servlet-name>
-        <servlet-class>org.cerberus.servlet.campaign.GetCampaignExecutionsCommand</servlet-class>
+        <servlet-class>org.cerberus.servlet.publi.GetCampaignExecutionsCommand</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>ListCampaignParameter</servlet-name>
