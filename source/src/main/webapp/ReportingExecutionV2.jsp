@@ -64,13 +64,10 @@
                 });
             });
 
-            //columns will be added based on the form
             $.each(country, function (index, elem) {
-//                $('#Comment').before("<th colspan='"+browser.length+"'>"+elem+"</th>");
-                $('#Comment').before("<th colspan='" + (browser.length * 2) + "'>" + elem + "</th>");
+                $('#TCComment').before("<th colspan='" + (browser.length * 2) + "'>" + elem + "</th>");
                 $.each(browser, function (i, e) {
-//                    $('#Country').append("<th>"+e+"</th>");
-                    $('#Country').append("<th colspan='2'>" + e + "</th>");
+                    $('#tableCountry').append("<th colspan='2'>" + e + "</th>");
                     $('#TCResult').append("<th></th><th></th>");
                 });
             });
@@ -107,10 +104,11 @@
                 "fnInitComplete": function () {
                     new FixedHeader(oTable, {
                         left: true,
+                        leftColumns: 2,
                         zTop: 98
                     });
 
-                    $('.FixedHeader_Left table tr#Country th').remove();
+                    $('.FixedHeader_Left table tr#tableCountry th').remove();
                     $('.FixedHeader_Left table tr#TCResult th').remove();
                 }
             });
@@ -192,23 +190,23 @@
 
     TreeMap<String, String> options = new TreeMap<String, String>();
 %>
-<div class="filters" style="text-align: left">
-<div>
-    <p class="dttTitle">Filters</p>
+<div class="filters" style="text-align: left; width:100%;">
+<div style="display: block; width: 100%">
+    <p class="dttTitle" style="float:left">Filters</p>
 
-    <div id="dropDownUpArrow" style="display:none">
+    <div id="dropDownUpArrow" style="display:none;">
         <a onclick="javascript:switchDivVisibleInvisible('filtersList', 'dropDownUpArrow');switchDivVisibleInvisible('dropDownDownArrow', 'dropDownUpArrow')">
             <img src="images/dropdown.gif"/>
         </a>
     </div>
-    <div id="dropDownDownArrow">
+    <div id="dropDownDownArrow" style="display: inline-block">
         <a onclick="javascript:switchDivVisibleInvisible('dropDownUpArrow', 'filtersList'); switchDivVisibleInvisible('dropDownUpArrow', 'dropDownDownArrow')">
             <img src="images/dropdown.gif"/>
         </a>
     </div>
 </div>
-<div id="filtersList">
-    <div style="clear:both">
+<div id="filtersList" style="display:block">
+    <div>
         <div class="underlinedDiv"></div>
         <p style="text-align:left" class="dttTitle">Testcase Filters (Displayed Rows)</p>
 
@@ -276,6 +274,130 @@
                     %>
                     <%=generateMultiSelect("Application", request.getParameterValues("Application"), options,
                             "Select an application", "Select Application", "# of # Application selected", 1, true)%>
+                </div>
+            </div>
+        </div>
+        <div style="float: left">
+            <div>
+                <div>
+                    <%=docService.findLabelHTML("testcase", "tcactive", "TestCase Active")%>
+                </div>
+                <div>
+                    <%
+                        options.clear();
+                        options.put("Y", "Yes");
+                        options.put("N", "No");
+                    %>
+                    <%=generateMultiSelect("TcActive", request.getParameterValues("TcActive"), options,
+                            "Select Activation state", "Select Activation", "# of # Activation state selected", 1, true)%>
+                </div>
+            </div>
+        </div>
+        <div style="float: left">
+            <div>
+                <div>
+                    <%=docService.findLabelHTML("invariant", "PRIORITY", "Priority")%>
+                </div>
+                <div>
+                    <%
+                        options.clear();
+                    %>
+                    <%=generateMultiSelect("Priority", request.getParameterValues("Priority"), options, "Select a Priority",
+                            "Select Priority", "# of # Priority selected", 1, true)%>
+                </div>
+            </div>
+        </div>
+        <div style="float: left">
+            <div>
+                <div>
+                    <%=docService.findLabelHTML("testcase", "Status", "Status")%>
+                </div>
+                <div>
+                    <%
+                        options.clear();
+                        for (Invariant statusInv : invariantService.findListOfInvariantById("TCSTATUS")) {
+                            options.put(statusInv.getValue(), statusInv.getValue());
+                        }
+                    %>
+                    <%=generateMultiSelect("Status", request.getParameterValues("Status"), options, "Select an option",
+                            "Select Status", "# of # Status selected", 1, true)%>
+                </div>
+            </div>
+        </div>
+        <div style="float: left">
+            <div>
+                <div>
+                    <%=docService.findLabelHTML("invariant", "GROUP", "Group")%>
+                </div>
+                <div>
+                    <%
+                        options.clear();
+                    %>
+                    <%=generateMultiSelect("Group", request.getParameterValues("Group"), options, "Select a Group",
+                            "Select Group", "# of # Group selected", 1, true)%>
+                </div>
+            </div>
+        </div>
+        <div style="float: left">
+            <div>
+                <div>
+                    <%=docService.findLabelHTML("testcase", "targetBuild", "targetBuild")%>
+                </div>
+                <div>
+                    <%
+                        options.clear();
+                    %>
+                    <%=generateMultiSelect("TargetBuild", request.getParameterValues("TargetBuild"), options,
+                            "Select a Target Build", "Select Target Build", "# of # Target Build selected", 1, true)%>
+                </div>
+            </div>
+        </div>
+        <div style="float: left">
+            <div>
+                <div>
+                    <%=docService.findLabelHTML("testcase", "targetRev", "targetRev")%>
+                </div>
+                <div>
+                    <%
+                        options.clear();
+                    %>
+                    <%=generateMultiSelect("TargetRev", request.getParameterValues("TargetRev"), options,
+                            "Select a Target Rev", "Select Target Rev", "# of # Target Rev selected", 1, true)%>
+                </div>
+            </div>
+        </div>
+        <div style="float: left">
+            <div>
+                <div>
+                    <%=docService.findLabelHTML("testcase", "creator", "Creator")%>
+                </div>
+                <div>
+                    <%
+                        options.clear();
+                    %>
+                    <%=generateMultiSelect("Creator", request.getParameterValues("Creator"), options, "Select a Creator",
+                            "Select Creator", "# of # Creator selected", 1, true)%>
+                </div>
+            </div>
+        </div>
+        <div style="float: left">
+            <div>
+                <div>
+                    <%=docService.findLabelHTML("testcase", "implementer", "implementer")%>
+                </div>
+                <div>
+                    <%=generateMultiSelect("Implementer", request.getParameterValues("Implementer"), options,
+                            "Select an Implementer", "Select Implementer", "# of # Implementer selected", 1, true)%>
+                </div>
+            </div>
+        </div>
+        <div style="float: left">
+            <div>
+                <div>
+                    <%=docService.findLabelHTML("testcase", "comment", "comment")%>
+                </div>
+                <div>
+                    <input style="font-weight: bold; width: 130px; height:16px" id="Comment" name="Comment" value="<%=comment%>"/>
                 </div>
             </div>
         </div>
@@ -414,11 +536,11 @@
             <th rowspan="3">Description</th>
             <th rowspan="3">Priority</th>
             <th rowspan="3">Status</th>
-            <th rowspan="3" id="Comment">Comment</th>
+            <th rowspan="3" id="TCComment">Comment</th>
             <th rowspan="3">Bug ID</th>
             <th rowspan="3">Group</th>
         </tr>
-        <tr id="Country"></tr>
+        <tr id="tableCountry"></tr>
         <tr id="TCResult"></tr>
         </thead>
         <tbody></tbody>
