@@ -90,6 +90,8 @@ public class RunTestCase extends HttpServlet {
         String platform = "";
         String robot = ParameterParserUtil.parseStringParam(policy.sanitize(request.getParameter("robot")), "");
         String active = "";
+        String timeout = "";
+        boolean synchroneous = true;
         
         if (robot.equals("")){
         robotHost = ParameterParserUtil.parseStringParam(policy.sanitize(request.getParameter("ss_ip")), "");
@@ -97,6 +99,8 @@ public class RunTestCase extends HttpServlet {
         browser = ParameterParserUtil.parseStringParam(policy.sanitize(request.getParameter("browser")), "firefox");
         version = ParameterParserUtil.parseStringParam(policy.sanitize(request.getParameter("version")), "");
         platform = ParameterParserUtil.parseStringParam(policy.sanitize(request.getParameter("platform")), "");
+        timeout = ParameterParserUtil.parseStringParam(policy.sanitize(request.getParameter("timeout")), "");
+        synchroneous = ParameterParserUtil.parseBooleanParam(policy.sanitize(request.getParameter("synchroneous")), true);
         } else {
         IRobotService robotService = appContext.getBean(IRobotService.class);
             try {
@@ -153,7 +157,9 @@ public class RunTestCase extends HttpServlet {
                 + "- Tag : Tag that will be stored on the execution. [" + tag + "]\n"
                 + "- outputformat : Format of the output of the execution. [" + outputFormat + "]\n"
                 + "- screenshot : Activate or not the screenshots. [" + screenshot + "]\n"
-                + "- verbose : Verbose level of the execution. [" + verbose + "]\n";
+                + "- verbose : Verbose level of the execution. [" + verbose + "]\n"
+                + "- timeout : Timeout used for the action. If empty, the default value will be the one configured in parameter table. ["+timeout+"]\n"
+                + "- synchroneous : Synchroneous define if the servlet wait for the end of the execution to redirect to the execution report. ["+synchroneous+"\n";
 
         boolean error = false;
 
@@ -188,7 +194,7 @@ public class RunTestCase extends HttpServlet {
             TCase tCase = factoryTCase.create(test, testCase);
 
             TestCaseExecution tCExecution = factoryTCExecution.create(0, test, testCase, null, null, environment, country, browser,version, platform, "",
-                    0, 0, "", "", null, robotHost, null, robotPort, tag, "N", verbose, screenshot, outputFormat, null,
+                    0, 0, "", "", null, robotHost, null, robotPort, tag, "N", verbose, screenshot, synchroneous, timeout,outputFormat, null,
                     Version.PROJECT_NAME_VERSION, tCase, null, null, manualURL, myHost, myContextRoot, myLoginRelativeURL, myEnvData, robotHost, robotPort, null, new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_TESTSTARTED));
             
             /**

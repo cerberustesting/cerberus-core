@@ -439,7 +439,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         String crbVersion = resultSet.getString("crbVersion");
         return factoryTCExecution.create(id, test, testcase, build, revision, environment,
                 country, browser,version, platform, browserFullVersion, start, end, controlStatus, controlMessage, null, ip, url,
-                port, tag, finished, verbose, 0, "", status, crbVersion, null, null, null,
+                port, tag, finished, verbose, 0,true,"", "", status, crbVersion, null, null, null,
                 false, null, null, null, null, null, null, null, null);
     }
 }

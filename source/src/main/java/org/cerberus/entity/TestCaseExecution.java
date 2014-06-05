@@ -48,6 +48,8 @@ public class TestCaseExecution {
     private int verbose;
     private String status;
     private String crbVersion;
+    private boolean synchroneous;
+    private String timeout;
     /**
      * From here are data outside database model.
      */
@@ -71,6 +73,22 @@ public class TestCaseExecution {
     private MessageGeneral resultMessage;
     private Selenium selenium;
     private String executionUUID;
+
+    public boolean isSynchroneous() {
+        return synchroneous;
+    }
+
+    public void setSynchroneous(boolean synchroneous) {
+        this.synchroneous = synchroneous;
+    }
+
+    public String getTimeout() {
+        return timeout;
+    }
+
+    public void setTimeout(String timeout) {
+        this.timeout = timeout;
+    }
 
     public String getExecutionUUID() {
         return executionUUID;

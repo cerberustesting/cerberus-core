@@ -85,6 +85,7 @@
                                         || sName.compareTo("myenvdata") == 0
                                         || sName.compareTo("Tag") == 0 || sName.compareTo("outputformat") == 0
                                         || sName.compareTo("verbose") == 0 || sName.compareTo("screenshot") == 0
+                                        || sName.compareTo("synchroneous") == 0 || sName.compareTo("timeout") == 0
                                         || sName.compareTo("platform") == 0 || sName.compareTo("os") == 0
                                         || sName.compareTo("robot") == 0) {
                                     String[] sMultiple = request.getParameterValues(sName);
@@ -205,6 +206,20 @@
                         } else {
                             screenshot = new String("1");
                         }
+                        
+                        String synchroneous;
+                        if (request.getParameter("synchroneous") != null && request.getParameter("synchroneous").compareTo("") != 0) {
+                            synchroneous = request.getParameter("synchroneous");
+                        } else {
+                            synchroneous = new String("Y");
+                        }
+                        
+                        String timeout;
+                        if (request.getParameter("timeout") != null && request.getParameter("timeout").compareTo("") != 0) {
+                            timeout = request.getParameter("timeout");
+                        } else {
+                            timeout = new String("");
+                        }
 
                         String enable = "";
 
@@ -251,6 +266,8 @@
                 <input hidden="hidden" id="defBrowser" value="<%=browser%>">
                 <input hidden="hidden" id="defVerbose" value="<%=verbose%>">
                 <input hidden="hidden" id="defScreenshot" value="<%=screenshot%>">
+                <input hidden="hidden" id="defSynchroneous" value="<%=synchroneous%>">
+                <input hidden="hidden" id="defTimeout" value="<%=timeout%>">
                 <div class="filters" style="clear:both; width:100%">
                     <p style="float:left" class="dttTitle">Choose Test</p>
                     <div id="dropDownDownArrow" style="float:left">
@@ -462,6 +479,21 @@
                             </select>
                         </div>
                     </div>
+                    <div style="clear:both">
+                        <div style="float:left;width:150px; text-align:left"><% out.print(docService.findLabelHTML("page_runtests", "synchroneous", ""));%>
+                        </div>
+                        <div style="float:left">
+                            <select id="synchroneous" name="synchroneous" style="width: 200px">
+                            </select>
+                        </div>
+                    </div>
+                    <div style="clear:both">
+                        <div style="float:left;width:150px; text-align:left"><% out.print(docService.findLabelHTML("page_runtests", "timeout", ""));%>
+                        </div>
+                        <div style="float:left">
+                            <input id="timeout" name="timeout" style="width: 200px">
+                        </div>
+                    </div>
                 </div>
                 <div style="clear:both">          
                     <br>
@@ -637,6 +669,28 @@
                 }
                 
                 $("#verbose").find('option').each(function(i, opt) {
+                    if (opt.value === pl) {
+                        $(opt).attr('selected', 'selected');
+                    }
+
+
+                });
+
+            })});
+
+        </script>
+        <script type="text/javascript">
+            $(document).ready(function(){$.getJSON('FindInvariantByID?idName=synchroneous', function(data) {
+                $("#synchroneous").empty();
+                var pl = document.getElementById("defSynchroneous").value;
+                
+                for (var i = 0; i < data.length; i++) {
+                    $("#synchroneous").append($("<option></option>")
+                            .attr("value", data[i].value)
+                            .text(data[i].value + " ( " + data[i].description + " )"));
+                }
+                
+                $("#synchroneous").find('option').each(function(i, opt) {
                     if (opt.value === pl) {
                         $(opt).attr('selected', 'selected');
                     }

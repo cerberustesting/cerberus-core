@@ -111,7 +111,8 @@ public class SeleniumService implements ISeleniumService {
             long defaultWait;
             try {
                 Parameter param = parameterService.findParameterByKey("selenium_defaultWait", "");
-                defaultWait = Long.parseLong(param.getValue());
+                String to = tCExecution.getTimeout().equals("")?param.getValue():tCExecution.getTimeout();
+                defaultWait = Long.parseLong(to);
             } catch (CerberusException ex) {
                 MyLogger.log(Selenium.class.getName(), Level.WARN, "Parameter (selenium_defaultWait) not in Parameter table, default wait set to 90 seconds");
                 defaultWait = 90;
