@@ -55,8 +55,7 @@ public class RunTestCaseService implements IRunTestCaseService {
             tCExecution = executionStartService.startExecution(tCExecution);
 
 //          Execute TestCase in new thread if automated test with outputformat gui
-          if (tCExecution.gettCase().getGroup().equals("AUTOMATED") &&
-                tCExecution.getOutputFormat().equals("gui")){
+          if (!tCExecution.isSynchroneous()){
           tCExecution = executionRunService.executeAsynchroneouslyTestCase(tCExecution);
           }else{
             tCExecution = executionRunService.executeTestCase(tCExecution);
