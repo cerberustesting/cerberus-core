@@ -31,6 +31,7 @@ import org.cerberus.dao.ITestBatteryContentDAO;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.entity.MessageGeneral;
 import org.cerberus.entity.MessageGeneralEnum;
+import org.cerberus.entity.TestBatteryContentWithDescription;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.factory.IFactoryTestBatteryContent;
 import org.cerberus.log.MyLogger;
@@ -185,6 +186,53 @@ public class TestBatteryContentDAO implements ITestBatteryContentDAO {
     }
 
     @Override
+    public List<TestBatteryContentWithDescription> findTestBatteryContentsWithDescriptionByTestBatteryName(String testBattery) throws CerberusException {
+        boolean throwEx = false;
+        final String query = "SELECT tbc.*, tc.Description FROM testbatterycontent tbc inner join testcase tc on tbc.Test=tc.Test and tbc.TestCase=tc.TestCase"
+                + " where tbc.testbattery = ?";
+
+        List<TestBatteryContentWithDescription> testBatteryContentsWithDescriptionsList = new ArrayList<TestBatteryContentWithDescription>();
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            try {
+                preStat.setString(1, testBattery);
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+                    while (resultSet.next()) {
+                        testBatteryContentsWithDescriptionsList.add(this.loadTestBatteryContentWithDescriptionFromResultSet(resultSet));
+                    }
+                } catch (SQLException exception) {
+                    MyLogger.log(TestBatteryContentDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                    testBatteryContentsWithDescriptionsList = null;
+                } finally {
+                    resultSet.close();
+                }
+            } catch (SQLException exception) {
+                MyLogger.log(TestBatteryContentDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                testBatteryContentsWithDescriptionsList = null;
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(TestBatteryContentDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            testBatteryContentsWithDescriptionsList = null;
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(TestBatteryContentDAO.class.getName(), Level.WARN, e.toString());
+            }
+        }
+        if (throwEx) {
+            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
+        }
+        return testBatteryContentsWithDescriptionsList;
+    }
+
+    @Override
     public boolean updateTestBatteryContent(TestBatteryContent testBatteryContent) {
         final StringBuffer query = new StringBuffer("UPDATE `testbatterycontent` set `testbattery` = ?, `Test` = ?, `TestCase` = ? WHERE `testbatterycontentID` = ?");
 
@@ -332,6 +380,16 @@ public class TestBatteryContentDAO implements ITestBatteryContentDAO {
         String testCase = ParameterParserUtil.parseStringParam(rs.getString("TestCase"), "");
 
         return factoryTestBatteryContent.create(testbatterycontentID, test, testCase, testbattery);
+    }
+
+    private TestBatteryContentWithDescription loadTestBatteryContentWithDescriptionFromResultSet(ResultSet rs) throws SQLException {
+        Integer testbatterycontentID = ParameterParserUtil.parseIntegerParam(rs.getString("testbatterycontentID"), -1);
+        String testbattery = ParameterParserUtil.parseStringParam(rs.getString("testbattery"), "");
+        String test = ParameterParserUtil.parseStringParam(rs.getString("Test"), "");
+        String testCase = ParameterParserUtil.parseStringParam(rs.getString("TestCase"), "");
+        String description = ParameterParserUtil.parseStringParam(rs.getString("Description"), "");
+
+        return new TestBatteryContentWithDescription(testbatterycontentID, test, testCase, testbattery, description);
     }
 
     @Override

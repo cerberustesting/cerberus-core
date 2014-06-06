@@ -27,7 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Level;
 import org.cerberus.entity.TestBattery;
-import org.cerberus.entity.TestBatteryContent;
+import org.cerberus.entity.TestBatteryContentWithDescription;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.log.MyLogger;
 import org.cerberus.service.ITestBatteryService;
@@ -91,8 +91,8 @@ public class GetTestBattery extends HttpServlet {
 
     private JSONArray findAllTestBatteryContentToJSON(String testBattery) throws JSONException, CerberusException {
         JSONArray jsonResponse = new JSONArray();
-        for (TestBatteryContent testBatteryContent : testBatteryService.findTestBatteryContentsByTestBatteryName(testBattery)) {
-            jsonResponse.put(convertTestBatteryContentToJSONObject(testBatteryContent));
+        for (TestBatteryContentWithDescription testBatteryContentWithDescription : testBatteryService.findTestBatteryContentsWithDescriptionByTestBatteryName(testBattery)) {
+            jsonResponse.put(convertTestBatteryContentWithDescriptionToJSONObject(testBatteryContentWithDescription));
         }
 
         return jsonResponse;
@@ -106,12 +106,15 @@ public class GetTestBattery extends HttpServlet {
         return result;
     }
 
-    private JSONArray convertTestBatteryContentToJSONObject(TestBatteryContent testBatteryContent) throws JSONException {
+    private JSONArray convertTestBatteryContentWithDescriptionToJSONObject(TestBatteryContentWithDescription testBatteryContentWithDescription) throws JSONException {
         JSONArray result = new JSONArray();
-        result.put(testBatteryContent.getTestbatterycontentID());
-        result.put(testBatteryContent.getTestbattery());
-        result.put(testBatteryContent.getTest());
-        result.put(testBatteryContent.getTestCase());
+        result.put(testBatteryContentWithDescription.getTestbatterycontentID());
+        result.put(testBatteryContentWithDescription.getTestbattery());
+        result.put(testBatteryContentWithDescription.getTest());
+
+        result.put("<a target=\"TestCase\" href=\"TestCase.jsp?Test=" + testBatteryContentWithDescription.getTest() + "&TestCase=" + testBatteryContentWithDescription.getTestCase() + "\">" + testBatteryContentWithDescription.getTestCase() + "</a>");
+        result.put(testBatteryContentWithDescription.getDescription());
+
         return result;
     }
 

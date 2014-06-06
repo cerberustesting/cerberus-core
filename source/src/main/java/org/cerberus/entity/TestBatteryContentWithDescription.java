@@ -17,12 +17,9 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.dao;
+package org.cerberus.entity;
 
-import org.cerberus.entity.TestBatteryContent;
-import java.util.List;
-import org.cerberus.entity.TestBatteryContentWithDescription;
-import org.cerberus.exception.CerberusException;
+import java.io.Serializable;
 
 /**
  *
@@ -35,21 +32,24 @@ import org.cerberus.exception.CerberusException;
     @NamedQuery(name = "TestBatteryContent.findAll", query = "SELECT t FROM testbatterycontent t"),
     @NamedQuery(name = "TestBatteryContent.findByTestbatterycontentID", query = "SELECT t FROM testbatterycontent t WHERE t.testbatterycontentID = :testbatterycontentID")})
  */
-public interface ITestBatteryContentDAO {
+public class TestBatteryContentWithDescription extends TestBatteryContent implements Serializable {
 
-    List<TestBatteryContent> findAll() throws CerberusException;
+    private String description;
 
-    TestBatteryContent findTestBatteryContentByKey(Integer testBatteryContentID) throws CerberusException;
+    public String getDescription() {
+        return description;
+    }
 
-    List<TestBatteryContent> findTestBatteryContentsByTestBatteryName(String testBattery) throws CerberusException;
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-    List<TestBatteryContentWithDescription> findTestBatteryContentsWithDescriptionByTestBatteryName(String testBattery) throws CerberusException;
+    public TestBatteryContentWithDescription(Integer testbatterycontentID, String test, String testCase, String testbattery, String description) {
+        this.setTestbatterycontentID(testbatterycontentID);
+        this.setTest(test);
+        this.setTestCase(testCase);
+        this.setTestbattery(testbattery);
+        this.description = description;
+    }
 
-    boolean updateTestBatteryContent(TestBatteryContent testBatteryContent);
-
-    boolean createTestBatteryContent(TestBatteryContent testBatteryContent);
-
-    boolean deleteTestBatteryContent(TestBatteryContent testBatteryContent);
-
-    List<TestBatteryContent> findTestBatteryContentsByCriteria(Integer testBatteryContentID, String testBattery, String test, String testCase) throws CerberusException;
 }
