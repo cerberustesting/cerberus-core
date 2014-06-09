@@ -487,18 +487,18 @@ public class ControlService implements IControlService {
                         mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_REGEXINELEMENT);
                         mes.setDescription(mes.getDescription().replaceAll("%STRING1%", html));
                         mes.setDescription(mes.getDescription().replaceAll("%STRING2%", str));
-                        mes.setDescription(mes.getDescription().replaceAll("%STRING3%", regex));
+                        mes.setDescription(mes.getDescription().replaceAll("%STRING3%", Pattern.quote(regex)));
                         return mes;
                     } else {
                         mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_REGEXINELEMENT);
                         mes.setDescription(mes.getDescription().replaceAll("%STRING1%", html));
                         mes.setDescription(mes.getDescription().replaceAll("%STRING2%", str));
-                        mes.setDescription(mes.getDescription().replaceAll("%STRING3%", regex));
+                        mes.setDescription(mes.getDescription().replaceAll("%STRING3%", Pattern.quote(regex)));
                         return mes;
                     }
                 } catch (PatternSyntaxException e) {
                     mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_REGEXINELEMENT_INVALIDPATERN);
-                    mes.setDescription(mes.getDescription().replaceAll("%PATERN%", regex));
+                    mes.setDescription(mes.getDescription().replaceAll("%PATERN%", Pattern.quote(regex)));
                     mes.setDescription(mes.getDescription().replaceAll("%ERROR%", e.getMessage()));
                     return mes;
                 }
@@ -528,16 +528,16 @@ public class ControlService implements IControlService {
                 Matcher matcher = pattern.matcher(pageSource);
                 if (matcher.find()) {
                     mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_TEXTINPAGE);
-                    mes.setDescription(mes.getDescription().replaceAll("%STRING1%", regex));
+                    mes.setDescription(mes.getDescription().replaceAll("%STRING1%", Pattern.quote(regex)));
                     return mes;
                 } else {
                     mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_TEXTINPAGE);
-                    mes.setDescription(mes.getDescription().replaceAll("%STRING1%", regex));
+                    mes.setDescription(mes.getDescription().replaceAll("%STRING1%", Pattern.quote(regex)));
                     return mes;
                 }
             } catch (PatternSyntaxException e) {
                 mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_TEXTINPAGE_INVALIDPATERN);
-                mes.setDescription(mes.getDescription().replaceAll("%PATERN%", regex));
+                mes.setDescription(mes.getDescription().replaceAll("%PATERN%", Pattern.quote(regex)));
                 mes.setDescription(mes.getDescription().replaceAll("%ERROR%", e.getMessage()));
                 return mes;
             }
@@ -558,16 +558,16 @@ public class ControlService implements IControlService {
                 Matcher matcher = pattern.matcher(pageSource);
                 if (!(matcher.find())) {
                     mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_TEXTNOTINPAGE);
-                    mes.setDescription(mes.getDescription().replaceAll("%STRING1%", regex));
+                    mes.setDescription(mes.getDescription().replaceAll("%STRING1%", Pattern.quote(regex)));
                     return mes;
                 } else {
                     mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_TEXTNOTINPAGE);
-                    mes.setDescription(mes.getDescription().replaceAll("%STRING1%", regex));
+                    mes.setDescription(mes.getDescription().replaceAll("%STRING1%", Pattern.quote(regex)));
                     return mes;
                 }
             } catch (PatternSyntaxException e) {
                 mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_TEXTNOTINPAGE_INVALIDPATERN);
-                mes.setDescription(mes.getDescription().replaceAll("%PATERN%", regex));
+                mes.setDescription(mes.getDescription().replaceAll("%PATERN%", Pattern.quote(regex)));
                 mes.setDescription(mes.getDescription().replaceAll("%ERROR%", e.getMessage()));
                 return mes;
             }
