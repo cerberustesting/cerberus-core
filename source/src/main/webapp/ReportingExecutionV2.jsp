@@ -48,7 +48,6 @@
         var oTable;
         var postData;
 
-        <% int countries = 3; %>
         var country = [];
         var browser = [];
         $(document).ready(function () {
@@ -75,7 +74,7 @@
                 $('#TCComment').before("<th colspan='" + (browser.length * 2) + "'>" + elem + "</th>");
                 $.each(browser, function (i, e) {
                     $('#tableCountry').append("<th colspan='2'>" + e + "</th>");
-                    $('#TCResult').append("<th></th><th></th>");
+                    $('#TCResult').append("<th class='TCResult'></th><th></th>");
                 });
             });
 
@@ -90,27 +89,36 @@
                 "bInfo": false,
                 "bSort": false,
                 "bPaginate": false,
+                "bDestroy": true,
                 "iDisplayLength": -1,
                 "aoColumnDefs": [
-                    <% for(int i = 0; i < countries; i++){ %>
-                    {"aTargets": [<%=6+i*2%>],
+                    {"aTargets": ['TCResult'],
                         "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
-                            if (oData[<%=6+i*2%>] === "") {
+                            if (oData[iCol] === "") {
                                 $(nTd).addClass('NOINF');
                             } else {
-                                $(nTd).addClass(oData[<%=6+i*2%>]);
+                                $(nTd).addClass(oData[iCol]);
                             }
                         },
                         "mRender": function (data, type, full) {
                             return "<a class='" + data + "F' href='ExecutionDetail.jsp?id_tc='>" + data + "</a>";
                         }
-                    },
-                    <% } %>
+                    }
                 ],
                 "fnServerParams": function (aoData) {
+                    var countries =  [];
+                    var browsers = [];
                     $.each(postData, function(index, data){
-                        aoData.push(data);
+                        if (data.name === "Country"){
+                            countries.push(data.value);
+                        } else if (data.name === "Browser") {
+                            browsers.push(data.value);
+                        } else {
+                            aoData.push(data);
+                        }
                     });
+                    aoData.push({"name": "Country[]", "value": countries});
+                    aoData.push({"name": "Browser[]", "value": browsers});
                 },
                 "fnInitComplete": function () {
                     new FixedHeader(oTable, {
