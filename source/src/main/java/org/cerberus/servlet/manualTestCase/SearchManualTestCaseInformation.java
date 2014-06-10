@@ -117,9 +117,10 @@ public class SearchManualTestCaseInformation extends HttpServlet {
         String tRev = this.getValue(req, "ScTRev");
         String targetBuild = this.getValue(req, "ScTargetBuild");
         String targetRev = this.getValue(req, "ScTargetRev");
+        String function = this.getValue(req, "function");
 
         IFactoryTCase factoryTCase = new FactoryTCase();
-        return factoryTCase.create(test, testCase, origin, null, creator, null, null, project, ticket, application, "", "", "", priority,
+        return factoryTCase.create(test, testCase, origin, null, creator, null, null, project, ticket, function, application, "", "", "", priority,
                 group, status, null, null, null, "", fBuild, fRev, tBuild, tRev, null, bug, targetBuild, targetRev, null, null, null, null, null);
     }
 

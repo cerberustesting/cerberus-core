@@ -145,6 +145,7 @@ toPosition	161
         tc.setTargetSprint(request.getParameter("editTargetBuild"));
         tc.setTargetRevision(request.getParameter("editTargetRev"));
         tc.setComment(request.getParameter("editComment"));
+        tc.setFunction(request.getParameter("function"));
         return tc;
     }
 }

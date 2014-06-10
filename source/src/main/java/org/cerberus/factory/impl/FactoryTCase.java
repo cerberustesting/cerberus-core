@@ -38,7 +38,7 @@ public class FactoryTCase implements IFactoryTCase {
     private TCase newTestCase;
 
     @Override
-    public TCase create(String test, String testCase, String origin, String refOrigin, String creator, String implementer, String lastModifier, String project, String ticket, String application, String runQA, String runUAT, String runPROD, int priority, String group, String status, String shortDescription, String description, String howTo, String active, String fromSprint, String fromRevision, String toSprint, String toRevision, String lastExecutionStatus, String bugID, String targetSprint, String targetRevision, String comment, List<TestCaseCountry> testCaseCountry, List<TestCaseCountryProperties> testCaseCountryProperties, List<TestCaseStep> testCaseStep, List<TestCaseStepBatch> testCaseStepBatch) {
+    public TCase create(String test, String testCase, String origin, String refOrigin, String creator, String implementer, String lastModifier, String project, String ticket, String function, String application, String runQA, String runUAT, String runPROD, int priority, String group, String status, String shortDescription, String description, String howTo, String active, String fromSprint, String fromRevision, String toSprint, String toRevision, String lastExecutionStatus, String bugID, String targetSprint, String targetRevision, String comment, List<TestCaseCountry> testCaseCountry, List<TestCaseCountryProperties> testCaseCountryProperties, List<TestCaseStep> testCaseStep, List<TestCaseStepBatch> testCaseStepBatch) {
         newTestCase = new TCase();
         newTestCase.setActive(active);
         newTestCase.setApplication(application);
@@ -73,6 +73,7 @@ public class FactoryTCase implements IFactoryTCase {
         newTestCase.setTestCaseCountryProperties(testCaseCountryProperties);
         newTestCase.setTestCaseStep(testCaseStep);
         newTestCase.setTestCaseStepBatch(testCaseStepBatch);
+        newTestCase.setFunction(function);
 
         return newTestCase;
     }

@@ -356,7 +356,7 @@
                         + "tc.Application, tc.TcActive ,tc.Project, tc.group, tc.status, tc.Comment, tc.HowTo, "
                         + "tc.Ticket, tc.Origine, tc.RefOrigine, tc.FromBuild, tc.FromRev, tc.ToBuild, tc.ToRev, "
                         + "tc.BugID, tc.TargetBuild, tc.TargetRev, tc.creator, tc.implementer, tc.lastModifier, "
-                        + "tc.activeQA, tc.activeUAT, tc.activePROD, tc.tcdatecrea "
+                        + "tc.activeQA, tc.activeUAT, tc.activePROD, tc.tcdatecrea, tc.function "
                         + " FROM test t, testcase tc"
                         + " WHERE t.test = tc.test"
                         + " AND tc.Test = '" + test + "'"
@@ -474,7 +474,7 @@
                                                 <td class="wob" style="width: 100px"><%out.print(docService.findLabelHTML("testcase", "LastModifier", "lastModifier"));%></td>
                                                 <td class="wob" style="width: 100px"><%out.print(docService.findLabelHTML("project", "idproject", "Project"));%></td>
                                                 <td class="wob" style="width: 100px"><%out.print(docService.findLabelHTML("testcase", "ticket", "Ticket"));%></td>
-                                                <td class="wob" style="width: 100px"><%out.print(docService.findLabelHTML("testcase", "function", "Function"));%></td>
+                                                <td class="wob" style="width: 100px"><%out.print(docService.findLabelHTML("testcase", "Function", "Function"));%></td>
 
                                             </tr>
                                             <tr>
@@ -488,7 +488,7 @@
                                                     <% out.print(ComboProject(conn, "editProject", "width: 90px", "project", "", rs_testcase_general_info.getString("tc.project"), "", true, "", "No Project Defined."));%>
                                                 </td>
                                                 <td class="wob"><input id="ticket" style="width: 90px;" name="editTicket" value="<%=rs_testcase_general_info.getString("Ticket") == null ? "" : rs_testcase_general_info.getString("Ticket")%>"></td>
-                                                <td class="wob"><input id="function" style="width: 90px;" name="editFunction" value="<%=rs_testcase_general_info.getString("Ticket") == null ? "" : rs_testcase_general_info.getString("Ticket")%>"></td>
+                                                <td class="wob"><input id="function" style="width: 90px;" name="function" value="<%=rs_testcase_general_info.getString("Function") == null ? "" : rs_testcase_general_info.getString("Function")%>"></td>
                                             </tr>
                                         </table>
                                     </td>

@@ -40,6 +40,7 @@ public class TestCase {
     private String lastModifier;
     private String project;
     private String ticket;
+    private String function;
     //TestCase Parameters
     private String application;
     private boolean runQA;
@@ -64,6 +65,14 @@ public class TestCase {
     private String targetRevision;
     private String comment;
     private List<String> countryList;
+
+    public String getFunction() {
+        return function;
+    }
+
+    public void setFunction(String function) {
+        this.function = function;
+    }
 
     public List<String> getCountryList() {
         return this.countryList;
