@@ -3448,6 +3448,27 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("('testcase', 'Function', '', 'Function', 'The function is the functionnality that the <code class=\\'doc-crbvvoca\\'>test case</code> is testing.')");
         SQLInstruction.add(SQLS.toString());
 
+//Add documentation for function column in testcase table
+//-- ------------------------ 484      
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) VALUES ");
+        SQLS.append("('', 'cerberus_testcase_function_urlForListOfFunction', '/URL/TO/FUNCTION/SERVICE', 'URL to feed the function field with proposal for autocompletion. URL should respond JSON format');");
+        SQLInstruction.add(SQLS.toString());
+        
+//Add documentation for function column in testcase table
+//-- ------------------------ 485      
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) VALUES ");
+        SQLS.append("('', 'cerberus_testcase_function_booleanListOfFunction', 'N', 'boolean to activate autocompletion on function fields.');");
+        SQLInstruction.add(SQLS.toString());
+        
+//Add documentation for timeout and synchroneous field
+//-- ------------------------ 486      
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `DocLabel`, `DocDesc`) VALUES ");
+        SQLS.append("('page_runtests', 'Synchroneous', '', 'Synchroneous', 'This is parameter to define if user mut be redirected to the reporting during the execution.<br><br>By default, synchroneous will be set to Y, meaning the redirection will be at the end of the execution.'),");
+        SQLS.append("('page_runtests', 'Timeout', '', 'Timeout', 'This is the timeout used for the execution.<br><br>If empty, the default value will be the one set in the parameter table.');");
+        SQLInstruction.add(SQLS.toString());
    
         return SQLInstruction;
     }

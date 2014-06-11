@@ -17,6 +17,7 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
+<%@page import="org.cerberus.entity.Parameter"%>
 <%@page import="java.util.ArrayList"%>
 <%@page import="java.util.List"%>
 <%@page import="java.sql.ResultSet"%>
@@ -29,6 +30,8 @@
 <%@page import="org.cerberus.service.impl.BuildRevisionInvariantService"%>
 <%@page import="org.cerberus.service.IBuildRevisionInvariantService"%>
 <%@page import="org.cerberus.service.IApplicationService"%>
+<%@page import="org.cerberus.service.IParameterService"%>
+<%@page import="org.cerberus.util.StringUtil"%>
 <%@page import="org.apache.commons.lang3.StringUtils"%>
 <% Date DatePageStart = new Date();%>
 
@@ -170,6 +173,7 @@
             <%
                 Connection conn = db.connect();
                 IDocumentationService docService = appContext.getBean(IDocumentationService.class);
+                boolean booleanFunction = false;
 
                 try {
 
@@ -177,8 +181,15 @@
                      * Filter requests
                      */
                     IApplicationService myApplicationService = appContext.getBean(IApplicationService.class);
+                    IParameterService parameterService = appContext.getBean(IParameterService.class);
                     IBuildRevisionInvariantService buildRevisionInvariantService = appContext.getBean(BuildRevisionInvariantService.class);
-
+                    
+                    booleanFunction = StringUtil.parseBoolean(parameterService.findParameterByKey("cerberus_testcase_function_booleanListOfFunction", "").getValue());
+                    String listOfFunction = "";
+                    if (booleanFunction){
+                    Parameter functions = parameterService.findParameterByKey("cerberus_testcase_function_urlForListOfFunction", "");
+                    listOfFunction = functions.getValue();
+                    }
                     String SitdmossBugtrackingURL;
                     SitdmossBugtrackingURL = "";
                     String appSystem = "";
@@ -286,6 +297,7 @@
                     Statement stQueryTest = conn.createStatement();
                     Statement stQueryTestCase = conn.createStatement();
             %>
+            <input id="urlForListOffunction" value="<%=listOfFunction%>" style="display:none">
             <form action="TestCase.jsp" method="post" name="selectTestCase" id="selectTestCase">
                 <table id="arrond">
                     <tr>
@@ -488,7 +500,7 @@
                                                     <% out.print(ComboProject(conn, "editProject", "width: 90px", "project", "", rs_testcase_general_info.getString("tc.project"), "", true, "", "No Project Defined."));%>
                                                 </td>
                                                 <td class="wob"><input id="ticket" style="width: 90px;" name="editTicket" value="<%=rs_testcase_general_info.getString("Ticket") == null ? "" : rs_testcase_general_info.getString("Ticket")%>"></td>
-                                                <td class="wob"><input id="function" style="width: 90px;" name="function" value="<%=rs_testcase_general_info.getString("Function") == null ? "" : rs_testcase_general_info.getString("Function")%>"></td>
+                                                <td class="wob"><input id="function" style="width: 90px;" list="functions" name="function" value="<%=rs_testcase_general_info.getString("Function") == null ? "" : rs_testcase_general_info.getString("Function")%>"></td>
                                             </tr>
                                         </table>
                                     </td>
@@ -844,6 +856,8 @@
 
                         </td>
                     </tr>
+                    <datalist id="functions">
+                    </datalist>
                 </form>
 
                 <% }%>
@@ -1715,6 +1729,16 @@
 
     </div>
 </div>
+        <% if (booleanFunction){%>
+<script type="text/javascript">
+            $(document).ready(function(){$.getJSON($('#urlForListOffunction').val(), function(data) {
+                for (var i = 0; i < data.length; i++) {
+                    $("#functions").append($("<option></option>")
+                            .attr("value", data[i].value));
+            }});
+        });
+</script>
+        <%}%>
 <div id="popin"></div>
 <br><% out.print(display_footer(DatePageStart));%>
 </body>
