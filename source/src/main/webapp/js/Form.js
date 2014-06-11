@@ -484,7 +484,7 @@ function addTestCaseProperties(tableau, max_tcp_country,
 
     TB51.appendChild(TR51);
     TD5.appendChild(TB51);
-    TD5.setAttribute('style', 'background-color: white')
+    TD5.setAttribute('style', 'background-color: white');
     TR.appendChild(TD5);
 
 
@@ -1082,13 +1082,10 @@ function hideSqlDetails(valueId, buttonOneId, buttonTwoId) {
 
 function activateDatabaseBox(value, fieldOneId, fieldTwoId) {
     if (value == "executeSql" || value == "executeSqlFromLib" || value == "executeSoapFromLib") {
-        document.getElementById(fieldOneId).style.display = "inline";
-        document.getElementById(fieldTwoId).style.display = "none";
+        $("#"+fieldOneId).empty().append($('#'+fieldTwoId).html());
     } else
     {
-        document.getElementById(fieldOneId).value = "";
-        document.getElementById(fieldOneId).style.display = "none";
-        document.getElementById(fieldTwoId).style.display = "inline";
+        $("#"+fieldOneId).empty().append($('<option></option>').text("---").val("---"));
     }
 }
 
@@ -1180,7 +1177,7 @@ function addBuildContent(tableau) {
     }
     var TD1 = document.createElement('td');
     TD1.appendChild(form1);
-    TD1.setAttribute('border-left', '1px')
+    TD1.setAttribute('border-left', '1px');
     TD1.setAttribute('style', 'background-color:lightgrey');
     TR.appendChild(TD1);
 
@@ -1290,7 +1287,7 @@ function addBuildContent(tableau) {
     form6.setAttribute('name', 'ubcLink');
     var TD6 = document.createElement('td');
     TD6.appendChild(form6);
-    TD6.setAttribute('colspan', '2')
+    TD6.setAttribute('colspan', '2');
     TD6.setAttribute('style', 'background-color:lightgrey');
     TR.appendChild(TD6);
 

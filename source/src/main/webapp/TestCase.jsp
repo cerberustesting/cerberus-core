@@ -954,9 +954,6 @@
                     Statement stmt6 = conn.createStatement();
                     Statement stmt80 = conn.createStatement();
                     String color = "white";
-                    String color2 = "white";
-                    String properties_dtb_display = "";
-                    String properties_dtbdisplay = "";
                     int i = 1;
                     int j = 1;
                     int rowNumber = 0;
@@ -1407,9 +1404,14 @@
                                                         ResultSet rs_properties = stmt7.executeQuery(coun);
 
 
-                                                        int numberOfRow = 0;
+                                                        String properties_dtb_ID = "properties_dtb_type_ID";
+
 
                                                         if (rs_properties.first()) {
+                                                            %><div id="cache_properties">
+                                                                <%=ComboInvariant(conn, "properties_dtb_type_ID", "display: none;", "properties_dtb_type_ID", "wob", "PROPERTYDATABASE", rs_properties.getString("a.Database"), "", null)%>
+                                                            </div><%
+
                                                             do {
 
                                                                 String type_init[] = {"text", "executeSql", "getFromHtmlVisible", "getFromHtml"}; // type for select list
@@ -1449,15 +1451,6 @@
                                                                     }
                                                                 }
 
-                                                                if (rs_properties.getString("a.Type").equals("executeSqlFromLib") || rs_properties.getString("a.Type").equals("executeSql") || rs_properties.getString("a.Type").equals("executeSoapFromLib")) {
-                                                                    properties_dtbdisplay = "inline";
-                                                                    properties_dtb_display = "none";
-                                                                } else {
-                                                                    properties_dtbdisplay = "none";
-                                                                    properties_dtb_display = "inline";
-
-                                                                }
-
                                                                 size3 = 0;
                                                                 size4 = size2;
                                                                 String styleValue2 = "none";
@@ -1490,17 +1483,14 @@
                                                                 String sqlDetailsB1 = "sqlDetailsB1" + valueID;
                                                                 String sqlDetailsB2 = "sqlDetailsB2" + valueID;
                                                                 String properties_dtbID = "properties_dtb" + valueID;
-                                                                String properties_dtb_ID = "properties_dtb_" + valueID;
                                                                 String showSqlDetail = "";
                                                                 i++;
 
                                                                 j = i % 2;
                                                                 if (j == 1) {
                                                                     color = "#f3f6fa";
-                                                                    color2 = "white";
                                                                 } else {
                                                                     color = "White";
-                                                                    color2 = "#f3f6fa";
                                                                 }
                                                 %>
                                                 <tr style="background-color : <%=color%>">
@@ -1537,8 +1527,18 @@
                                                                     %>
                                                             </tr></table></td>
                                                     <td><%=ComboInvariant(conn, "properties_type", "width: 120px; background-color:" + color, typeID, "wob", "PROPERTYTYPE", rs_properties.getString("a.Type"), "activateDatabaseBox(this.value, '" + properties_dtbID + "' ,'" + properties_dtb_ID + "' );activateValue2(this.value, 'tdValue2_" + rowNumber + "', '" + valueID + "','" + valueID + "_2','" + size2 + "')", null)%></td>
-                                                    <td><%=ComboInvariant(conn, "properties_dtb", "width: 40px; display: " + properties_dtbdisplay + " ; background-color:" + color, properties_dtbID, "wob", "PROPERTYDATABASE", rs_properties.getString("a.Database"), "", null)%>
-                                                        <input id="<%=properties_dtb_ID%>" style="display:<%=properties_dtb_display%>;  width:39px; background-color: <%=color%>;text-align:center; color: green; font-weight:bolder" class="wob"  value="---">
+                                                    <td>
+                                                        <%
+                                                        if (rs_properties.getString("a.Type").equals("executeSqlFromLib") || rs_properties.getString("a.Type").equals("executeSql") || rs_properties.getString("a.Type").equals("executeSoapFromLib")) {
+                                                        %>
+                                                            <%=ComboInvariant(conn, "properties_dtb", "width: 40px; display: inline ; background-color:" + color, properties_dtbID, "wob", "PROPERTYDATABASE", rs_properties.getString("a.Database"), "", null)%>
+                                                        <%
+                                                            } else {
+                                                            %><select name="properties_dtb" style="width: 40px; display: inline ; background-color:<%=color%>" class="wob" id="<%=properties_dtbID%>">
+                                                                <option value="---">---</option>
+                                                            </select><%
+                                                            }
+                                                        %>
                                                     </td>
 
                                                     <td><table><tr><td class="wob" rowspan="2"><textarea id="<%=valueID%>" rows="2" class="wob" style="width: <%=size4%>px; background-color : <%=color%>; " name="properties_value"
