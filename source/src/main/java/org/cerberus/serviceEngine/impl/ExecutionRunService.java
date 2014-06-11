@@ -462,6 +462,7 @@ public class ExecutionRunService implements IExecutionRunService {
             if ((!(testCaseStepActionExecution.getExecutionResultMessage().equals(new MessageGeneral(MessageGeneralEnum.EXECUTION_OK))))
                     && (!(testCaseStepActionExecution.getExecutionResultMessage().equals(new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_TESTEXECUTING))))) {
                 testCaseStepExecution.setExecutionResultMessage(testCaseStepActionExecution.getExecutionResultMessage());
+                testCaseStepExecution.setStepResultMessage(testCaseStepActionExecution.getActionResultMessage());
             }
             if (testCaseStepActionExecution.isStopExecution()) {
                 break;
