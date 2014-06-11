@@ -3477,6 +3477,12 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(" ('SYNCHRONEOUS', 'N', '2', 'Redirect to the execution before the end of the execution', '', NULL, NULL, NULL),");
         SQLS.append(" ('SYNCHRONEOUS', 'Y', '1', 'Redirect to the execution after the end of the execution', '', NULL, NULL, NULL);");
         SQLInstruction.add(SQLS.toString());
+        
+//Add invariant private synchroneous
+//-- ------------------------ 488       
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ('INVARIANTPRIVATE', 'SYNCHRONEOUS', '430', '', '');");
+        SQLInstruction.add(SQLS.toString());
    
         return SQLInstruction;
     }
