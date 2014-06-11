@@ -214,7 +214,10 @@
                             title: 'Add Content',
                             show: "blind",
                             hide: "blind",
-                            width: "900px"
+                            width: "900px",
+                            close: function(ev,ui) {
+                                refreshContents(id);
+                            }
                         },
                         sDeleteHttpMethod: "POST",
                         sDeleteURL: "DeleteTestBatteryContent",
