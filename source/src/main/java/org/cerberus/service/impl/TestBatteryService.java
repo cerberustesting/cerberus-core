@@ -24,6 +24,7 @@ import org.cerberus.dao.ITestBatteryContentDAO;
 import org.cerberus.dao.ITestBatteryDAO;
 import org.cerberus.entity.TestBattery;
 import org.cerberus.entity.TestBatteryContent;
+import org.cerberus.entity.TestBatteryContentWithDescription;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.service.ITestBatteryService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,6 +61,11 @@ public class TestBatteryService implements ITestBatteryService {
     @Override
     public List<TestBatteryContent> findTestBatteryContentsByTestBatteryName(String testBattery) throws CerberusException {
         return testBatteryContentDAO.findTestBatteryContentsByTestBatteryName(testBattery);
+    }
+
+    @Override
+    public List<TestBatteryContentWithDescription> findTestBatteryContentsWithDescriptionByTestBatteryName(String testBattery) throws CerberusException {
+        return testBatteryContentDAO.findTestBatteryContentsWithDescriptionByTestBatteryName(testBattery);
     }
 
     @Override

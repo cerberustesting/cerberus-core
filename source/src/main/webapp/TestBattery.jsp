@@ -88,6 +88,7 @@
                         <th>Test Battery</th>
                         <th>Test</th>
                         <th>TestCase</th>
+                        <th>Description</th>
                     </tr>
                 </thead>
             </table>
@@ -190,7 +191,8 @@
                             {"sName": "ID", "bVisible": false},
                             {"sName": "Test Battery", "bVisible": false},
                             {"sName": "Test"},
-                            {"sName": "TestCase"}
+                            {"sName": "TestCase"},
+                            {"sName": "Description"}
                         ],
                         "aaData" : data.TestBatteryContents
                     }).makeEditable({
@@ -252,6 +254,7 @@
                 <input type="hidden" value="-1" id="TestBatteryIdForContent" name="TestBattery" class="ncdetailstext" rel="1">
                 <input type="hidden" id="Test" name="Test" class="ncdetailstext" rel="2" >
                 <input type="hidden" id="TestCase" name="TestCase" class="ncdetailstext" rel="3" >
+                <input type="hidden" id="Description" name="Descrition" class="ncdetailstext" rel="4" >
                 <div id="testcasesearchdiv"></div>
             </form>
      </body>

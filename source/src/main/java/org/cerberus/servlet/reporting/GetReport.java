@@ -48,8 +48,10 @@ public class GetReport extends HttpServlet {
                 object.put(tc.getShortDescription());
                 object.put(tc.getPriority());
                 object.put(tc.getStatus());
-                for (String country : req.getParameterValues("country[]")) {
-                    for (String browser : req.getParameterValues("browser[]")) {
+                for (String country : req.getParameterValues("Country[]")) {
+//                for (String country : req.getParameterValues("Country")) {
+                    for (String browser : req.getParameterValues("Browser[]")) {
+//                    for (String browser : req.getParameterValues("Browser")) {
                         TestCaseExecution tce = testCaseExecutionService.findLastTCExecutionByCriteria(tc.getTest(), tc.getTestCase(), "", country, "", "", browser, "", "", "", "");
                         if (tce != null) {
                             object.put(tce.getControlStatus());

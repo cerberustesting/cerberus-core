@@ -22,6 +22,7 @@ package org.cerberus.service;
 import java.util.List;
 import org.cerberus.entity.TestBattery;
 import org.cerberus.entity.TestBatteryContent;
+import org.cerberus.entity.TestBatteryContentWithDescription;
 import org.cerberus.exception.CerberusException;
 
 /**
@@ -40,6 +41,8 @@ public interface ITestBatteryService {
     TestBattery findTestBatteryByTestBatteryName(String testBattery) throws CerberusException;
 
     List<TestBatteryContent> findTestBatteryContentsByTestBatteryName(String testBattery) throws CerberusException;
+
+    List<TestBatteryContentWithDescription> findTestBatteryContentsWithDescriptionByTestBatteryName(String testBattery) throws CerberusException;
 
     boolean updateTestBattery(TestBattery testBattery);
 

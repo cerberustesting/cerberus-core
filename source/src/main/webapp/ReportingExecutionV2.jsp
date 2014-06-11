@@ -46,11 +46,10 @@
 
     <script type="text/javascript">
         var oTable;
+        var postData;
 
-        //        var country = ["BE", "CH", "ES", "FR", "IT", "PT", "RU", "UK", "VI"];
-        <% int countries = 3; %>
-        var country = ["PT", "ES", "BE"];
-        var browser = ["firefox"];
+        var country = [];
+        var browser = [];
         $(document).ready(function () {
             $(".multiSelectOptions").each(function () {
                 var currentElement = $(this);
@@ -64,13 +63,22 @@
                 });
             });
 
+        $('#formReporting').submit(function(e){
+            e.preventDefault();
+
+            postData = $(this).serializeArray();
+            country = $('#Country').val();
+            browser= $('#Browser').val();
+
             $.each(country, function (index, elem) {
                 $('#TCComment').before("<th colspan='" + (browser.length * 2) + "'>" + elem + "</th>");
                 $.each(browser, function (i, e) {
                     $('#tableCountry').append("<th colspan='2'>" + e + "</th>");
-                    $('#TCResult').append("<th></th><th></th>");
+                    $('#TCResult').append("<th class='TCResult'></th><th></th>");
                 });
             });
+
+            $('#divReporting').show();
 
             oTable = $('#reporting').dataTable({
                 "bServerSide": true,
@@ -81,25 +89,36 @@
                 "bInfo": false,
                 "bSort": false,
                 "bPaginate": false,
+                "bDestroy": true,
                 "iDisplayLength": -1,
                 "aoColumnDefs": [
-                    <% for(int i = 0; i < countries; i++){ %>
-                    {"aTargets": [<%=6+i*2%>],
+                    {"aTargets": ['TCResult'],
                         "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
-                            if (oData[<%=6+i*2%>] === "") {
+                            if (oData[iCol] === "") {
                                 $(nTd).addClass('NOINF');
                             } else {
-                                $(nTd).addClass(oData[<%=6+i*2%>]);
+                                $(nTd).addClass(oData[iCol]);
                             }
                         },
                         "mRender": function (data, type, full) {
                             return "<a class='" + data + "F' href='ExecutionDetail.jsp?id_tc='>" + data + "</a>";
                         }
-                    },
-                    <% } %>
+                    }
                 ],
                 "fnServerParams": function (aoData) {
-                    aoData.push({ "name": "country", "value": country }, { "name": "browser", "value": browser });
+                    var countries =  [];
+                    var browsers = [];
+                    $.each(postData, function(index, data){
+                        if (data.name === "Country"){
+                            countries.push(data.value);
+                        } else if (data.name === "Browser") {
+                            browsers.push(data.value);
+                        } else {
+                            aoData.push(data);
+                        }
+                    });
+                    aoData.push({"name": "Country[]", "value": countries});
+                    aoData.push({"name": "Browser[]", "value": browsers});
                 },
                 "fnInitComplete": function () {
                     new FixedHeader(oTable, {
@@ -113,8 +132,12 @@
                 }
             });
         });
+    });
     </script>
     <style>
+        .underlinedDiv{
+            padding-top: 15px;
+        }
         div.FixedHeader_Cloned th,
         div.FixedHeader_Cloned td {
             background-color: white !important;
@@ -187,6 +210,8 @@
     IProjectService projectService = appContext.getBean(IProjectService.class);
     IInvariantService invariantService = appContext.getBean(InvariantService.class);
     IBuildRevisionInvariantService buildRevisionInvariantService = appContext.getBean(IBuildRevisionInvariantService.class);
+    IApplicationService applicationService = appContext.getBean(IApplicationService.class);
+    IUserService userService = appContext.getBean(IUserService.class);
 
     TreeMap<String, String> options = new TreeMap<String, String>();
 %>
@@ -206,6 +231,7 @@
     </div>
 </div>
 <div id="filtersList" style="display:block">
+<form id="formReporting">
     <div>
         <div class="underlinedDiv"></div>
         <p style="text-align:left" class="dttTitle">Testcase Filters (Displayed Rows)</p>
@@ -271,6 +297,9 @@
                 <div>
                     <%
                         options.clear();
+                        for(Application app : applicationService.findAllApplication()){
+                            options.put(app.getApplication(), app.getApplication()+" ["+app.getSystem()+"]");
+                        }
                     %>
                     <%=generateMultiSelect("Application", request.getParameterValues("Application"), options,
                             "Select an application", "Select Application", "# of # Application selected", 1, true)%>
@@ -301,6 +330,9 @@
                 <div>
                     <%
                         options.clear();
+                        for (Invariant statusInv : invariantService.findListOfInvariantById("PRIORITY")) {
+                            options.put(statusInv.getValue(), statusInv.getValue());
+                        }
                     %>
                     <%=generateMultiSelect("Priority", request.getParameterValues("Priority"), options, "Select a Priority",
                             "Select Priority", "# of # Priority selected", 1, true)%>
@@ -332,6 +364,11 @@
                 <div>
                     <%
                         options.clear();
+                        for (Invariant statusInv : invariantService.findListOfInvariantById("GROUP")) {
+                            if(!statusInv.getValue().isEmpty()){
+                                options.put(statusInv.getValue(), statusInv.getValue());
+                            }
+                        }
                     %>
                     <%=generateMultiSelect("Group", request.getParameterValues("Group"), options, "Select a Group",
                             "Select Group", "# of # Group selected", 1, true)%>
@@ -346,6 +383,10 @@
                 <div>
                     <%
                         options.clear();
+                        List<BuildRevisionInvariant> buildList = buildRevisionInvariantService.findAllBuildRevisionInvariantBySystemLevel(systemBR, 1);
+                        for (BuildRevisionInvariant myBR : buildList) {
+                            options.put(myBR.getVersionName(), myBR.getVersionName());
+                        }
                     %>
                     <%=generateMultiSelect("TargetBuild", request.getParameterValues("TargetBuild"), options,
                             "Select a Target Build", "Select Target Build", "# of # Target Build selected", 1, true)%>
@@ -360,6 +401,10 @@
                 <div>
                     <%
                         options.clear();
+                        List<BuildRevisionInvariant> revisionList = buildRevisionInvariantService.findAllBuildRevisionInvariantBySystemLevel(systemBR, 2);
+                        for (BuildRevisionInvariant myBR : revisionList) {
+                            options.put(myBR.getVersionName(), myBR.getVersionName());
+                        }
                     %>
                     <%=generateMultiSelect("TargetRev", request.getParameterValues("TargetRev"), options,
                             "Select a Target Rev", "Select Target Rev", "# of # Target Rev selected", 1, true)%>
@@ -374,6 +419,9 @@
                 <div>
                     <%
                         options.clear();
+                        for(User user : userService.findallUser()){
+                            options.put(user.getLogin(), user.getLogin());
+                        }
                     %>
                     <%=generateMultiSelect("Creator", request.getParameterValues("Creator"), options, "Select a Creator",
                             "Select Creator", "# of # Creator selected", 1, true)%>
@@ -413,6 +461,9 @@
             <div>
                 <%
                     options.clear();
+                    for (Invariant statusInv : invariantService.findListOfInvariantById("ENVIRONMENT")) {
+                        options.put(statusInv.getValue(), statusInv.getValue());
+                    }
                 %>
                 <%=generateMultiSelect("Environment", request.getParameterValues("Environment"), options,
                         "Select an Environment", "Select Environment", "# of # Environment selected", 1, true)%>
@@ -425,7 +476,7 @@
             <div>
                 <%
                     options.clear();
-                    for (BuildRevisionInvariant myBR : buildRevisionInvariantService.findAllBuildRevisionInvariantBySystemLevel(systemBR, 1)) {
+                    for (BuildRevisionInvariant myBR : buildList) {
                         options.put(myBR.getVersionName(), myBR.getVersionName());
                     }
                 %>
@@ -440,7 +491,7 @@
             <div>
                 <%
                     options.clear();
-                    for (BuildRevisionInvariant myBR : buildRevisionInvariantService.findAllBuildRevisionInvariantBySystemLevel(systemBR, 2)) {
+                    for (BuildRevisionInvariant myBR : revisionList) {
                         options.put(myBR.getVersionName(), myBR.getVersionName());
                     }
                 %>
@@ -524,9 +575,13 @@
     <div style="clear:both">
         <div class="underlinedDiv"></div>
     </div>
+    <div>
+        <input id="button" type="submit" name="Apply" value="Apply">
+    </div>
+</form>
 </div>
 </div>
-<div>
+<div id="divReporting" style="display: none; margin-top: 25px">
     <table id="reporting" class="display" style="color: #555555;font-family: Trebuchet MS;font-weight: bold;">
         <thead>
         <tr>
