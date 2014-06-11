@@ -211,7 +211,7 @@
                         if (request.getParameter("synchroneous") != null && request.getParameter("synchroneous").compareTo("") != 0) {
                             synchroneous = request.getParameter("synchroneous");
                         } else {
-                            synchroneous = new String("Y");
+                            synchroneous = new String("N");
                         }
                         
                         String timeout;
