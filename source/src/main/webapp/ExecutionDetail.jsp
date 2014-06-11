@@ -375,13 +375,13 @@
                             for (TestCaseExecutionData myData : dataList) {
                         %>
                         <tr>
+                            <td class="<%=myData.getRC()%>"><span class="<%=myData.getRC()%>F" id="PROPSTS-<%=myData.getProperty()%>"><%=myData.getRC()%></span></td>
                             <td><%=DateUtil.getFormatedDate(myData.getStartLong())%></td>
                             <td><%=DateUtil.getFormatedElapsed(myData.getStartLong(), myData.getEndLong())%></td>
                             <td><b><span id="PROP-<%=myData.getProperty()%>"><%=myData.getProperty()%></span></b></td>
                             <td><b><i><span id="PROPVAL-<%=myData.getProperty()%>"><%=myData.getValue()%></span></i></b></td>
                             <td style="font-size: x-small"><%=myData.getType()%></td>
                             <td style="font-size: x-small"><%=myData.getValue1()%> / <%=myData.getValue2()%></td>
-                            <td class="<%=myData.getRC()%>"><span class="<%=myData.getRC()%>F" id="PROPSTS-<%=myData.getProperty()%>"><%=myData.getRC()%></span></td>
                             <td><span id="PROPMES-<%=myData.getProperty()%>"><%=myData.getrMessage()%></span></td>
                         </tr>
                         <%
@@ -417,13 +417,14 @@
                         %>
                         <tr class="tableHeader">
                             <td class="<%=myStepData.getReturnCode()%>"><a class="<%=myStepData.getReturnCode()%>F"><%=myStepData.getReturnCode()%></a></td>
-                            <td><%=DateUtil.getFormatedDate(myStepData.getFullStart())%></td>
-                            <td><%=DateUtil.getFormatedDate(myStepData.getFullEnd())%></td>
-                            <td><%=styleMainTestCase1%><%=myStepData.getTest()%><%=styleMainTestCase2%></td>
-                            <td><%=styleMainTestCase1%><%=myStepData.getTestCase()%><%=styleMainTestCase2%></td>
-                            <td><%=styleMainTestCase1%>Step <%=myStepData.getStep()%><%=styleMainTestCase2%></td>
-                            <td><%=styleMainTestCase1%><%=myTCSDesc%><%=styleMainTestCase2%></td>
-                            <td><%=myStepData.getTimeElapsed()%> s</td>
+                            <td align="left"><%=styleMainTestCase1%><%=myTCSDesc%><%=styleMainTestCase2%>    (  
+                            <%=myStepData.getTimeElapsed()%> s )</td>
+                            <td align="right"><%=DateUtil.getFormatedDate(myStepData.getFullStart())%>  >>  
+                            <%=DateUtil.getFormatedDate(myStepData.getFullEnd())%> (
+                            <%=styleMainTestCase1%><%=myStepData.getTest()%><%=styleMainTestCase2%> / 
+                            <%=styleMainTestCase1%><%=myStepData.getTestCase()%><%=styleMainTestCase2%> / 
+                            <%=styleMainTestCase1%>Step <%=myStepData.getStep()%><%=styleMainTestCase2%> )
+                            
                         </tr>
                         <tr>
                             <td colspan="9">
