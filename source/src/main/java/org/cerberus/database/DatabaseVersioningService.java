@@ -3469,6 +3469,14 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("('page_runtests', 'Synchroneous', '', 'Synchroneous', 'This is parameter to define if user mut be redirected to the reporting during the execution.<br><br>By default, synchroneous will be set to Y, meaning the redirection will be at the end of the execution.'),");
         SQLS.append("('page_runtests', 'Timeout', '', 'Timeout', 'This is the timeout used for the execution.<br><br>If empty, the default value will be the one set in the parameter table.');");
         SQLInstruction.add(SQLS.toString());
+        
+//Add invariant synchroneous
+//-- ------------------------ 487      
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` VALUES ");
+        SQLS.append(" ('SYNCHRONEOUS', 'N', '2', 'Redirect to the execution before the end of the execution', '', NULL, NULL, NULL),");
+        SQLS.append(" ('SYNCHRONEOUS', 'Y', '1', 'Redirect to the execution after the end of the execution', '', NULL, NULL, NULL);");
+        SQLInstruction.add(SQLS.toString());
    
         return SQLInstruction;
     }
