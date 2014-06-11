@@ -60,7 +60,7 @@ public class ExportListTestCase extends HttpServlet {
         List<TCase> list = testCaseService.findTestCaseByAllCriteria(tCase, text, system);
 
         StringBuilder sb = new StringBuilder();
-        sb.append("Test,TestCase,Origin,RefOrigin,Creator,Implementer,LastModifier,Project,Ticket,Application,RunQA,RunUAT,RunPROD,Priority,Group,Status,");
+        sb.append("Test,TestCase,Origin,RefOrigin,Creator,Implementer,LastModifier,Project,Ticket,Function,Application,RunQA,RunUAT,RunPROD,Priority,Group,Status,");
         sb.append("ShortDescription,Description,HowTo,Active,FromSprint,FromRevision,ToSprint,ToRevision,LastExecution,BugID,TargetSprint,TargetRevision,Comment\n");
 
         for (TCase tc : list) {
@@ -98,9 +98,10 @@ public class ExportListTestCase extends HttpServlet {
         String tRev = this.getValue(req, "ScTRev");
         String targetBuild = this.getValue(req, "ScTargetBuild");
         String targetRev = this.getValue(req, "ScTargetRev");
+        String function = this.getValue(req, "function");
 
         IFactoryTCase factoryTCase = new FactoryTCase();
-        return factoryTCase.create(test, testCase, origine, null, creator, null, null, project, ticket, application, qa, uat, prod, priority, group,
+        return factoryTCase.create(test, testCase, origine, null, creator, null, null, project, ticket,function, application, qa, uat, prod, priority, group,
                 status, null, null, null, active, fBuild, fRev, tBuild, tRev, null, bug, targetBuild, targetRev, null, null, null, null, null);
     }
 
@@ -173,6 +174,8 @@ public class ExportListTestCase extends HttpServlet {
         sb.append(StringUtil.getCleanCSVTextField(tc.getTargetRevision()));
         sb.append("\",\"");
         sb.append(StringUtil.getCleanCSVTextField(tc.getComment()));
+        sb.append("\",\"");
+        sb.append(StringUtil.getCleanCSVTextField(tc.getFunction()));
         sb.append("\"\n");
 
         return sb.toString();

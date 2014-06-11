@@ -33,6 +33,7 @@ public class TCase {
     private String lastModifier;
     private String project;
     private String ticket;
+    private String function;
     private String application;
     private String runQA;
     private String runUAT;
@@ -57,6 +58,14 @@ public class TCase {
     private List<TestCaseCountryProperties> testCaseCountryProperties;
     private List<TestCaseStep> testCaseStep;
     private List<TestCaseStepBatch> testCaseStepBatch;
+
+    public String getFunction() {
+        return function;
+    }
+
+    public void setFunction(String function) {
+        this.function = function;
+    }
 
     public List<TestCaseCountryProperties> getTestCaseCountryProperties() {
         return testCaseCountryProperties;

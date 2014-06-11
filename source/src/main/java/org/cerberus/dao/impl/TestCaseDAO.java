@@ -170,7 +170,7 @@ public class TestCaseDAO implements ITestCaseDAO {
         boolean res = false;
         final String sql = "UPDATE testcase tc SET tc.Application = ?, tc.Project = ?, tc.BehaviorOrValueExpected = ?, tc.activeQA = ?, tc.activeUAT = ?, tc.activePROD = ?, "
                 + "tc.Priority = ?, tc.Status = ?, tc.TcActive = ?, tc.Description = ?, tc.Group = ?, tc.HowTo = ?, tc.Comment = ?, tc.Ticket = ?, tc.FromBuild = ?, "
-                + "tc.FromRev = ?, tc.ToBuild = ?, tc.ToRev = ?, tc.BugID = ?, tc.TargetBuild = ?, tc.Implementer = ?, tc.LastModifier = ?, tc.TargetRev = ? "
+                + "tc.FromRev = ?, tc.ToBuild = ?, tc.ToRev = ?, tc.BugID = ?, tc.TargetBuild = ?, tc.Implementer = ?, tc.LastModifier = ?, tc.TargetRev = ?, tc.`function` = ? "
                 + "WHERE tc.Test = ? AND tc.Testcase = ?";
 
         Connection connection = this.databaseSpring.connect();
@@ -200,8 +200,9 @@ public class TestCaseDAO implements ITestCaseDAO {
                 preStat.setString(21, testCase.getImplementer());
                 preStat.setString(22, testCase.getLastModifier());
                 preStat.setString(23, testCase.getTargetRevision());
-                preStat.setString(24, testCase.getTest());
-                preStat.setString(25, testCase.getTestCase());
+                preStat.setString(24, testCase.getFunction());
+                preStat.setString(25, testCase.getTest());
+                preStat.setString(26, testCase.getTestCase());
 
                 res = preStat.executeUpdate() > 0;
             } catch (SQLException exception) {
@@ -313,8 +314,8 @@ public class TestCaseDAO implements ITestCaseDAO {
                 .append("`Group`, `Origine`, `RefOrigine`, `HowTo`, `Comment`, ")
                 .append("`FromBuild`, `FromRev`, `ToBuild`, `ToRev`, ")
                 .append("`BugID`, `TargetBuild`, `TargetRev`, `Creator`, ")
-                .append("`Implementer`, `LastModifier`, `Sla`) ")
-                .append("VALUES ( ?, ?, ?, ?, ?, ")
+                .append("`Implementer`, `LastModifier`, `Sla`, `function`) ")
+                .append("VALUES ( ?, ?, ?, ?, ?, ?, ")
                 .append("?, ?, ")
                 .append("?, ?, ?, ?, ")
                 .append("?, ?, ?, ?, ?, ")
@@ -354,6 +355,7 @@ public class TestCaseDAO implements ITestCaseDAO {
                 preStat.setString(24, testCase.getImplementer());
                 preStat.setString(25, testCase.getLastModifier());
                 preStat.setString(26, "");
+                preStat.setString(27, testCase.getFunction());
                 /*        preStat.setString(4, testCase.isRunQA() ? "Y" : "N");
                  preStat.setString(5, testCase.isRunUAT() ? "Y" : "N");
                  preStat.setString(6, testCase.isRunPROD() ? "Y" : "N");
@@ -508,6 +510,8 @@ public class TestCaseDAO implements ITestCaseDAO {
         query.append(ParameterParserUtil.wildcardOrIsNullIfEmpty("t2.targetrev", testCase.getTargetRevision()));
         query.append(") AND (t2.testcase LIKE ");
         query.append(ParameterParserUtil.wildcardOrIsNullIfEmpty("t2.testcase", testCase.getTestCase()));
+        query.append(") AND (t2.function LIKE ");
+        query.append(ParameterParserUtil.wildcardOrIsNullIfEmpty("t2.function", testCase.getFunction()));
         query.append(")");
         
         Connection connection = this.databaseSpring.connect();
@@ -576,9 +580,10 @@ public class TestCaseDAO implements ITestCaseDAO {
         String runQA = resultSet.getString("activeQA");
         String runUAT = resultSet.getString("activeUAT");
         String runPROD = resultSet.getString("activePROD");
+        String function = resultSet.getString("function");
 
         return factoryTestCase.create(test, testCase, origin, refOrigin, creator, implementer,
-                lastModifier, project, ticket, tcapplication, runQA, runUAT, runPROD, priority, group,
+                lastModifier, project, ticket, function, tcapplication, runQA, runUAT, runPROD, priority, group,
                 status, description, behavior, howTo, tcactive, fromSprint, fromRevision, toSprint,
                 toRevision, status, bugID, targetSprint, targetRevision, comment, null, null, null, null);
     }
