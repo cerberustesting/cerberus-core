@@ -91,6 +91,30 @@ div#header {
     border-bottom: solid 1px;
     font-size: large;
 }
+
+.tableHeader{
+background-image: -moz-linear-gradient(bottom, #ebebeb, #f8f8f8); 
+background-image: -webkit-linear-gradient(bottom, #ebebeb, #f8f8f8); 
+font-weight:bold;
+font-family: Trebuchet MS;
+color:#555555;
+text-align: center;
+}
+
+.tableContent{
+background-color: white;   
+    
+}
+
+.tableBorder{
+    background-color:#e1e7f3;
+    border: solid;
+    border-width: 2px;
+    border-color: #8999c4;
+    -moz-border-radius: 5px;
+    width : 100%;
+}
+
 /** 2 - TABLE */
 td#arrond {
     background-color:#cad3f1;
