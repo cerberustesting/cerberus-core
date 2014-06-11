@@ -364,7 +364,7 @@ function addTestCaseProperties(tableau, max_tcp_country,
     /* Property */
     var form2 = document.createElement('input');
     form2.setAttribute('name', 'properties_property');
-    form2.setAttribute('class', 'wob');
+    form2.setAttribute('class', 'wob properties_id_'+ eval(row_number + 1));
     form2.setAttribute('size', '130%');
     form2
             .setAttribute('style',
@@ -386,7 +386,11 @@ function addTestCaseProperties(tableau, max_tcp_country,
         TD3.setAttribute('style', 'font-size : x-small ; width: ' + size
                 + 'px;');
         TD3.setAttribute('style', 'background-color: white;');
-        TD3.innerHTML = (TD3.innerHTML + document.getElementById('toto').innerHTML);
+        
+        var jToto = $('#toto');
+        jToto.find('input[name="properties_country"]').addClass('properties_id_'+ eval(row_number + 1));
+        TD3.innerHTML = (TD3.innerHTML + jToto.html());
+        
         // if (document.getElementById("checkbox-AT")) {
         // tata=TD3.getElementById("checkbox-AT")
         // tata.setAttribute('value', prop_line+' - AT');
@@ -1514,3 +1518,23 @@ function deleteTestCase(test, testcase, page) {
 
 }
 
+function alertOnProperties() {
+    alert("At least one property has empty name or no country selected, please correct before save !");
+    return false;
+}
+
+function checkForm() {
+    // Check all properties to be sure PK of each is OK
+    var numberOfProperties = $("input[name='properties_property']").length;
+    for(var index=1; index <= numberOfProperties; index++) {
+        // Check if name of property is not empty
+        if($("input.properties_id_"+index+"[name='properties_property']").val() == "") {
+            return alertOnProperties();
+        } else {
+            if($("input.properties_id_"+index+"[name='properties_country']:checked").length <= 0) {
+                return alertOnProperties();
+            }
+        }
+    }
+    return true;
+}

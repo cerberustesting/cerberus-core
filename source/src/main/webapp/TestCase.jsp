@@ -964,7 +964,7 @@
 
                 %>                          
                 <%  if (canEdit) {%>
-                <form method="post" name="UpdateTestCaseDetail" id="UpdateTestCaseDetail" action="UpdateTestCaseDetail">
+                <form method="post" name="UpdateTestCaseDetail" id="UpdateTestCaseDetail" onsubmit="return checkForm();" action="UpdateTestCaseDetail">
                     <% }%>                                   <%--Countries checkbox for adding property (javascript) --%>
                 <%
                     Statement stmt6 = conn.createStatement();
@@ -1522,7 +1522,7 @@
                                                         <input type="hidden" name="old_property_hidden" value="<%=rowNumber%> - <%=rs_tccountry.getString("Country")%> - <%=rs_properties.getString("a.Property")%>">
                                                         <% 		} while (rs_tccountry.next());%></td>
 
-                                                    <td><input class="wob" style="width: 100px; font-weight: bold; background-color : <%=color%>"
+                                                    <td><input class="wob properties_id_<%=rowNumber%>" style="width: 100px; font-weight: bold; background-color : <%=color%>"
                                                                name="properties_property"
                                                                value="<%=rs_properties.getString("a.Property")%>"
                                                                onchange="trackChanges(this.value, '<%=rs_properties.getString("a.Property")%>', 'SavePropertyChanges')"></td>
@@ -1536,7 +1536,8 @@
                                                                     do {
                                                                 %>
                                                                 <td class="wob"><input value="<%=rowNumber%> - <%=rs_tccountry.getString("Country")%>" type="checkbox" <% if (StringUtils.isNotBlank(rs_properties.getString(rs_tccountry.getString("Country")))) {%>  CHECKED  <% }%>
-                                                                                       name="properties_country" onchange="trackChanges(this.value, '<%=rs_properties.getString(rs_tccountry.getString("Country"))%>', 'SavePropertyChanges')"></td>
+                                                                                   class="properties_id_<%=rowNumber%>"
+                                                                                    name="properties_country" onchange="trackChanges(this.value, '<%=rs_properties.getString(rs_tccountry.getString("Country"))%>', 'SavePropertyChanges')"></td>
                                                                     <% //onclick="return false"
                                                                         } while (rs_tccountry.next());
                                                                         rs_tccountry.first();
