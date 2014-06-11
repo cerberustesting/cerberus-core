@@ -127,17 +127,16 @@
                     String exedate = "";
                     String appSystem = "";
             %>
-            <table id="arrond">
-                <tr>
-                    <td id="arrond"><h3 style="color: blue">Filters</h3>
+            <div class="filters" style="float:left; width:100%; height:30px">
+                <div style="float:left; width:100px"><p class="dttTitle">Filters</p></div>
+                <div style="float:left; width:1000px;font-weight: bold;">
                         <form action="ExecutionDetail.jsp" method="get" name="ExecFilters" id="ExecFilters">
                             Id &nbsp;&nbsp;&nbsp;
                             <input name="id_tc" id="id_tc" style="width: 350px" OnChange ="document.ExecFilters.submit()" value="<%= id_filter%>">
                             <input type="submit" value="Apply">
                         </form>
-                    </td>
-                </tr>
-            </table>
+                </div>
+            </div>
             <%
 
 
@@ -181,10 +180,11 @@
                     TCase myTestCase = testCaseService.findTestCaseByKey(test, testCase);
                     tcGroup = myTestCase.getGroup();
             %>
-            <br>
-            <div id="table">
+            <div style="clear:both" id="table">
+                <br>
+            
 <input id="statushidden" value="<%=rs_inf.getString("ControlStatus")%>" hidden="hidden">
-                <table id="arrond" style="text-align: left" border="1" >
+                <table class="tableBorder" style="text-align: left" border="1" >
                     <tr id="header" style="font-style: italic">
                         <td style="font-weight: bold; width: 140px"><%out.print(docService.findLabelHTML("testcaseexecution", "id", "ID"));%></td>
                         <td style="font-weight: bold; width: 140px"><%out.print(docService.findLabelHTML("test", "test", "Test"));%></td>
@@ -260,7 +260,7 @@
                         <td><span id="res_status"><%= rs_inf.getString("ControlStatus")%></span></td><%
                             }%>
                     </tr>
-                    <tr id="header" style="font-style: italic">
+                    <tr style="font-style: italic">
                         <td style="font-weight: bold; width: 140px" colspan=3><%out.print(docService.findLabelHTML("testcaseexecution", "tag", "Tag"));%></td>
                         <td style="font-weight: bold; width: 140px" colspan=8><%out.print(docService.findLabelHTML("testcaseexecution", "controlmessage", "Message"));%></td>
                         <td style="font-weight: bold; width: 140px"><%out.print(docService.findLabelHTML("testcaseexecution", "verbose", "Verbose"));%></td>
@@ -289,7 +289,7 @@
                 %>
                 <div id="tablewwwsum">
 
-                    <table id="arrond" style="text-align: left" border="1" >
+                    <table class="tableBorder" style="text-align: left" border="1" >
                         <tr id="header" style="font-style: italic">
                             <td style="font-weight: bold; width: 140px" colspan="2"><%out.print(docService.findLabelHTML("testcaseexecutionwwwsum", "tot_nbhits", "tot_nbhits"));%></td>
                             <td style="font-weight: bold; width: 140px" colspan="2"><%out.print(docService.findLabelHTML("testcaseexecutionwwwsum", "tot_tps", "tot_tps"));%></td>
@@ -370,7 +370,7 @@
                         ITestCaseExecutionDataService testCaseExecutionDataService = appContext.getBean(ITestCaseExecutionDataService.class);
 
                         List<TestCaseExecutionData> dataList = testCaseExecutionDataService.findTestCaseExecutionDataById(iD);%>
-                    <table id="dataTable" class="arrondTable">
+                    <table id="dataTable" class="tableBorder">
                         <%
                             for (TestCaseExecutionData myData : dataList) {
                         %>
@@ -398,7 +398,7 @@
                         ITestCaseStepService testCaseStepService = appContext.getBean(ITestCaseStepService.class);
 
                         List<TestCaseStepExecution> stepList = testCaseStepExecutionService.findTestCaseStepExecutionById(iD);%>
-                    <table id="stepTable" class="arrondTable">
+                    <table id="stepTable" class="tableBorder" style="border-collapse: collapse">
                         <%
                             for (TestCaseStepExecution myStepData : stepList) {
                                 myKey++;
@@ -415,14 +415,14 @@
                                     styleMainTestCase2 = "</b>";
                                 }
                         %>
-                        <tr>
+                        <tr class="tableHeader">
+                            <td class="<%=myStepData.getReturnCode()%>"><a class="<%=myStepData.getReturnCode()%>F"><%=myStepData.getReturnCode()%></a></td>
                             <td><%=DateUtil.getFormatedDate(myStepData.getFullStart())%></td>
                             <td><%=DateUtil.getFormatedDate(myStepData.getFullEnd())%></td>
                             <td><%=styleMainTestCase1%><%=myStepData.getTest()%><%=styleMainTestCase2%></td>
                             <td><%=styleMainTestCase1%><%=myStepData.getTestCase()%><%=styleMainTestCase2%></td>
-                            <td><%=styleMainTestCase1%><%=myStepData.getStep()%><%=styleMainTestCase2%></td>
+                            <td><%=styleMainTestCase1%>Step <%=myStepData.getStep()%><%=styleMainTestCase2%></td>
                             <td><%=styleMainTestCase1%><%=myTCSDesc%><%=styleMainTestCase2%></td>
-                            <td class="<%=myStepData.getReturnCode()%>"><a class="<%=myStepData.getReturnCode()%>F"><%=myStepData.getReturnCode()%></a></td>
                             <td><%=myStepData.getTimeElapsed()%> s</td>
                         </tr>
                         <tr>
@@ -432,7 +432,7 @@
                                     ITestCaseStepActionService testCaseStepActionService = appContext.getBean(ITestCaseStepActionService.class);
 
                                     List<TestCaseStepActionExecution> actionList = testCaseStepActionExecutionService.findTestCaseStepActionExecutionByCriteria(iD, myStepData.getTest(), myStepData.getTestCase(), myStepData.getStep());%>
-                                <table id="actionTable" >
+                                <table id="actionTable"  style="border-collapse: collapse">
                                     <%
                                         myStep = String.valueOf(myKey);
                                         for (TestCaseStepActionExecution myActionData : actionList) {
@@ -443,17 +443,17 @@
                                                 actionDesc = " title='" + myTCSA.getDescription() + "'";
                                             }
                                     %>
-                                    <tr>
-                                        <td>&nbsp;&nbsp;&nbsp;&nbsp;</td>
-                                        <td><%=DateUtil.getFormatedDate(myActionData.getStartLong())%></td>
-                                        <td><%=DateUtil.getFormatedElapsed(myActionData.getStartLong(), myActionData.getEndLong())%></td>
-                                        <td><%=myActionData.getSequence()%></td>
-                                        <td<%=actionDesc%>><b><%=myActionData.getAction()%></b></td>
-                                        <td><%=myActionData.getObject()%></td>
-                                        <td><%=myActionData.getProperty()%></td>
-                                        <td class="<%=myActionData.getReturnCode()%>"><span class="<%=myActionData.getReturnCode()%>F" id="ACTSTS-<%=myStep + "-" + myActionData.getSequence()%>"><%=myActionData.getReturnCode()%></span></td>
-                                        <td><i><span id="ACTMES-<%=myStep + "-" + myActionData.getSequence()%>"><%=myActionData.getReturnMessage()%></span></i></td>
-                                        <td><%if (myActionData.getScreenshotFilename() != null) {%>
+                                    <tr class="tableContent">
+                                        <td style="width:10px">&nbsp;&nbsp;&nbsp;&nbsp;</td>
+                                        <td style="width:20px" class="<%=myActionData.getReturnCode()%>"><span class="<%=myActionData.getReturnCode()%>F" id="ACTSTS-<%=myStep + "-" + myActionData.getSequence()%>"><%=myActionData.getReturnCode()%></span></td>
+                                        <td style="width:90px"><%=DateUtil.getFormatedDate(myActionData.getStartLong())%></td>
+                                        <td style="width:5%"><%=DateUtil.getFormatedElapsed(myActionData.getStartLong(), myActionData.getEndLong())%></td>
+                                        <td style="width:5%"><%=myActionData.getSequence()%></td>
+                                        <td style="width:20%"<%=actionDesc%>><b><%=myActionData.getAction()%></b></td>
+                                        <td style="width:20%"><%=myActionData.getObject()%></td>
+                                        <td style="width:20%"><%=myActionData.getProperty()%></td>
+                                        <td style="width:20%"><i><span id="ACTMES-<%=myStep + "-" + myActionData.getSequence()%>"><%=myActionData.getReturnMessage()%></span></i></td>
+                                        <td style="width:10px"><%if (myActionData.getScreenshotFilename() != null) {%>
                                             <a href="<%=PictureURL%><%=myActionData.getScreenshotFilename().replaceAll("\\\\", "/")%>" id="ACTIMG-<%=myStep + "-" + myActionData.getSequence()%>" class="zoombox  zgallery1">img</a>
                                             <%}%>
                                         </td>
@@ -466,7 +466,7 @@
                                                 ITestCaseStepActionControlService testCaseStepActionControlService = appContext.getBean(ITestCaseStepActionControlService.class);
 
                                                 List<TestCaseStepActionControlExecution> controlList = testCaseStepActionControlExecutionService.findTestCaseStepActionControlExecutionByCriteria(iD, myActionData.getTest(), myActionData.getTestCase(), myActionData.getStep(), myActionData.getSequence());%>
-                                            <table id="controlTable" >
+                                            <table id="controlTable"  style="border-collapse: collapse">
                                                 <%
                                                     myAction = myStep + "-" + myActionData.getSequence();
 
@@ -479,8 +479,9 @@
                                                         }
 
                                                 %>
-                                                <tr>
+                                                <tr  class="tableContent">
                                                     <td>&nbsp;&nbsp;&nbsp;&nbsp;</td>
+                                                    <td class="<%=myControlData.getReturnCode()%>"><span class="<%=myControlData.getReturnCode()%>F" id="CTLSTS-<%=myAction + "-" + myControlData.getControl()%>"><%=myControlData.getReturnCode()%></span></td>
                                                     <td><%=DateUtil.getFormatedDate(myControlData.getStartLong())%></td>
                                                     <td><%=DateUtil.getFormatedElapsed(myControlData.getStartLong(), myControlData.getEndLong())%></td>
                                                     <td><%=myControlData.getControl()%></td>
@@ -488,7 +489,6 @@
                                                     <td><%=myControlData.getControlProperty()%></td>
                                                     <td><%=myControlData.getControlValue()%></td>
                                                     <td><%=myControlData.getFatal()%></td>
-                                                    <td class="<%=myControlData.getReturnCode()%>"><span class="<%=myControlData.getReturnCode()%>F" id="CTLSTS-<%=myAction + "-" + myControlData.getControl()%>"><%=myControlData.getReturnCode()%></span></td>
                                                     <td><i><span id="CTLMES-<%=myAction + "-" + myControlData.getControl()%>"><%=myControlData.getReturnMessage()%></span></i></td>
                                                     <td><%if (myControlData.getScreenshotFilename() != null) {%>
                                                         <a href="<%=PictureURL%><%=myControlData.getScreenshotFilename().replaceAll("\\\\", "/")%>" class="zoombox  zgallery1">img</a>
@@ -708,7 +708,7 @@
                 <%  if (!(myApplication.equalsIgnoreCase(""))) {
                 %>
                 <h4>Contextual Actions</h4>
-                <table id="arrond" style="text-align: left" border="1" >
+                <table class="tableBorder"  style="text-align: left" border="1" >
                     <tr>
                         <% if (tcGroup.equalsIgnoreCase("AUTOMATED")) {%>
                         <td><a href="RunTests.jsp?Test=<%=test%>&TestCase=<%=testCase%>&MySystem=<%=appSystem%>&Country=<%=country%>&Environment=<%=environment%>">Run the same Test Case again.</a></td>
