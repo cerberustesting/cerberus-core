@@ -414,17 +414,30 @@
                                     styleMainTestCase1 = "<b>";
                                     styleMainTestCase2 = "</b>";
                                 }
+                                String conditionalDisplay = "inline";
+                                if (myStepData.getReturnCode().equals("OK")){
+                                conditionalDisplay = "none";
+                                }
+                                
+                                String stepIdentifier = myStepData.getTest()+myStepData.getTestCase()+myStepData.getStep();
+                                
                         %>
                         <tr class="tableHeader">
-                            <td class="<%=myStepData.getReturnCode()%>"><a class="<%=myStepData.getReturnCode()%>F"><%=myStepData.getReturnCode()%></a></td>
+                            <td style="width:20px" class="<%=myStepData.getReturnCode()%>"><a class="<%=myStepData.getReturnCode()%>F"><%=myStepData.getReturnCode()%></a></td>
                             <td align="left"><%=styleMainTestCase1%><%=myTCSDesc%><%=styleMainTestCase2%>    (  
-                            <%=myStepData.getTimeElapsed()%> s )</td>
+                            <%=myStepData.getTimeElapsed()%> s )
+                            <a id="dropDownUpArrow<%=stepIdentifier%>" style="display:none"
+                            onclick="javascript:switchTableVisibleInvisible('dropDownDownArrow<%=stepIdentifier%>', 'dropDownUpArrow<%=stepIdentifier%>');switchTableVisibleInvisible('dropDownDownArrow<%=stepIdentifier%>', 'actionTable<%=stepIdentifier%>'); "><img src="images/dropdownup.gif"/></a>
+                    
+                        <a id="dropDownDownArrow<%=stepIdentifier%>"
+                                onclick="javascript:switchTableVisibleInvisible('actionTable<%=stepIdentifier%>', 'dropDownDownArrow<%=stepIdentifier%>');switchTableVisibleInvisible('dropDownUpArrow<%=stepIdentifier%>','dropDownDownArrow<%=stepIdentifier%>') "><img src="images/dropdown.gif"/></a>
+                    </td>
                             <td align="right"><%=DateUtil.getFormatedDate(myStepData.getFullStart())%>  >>  
                             <%=DateUtil.getFormatedDate(myStepData.getFullEnd())%> (
                             <%=styleMainTestCase1%><%=myStepData.getTest()%><%=styleMainTestCase2%> / 
                             <%=styleMainTestCase1%><%=myStepData.getTestCase()%><%=styleMainTestCase2%> / 
                             <%=styleMainTestCase1%>Step <%=myStepData.getStep()%><%=styleMainTestCase2%> )
-                            
+                            </td>
                         </tr>
                         <tr>
                             <td colspan="9">
@@ -433,7 +446,7 @@
                                     ITestCaseStepActionService testCaseStepActionService = appContext.getBean(ITestCaseStepActionService.class);
 
                                     List<TestCaseStepActionExecution> actionList = testCaseStepActionExecutionService.findTestCaseStepActionExecutionByCriteria(iD, myStepData.getTest(), myStepData.getTestCase(), myStepData.getStep());%>
-                                <table id="actionTable"  style="border-collapse: collapse">
+                                <table id="actionTable<%=stepIdentifier%>"  style="border-collapse: collapse; display:<%=conditionalDisplay%>">
                                     <%
                                         myStep = String.valueOf(myKey);
                                         for (TestCaseStepActionExecution myActionData : actionList) {

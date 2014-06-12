@@ -889,6 +889,10 @@ function switchDivVisibleInvisible(visible, invisible) {
     document.getElementById(visible).style.display = "inline-block";
     document.getElementById(invisible).style.display = "none";
 }
+function switchTableVisibleInvisible(visible, invisible) {
+    document.getElementById(visible).style.display = "inline";
+    document.getElementById(invisible).style.display = "none";
+}
 function enableElement(element) {
     document.getElementById(element).disabled = false;
 }
