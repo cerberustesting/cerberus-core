@@ -549,6 +549,7 @@ public class ExecutionRunService implements IExecutionRunService {
             testCaseStepActionExecution.setStopExecution(testCaseStepActionControlExecution.isStopExecution());
             if (!(testCaseStepActionControlExecution.getControlResultMessage().equals(new MessageEvent(MessageEventEnum.CONTROL_SUCCESS)))) {
                 testCaseStepActionExecution.setExecutionResultMessage(testCaseStepActionControlExecution.getExecutionResultMessage());
+                testCaseStepActionExecution.setActionResultMessage(testCaseStepActionControlExecution.getControlResultMessage());
             }
             /**
              * If Control reported to stop the testcase, we stop it.
