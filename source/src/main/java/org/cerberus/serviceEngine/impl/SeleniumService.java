@@ -24,16 +24,13 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.ProtocolException;
 import java.net.URL;
 import java.util.Set;
-import java.util.UUID;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 import javax.imageio.ImageIO;
-import org.apache.commons.net.telnet.TelnetClient;
 import org.apache.log4j.Level;
 import org.cerberus.entity.Invariant;
 import org.cerberus.entity.MessageEvent;
@@ -826,10 +823,12 @@ public class SeleniumService implements ISeleniumService {
             if ("ok".equalsIgnoreCase(value)) {
                 // Accept javascript popup dialog.
                 selenium.getDriver().switchTo().alert().accept();
+                selenium.getDriver().switchTo().defaultContent();
                 return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CLOSE_ALERT);
             } else if ("cancel".equalsIgnoreCase(value)) {
                 // Dismiss javascript popup dialog.
                 selenium.getDriver().switchTo().alert().dismiss();
+                selenium.getDriver().switchTo().defaultContent();
                 return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CLOSE_ALERT);
             }
 
