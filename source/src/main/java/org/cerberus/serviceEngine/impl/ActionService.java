@@ -213,7 +213,7 @@ public class ActionService implements IActionService{
     private MessageEvent doActionManageDialog(TestCaseExecution tCExecution, String string1, String string2) {
         MessageEvent message;
         if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")){
-        return seleniumService.doSeleniumActionManageDialog(tCExecution.getSelenium(),string1, string2);
+            return seleniumService.doSeleniumActionManageDialog(tCExecution.getSelenium(), string1, string2);
         }
         message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
         message.setDescription(message.getDescription().replaceAll("%ACTION%", "ManageDialog"));
