@@ -1614,8 +1614,8 @@
 
                                                             } while (rs_properties.next());
                                                             rs_properties.close();
-                                                        } else {
-                                                            rowNumber = rowNumber + 1;
+//                                                        } else {
+//                                                            rowNumber = rowNumber + 1;
                                                         }
                                                     }
                                                 %>
