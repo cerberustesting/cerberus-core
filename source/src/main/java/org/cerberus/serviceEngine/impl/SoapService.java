@@ -43,6 +43,9 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 import org.apache.log4j.Level;
+import org.cerberus.entity.ExecutionSOAPResponse;
+import org.cerberus.entity.MessageEvent;
+import org.cerberus.entity.MessageEventEnum;
 import org.cerberus.entity.MessageGeneral;
 import org.cerberus.entity.MessageGeneralEnum;
 import org.cerberus.entity.Property;
@@ -71,6 +74,8 @@ public class SoapService implements ISoapService{
     
     @Autowired
     private ICountryEnvironmentDatabaseService countryEnvironmentDatabaseService;
+    @Autowired
+    ExecutionSOAPResponse executionSOAPResponse;
     
     /**
      * On chercher le premier chiffre entre crochet le ? dans le premier groupe
@@ -112,13 +117,18 @@ public class SoapService implements ISoapService{
         headers.addHeader("Content-Type", "text/xml;charset=UTF-8");
 
         final SOAPBody soapBody = soapMessage.getSOAPBody();
-
+        
         // convert String into InputStream - traitement des caracères escapés > < ... (contraintes de l'affichage IHM)
-        //InputStream is = new ByteArrayInputStream(HtmlUtils.htmlUnescape(pBody).getBytes());
-        InputStream is = new ByteArrayInputStream(pBody.getBytes());
+        String unescaped = HtmlUtils.htmlUnescape(pBody);
+
+        
+        InputStream is;
+
+           is = new ByteArrayInputStream(unescaped.getBytes());
+            DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
+
         DocumentBuilder builder = null;
 
-        DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
         
         // Important à laisser sinon KO
         builderFactory.setNamespaceAware(true);
@@ -142,9 +152,10 @@ public class SoapService implements ISoapService{
     }
 
     @Override
-    public String getSOAPResponse(String envelope, String servicePath, String method) {
+    public  MessageEvent callSOAPAndStoreResponseInMemory(TestCaseExecution tCExecution, String envelope, String servicePath, String method) {
         String result = null;
         ByteArrayOutputStream out = null;
+        MessageEvent message = null;
         // Test des inputs nécessaires.
         if (envelope != null && servicePath != null && method != null) {
             
@@ -171,16 +182,27 @@ public class SoapService implements ISoapService{
                 MyLogger.log(SoapService.class.getName(), Level.INFO, "WS response received");
                 MyLogger.log(SoapService.class.getName(), Level.DEBUG, "WS response : "+out.toString());
                 result = out.toString();
-
-
+                executionSOAPResponse.setExecutionSOAPResponse(tCExecution.getId(), result);
+                message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CALLSOAP);
+                message.setDescription(message.getDescription().replaceAll("%SOAPNAME%", method));
+                return message;
+                
             } catch (SOAPException e){  
                 MyLogger.log(SoapService.class.getName(), Level.ERROR, e.toString());
+                message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSOAP);
+                message.setDescription(message.getDescription().replaceAll("%SOAPNAME%", method));
             } catch (IOException e) {
                 MyLogger.log(SoapService.class.getName(), Level.ERROR, e.toString());
+                message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSOAP);
+                message.setDescription(message.getDescription().replaceAll("%SOAPNAME%", method));
             } catch (ParserConfigurationException e) {
                 MyLogger.log(SoapService.class.getName(), Level.ERROR, e.toString());
+                message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSOAP);
+                message.setDescription(message.getDescription().replaceAll("%SOAPNAME%", method));
             } catch (SAXException e) {
                 MyLogger.log(SoapService.class.getName(), Level.ERROR, e.toString());
+                message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSOAP);
+                message.setDescription(message.getDescription().replaceAll("%SOAPNAME%", method));
             }
             finally{
                 try {
@@ -198,7 +220,8 @@ public class SoapService implements ISoapService{
                 }
         }
         }
-        return result;
+        
+        return message;
     }
     
     /**

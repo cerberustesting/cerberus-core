@@ -370,34 +370,17 @@
                         ITestCaseExecutionDataService testCaseExecutionDataService = appContext.getBean(ITestCaseExecutionDataService.class);
 
                         List<TestCaseExecutionData> dataList = testCaseExecutionDataService.findTestCaseExecutionDataById(iD);%>
-                    <table id="dataTable" class="tableBorder">
-                        <%
-                            for (TestCaseExecutionData myData : dataList) {
-                        %>
-                        <tr>
-                            <td class="<%=myData.getRC()%>"><span class="<%=myData.getRC()%>F" id="PROPSTS-<%=myData.getProperty()%>"><%=myData.getRC()%></span></td>
-                            <td><%=DateUtil.getFormatedDate(myData.getStartLong())%></td>
-                            <td><%=DateUtil.getFormatedElapsed(myData.getStartLong(), myData.getEndLong())%></td>
-                            <td><b><span id="PROP-<%=myData.getProperty()%>"><%=myData.getProperty()%></span></b></td>
-                            <td><b><i><span id="PROPVAL-<%=myData.getProperty()%>"><%=myData.getValue()%></span></i></b></td>
-                            <td style="font-size: x-small"><%=myData.getType()%></td>
-                            <td style="font-size: x-small"><%=myData.getValue1()%> / <%=myData.getValue2()%></td>
-                            <td><span id="PROPMES-<%=myData.getProperty()%>"><%=myData.getrMessage()%></span></td>
-                        </tr>
-                        <%
-                            }
-                            String myStep = "";
+                    
+                    <%
+                        String myStep = "";
                             String myAction = "";
                             Integer myKey = 0;
-                        %>                        
-                    </table>
-                    <br><br>
-                    <%
 
                         ITestCaseStepExecutionService testCaseStepExecutionService = appContext.getBean(ITestCaseStepExecutionService.class);
                         ITestCaseStepService testCaseStepService = appContext.getBean(ITestCaseStepService.class);
 
                         List<TestCaseStepExecution> stepList = testCaseStepExecutionService.findTestCaseStepExecutionById(iD);%>
+                    <p class="dttTitle">TestCase Execution Result</p>
                     <table id="stepTable" class="tableBorder" style="border-collapse: collapse">
                         <%
                             for (TestCaseStepExecution myStepData : stepList) {
@@ -415,8 +398,10 @@
                                     styleMainTestCase2 = "</b>";
                                 }
                                 String conditionalDisplay = "inline";
+                                String conditionalHidden = "none";
                                 if (myStepData.getReturnCode().equals("OK")){
                                 conditionalDisplay = "none";
+                                conditionalHidden = "inline";
                                 }
                                 
                                 String stepIdentifier = myStepData.getTest()+myStepData.getTestCase()+myStepData.getStep();
@@ -426,11 +411,11 @@
                             <td style="width:20px" class="<%=myStepData.getReturnCode()%>"><a class="<%=myStepData.getReturnCode()%>F"><%=myStepData.getReturnCode()%></a></td>
                             <td align="left"><%=styleMainTestCase1%><%=myTCSDesc%><%=styleMainTestCase2%>    (  
                             <%=myStepData.getTimeElapsed()%> s )
-                            <a id="dropDownUpArrow<%=stepIdentifier%>" style="display:none"
+                            <a id="dropDownUpArrow<%=stepIdentifier%>" style="display:<%=conditionalDisplay%>"
                             onclick="javascript:switchTableVisibleInvisible('dropDownDownArrow<%=stepIdentifier%>', 'dropDownUpArrow<%=stepIdentifier%>');switchTableVisibleInvisible('dropDownDownArrow<%=stepIdentifier%>', 'actionTable<%=stepIdentifier%>'); "><img src="images/dropdownup.gif"/></a>
                     
-                        <a id="dropDownDownArrow<%=stepIdentifier%>"
-                                onclick="javascript:switchTableVisibleInvisible('actionTable<%=stepIdentifier%>', 'dropDownDownArrow<%=stepIdentifier%>');switchTableVisibleInvisible('dropDownUpArrow<%=stepIdentifier%>','dropDownDownArrow<%=stepIdentifier%>') "><img src="images/dropdown.gif"/></a>
+                        <a id="dropDownDownArrow<%=stepIdentifier%>" style="display:<%=conditionalHidden%>"
+                            onclick="javascript:switchTableVisibleInvisible('actionTable<%=stepIdentifier%>', 'dropDownDownArrow<%=stepIdentifier%>');switchTableVisibleInvisible('dropDownUpArrow<%=stepIdentifier%>','dropDownDownArrow<%=stepIdentifier%>') "><img src="images/dropdown.gif"/></a>
                     </td>
                             <td align="right"><%=DateUtil.getFormatedDate(myStepData.getFullStart())%>  >>  
                             <%=DateUtil.getFormatedDate(myStepData.getFullEnd())%> (
@@ -528,6 +513,27 @@
                                 %>
                             </td>
                         </tr>                        
+                    </table>
+                    <br><br>
+                    <p class="dttTitle">Properties</p>
+                            <table id="dataTable" class="tableBorder">
+                        <%
+                            for (TestCaseExecutionData myData : dataList) {
+                        %>
+                        <tr>
+                            <td class="<%=myData.getRC()%>"><span class="<%=myData.getRC()%>F" id="PROPSTS-<%=myData.getProperty()%>"><%=myData.getRC()%></span></td>
+                            <td><%=DateUtil.getFormatedDate(myData.getStartLong())%></td>
+                            <td><%=DateUtil.getFormatedElapsed(myData.getStartLong(), myData.getEndLong())%></td>
+                            <td><b><span id="PROP-<%=myData.getProperty()%>"><%=myData.getProperty()%></span></b></td>
+                            <td><b><i><span id="PROPVAL-<%=myData.getProperty()%>"><%=myData.getValue()%></span></i></b></td>
+                            <td style="font-size: x-small"><%=myData.getType()%></td>
+                            <td style="font-size: x-small"><%=myData.getValue1()%> / <%=myData.getValue2()%></td>
+                            <td><span id="PROPMES-<%=myData.getProperty()%>"><%=myData.getrMessage()%></span></td>
+                        </tr>
+                        <%
+                            }
+                            
+                        %>                        
                     </table>
                     <%
 

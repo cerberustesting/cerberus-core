@@ -19,11 +19,14 @@
  */
 package org.cerberus.serviceEngine.impl;
 
+import org.apache.log4j.Level;
+import org.cerberus.entity.ExecutionSOAPResponse;
 import org.cerberus.entity.ExecutionUUID;
 import org.cerberus.entity.MessageGeneral;
 import org.cerberus.entity.MessageGeneralEnum;
 import org.cerberus.entity.TestCaseExecution;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.log.MyLogger;
 import org.cerberus.serviceEngine.IExecutionRunService;
 import org.cerberus.serviceEngine.IExecutionStartService;
 import org.cerberus.serviceEngine.IRunTestCaseService;
@@ -46,6 +49,8 @@ public class RunTestCaseService implements IRunTestCaseService {
     private IExecutionRunService executionRunService;
     @Autowired 
     private ExecutionUUID executionUUID;
+    @Autowired 
+    private ExecutionSOAPResponse eSResponse;
 
     @Override
     public TestCaseExecution runTestCase(TestCaseExecution tCExecution) {
@@ -66,8 +71,9 @@ public class RunTestCaseService implements IRunTestCaseService {
             tCExecution.setResultMessage(mes);
         } finally {
             // stop execution of the test case and collect data in all case.
-            //System.out.print(tCExecution.getExecutionUUID());
+            MyLogger.log(SoapService.class.getName(), Level.INFO, eSResponse.getExecutionSOAPResponse(tCExecution.getId()));
             executionUUID.removeExecutionUUID(tCExecution.getExecutionUUID());
+            eSResponse.removeExecutionSOAPResponse(tCExecution.getId());
             //tCExecution = executionRunService.stopTestCase(tCExecution);
         }
 

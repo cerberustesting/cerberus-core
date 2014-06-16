@@ -184,6 +184,11 @@
             <!-- We depend on 17 because needs to work with JDK 6. -->
             <version>17.0</version>
         </dependency>
+        <dependency>
+            <groupId>xmlunit</groupId>
+            <artifactId>xmlunit</artifactId>
+            <version>1.5</version>
+        </dependency>
     </dependencies>
 
     <build>

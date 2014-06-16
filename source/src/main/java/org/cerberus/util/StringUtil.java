@@ -19,8 +19,9 @@
  */
 package org.cerberus.util;
 
-import java.util.List;
 import java.util.Random;
+import org.owasp.html.PolicyFactory;
+import org.owasp.html.Sanitizers;
 
 /**
  * Utility class centralizing string utility methods
@@ -172,4 +173,8 @@ public final class StringUtil {
     
     
     
+    public static String sanitize(String inputString) {
+        PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
+        return policy.sanitize(inputString);
+    }
 }
