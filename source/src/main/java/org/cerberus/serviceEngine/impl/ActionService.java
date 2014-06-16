@@ -380,7 +380,7 @@ public class ActionService implements IActionService {
             try {
                 SoapLibrary soapLibrary = soapLibraryService.findSoapLibraryByKey(object);
                 return soapService.callSOAPAndStoreResponseInMemory(tCExecution, soapLibrary.getEnvelope(), tCExecution.getCountryEnvironmentApplication().getIp(), soapLibrary.getMethod());
-            } catch (CerberusException ex) {
+            } catch (CerberusException ex)  {
                 message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSOAP);
                 message.setDescription(message.getDescription().replaceAll("%SOAPNAME%", object));
             }
