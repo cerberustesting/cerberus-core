@@ -34,6 +34,7 @@ import org.cerberus.log.MyLogger;
 import org.cerberus.serviceEngine.IControlService;
 import org.cerberus.serviceEngine.IPropertyService;
 import org.cerberus.serviceEngine.ISeleniumService;
+import org.cerberus.serviceEngine.IXmlUnitService;
 import org.cerberus.util.StringUtil;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriverException;
@@ -54,6 +55,8 @@ public class ControlService implements IControlService {
     private ISeleniumService seleniumService;
     @Autowired
     private IPropertyService propertyService;
+    @Autowired
+    private IXmlUnitService xpathService;
 
     @Override
     public TestCaseStepActionControlExecution doControl(TestCaseStepActionControlExecution testCaseStepActionControlExecution) {
@@ -292,8 +295,22 @@ public class ControlService implements IControlService {
         MyLogger.log(ControlService.class.getName(), Level.DEBUG, "Control : verifyElementPresent on : " + html);
         MessageEvent mes;
         if (!StringUtil.isNull(html)) {
-            try {
-                if (this.seleniumService.isElementPresent(tCExecution.getSelenium(), html)) {
+            if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")) {
+                try {
+                    if (this.seleniumService.isElementPresent(tCExecution.getSelenium(), html)) {
+                        mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_PRESENT);
+                        mes.setDescription(mes.getDescription().replaceAll("%STRING1%", html));
+                        return mes;
+                    } else {
+                        mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_PRESENT);
+                        mes.setDescription(mes.getDescription().replaceAll("%STRING1%", html));
+                        return mes;
+                    }
+                } catch (WebDriverException exception) {
+                    return parseWebDriverException(exception);
+                }
+            } else if (tCExecution.getApplication().getType().equalsIgnoreCase("WS")) {
+                if (xpathService.isElementPresent(tCExecution, html)) {
                     mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_PRESENT);
                     mes.setDescription(mes.getDescription().replaceAll("%STRING1%", html));
                     return mes;
@@ -302,8 +319,11 @@ public class ControlService implements IControlService {
                     mes.setDescription(mes.getDescription().replaceAll("%STRING1%", html));
                     return mes;
                 }
-            } catch (WebDriverException exception) {
-                return parseWebDriverException(exception);
+            } else {
+                mes = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
+                mes.setDescription(mes.getDescription().replaceAll("%CONTROL%", "VerifyElementPresent"));
+                mes.setDescription(mes.getDescription().replaceAll("%APPLICATIONTYPE%", tCExecution.getApplication().getType()));
+                return mes;
             }
         } else {
             return new MessageEvent(MessageEventEnum.CONTROL_FAILED_PRESENT_NULL);
@@ -339,7 +359,7 @@ public class ControlService implements IControlService {
         MessageEvent mes;
         if (!StringUtil.isNull(html)) {
             try {
-                if (!this.seleniumService.isElementPresent(tCExecution.getSelenium(),html)) {
+                if (!this.seleniumService.isElementPresent(tCExecution.getSelenium(), html)) {
                     mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_NOTPRESENT);
                     mes.setDescription(mes.getDescription().replaceAll("%STRING1%", html));
                     return mes;
@@ -361,7 +381,7 @@ public class ControlService implements IControlService {
         MessageEvent mes;
         if (!StringUtil.isNull(html)) {
             try {
-                if (this.seleniumService.isElementVisible(tCExecution.getSelenium(),html)) {
+                if (this.seleniumService.isElementVisible(tCExecution.getSelenium(), html)) {
                     mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_VISIBLE);
                     mes.setDescription(mes.getDescription().replaceAll("%STRING1%", html));
                     return mes;
@@ -383,8 +403,8 @@ public class ControlService implements IControlService {
         MessageEvent mes;
         if (!StringUtil.isNull(html)) {
             try {
-                if (this.seleniumService.isElementPresent(tCExecution.getSelenium(),html)) {
-                    if (this.seleniumService.isElementNotVisible(tCExecution.getSelenium(),html)) {
+                if (this.seleniumService.isElementPresent(tCExecution.getSelenium(), html)) {
+                    if (this.seleniumService.isElementNotVisible(tCExecution.getSelenium(), html)) {
                         mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_NOTVISIBLE);
                         mes.setDescription(mes.getDescription().replaceAll("%STRING1%", html));
                         return mes;
@@ -409,8 +429,9 @@ public class ControlService implements IControlService {
     private MessageEvent VerifyTextInElement(TestCaseExecution tCExecution, String html, String value) {
         MyLogger.log(ControlService.class.getName(), Level.DEBUG, "Control : VerifyTextInElement on : " + html + " element against value : " + value);
         MessageEvent mes;
+        if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")) {
         try {
-            String str = this.seleniumService.getValueFromHTML(tCExecution.getSelenium(),html);
+            String str = this.seleniumService.getValueFromHTML(tCExecution.getSelenium(), html);
             MyLogger.log(ControlService.class.getName(), Level.DEBUG, "Control : VerifyTextInElement element : " + html + " has value : " + str);
             if (str != null) {
                 if (str.equalsIgnoreCase(value)) {
@@ -439,6 +460,24 @@ public class ControlService implements IControlService {
         } catch (WebDriverException exception) {
             return parseWebDriverException(exception);
         }
+        } else if (tCExecution.getApplication().getType().equalsIgnoreCase("WS")) {
+        if (xpathService.isTextInElement(tCExecution, html, value)) {
+                    mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_TEXTINELEMENT);
+                    mes.setDescription(mes.getDescription().replaceAll("%STRING1%", html));
+                    return mes;
+                } else {
+                    mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_TEXTINELEMENT);
+                    mes.setDescription(mes.getDescription().replaceAll("%STRING1%", html));
+                    mes.setDescription(mes.getDescription().replaceAll("%STRING2%", value));
+                    return mes;
+                }
+        } else {
+                mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
+                mes.setDescription(mes.getDescription().replaceAll("%CONTROL%", "VerifyElementPresent"));
+                mes.setDescription(mes.getDescription().replaceAll("%APPLICATIONTYPE%", tCExecution.getApplication().getType()));
+                return mes;
+            }
+        
     }
 
     private MessageEvent verifyTextInDialog(TestCaseExecution tCExecution, String property, String value) {
@@ -477,7 +516,7 @@ public class ControlService implements IControlService {
         MyLogger.log(ControlService.class.getName(), Level.DEBUG, "Control : verifyRegexInElement on : " + html + " element against value : " + regex);
         MessageEvent mes;
         try {
-            String str = this.seleniumService.getValueFromHTML(tCExecution.getSelenium(),html);
+            String str = this.seleniumService.getValueFromHTML(tCExecution.getSelenium(), html);
             MyLogger.log(ControlService.class.getName(), Level.DEBUG, "Control : verifyRegexInElement element : " + html + " has value : " + str);
             if (html != null) {
                 try {
@@ -492,7 +531,7 @@ public class ControlService implements IControlService {
                     } else {
                         mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_REGEXINELEMENT);
                         mes.setDescription(mes.getDescription().replaceAll("%STRING1%", html));
-                        mes.setDescription(mes.getDescription().replaceAll("%STRING2%", str));
+                        mes.setDescription(mes.getDescription().replaceAll("%STRING2%", StringUtil.sanitize(str)));
                         mes.setDescription(mes.getDescription().replaceAll("%STRING3%", Pattern.quote(regex)));
                         return mes;
                     }

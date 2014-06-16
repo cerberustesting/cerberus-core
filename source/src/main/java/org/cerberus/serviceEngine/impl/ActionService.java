@@ -20,16 +20,21 @@
 package org.cerberus.serviceEngine.impl;
 
 import java.util.Date;
+import java.util.logging.Logger;
 import org.apache.log4j.Level;
 import org.cerberus.entity.MessageEvent;
 import org.cerberus.entity.MessageEventEnum;
 import org.cerberus.entity.MessageGeneral;
+import org.cerberus.entity.SoapLibrary;
 import org.cerberus.entity.TestCaseExecution;
 import org.cerberus.entity.TestCaseStepActionExecution;
+import org.cerberus.exception.CerberusException;
 import org.cerberus.log.MyLogger;
+import org.cerberus.service.ISoapLibraryService;
 import org.cerberus.serviceEngine.IActionService;
 import org.cerberus.serviceEngine.IPropertyService;
 import org.cerberus.serviceEngine.ISeleniumService;
+import org.cerberus.serviceEngine.ISoapService;
 import org.cerberus.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -45,6 +50,10 @@ public class ActionService implements IActionService{
     private IPropertyService propertyService;
     @Autowired
     private ISeleniumService seleniumService;
+    @Autowired
+    private ISoapService soapService;
+    @Autowired
+    private ISoapLibraryService soapLibraryService;
     
     
     @Override
@@ -68,7 +77,7 @@ public class ActionService implements IActionService{
         String propertyName = testCaseStepActionExecution.getPropertyName();
         MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Doing Action : " + testCaseStepActionExecution.getAction() + " with object : " + object + " and property : " + property);
 
-        MessageEvent res;
+        MessageEvent res = null;
 
         TestCaseExecution tCExecution = testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution();
         String applicationType = testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getApplication().getType();
@@ -135,8 +144,12 @@ public class ActionService implements IActionService{
         } else if (testCaseStepActionExecution.getAction().equals("manageDialog")) {
             res = this.doActionManageDialog(tCExecution, object, property);
 
-        } else if (testCaseStepActionExecution.getAction().equals("makeSoapCall")) {
-            res = this.doActionMakeSoapCall(tCExecution, object, property);
+        } else if (testCaseStepActionExecution.getAction().equals("callSoapWithBase")) {
+            try {
+                res = this.doActionMakeSoapCall(tCExecution, object);
+            } catch (CerberusException ex) {
+                Logger.getLogger(ActionService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            }
 
         } else if (testCaseStepActionExecution.getAction().equals("calculateProperty")) {
             res = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_PROPERTYCALCULATED);
@@ -365,13 +378,14 @@ public class ActionService implements IActionService{
 
     }
     
-    private MessageEvent doActionMakeSoapCall(TestCaseExecution tCExecution, String object, String property) {
+    private MessageEvent doActionMakeSoapCall(TestCaseExecution tCExecution, String object) throws CerberusException {
         MessageEvent message;
-        if (tCExecution.getApplication().getType().equalsIgnoreCase("SRV")){
-        return seleniumService.doSeleniumActionFocusToIframe(tCExecution.getSelenium(),object, property);
+        if (tCExecution.getApplication().getType().equalsIgnoreCase("WS")){
+        SoapLibrary soapLibrary = soapLibraryService.findSoapLibraryByKey(object);
+        return soapService.callSOAPAndStoreResponseInMemory(tCExecution, soapLibrary.getEnvelope(), tCExecution.getCountryEnvironmentApplication().getIp(), soapLibrary.getMethod());
         }
         message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
-        message.setDescription(message.getDescription().replaceAll("%ACTION%", "FocusToIframe"));
+        message.setDescription(message.getDescription().replaceAll("%ACTION%", "callSoap"));
         message.setDescription(message.getDescription().replaceAll("%APPLICATIONTYPE%", tCExecution.getApplication().getType()));
         return message;
 

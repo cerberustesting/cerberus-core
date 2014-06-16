@@ -19,25 +19,17 @@
  */
 package org.cerberus.serviceEngine;
 
-import java.io.IOException;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.soap.SOAPException;
-import javax.xml.soap.SOAPMessage;
-import org.cerberus.entity.MessageEvent;
-import org.cerberus.entity.SoapLibrary;
 import org.cerberus.entity.TestCaseExecution;
-import org.cerberus.exception.CerberusException;
-import org.xml.sax.SAXException;
 
 /**
  *
  * @author bcivel
  */
-public interface ISoapService {
+public interface IXmlUnitService {
 
-    SOAPMessage createSoapRequest(final String pBody, final String method) throws SOAPException, IOException, SAXException, ParserConfigurationException;
+    boolean isElementPresent(TestCaseExecution tCExecution, String element);
     
-    MessageEvent callSOAPAndStoreResponseInMemory(TestCaseExecution tCExecution, final String envelope, final String servicePath, final String method);
+    boolean isTextInElement(TestCaseExecution tCExecution, String element, String text);
     
-    String calculatePropertyFromSOAPResponse(final SoapLibrary pSoapLibrary, org.cerberus.entity.TestCaseCountryProperties pTestCaseCountry, org.cerberus.entity.TestCaseExecution pTestCaseExecution) throws CerberusException;
+    boolean isSimilarTree(TestCaseExecution tCExecution, String element, String text);
 }

@@ -20,6 +20,9 @@
 package org.cerberus.serviceEngine.impl;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -27,6 +30,7 @@ import java.util.logging.Logger;
 import org.apache.log4j.Level;
 import org.cerberus.entity.CountryEnvLink;
 import org.cerberus.entity.CountryEnvParam;
+import org.cerberus.entity.ExecutionSOAPResponse;
 import org.cerberus.entity.MessageEvent;
 import org.cerberus.entity.MessageEventEnum;
 import org.cerberus.entity.MessageGeneral;
@@ -52,6 +56,7 @@ import org.cerberus.log.MyLogger;
 import org.cerberus.service.ICountryEnvLinkService;
 import org.cerberus.service.ICountryEnvParamService;
 import org.cerberus.service.ILoadTestCaseService;
+import org.cerberus.service.IParameterService;
 import org.cerberus.service.ITestCaseCountryPropertiesService;
 import org.cerberus.service.ITestCaseExecutionDataService;
 import org.cerberus.service.ITestCaseExecutionService;
@@ -122,6 +127,10 @@ public class ExecutionRunService implements IExecutionRunService {
     private IFactoryTestCaseExecutionData factoryTestCaseExecutionData;
     @Autowired
     private IFactoryTestCaseExecutionSysVer factoryTestCaseExecutionSysVer;
+    @Autowired
+    private IParameterService parameterService;
+    @Autowired
+    private ExecutionSOAPResponse executionSOAPResponse;
     
     @Override
     public TestCaseExecution executeTestCase(TestCaseExecution tCExecution) {
@@ -419,15 +428,19 @@ public class ExecutionRunService implements IExecutionRunService {
                     if (((testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getScreenshot() == 2)
                             || (testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getScreenshot() == 1))
                             && (testCaseExecutionData.getPropertyResultMessage().isDoScreenshot())) {
-                        MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Doing screenshot.");
-                        File myFile = null;
-                        String screenshotFilename = testCaseStepActionExecution.getTest() + "-" + testCaseStepActionExecution.getTestCase()
-                                + "-St" + testCaseStepActionExecution.getStep()
-                                + "Sq" + testCaseStepActionExecution.getSequence() + ".jpg";
-                        screenshotFilename = screenshotFilename.replaceAll(" ", "");
-                        this.seleniumService.doScreenShot(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getSelenium(), Long.toString(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getId()), screenshotFilename);
-                        testCaseStepActionExecution.setScreenshotFilename(Long.toString(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getId()) + File.separator + screenshotFilename);
-                        MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Screenshot done in : " + testCaseStepActionExecution.getScreenshotFilename());
+                        
+                        if (testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getApplication().getType().equals("GUI")){
+                            MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Doing screenshot.");
+                            File myFile = null;
+                            String screenshotFilename = testCaseStepActionExecution.getTest() + "-" + testCaseStepActionExecution.getTestCase()
+                                    + "-St" + testCaseStepActionExecution.getStep()
+                                    + "Sq" + testCaseStepActionExecution.getSequence() + ".jpg";
+                            screenshotFilename = screenshotFilename.replaceAll(" ", "");
+                            this.seleniumService.doScreenShot(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getSelenium(), Long.toString(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getId()), screenshotFilename);
+                            testCaseStepActionExecution.setScreenshotFilename(Long.toString(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getId()) + File.separator + screenshotFilename);
+                            MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Screenshot done in : " + testCaseStepActionExecution.getScreenshotFilename());
+                        }  
+                        
                     }
 
                     /**
@@ -488,6 +501,8 @@ public class ExecutionRunService implements IExecutionRunService {
                 || ((testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getScreenshot() == 1)
                 && (testCaseStepActionExecution.getActionResultMessage().isDoScreenshot()))
                 || (testCaseStepActionExecution.getAction().equalsIgnoreCase("takeScreenshot"))) {
+            
+            if (testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getApplication().getType().equals("GUI")){
             MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Doing screenshot.");
             File myFile = null;
             String screenshotFilename = testCaseStepActionExecution.getTest() + "-" + testCaseStepActionExecution.getTestCase()
@@ -497,6 +512,38 @@ public class ExecutionRunService implements IExecutionRunService {
             this.seleniumService.doScreenShot(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getSelenium(), Long.toString(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getId()), screenshotFilename);
             testCaseStepActionExecution.setScreenshotFilename(Long.toString(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getId()) + File.separator + screenshotFilename);
             MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Screenshot done in : " + testCaseStepActionExecution.getScreenshotFilename());
+            } 
+            else if (testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getApplication().getType().equals("WS")){
+            MyLogger.log(RunTestCaseService.class.getName(), Level.INFO, "Saving File.");
+            String screenshotFilename = testCaseStepActionExecution.getTest() + "-" + testCaseStepActionExecution.getTestCase()
+                    + "-St" + testCaseStepActionExecution.getStep()
+                    + "Sq" + testCaseStepActionExecution.getSequence() + ".xml";
+            screenshotFilename = screenshotFilename.replaceAll(" ", "");
+            String imgPath = "";
+                try {
+                    imgPath = parameterService.findParameterByKey("cerberus_picture_path", "").getValue();
+                } catch (CerberusException ex) {
+                    Logger.getLogger(ExecutionRunService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+                }
+                File dir = new File(imgPath + testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getId());
+                dir.mkdirs();
+                
+                File file = new File(dir.getAbsolutePath() + File.separator + screenshotFilename);
+                    System.err.println(" FILE : " + file.getAbsolutePath());
+
+                    FileOutputStream fileOutputStream = null;
+                try {
+                    fileOutputStream = new FileOutputStream(file);
+                    fileOutputStream.write(executionSOAPResponse.getExecutionSOAPResponse(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getId()).getBytes());
+                    fileOutputStream.close();
+                    } catch (FileNotFoundException ex) {
+                    Logger.getLogger(ExecutionRunService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+                } catch (IOException ex) {
+                    Logger.getLogger(ExecutionRunService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+                }
+            testCaseStepActionExecution.setScreenshotFilename(Long.toString(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getId()) + File.separator + screenshotFilename);
+            MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Screenshot done in : " + testCaseStepActionExecution.getScreenshotFilename());
+            }
         } else {
             MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Not Doing screenshot after action because of the screenshot parameter or flag on the last Action result.");
         }
