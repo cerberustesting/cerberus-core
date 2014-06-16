@@ -1531,6 +1531,7 @@ function checkForm() {
     // Check all properties to be sure PK of each is OK
     var numberOfProperties = $("input[name='properties_property']").length;
     for(var index=1; index <= numberOfProperties; index++) {
+
         // Check if name of property is not empty
         if($("input.properties_id_"+index+"[name='properties_property']").val() == "") {
             return alertOnProperties();
