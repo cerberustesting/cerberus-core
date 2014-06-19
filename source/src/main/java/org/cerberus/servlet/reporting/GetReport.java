@@ -32,13 +32,8 @@ public class GetReport extends HttpServlet {
         ITestCaseService testCaseService = applicationContext.getBean(ITestCaseService.class);
         ITestCaseExecutionService testCaseExecutionService = applicationContext.getBean(ITestCaseExecutionService.class);
 
-        TCase tCase2 = this.getTestCaseFromRequest(req);
+        TCase tCase = this.getTestCaseFromRequest(req);
 
-        TCase tCase = new TCase();
-        tCase.setGroup("AUTOMATED");
-        tCase.setApplication("VCCRM");
-        tCase.setStatus("WORKING");
-        tCase.setPriority(-1);
         //TODO only keep the last parameter
         String environment = this.getValue(req, "Environment");
         //TODO only keep the last parameter
@@ -55,33 +50,36 @@ public class GetReport extends HttpServlet {
         try {
 
             for (TCase tc : list) {
-                JSONArray object = new JSONArray();
-                object.put(tc.getTest());
-                object.put(tc.getTestCase());
-                object.put(tc.getApplication());
-                object.put(tc.getShortDescription());
-                object.put(tc.getPriority());
-                object.put(tc.getStatus());
+                JSONArray array = new JSONArray();
+                array.put(tc.getTest());
+                array.put(tc.getTestCase());
+                array.put(tc.getApplication());
+                array.put(tc.getShortDescription());
+                array.put(tc.getPriority());
+                array.put(tc.getStatus());
                 for (String country : req.getParameterValues("Country[]")) {
                     for (String browser : req.getParameterValues("Browser[]")) {
                         TestCaseExecution tce = testCaseExecutionService.findLastTCExecutionByCriteria(tc.getTest(), tc.getTestCase(),
                                 environment, country, build, revision, browser, browserVersion, ip, port, tag);
                         if (tce != null) {
-                            object.put(tce.getControlStatus());
+                            JSONObject obj = new JSONObject();
+                            obj.put("result", tce.getControlStatus());
+                            obj.put("execID", tce.getId());
+                            array.put(obj);
                             Date date = new Date(tce.getStart());
                             DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-                            object.put(formatter.format(date));
+                            array.put(formatter.format(date));
                         } else {
-                            object.put("");
-                            object.put("");
+                            array.put("");
+                            array.put("");
                         }
                     }
                 }
-                object.put(tc.getComment());
-                object.put("for BUILD/REV");
-                object.put(tc.getGroup());
+                array.put(tc.getComment());
+                array.put(tc.getBugID() + "for BUILD/REV");
+                array.put(tc.getGroup());
 
-                data.put(object);
+                data.put(array);
 
             }
 
@@ -137,7 +135,7 @@ public class GetReport extends HttpServlet {
         if (values != null) {
             if (values.length == 1) {
                 if (!"All".equalsIgnoreCase(values[0]) && !"".equalsIgnoreCase(values[0].trim())) {
-                    whereClause.append("'").append(values[0]).append("'");
+                    whereClause.append(values[0]);
                 }
             } else {
                 whereClause.append(" ( '").append(values[0]);

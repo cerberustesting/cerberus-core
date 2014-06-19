@@ -53,8 +53,15 @@
         $(document).ready(function () {
             $(".multiSelectOptions").each(function () {
                 var currentElement = $(this);
+                var bool = true;
+                //TODO remove when allow all filters multiple search on DB
+                var id = currentElement.attr('id');
+                if(id === "Environment" || id === "Build" || id === "Revision"){
+                    bool = false;
+                }
+
                 currentElement.multiselect({
-                    multiple: true,
+                    multiple: bool,
                     minWidth: 150,
                     header: currentElement.data('header'),
                     noneSelectedText: currentElement.data('none-selected-text'),
@@ -98,11 +105,15 @@
                             if (oData[iCol] === "") {
                                 $(nTd).addClass('NOINF');
                             } else {
-                                $(nTd).addClass(oData[iCol]);
+                                $(nTd).addClass(oData[iCol].result);
                             }
                         },
                         "mRender": function (data, type, full) {
-                            return "<a class='" + data + "F' href='ExecutionDetail.jsp?id_tc='>" + data + "</a>";
+                            if (data != ""){
+                                return "<a target='_blank' class='" + data.result + "F' href='ExecutionDetail.jsp?id_tc=" + data.execID + "'>" + data.result + "</a>";
+                            } else{
+                                return "";
+                            }
                         }
                     }
                 ],
@@ -111,7 +122,7 @@
                         aoData.push({"name": data.name+"[]", "value": data.value});
                     });
                 },
-                "fnInitComplete": function () {
+                "fnInitComplete": function (oSettings, json) {
 //                    new FixedHeader(oTable, {
 //                        left: true,
 //                        leftColumns: 2,
@@ -137,6 +148,26 @@
                         $('#reporting tbody tr').removeClass('row_selected');
                         $(this).addClass('row_selected');
                     });
+
+                    var countTest = {};
+                    var countGroup = {};
+
+                    $.each(json.aaData, function(index, elem){
+                        var test = elem[0];
+                        var res = elem[6].result;
+                        if(res != ""){
+                            if(typeof countTest[test] == "undefined"){
+                                countTest[test] = {};
+                                countTest[test][res] = 1;
+                            } else if (typeof countTest[test][res] == "undefined"){
+                                countTest[test][res] = 1;
+                            } else{
+                                countTest[test][res] += 1;
+                            }
+                        }
+                    });
+
+                    alert(countTest);
                 }
             });
         });
