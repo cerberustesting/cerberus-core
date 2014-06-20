@@ -53,8 +53,15 @@
         $(document).ready(function () {
             $(".multiSelectOptions").each(function () {
                 var currentElement = $(this);
+                var bool = true;
+                //TODO remove when allow all filters multiple search on DB
+                var id = currentElement.attr('id');
+                if(id === "Environment" || id === "Build" || id === "Revision"){
+                    bool = false;
+                }
+
                 currentElement.multiselect({
-                    multiple: true,
+                    multiple: bool,
                     minWidth: 150,
                     header: currentElement.data('header'),
                     noneSelectedText: currentElement.data('none-selected-text'),
@@ -70,11 +77,12 @@
             country = $('#Country').val();
             browser= $('#Browser').val();
 
+            $('#jsAdded').remove();
             $.each(country, function (index, elem) {
-                $('#TCComment').before("<th colspan='" + (browser.length * 2) + "'>" + elem + "</th>");
+                $('#TCComment').before("<th id='jsAdded' colspan='" + (browser.length * 2) + "'>" + elem + "</th>");
                 $.each(browser, function (i, e) {
-                    $('#tableCountry').append("<th colspan='2'>" + e + "</th>");
-                    $('#TCResult').append("<th class='TCResult'></th><th></th>");
+                    $('#tableCountry').append("<th id='jsAdded' colspan='2'>" + e + "</th>");
+                    $('#TCResult').append("<th id='jsAdded' class='TCResult'></th><th id='jsAdded'></th>");
                 });
             });
 
@@ -97,42 +105,97 @@
                             if (oData[iCol] === "") {
                                 $(nTd).addClass('NOINF');
                             } else {
-                                $(nTd).addClass(oData[iCol]);
+                                $(nTd).addClass(oData[iCol].result);
                             }
                         },
                         "mRender": function (data, type, full) {
-                            return "<a class='" + data + "F' href='ExecutionDetail.jsp?id_tc='>" + data + "</a>";
+                            if (data != ""){
+                                return "<a target='_blank' class='" + data.result + "F' href='ExecutionDetail.jsp?id_tc=" + data.execID + "'>" + data.result + "</a>";
+                            } else{
+                                return "";
+                            }
                         }
                     }
                 ],
                 "fnServerParams": function (aoData) {
-                    var countries =  [];
-                    var browsers = [];
                     $.each(postData, function(index, data){
-                        if (data.name === "Country"){
-                            countries.push(data.value);
-                        } else if (data.name === "Browser") {
-                            browsers.push(data.value);
-                        } else {
-                            aoData.push(data);
-                        }
+                        aoData.push({"name": data.name+"[]", "value": data.value});
                     });
-                    aoData.push({"name": "Country[]", "value": countries});
-                    aoData.push({"name": "Browser[]", "value": browsers});
                 },
-                "fnInitComplete": function () {
-                    new FixedHeader(oTable, {
-                        left: true,
-                        leftColumns: 2,
-                        zTop: 98
+                "fnInitComplete": function (oSettings, json) {
+//                    new FixedHeader(oTable, {
+//                        left: true,
+//                        leftColumns: 2,
+//                        zTop: 98
+//                    });
+
+//                    $('.FixedHeader_Left table tr#tableCountry th').remove();
+//                    $('.FixedHeader_Left table tr#TCResult th').remove();
+
+                    $('.ui-corner-tl').append("<div style='font-weight: bold;font-family: Trebuchet MS; clear: both'>")
+                            .append("<div style='float: left'>Legend : </div>")
+                            .append("<div style='float: left;margin-left: 3px;margin-right: 3px;' title='FILTER : Use this checkbox to filter status.'><input type='checkbox' name='FILTER' class='filterDisplay' value='FILTER' onchange='filterDisplay($(this).is(\":checked\"))'><label title='FILTER'>FILTER</label></div>")
+                            .append("<div class='OK' style='float: left;margin-left: 3px;margin-right: 3px;' title='OK : Test was fully executed and no bug are to be reported.'><input type='checkbox' id='FOK' name='OK' value='OK' class='filterCheckbox' disabled='disabled' onchange='toogleDisplay(this)'><label class='OKF' title='OK'>OK</label></div>")
+                            .append("<div class='KO' style='float: left;margin-left: 3px;margin-right: 3px;' title='KO : Test was executed and bug have been detected.'><input type='checkbox' name='KO' id='FKO' value='KO' class='filterCheckbox' disabled='disabled' onchange='toogleDisplay(this)'><label  class='KOF' title='KO'>KO</label></div>")
+                            .append("<div class='NA' style='float: left;margin-left: 3px;margin-right: 3px;' title='NA : Test could not be executed because some test data are not available.'><input type='checkbox' id='FNA' class='filterCheckbox' disabled='disabled' name='NA' value='NA' onchange='toogleDisplay(this)'><label  title='NA' class='NAF'>NA</label></div>")
+                            .append("<div class='FA' style='float: left;margin-left: 3px;margin-right: 3px;' title='FA : Test could not be executed because there is a bug on the test.'><input type='checkbox' name='FA'  id='FFA' class='filterCheckbox' disabled='disabled' value='FA' onchange='toogleDisplay(this)'><label  class='FAF'>FA</label></div>")
+                            .append("<div class='PE' style='float: left;margin-left: 3px;margin-right: 3px;' title='PE : Test execution is still running...'><input type='checkbox' name='PE' value='PE' class='filterCheckbox' id='FPE' disabled='disabled' onchange='toogleDisplay(this)'><label class='PEF'>PE</label></div>")
+                            .append("<div class='NotExecuted' style='float: left;margin-left: 3px;margin-right: 3px;' title='Test Case has not been executed for that country.'><span class='NotExecutedF'>XX</span></div>")
+                            .append("<div class='NOINF' style='float: left;margin-left: 3px;margin-right: 3px;' title='Test Case not available for the country XX.'><span class='NOINFF'>XX</span></div>")
+                            .append("</div>");
+
+                    $('#reporting tbody tr').on('click',function(event) {
+                        $('#reporting tbody tr').removeClass('row_selected');
+                        $(this).addClass('row_selected');
                     });
 
-                    $('.FixedHeader_Left table tr#tableCountry th').remove();
-                    $('.FixedHeader_Left table tr#TCResult th').remove();
+                    var countTest = {};
+                    var countGroup = {};
+
+                    $.each(json.aaData, function(index, elem){
+                        var test = elem[0];
+                        var res = elem[6].result;
+                        if(res != ""){
+                            if(typeof countTest[test] == "undefined"){
+                                countTest[test] = {};
+                                countTest[test][res] = 1;
+                            } else if (typeof countTest[test][res] == "undefined"){
+                                countTest[test][res] = 1;
+                            } else{
+                                countTest[test][res] += 1;
+                            }
+                        }
+                    });
+
+                    alert(countTest);
                 }
             });
         });
     });
+
+        function filterDisplay(checked) {
+            if(checked) {
+                $('#reporting tbody tr').hide();
+
+                $('input.filterCheckbox').removeAttr('disabled');
+                $('input.filterDisplay').attr('checked','checked');
+            } else {
+                $('#reporting tbody tr').show();
+
+                $('input.filterCheckbox').attr('disabled','disabled').removeAttr('checked');
+                $('input.filterDisplay').removeAttr('checked');
+            }
+        }
+
+        function toogleDisplay(input) {
+            input = $(input);
+            var value = input.val();
+            if(input.is(':checked')) {
+                $('td.'+value).parent().show();
+            } else {
+                $('td.'+value).parent().hide();
+            }
+        }
     </script>
     <style>
         .underlinedDiv{
@@ -141,6 +204,10 @@
         div.FixedHeader_Cloned th,
         div.FixedHeader_Cloned td {
             background-color: white !important;
+        }
+
+        tr.row_selected {
+            background-color: rgba(248, 255, 33, 0.45);
         }
     </style>
 </head>
@@ -220,12 +287,12 @@
     <p class="dttTitle" style="float:left">Filters</p>
 
     <div id="dropDownUpArrow" style="display:none;">
-        <a onclick="javascript:switchDivVisibleInvisible('filtersList', 'dropDownUpArrow');switchDivVisibleInvisible('dropDownDownArrow', 'dropDownUpArrow')">
+        <a onclick="switchDivVisibleInvisible('filtersList', 'dropDownUpArrow');switchDivVisibleInvisible('dropDownDownArrow', 'dropDownUpArrow')">
             <img src="images/dropdown.gif"/>
         </a>
     </div>
     <div id="dropDownDownArrow" style="display: inline-block">
-        <a onclick="javascript:switchDivVisibleInvisible('dropDownUpArrow', 'filtersList'); switchDivVisibleInvisible('dropDownUpArrow', 'dropDownDownArrow')">
+        <a onclick="switchDivVisibleInvisible('dropDownUpArrow', 'filtersList'); switchDivVisibleInvisible('dropDownUpArrow', 'dropDownDownArrow')">
             <img src="images/dropdown.gif"/>
         </a>
     </div>
