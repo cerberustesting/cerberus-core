@@ -147,6 +147,9 @@ public class ActionService implements IActionService {
         } else if (testCaseStepActionExecution.getAction().equals("callSoapWithBase")) {
             res = this.doActionMakeSoapCall(tCExecution, object);
 
+        } else if (testCaseStepActionExecution.getAction().equals("mouseDownMouseUp")) {
+            res = this.doActionMouseDownMouseUp(tCExecution, object, property);
+
         } else if (testCaseStepActionExecution.getAction().equals("calculateProperty")) {
             res = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_PROPERTYCALCULATED);
             res.setDescription(res.getDescription().replaceAll("%PROP%", testCaseStepActionExecution.getPropertyName()));
@@ -391,5 +394,18 @@ public class ActionService implements IActionService {
         return message;
 
     }
+
+    private MessageEvent doActionMouseDownMouseUp(TestCaseExecution tCExecution, String object, String property) {
+         MessageEvent message;
+        if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")) {
+            return seleniumService.doSeleniumActionMouseDownMouseUp(tCExecution.getSelenium(), object, property);
+        }
+        message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
+        message.setDescription(message.getDescription().replaceAll("%ACTION%", "Click"));
+        message.setDescription(message.getDescription().replaceAll("%APPLICATIONTYPE%", object));
+        return message;
+    }
+
+    
 
 }

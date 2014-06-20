@@ -19,17 +19,21 @@
  */
 package org.cerberus.serviceEngine.impl;
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringReader;
-import java.net.URL;
+import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
@@ -39,9 +43,12 @@ import org.cerberus.entity.ExecutionSOAPResponse;
 import org.cerberus.entity.TestCaseExecution;
 import org.cerberus.log.MyLogger;
 import org.cerberus.serviceEngine.IXmlUnitService;
+import org.cerberus.util.xmlUnitUtil;
 import org.custommonkey.xmlunit.DetailedDiff;
 import org.custommonkey.xmlunit.Diff;
 import org.custommonkey.xmlunit.Difference;
+import org.custommonkey.xmlunit.DifferenceListener;
+import org.custommonkey.xmlunit.XMLUnit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.w3c.dom.Document;
@@ -149,29 +156,74 @@ public class XmlUnitService implements IXmlUnitService{
 
             XPathFactory xpathFactory = XPathFactory.newInstance();
             XPath xpath = xpathFactory.newXPath();
+  
+            XPathExpression expr = xpath.compile(element);
+            Object result = expr.evaluate(document, XPathConstants.NODE);
+            Node nodes = (Node) result;
             
-            Diff diff = new Diff(element, text);
-//            System.out.println("Similar? " + diff.similar());
-//            System.out.println("Identical? " + diff.identical());
- 
-//            DetailedDiff detDiff = new DetailedDiff(diff);
-//            List differences = detDiff.getAllDifferences();
-//            for (Object object : differences) {
-//                Difference difference = (Difference)object;
+            NodeList nl = nodes.getChildNodes();
+            
+            
+            int length = nl.getLength();
+            String[] copy = new String[length+1];
+      
+            if (nodes.hasChildNodes()){
+            for (int n = 0; n < length; ++n){
+            copy[n] = nl.item(n).getNodeName();
+            }
+            }
+            copy[length] = nodes.getNodeName();
+            
+            StreamResult xmlOutput = new StreamResult(new StringWriter());
+            Transformer transformer = TransformerFactory.newInstance().newTransformer();
+            transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+            transformer.transform(new DOMSource(nodes), xmlOutput);
+            String nodeAsAString = xmlOutput.getWriter().toString(); 
+            
+            XMLUnit.setIgnoreWhitespace(true);
+            XMLUnit.setIgnoreDiffBetweenTextAndCDATA(true);
+           
+            //System.out.println("Compare "+nodeAsAString+" with "+text);
+            
+            Diff diff = new Diff(nodeAsAString, text);
+            
+            DetailedDiff detDiff = new DetailedDiff(diff);
+            List differences = detDiff.getAllDifferences();
+            List d = new ArrayList();
+            xmlUnitUtil xuu = new xmlUnitUtil(copy);
+            for (Object object : differences) {
+                Difference difference = (Difference)object;
 //                System.out.println("***********************");
 //                System.out.println(difference);
 //                System.out.println("***********************");
-//            }
+                xuu.differenceFound(difference);
+            }
+              
+            diff.overrideDifferenceListener(xuu);
+            
                 return diff.similar();
                 
         } catch (SAXException e) {
             e.printStackTrace();
+            return false;
         } catch (IOException e) {
             e.printStackTrace();
+            return false;
         } catch (ParserConfigurationException ex) {
             Logger.getLogger(XmlUnitService.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        } catch (XPathExpressionException ex) {
+            Logger.getLogger(XmlUnitService.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }  catch (Exception ex) {
+            Logger.getLogger(XmlUnitService.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
         }
-        return false;
+        
     }
+    
+    
+    
+    
     
 }

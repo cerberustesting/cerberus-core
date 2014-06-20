@@ -113,4 +113,6 @@ public interface ISeleniumService {
     MessageEvent doSeleniumActionFocusToIframe(Selenium selenium, String object, String property);
 
     MessageEvent doSeleniumActionFocusDefaultIframe(Selenium selenium);
+    
+    MessageEvent doSeleniumActionMouseDownMouseUp(Selenium selenium, String string1, String string2);
 }
