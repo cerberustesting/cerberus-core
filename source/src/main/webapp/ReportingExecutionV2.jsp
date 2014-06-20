@@ -150,6 +150,7 @@
                     });
 
                     var countTest = {};
+                    countTest.Total = {};
                     var countGroup = {};
 
                     $.each(json.aaData, function(index, elem){
@@ -281,6 +282,10 @@
     IUserService userService = appContext.getBean(IUserService.class);
 
     TreeMap<String, String> options = new TreeMap<String, String>();
+
+//    User usr = userService.findUserByKey(request.getUserPrincipal().getName());
+//    String reportingFavorite = "ReportingExecution.jsp?"+usr.getReportingFavorite();
+    String reportingFavorite = "ReportingExecution.jsp?";
 %>
 <div class="filters" style="text-align: left; width:100%;">
 <div style="display: block; width: 100%">
@@ -643,7 +648,9 @@
         <div class="underlinedDiv"></div>
     </div>
     <div>
-        <input id="button" type="submit" name="Apply" value="Apply">
+        <input id="apply" type="submit" name="Apply" value="Apply">
+        <input id="loadFilters" type="button" name="defaultFilter" value="Select My Default Filters" onclick="loadReporting('<%=reportingFavorite%>')">
+        <input id="button" type="button" value="Set As My Default Filter" onclick="saveFilters()">
     </div>
 </form>
 </div>
