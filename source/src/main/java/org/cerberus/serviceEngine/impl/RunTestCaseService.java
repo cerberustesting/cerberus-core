@@ -71,7 +71,7 @@ public class RunTestCaseService implements IRunTestCaseService {
             tCExecution.setResultMessage(mes);
         } finally {
             // stop execution of the test case and collect data in all case.
-            MyLogger.log(SoapService.class.getName(), Level.INFO, eSResponse.getExecutionSOAPResponse(tCExecution.getId()));
+            MyLogger.log(SoapService.class.getName(), Level.DEBUG, eSResponse.getExecutionSOAPResponse(tCExecution.getId()));
             executionUUID.removeExecutionUUID(tCExecution.getExecutionUUID());
             eSResponse.removeExecutionSOAPResponse(tCExecution.getId());
             //tCExecution = executionRunService.stopTestCase(tCExecution);

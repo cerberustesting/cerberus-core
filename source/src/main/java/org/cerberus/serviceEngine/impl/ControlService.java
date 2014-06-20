@@ -56,7 +56,7 @@ public class ControlService implements IControlService {
     @Autowired
     private IPropertyService propertyService;
     @Autowired
-    private IXmlUnitService xpathService;
+    private IXmlUnitService xmlUnitService;
 
     @Override
     public TestCaseStepActionControlExecution doControl(TestCaseStepActionControlExecution testCaseStepActionControlExecution) {
@@ -143,6 +143,9 @@ public class ControlService implements IControlService {
                 res = this.verifyUrl(tCExecution, testCaseStepActionControlExecution.getControlProperty());
             } else if (testCaseStepActionControlExecution.getControlType().equals("verifyStringContains")) {
                 res = this.verifyStringContains(testCaseStepActionControlExecution.getControlProperty(),
+                        testCaseStepActionControlExecution.getControlValue());
+            } else if (testCaseStepActionControlExecution.getControlType().equals("verifyXmlTreeStructure")) {
+                res = this.verifyXmlTreeStructure(tCExecution, testCaseStepActionControlExecution.getControlProperty(),
                         testCaseStepActionControlExecution.getControlValue());
             } else {
                 res = new MessageEvent(MessageEventEnum.CONTROL_FAILED_UNKNOWNCONTROL);
@@ -310,7 +313,7 @@ public class ControlService implements IControlService {
                     return parseWebDriverException(exception);
                 }
             } else if (tCExecution.getApplication().getType().equalsIgnoreCase("WS")) {
-                if (xpathService.isElementPresent(tCExecution, html)) {
+                if (xmlUnitService.isElementPresent(tCExecution, html)) {
                     mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_PRESENT);
                     mes.setDescription(mes.getDescription().replaceAll("%STRING1%", html));
                     return mes;
@@ -461,7 +464,7 @@ public class ControlService implements IControlService {
             return parseWebDriverException(exception);
         }
         } else if (tCExecution.getApplication().getType().equalsIgnoreCase("WS")) {
-        if (xpathService.isTextInElement(tCExecution, html, value)) {
+        if (xmlUnitService.isTextInElement(tCExecution, html, value)) {
                     mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_TEXTINELEMENT);
                     mes.setDescription(mes.getDescription().replaceAll("%STRING1%", html));
                     return mes;
@@ -669,5 +672,28 @@ public class ControlService implements IControlService {
         mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_SELENIUM_CONNECTIVITY);
         mes.setDescription(mes.getDescription().replaceAll("%ERROR%", exception.getMessage().split("\n")[0]));
         return mes;
+    }
+
+    private MessageEvent verifyXmlTreeStructure(TestCaseExecution tCExecution, String controlProperty, String controlValue) {
+        MyLogger.log(ControlService.class.getName(), Level.DEBUG, "Control : verifyXmlTreeStructure on : " + controlProperty);
+        MessageEvent mes;
+        try {
+           
+            if (this.xmlUnitService.isSimilarTree(tCExecution, controlProperty, controlValue)) {
+                mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_SIMILARTREE);
+                mes.setDescription(mes.getDescription().replaceAll("%STRING1%", StringUtil.sanitize(controlProperty)));
+                mes.setDescription(mes.getDescription().replaceAll("%STRING2%", StringUtil.sanitize(controlValue)));
+                return mes;
+            } else {
+                mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_SIMILARTREE);
+                mes.setDescription(mes.getDescription().replaceAll("%STRING1%", StringUtil.sanitize(controlProperty)));
+                mes.setDescription(mes.getDescription().replaceAll("%STRING2%", StringUtil.sanitize(controlValue)));
+                return mes;
+            }
+        } catch (Exception exception) {
+        MyLogger.log(SeleniumService.class.getName(), Level.FATAL, exception.toString());
+        mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED);
+        return mes;
+        }
     }
 }
