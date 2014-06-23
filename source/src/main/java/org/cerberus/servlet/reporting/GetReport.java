@@ -76,7 +76,7 @@ public class GetReport extends HttpServlet {
                     }
                 }
                 array.put(tc.getComment());
-                array.put(tc.getBugID() + "for BUILD/REV");
+                array.put(tc.getBugID() + "for " + tc.getTargetSprint() + "/" + tc.getTargetRevision());
                 array.put(tc.getGroup());
 
                 data.put(array);
@@ -103,7 +103,7 @@ public class GetReport extends HttpServlet {
         String active = this.getValues(req, "TcActive");
         //TODO only keep the last parameter
         int priority = -1;
-        String temp= req.getParameter("Priority");
+        String temp = req.getParameter("Priority");
         if (temp != null && !temp.equalsIgnoreCase("All") && StringUtil.isNumeric(temp)) {
             priority = Integer.parseInt(temp);
         }
@@ -123,14 +123,14 @@ public class GetReport extends HttpServlet {
     private String getValue(HttpServletRequest req, String valueName) {
         String value = null;
         if (req.getParameter(valueName) != null && !req.getParameter(valueName).equalsIgnoreCase("All")) {
-            value = req.getParameter(valueName+"[]");
+            value = req.getParameter(valueName + "[]");
         }
         return value;
     }
 
     private String getValues(HttpServletRequest req, String valueName) {
         StringBuilder whereClause = new StringBuilder();
-        String[] values = req.getParameterValues(valueName+"[]");
+        String[] values = req.getParameterValues(valueName + "[]");
 
         if (values != null) {
             if (values.length == 1) {
@@ -139,7 +139,7 @@ public class GetReport extends HttpServlet {
                 }
             } else {
                 whereClause.append(" ( '").append(values[0]);
-                for (int i = 1; i < values.length ; i++) {
+                for (int i = 1; i < values.length; i++) {
                     whereClause.append("', '").append(values[i]);
                 }
                 whereClause.append("' ) ");
