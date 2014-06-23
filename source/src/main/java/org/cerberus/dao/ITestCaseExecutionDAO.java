@@ -33,6 +33,7 @@ public interface ITestCaseExecutionDAO {
 
     /**
      * @param tCExecution TestCaseExecution Object to insert in TestcaseExecution table
+     * @throws org.cerberus.exception.CerberusException
      */
     void insertTCExecution(TestCaseExecution tCExecution) throws CerberusException;
 

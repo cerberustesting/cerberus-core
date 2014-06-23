@@ -344,10 +344,8 @@ public class ExecutionStartService implements IExecutionStartService{
             try{
             this.seleniumService.startSeleniumServer(tCExecution, tCExecution.getSeleniumIP(), tCExecution.getSeleniumPort(), tCExecution.getBrowser(),tCExecution.getVersion(),tCExecution.getPlatform(), url, login, tCExecution.getVerbose(), tCExecution.getCountry());
             } catch (CerberusException ex) {
-                MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_BROWSER_NOT_SUPPORTED);
-                mes.setDescription(mes.getDescription().replaceAll("%BROWSER%", ex.getMessage()));
-                tCExecution.setResultMessage(mes);
-                Logger.getLogger(RunTestCaseService.class.getName()).log(java.util.logging.Level.WARNING, mes.getDescription());
+                tCExecution.setResultMessage(ex.getMessageError());
+                Logger.getLogger(RunTestCaseService.class.getName()).log(java.util.logging.Level.WARNING, ex.getMessageError().getDescription());
                 throw new CerberusException(ex.getMessageError());
             }
             
@@ -358,15 +356,19 @@ public class ExecutionStartService implements IExecutionStartService{
          */
         tCExecution.setResultMessage(new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_CREATINGRUNID));
         MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Registering Execution ID on database");
-        long runID = this.testCaseExecutionService.registerRunID(tCExecution);
+        long runID = 0;
+        try {
+            runID = this.testCaseExecutionService.registerRunID(tCExecution);
+        } catch (CerberusException ex){
+            tCExecution.setResultMessage(new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_COULDNOTCREATE_RUNID));
+            Logger.getLogger(RunTestCaseService.class.getName()).log(java.util.logging.Level.WARNING, ex.getMessageError().getDescription());
+            throw new CerberusException(ex.getMessageError());
+        }
         executionUUIDObject.setExecutionUUID(tCExecution.getExecutionUUID(), runID);
         MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, tCExecution.getId() + " - RunID Registered on database.");
-        if (runID <= 0) {
-            tCExecution.setResultMessage(new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_COULDNOTCREATE_RUNID));
-            return tCExecution;
-        }
+        
     
-        tCExecution.setResultMessage(new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_APPLICATION_NOT_FOUND));
+//        tCExecution.setResultMessage(new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_APPLICATION_NOT_FOUND));
         return tCExecution;
     }
     

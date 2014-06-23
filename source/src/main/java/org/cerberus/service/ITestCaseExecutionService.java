@@ -57,5 +57,5 @@ public interface ITestCaseExecutionService {
      */
     List<TestCaseExecution> findTCExecutionbyCriteria1(String dateLimitFrom, String test, String testCase, String application, String country, String environment, String controlStatus, String status) throws CerberusException;
 
-    long registerRunID(TestCaseExecution tCExecution);
+    long registerRunID(TestCaseExecution tCExecution) throws CerberusException;
 }
