@@ -82,7 +82,11 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
                     while (resultSet.next()) {
                         int step = resultSet.getInt("Step");
                         String description = resultSet.getString("Description");
-                        list.add(factoryTestCaseStep.create(test, testcase, step, description));
+                        String useStep = resultSet.getString("useStep");
+                        String useStepTest = resultSet.getString("useStepTest");
+                        String useStepTestCase = resultSet.getString("useStepTestCase");
+                        Integer useStepStep = resultSet.getInt("useStepStep");
+                        list.add(factoryTestCaseStep.create(test, testcase, step, description, useStep, useStepTest, useStepTestCase, useStepStep));
                     }
                 } catch (SQLException exception) {
                     MyLogger.log(TestCaseStepDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
@@ -156,8 +160,8 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
     public void insertTestCaseStep(TestCaseStep testCaseStep) throws CerberusException {
         boolean throwExcep = false;
         StringBuilder query = new StringBuilder();
-        query.append("INSERT INTO testcasestep (`test`, `testCase`, `step`, `Description`) ");
-        query.append("VALUES (?,?,?,?)");
+        query.append("INSERT INTO `testcasestep` (`Test`,`TestCase`,`Step`,`Description`,`useStep`,`useStepTest`,`useStepTestCase`,`useStepStep`) ");
+        query.append("VALUES (?,?,?,?,?,?,?,?)");
         
         Connection connection = this.databaseSpring.connect();
         try {
@@ -167,7 +171,11 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
                 preStat.setString(2, testCaseStep.getTestCase());
                 preStat.setInt(3, testCaseStep.getStep());
                 preStat.setString(4, testCaseStep.getDescription());
-
+                preStat.setString(5, testCaseStep.getUseStep());
+                preStat.setString(6, testCaseStep.getUseStepTest());
+                preStat.setString(7, testCaseStep.getUseStepTestCase());
+                preStat.setInt(8, testCaseStep.getUseStepStep());
+                
                 preStat.executeUpdate();
                 throwExcep = false;
                 
@@ -210,7 +218,11 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
                 try {
                     if (resultSet.first()) {
                         String description = resultSet.getString("Description");
-                        result = factoryTestCaseStep.create(test, testcase, step, description);
+                        String useStep = resultSet.getString("useStep");
+                        String useStepTest = resultSet.getString("useStepTest");
+                        String useStepTestCase = resultSet.getString("useStepTestCase");
+                        Integer useStepStep = resultSet.getInt("useStepStep");
+                        result = factoryTestCaseStep.create(test, testcase, step, description, useStep, useStepTest, useStepTestCase, useStepStep);
                     }
                 } catch (SQLException exception) {
                     MyLogger.log(TestCaseStepDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());

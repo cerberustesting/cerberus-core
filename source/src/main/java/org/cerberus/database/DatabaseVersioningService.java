@@ -3503,7 +3503,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ('ACTION', 'mouseDownMouseUp', '200', 'mouseDownMouseUp', '');");
         SQLInstruction.add(SQLS.toString());
         
-   
+           
         return SQLInstruction;
     }
 }

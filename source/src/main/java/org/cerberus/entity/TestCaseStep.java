@@ -28,7 +28,43 @@ public class TestCaseStep {
     private String testCase;
     private int step;
     private String description;
+    private String useStep;  //  Y if the step use a step from another test 
+    private String useStepTest; //  The test of the used step
+    private String useStepTestCase;  // The testcase of the used step
+    private Integer useStepStep;   //  the step used
     private List<TestCaseStepAction> testCaseStepAction;
+
+    public String getUseStep() {
+        return useStep;
+    }
+
+    public void setUseStep(String useStep) {
+        this.useStep = useStep;
+    }
+
+    public String getUseStepTest() {
+        return useStepTest;
+    }
+
+    public void setUseStepTest(String useStepTest) {
+        this.useStepTest = useStepTest;
+    }
+
+    public String getUseStepTestCase() {
+        return useStepTestCase;
+    }
+
+    public void setUseStepTestCase(String useStepTestCase) {
+        this.useStepTestCase = useStepTestCase;
+    }
+
+    public Integer getUseStepStep() {
+        return useStepStep;
+    }
+
+    public void setUseStepStep(Integer useStepStep) {
+        this.useStepStep = useStepStep;
+    }
 
     public List<TestCaseStepAction> getTestCaseStepAction() {
         return testCaseStepAction;
