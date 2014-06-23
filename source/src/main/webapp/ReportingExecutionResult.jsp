@@ -468,7 +468,7 @@
                                               ><%=com%></span>
                                         <textarea id="commentField_<%=rs_time.getString("tc.test")%>_<%=rs_time.getString("tc.testcase")%>" style="background-color:transparent;width:100%;height:100%; display:none" value="<%=com%>"
                                                   onblur="saveCommentChanges('<%=rs_time.getString("tc.test")%>','<%=rs_time.getString("tc.testcase")%>')"><%=com%></textarea></td>
-                                    <td ><%
+                                    <td><%
                                         if ((rs_time.getString("tc.BugID") != null)
                                                 && (rs_time.getString("tc.BugID").compareToIgnoreCase("") != 0)
                                                 && (rs_time.getString("tc.BugID").compareToIgnoreCase("null") != 0)) {
@@ -478,11 +478,13 @@
                                             SitdmossBugtrackingURL_tc = "";
                                         }
                                         if (SitdmossBugtrackingURL_tc.equalsIgnoreCase("") == false) {%><a href="<%=SitdmossBugtrackingURL_tc%>" target="_blank"><%=rs_time.getString("tc.BugID")%></a><%
-                                            }
+                                            }else{%>
+                                        <%=rs_time.getString("tc.BugID")%>
+                                        <%}
                                             if ((rs_time.getString("tc.TargetBuild") != null) && (rs_time.getString("tc.TargetBuild").equalsIgnoreCase("") == false)) {
                                         %> for <%=rs_time.getString("tc.TargetBuild")%>/<%=rs_time.getString("tc.TargetRev")%><%
                                             }%></td>
-                                    <td ><%
+                                    <td><%
                                         if (rs_time.getString("tc.Group") != null) {%><%=rs_time.getString("tc.Group")%><%}%></td>
 
                                 </tr>
