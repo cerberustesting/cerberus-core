@@ -276,7 +276,7 @@
                     </tr>
                 </table>
             </div>
-
+                    <input type="button" value="Stop Auto Refresh" onclick="document.getElementById('refreshAuto').value='Stop'">
             <br/><br/>
             <div id="tablewwwsum">
                 <%
@@ -765,7 +765,7 @@
                 </table>
                 <%  }
                 %>
-
+                <input visibility="hidden" id="refreshAuto">
 
                 <%
                         stmt0.close();
@@ -807,8 +807,14 @@
     $(document).ready(function() {
         var stat = document.getElementById("statushidden").value;
         var idtc = document.getElementById("exeid").innerHTML;
+        
+        
      if (stat === "PE"){
-         setTimeout(function(){location.href='./ExecutionDetail.jsp?id_tc='+idtc}, 1000);
+         setTimeout(function(){
+             var refresh = document.getElementById("refreshAuto").value;
+             if(refresh !== 'Stop'){
+                 location.href='./ExecutionDetail.jsp?id_tc='+idtc}}, 1000);
+         
      }
  });
             </script>
