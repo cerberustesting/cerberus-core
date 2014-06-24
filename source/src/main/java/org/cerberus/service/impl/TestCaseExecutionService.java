@@ -77,7 +77,7 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
     }
 
     @Override
-    public long registerRunID(TestCaseExecution tCExecution) {
+    public long registerRunID(TestCaseExecution tCExecution) throws CerberusException {
 
         /**
          * Insert TestCaseExecution
@@ -86,6 +86,7 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
             this.insertTCExecution(tCExecution);
         } catch (CerberusException ex) {
             MyLogger.log(TestCaseExecutionService.class.getName(), Level.FATAL, ex.toString());
+            throw new CerberusException(ex.getMessageError());
         }
         return tCExecution.getId();
     }

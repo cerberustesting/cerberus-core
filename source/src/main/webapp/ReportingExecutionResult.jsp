@@ -468,7 +468,7 @@
                                               ><%=com%></span>
                                         <textarea id="commentField_<%=rs_time.getString("tc.test")%>_<%=rs_time.getString("tc.testcase")%>" style="background-color:transparent;width:100%;height:100%; display:none" value="<%=com%>"
                                                   onblur="saveCommentChanges('<%=rs_time.getString("tc.test")%>','<%=rs_time.getString("tc.testcase")%>')"><%=com%></textarea></td>
-                                    <td ><%
+                                    <td><%
                                         if ((rs_time.getString("tc.BugID") != null)
                                                 && (rs_time.getString("tc.BugID").compareToIgnoreCase("") != 0)
                                                 && (rs_time.getString("tc.BugID").compareToIgnoreCase("null") != 0)) {
@@ -478,11 +478,13 @@
                                             SitdmossBugtrackingURL_tc = "";
                                         }
                                         if (SitdmossBugtrackingURL_tc.equalsIgnoreCase("") == false) {%><a href="<%=SitdmossBugtrackingURL_tc%>" target="_blank"><%=rs_time.getString("tc.BugID")%></a><%
-                                            }
+                                            }else{%>
+                                        <%=rs_time.getString("tc.BugID")%>
+                                        <%}
                                             if ((rs_time.getString("tc.TargetBuild") != null) && (rs_time.getString("tc.TargetBuild").equalsIgnoreCase("") == false)) {
                                         %> for <%=rs_time.getString("tc.TargetBuild")%>/<%=rs_time.getString("tc.TargetRev")%><%
                                             }%></td>
-                                    <td ><%
+                                    <td><%
                                         if (rs_time.getString("tc.Group") != null) {%><%=rs_time.getString("tc.Group")%><%}%></td>
 
                                 </tr>
@@ -527,7 +529,7 @@
                                     <%
                                         for (int i = 0; i < country_list.length; i++) {
                                     %>
-                                    <td colspan="6" align="center" style="width: 60px ;"><%=country_list[i]%></td>
+                                    <td colspan="7" align="center" style="width: 60px ;"><%=country_list[i]%></td>
                                     <%
                                         }
                                     %>
@@ -541,8 +543,9 @@
                                     <td id="repsynthesis2" align="center" style="color : red">KO</td>
                                     <td id="repsynthesis3" align="center" style="color : darkmagenta">FA</td>
                                     <td id="repsynthesis4" align="center" style="color : blue">PE</td>
-                                    <td id="repsynthesis5" align="center" style="color : #999999">NE</td>
-                                    <td id="repsynthesis6" align="center" style="color : black">TOTAL</td>
+                                    <td id="repsynthesis5" align="center" style="color : yellow">NA</td>
+                                    <td id="repsynthesis6" align="center" style="color : #999999">NE</td>
+                                    <td id="repsynthesis7" align="center" style="color : black">TOTAL</td>
                                     <%                                                              }
                                     %>
                                 </tr>
@@ -553,6 +556,7 @@
                                         String KO = "KO" + country_list[k];
                                         String FA = "FA" + country_list[k];
                                         String PE = "PE" + country_list[k];
+                                        String NA = "NA" + country_list[k];
                                         String NE = "NE" + country_list[k];
                                         String NT = "NT" + country_list[k];
                                     }
@@ -575,6 +579,7 @@
                                     List<String> listTOTKO = new ArrayList<String>();
                                     List<String> listTOTFA = new ArrayList<String>();
                                     List<String> listTOTPE = new ArrayList<String>();
+                                    List<String> listTOTNA = new ArrayList<String>();
                                     List<String> listTOTNE = new ArrayList<String>();
                                     List<String> listTOTNT = new ArrayList<String>();
 
@@ -583,6 +588,7 @@
                                         List<String> listKO = new ArrayList<String>();
                                         List<String> listFA = new ArrayList<String>();
                                         List<String> listPE = new ArrayList<String>();
+                                        List<String> listNA = new ArrayList<String>();
                                         List<String> listNE = new ArrayList<String>();
                                         List<String> listNT = new ArrayList<String>();
                                         for (int i = 0; i < statistiques.size(); i++) {
@@ -606,6 +612,10 @@
                                                     listPE.add(countrystatus);
                                                     listTOTPE.add(countrystatus);
                                                 }
+                                                if (statsdetails[2].equals("NA")) {
+                                                    listNA.add(countrystatus);
+                                                    listTOTNA.add(countrystatus);
+                                                }
                                                 if (statsdetails[2].equals("NE")) {
                                                     listNE.add(countrystatus);
                                                     listTOTNE.add(countrystatus);
@@ -627,6 +637,7 @@
                                             List<String> listCTKO = new ArrayList<String>();
                                             List<String> listCTFA = new ArrayList<String>();
                                             List<String> listCTPE = new ArrayList<String>();
+                                            List<String> listCTNA = new ArrayList<String>();
                                             List<String> listCTNE = new ArrayList<String>();
                                             List<String> listCTNT = new ArrayList<String>();
 
@@ -666,6 +677,15 @@
                                                 }
                                             }
 
+                                            for (int a = 0; a < listNA.size(); a++) {
+                                                String[] CTNAdetails = listNA.get(a).split("-");
+                                                if (country_list[b].equals(CTNAdetails[0])) {
+                                                    if (CTNAdetails[1].equals("NA")) {
+                                                        listCTNA.add(CTNAdetails[1]);
+                                                    }
+                                                }
+                                            }
+                                            
                                             for (int a = 0; a < listNE.size(); a++) {
                                                 String[] CTNEdetails = listNE.get(a).split("-");
                                                 if (country_list[b].equals(CTNEdetails[0])) {
@@ -735,7 +755,7 @@
 
                                             }
 
-                                            int total = 0 + listCTOK.size() + listCTKO.size() + listCTFA.size() + listCTPE.size() + listCTNE.size();
+                                            int total = 0 + listCTOK.size() + listCTKO.size() + listCTFA.size() + listCTPE.size() + listCTNE.size() + listCTNA.size();
                                     %><td id="repsynthesis1"  align="center" style="font : bold  ;
                                         ; color: green; border-top-color: <%=cssleftTOP%> ; border-right-color: <%=cssleftRIG%>  ">
                                         <%=listCTOK.size() != 0 ? listCTOK.size() : "0"%> 
@@ -749,6 +769,9 @@
                                         ; color: blue; border-top-color: <%=cssleftTOP%> ; border-left-color: <%=cssleftRIG%>  ">
                                         <%=listCTPE.size() != 0 ? listCTPE.size() : "0"%></td>
                                     <td id="repsynthesis5"  align="center" style="font : bold ; 
+                                        ; color: #999; border-top-color: <%=cssleftTOP%> ; border-left-color: <%=cssleftRIG%>  ">
+                                        <%=listCTNA.size() != 0 ? listCTNA.size() : "0"%></td>
+                                    <td id="repsynthesis6"  align="center" style="font : bold ; 
                                         ; color: #999; border-top-color: <%=cssleftTOP%> ; border-left-color: <%=cssleftRIG%>  ">
                                         <%=listCTNE.size() != 0 ? listCTNE.size() : "0"%></td>
                                     <td id="repsynthesis5"  align="center" style="font : bold ; 
@@ -769,6 +792,7 @@
                                             List<String> listCTTOTKO = new ArrayList<String>();
                                             List<String> listCTTOTFA = new ArrayList<String>();
                                             List<String> listCTTOTPE = new ArrayList<String>();
+                                            List<String> listCTTOTNA = new ArrayList<String>();
                                             List<String> listCTTOTNE = new ArrayList<String>();
                                             List<String> listCTTOTNT = new ArrayList<String>();
 
@@ -808,6 +832,15 @@
                                                 }
                                             }
 
+                                            for (int a = 0; a < listTOTNA.size(); a++) {
+                                                String[] CTNAdetails = listTOTNA.get(a).split("-");
+                                                if (country_list[i].equals(CTNAdetails[0])) {
+                                                    if (CTNAdetails[1].equals("NA")) {
+                                                        listCTTOTNA.add(CTNAdetails[1]);
+                                                    }
+                                                }
+                                            }
+                                            
                                             for (int a = 0; a < listTOTNE.size(); a++) {
                                                 String[] CTNEdetails = listTOTNE.get(a).split("-");
                                                 if (country_list[i].equals(CTNEdetails[0])) {
@@ -817,13 +850,14 @@
                                                 }
                                             }
 
-                                            int total = 0 + listCTTOTOK.size() + listCTTOTKO.size() + listCTTOTFA.size() + listCTTOTPE.size() + listCTTOTNE.size();
+                                            int total = 0 + listCTTOTOK.size() + listCTTOTKO.size() + listCTTOTFA.size() + listCTTOTPE.size() + listCTTOTNE.size()+ listCTTOTNA.size();
 
                                     %>
                                     <td align="center" style="color : green"><%=listCTTOTOK.size()%></td>
                                     <td align="center" style="color : red"><%=listCTTOTKO.size()%></td>
                                     <td align="center" style="color : darkmagenta"><%=listCTTOTFA.size()%></td>
                                     <td align="center" style="color : blue"><%=listCTTOTPE.size()%></td>
+                                    <td align="center" style="color : yellow"><%=listCTTOTNA.size()%></td>
                                     <td align="center" style="color : #999"><%=listCTTOTNE.size()%></td>
                                     <td align="center" style="color : black"><%=total%></td>
                                     <%                                                              }

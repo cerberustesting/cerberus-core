@@ -66,9 +66,7 @@ public class RunTestCaseService implements IRunTestCaseService {
             tCExecution = executionRunService.executeTestCase(tCExecution);
           }
         } catch (CerberusException ex) {
-            MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_CERBERUS);
-            mes.setDescription(mes.getDescription().replaceAll("%MES%", "Exception " + ex.getMessageError().getDescription()));
-            tCExecution.setResultMessage(mes);
+            tCExecution.setResultMessage(ex.getMessageError());
         } finally {
             // stop execution of the test case and collect data in all case.
             MyLogger.log(SoapService.class.getName(), Level.DEBUG, eSResponse.getExecutionSOAPResponse(tCExecution.getId()));

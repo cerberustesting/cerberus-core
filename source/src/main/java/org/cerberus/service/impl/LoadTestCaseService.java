@@ -21,17 +21,18 @@ package org.cerberus.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.apache.log4j.Level;
-import org.cerberus.entity.TestCaseExecution;
 import org.cerberus.entity.TCase;
 import org.cerberus.entity.TestCaseCountry;
 import org.cerberus.entity.TestCaseCountryProperties;
+import org.cerberus.entity.TestCaseExecution;
 import org.cerberus.entity.TestCaseStep;
 import org.cerberus.entity.TestCaseStepAction;
 import org.cerberus.entity.TestCaseStepActionControl;
 import org.cerberus.factory.IFactoryTCase;
 import org.cerberus.factory.IFactoryTestCaseCountry;
+import org.cerberus.factory.IFactoryTestCaseStep;
+import org.cerberus.factory.impl.FactoryTestCaseStep;
 import org.cerberus.log.MyLogger;
 import org.cerberus.service.ILoadTestCaseService;
 import org.cerberus.service.ITestCaseCountryPropertiesService;
@@ -60,6 +61,8 @@ public class LoadTestCaseService implements ILoadTestCaseService {
     private IFactoryTestCaseCountry factoryTestCaseCountry;
     @Autowired
     private IFactoryTCase factoryTCase;
+    @Autowired
+    private IFactoryTestCaseStep factoryTCS;
 
     @Override
     public void loadTestCase(TestCaseExecution tCExecution) {
@@ -135,28 +138,63 @@ public class LoadTestCaseService implements ILoadTestCaseService {
         for (TestCaseStep testCaseStep : this.testCaseStepService.getListOfSteps(testCase.getTest(), testCase.getTestCase())) {
             MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "set list of step :" + testCaseStep.getStep());
 
-            List<TestCaseStepAction> tcsa = this.loadTestCaseStepAction(testCaseStep);
-            if (tcsa != null) {
-                testCaseStep.setTestCaseStepAction(tcsa);
+            /**
+             * If use Step, load action and control of used step
+             */
+            if (!testCaseStep.getUseStep().equals("Y")) {
+                List<TestCaseStepAction> tcsa = this.loadTestCaseStepAction(testCaseStep, null);
+                if (tcsa != null) {
+                    testCaseStep.setTestCaseStepAction(tcsa);
+                }
+            } else {
+                List<TestCaseStepAction> tcsa = this.loadTestCaseStepAction(testCaseStep, factoryTCS.create(testCaseStep.getUseStepTest(), testCaseStep.getUseStepTestCase(), testCaseStep.getUseStepStep(), null, null, null, null, 0));
+                if (tcsa != null) {
+                    testCaseStep.setTestCaseStepAction(tcsa);
+                }
             }
             MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "adding testCaseStep");
             result.add(testCaseStep);
         }
+
         MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "return List<TestCaseStep>");
         return result;
     }
 
-    public List<TestCaseStepAction> loadTestCaseStepAction(TestCaseStep testCaseStep) {
+    public List<TestCaseStepAction> loadTestCaseStepAction(TestCaseStep testCaseStep, TestCaseStep UsedTestCaseStep) {
         List<TestCaseStepAction> result = new ArrayList<TestCaseStepAction>();
-        List<TestCaseStepAction> tcsaToAdd = this.testCaseStepActionService.getListOfAction(
-                testCaseStep.getTest(), testCaseStep.getTestCase(), testCaseStep.getStep());
+        List<TestCaseStepAction> tcsaToAdd = new ArrayList<TestCaseStepAction>();
+        /**
+         * If use Step, take the List of action and control of the used step
+         */
+        boolean useStep = (UsedTestCaseStep != null);
+        if (!useStep) {
+            tcsaToAdd = this.testCaseStepActionService.getListOfAction(
+                    testCaseStep.getTest(), testCaseStep.getTestCase(), testCaseStep.getStep());
+        } else {
+            tcsaToAdd = this.testCaseStepActionService.getListOfAction(
+                    UsedTestCaseStep.getTest(), UsedTestCaseStep.getTestCase(), UsedTestCaseStep.getStep());
+        }
+
+        /**
+         * Iterate on the list of action to get the control
+         * In case of useStep, print the test,testcase,step of the executed test instead of the used step
+         */
         for (TestCaseStepAction testCaseStepAction : tcsaToAdd) {
             MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "set list of action :" + testCaseStepAction.getAction());
 
-            List<TestCaseStepActionControl> tcsacList = this.loadTestCaseStepActionControl(testCaseStepAction);
+            /**
+             * 
+             */
+            List<TestCaseStepActionControl> tcsacList = this.loadTestCaseStepActionControl(testCaseStep,testCaseStepAction);
             if (tcsacList != null) {
                 testCaseStepAction.setTestCaseStepActionControl(tcsacList);
             }
+            /**
+             * Update the test, Testcase, Step in case of useStep
+             */
+            testCaseStepAction.setTest(testCaseStep.getTest());
+            testCaseStepAction.setTestCase(testCaseStep.getTestCase());
+            testCaseStepAction.setStep(testCaseStep.getStep());
             MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "adding testCaseStepAction" + testCaseStepAction.getAction());
             result.add(testCaseStepAction);
             MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "added testCaseStepAction" + testCaseStepAction.getAction());
@@ -166,13 +204,16 @@ public class LoadTestCaseService implements ILoadTestCaseService {
         return result;
     }
 
-    public List<TestCaseStepActionControl> loadTestCaseStepActionControl(TestCaseStepAction testCaseAction) {
+    public List<TestCaseStepActionControl> loadTestCaseStepActionControl(TestCaseStep testCaseStep, TestCaseStepAction testCaseAction) {
         List<TestCaseStepActionControl> result = new ArrayList<TestCaseStepActionControl>();
         MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "get list of control");
         List<TestCaseStepActionControl> controlList = testCaseStepActionControlService.findControlByTestTestCaseStepSequence(testCaseAction.getTest(), testCaseAction.getTestCase(), testCaseAction.getStep(), testCaseAction.getSequence());
         if (controlList != null) {
             for (TestCaseStepActionControl testCaseStepActionControl : controlList) {
                 MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "set control :" + testCaseStepActionControl.getType());
+                testCaseStepActionControl.setTest(testCaseStep.getTest());
+                testCaseStepActionControl.setTestCase(testCaseStep.getTestCase());
+                testCaseStepActionControl.setStep(testCaseStep.getStep());
                 result.add(testCaseStepActionControl);
             }
         }

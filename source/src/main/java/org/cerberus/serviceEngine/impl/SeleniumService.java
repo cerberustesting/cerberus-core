@@ -131,10 +131,7 @@ public class SeleniumService implements ISeleniumService {
                 tCExecution.setSelenium(selenium);
                 return tCExecution;
             } catch (CerberusException ex) {
-                MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_SELENIUM);
-                mes.setDescription(mes.getDescription().replaceAll("%MES%", ex.toString()));
-                Logger.getLogger(SeleniumService.class.getName()).log(java.util.logging.Level.WARNING, null, ex.getMessage());
-                throw new CerberusException(mes);
+                throw new CerberusException(ex.getMessageError());
             }
 //        } else {
 //            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.EXECUTION_FA));
@@ -257,10 +254,11 @@ public class SeleniumService implements ISeleniumService {
         MyLogger.log(SeleniumService.class.getName(), Level.DEBUG, "Starting " + browser);
 
         DesiredCapabilities capabilities = null;
+        Selenium selenium = null;
 
         //TODO : take platform and version from servlet
         try {
-            Selenium selenium = tCExecution.getSelenium();
+            selenium = tCExecution.getSelenium();
             capabilities = setCapabilityBrowser(capabilities, browser, tCExecution.getExecutionUUID(), record, country);
             capabilities = setCapabilityPlatform(capabilities, platform);
         //capabilities = setCapabilityVersion(capabilities, version);
@@ -278,8 +276,9 @@ public class SeleniumService implements ISeleniumService {
             return false;
         } catch (UnreachableBrowserException exception) {
             MyLogger.log(Selenium.class.getName(), Level.ERROR, exception.toString());
-            MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_SELENIUM);
-            mes.setDescription(mes.getDescription().replace("%MES%", exception.getMessage()));
+            MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_SELENIUM_COULDNOTCONNECT);
+            mes.setDescription(mes.getDescription().replace("%SSIP%", selenium.getHost()));
+            mes.setDescription(mes.getDescription().replace("%SSPORT%", selenium.getPort()));
             throw new CerberusException(mes);
         } catch (Exception exception) {
             MyLogger.log(Selenium.class.getName(), Level.ERROR, exception.toString());

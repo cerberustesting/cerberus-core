@@ -30,12 +30,16 @@ import org.springframework.stereotype.Service;
 public class FactoryTestCaseStep implements IFactoryTestCaseStep {
 
     @Override
-    public TestCaseStep create(String test, String testCase, int step, String description) {
+    public TestCaseStep create(String test, String testCase, int step, String description, String useStep, String useStepTest, String useStepTestCase, Integer useStepStep) {
         TestCaseStep testCaseStep = new TestCaseStep();
         testCaseStep.setDescription(description);
         testCaseStep.setStep(step);
         testCaseStep.setTest(test);
         testCaseStep.setTestCase(testCase);
+        testCaseStep.setUseStep(useStep);
+        testCaseStep.setUseStepTest(useStepTest);
+        testCaseStep.setUseStepTestCase(useStepTestCase);
+        testCaseStep.setUseStepStep(useStepStep);
         return testCaseStep;
     }
 }

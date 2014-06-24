@@ -106,6 +106,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                     }
                 } catch (SQLException exception) {
                     MyLogger.log(UserDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                    throwEx = true;
                 } finally {
                     resultSet.close();
                 }
@@ -118,6 +119,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
             }
         } catch (SQLException exception) {
             MyLogger.log(TestCaseExecutionDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+            throwEx = true;
         } finally {
             try {
                 if (connection != null) {
