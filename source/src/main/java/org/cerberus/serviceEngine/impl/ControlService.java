@@ -456,7 +456,7 @@ public class ControlService implements IControlService {
                 return mes;
             }
         } catch (NoSuchElementException exception) {
-            MyLogger.log(ControlService.class.getName(), Level.ERROR, exception.toString());
+            MyLogger.log(ControlService.class.getName(), Level.DEBUG, exception.toString());
             mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_TEXTINELEMENT_NO_SUCH_ELEMENT);
             mes.setDescription(mes.getDescription().replaceAll("%ELEMENT%", html));
             return mes;
@@ -549,7 +549,7 @@ public class ControlService implements IControlService {
                 return mes;
             }
         } catch (NoSuchElementException exception) {
-            MyLogger.log(ControlService.class.getName(), Level.ERROR, exception.toString());
+            MyLogger.log(ControlService.class.getName(), Level.DEBUG, exception.toString());
             mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_REGEXINELEMENT_NO_SUCH_ELEMENT);
             mes.setDescription(mes.getDescription().replaceAll("%ELEMENT%", html));
             return mes;

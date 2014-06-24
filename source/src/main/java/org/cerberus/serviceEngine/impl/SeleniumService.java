@@ -100,7 +100,6 @@ public class SeleniumService implements ISeleniumService {
     public TestCaseExecution startSeleniumServer(TestCaseExecution tCExecution, String host, String port, String browser, String version, String platform, String ip, String login, int verbose, String country) throws CerberusException {
 
 //        if (tCExecution.getSelenium()==null || !tCExecution.getSelenium().isStarted()) {
-            Selenium selenium = new Selenium();
             /**
              * We activate Network Traffic for verbose 1 and 2.
              */
@@ -115,7 +114,7 @@ public class SeleniumService implements ISeleniumService {
                 defaultWait = 90;
             }
 
-            selenium = factorySelenium.create(host, port, browser, version, platform, login, ip, null, defaultWait);
+        Selenium selenium = factorySelenium.create(host, port, browser, version, platform, login, ip, null, defaultWait);
             tCExecution.setSelenium(selenium);
             try {
 
@@ -639,7 +638,7 @@ public class SeleniumService implements ISeleniumService {
                 } catch (NoSuchElementException exception) {
                     message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CLICK_NO_SUCH_ELEMENT);
                     message.setDescription(message.getDescription().replaceAll("%ELEMENT%", string1));
-                    MyLogger.log(SeleniumService.class.getName(), Level.ERROR, exception.toString());
+                    MyLogger.log(SeleniumService.class.getName(), Level.DEBUG, exception.toString());
                     return message;
                 }
             } else if (!StringUtil.isNull(string2)) {
@@ -651,7 +650,7 @@ public class SeleniumService implements ISeleniumService {
                 } catch (NoSuchElementException exception) {
                     message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CLICK_NO_SUCH_ELEMENT);
                     message.setDescription(message.getDescription().replaceAll("%ELEMENT%", string2));
-                    MyLogger.log(SeleniumService.class.getName(), Level.ERROR, exception.toString());
+                    MyLogger.log(SeleniumService.class.getName(), Level.DEBUG, exception.toString());
                     return message;
                 }
             }
@@ -678,7 +677,7 @@ public class SeleniumService implements ISeleniumService {
                 } catch (NoSuchElementException exception) {
                     message = new MessageEvent(MessageEventEnum.ACTION_FAILED_MOUSEDOWN_NO_SUCH_ELEMENT);
                     message.setDescription(message.getDescription().replaceAll("%ELEMENT%", string1));
-                    MyLogger.log(SeleniumService.class.getName(), Level.ERROR, exception.toString());
+                    MyLogger.log(SeleniumService.class.getName(), Level.DEBUG, exception.toString());
                     return message;
                 }
             } else if (!StringUtil.isNull(string2)) {
@@ -692,7 +691,7 @@ public class SeleniumService implements ISeleniumService {
                 } catch (NoSuchElementException exception) {
                     message = new MessageEvent(MessageEventEnum.ACTION_FAILED_MOUSEDOWN_NO_SUCH_ELEMENT);
                     message.setDescription(message.getDescription().replaceAll("%ELEMENT%", string2));
-                    MyLogger.log(SeleniumService.class.getName(), Level.ERROR, exception.toString());
+                    MyLogger.log(SeleniumService.class.getName(), Level.DEBUG, exception.toString());
                     return message;
                 }
             }
@@ -719,7 +718,7 @@ public class SeleniumService implements ISeleniumService {
                 } catch (NoSuchElementException exception) {
                     message = new MessageEvent(MessageEventEnum.ACTION_FAILED_MOUSEUP_NO_SUCH_ELEMENT);
                     message.setDescription(message.getDescription().replaceAll("%ELEMENT%", string1));
-                    MyLogger.log(SeleniumService.class.getName(), Level.ERROR, exception.toString());
+                    MyLogger.log(SeleniumService.class.getName(), Level.DEBUG, exception.toString());
                     return message;
                 }
             } else if (!StringUtil.isNull(string2)) {
@@ -733,7 +732,7 @@ public class SeleniumService implements ISeleniumService {
                 } catch (NoSuchElementException exception) {
                     message = new MessageEvent(MessageEventEnum.ACTION_FAILED_MOUSEUP_NO_SUCH_ELEMENT);
                     message.setDescription(message.getDescription().replaceAll("%ELEMENT%", string2));
-                    MyLogger.log(SeleniumService.class.getName(), Level.ERROR, exception.toString());
+                    MyLogger.log(SeleniumService.class.getName(), Level.DEBUG, exception.toString());
                     return message;
                 }
             }
@@ -799,7 +798,7 @@ public class SeleniumService implements ISeleniumService {
                         MyLogger.log(SeleniumService.class.getName(), Level.DEBUG, "windowHandle=" + windowHandle);
                     }
                 } catch (NoSuchElementException exception) {
-                    MyLogger.log(SeleniumService.class.getName(), Level.ERROR, exception.toString());
+                    MyLogger.log(SeleniumService.class.getName(), Level.DEBUG, exception.toString());
                 }
             }
         } catch (WebDriverException exception) {
@@ -866,7 +865,7 @@ public class SeleniumService implements ISeleniumService {
                 } catch (NoSuchElementException exception) {
                     message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CLICK_NO_SUCH_ELEMENT);
                     message.setDescription(message.getDescription().replaceAll("%ELEMENT%", actionObject));
-                    MyLogger.log(SeleniumService.class.getName(), Level.ERROR, exception.toString());
+                    MyLogger.log(SeleniumService.class.getName(), Level.DEBUG, exception.toString());
                     return message;
                 }
                 if (StringUtil.isNumeric(actionProperty)) {
@@ -894,7 +893,7 @@ public class SeleniumService implements ISeleniumService {
                 } catch (NoSuchElementException exception) {
                     message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CLICK_NO_SUCH_ELEMENT);
                     message.setDescription(message.getDescription().replaceAll("%ELEMENT%", actionObject));
-                    MyLogger.log(SeleniumService.class.getName(), Level.ERROR, exception.toString());
+                    MyLogger.log(SeleniumService.class.getName(), Level.DEBUG, exception.toString());
                     return message;
                 }
                 message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CLICKANDNOWAIT);
@@ -906,7 +905,7 @@ public class SeleniumService implements ISeleniumService {
                 } catch (NoSuchElementException exception) {
                     message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CLICK_NO_SUCH_ELEMENT);
                     message.setDescription(message.getDescription().replaceAll("%ELEMENT%", actionProperty));
-                    MyLogger.log(SeleniumService.class.getName(), Level.ERROR, exception.toString());
+                    MyLogger.log(SeleniumService.class.getName(), Level.DEBUG, exception.toString());
                     return message;
                 }
                 message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CLICKANDNOWAIT);
@@ -935,7 +934,7 @@ public class SeleniumService implements ISeleniumService {
                 } catch (NoSuchElementException exception) {
                     message = new MessageEvent(MessageEventEnum.ACTION_FAILED_DOUBLECLICK_NO_SUCH_ELEMENT);
                     message.setDescription(message.getDescription().replaceAll("%ELEMENT%", property));
-                    MyLogger.log(SeleniumService.class.getName(), Level.ERROR, exception.toString());
+                    MyLogger.log(SeleniumService.class.getName(), Level.DEBUG, exception.toString());
                     return message;
                 }
             } else if (!StringUtil.isNull(html)) {
@@ -947,7 +946,7 @@ public class SeleniumService implements ISeleniumService {
                 } catch (NoSuchElementException exception) {
                     message = new MessageEvent(MessageEventEnum.ACTION_FAILED_DOUBLECLICK_NO_SUCH_ELEMENT);
                     message.setDescription(message.getDescription().replaceAll("%ELEMENT%", property));
-                    MyLogger.log(SeleniumService.class.getName(), Level.ERROR, exception.toString());
+                    MyLogger.log(SeleniumService.class.getName(), Level.DEBUG, exception.toString());
                     return message;
                 }
             }
@@ -981,7 +980,7 @@ public class SeleniumService implements ISeleniumService {
                 } catch (NoSuchElementException exception) {
                     message = new MessageEvent(MessageEventEnum.ACTION_FAILED_TYPE_NO_SUCH_ELEMENT);
                     message.setDescription(message.getDescription().replaceAll("%ELEMENT%", html));
-                    MyLogger.log(SeleniumService.class.getName(), Level.ERROR, exception.toString());
+                    MyLogger.log(SeleniumService.class.getName(), Level.DEBUG, exception.toString());
                     return message;
                 }
             }
@@ -1009,7 +1008,7 @@ public class SeleniumService implements ISeleniumService {
                 } catch (NoSuchElementException exception) {
                     message = new MessageEvent(MessageEventEnum.ACTION_FAILED_MOUSEOVER_NO_SUCH_ELEMENT);
                     message.setDescription(message.getDescription().replaceAll("%ELEMENT%", html));
-                    MyLogger.log(SeleniumService.class.getName(), Level.ERROR, exception.toString());
+                    MyLogger.log(SeleniumService.class.getName(), Level.DEBUG, exception.toString());
                     return message;
                 }
             } else if (!StringUtil.isNull(property)) {
@@ -1024,7 +1023,7 @@ public class SeleniumService implements ISeleniumService {
                 } catch (NoSuchElementException exception) {
                     message = new MessageEvent(MessageEventEnum.ACTION_FAILED_MOUSEOVER_NO_SUCH_ELEMENT);
                     message.setDescription(message.getDescription().replaceAll("%ELEMENT%", property));
-                    MyLogger.log(SeleniumService.class.getName(), Level.ERROR, exception.toString());
+                    MyLogger.log(SeleniumService.class.getName(), Level.DEBUG, exception.toString());
                     return message;
                 }
             }
@@ -1064,7 +1063,7 @@ public class SeleniumService implements ISeleniumService {
                     } catch (NoSuchElementException exception) {
                         message = new MessageEvent(MessageEventEnum.ACTION_FAILED_MOUSEOVER_NO_SUCH_ELEMENT);
                         message.setDescription(message.getDescription().replaceAll("%ELEMENT%", actionObject));
-                        MyLogger.log(SeleniumService.class.getName(), Level.ERROR, exception.toString());
+                        MyLogger.log(SeleniumService.class.getName(), Level.DEBUG, exception.toString());
                         return message;
                     }
                 }
@@ -1080,7 +1079,7 @@ public class SeleniumService implements ISeleniumService {
                 } catch (NoSuchElementException exception) {
                     message = new MessageEvent(MessageEventEnum.ACTION_FAILED_MOUSEOVER_NO_SUCH_ELEMENT);
                     message.setDescription(message.getDescription().replaceAll("%ELEMENT%", actionObject));
-                    MyLogger.log(SeleniumService.class.getName(), Level.ERROR, exception.toString());
+                    MyLogger.log(SeleniumService.class.getName(), Level.DEBUG, exception.toString());
                     return message;
                 }
                 message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CLICKANDNOWAIT);
@@ -1122,7 +1121,7 @@ public class SeleniumService implements ISeleniumService {
                     } catch (NoSuchElementException exception) {
                         message = new MessageEvent(MessageEventEnum.ACTION_FAILED_WAIT_NO_SUCH_ELEMENT);
                         message.setDescription(message.getDescription().replaceAll("%ELEMENT%", property));
-                        MyLogger.log(SeleniumService.class.getName(), Level.ERROR, exception.toString());
+                        MyLogger.log(SeleniumService.class.getName(), Level.DEBUG, exception.toString());
                         return message;
                     }
                 }
@@ -1149,7 +1148,7 @@ public class SeleniumService implements ISeleniumService {
                     } catch (NoSuchElementException exception) {
                         message = new MessageEvent(MessageEventEnum.ACTION_FAILED_WAIT_NO_SUCH_ELEMENT);
                         message.setDescription(message.getDescription().replaceAll("%ELEMENT%", object));
-                        MyLogger.log(SeleniumService.class.getName(), Level.ERROR, exception.toString());
+                        MyLogger.log(SeleniumService.class.getName(), Level.DEBUG, exception.toString());
                         return message;
                     }
                 }
@@ -1188,7 +1187,7 @@ public class SeleniumService implements ISeleniumService {
                 } catch (NoSuchElementException exception) {
                     message = new MessageEvent(MessageEventEnum.ACTION_FAILED_KEYPRESS_NO_SUCH_ELEMENT);
                     message.setDescription(message.getDescription().replaceAll("%ELEMENT%", html));
-                    MyLogger.log(SeleniumService.class.getName(), Level.ERROR, exception.toString());
+                    MyLogger.log(SeleniumService.class.getName(), Level.DEBUG, exception.toString());
                     return message;
                 }
             }
@@ -1254,7 +1253,7 @@ public class SeleniumService implements ISeleniumService {
                 } catch (NoSuchElementException exception) {
                     message = new MessageEvent(MessageEventEnum.ACTION_FAILED_SELECT_NO_SUCH_ELEMENT);
                     message.setDescription(message.getDescription().replaceAll("%ELEMENT%", html));
-                    MyLogger.log(SeleniumService.class.getName(), Level.ERROR, exception.toString());
+                    MyLogger.log(SeleniumService.class.getName(), Level.DEBUG, exception.toString());
                     return message;
                 }
                 if (identifier.equalsIgnoreCase("value")) {
@@ -1376,7 +1375,7 @@ public class SeleniumService implements ISeleniumService {
                 } catch (NoSuchElementException exception) {
                     message = new MessageEvent(MessageEventEnum.ACTION_FAILED_FOCUS_NO_SUCH_ELEMENT);
                     message.setDescription(message.getDescription().replaceAll("%IFRAME%", property));
-                    MyLogger.log(SeleniumService.class.getName(), Level.ERROR, exception.toString());
+                    MyLogger.log(SeleniumService.class.getName(), Level.DEBUG, exception.toString());
                 }
             } else {
                 try {
@@ -1386,7 +1385,7 @@ public class SeleniumService implements ISeleniumService {
                 } catch (NoSuchElementException exception) {
                     message = new MessageEvent(MessageEventEnum.ACTION_FAILED_FOCUS_NO_SUCH_ELEMENT);
                     message.setDescription(message.getDescription().replaceAll("%IFRAME%", object));
-                    MyLogger.log(SeleniumService.class.getName(), Level.ERROR, exception.toString());
+                    MyLogger.log(SeleniumService.class.getName(), Level.DEBUG, exception.toString());
                     return message;
                 }
             }
@@ -1432,7 +1431,7 @@ public class SeleniumService implements ISeleniumService {
                 } catch (NoSuchElementException exception) {
                     message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CLICK_NO_SUCH_ELEMENT);
                     message.setDescription(message.getDescription().replaceAll("%ELEMENT%", string1));
-                    MyLogger.log(SeleniumService.class.getName(), Level.ERROR, exception.toString());
+                    MyLogger.log(SeleniumService.class.getName(), Level.DEBUG, exception.toString());
                     return message;
                 }
             } else if (!StringUtil.isNull(string2)) {
@@ -1448,7 +1447,7 @@ public class SeleniumService implements ISeleniumService {
                 } catch (NoSuchElementException exception) {
                     message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CLICK_NO_SUCH_ELEMENT);
                     message.setDescription(message.getDescription().replaceAll("%ELEMENT%", string2));
-                    MyLogger.log(SeleniumService.class.getName(), Level.ERROR, exception.toString());
+                    MyLogger.log(SeleniumService.class.getName(), Level.DEBUG, exception.toString());
                     return message;
                 }
             }
