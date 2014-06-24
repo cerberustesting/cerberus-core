@@ -520,7 +520,7 @@ public class ControlService implements IControlService {
         MessageEvent mes;
         try {
             String str = this.seleniumService.getValueFromHTML(tCExecution.getSelenium(), html);
-            MyLogger.log(ControlService.class.getName(), Level.DEBUG, "Control : verifyRegexInElement element : " + html + " has value : " + str);
+            MyLogger.log(ControlService.class.getName(), Level.DEBUG, "Control : verifyRegexInElement element : " + html + " has value : " + StringUtil.sanitize(str));
             if (html != null) {
                 try {
                     Pattern pattern = Pattern.compile(regex);
@@ -528,19 +528,19 @@ public class ControlService implements IControlService {
                     if (matcher.find()) {
                         mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_REGEXINELEMENT);
                         mes.setDescription(mes.getDescription().replaceAll("%STRING1%", html));
-                        mes.setDescription(mes.getDescription().replaceAll("%STRING2%", str));
-                        mes.setDescription(mes.getDescription().replaceAll("%STRING3%", Pattern.quote(regex)));
+                        mes.setDescription(mes.getDescription().replaceAll("%STRING2%", StringUtil.sanitize(str)));
+                        mes.setDescription(mes.getDescription().replaceAll("%STRING3%", regex));
                         return mes;
                     } else {
                         mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_REGEXINELEMENT);
                         mes.setDescription(mes.getDescription().replaceAll("%STRING1%", html));
                         mes.setDescription(mes.getDescription().replaceAll("%STRING2%", StringUtil.sanitize(str)));
-                        mes.setDescription(mes.getDescription().replaceAll("%STRING3%", Pattern.quote(regex)));
+                        mes.setDescription(mes.getDescription().replaceAll("%STRING3%", regex));
                         return mes;
                     }
                 } catch (PatternSyntaxException e) {
                     mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_REGEXINELEMENT_INVALIDPATERN);
-                    mes.setDescription(mes.getDescription().replaceAll("%PATERN%", Pattern.quote(regex)));
+                    mes.setDescription(mes.getDescription().replaceAll("%PATERN%", regex));
                     mes.setDescription(mes.getDescription().replaceAll("%ERROR%", e.getMessage()));
                     return mes;
                 }
