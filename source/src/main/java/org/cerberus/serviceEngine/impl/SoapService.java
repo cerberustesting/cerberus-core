@@ -182,7 +182,7 @@ public class SoapService implements ISoapService{
                 MyLogger.log(SoapService.class.getName(), Level.INFO, "WS response received");
                 MyLogger.log(SoapService.class.getName(), Level.DEBUG, "WS response : "+out.toString());
                 result = out.toString();
-                executionSOAPResponse.setExecutionSOAPResponse(tCExecution.getId(), result);
+                executionSOAPResponse.setExecutionSOAPResponse(tCExecution.getExecutionUUID(), result);
                 message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CALLSOAP);
                 message.setDescription(message.getDescription().replaceAll("%SOAPNAME%", method));
                 return message;

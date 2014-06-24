@@ -37,15 +37,15 @@ public class ExecutionSOAPResponse {
     }
     
     
-    public void setExecutionSOAPResponse(long executionID, String soapResponse){
-    executionHashMap.put("SOAP"+executionID, soapResponse);
+    public void setExecutionSOAPResponse(String executionUUID, String soapResponse){
+    executionHashMap.put(executionUUID, soapResponse);
     }
     
-    public void removeExecutionSOAPResponse(long executionID) {
-        executionHashMap.remove("SOAP"+executionID);
+    public void removeExecutionSOAPResponse(String executionUUID) {
+        executionHashMap.remove(executionUUID);
     }
 
-    public String getExecutionSOAPResponse(long executionID) {
-        return executionHashMap.get("SOAP"+executionID).toString();
+    public String getExecutionSOAPResponse(String executionUUID) {
+        return (String) executionHashMap.get(executionUUID);
     }
 }

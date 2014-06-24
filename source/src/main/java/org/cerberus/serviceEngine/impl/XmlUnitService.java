@@ -71,7 +71,7 @@ public class XmlUnitService implements IXmlUnitService{
     public boolean isElementPresent(TestCaseExecution tCExecution, String element) {
 
         try {
-            String xml = executionSOAPResponse.getExecutionSOAPResponse(tCExecution.getId());
+            String xml = executionSOAPResponse.getExecutionSOAPResponse(tCExecution.getExecutionUUID());
             InputSource source = new InputSource(new StringReader(xml));
 
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -104,7 +104,7 @@ public class XmlUnitService implements IXmlUnitService{
     @Override
     public boolean isTextInElement(TestCaseExecution tCExecution, String element, String text) {
         try {
-            String xml = executionSOAPResponse.getExecutionSOAPResponse(tCExecution.getId());
+            String xml = executionSOAPResponse.getExecutionSOAPResponse(tCExecution.getExecutionUUID());
             InputSource source = new InputSource(new StringReader(xml));
 
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -147,7 +147,7 @@ public class XmlUnitService implements IXmlUnitService{
     @Override
     public boolean isSimilarTree(TestCaseExecution tCExecution, String element, String text) {
         try {
-            String xml = executionSOAPResponse.getExecutionSOAPResponse(tCExecution.getId());
+            String xml = executionSOAPResponse.getExecutionSOAPResponse(tCExecution.getExecutionUUID());
             InputSource source = new InputSource(new StringReader(xml));
 
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
