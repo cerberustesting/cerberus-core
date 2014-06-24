@@ -7,18 +7,52 @@
 ## TODO: Get time and statistics on all threads
 ## TODO: Try to use Thread::Thread_Share
 
-my %parameters = ('campaign'=>2,
-	'environment'=>'QA',
-	'on' => 3,
-	'robot'=>'MyRobot',
+use strict;
+use warnings;
+use LWP::Simple qw($ua get);
+use Getopt::Long;
+
+my $debug = 0;
+
+# Specify default parameters value
+my $help = 0;
+my $campaign = 2;
+my $environment = 'QA';
+my $on = 3;
+my $robot = 'MyRobot';
+
+# Retrieve value of parameters
+GetOptions(
+	'campaign=i'	=> \$campaign,
+	'environment=s'	=> \$environment,
+	'on=i'		=> \$on,
+	'robot=s'		=> \$robot,
+	'help!'		=> \$help,
+) or die "Usage incorrect!\n";
+
+# Set parameter values
+my %parameters = ('campaign'=>$campaign,
+	'environment'=>$environment,
+	'on' => $on,
+	'robot'=>$robot,
 	'cerberus'=> 'http://localhost:8080/Cerberus-0.9.2-SNAPSHOT/',
 	'servlet'=> 'GetCampaignExecutionsCommand',
 	'timeout'=> 150000
 );
 
-use strict;
-use warnings;
-use LWP::Simple qw($ua get);
+# if -help is specified, print help and exit
+if( $help ) {
+	print " -campaign 2 -environment QA\n";
+	print " -on 3 -robot GRID\n";
+	exit;
+} elsif( $debug ) {
+	# if not AND debug to 1, display parameters
+	my $param;
+	# concat all parameters to print them
+	foreach $param (sort keys %parameters) {
+		print "$param: $parameters{$param}\n";
+	}
+}
 
 # Add timeout on get function (lot of seconds !!)
 $ua->timeout($parameters{'timeout'});
