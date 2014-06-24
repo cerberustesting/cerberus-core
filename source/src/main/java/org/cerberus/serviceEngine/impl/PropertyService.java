@@ -88,33 +88,25 @@ public class PropertyService implements IPropertyService {
         /**
          * Calculate Property regarding the type
          */
-        if (testCaseCountryProperty.getType().equals("executeSqlFromLib")){
+        if (testCaseCountryProperty.getType().equals("executeSqlFromLib")) {
             testCaseExecutionData = this.executeSqlFromLib(testCaseExecutionData, testCaseCountryProperty, tCExecution);
-        } 
-        else if (testCaseCountryProperty.getType().equals("executeSql")){
+        } else if (testCaseCountryProperty.getType().equals("executeSql")) {
             testCaseExecutionData = this.executeSql(testCaseExecutionData, testCaseCountryProperty, tCExecution);
-        }
-        else if (testCaseCountryProperty.getType().equals("text")) {
+        } else if (testCaseCountryProperty.getType().equals("text")) {
             testCaseExecutionData = this.calculateText(testCaseExecutionData, testCaseCountryProperty);
-        }
-        else if (testCaseCountryProperty.getType().equals("getFromHtmlVisible")) {
+        } else if (testCaseCountryProperty.getType().equals("getFromHtmlVisible")) {
             testCaseExecutionData = this.getFromHtmlVIsible(testCaseExecutionData, tCExecution, testCaseCountryProperty);
-        }
-        else if (testCaseCountryProperty.getType().equals("getFromHtml")) {
+        } else if (testCaseCountryProperty.getType().equals("getFromHtml")) {
             testCaseExecutionData = this.getFromHTML(testCaseExecutionData, tCExecution, testCaseCountryProperty);
-        } 
-         else if (testCaseCountryProperty.getType().equals("getFromJS")) {
-             testCaseExecutionData = this.getFromJS(testCaseExecutionData, tCExecution, testCaseCountryProperty);
-         }
-         else if (testCaseCountryProperty.getType().equals("getFromTestData")) {
-             testCaseExecutionData = this.getFromTestData(testCaseExecutionData, tCExecution, testCaseCountryProperty);
-         }
-         else if (testCaseCountryProperty.getType().equals("getAttributeFromHtml")) {
-             testCaseExecutionData = this.getAttributeFromHtml(testCaseExecutionData, tCExecution, testCaseCountryProperty);
-         }
-         else if ("executeSoapFromLib".equals(testCaseCountryProperty.getType())) {
-             testCaseExecutionData = this.executeSoapFromLib(testCaseExecutionData, tCExecution, testCaseCountryProperty);
-         }else {
+        } else if (testCaseCountryProperty.getType().equals("getFromJS")) {
+            testCaseExecutionData = this.getFromJS(testCaseExecutionData, tCExecution, testCaseCountryProperty);
+        } else if (testCaseCountryProperty.getType().equals("getFromTestData")) {
+            testCaseExecutionData = this.getFromTestData(testCaseExecutionData, tCExecution, testCaseCountryProperty);
+        } else if (testCaseCountryProperty.getType().equals("getAttributeFromHtml")) {
+            testCaseExecutionData = this.getAttributeFromHtml(testCaseExecutionData, tCExecution, testCaseCountryProperty);
+        } else if ("executeSoapFromLib".equals(testCaseCountryProperty.getType())) {
+            testCaseExecutionData = this.executeSoapFromLib(testCaseExecutionData, tCExecution, testCaseCountryProperty);
+        } else {
             res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_UNKNOWNPROPERTY);
             res.setDescription(res.getDescription().replaceAll("%PROPERTY%", testCaseCountryProperty.getType()));
         }
@@ -122,7 +114,6 @@ public class PropertyService implements IPropertyService {
         testCaseExecutionData.setEnd(new Date().getTime());
         return testCaseExecutionData;
     }
-    
 
     @Override
     public String decodeValue(String myString, List<TestCaseExecutionData> properties, TestCaseExecution tCExecution) {
@@ -170,187 +161,186 @@ public class PropertyService implements IPropertyService {
         return myString;
     }
 
-private TestCaseExecutionData executeSqlFromLib(TestCaseExecutionData testCaseExecutionData, TestCaseCountryProperties testCaseCountryProperty, TestCaseExecution tCExecution) {
+    private TestCaseExecutionData executeSqlFromLib(TestCaseExecutionData testCaseExecutionData, TestCaseCountryProperties testCaseCountryProperty, TestCaseExecution tCExecution) {
         try {
-                    String script = this.sqlLibraryService.findSqlLibraryByKey(testCaseCountryProperty.getValue1()).getScript();
-                    testCaseExecutionData.setValue(script);
-                } catch (CerberusException ex) {
-                    Logger.getLogger(PropertyService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-                    MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_SQL_SQLLIB_NOTEXIT);
-                    res.setDescription(res.getDescription().replaceAll("%SQLLIB%", testCaseCountryProperty.getValue1()));
-                    testCaseExecutionData.setPropertyResultMessage(res);
-                    testCaseExecutionData.setEnd(new Date().getTime());
-                    return testCaseExecutionData;
-                }
-    testCaseExecutionData = this.executeSql(testCaseExecutionData, testCaseCountryProperty, tCExecution);
-    return testCaseExecutionData;    
+            String script = this.sqlLibraryService.findSqlLibraryByKey(testCaseCountryProperty.getValue1()).getScript();
+            testCaseExecutionData.setValue(script);
+        } catch (CerberusException ex) {
+            Logger.getLogger(PropertyService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_SQL_SQLLIB_NOTEXIT);
+            res.setDescription(res.getDescription().replaceAll("%SQLLIB%", testCaseCountryProperty.getValue1()));
+            testCaseExecutionData.setPropertyResultMessage(res);
+            testCaseExecutionData.setEnd(new Date().getTime());
+            return testCaseExecutionData;
+        }
+        testCaseExecutionData = this.executeSql(testCaseExecutionData, testCaseCountryProperty, tCExecution);
+        return testCaseExecutionData;
     }
 
     private TestCaseExecutionData executeSql(TestCaseExecutionData testCaseExecutionData, TestCaseCountryProperties testCaseCountryProperty, TestCaseExecution tCExecution) {
         return sQLService.calculateOnDatabase(testCaseExecutionData, testCaseCountryProperty, tCExecution);
-}
+    }
 
     private TestCaseExecutionData calculateText(TestCaseExecutionData testCaseExecutionData, TestCaseCountryProperties testCaseCountryProperty) {
         if (Property.NATURE_RANDOM.equals(testCaseCountryProperty.getNature())
-                    //TODO CTE Voir avec B. Civel "RANDOM_NEW"
-                    || (testCaseCountryProperty.getNature().equals(Property.NATURE_RANDOMNEW))) {
-                if (testCaseCountryProperty.getLength() == 0) {
-                    MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_TEXTRANDOMLENGHT0);
-                    testCaseExecutionData.setPropertyResultMessage(res);
+                //TODO CTE Voir avec B. Civel "RANDOM_NEW"
+                || (testCaseCountryProperty.getNature().equals(Property.NATURE_RANDOMNEW))) {
+            if (testCaseCountryProperty.getLength() == 0) {
+                MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_TEXTRANDOMLENGHT0);
+                testCaseExecutionData.setPropertyResultMessage(res);
+            } else {
+                String charset;
+                if (testCaseCountryProperty.getValue1() != null && !"".equals(testCaseCountryProperty.getValue1().trim())) {
+                    charset = testCaseCountryProperty.getValue1();
                 } else {
-                    String charset;
-                    if (testCaseCountryProperty.getValue1() != null && !"".equals(testCaseCountryProperty.getValue1().trim())) {
-                        charset = testCaseCountryProperty.getValue1();
-                    } else {
-                        charset = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-                    }
-                    String value = StringUtil.getRandomString(testCaseCountryProperty.getLength(), charset);
-                    testCaseExecutionData.setValue(value);
-                    MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_RANDOM);
-                    res.setDescription(res.getDescription().replaceAll("%VALUE%", ParameterParserUtil.securePassword(value, testCaseCountryProperty.getProperty())));
-                    testCaseExecutionData.setPropertyResultMessage(res);
+                    charset = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+                }
+                String value = StringUtil.getRandomString(testCaseCountryProperty.getLength(), charset);
+                testCaseExecutionData.setValue(value);
+                MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_RANDOM);
+                res.setDescription(res.getDescription().replaceAll("%VALUE%", ParameterParserUtil.securePassword(value, testCaseCountryProperty.getProperty())));
+                testCaseExecutionData.setPropertyResultMessage(res);
 //                    if (testCaseCountryProperty.getNature().equals("RANDOM_NEW")) {
 //                        //TODO check if value exist on DB ( used in another test case of the revision )
 //                    }
-                }
-            } else {
-                MyLogger.log(PropertyService.class.getName(), Level.DEBUG, "Setting value : " + testCaseCountryProperty.getValue1());
-                String value = testCaseCountryProperty.getValue1();
-                testCaseExecutionData.setValue(value);
-                MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_TEXT);
-                res.setDescription(res.getDescription().replaceAll("%VALUE%", ParameterParserUtil.securePassword(value, testCaseCountryProperty.getProperty())));
-                testCaseExecutionData.setPropertyResultMessage(res);
             }
-    return testCaseExecutionData;  
+        } else {
+            MyLogger.log(PropertyService.class.getName(), Level.DEBUG, "Setting value : " + testCaseCountryProperty.getValue1());
+            String value = testCaseCountryProperty.getValue1();
+            testCaseExecutionData.setValue(value);
+            MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_TEXT);
+            res.setDescription(res.getDescription().replaceAll("%VALUE%", ParameterParserUtil.securePassword(value, testCaseCountryProperty.getProperty())));
+            testCaseExecutionData.setPropertyResultMessage(res);
+        }
+        return testCaseExecutionData;
     }
 
     private TestCaseExecutionData getFromHTML(TestCaseExecutionData testCaseExecutionData, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseCountryProperty) {
         try {
-                String valueFromHTML = this.seleniumService.getValueFromHTML(tCExecution.getSelenium(), testCaseCountryProperty.getValue1());
-                if (valueFromHTML != null) {
-                    testCaseExecutionData.setValue(valueFromHTML);
-                    MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_HTML);
-                    res.setDescription(res.getDescription().replaceAll("%ELEMENT%", testCaseCountryProperty.getValue1()));
-                    res.setDescription(res.getDescription().replaceAll("%VALUE%", valueFromHTML));
-                    testCaseExecutionData.setPropertyResultMessage(res);
-                }
-            } catch (NoSuchElementException exception) {
-            MyLogger.log(PropertyService.class.getName(), Level.DEBUG, exception.toString());
-                MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_HTML_ELEMENTDONOTEXIST);
+            String valueFromHTML = this.seleniumService.getValueFromHTML(tCExecution.getSelenium(), testCaseCountryProperty.getValue1());
+            if (valueFromHTML != null) {
+                testCaseExecutionData.setValue(valueFromHTML);
+                MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_HTML);
                 res.setDescription(res.getDescription().replaceAll("%ELEMENT%", testCaseCountryProperty.getValue1()));
+                res.setDescription(res.getDescription().replaceAll("%VALUE%", valueFromHTML));
                 testCaseExecutionData.setPropertyResultMessage(res);
             }
-        return testCaseExecutionData;  
+        } catch (NoSuchElementException exception) {
+            MyLogger.log(PropertyService.class.getName(), Level.DEBUG, exception.toString());
+            MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_HTML_ELEMENTDONOTEXIST);
+            res.setDescription(res.getDescription().replaceAll("%ELEMENT%", testCaseCountryProperty.getValue1()));
+            testCaseExecutionData.setPropertyResultMessage(res);
+        }
+        return testCaseExecutionData;
     }
 
     private TestCaseExecutionData getFromJS(TestCaseExecutionData testCaseExecutionData, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseCountryProperty) {
         try {
-                String script = testCaseCountryProperty.getValue1();
-                String valueFromJS;
-                try {
-                    valueFromJS = this.seleniumService.getValueFromJS(tCExecution.getSelenium(), script);
-                } catch (Exception e) {
-                    MyLogger.log(PropertyService.class.getName(), Level.ERROR, e.toString());
-                    valueFromJS = null;
-                }
-                if (valueFromJS != null) {
-                    testCaseExecutionData.setValue(valueFromJS);
-                    MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_HTML);
-                    res.setDescription(res.getDescription().replaceAll("%ELEMENT%", testCaseCountryProperty.getValue1()));
-                    res.setDescription(res.getDescription().replaceAll("%VALUE%", script));
-                    testCaseExecutionData.setPropertyResultMessage(res);
-                } else {
-                    MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED);
-                    testCaseExecutionData.setPropertyResultMessage(res);
-                }
-            } catch (NoSuchElementException exception) {
-            MyLogger.log(PropertyService.class.getName(), Level.DEBUG, exception.toString());
-                MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_HTML_ELEMENTDONOTEXIST);
+            String script = testCaseCountryProperty.getValue1();
+            String valueFromJS;
+            try {
+                valueFromJS = this.seleniumService.getValueFromJS(tCExecution.getSelenium(), script);
+            } catch (Exception e) {
+                MyLogger.log(PropertyService.class.getName(), Level.ERROR, "Exception Running JS Script :" +e.toString());
+                valueFromJS = null;
+            }
+            if (valueFromJS != null) {
+                testCaseExecutionData.setValue(valueFromJS);
+                MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_HTML);
                 res.setDescription(res.getDescription().replaceAll("%ELEMENT%", testCaseCountryProperty.getValue1()));
+                res.setDescription(res.getDescription().replaceAll("%VALUE%", script));
+                testCaseExecutionData.setPropertyResultMessage(res);
+            } else {
+                MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED);
                 testCaseExecutionData.setPropertyResultMessage(res);
             }
-        return testCaseExecutionData;  
+        } catch (NoSuchElementException exception) {
+            MyLogger.log(PropertyService.class.getName(), Level.DEBUG, exception.toString());
+            MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_HTML_ELEMENTDONOTEXIST);
+            res.setDescription(res.getDescription().replaceAll("%ELEMENT%", testCaseCountryProperty.getValue1()));
+            testCaseExecutionData.setPropertyResultMessage(res);
+        }
+        return testCaseExecutionData;
     }
 
     private TestCaseExecutionData getFromTestData(TestCaseExecutionData testCaseExecutionData, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseCountryProperty) {
+        String propertyValue = "";
         try {
-                String propertyValue = testCaseCountryProperty.getValue1();
-                String valueFromTestData = testDataService.findTestDataByKey(propertyValue).getValue();
-                if (valueFromTestData != null) {
-                    testCaseExecutionData.setValue(valueFromTestData);
-                    MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_TESTDATA);
-                    res.setDescription(res.getDescription().replaceAll("%PROPERTY%", propertyValue));
-                    res.setDescription(res.getDescription().replaceAll("%VALUE%", valueFromTestData));
-                    testCaseExecutionData.setPropertyResultMessage(res);
-                }
-            } catch (CerberusException exception) {
-                MyLogger.log(PropertyService.class.getName(), Level.ERROR, exception.toString());
-                MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_TESTDATA_PROPERTYDONOTEXIST);
-                res.setDescription(res.getDescription().replaceAll("%PROPERTY%", testCaseCountryProperty.getValue1()));
+            propertyValue = testCaseCountryProperty.getValue1();
+            String valueFromTestData = testDataService.findTestDataByKey(propertyValue).getValue();
+            if (valueFromTestData != null) {
+                testCaseExecutionData.setValue(valueFromTestData);
+                MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_TESTDATA);
+                res.setDescription(res.getDescription().replaceAll("%PROPERTY%", propertyValue));
+                res.setDescription(res.getDescription().replaceAll("%VALUE%", valueFromTestData));
                 testCaseExecutionData.setPropertyResultMessage(res);
             }
-        return testCaseExecutionData;  
+        } catch (CerberusException exception) {
+            MyLogger.log(PropertyService.class.getName(), Level.INFO, "Exception Getting value from TestData for data :'"+propertyValue+"'\n"+exception.getMessageError().getDescription());
+            MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_TESTDATA_PROPERTYDONOTEXIST);
+            res.setDescription(res.getDescription().replaceAll("%PROPERTY%", testCaseCountryProperty.getValue1()));
+            testCaseExecutionData.setPropertyResultMessage(res);
+        }
+        return testCaseExecutionData;
     }
 
     private TestCaseExecutionData getAttributeFromHtml(TestCaseExecutionData testCaseExecutionData, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseCountryProperty) {
         try {
-                String valueFromHTML = this.seleniumService.getAttributeFromHtml(tCExecution.getSelenium(), testCaseCountryProperty.getValue1(), testCaseCountryProperty.getValue2());
-                if (valueFromHTML != null) {
-                    testCaseExecutionData.setValue(valueFromHTML);
-                    MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETATTRIBUTEFROMHTML);
-                    res.setDescription(res.getDescription().replaceAll("%ELEMENT%", testCaseCountryProperty.getValue1()));
-                    res.setDescription(res.getDescription().replaceAll("%ATTRIBUTE%", testCaseCountryProperty.getValue2()));
-                    res.setDescription(res.getDescription().replaceAll("%VALUE%", valueFromHTML));
-                    testCaseExecutionData.setPropertyResultMessage(res);
-                }
-            } catch (NoSuchElementException exception) {
-            MyLogger.log(PropertyService.class.getName(), Level.DEBUG, exception.toString());
-                MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_HTMLVISIBLE_ELEMENTDONOTEXIST);
+            String valueFromHTML = this.seleniumService.getAttributeFromHtml(tCExecution.getSelenium(), testCaseCountryProperty.getValue1(), testCaseCountryProperty.getValue2());
+            if (valueFromHTML != null) {
+                testCaseExecutionData.setValue(valueFromHTML);
+                MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETATTRIBUTEFROMHTML);
                 res.setDescription(res.getDescription().replaceAll("%ELEMENT%", testCaseCountryProperty.getValue1()));
+                res.setDescription(res.getDescription().replaceAll("%ATTRIBUTE%", testCaseCountryProperty.getValue2()));
+                res.setDescription(res.getDescription().replaceAll("%VALUE%", valueFromHTML));
                 testCaseExecutionData.setPropertyResultMessage(res);
             }
-        return testCaseExecutionData;  
+        } catch (NoSuchElementException exception) {
+            MyLogger.log(PropertyService.class.getName(), Level.DEBUG, exception.toString());
+            MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_HTMLVISIBLE_ELEMENTDONOTEXIST);
+            res.setDescription(res.getDescription().replaceAll("%ELEMENT%", testCaseCountryProperty.getValue1()));
+            testCaseExecutionData.setPropertyResultMessage(res);
+        }
+        return testCaseExecutionData;
     }
 
     private TestCaseExecutionData executeSoapFromLib(TestCaseExecutionData testCaseExecutionData, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseCountryProperty) {
         try {
-                SoapLibrary soapLib = this.soapLibraryService.findSoapLibraryByKey(testCaseCountryProperty.getValue1());
-                if (soapLib != null) {
+            SoapLibrary soapLib = this.soapLibraryService.findSoapLibraryByKey(testCaseCountryProperty.getValue1());
+            if (soapLib != null) {
 
-                    String result = soapService.calculatePropertyFromSOAPResponse(soapLib, testCaseCountryProperty, tCExecution);
-                    if (result != null) {
-                        testCaseExecutionData.setValue(result);
-                        testCaseExecutionData.setPropertyResultMessage(new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_SOAP));
-                    }
+                String result = soapService.calculatePropertyFromSOAPResponse(soapLib, testCaseCountryProperty, tCExecution);
+                if (result != null) {
+                    testCaseExecutionData.setValue(result);
+                    testCaseExecutionData.setPropertyResultMessage(new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_SOAP));
                 }
-            } catch (CerberusException exception) {
-                MyLogger.log(PropertyService.class.getName(), Level.ERROR, exception.toString());
-                MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_TESTDATA_PROPERTYDONOTEXIST);
-                res.setDescription(res.getDescription().replaceAll("%PROPERTY%", testCaseCountryProperty.getValue1()));
-                testCaseExecutionData.setPropertyResultMessage(res);
             }
-        return testCaseExecutionData;  
+        } catch (CerberusException exception) {
+            MyLogger.log(PropertyService.class.getName(), Level.ERROR, exception.toString());
+            MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_TESTDATA_PROPERTYDONOTEXIST);
+            res.setDescription(res.getDescription().replaceAll("%PROPERTY%", testCaseCountryProperty.getValue1()));
+            testCaseExecutionData.setPropertyResultMessage(res);
+        }
+        return testCaseExecutionData;
     }
-    
+
     private TestCaseExecutionData getFromHtmlVIsible(TestCaseExecutionData testCaseExecutionData, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseCountryProperty) {
         try {
-                String valueFromHTML = this.seleniumService.getValueFromHTMLVisible(tCExecution.getSelenium(), testCaseCountryProperty.getValue1());
-                if (valueFromHTML != null) {
-                    testCaseExecutionData.setValue(valueFromHTML);
-                    MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_HTMLVISIBLE);
-                    res.setDescription(res.getDescription().replaceAll("%ELEMENT%", testCaseCountryProperty.getValue1()));
-                    res.setDescription(res.getDescription().replaceAll("%VALUE%", valueFromHTML));
-                    testCaseExecutionData.setPropertyResultMessage(res);
-                }
-            } catch (NoSuchElementException exception) {
-            MyLogger.log(PropertyService.class.getName(), Level.DEBUG, exception.toString());
-                MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_HTMLVISIBLE_ELEMENTDONOTEXIST);
+            String valueFromHTML = this.seleniumService.getValueFromHTMLVisible(tCExecution.getSelenium(), testCaseCountryProperty.getValue1());
+            if (valueFromHTML != null) {
+                testCaseExecutionData.setValue(valueFromHTML);
+                MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_HTMLVISIBLE);
                 res.setDescription(res.getDescription().replaceAll("%ELEMENT%", testCaseCountryProperty.getValue1()));
+                res.setDescription(res.getDescription().replaceAll("%VALUE%", valueFromHTML));
                 testCaseExecutionData.setPropertyResultMessage(res);
             }
-        return testCaseExecutionData;  
+        } catch (NoSuchElementException exception) {
+            MyLogger.log(PropertyService.class.getName(), Level.DEBUG, exception.toString());
+            MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_HTMLVISIBLE_ELEMENTDONOTEXIST);
+            res.setDescription(res.getDescription().replaceAll("%ELEMENT%", testCaseCountryProperty.getValue1()));
+            testCaseExecutionData.setPropertyResultMessage(res);
+        }
+        return testCaseExecutionData;
     }
-
-    
 
 }
