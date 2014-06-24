@@ -47,34 +47,46 @@ public class RunTestCaseService implements IRunTestCaseService {
     private IExecutionStartService executionStartService;
     @Autowired
     private IExecutionRunService executionRunService;
-    @Autowired 
+    @Autowired
     private ExecutionUUID executionUUID;
-    @Autowired 
+    @Autowired
     private ExecutionSOAPResponse eSResponse;
 
     @Override
     public TestCaseExecution runTestCase(TestCaseExecution tCExecution) {
 
         try {
-            //Start Execution (Checks and Creation of ID)
+            /**
+             * Start Execution (Checks and Creation of ID)
+            *
+             */
             tCExecution = executionStartService.startExecution(tCExecution);
 
-//          Execute TestCase in new thread if automated test with outputformat gui
-          if (!tCExecution.isSynchroneous()){
-          tCExecution = executionRunService.executeAsynchroneouslyTestCase(tCExecution);
-          }else{
-            tCExecution = executionRunService.executeTestCase(tCExecution);
-          }
+            /**
+             * Execute TestCase in new thread if asynchroneous execution
+             */
+            if (!tCExecution.isSynchroneous()) {
+                tCExecution = executionRunService.executeAsynchroneouslyTestCase(tCExecution);
+            } else {
+                tCExecution = executionRunService.executeTestCase(tCExecution);
+            }
         } catch (CerberusException ex) {
             tCExecution.setResultMessage(ex.getMessageError());
         } finally {
-            // stop execution of the test case and collect data in all case.
-            MyLogger.log(SoapService.class.getName(), Level.DEBUG, eSResponse.getExecutionSOAPResponse(tCExecution.getId()));
-            executionUUID.removeExecutionUUID(tCExecution.getExecutionUUID());
-            eSResponse.removeExecutionSOAPResponse(tCExecution.getId());
-            //tCExecution = executionRunService.stopTestCase(tCExecution);
+            /**
+             * Clean memory (Remove all object put in memory
+             */
+            try {
+                if (executionUUID.getExecutionID(tCExecution.getExecutionUUID()) != null) {
+                    executionUUID.removeExecutionUUID(tCExecution.getExecutionUUID());
+                }
+                if (eSResponse.getExecutionSOAPResponse(tCExecution.getId()) != null) {
+                    eSResponse.removeExecutionSOAPResponse(tCExecution.getId());
+                }
+            } catch (Exception ex) {
+                MyLogger.log(RunTestCaseService.class.getName(), Level.FATAL, "Exception cleaning Memory: " + ex.toString());
+            }
         }
-
 
         return tCExecution;
     }

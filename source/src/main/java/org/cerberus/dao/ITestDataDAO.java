@@ -71,6 +71,7 @@ public interface ITestDataDAO {
      *
      * @param key Key (String) of testData
      * @return
+     * @throws org.cerberus.exception.CerberusException
      */
     TestData findTestDataByKey(String key) throws CerberusException;
 
