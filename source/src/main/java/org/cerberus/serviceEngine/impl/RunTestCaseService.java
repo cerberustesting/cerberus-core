@@ -58,7 +58,7 @@ public class RunTestCaseService implements IRunTestCaseService {
         try {
             /**
              * Start Execution (Checks and Creation of ID)
-            *
+             *
              */
             tCExecution = executionStartService.startExecution(tCExecution);
 
@@ -66,14 +66,14 @@ public class RunTestCaseService implements IRunTestCaseService {
              * Execute TestCase in new thread if asynchroneous execution
              */
             if (!tCExecution.isSynchroneous()) {
-                tCExecution = executionRunService.executeAsynchroneouslyTestCase(tCExecution);
+                executionRunService.executeAsynchroneouslyTestCase(tCExecution);
             } else {
                 tCExecution = executionRunService.executeTestCase(tCExecution);
             }
         } catch (CerberusException ex) {
             tCExecution.setResultMessage(ex.getMessageError());
-        } 
-MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Exception rtcs: " + tCExecution.getId());
+        }
+        MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Exit RunTestCaseService : " + tCExecution.getId());
         return tCExecution;
     }
 }

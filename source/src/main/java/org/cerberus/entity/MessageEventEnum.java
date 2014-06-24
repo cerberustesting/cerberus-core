@@ -68,6 +68,7 @@ public enum MessageEventEnum {
     PROPERTY_FAILED_UNKNOWNPROPERTY(182, "KO", "Property function '%PROPERTY%' does not exist or is not supported by the engine.", true, false, MessageGeneralEnum.EXECUTION_FA),
     PROPERTY_FAILED_TEXTRANDOMLENGHT0(183, "KO", "RANDOM or RANDOMNEW text Property function cannot have a lenght at 0. Pick STATIC nature (if you want an empty string) or increase the lenght.", true, false, MessageGeneralEnum.EXECUTION_FA),
     PROPERTY_FAILED_TESTDATA_PROPERTYDONOTEXIST(184, "KO", "TestData %PROPERTY% do not exist!", true, true, MessageGeneralEnum.EXECUTION_NA),
+    PROPERTY_FAILED_JS_EXCEPTION(185, "NA", "Failed to Execute script!\nException reached : %EXCEPTION%.", true, true, MessageGeneralEnum.EXECUTION_NA),
     PROPERTY_PENDING(199, "PE", "Calculating property...", false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     ACTION_SUCCESS(200, "OK", "", false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     ACTION_SUCCESS_CLICK(200, "OK", "Element '%ELEMENT%' clicked.", false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),

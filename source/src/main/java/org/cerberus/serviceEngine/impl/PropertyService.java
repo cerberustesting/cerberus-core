@@ -235,13 +235,15 @@ public class PropertyService implements IPropertyService {
     }
 
     private TestCaseExecutionData getFromJS(TestCaseExecutionData testCaseExecutionData, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseCountryProperty) {
-        try {
+        
             String script = testCaseCountryProperty.getValue1();
             String valueFromJS;
+            String message = "";
             try {
                 valueFromJS = this.seleniumService.getValueFromJS(tCExecution.getSelenium(), script);
             } catch (Exception e) {
-                MyLogger.log(PropertyService.class.getName(), Level.ERROR, "Exception Running JS Script :" +e.toString());
+                message = e.getMessage().split("\n")[0];
+                MyLogger.log(PropertyService.class.getName(), Level.INFO, "Exception Running JS Script :" +message);
                 valueFromJS = null;
             }
             if (valueFromJS != null) {
@@ -251,15 +253,11 @@ public class PropertyService implements IPropertyService {
                 res.setDescription(res.getDescription().replaceAll("%VALUE%", script));
                 testCaseExecutionData.setPropertyResultMessage(res);
             } else {
-                MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED);
+                MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_JS_EXCEPTION);
+                res.setDescription(res.getDescription().replaceAll("%EXCEPTION%", message));
                 testCaseExecutionData.setPropertyResultMessage(res);
             }
-        } catch (NoSuchElementException exception) {
-            MyLogger.log(PropertyService.class.getName(), Level.DEBUG, exception.toString());
-            MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_HTML_ELEMENTDONOTEXIST);
-            res.setDescription(res.getDescription().replaceAll("%ELEMENT%", testCaseCountryProperty.getValue1()));
-            testCaseExecutionData.setPropertyResultMessage(res);
-        }
+        
         return testCaseExecutionData;
     }
 
