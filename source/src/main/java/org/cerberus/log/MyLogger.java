@@ -22,15 +22,21 @@ package org.cerberus.log;
 import org.apache.log4j.Level;
 
 /**
- * {Insert class description here}
+ * Class used to automatically generate log4j of a log message
  *
  * @author Tiago Bernardes
  * @version 1.0, 22/02/2013
  * @since 2.0.0
  */
-public class MyLogger {
+public final class MyLogger {
 
-    public static void log(String className, Level level, String message) {
+    /**
+     *
+     * @param className of the class generate log
+     * @param level of the log
+     * @param message need to be logged
+     */
+    public static final void log(String className, Level level, String message) {
         org.apache.log4j.Logger.getLogger(className).log(level, message);
     }
 }
