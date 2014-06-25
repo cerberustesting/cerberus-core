@@ -45,7 +45,7 @@ public class ExecutionUUID {
         executionHashMap.remove(uuid);
     }
 
-    public Integer getExecutionID(String uuid) {
-        return (Integer) executionHashMap.get(uuid);
+    public long getExecutionID(String uuid) {
+        return (Long) executionHashMap.get(uuid);
     }
 }

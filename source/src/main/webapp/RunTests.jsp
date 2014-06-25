@@ -192,28 +192,28 @@
                         } else {
                             tag = new String("None");
                         }
-                        
+
                         String verbose;
                         if (request.getParameter("verbose") != null && request.getParameter("verbose").compareTo("") != 0) {
                             verbose = request.getParameter("verbose");
                         } else {
                             verbose = new String("0");
                         }
-                        
+
                         String screenshot;
                         if (request.getParameter("screenshot") != null && request.getParameter("screenshot").compareTo("") != 0) {
                             screenshot = request.getParameter("screenshot");
                         } else {
-                            screenshot = new String("1");
+                            screenshot = new String("");
                         }
-                        
+
                         String synchroneous;
                         if (request.getParameter("synchroneous") != null && request.getParameter("synchroneous").compareTo("") != 0) {
                             synchroneous = request.getParameter("synchroneous");
                         } else {
                             synchroneous = new String("N");
                         }
-                        
+
                         String timeout;
                         if (request.getParameter("timeout") != null && request.getParameter("timeout").compareTo("") != 0) {
                             timeout = request.getParameter("timeout");
@@ -494,6 +494,9 @@
                             <input id="timeout" name="timeout" style="width: 200px">
                         </div>
                     </div>
+                    <div id="recordButtonDiv" style="clear:both">
+                        <input id="button" class="button" type="button" onclick="recordExecutionParam()" <%=enable%> name="execParam" value="Record my Execution Parameters" >
+                    </div>
                 </div>
                 <div style="clear:both">          
                     <br>
@@ -529,26 +532,29 @@
             var systemSelected = sys.options[sys.selectedIndex].value;
             var testS = document.getElementById("defTest").value;
             var tcS = document.getElementById("defTestCase").value;
-            
-            
-            $(document).ready(function(){$.getJSON('GetTestBySystem?system=' + systemSelected, function(data) {
-                $("#test").empty();
 
-                for (var i = 0; i < data.testsList.length; i++) {
-                    $("#test").append($("<option></option>")
-                            .attr("value", data.testsList[i])
-                            .text(data.testsList[i]));
-                }
+
+            $(document).ready(function() {
+                $.getJSON('GetTestBySystem?system=' + systemSelected, function(data) {
+                    $("#test").empty();
+
+                    for (var i = 0; i < data.testsList.length; i++) {
+                        $("#test").append($("<option></option>")
+                                .attr("value", data.testsList[i])
+                                .text(data.testsList[i]));
+                    }
                     $("#test").find('option').each(function(i, opt) {
                         if (opt.value === testS)
                             $(opt).attr('selected', 'selected');
                     });
-              if (tcS !== "%%"){
-              getTestCaseList();}
-              
-            })});
-            
-             
+                    if (tcS !== "%%") {
+                        getTestCaseList();
+                    }
+
+                })
+            });
+
+
 
         </script>
         <script type="text/javascript">
@@ -577,10 +583,11 @@
                         if (opt.value === tcS)
                             $(opt).attr('selected', 'selected');
                     });
-                    
+
                     getCountryList();
                 });
-            };
+            }
+            ;
         </script>
         <script type="text/javascript">
             function getCountryList() {
@@ -605,12 +612,13 @@
                         if (opt.value === countryS)
                             $(opt).attr('selected', 'selected');
                     });
-                    if (env !== "%%"){
+                    if (env !== "%%") {
                         getApplicationList();
                     }
-                    
+
                 });
-            };
+            }
+            ;
         </script>
 
         <script type="text/javascript">
@@ -645,126 +653,160 @@
             ;
         </script>
         <script type="text/javascript">
-            $(document).ready(function(){$.getJSON('FindInvariantByID?idName=outputformat', function(data) {
-                $("#outputformat").empty();
+            $(document).ready(function() {
+                $.getJSON('FindInvariantByID?idName=outputformat', function(data) {
+                    $("#outputformat").empty();
 
-                for (var i = 0; i < data.length; i++) {
-                    $("#outputformat").append($("<option></option>")
-                            .attr("value", data[i].value)
-                            .text(data[i].value + " ( " + data[i].description + " )"));
-                }
-
-            })});
-
-        </script>
-        <script type="text/javascript">
-            $(document).ready(function(){$.getJSON('FindInvariantByID?idName=verbose', function(data) {
-                $("#verbose").empty();
-                var pl = document.getElementById("defVerbose").value;
-                
-                for (var i = 0; i < data.length; i++) {
-                    $("#verbose").append($("<option></option>")
-                            .attr("value", data[i].value)
-                            .text(data[i].value + " ( " + data[i].description + " )"));
-                }
-                
-                $("#verbose").find('option').each(function(i, opt) {
-                    if (opt.value === pl) {
-                        $(opt).attr('selected', 'selected');
+                    for (var i = 0; i < data.length; i++) {
+                        $("#outputformat").append($("<option></option>")
+                                .attr("value", data[i].value)
+                                .text(data[i].value + " ( " + data[i].description + " )"));
                     }
 
 
-                });
-
-            })});
+                    setCookie('OutputFormatPreference', 'outputformat');
+                })
+            });
 
         </script>
         <script type="text/javascript">
-            $(document).ready(function(){$.getJSON('FindInvariantByID?idName=synchroneous', function(data) {
-                $("#synchroneous").empty();
-                var pl = document.getElementById("defSynchroneous").value;
-                
-                for (var i = 0; i < data.length; i++) {
-                    $("#synchroneous").append($("<option></option>")
-                            .attr("value", data[i].value)
-                            .text(data[i].value + " ( " + data[i].description + " )"));
-                }
-                
-                $("#synchroneous").find('option').each(function(i, opt) {
-                    if (opt.value === pl) {
-                        $(opt).attr('selected', 'selected');
+            $(document).ready(function() {
+                $.getJSON('FindInvariantByID?idName=verbose', function(data) {
+                    $("#verbose").empty();
+                    var pl = document.getElementById("defVerbose").value;
+
+                    for (var i = 0; i < data.length; i++) {
+                        $("#verbose").append($("<option></option>")
+                                .attr("value", data[i].value)
+                                .text(data[i].value + " ( " + data[i].description + " )"));
                     }
 
+                    setCookie('VerbosePreference', 'verbose');
 
-                });
+                    $("#verbose").find('option').each(function(i, opt) {
+                        if (opt.value === pl) {
+                            $(opt).attr('selected', 'selected');
+                        }
 
-            })});
+
+                    });
+
+                })
+            });
 
         </script>
         <script type="text/javascript">
-            $(document).ready(function(){$.getJSON('FindInvariantByID?idName=screenshot', function(data) {
-                $("#screenshot").empty();
-                var pl = document.getElementById("defScreenshot").value;
+            $(document).ready(function() {
+                $.getJSON('FindInvariantByID?idName=synchroneous', function(data) {
+                    $("#synchroneous").empty();
+                    var pl = document.getElementById("defSynchroneous").value;
 
-                for (var i = 0; i < data.length; i++) {
-                    $("#screenshot").append($("<option></option>")
-                            .attr("value", data[i].value)
-                            .text(data[i].value + " ( " + data[i].description + " )"));
-                }
-
-                $("#screenshot").find('option').each(function(i, opt) {
-                    if (opt.value === pl) {
-                        $(opt).attr('selected', 'selected');
+                    for (var i = 0; i < data.length; i++) {
+                        $("#synchroneous").append($("<option></option>")
+                                .attr("value", data[i].value)
+                                .text(data[i].value + " ( " + data[i].description + " )"));
                     }
 
+                    setCookie('SynchroneousPreference', 'synchroneous');
 
-                });
-            })});
+                    $("#synchroneous").find('option').each(function(i, opt) {
+                        if (opt.value === pl) {
+                            $(opt).attr('selected', 'selected');
+                        }
+
+
+                    });
+
+                })
+            });
 
         </script>
         <script type="text/javascript">
-            $(document).ready(function(){$.getJSON('FindInvariantByID?idName=browser', function(data) {
-                $("#browser").empty();
-                var pl = document.getElementById("defBrowser").value;
+            $(document).ready(function() {
+                $.getJSON('FindInvariantByID?idName=screenshot', function(data) {
+                    $("#screenshot").empty();
+                    var pl = document.getElementById("defScreenshot").value;
 
-                for (var i = 0; i < data.length; i++) {
-                    $("#browser").append($("<option></option>")
-                            .attr("value", data[i].value)
-                            .text(data[i].value + " ( " + data[i].description + " )"));
-                }
-                $("#browser").find('option').each(function(i, opt) {
-                    if (opt.value === pl) {
-                        $(opt).attr('selected', 'selected');
+                    for (var i = 0; i < data.length; i++) {
+                        $("#screenshot").append($("<option></option>")
+                                .attr("value", data[i].value)
+                                .text(data[i].value + " ( " + data[i].description + " )"));
                     }
 
+                    setCookie('ScreenshotPreference', 'screenshot');
 
-                });
-            })});
+                    $("#screenshot").find('option').each(function(i, opt) {
+                        if (opt.value === pl) {
+                            $(opt).attr('selected', 'selected');
+                        }
+
+
+                    });
+                })
+            });
 
         </script>
         <script type="text/javascript">
-            $(document).ready(function(){$.getJSON('FindInvariantByID?idName=platform', function(data) {
-                $("#platform").empty();
-                var pl = document.getElementById("defPlatform").value;
+            $(document).ready(function() {
+                $.getJSON('FindInvariantByID?idName=browser', function(data) {
+                    $("#browser").empty();
+                    var pl = document.getElementById("defBrowser").value;
 
-                $("#platform").append($("<option></option>")
-                        .attr("value", "")
-                        .text("Optional"));
+                    for (var i = 0; i < data.length; i++) {
+                        $("#browser").append($("<option></option>")
+                                .attr("value", data[i].value)
+                                .text(data[i].value + " ( " + data[i].description + " )"));
+                    }
+                    $("#browser").find('option').each(function(i, opt) {
+                        if (opt.value === pl) {
+                            $(opt).attr('selected', 'selected');
+                        }
 
-                for (var i = 0; i < data.length; i++) {
+
+                    });
+                })
+            });
+
+        </script>
+        <script type="text/javascript">
+            $(document).ready(function() {
+                $.getJSON('FindInvariantByID?idName=platform', function(data) {
+                    $("#platform").empty();
+                    var pl = document.getElementById("defPlatform").value;
+
                     $("#platform").append($("<option></option>")
-                            .attr("value", data[i].value)
-                            .text(data[i].value + " ( " + data[i].description + " )"));
-                }
+                            .attr("value", "")
+                            .text("Optional"));
 
-                $("#platform").find('option').each(function(i, opt) {
-                    if (opt.value === pl) {
-                        $(opt).attr('selected', 'selected');
+                    for (var i = 0; i < data.length; i++) {
+                        $("#platform").append($("<option></option>")
+                                .attr("value", data[i].value)
+                                .text(data[i].value + " ( " + data[i].description + " )"));
                     }
 
+                    $("#platform").find('option').each(function(i, opt) {
+                        if (opt.value === pl) {
+                            $(opt).attr('selected', 'selected');
+                        }
 
-                });
-            })});
+
+                    });
+                })
+            });
+
+        </script>
+        <script type="text/javascript">
+            $(document).ready(function() {
+                $("#tag").empty();
+                setCookie('TagPreference', 'tag');
+            });
+
+        </script>
+        <script type="text/javascript">
+            $(document).ready(function() {
+                $("#timeout").empty();
+                setCookie('TimeoutPreference', 'timeout');
+            });
 
         </script>
         <script>
@@ -794,6 +836,38 @@
                 xhttp.send();
                 var xmlDoc = xhttp.responseText;
                 $("#loader").remove();
+            }
+        </script>
+        <script>
+            function recordExecutionParam() {
+                var expiration_date = new Date();
+                expiration_date.setFullYear(expiration_date.getFullYear() + 1);
+                
+                var prefTag = $("#tag").val();
+                var prefOf = $("#outputformat").val();
+                var prefVerb = $("#verbose").val();
+                var prefScreen = $("#screenshot").val();
+                var prefSynch = $("#synchroneous").val();
+                var prefTimeOut = $("#timeout").val();
+                document.cookie = "TagPreference=" + prefTag + ";expires=" + expiration_date.toGMTString();
+                document.cookie = "OutputFormatPreference=" + prefOf + ";expires=" + expiration_date.toGMTString();
+                document.cookie = "VerbosePreference=" + prefVerb + ";expires=" + expiration_date.toGMTString();
+                document.cookie = "ScreenshotPreference=" + prefScreen + ";expires=" + expiration_date.toGMTString();
+                document.cookie = "SynchroneousPreference=" + prefSynch + ";expires=" + expiration_date.toGMTString();
+                document.cookie = "TimeoutPreference=" + prefTimeOut + ";expires=" + expiration_date.toGMTString();
+            }
+        </script>
+        <script>
+            function setCookie(cookieName, element) {
+                var name = cookieName+"=";
+                var ca = document.cookie.split(';');
+                for (var i = 0; i < ca.length; i++) {
+                    var c = ca[i].trim();
+                    var val = c.split('=')[1];
+                    if (c.indexOf(name) === 0) {
+                        document.getElementById(element).value = val;
+                    }
+                }
             }
         </script>
     </body>

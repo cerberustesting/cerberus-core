@@ -41,8 +41,8 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
     ITestCaseExecutionDAO testCaseExecutionDao;
 
     @Override
-    public void insertTCExecution(TestCaseExecution tCExecution) throws CerberusException {
-        testCaseExecutionDao.insertTCExecution(tCExecution);
+    public long insertTCExecution(TestCaseExecution tCExecution) throws CerberusException {
+        return testCaseExecutionDao.insertTCExecution(tCExecution);
     }
 
     @Override
@@ -82,12 +82,13 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
         /**
          * Insert TestCaseExecution
          */
+        long runID = 0;
         try {
-            this.insertTCExecution(tCExecution);
+            runID = this.insertTCExecution(tCExecution);
         } catch (CerberusException ex) {
             MyLogger.log(TestCaseExecutionService.class.getName(), Level.FATAL, ex.toString());
             throw new CerberusException(ex.getMessageError());
         }
-        return tCExecution.getId();
+        return runID;
     }
 }

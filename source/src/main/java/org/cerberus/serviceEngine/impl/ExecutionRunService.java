@@ -31,6 +31,7 @@ import org.apache.log4j.Level;
 import org.cerberus.entity.CountryEnvLink;
 import org.cerberus.entity.CountryEnvParam;
 import org.cerberus.entity.ExecutionSOAPResponse;
+import org.cerberus.entity.ExecutionUUID;
 import org.cerberus.entity.MessageEvent;
 import org.cerberus.entity.MessageEventEnum;
 import org.cerberus.entity.MessageGeneral;
@@ -130,7 +131,9 @@ public class ExecutionRunService implements IExecutionRunService {
     @Autowired
     private IParameterService parameterService;
     @Autowired
-    private ExecutionSOAPResponse executionSOAPResponse;
+    private ExecutionSOAPResponse eSResponse;
+    @Autowired
+    private ExecutionUUID executionUUID;
     
     @Override
     public TestCaseExecution executeTestCase(TestCaseExecution tCExecution) {
@@ -302,6 +305,22 @@ public class ExecutionRunService implements IExecutionRunService {
         }
         }
         tCExecution = this.stopTestCase(tCExecution);
+        
+        try {
+                if (!tCExecution.isSynchroneous()) {
+                    if (executionUUID.getExecutionID(tCExecution.getExecutionUUID()) != 0) {
+                        executionUUID.removeExecutionUUID(tCExecution.getExecutionUUID());
+                        MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Clean ExecutionUUID");
+                    }
+                    if (eSResponse.getExecutionSOAPResponse(tCExecution.getExecutionUUID()) != null) {
+                        eSResponse.removeExecutionSOAPResponse(tCExecution.getExecutionUUID());
+                        MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Clean ExecutionSOAPResponse");
+                    }
+                }
+            } catch (Exception ex) {
+                MyLogger.log(RunTestCaseService.class.getName(), Level.FATAL, "Exception cleaning Memory: " + ex.toString());
+            }
+        
         return tCExecution;
         
     }
@@ -534,7 +553,7 @@ public class ExecutionRunService implements IExecutionRunService {
                     FileOutputStream fileOutputStream = null;
                 try {
                     fileOutputStream = new FileOutputStream(file);
-                    fileOutputStream.write(executionSOAPResponse.getExecutionSOAPResponse(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getId()).getBytes());
+                    fileOutputStream.write(eSResponse.getExecutionSOAPResponse(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getExecutionUUID()).getBytes());
                     fileOutputStream.close();
                     } catch (FileNotFoundException ex) {
                     Logger.getLogger(ExecutionRunService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);

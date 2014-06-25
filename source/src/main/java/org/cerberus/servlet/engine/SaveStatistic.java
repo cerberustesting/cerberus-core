@@ -67,7 +67,7 @@ public class SaveStatistic extends HttpServlet {
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         ITestCaseExecutionWWWService testCaseExecutionWWWService = appContext.getBean(TestCaseExecutionWWWService.class);
         ExecutionUUID executionUUID = appContext.getBean(ExecutionUUID.class);
-        Integer executionId = executionUUID.getExecutionID(runId);
+        long executionId = executionUUID.getExecutionID(runId);
         
         testCaseExecutionWWWService.registerDetail(executionId, sb.toString(), page);
 

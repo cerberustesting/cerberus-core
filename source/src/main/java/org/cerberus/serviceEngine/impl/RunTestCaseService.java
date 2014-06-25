@@ -58,7 +58,7 @@ public class RunTestCaseService implements IRunTestCaseService {
         try {
             /**
              * Start Execution (Checks and Creation of ID)
-            *
+             *
              */
             tCExecution = executionStartService.startExecution(tCExecution);
 
@@ -66,28 +66,14 @@ public class RunTestCaseService implements IRunTestCaseService {
              * Execute TestCase in new thread if asynchroneous execution
              */
             if (!tCExecution.isSynchroneous()) {
-                tCExecution = executionRunService.executeAsynchroneouslyTestCase(tCExecution);
+                executionRunService.executeAsynchroneouslyTestCase(tCExecution);
             } else {
                 tCExecution = executionRunService.executeTestCase(tCExecution);
             }
         } catch (CerberusException ex) {
             tCExecution.setResultMessage(ex.getMessageError());
-        } finally {
-            /**
-             * Clean memory (Remove all object put in memory
-             */
-            try {
-                if (executionUUID.getExecutionID(tCExecution.getExecutionUUID()) != null) {
-                    executionUUID.removeExecutionUUID(tCExecution.getExecutionUUID());
-                }
-                if (eSResponse.getExecutionSOAPResponse(tCExecution.getId()) != null) {
-                    eSResponse.removeExecutionSOAPResponse(tCExecution.getId());
-                }
-            } catch (Exception ex) {
-                MyLogger.log(RunTestCaseService.class.getName(), Level.FATAL, "Exception cleaning Memory: " + ex.toString());
-            }
         }
-
+        MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Exit RunTestCaseService : " + tCExecution.getId());
         return tCExecution;
     }
 }
