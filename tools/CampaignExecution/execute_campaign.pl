@@ -108,6 +108,8 @@ sub execute_tests {
 		# display some information in the terminal
 		print "Execute Test $i/$numberOfTests of from=".$args{'from'}." on=".$args{'on'}."\n";
 		# display URL currently executed by the tread
+		$TestURL =~ s/Browser/browser/;
+
 		print $TestURL."\n\n";
 
 		# retrieve the content of the URL (nothing done with it for the moment)
