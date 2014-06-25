@@ -20,8 +20,8 @@
 package org.cerberus.service;
 
 import java.util.List;
-
 import org.cerberus.entity.TestCaseExecutionSysVer;
+import org.cerberus.exception.CerberusException;
 
 /**
  *
@@ -29,7 +29,7 @@ import org.cerberus.entity.TestCaseExecutionSysVer;
  */
 public interface ITestCaseExecutionSysVerService {
 
-    void insertTestCaseExecutionSysVer(TestCaseExecutionSysVer testCaseExecutionSysVer);
+    void insertTestCaseExecutionSysVer(TestCaseExecutionSysVer testCaseExecutionSysVer) throws CerberusException;
 
     /**
      *

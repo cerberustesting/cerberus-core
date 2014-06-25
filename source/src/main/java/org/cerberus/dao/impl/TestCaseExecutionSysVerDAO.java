@@ -27,7 +27,10 @@ import java.util.List;
 import org.apache.log4j.Level;
 import org.cerberus.dao.ITestCaseExecutionSysVerDAO;
 import org.cerberus.database.DatabaseSpring;
+import org.cerberus.entity.MessageGeneral;
+import org.cerberus.entity.MessageGeneralEnum;
 import org.cerberus.entity.TestCaseExecutionSysVer;
+import org.cerberus.exception.CerberusException;
 import org.cerberus.factory.IFactoryTestCaseExecutionSysVer;
 import org.cerberus.log.MyLogger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,9 +61,10 @@ public class TestCaseExecutionSysVerDAO implements ITestCaseExecutionSysVerDAO {
      * more explanations to follow in consecutive paragraphs separated by HTML
      * paragraph breaks.
      *
+     * @throws org.cerberus.exception.CerberusException
      */
     @Override
-    public void insertTestCaseExecutionSysVer(TestCaseExecutionSysVer testCaseExecutionSysVer) {
+    public void insertTestCaseExecutionSysVer(TestCaseExecutionSysVer testCaseExecutionSysVer)  throws CerberusException {
         final String query = "INSERT INTO testcaseexecutionsysver (id, system, build, revision) "
                 + "VALUES (?, ?, ?, ?)";
 
@@ -79,11 +83,13 @@ public class TestCaseExecutionSysVerDAO implements ITestCaseExecutionSysVerDAO {
 
             } catch (SQLException exception) {
                 MyLogger.log(TestCaseExecutionSysVerDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                throw new CerberusException(new MessageGeneral(MessageGeneralEnum.CANNOT_UPDATE_TABLE));
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
             MyLogger.log(TestCaseExecutionSysVerDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.CANNOT_UPDATE_TABLE));
         } finally {
             try {
                 if (connection != null) {

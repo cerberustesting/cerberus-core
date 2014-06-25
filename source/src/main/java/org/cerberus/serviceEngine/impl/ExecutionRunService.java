@@ -129,30 +129,36 @@ public class ExecutionRunService implements IExecutionRunService {
     @Autowired
     private IFactoryTestCaseExecutionSysVer factoryTestCaseExecutionSysVer;
     @Autowired
-    private IParameterService parameterService;
-    @Autowired
     private ExecutionSOAPResponse eSResponse;
     @Autowired
     private ExecutionUUID executionUUID;
-    
+    @Autowired
+    private IRecorderService recorderService;
+
     @Override
-    public TestCaseExecution executeTestCase(TestCaseExecution tCExecution) {
+    public TestCaseExecution executeTestCase(TestCaseExecution tCExecution) throws CerberusException {
         long runID = tCExecution.getId();
         /**
          * Feeding Build Rev of main Application system to
          * testcaseexecutionsysver table. Only if execution is not manual.
          */
-        run: {
         if (!(tCExecution.isManualURL())) {
-            TestCaseExecutionSysVer myExeSysVer = factoryTestCaseExecutionSysVer.create(runID, tCExecution.getApplication().getSystem(), tCExecution.getBuild(), tCExecution.getRevision());
-            testCaseExecutionSysVerService.insertTestCaseExecutionSysVer(myExeSysVer);
+            /**
+             * Insert SystemVersion in Database
+             */
+            try {
+                TestCaseExecutionSysVer myExeSysVer = factoryTestCaseExecutionSysVer.create(runID, tCExecution.getApplication().getSystem(), tCExecution.getBuild(), tCExecution.getRevision());
+                testCaseExecutionSysVerService.insertTestCaseExecutionSysVer(myExeSysVer);
+            } catch (CerberusException ex) {
+                MyLogger.log(RunTestCaseService.class.getName(), Level.INFO, ex.getMessage());
+            }
 
             /**
              * For all Linked environment, we also keep track on the build/rev
              * information inside testcaseexecutionsysver table.
              */
-            List<CountryEnvLink> ceLink = null;
             try {
+                List<CountryEnvLink> ceLink = null;
                 ceLink = countryEnvLinkService.findCountryEnvLinkByCriteria(tCExecution.getApplication().getSystem(), tCExecution.getCountry(), tCExecution.getEnvironment());
                 MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, tCExecution.getId() + " - Linked environment found.");
                 for (CountryEnvLink myCeLink : ceLink) {
@@ -165,8 +171,8 @@ public class ExecutionRunService implements IExecutionRunService {
                         testCaseExecutionSysVerService.insertTestCaseExecutionSysVer(myExeSysVer);
                     } catch (CerberusException ex) {
                         // Referencial Integrity link between countryEnvLink and CountryEnvParam table should secure that exception to never happen.
-                        Logger.getLogger(RunTestCaseService.class.getName()).log(java.util.logging.Level.SEVERE, ex.getMessage());
-                        break run;
+                        MyLogger.log(RunTestCaseService.class.getName(), Level.FATAL, ex.getMessage());
+                        throw new CerberusException(ex.getMessageError());
                     }
                 }
             } catch (CerberusException ex) {
@@ -174,15 +180,18 @@ public class ExecutionRunService implements IExecutionRunService {
             }
         }
 
-
         /**
          * Get used SeleniumCapabilities (empty if application is not GUI)
          */
         if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")) {
-            Capabilities caps = this.seleniumService.getUsedCapabilities(tCExecution.getSelenium());
+            try {
+                Capabilities caps = this.seleniumService.getUsedCapabilities(tCExecution.getSelenium());
                 tCExecution.setBrowserFullVersion(caps.getBrowserName() + " " + caps.getVersion() + " " + caps.getPlatform().toString());
                 tCExecution.setVersion(caps.getVersion());
                 tCExecution.setPlatform(caps.getPlatform().toString());
+            } catch (Exception ex) {
+                MyLogger.log(RunTestCaseService.class.getName(), Level.ERROR, "exception on selenium getting Used Capabilities :" + ex.toString());
+            }
         } else {
             // If Selenium is not needed, the selenium and browser info is set to empty.
             tCExecution.setSeleniumIP("");
@@ -192,10 +201,9 @@ public class ExecutionRunService implements IExecutionRunService {
             tCExecution.setPlatform("");
         }
 
-
         /**
-         * Load PreTestCase information and set PreTCase to the TestCaseExecution
-         * object
+         * Load PreTestCase information and set PreTCase to the
+         * TestCaseExecution object
          */
         tCExecution.setResultMessage(new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_LOADINGDETAILEDDATA));
         MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, runID + " - Loading Pre testcases.");
@@ -204,7 +212,6 @@ public class ExecutionRunService implements IExecutionRunService {
         if (!(preTests == null)) {
             MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, runID + " - Loaded PreTest List. " + tCExecution.getPreTCase().size() + " found.");
         }
-
 
         /**
          * Load Main TestCase with Step dependencies (Actions/Control)
@@ -229,7 +236,6 @@ public class ExecutionRunService implements IExecutionRunService {
             MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, runID + " - Pre testcase : " + myTCase.getTest() + "-" + myTCase.getTestCase() + " With " + myTCase.getTestCaseStep().size() + " Step(s) found.");
         }
         tCExecution.setPreTCase(preTestCase);
-
 
         /**
          * Start Execution of the steps/Actions/controls Iterate Steps.
@@ -302,27 +308,34 @@ public class ExecutionRunService implements IExecutionRunService {
             if (testCaseStepExecution.isStopExecution()) {
                 break;
             }
+
         }
-        }
-        tCExecution = this.stopTestCase(tCExecution);
-        
+
         try {
-                if (!tCExecution.isSynchroneous()) {
-                    if (executionUUID.getExecutionID(tCExecution.getExecutionUUID()) != 0) {
-                        executionUUID.removeExecutionUUID(tCExecution.getExecutionUUID());
-                        MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Clean ExecutionUUID");
-                    }
-                    if (eSResponse.getExecutionSOAPResponse(tCExecution.getExecutionUUID()) != null) {
-                        eSResponse.removeExecutionSOAPResponse(tCExecution.getExecutionUUID());
-                        MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Clean ExecutionSOAPResponse");
-                    }
+            tCExecution = this.stopTestCase(tCExecution);
+        } catch (Exception ex) {
+            MyLogger.log(RunTestCaseService.class.getName(), Level.FATAL, "Exception Stopping Test: " + ex.toString());
+        }
+
+        try {
+            if (!tCExecution.isSynchroneous()) {
+                if (executionUUID.getExecutionID(tCExecution.getExecutionUUID()) != 0) {
+                    executionUUID.removeExecutionUUID(tCExecution.getExecutionUUID());
+                    MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Clean ExecutionUUID");
                 }
-            } catch (Exception ex) {
-                MyLogger.log(RunTestCaseService.class.getName(), Level.FATAL, "Exception cleaning Memory: " + ex.toString());
+                if (eSResponse.getExecutionSOAPResponse(tCExecution.getExecutionUUID()) != null) {
+                    eSResponse.removeExecutionSOAPResponse(tCExecution.getExecutionUUID());
+                    MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Clean ExecutionSOAPResponse");
+                }
             }
-        
+        } catch (Exception ex) {
+            MyLogger.log(RunTestCaseService.class.getName(), Level.FATAL, "Exception cleaning Memory: " + ex.toString());
+        }
+
+        MyLogger.log(RunTestCaseService.class.getName(), Level.INFO, "Execution Finished : UUID=" + tCExecution.getExecutionUUID() + " | ID=" + tCExecution.getId() + " | RC=" + tCExecution.getControlStatus());
+
         return tCExecution;
-        
+
     }
 
     @Override
@@ -421,7 +434,6 @@ public class ExecutionRunService implements IExecutionRunService {
                 myActionDataList.add(testCaseExecutionData);
                 testCaseStepActionExecution.setTestCaseExecutionDataList(myActionDataList);
 
-
                 if (testCaseExecutionData.getPropertyResultMessage().equals(new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS))) {
                     /**
                      * If property could be calculated, we execute the action.
@@ -447,8 +459,8 @@ public class ExecutionRunService implements IExecutionRunService {
                     if (((testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getScreenshot() == 2)
                             || (testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getScreenshot() == 1))
                             && (testCaseExecutionData.getPropertyResultMessage().isDoScreenshot())) {
-                        
-                        if (testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getApplication().getType().equals("GUI")){
+
+                        if (testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getApplication().getType().equals("GUI")) {
                             MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Doing screenshot.");
                             File myFile = null;
                             String screenshotFilename = testCaseStepActionExecution.getTest() + "-" + testCaseStepActionExecution.getTestCase()
@@ -458,8 +470,8 @@ public class ExecutionRunService implements IExecutionRunService {
                             this.seleniumService.doScreenShot(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getSelenium(), Long.toString(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getId()), screenshotFilename);
                             testCaseStepActionExecution.setScreenshotFilename(Long.toString(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getId()) + File.separator + screenshotFilename);
                             MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Screenshot done in : " + testCaseStepActionExecution.getScreenshotFilename());
-                        }  
-                        
+                        }
+
                     }
 
                     /**
@@ -518,55 +530,20 @@ public class ExecutionRunService implements IExecutionRunService {
          */
         if ((testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getScreenshot() == 2)
                 || ((testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getScreenshot() == 1)
-                && (testCaseStepActionExecution.getActionResultMessage().isDoScreenshot()))
-                || (testCaseStepActionExecution.getAction().equalsIgnoreCase("takeScreenshot"))) {
-            
-            if (testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getApplication().getType().equals("GUI")){
-            MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Doing screenshot.");
-            File myFile = null;
-            String screenshotFilename = testCaseStepActionExecution.getTest() + "-" + testCaseStepActionExecution.getTestCase()
-                    + "-St" + testCaseStepActionExecution.getStep()
-                    + "Sq" + testCaseStepActionExecution.getSequence() + ".jpg";
-            screenshotFilename = screenshotFilename.replaceAll(" ", "");
-            this.seleniumService.doScreenShot(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getSelenium(), Long.toString(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getId()), screenshotFilename);
-            testCaseStepActionExecution.setScreenshotFilename(Long.toString(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getId()) + File.separator + screenshotFilename);
-            MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Screenshot done in : " + testCaseStepActionExecution.getScreenshotFilename());
-            } 
-            else if (testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getApplication().getType().equals("WS")){
-            MyLogger.log(RunTestCaseService.class.getName(), Level.INFO, "Saving File.");
-            String screenshotFilename = testCaseStepActionExecution.getTest() + "-" + testCaseStepActionExecution.getTestCase()
-                    + "-St" + testCaseStepActionExecution.getStep()
-                    + "Sq" + testCaseStepActionExecution.getSequence() + ".xml";
-            screenshotFilename = screenshotFilename.replaceAll(" ", "");
-            String imgPath = "";
-                try {
-                    imgPath = parameterService.findParameterByKey("cerberus_picture_path", "").getValue();
-                } catch (CerberusException ex) {
-                    Logger.getLogger(ExecutionRunService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-                }
-                File dir = new File(imgPath + testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getId());
-                dir.mkdirs();
-                
-                File file = new File(dir.getAbsolutePath() + File.separator + screenshotFilename);
-                    System.err.println(" FILE : " + file.getAbsolutePath());
+                && (testCaseStepActionExecution.getActionResultMessage().isDoScreenshot()))) {
 
-                    FileOutputStream fileOutputStream = null;
-                try {
-                    fileOutputStream = new FileOutputStream(file);
-                    fileOutputStream.write(eSResponse.getExecutionSOAPResponse(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getExecutionUUID()).getBytes());
-                    fileOutputStream.close();
-                    } catch (FileNotFoundException ex) {
-                    Logger.getLogger(ExecutionRunService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-                } catch (IOException ex) {
-                    Logger.getLogger(ExecutionRunService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-                }
-            testCaseStepActionExecution.setScreenshotFilename(Long.toString(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getId()) + File.separator + screenshotFilename);
-            MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Screenshot done in : " + testCaseStepActionExecution.getScreenshotFilename());
+            if (testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getApplication().getType().equals("GUI")) {
+                
+                String screenshotPath = recorderService.recordScreenshotAndGetName(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution(),testCaseStepActionExecution, 0);
+                testCaseStepActionExecution.setScreenshotFilename(screenshotPath);
+                
+            } else if (testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getApplication().getType().equals("WS")) {
+                String screenshotPath = recorderService.recordXMLAndGetName(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution(),testCaseStepActionExecution, 0);
+                testCaseStepActionExecution.setScreenshotFilename(screenshotPath);
             }
         } else {
             MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Not Doing screenshot after action because of the screenshot parameter or flag on the last Action result.");
         }
-
 
         /**
          * Register Action in database
@@ -574,7 +551,6 @@ public class ExecutionRunService implements IExecutionRunService {
         MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Registering Action : " + testCaseStepActionExecution.getAction());
         this.testCaseStepActionExecutionService.updateTestCaseStepActionExecution(testCaseStepActionExecution);
         MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Registered Action");
-
 
         if (testCaseStepActionExecution.isStopExecution()) {
             return testCaseStepActionExecution;
@@ -595,16 +571,15 @@ public class ExecutionRunService implements IExecutionRunService {
              * Create and Register TestCaseStepActionControlExecution
              */
             MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Creating TestCaseStepActionControlExecution");
-            TestCaseStepActionControlExecution testCaseStepActionControlExecution =
-                    factoryTestCaseStepActionControlExecution.create(testCaseStepActionExecution.getId(), testCaseStepActionControl.getTest(),
-                    testCaseStepActionControl.getTestCase(), testCaseStepActionControl.getStep(), testCaseStepActionControl.getSequence(), testCaseStepActionControl.getControl(),
-                    null, null, testCaseStepActionControl.getType(), testCaseStepActionControl.getControlProperty(), testCaseStepActionControl.getControlValue(),
-                    testCaseStepActionControl.getFatal(), startControl, 0, 0, 0, null, testCaseStepActionExecution, new MessageEvent(MessageEventEnum.CONTROL_PENDING));
+            TestCaseStepActionControlExecution testCaseStepActionControlExecution
+                    = factoryTestCaseStepActionControlExecution.create(testCaseStepActionExecution.getId(), testCaseStepActionControl.getTest(),
+                            testCaseStepActionControl.getTestCase(), testCaseStepActionControl.getStep(), testCaseStepActionControl.getSequence(), testCaseStepActionControl.getControl(),
+                            null, null, testCaseStepActionControl.getType(), testCaseStepActionControl.getControlProperty(), testCaseStepActionControl.getControlValue(),
+                            testCaseStepActionControl.getFatal(), startControl, 0, 0, 0, null, testCaseStepActionExecution, new MessageEvent(MessageEventEnum.CONTROL_PENDING));
             this.testCaseStepActionControlExecutionService.insertTestCaseStepActionControlExecution(testCaseStepActionControlExecution);
 
             MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Executing control : " + testCaseStepActionControlExecution.getControl() + " type : " + testCaseStepActionControlExecution.getControlType());
             testCaseStepActionControlExecution = executeControl(testCaseStepActionControlExecution);
-
 
             /**
              * We update the Action with the execution message and stop flag
@@ -643,16 +618,11 @@ public class ExecutionRunService implements IExecutionRunService {
          */
         if ((myExecution.getScreenshot() == 2)
                 || ((myExecution.getScreenshot() == 1) && (testCaseStepActionControlExecution.getControlResultMessage().isDoScreenshot()))) {
-            MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Doing screenshot.");
-            File myFile = null;
-            String screenshotFilename = testCaseStepActionControlExecution.getTest() + "-" + testCaseStepActionControlExecution.getTestCase()
-                    + "-St" + testCaseStepActionControlExecution.getStep()
-                    + "Sq" + testCaseStepActionControlExecution.getSequence()
-                    + "Ct" + testCaseStepActionControlExecution.getControl() + ".jpg";
-            screenshotFilename = screenshotFilename.replaceAll(" ", "");
-            this.seleniumService.doScreenShot(myExecution.getSelenium(), Long.toString(myExecution.getId()), screenshotFilename);
-            testCaseStepActionControlExecution.setScreenshotFilename(Long.toString(myExecution.getId()) + File.separator + screenshotFilename);
-            MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Screenshot done in : " + testCaseStepActionControlExecution.getScreenshotFilename());
+            if (testCaseStepActionControlExecution.getTestCaseStepExecution().gettCExecution().getApplication().getType().equals("GUI")) {
+                String screenshotPath = recorderService.recordScreenshotAndGetName(testCaseStepActionControlExecution.getTestCaseStepExecution().gettCExecution(),
+                        testCaseStepActionControlExecution.getTestCaseStepExecution().getTestCaseStepActionExecution(), testCaseStepActionControlExecution.getControl());
+                testCaseStepActionControlExecution.setScreenshotFilename(screenshotPath);
+            }
         } else {
             MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Not Doing screenshot after control because of parameter of result of last control execution.");
         }
@@ -704,7 +674,7 @@ public class ExecutionRunService implements IExecutionRunService {
          */
         MessageEvent msg = new MessageEvent(MessageEventEnum.PROPERTY_PENDING);
         long now = new Date().getTime();
-        TestCaseExecutionData testCaseExecutionData = factoryTestCaseExecutionData.create(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getId(), propertyName, null, null, null, null,null, null, now, now, now, now, msg);
+        TestCaseExecutionData testCaseExecutionData = factoryTestCaseExecutionData.create(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getId(), propertyName, null, null, null, null, null, null, now, now, now, now, msg);
 
         /**
          * Find TestCaseCountryProperty from database.
@@ -749,8 +719,12 @@ public class ExecutionRunService implements IExecutionRunService {
 
     @Override
     @Async
-    public TestCaseExecution executeAsynchroneouslyTestCase(TestCaseExecution tCExecution) {
-        return executeTestCase(tCExecution);
+    public TestCaseExecution executeAsynchroneouslyTestCase(TestCaseExecution tCExecution) throws CerberusException {
+        try {
+            return executeTestCase(tCExecution);
+        } catch (CerberusException ex) {
+            throw new CerberusException(ex.getMessageError());
+        }
     }
-    
+
 }

@@ -94,27 +94,24 @@ public class ExecutionStartService implements IExecutionStartService {
         } catch (CerberusException ex) {
             MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_OUTPUTFORMAT_INVALID);
             mes.setDescription(mes.getDescription().replaceAll("%PARAM%", tCExecution.getOutputFormat()));
-            tCExecution.setResultMessage(mes);
-            Logger.getLogger(ExecutionStartService.class.getName()).log(java.util.logging.Level.WARNING, mes.getDescription());
-            return tCExecution;
+            MyLogger.log(ExecutionStartService.class.getName(), Level.DEBUG, mes.getDescription());
+            throw new CerberusException(mes);
         }
         try {
             myInvariant = this.invariantService.findInvariantByIdValue("VERBOSE", String.valueOf(tCExecution.getVerbose()));
         } catch (CerberusException ex) {
             MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_VERBOSE_INVALID);
             mes.setDescription(mes.getDescription().replaceAll("%PARAM%", String.valueOf(tCExecution.getVerbose())));
-            tCExecution.setResultMessage(mes);
-            Logger.getLogger(ExecutionStartService.class.getName()).log(java.util.logging.Level.WARNING, mes.getDescription());
-            return tCExecution;
+            MyLogger.log(ExecutionStartService.class.getName(), Level.DEBUG, mes.getDescription());
+            throw new CerberusException(mes);
         }
         try {
             myInvariant = this.invariantService.findInvariantByIdValue("SCREENSHOT", String.valueOf(tCExecution.getScreenshot()));
         } catch (CerberusException ex) {
             MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_SCREENSHOT_INVALID);
             mes.setDescription(mes.getDescription().replaceAll("%PARAM%", String.valueOf(tCExecution.getScreenshot())));
-            tCExecution.setResultMessage(mes);
-            Logger.getLogger(ExecutionStartService.class.getName()).log(java.util.logging.Level.WARNING, mes.getDescription());
-            return tCExecution;
+            MyLogger.log(ExecutionStartService.class.getName(), Level.DEBUG, mes.getDescription());
+            throw new CerberusException(mes);
         }
 
         /**
@@ -137,9 +134,8 @@ public class ExecutionStartService implements IExecutionStartService {
             MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_TESTCASE_NOT_FOUND);
             mes.setDescription(mes.getDescription().replaceAll("%TEST%", tCExecution.getTest()));
             mes.setDescription(mes.getDescription().replaceAll("%TESTCASE%", tCExecution.getTestCase()));
-            tCExecution.setResultMessage(mes);
-            Logger.getLogger(ExecutionStartService.class.getName()).log(java.util.logging.Level.WARNING, mes.getDescription());
-            return tCExecution;
+            MyLogger.log(ExecutionStartService.class.getName(), Level.DEBUG, mes.getDescription());
+            throw new CerberusException(mes);
         }
         MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Test Case Information Loaded - " + tCExecution.getTest() + "-" + tCExecution.getTestCase());
 
@@ -153,9 +149,8 @@ public class ExecutionStartService implements IExecutionStartService {
         } catch (CerberusException ex) {
             MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_APPLICATION_NOT_FOUND);
             mes.setDescription(mes.getDescription().replaceAll("%APPLI%", tCExecution.gettCase().getApplication()));
-            tCExecution.setResultMessage(mes);
-            Logger.getLogger(ExecutionStartService.class.getName()).log(java.util.logging.Level.WARNING, mes.getDescription());
-            return tCExecution;
+            MyLogger.log(ExecutionStartService.class.getName(), Level.DEBUG, mes.getDescription());
+            throw new CerberusException(mes);
         }
         MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Application Information Loaded - " + tCExecution.getApplication().getDescription());
 
@@ -168,9 +163,8 @@ public class ExecutionStartService implements IExecutionStartService {
         } catch (CerberusException ex) {
             MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_COUNTRY_NOT_FOUND);
             mes.setDescription(mes.getDescription().replaceAll("%COUNTRY%", tCExecution.getCountry()));
-            tCExecution.setResultMessage(mes);
-            Logger.getLogger(ExecutionStartService.class.getName()).log(java.util.logging.Level.WARNING, mes.getDescription());
-            return tCExecution;
+            MyLogger.log(ExecutionStartService.class.getName(), Level.DEBUG, mes.getDescription());
+            throw new CerberusException(mes);
         }
         MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Country Information Loaded - " + tCExecution.getCountryObj().getDescription());
 
@@ -188,9 +182,8 @@ public class ExecutionStartService implements IExecutionStartService {
             MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Execution will be done with manual application connectivity setting.");
             if (StringUtil.isNullOrEmpty(tCExecution.getMyHost())) {
                 MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_MANUALURL_INVALID);
-                tCExecution.setResultMessage(mes);
-                Logger.getLogger(ExecutionStartService.class.getName()).log(java.util.logging.Level.WARNING, mes.getDescription());
-                return tCExecution;
+                MyLogger.log(ExecutionStartService.class.getName(), Level.DEBUG, mes.getDescription());
+                throw new CerberusException(mes);
             } else {
                 CountryEnvironmentApplication cea;
                 cea = this.factorycountryEnvironmentApplication.create(tCExecution.getApplication().getSystem(), tCExecution.getCountry(), tCExecution.getEnvironment(), tCExecution.getApplication().getApplication(), tCExecution.getMyHost(), tCExecution.getMyContextRoot(), tCExecution.getMyLoginRelativeURL());
@@ -230,9 +223,8 @@ public class ExecutionStartService implements IExecutionStartService {
                 mes.setDescription(mes.getDescription().replaceAll("%COUNTRY%", tCExecution.getCountry()));
                 mes.setDescription(mes.getDescription().replaceAll("%ENV%", tCExecution.getEnvironment()));
                 mes.setDescription(mes.getDescription().replaceAll("%APPLI%", tCExecution.gettCase().getApplication()));
-                tCExecution.setResultMessage(mes);
-                Logger.getLogger(ExecutionStartService.class.getName()).log(java.util.logging.Level.WARNING, mes.getDescription());
-                return tCExecution;
+                MyLogger.log(ExecutionStartService.class.getName(),Level.DEBUG, mes.getDescription());
+                throw new CerberusException(mes);
             }
             MyLogger.log(ExecutionStartService.class.getName(), Level.DEBUG, "-> Execution will be done with automatic application connectivity setting. IP/URL/LOGIN : " + cea.getIp() + "-" + cea.getUrl() + "-" + cea.getUrlLogin());
             tCExecution.setEnvironmentData(tCExecution.getEnvironment());
@@ -247,15 +239,13 @@ public class ExecutionStartService implements IExecutionStartService {
             if (tCExecution.isManualURL()) {
                 MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_ENVIRONMENT_DOESNOTEXIST_MAN);
                 mes.setDescription(mes.getDescription().replaceAll("%ENV%", tCExecution.getEnvironmentData()));
-                tCExecution.setResultMessage(mes);
-                Logger.getLogger(ExecutionStartService.class.getName()).log(java.util.logging.Level.WARNING, mes.getDescription());
-                return tCExecution;
+                MyLogger.log(ExecutionStartService.class.getName(),Level.DEBUG, mes.getDescription());
+                throw new CerberusException(mes);
             } else {
                 MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_ENVIRONMENT_DOESNOTEXIST);
                 mes.setDescription(mes.getDescription().replaceAll("%ENV%", tCExecution.getEnvironmentData()));
-                tCExecution.setResultMessage(mes);
-                Logger.getLogger(ExecutionStartService.class.getName()).log(java.util.logging.Level.WARNING, mes.getDescription());
-                return tCExecution;
+                MyLogger.log(ExecutionStartService.class.getName(),Level.DEBUG, mes.getDescription());
+                throw new CerberusException(mes);
             }
         }
 
@@ -281,9 +271,8 @@ public class ExecutionStartService implements IExecutionStartService {
             mes.setDescription(mes.getDescription().replaceAll("%SYSTEM%", tCExecution.getApplication().getSystem()));
             mes.setDescription(mes.getDescription().replaceAll("%COUNTRY%", tCExecution.getCountry()));
             mes.setDescription(mes.getDescription().replaceAll("%ENV%", tCExecution.getEnvironmentData()));
-            tCExecution.setResultMessage(mes);
-            Logger.getLogger(ExecutionStartService.class.getName()).log(java.util.logging.Level.WARNING, mes.getDescription());
-            return tCExecution;
+            MyLogger.log(ExecutionStartService.class.getName(),Level.DEBUG, mes.getDescription());
+            throw new CerberusException(mes);
         }
 
         /**
@@ -311,20 +300,21 @@ public class ExecutionStartService implements IExecutionStartService {
             } catch (CerberusException ex) {
                 MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_BROWSER_NOT_SUPPORTED);
                 mes.setDescription(mes.getDescription().replaceAll("%BROWSER%", tCExecution.getBrowser()));
-                tCExecution.setResultMessage(mes);
-                Logger.getLogger(ExecutionStartService.class.getName()).log(java.util.logging.Level.WARNING, mes.getDescription());
-                return tCExecution;
+                MyLogger.log(ExecutionStartService.class.getName(), Level.DEBUG, mes.getDescription());
+                throw new CerberusException(mes);
             }
 
             if (tCExecution.getIp().equalsIgnoreCase("")) {
-                tCExecution.setResultMessage(new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_SELENIUM_EMPTYORBADIP));
-                tCExecution.getResultMessage().setDescription(tCExecution.getResultMessage().getDescription().replaceAll("%IP%", tCExecution.getIp()));
-                return tCExecution;
+                MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_SELENIUM_EMPTYORBADIP);
+                mes.setDescription(mes.getDescription().replaceAll("%IP%", tCExecution.getIp()));
+                MyLogger.log(ExecutionStartService.class.getName(),Level.DEBUG, mes.getDescription());
+                throw new CerberusException(mes);
             }
             if (tCExecution.getPort().equalsIgnoreCase("")) {
-                tCExecution.setResultMessage(new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_SELENIUM_EMPTYORBADPORT));
-                tCExecution.getResultMessage().setDescription(tCExecution.getResultMessage().getDescription().replaceAll("%PORT%", tCExecution.getPort()));
-                return tCExecution;
+                MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_SELENIUM_EMPTYORBADPORT);
+                mes.setDescription(mes.getDescription().replaceAll("%IP%", tCExecution.getIp()));
+                MyLogger.log(ExecutionStartService.class.getName(),Level.DEBUG, mes.getDescription());
+                throw new CerberusException(mes);
             }
 
             MyLogger.log(ExecutionStartService.class.getName(), Level.DEBUG, "Application is GUI. Trying to reach selenium server.");
@@ -339,8 +329,7 @@ public class ExecutionStartService implements IExecutionStartService {
             try {
                 this.seleniumService.startSeleniumServer(tCExecution, tCExecution.getSeleniumIP(), tCExecution.getSeleniumPort(), tCExecution.getBrowser(), tCExecution.getVersion(), tCExecution.getPlatform(), url, login, tCExecution.getVerbose(), tCExecution.getCountry());
             } catch (CerberusException ex) {
-                tCExecution.setResultMessage(ex.getMessageError());
-                Logger.getLogger(ExecutionStartService.class.getName()).log(java.util.logging.Level.WARNING, ex.getMessageError().getDescription());
+                MyLogger.log(ExecutionStartService.class.getName(),Level.DEBUG, ex.getMessageError().getDescription());
                 throw new CerberusException(ex.getMessageError());
             }
 
@@ -361,16 +350,16 @@ public class ExecutionStartService implements IExecutionStartService {
             } else {
                 MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_COULDNOTCREATE_RUNID);
                 tCExecution.setResultMessage(mes);
-                MyLogger.log(ExecutionStartService.class.getName(),Level.FATAL, "Could not create RunID, or cannot retreive the generated Key");
+                MyLogger.log(ExecutionStartService.class.getName(), Level.FATAL, "Could not create RunID, or cannot retreive the generated Key");
                 throw new CerberusException(mes);
             }
-            
+
         } catch (CerberusException ex) {
             tCExecution.setResultMessage(new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_COULDNOTCREATE_RUNID));
             Logger.getLogger(ExecutionStartService.class.getName()).log(java.util.logging.Level.WARNING, ex.getMessageError().getDescription());
             throw new CerberusException(ex.getMessageError());
         }
-        
+
         MyLogger.log(ExecutionStartService.class.getName(), Level.DEBUG, tCExecution.getId() + " - RunID Registered on database.");
 
 //        tCExecution.setResultMessage(new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_APPLICATION_NOT_FOUND));

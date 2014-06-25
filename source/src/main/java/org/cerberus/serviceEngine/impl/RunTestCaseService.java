@@ -55,16 +55,23 @@ public class RunTestCaseService implements IRunTestCaseService {
     @Override
     public TestCaseExecution runTestCase(TestCaseExecution tCExecution) {
 
+        /**
+         * Start Execution (Checks and Creation of ID)
+         *
+         */
         try {
-            /**
-             * Start Execution (Checks and Creation of ID)
-             *
-             */
             tCExecution = executionStartService.startExecution(tCExecution);
+            MyLogger.log(ExecutionStartService.class.getName(), Level.INFO, "Execution Check Started : UUID=" + tCExecution.getExecutionUUID() + " | ID=" + tCExecution.getId());
 
-            /**
-             * Execute TestCase in new thread if asynchroneous execution
-             */
+        } catch (CerberusException ex) {
+            tCExecution.setResultMessage(ex.getMessageError());
+            MyLogger.log(RunTestCaseService.class.getName(), Level.INFO, "Execution not Launched : UUID=" + tCExecution.getExecutionUUID() + " | causedBy=" + ex.getMessageError().getDescription());
+        }
+
+        /**
+         * Execute TestCase in new thread if asynchroneous execution
+         */
+        try {
             if (!tCExecution.isSynchroneous()) {
                 executionRunService.executeAsynchroneouslyTestCase(tCExecution);
             } else {
@@ -73,6 +80,10 @@ public class RunTestCaseService implements IRunTestCaseService {
         } catch (CerberusException ex) {
             tCExecution.setResultMessage(ex.getMessageError());
         }
+        
+        /**
+         * Return tcexecution object
+         */
         MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Exit RunTestCaseService : " + tCExecution.getId());
         return tCExecution;
     }

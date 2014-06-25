@@ -34,6 +34,7 @@ import org.cerberus.log.MyLogger;
 import org.cerberus.service.ISoapLibraryService;
 import org.cerberus.serviceEngine.IActionService;
 import org.cerberus.serviceEngine.IPropertyService;
+import org.cerberus.serviceEngine.IRecorderService;
 import org.cerberus.serviceEngine.ISeleniumService;
 import org.cerberus.serviceEngine.ISoapService;
 import org.cerberus.util.StringUtil;
@@ -55,6 +56,8 @@ public class ActionService implements IActionService {
     private ISoapService soapService;
     @Autowired
     private ISoapLibraryService soapLibraryService;
+    @Autowired
+    private IRecorderService recorderService;
 
     @Override
     public TestCaseStepActionExecution doAction(TestCaseStepActionExecution testCaseStepActionExecution) {
@@ -154,7 +157,8 @@ public class ActionService implements IActionService {
             res = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_PROPERTYCALCULATED);
             res.setDescription(res.getDescription().replaceAll("%PROP%", testCaseStepActionExecution.getPropertyName()));
         } else if (testCaseStepActionExecution.getAction().equals("takeScreenshot")) {
-            res = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_TAKESCREENSHOT);
+            res = this.doActionTakeScreenshot(testCaseStepActionExecution);
+            //res = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_TAKESCREENSHOT);
         } else {
             res = new MessageEvent(MessageEventEnum.ACTION_FAILED_UNKNOWNACTION);
             res.setDescription(res.getDescription().replaceAll("%ACTION%", testCaseStepActionExecution.getAction()));
@@ -402,9 +406,26 @@ public class ActionService implements IActionService {
         }
         message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
         message.setDescription(message.getDescription().replaceAll("%ACTION%", "Click"));
-        message.setDescription(message.getDescription().replaceAll("%APPLICATIONTYPE%", object));
+        message.setDescription(message.getDescription().replaceAll("%APPLICATIONTYPE%", tCExecution.getApplication().getType()));
         return message;
     }
+    
+    private MessageEvent doActionTakeScreenshot(TestCaseStepActionExecution testCaseStepActionExecution) {
+         MessageEvent message;
+        if (testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getApplication().getType().equalsIgnoreCase("GUI")) {
+            String screenshotPath = recorderService.recordScreenshotAndGetName(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution(),
+                        testCaseStepActionExecution, 0);
+                testCaseStepActionExecution.setScreenshotFilename(screenshotPath);
+        message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_TAKESCREENSHOT);
+        return message;    
+        }
+        message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
+        message.setDescription(message.getDescription().replaceAll("%ACTION%", "Click"));
+        message.setDescription(message.getDescription().replaceAll("%APPLICATIONTYPE%", testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getApplication().getType()));
+        return message;
+    }
+    
+    
 
     
 

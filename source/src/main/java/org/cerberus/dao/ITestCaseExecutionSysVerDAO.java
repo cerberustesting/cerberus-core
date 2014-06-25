@@ -20,6 +20,7 @@ package org.cerberus.dao;
 import java.util.List;
 
 import org.cerberus.entity.TestCaseExecutionSysVer;
+import org.cerberus.exception.CerberusException;
 
 /**
  * {Insert class description here}
@@ -35,7 +36,7 @@ public interface ITestCaseExecutionSysVerDAO {
      * @param testCaseExecutionSysVer
      * @param testCaseStepExecution
      */
-    void insertTestCaseExecutionSysVer(TestCaseExecutionSysVer testCaseExecutionSysVer);
+    void insertTestCaseExecutionSysVer(TestCaseExecutionSysVer testCaseExecutionSysVer) throws CerberusException;
 
     /**
      *

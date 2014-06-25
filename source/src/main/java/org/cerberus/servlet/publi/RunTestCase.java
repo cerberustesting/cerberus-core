@@ -205,7 +205,7 @@ public class RunTestCase extends HttpServlet {
             UUID executionUUID = UUID.randomUUID();
             executionUUIDObject.setExecutionUUID(executionUUID.toString(), 0);
             tCExecution.setExecutionUUID(executionUUID.toString());
-            MyLogger.log(RunTestCase.class.getName(), Level.DEBUG, "Execution Key : " + executionUUID);
+            MyLogger.log(RunTestCase.class.getName(), Level.INFO, "Execution Requested : UUID=" + executionUUID);
 
             ExecutionSOAPResponse eSResponse = appContext.getBean(ExecutionSOAPResponse.class);
             eSResponse.setExecutionSOAPResponse(executionUUID.toString(), "init");

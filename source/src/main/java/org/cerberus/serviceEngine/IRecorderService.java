@@ -19,31 +19,18 @@
  */
 package org.cerberus.serviceEngine;
 
-import java.util.concurrent.Future;
 import org.cerberus.entity.TestCaseExecution;
-import org.cerberus.exception.CerberusException;
+import org.cerberus.entity.TestCaseStepActionExecution;
 
 /**
  *
  * @author bcivel
  */
-public interface IExecutionRunService {
-    
-    /**
-     * Run the Test Case Execution
-     *
-     * @param tCExecution
-     * @return 
-     */
-    TestCaseExecution executeTestCase(TestCaseExecution tCExecution) throws CerberusException;
+public interface IRecorderService {
 
-    TestCaseExecution executeAsynchroneouslyTestCase(TestCaseExecution tCExecution) throws CerberusException;
+    String recordScreenshotAndGetName(TestCaseExecution testCaseExecution,
+            TestCaseStepActionExecution testCaseStepActionExecution,Integer control);
     
-    /**
-     * Stop the Test Case Execution
-     *
-     * @param tCExecution
-     * @return
-     */
-    TestCaseExecution stopTestCase(TestCaseExecution tCExecution);
+    String recordXMLAndGetName(TestCaseExecution testCaseExecution,
+            TestCaseStepActionExecution testCaseStepActionExecution,Integer control);
 }
