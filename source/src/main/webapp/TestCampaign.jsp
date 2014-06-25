@@ -393,11 +393,10 @@
             
             function viewListOfTests(id) {
               $.get('./GetCampaign','action=findAllCampaignContent&campaign='+id,function(data){
-                  
                 for(index=0;index<data.CampaignContents.length;index++) {
                     $.get('./GetTestBattery','action=findAllTestBatteryContent&testBattery='+data.CampaignContents[index][0],function(tests){
                         for(indexTest=0;indexTest<tests.TestBatteryContents.length;indexTest++) {
-                            $("#listOfTests").append(tests.TestBatteryContents[indexTest][1]+" - "+tests.TestBatteryContents[indexTest][2]+" - "+tests.TestBatteryContents[indexTest][3]+" - "+tests.TestBatteryContents[indexTest][4]+"<br/>");
+                            $("#listOfTests ul").append("<li>"+tests.TestBatteryContents[indexTest][1]+" - "+tests.TestBatteryContents[indexTest][2]+" - "+tests.TestBatteryContents[indexTest][3]+" - "+tests.TestBatteryContents[indexTest][4]+"</li>");
                         }
                     });
                 }
@@ -405,8 +404,8 @@
                   
               });
                 $("#listOfTests").dialog({
-                    width: "600px",
-                    height: "80%",
+                    width: "800",
+                    height: "600",
                     buttons: {
                         "OK": function() {
                           $( this ).dialog( "close" );
@@ -443,6 +442,6 @@
                 <select id="TestBattery" name="TestBattery" class="ncdetailstext" rel="2" ></select>
             </form>
         
-        <div id="listOfTests" style="display:none;"></div>
+        <div id="listOfTests" style="display:none;"><ul></ul></div>
      </body>
 </html>
