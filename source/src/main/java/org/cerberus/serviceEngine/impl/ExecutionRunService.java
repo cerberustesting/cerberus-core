@@ -71,6 +71,7 @@ import org.cerberus.serviceEngine.IActionService;
 import org.cerberus.serviceEngine.IControlService;
 import org.cerberus.serviceEngine.IExecutionRunService;
 import org.cerberus.serviceEngine.IPropertyService;
+import org.cerberus.serviceEngine.IRecorderService;
 import org.cerberus.serviceEngine.ISeleniumService;
 import org.cerberus.util.StringUtil;
 import org.openqa.selenium.Capabilities;
@@ -146,8 +147,9 @@ public class ExecutionRunService implements IExecutionRunService {
             /**
              * Insert SystemVersion in Database
              */
+            TestCaseExecutionSysVer myExeSysVer = null;
             try {
-                TestCaseExecutionSysVer myExeSysVer = factoryTestCaseExecutionSysVer.create(runID, tCExecution.getApplication().getSystem(), tCExecution.getBuild(), tCExecution.getRevision());
+                myExeSysVer = factoryTestCaseExecutionSysVer.create(runID, tCExecution.getApplication().getSystem(), tCExecution.getBuild(), tCExecution.getRevision());
                 testCaseExecutionSysVerService.insertTestCaseExecutionSysVer(myExeSysVer);
             } catch (CerberusException ex) {
                 MyLogger.log(RunTestCaseService.class.getName(), Level.INFO, ex.getMessage());
@@ -618,9 +620,9 @@ public class ExecutionRunService implements IExecutionRunService {
          */
         if ((myExecution.getScreenshot() == 2)
                 || ((myExecution.getScreenshot() == 1) && (testCaseStepActionControlExecution.getControlResultMessage().isDoScreenshot()))) {
-            if (testCaseStepActionControlExecution.getTestCaseStepExecution().gettCExecution().getApplication().getType().equals("GUI")) {
-                String screenshotPath = recorderService.recordScreenshotAndGetName(testCaseStepActionControlExecution.getTestCaseStepExecution().gettCExecution(),
-                        testCaseStepActionControlExecution.getTestCaseStepExecution().getTestCaseStepActionExecution(), testCaseStepActionControlExecution.getControl());
+            if (testCaseStepActionControlExecution.getTestCaseStepActionExecution().getTestCaseStepExecution().gettCExecution().getApplication().getType().equals("GUI")) {
+                String screenshotPath = recorderService.recordScreenshotAndGetName(testCaseStepActionControlExecution.getTestCaseStepActionExecution().getTestCaseStepExecution().gettCExecution(),
+                        testCaseStepActionControlExecution.getTestCaseStepActionExecution(), testCaseStepActionControlExecution.getControl());
                 testCaseStepActionControlExecution.setScreenshotFilename(screenshotPath);
             }
         } else {
