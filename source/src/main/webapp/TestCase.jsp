@@ -1171,8 +1171,18 @@
                                                                                                                                                              name="actions_object<%=complementName%>" <%=isReadonly%>
                                                                                                                                                              onchange="trackChanges(this.value, '<%=rs_stepaction.getString("Object")%>', 'submitButtonAction')">
                                                                                 </td>
-                                                                                <td class="technical_part" style="background-color: <%=actionColor%>"><input  class="wob" style="width: 210px; background-color: <%=actionColor%>; color:<%=actionFontColor%>"
+                                                                                <td class="technical_part" style="background-color: <%=actionColor%>"><input  class="wob property_value" style="width: 210px; background-color: <%=actionColor%>; color:<%=actionFontColor%>"
                                                                                                                                                               value="<%=rs_stepaction.getString("Property")%>"
+                                                                                                                                                              <%
+                                                                                                                                                                if(useStep) {
+                                                                                                                                                                    %>
+                                                                                                                                                                    data-usestep-test="<%=testForQuery%>"
+                                                                                                                                                                    data-usestep-testcase="<%=testcaseForQuery%>"
+                                                                                                                                                                    data-usestep-step="<%=stepForQuery%>"
+                                                                                                                                                                    <%
+                                                                                                                                                                }
+                                                                                                                                                              
+                                                                                                                                                              %>
                                                                                                                                                               name="actions_property<%=complementName%>" <%=isReadonly%>
                                                                                                                                                               onchange="trackChanges(this.value, '<%=rs_stepaction.getString("Property")%>', 'submitButtonAction')">
                                                                                 </td>
@@ -1561,7 +1571,7 @@
                                             <input type="hidden" name="old_property_hidden" value="<%=rowNumber%> - <%=rs_tccountry.getString("Country")%> - <%=rs_properties.getString("a.Property")%>">
                                             <% 		} while (rs_tccountry.next());%></td>
 
-                                        <td><input class="wob properties_id_<%=rowNumber%>" style="width: 100px; font-weight: bold; background-color : <%=color%>"
+                                        <td><input class="wob properties_id_<%=rowNumber%> property_name" style="width: 100px; font-weight: bold; background-color : <%=color%>"
                                                    name="properties_property"
                                                    value="<%=rs_properties.getString("a.Property")%>"
                                                    onchange="trackChanges(this.value, '<%=rs_properties.getString("a.Property")%>', 'SavePropertyChanges')"></td>
@@ -1783,6 +1793,15 @@
     });
 </script>
 <%}%>
+<script>
+    $("input.property_value").each(function(){
+        //var jinput = $(this);
+        if(this.value && this.value !== "" && isNaN(this.value) && $("input.property_name[value='"+this.value+"']").length === 0) {
+            this.style.width = '192px';
+            $(this).before("<img src='./images/ko.png' style='display:inline;' width='16px' height='16px' />");
+        }
+    });  
+</script>
 <div id="popin"></div>
 <br><% out.print(display_footer(DatePageStart));%>
 </body>

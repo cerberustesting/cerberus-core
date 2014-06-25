@@ -170,11 +170,13 @@
                         }
                     ]
                 });
-                
+
                 /* Add a click handler to the rows - this could be used as a callback */
                 $('#listOfCampaigns tbody').click(function(event) {
+                    if($(event.target.parentNode).attr("id")) {
                         refreshParameters($(event.target.parentNode).attr("id"));
                         refreshContents($(event.target.parentNode).attr("id"));
+                    }
                 });
             };
             
@@ -388,6 +390,29 @@
                 });
             }
             
+            
+            function viewListOfTests(id) {
+              $.get('./GetCampaign','action=findAllCampaignContent&campaign='+id,function(data){
+                for(index=0;index<data.CampaignContents.length;index++) {
+                    $.get('./GetTestBattery','action=findAllTestBatteryContent&testBattery='+data.CampaignContents[index][0],function(tests){
+                        for(indexTest=0;indexTest<tests.TestBatteryContents.length;indexTest++) {
+                            $("#listOfTests ul").append("<li>"+tests.TestBatteryContents[indexTest][1]+" - "+tests.TestBatteryContents[indexTest][2]+" - "+tests.TestBatteryContents[indexTest][3]+" - "+tests.TestBatteryContents[indexTest][4]+"</li>");
+                        }
+                    });
+                }
+                
+                  
+              });
+                $("#listOfTests").dialog({
+                    width: "800",
+                    height: "600",
+                    buttons: {
+                        "OK": function() {
+                          $( this ).dialog( "close" );
+                      }
+                    }
+                });
+            };
         </script>
             <form id="formAddNewCampaign" class="formForDataTable" action="#" title="Add Campaign Entry" style="width:600px" method="post">
                 <input type="hidden" value="-1" id="ID" name="ID" class="ncdetailstext" rel="0" >
@@ -416,5 +441,7 @@
                 <label for="TestBattery" style="font-weight:bold">TestBattery</label>
                 <select id="TestBattery" name="TestBattery" class="ncdetailstext" rel="2" ></select>
             </form>
+        
+        <div id="listOfTests" style="display:none;"><ul></ul></div>
      </body>
 </html>

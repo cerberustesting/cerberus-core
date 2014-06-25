@@ -115,7 +115,7 @@ public class GetCampaign extends HttpServlet {
     private JSONArray convertCampaignToJSONObject(Campaign campaign) throws JSONException {
         JSONArray result = new JSONArray();
         result.put(campaign.getCampaignID());
-        result.put(campaign.getCampaign());
+        result.put(campaign.getCampaign() + "<a onclick='viewListOfTests(" + campaign.getCampaignID() + ");' title='View list of tests'><img src='images/details_open.png'/></a>");
         result.put(campaign.getDescription());
         return result;
     }

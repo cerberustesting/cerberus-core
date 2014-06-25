@@ -20,6 +20,7 @@ my $campaign = 2;
 my $environment = 'QA';
 my $on = 3;
 my $robot = 'MyRobot';
+my $tag = '';
 
 # Retrieve value of parameters
 GetOptions(
@@ -27,6 +28,7 @@ GetOptions(
 	'environment=s'	=> \$environment,
 	'on=i'		=> \$on,
 	'robot=s'		=> \$robot,
+	'tag=s'		=> \$tag,
 	'help!'		=> \$help,
 ) or die "Usage incorrect!\n";
 
@@ -35,6 +37,7 @@ my %parameters = ('campaign'=>$campaign,
 	'environment'=>$environment,
 	'on' => $on,
 	'robot'=>$robot,
+	'tag'=>$tag,
 	'cerberus'=> 'http://localhost:8080/Cerberus-0.9.2-SNAPSHOT/',
 	'servlet'=> 'GetCampaignExecutionsCommand',
 	'timeout'=> 150000
@@ -108,6 +111,8 @@ sub execute_tests {
 		# display some information in the terminal
 		print "Execute Test $i/$numberOfTests of from=".$args{'from'}." on=".$args{'on'}."\n";
 		# display URL currently executed by the tread
+		$TestURL =~ s/Browser/browser/;
+
 		print $TestURL."\n\n";
 
 		# retrieve the content of the URL (nothing done with it for the moment)
@@ -139,5 +144,15 @@ while ($threads[$index]) {
 	$threads[$index]->join();
 	# When Thread is ended wait the next one
 	$index++;
+}
+
+if($tag) {
+	my $resultOfCampaign = get($parameters{'cerberus'}."/ResultCI?tag=".$parameters{'tag'});
+
+	if($resultOfCampaign === "OK") {
+		exit 0;
+	} else {
+		exit 1;
+	}
 }
 
