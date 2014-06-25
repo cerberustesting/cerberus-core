@@ -58,7 +58,6 @@ public class TestCaseExecutionSysVerDAO implements ITestCaseExecutionSysVerDAO {
      * more explanations to follow in consecutive paragraphs separated by HTML
      * paragraph breaks.
      *
-     * @param variable Description text text text.
      */
     @Override
     public void insertTestCaseExecutionSysVer(TestCaseExecutionSysVer testCaseExecutionSysVer) {

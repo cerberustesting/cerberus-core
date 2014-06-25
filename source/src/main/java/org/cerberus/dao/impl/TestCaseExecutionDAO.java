@@ -59,7 +59,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
     private IFactoryTestCaseExecution factoryTCExecution;
 
     @Override
-    public void insertTCExecution(TestCaseExecution tCExecution) throws CerberusException {
+    public long insertTCExecution(TestCaseExecution tCExecution) throws CerberusException {
         boolean throwEx = false;
         final String query = "INSERT INTO testcaseexecution(test, testcase, build, revision, environment, country, browser, application, ip, "
                 + "url, port, tag, verbose, status, start, end, controlstatus, controlMessage, crbversion, finished, browserFullVersion) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
@@ -102,23 +102,23 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                 ResultSet resultSet = preStat.getGeneratedKeys();
                 try {
                     if (resultSet.first()) {
-                        tCExecution.setId(resultSet.getInt(1));
+                        return resultSet.getInt(1);
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(UserDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                    MyLogger.log(TestCaseExecutionDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
                     throwEx = true;
                 } finally {
                     resultSet.close();
                 }
 
             } catch (SQLException exception) {
-                MyLogger.log(TestCaseExecutionDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                MyLogger.log(TestCaseExecutionDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
                 throwEx = true;
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(TestCaseExecutionDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+            MyLogger.log(TestCaseExecutionDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
             throwEx = true;
         } finally {
             try {
@@ -130,9 +130,9 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
             }
         }
         if (throwEx) {
-            tCExecution.setId(-1);
             throw new CerberusException(new MessageGeneral(MessageGeneralEnum.EXECUTION_FA));
         }
+        return 0;
     }
 
     @Override
@@ -181,13 +181,13 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
 
                 preStat.executeUpdate();
             } catch (SQLException exception) {
-                MyLogger.log(TestCaseExecutionDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                MyLogger.log(TestCaseExecutionDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
                 throwEx = true;
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(TestCaseExecutionDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+            MyLogger.log(TestCaseExecutionDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
         } finally {
             try {
                 if (connection != null) {
@@ -223,17 +223,17 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                         list.add(resultSet.getString("ID"));
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(TestCaseExecutionDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                    MyLogger.log(TestCaseExecutionDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(TestCaseExecutionDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                MyLogger.log(TestCaseExecutionDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(TestCaseExecutionDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+            MyLogger.log(TestCaseExecutionDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
         } finally {
             try {
                 if (connection != null) {
@@ -249,10 +249,10 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
 
     @Override
     public TestCaseExecution findLastTCExecutionByCriteria(String test, String testcase, String environment, String country,
-                                                     String build, String revision) throws CerberusException {
+            String build, String revision) throws CerberusException {
         TestCaseExecution result = null;
-        final String query = "SELECT * FROM testcaseexecution WHERE test = ? AND testcase = ? AND environment = ? AND " +
-                "country = ? AND build = ? AND revision = ? ORDER BY id DESC";
+        final String query = "SELECT * FROM testcaseexecution WHERE test = ? AND testcase = ? AND environment = ? AND "
+                + "country = ? AND build = ? AND revision = ? ORDER BY id DESC";
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -273,17 +273,17 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(TestCaseExecutionDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                    MyLogger.log(TestCaseExecutionDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(TestCaseExecutionDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                MyLogger.log(TestCaseExecutionDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(TestCaseExecutionDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+            MyLogger.log(TestCaseExecutionDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
         } finally {
             try {
                 if (connection != null) {
@@ -298,12 +298,12 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
 
     @Override
     public TestCaseExecution findLastTCExecutionByCriteria(String test, String testCase, String environment, String country,
-                                                           String build, String revision, String browser, String browserVersion,
-                                                           String ip, String port, String tag) {
+            String build, String revision, String browser, String browserVersion,
+            String ip, String port, String tag) {
         TestCaseExecution result = null;
-        final String query = "SELECT * FROM testcaseexecution WHERE test = ? AND testcase = ? AND environment LIKE ? AND " +
-                "country = ? AND build LIKE ? AND revision LIKE ? AND browser = ? AND browserfullversion LIKE ? AND ip LIKE ? AND " +
-                "port LIKE ? AND tag LIKE ? ORDER BY id DESC";
+        final String query = "SELECT * FROM testcaseexecution WHERE test = ? AND testcase = ? AND environment LIKE ? AND "
+                + "country = ? AND build LIKE ? AND revision LIKE ? AND browser = ? AND browserfullversion LIKE ? AND ip LIKE ? AND "
+                + "port LIKE ? AND tag LIKE ? ORDER BY id DESC";
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -327,17 +327,17 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                         result = this.loadFromResultSet(resultSet);
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(TestCaseExecutionDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                    MyLogger.log(TestCaseExecutionDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(TestCaseExecutionDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                MyLogger.log(TestCaseExecutionDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(TestCaseExecutionDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+            MyLogger.log(TestCaseExecutionDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
         } finally {
             try {
                 if (connection != null) {
@@ -384,19 +384,19 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                         } while (resultSet.next());
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(TestCaseExecutionDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                    MyLogger.log(TestCaseExecutionDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
                 } finally {
                     if (!(resultSet == null)) {
                         resultSet.close();
                     }
                 }
             } catch (Exception exception) {
-                MyLogger.log(TestCaseExecutionDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                MyLogger.log(TestCaseExecutionDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (Exception exception) {
-            MyLogger.log(TestCaseExecutionDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+            MyLogger.log(TestCaseExecutionDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
         } finally {
             try {
                 if (connection != null) {
@@ -413,7 +413,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         return myTestCaseExecutions;
     }
 
-    private TestCaseExecution loadFromResultSet(ResultSet resultSet) throws SQLException{
+    private TestCaseExecution loadFromResultSet(ResultSet resultSet) throws SQLException {
         long id = resultSet.getLong("ID");
         String test = resultSet.getString("test");
         String testcase = resultSet.getString("testcase");
@@ -440,8 +440,8 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         String status = resultSet.getString("status");
         String crbVersion = resultSet.getString("crbVersion");
         return factoryTCExecution.create(id, test, testcase, build, revision, environment,
-                country, browser,version, platform, browserFullVersion, start, end, controlStatus, controlMessage, null, ip, url,
-                port, tag, finished, verbose, 0,true,"", "", status, crbVersion, null, null, null,
+                country, browser, version, platform, browserFullVersion, start, end, controlStatus, controlMessage, null, ip, url,
+                port, tag, finished, verbose, 0, true, "", "", status, crbVersion, null, null, null,
                 false, null, null, null, null, null, null, null, null);
     }
 }

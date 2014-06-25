@@ -243,7 +243,7 @@ public class PropertyService implements IPropertyService {
                 valueFromJS = this.seleniumService.getValueFromJS(tCExecution.getSelenium(), script);
             } catch (Exception e) {
                 message = e.getMessage().split("\n")[0];
-                MyLogger.log(PropertyService.class.getName(), Level.INFO, "Exception Running JS Script :" +message);
+                MyLogger.log(PropertyService.class.getName(), Level.DEBUG, "Exception Running JS Script :" +message);
                 valueFromJS = null;
             }
             if (valueFromJS != null) {
@@ -274,7 +274,7 @@ public class PropertyService implements IPropertyService {
                 testCaseExecutionData.setPropertyResultMessage(res);
             }
         } catch (CerberusException exception) {
-            MyLogger.log(PropertyService.class.getName(), Level.INFO, "Exception Getting value from TestData for data :'"+propertyValue+"'\n"+exception.getMessageError().getDescription());
+            MyLogger.log(PropertyService.class.getName(), Level.DEBUG, "Exception Getting value from TestData for data :'"+propertyValue+"'\n"+exception.getMessageError().getDescription());
             MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_TESTDATA_PROPERTYDONOTEXIST);
             res.setDescription(res.getDescription().replaceAll("%PROPERTY%", testCaseCountryProperty.getValue1()));
             testCaseExecutionData.setPropertyResultMessage(res);

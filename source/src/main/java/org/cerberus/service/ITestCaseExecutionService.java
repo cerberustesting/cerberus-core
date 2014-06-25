@@ -29,7 +29,7 @@ import org.cerberus.exception.CerberusException;
  */
 public interface ITestCaseExecutionService {
 
-    void insertTCExecution(TestCaseExecution tCExecution) throws CerberusException;
+    long insertTCExecution(TestCaseExecution tCExecution) throws CerberusException;
 
     void updateTCExecution(TestCaseExecution tCExecution) throws CerberusException;
 
