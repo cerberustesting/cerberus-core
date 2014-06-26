@@ -334,7 +334,7 @@ public class ExecutionRunService implements IExecutionRunService {
             MyLogger.log(RunTestCaseService.class.getName(), Level.FATAL, "Exception cleaning Memory: " + ex.toString());
         }
 
-        MyLogger.log(RunTestCaseService.class.getName(), Level.INFO, "Execution Finished : UUID=" + tCExecution.getExecutionUUID() + " | ID=" + tCExecution.getId() + " | RC=" + tCExecution.getControlStatus());
+        MyLogger.log(RunTestCaseService.class.getName(), Level.INFO, "Execution Finished : UUID=" + tCExecution.getExecutionUUID() + "__ID=" + tCExecution.getId() + "__RC=" + tCExecution.getControlStatus());
 
         return tCExecution;
 

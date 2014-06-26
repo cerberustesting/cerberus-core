@@ -34,6 +34,7 @@ public interface IExecutionRunService {
      *
      * @param tCExecution
      * @return 
+     * @throws org.cerberus.exception.CerberusException 
      */
     TestCaseExecution executeTestCase(TestCaseExecution tCExecution) throws CerberusException;
 
