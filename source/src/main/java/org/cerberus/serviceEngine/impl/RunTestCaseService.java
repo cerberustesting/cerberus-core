@@ -66,6 +66,7 @@ public class RunTestCaseService implements IRunTestCaseService {
         } catch (CerberusException ex) {
             tCExecution.setResultMessage(ex.getMessageError());
             MyLogger.log(RunTestCaseService.class.getName(), Level.INFO, "Execution not Launched : UUID=" + tCExecution.getExecutionUUID() + "__causedBy=" + ex.getMessageError().getDescription());
+            return tCExecution;
         }
 
         /**
