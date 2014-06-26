@@ -1798,7 +1798,7 @@
         //var jinput = $(this);
         if(this.value && this.value !== "" && isNaN(this.value) && $("input.property_name[value='"+this.value+"']").length === 0) {
             this.style.width = '192px';
-            $(this).before("<img src='./images/ko.png' style='display:inline;' width='16px' height='16px' />");
+            $(this).before("<img src='./images/ko.png' title='Property Missing' style='display:inline;' width='16px' height='16px' />");
         }
     });  
 </script>
