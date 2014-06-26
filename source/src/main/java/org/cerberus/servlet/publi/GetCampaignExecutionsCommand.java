@@ -73,6 +73,7 @@ public class GetCampaignExecutionsCommand extends HttpServlet {
         parameterService = appContext.getBean(IParameterService.class);
 
         String campaignId = policy.sanitize(request.getParameter("campaign"));
+        String campaignName = policy.sanitize(request.getParameter("campaignname"));
 
         String robotName = policy.sanitize(request.getParameter("robot"));
 
@@ -134,7 +135,12 @@ public class GetCampaignExecutionsCommand extends HttpServlet {
         PrintWriter printWriter = response.getWriter();
 
         try {
-            Campaign campaign = campaignService.findCampaignByKey(Integer.parseInt(campaignId));
+            Campaign campaign;
+            if (campaignName != null && !"".equals(campaignName.trim())) {
+                campaign = campaignService.findCampaignByCampaignName(campaignName);
+            } else {
+                campaign = campaignService.findCampaignByKey(Integer.parseInt(campaignId));
+            }
 
             List<CampaignContent> campaignContentList = campaignService.findCampaignContentsByCampaignName(campaign.getCampaign());
             List<CampaignParameter> campaignParameterList = campaignService.findCampaignParametersByCampaignName(campaign.getCampaign());
