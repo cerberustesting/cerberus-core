@@ -72,6 +72,7 @@ public class RunTestCaseService implements IRunTestCaseService {
         /**
          * Execute TestCase in new thread if asynchroneous execution
          */
+        if (tCExecution.getId() != 0) {
         try {
             if (!tCExecution.isSynchroneous()) {
                 executionRunService.executeAsynchroneouslyTestCase(tCExecution);
@@ -81,7 +82,7 @@ public class RunTestCaseService implements IRunTestCaseService {
         } catch (CerberusException ex) {
             tCExecution.setResultMessage(ex.getMessageError());
         }
-        
+        }
         /**
          * Return tcexecution object
          */
