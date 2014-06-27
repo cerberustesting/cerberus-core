@@ -3518,7 +3518,32 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("ADD COLUMN `useStepTestCase` VARCHAR(45) NOT NULL DEFAULT '' AFTER `useStepTest`, ");
         SQLS.append("ADD COLUMN `useStepStep` INT(10) NOT NULL  AFTER `useStepTestCase`; ");
         SQLInstruction.add(SQLS.toString());
-
+        
+//Add control isElementClickable and isElementNotClickable
+//-- ------------------------ 494       
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ");
+        SQLS.append(" ('CONTROL','verifyElementClickable',35,'isElementClickable','',NULL,NULL,NULL),");
+        SQLS.append(" ('CONTROL','verifyElementNotClickable',36,'isElementNotClickable','',NULL,NULL,NULL)");
+        SQLInstruction.add(SQLS.toString());
+        
+//Add documentation isElementClickable , isElementNotClickable, callSoapWithBase
+//-- ------------------------ 495       
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `DocLabel`, `DocDesc`) VALUES ");
+        SQLS.append(" ('testcasestepactioncontrol', 'Type', 'verifyElementClickable', 'True if element is clickable.', '<b>verifyElementClickable</b><br><br>Verify if an element is clickable.<br><br><i>Control Property :</i> Element container<br><br>'), ");
+        SQLS.append(" ('testcasestepactioncontrol', 'Type', 'verifyElementNotClickable', 'True if element is not clickable.', '<b>verifyElementNotClickable</b><br><br>Verify if an element is not clickable.<br><br><i>Control Property :</i> Element container<br><br>');");
+        SQLS.append(" ('testcasestepaction', 'Action', 'callSoapWithBase', 'callSoapWithBase', '<code class=\'doc-fixed\'>callSoapWithBase</code> will allow you to make a SOAP call (Stored on the <a href=\"./SoapLibrary.jsp\">SoapLibrary</a>) using the servicePath stored at the countryenvrionmentparameters level. That allow to call the soap on the environment of the execution.<br><br> The result will be stored in the memory. On this result, you can make some control (verify the presence or the content of the elements for exemple) or get some information using property getFromXML<br><br>Usage :<br><doc class=\"usage\"><table cellspacing=0 cellpadding=2><th class=\'ex\'>Field</th><th class=\'ex\'>Usage</th><tr><td class=\'ex\'>Object</td><td class=\'ex\'>Name of the SOAP from the SOAPLibrary.</td></tr><tr><td class=\'ex\'>Property</td><td class=\'ex\'></td></tr></table></doc><br><br>Examples :<br><doc class=\"examples\"><table cellspacing=0 cellpadding=2><th class=\'ex\'>Object</th><th class=\'ex\'>Property</th><th class=\'ex\'>Result</th><tr><td class=\'ex\'>WEATHER</td><td class=\'ex\'></td><td class=\'ex\'>WEATHER soapCall will be made.</td></tr></table></doc>'");
+        SQLInstruction.add(SQLS.toString());
+        
+        
+//Remove mouseUpMouseDown
+//-- ------------------------ 496       
+        SQLS = new StringBuilder();
+        SQLS.append("DELETE FROM `invariant` WHERE `idname`='ACTION' and`value`='mouseDownMouseUp';");
+        SQLInstruction.add(SQLS.toString());
+        
+        
         return SQLInstruction;
     }
 }

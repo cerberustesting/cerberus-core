@@ -393,7 +393,7 @@ public class ActionService implements IActionService {
             }
         }
         message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
-        message.setDescription(message.getDescription().replaceAll("%ACTION%", "callSoap"));
+        message.setDescription(message.getDescription().replaceAll("%ACTION%", "callSoapWithBase"));
         message.setDescription(message.getDescription().replaceAll("%APPLICATIONTYPE%", tCExecution.getApplication().getType()));
         return message;
 
