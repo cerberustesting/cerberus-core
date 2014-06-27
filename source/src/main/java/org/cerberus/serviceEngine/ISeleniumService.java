@@ -58,6 +58,10 @@ public interface ISeleniumService {
     boolean isElementNotVisible(Selenium selenium, String locator);
     
     boolean isElementInElement(Selenium selenium, String element, String childElement);
+    
+    boolean isElementNotClickable(Selenium selenium, String locator);
+    
+    boolean isElementClickable(Selenium selenium, String locator);
 
     String getPageSource(Selenium selenium);
 

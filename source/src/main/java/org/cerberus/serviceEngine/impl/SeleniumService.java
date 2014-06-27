@@ -100,39 +100,39 @@ public class SeleniumService implements ISeleniumService {
     public TestCaseExecution startSeleniumServer(TestCaseExecution tCExecution, String host, String port, String browser, String version, String platform, String ip, String login, int verbose, String country) throws CerberusException {
 
 //        if (tCExecution.getSelenium()==null || !tCExecution.getSelenium().isStarted()) {
-            /**
-             * We activate Network Traffic for verbose 1 and 2.
-             */
-            boolean record = (verbose > 0);
-            long defaultWait;
-            try {
-                Parameter param = parameterService.findParameterByKey("selenium_defaultWait", "");
-                String to = tCExecution.getTimeout().equals("")?param.getValue():tCExecution.getTimeout();
-                defaultWait = Long.parseLong(to);
-            } catch (CerberusException ex) {
-                MyLogger.log(Selenium.class.getName(), Level.WARN, "Parameter (selenium_defaultWait) not in Parameter table, default wait set to 90 seconds");
-                defaultWait = 90;
-            }
+        /**
+         * We activate Network Traffic for verbose 1 and 2.
+         */
+        boolean record = (verbose > 0);
+        long defaultWait;
+        try {
+            Parameter param = parameterService.findParameterByKey("selenium_defaultWait", "");
+            String to = tCExecution.getTimeout().equals("") ? param.getValue() : tCExecution.getTimeout();
+            defaultWait = Long.parseLong(to);
+        } catch (CerberusException ex) {
+            MyLogger.log(Selenium.class.getName(), Level.WARN, "Parameter (selenium_defaultWait) not in Parameter table, default wait set to 90 seconds");
+            defaultWait = 90;
+        }
 
         Selenium selenium = factorySelenium.create(host, port, browser, version, platform, login, ip, null, defaultWait);
-            tCExecution.setSelenium(selenium);
-            try {
+        tCExecution.setSelenium(selenium);
+        try {
 
-                if (this.invariantService.isInvariantExist("BROWSER", browser)) {
-                    startSeleniumBrowser(tCExecution, record, country, browser, version, platform);
-                } else {
-                    MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_SELENIUM);
-                    mes.setDescription(mes.getDescription().replaceAll("%MES%", "Browser " + browser + " is not supported."));
-                    throw new CerberusException(mes);
-                }
-
-                selenium.getDriver().manage().window().maximize();
-                selenium.setStarted(true);
-                tCExecution.setSelenium(selenium);
-                return tCExecution;
-            } catch (CerberusException ex) {
-                throw new CerberusException(ex.getMessageError());
+            if (this.invariantService.isInvariantExist("BROWSER", browser)) {
+                startSeleniumBrowser(tCExecution, record, country, browser, version, platform);
+            } else {
+                MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_SELENIUM);
+                mes.setDescription(mes.getDescription().replaceAll("%MES%", "Browser " + browser + " is not supported."));
+                throw new CerberusException(mes);
             }
+
+            selenium.getDriver().manage().window().maximize();
+            selenium.setStarted(true);
+            tCExecution.setSelenium(selenium);
+            return tCExecution;
+        } catch (CerberusException ex) {
+            throw new CerberusException(ex.getMessageError());
+        }
 //        } else {
 //            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.EXECUTION_FA));
 //        }
@@ -261,7 +261,7 @@ public class SeleniumService implements ISeleniumService {
             selenium = tCExecution.getSelenium();
             capabilities = setCapabilityBrowser(capabilities, browser, tCExecution.getExecutionUUID(), record, country);
             capabilities = setCapabilityPlatform(capabilities, platform);
-        //capabilities = setCapabilityVersion(capabilities, version);
+            //capabilities = setCapabilityVersion(capabilities, version);
 
             MyLogger.log(SeleniumService.class.getName(), Level.DEBUG, "Set Driver");
             WebDriver driver = new RemoteWebDriver(new URL("http://" + selenium.getHost() + ":" + selenium.getPort() + "/wd/hub"), capabilities);
@@ -395,13 +395,16 @@ public class SeleniumService implements ISeleniumService {
         }
     }
 
-    private WebElement getSeleniumElement(Selenium selenium, String input, boolean visible) {
+    private WebElement getSeleniumElement(Selenium selenium, String input, boolean visible, boolean clickable) {
         By locator = this.getIdentifier(input);
         MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Waiting for Element : " + input);
         try {
             WebDriverWait wait = new WebDriverWait(selenium.getDriver(), selenium.getDefaultWait());
             if (visible) {
                 wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
+                if (clickable) {
+                    wait.until(ExpectedConditions.elementToBeClickable(locator));
+                }
             } else {
                 wait.until(ExpectedConditions.presenceOfElementLocated(locator));
             }
@@ -432,7 +435,7 @@ public class SeleniumService implements ISeleniumService {
 
     @Override
     public String getValueFromHTMLVisible(Selenium selenium, String locator) {
-        WebElement webElement = this.getSeleniumElement(selenium, locator, true);
+        WebElement webElement = this.getSeleniumElement(selenium, locator, true, false);
         String result;
 
         if (webElement.getTagName().equalsIgnoreCase("select")) {
@@ -448,7 +451,7 @@ public class SeleniumService implements ISeleniumService {
 
     @Override
     public String getValueFromHTML(Selenium selenium, String locator) {
-        WebElement webElement = this.getSeleniumElement(selenium, locator, false);
+        WebElement webElement = this.getSeleniumElement(selenium, locator, false, false);
         String result;
 
         if (webElement.getTagName().equalsIgnoreCase("select")) {
@@ -505,7 +508,7 @@ public class SeleniumService implements ISeleniumService {
     public String getAttributeFromHtml(Selenium selenium, String locator, String attribute) {
         String result = null;
         try {
-            WebElement webElement = this.getSeleniumElement(selenium, locator, true);
+            WebElement webElement = this.getSeleniumElement(selenium, locator, true, false);
             result = webElement.getAttribute(attribute);
         } catch (WebDriverException exception) {
             MyLogger.log(SeleniumService.class.getName(), Level.FATAL, exception.toString());
@@ -516,7 +519,7 @@ public class SeleniumService implements ISeleniumService {
     @Override
     public boolean isElementPresent(Selenium selenium, String locator) {
         try {
-            WebElement webElement = this.getSeleniumElement(selenium, locator, false);
+            WebElement webElement = this.getSeleniumElement(selenium, locator, false, false);
             return webElement != null;
         } catch (NoSuchElementException exception) {
             return false;
@@ -526,7 +529,7 @@ public class SeleniumService implements ISeleniumService {
     @Override
     public boolean isElementVisible(Selenium selenium, String locator) {
         try {
-            WebElement webElement = this.getSeleniumElement(selenium, locator, true);
+            WebElement webElement = this.getSeleniumElement(selenium, locator, true, false);
             return webElement != null && webElement.isDisplayed();
         } catch (NoSuchElementException exception) {
             return false;
@@ -536,7 +539,7 @@ public class SeleniumService implements ISeleniumService {
     @Override
     public boolean isElementNotVisible(Selenium selenium, String locator) {
         try {
-            WebElement webElement = this.getSeleniumElement(selenium, locator, false);
+            WebElement webElement = this.getSeleniumElement(selenium, locator, false, false);
             return webElement != null && !webElement.isDisplayed();
         } catch (NoSuchElementException exception) {
             return false;
@@ -626,12 +629,32 @@ public class SeleniumService implements ISeleniumService {
     }
 
     @Override
+    public boolean isElementNotClickable(Selenium selenium, String locator) {
+        try {
+            WebElement webElement = this.getSeleniumElement(selenium, locator, true, true);
+            return webElement == null;
+        } catch (NoSuchElementException exception) {
+            return false;
+        }
+    }
+    
+    @Override
+    public boolean isElementClickable(Selenium selenium, String locator) {
+        try {
+            WebElement webElement = this.getSeleniumElement(selenium, locator, true, true);
+            return webElement != null;
+        } catch (NoSuchElementException exception) {
+            return false;
+        }
+    }
+
+    @Override
     public MessageEvent doSeleniumActionClick(Selenium selenium, String string1, String string2) {
         MessageEvent message;
         try {
             if (!StringUtil.isNull(string1)) {
                 try {
-                    this.getSeleniumElement(selenium, string1, true).click();
+                    this.getSeleniumElement(selenium, string1, true, true).click();
                     message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CLICK);
                     message.setDescription(message.getDescription().replaceAll("%ELEMENT%", string1));
                     return message;
@@ -643,7 +666,7 @@ public class SeleniumService implements ISeleniumService {
                 }
             } else if (!StringUtil.isNull(string2)) {
                 try {
-                    this.getSeleniumElement(selenium, string2, true).click();
+                    this.getSeleniumElement(selenium, string1, true, true).click();
                     message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CLICK);
                     message.setDescription(message.getDescription().replaceAll("%ELEMENT%", string2));
                     return message;
@@ -669,7 +692,7 @@ public class SeleniumService implements ISeleniumService {
             if (!StringUtil.isNull(string1)) {
                 try {
                     Actions actions = new Actions(selenium.getDriver());
-                    actions.clickAndHold(this.getSeleniumElement(selenium, string1, true));
+                    actions.clickAndHold(this.getSeleniumElement(selenium, string1, true, true));
                     actions.build().perform();
                     message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_MOUSEDOWN);
                     message.setDescription(message.getDescription().replaceAll("%ELEMENT%", string1));
@@ -683,7 +706,7 @@ public class SeleniumService implements ISeleniumService {
             } else if (!StringUtil.isNull(string2)) {
                 try {
                     Actions actions = new Actions(selenium.getDriver());
-                    actions.clickAndHold(this.getSeleniumElement(selenium, string2, true));
+                    actions.clickAndHold(this.getSeleniumElement(selenium, string1, true, true));
                     actions.build().perform();
                     message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_MOUSEDOWN);
                     message.setDescription(message.getDescription().replaceAll("%ELEMENT%", string2));
@@ -710,7 +733,7 @@ public class SeleniumService implements ISeleniumService {
             if (!StringUtil.isNull(string1)) {
                 try {
                     Actions actions = new Actions(selenium.getDriver());
-                    actions.release(this.getSeleniumElement(selenium, string1, true));
+                    actions.release(this.getSeleniumElement(selenium, string1, true, true));
                     actions.build().perform();
                     message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_MOUSEUP);
                     message.setDescription(message.getDescription().replaceAll("%ELEMENT%", string1));
@@ -724,7 +747,7 @@ public class SeleniumService implements ISeleniumService {
             } else if (!StringUtil.isNull(string2)) {
                 try {
                     Actions actions = new Actions(selenium.getDriver());
-                    actions.release(this.getSeleniumElement(selenium, string2, true));
+                    actions.release(this.getSeleniumElement(selenium, string1, true, true));
                     actions.build().perform();
                     message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_MOUSEUP);
                     message.setDescription(message.getDescription().replaceAll("%ELEMENT%", string2));
@@ -861,7 +884,7 @@ public class SeleniumService implements ISeleniumService {
         try {
             if (!StringUtil.isNull(actionProperty) && !StringUtil.isNull(actionObject)) {
                 try {
-                    this.getSeleniumElement(selenium, actionObject, true).click();
+                    this.getSeleniumElement(selenium, actionObject, true, true).click();
                 } catch (NoSuchElementException exception) {
                     message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CLICK_NO_SUCH_ELEMENT);
                     message.setDescription(message.getDescription().replaceAll("%ELEMENT%", actionObject));
@@ -889,7 +912,7 @@ public class SeleniumService implements ISeleniumService {
                 return message;
             } else if (StringUtil.isNull(actionProperty) && !StringUtil.isNull(actionObject)) {
                 try {
-                    this.getSeleniumElement(selenium, actionObject, true).click();
+                    this.getSeleniumElement(selenium, actionObject, true, true).click();
                 } catch (NoSuchElementException exception) {
                     message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CLICK_NO_SUCH_ELEMENT);
                     message.setDescription(message.getDescription().replaceAll("%ELEMENT%", actionObject));
@@ -901,7 +924,7 @@ public class SeleniumService implements ISeleniumService {
                 return message;
             } else if (!StringUtil.isNull(actionProperty) && StringUtil.isNull(actionObject)) {
                 try {
-                    this.getSeleniumElement(selenium, actionProperty, true).click();
+                    this.getSeleniumElement(selenium, actionProperty, true, true).click();
                 } catch (NoSuchElementException exception) {
                     message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CLICK_NO_SUCH_ELEMENT);
                     message.setDescription(message.getDescription().replaceAll("%ELEMENT%", actionProperty));
@@ -927,7 +950,7 @@ public class SeleniumService implements ISeleniumService {
             Actions actions = new Actions(selenium.getDriver());
             if (!StringUtil.isNull(property)) {
                 try {
-                    actions.doubleClick(this.getSeleniumElement(selenium, property, true));
+                    actions.doubleClick(this.getSeleniumElement(selenium, property, true, true));
                     message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_DOUBLECLICK);
                     message.setDescription(message.getDescription().replaceAll("%ELEMENT%", property));
                     return message;
@@ -939,7 +962,7 @@ public class SeleniumService implements ISeleniumService {
                 }
             } else if (!StringUtil.isNull(html)) {
                 try {
-                    actions.doubleClick(this.getSeleniumElement(selenium, html, true));
+                    actions.doubleClick(this.getSeleniumElement(selenium, html, true, true));
                     message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_DOUBLECLICK);
                     message.setDescription(message.getDescription().replaceAll("%ELEMENT%", html));
                     return message;
@@ -964,7 +987,7 @@ public class SeleniumService implements ISeleniumService {
         try {
             if (!StringUtil.isNull(html)) {
                 try {
-                    WebElement webElement = this.getSeleniumElement(selenium, html, true);
+                    WebElement webElement = this.getSeleniumElement(selenium, html, true, true);
                     webElement.clear();
                     if (!StringUtil.isNull(property)) {
                         webElement.sendKeys(property);
@@ -999,7 +1022,7 @@ public class SeleniumService implements ISeleniumService {
             if (!StringUtil.isNull(html)) {
                 try {
                     Actions actions = new Actions(selenium.getDriver());
-                    WebElement menuHoverLink = this.getSeleniumElement(selenium, html, true);
+                    WebElement menuHoverLink = this.getSeleniumElement(selenium, html, true, true);
                     actions.moveToElement(menuHoverLink);
                     actions.build().perform();
                     message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_MOUSEOVER);
@@ -1014,7 +1037,7 @@ public class SeleniumService implements ISeleniumService {
             } else if (!StringUtil.isNull(property)) {
                 try {
                     Actions actions = new Actions(selenium.getDriver());
-                    WebElement menuHoverLink = this.getSeleniumElement(selenium, property, true);
+                    WebElement menuHoverLink = this.getSeleniumElement(selenium, property, true, true);
                     actions.moveToElement(menuHoverLink);
                     actions.build().perform();
                     message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_MOUSEOVER);
@@ -1043,7 +1066,7 @@ public class SeleniumService implements ISeleniumService {
                 if (StringUtil.isNumeric(actionProperty)) {
                     try {
                         Actions actions = new Actions(selenium.getDriver());
-                        WebElement menuHoverLink = this.getSeleniumElement(selenium, actionObject, true);
+                        WebElement menuHoverLink = this.getSeleniumElement(selenium, actionObject, true, true);
                         actions.moveToElement(menuHoverLink);
                         actions.build().perform();
                         int sleep = Integer.parseInt(actionProperty);
@@ -1073,7 +1096,7 @@ public class SeleniumService implements ISeleniumService {
             } else if (StringUtil.isNull(actionProperty) && !StringUtil.isNull(actionObject)) {
                 try {
                     Actions actions = new Actions(selenium.getDriver());
-                    WebElement menuHoverLink = this.getSeleniumElement(selenium, actionObject, true);
+                    WebElement menuHoverLink = this.getSeleniumElement(selenium, actionObject, true, true);
                     actions.moveToElement(menuHoverLink);
                     actions.build().perform();
                 } catch (NoSuchElementException exception) {
@@ -1178,7 +1201,7 @@ public class SeleniumService implements ISeleniumService {
         try {
             if (!StringUtil.isNull(html) && !StringUtil.isNull(property)) {
                 try {
-                    WebElement element = this.getSeleniumElement(selenium, html, true);
+                    WebElement element = this.getSeleniumElement(selenium, html, true, true);
                     element.sendKeys(Keys.valueOf(property));
                     message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_KEYPRESS);
                     message.setDescription(message.getDescription().replaceAll("%ELEMENT%", html));
@@ -1249,7 +1272,7 @@ public class SeleniumService implements ISeleniumService {
 
                 Select select;
                 try {
-                    select = new Select(this.getSeleniumElement(selenium, html, true));
+                    select = new Select(this.getSeleniumElement(selenium, html, true, true));
                 } catch (NoSuchElementException exception) {
                     message = new MessageEvent(MessageEventEnum.ACTION_FAILED_SELECT_NO_SUCH_ELEMENT);
                     message.setDescription(message.getDescription().replaceAll("%ELEMENT%", html));
@@ -1369,7 +1392,7 @@ public class SeleniumService implements ISeleniumService {
         try {
             if (!StringUtil.isNullOrEmpty(property)) {
                 try {
-                    selenium.getDriver().switchTo().frame(this.getSeleniumElement(selenium, property, false));
+                    selenium.getDriver().switchTo().frame(this.getSeleniumElement(selenium, property, false, false));
                     message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_FOCUSTOIFRAME);
                     message.setDescription(message.getDescription().replaceAll("%IFRAME%", property));
                 } catch (NoSuchElementException exception) {
@@ -1379,7 +1402,7 @@ public class SeleniumService implements ISeleniumService {
                 }
             } else {
                 try {
-                    selenium.getDriver().switchTo().frame(this.getSeleniumElement(selenium, object, false));
+                    selenium.getDriver().switchTo().frame(this.getSeleniumElement(selenium, object, false, false));
                     message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_FOCUSTOIFRAME);
                     message.setDescription(message.getDescription().replaceAll("%IFRAME%", object));
                 } catch (NoSuchElementException exception) {
@@ -1421,9 +1444,9 @@ public class SeleniumService implements ISeleniumService {
             if (!StringUtil.isNull(string1)) {
                 try {
                     Actions actions = new Actions(selenium.getDriver());
-                    actions.clickAndHold(this.getSeleniumElement(selenium, string1, true));
+                    actions.clickAndHold(this.getSeleniumElement(selenium, string1, true, false));
                     actions.build().perform();
-                    actions.release(this.getSeleniumElement(selenium, string1, true));
+                    actions.release(this.getSeleniumElement(selenium, string1, true, false));
                     actions.build().perform();
                     message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_MOUSEDOWN);
                     message.setDescription(message.getDescription().replaceAll("%ELEMENT%", string1));
@@ -1437,9 +1460,9 @@ public class SeleniumService implements ISeleniumService {
             } else if (!StringUtil.isNull(string2)) {
                 try {
                     Actions actions = new Actions(selenium.getDriver());
-                    actions.clickAndHold(this.getSeleniumElement(selenium, string2, true));
+                    actions.clickAndHold(this.getSeleniumElement(selenium, string1, true, false));
                     actions.build().perform();
-                    actions.release(this.getSeleniumElement(selenium, string2, true));
+                    actions.release(this.getSeleniumElement(selenium, string1, true, false));
                     actions.build().perform();
                     message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_MOUSEDOWN);
                     message.setDescription(message.getDescription().replaceAll("%ELEMENT%", string1));
