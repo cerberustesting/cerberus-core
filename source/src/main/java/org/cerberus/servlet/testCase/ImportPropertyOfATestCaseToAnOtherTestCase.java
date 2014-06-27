@@ -111,7 +111,7 @@ public class ImportPropertyOfATestCaseToAnOtherTestCase extends HttpServlet {
                                     if (countryProperties != null) {
                                         // change the TestCase information to the destination TestCase
                                         countryProperties.setTest(toTest);
-                                        countryProperties.setTestCase(toTest);
+                                        countryProperties.setTestCase(toTestCase);
 
                                         // Insert the new property
                                         testCaseCountryPropertiesService.insertTestCaseCountryProperties(countryProperties);

@@ -1776,7 +1776,7 @@
             $(this).before("<img class='property_ko' data-property-name='"+this.value+"' src='./images/ko.png' title='Property Missing' style='display:inline;' width='16px' height='16px' />");
         }
     });
-    /*
+
     $("img.property_ko").on("click",function(event){
         var propertyName = $(event.target).data("property-name");
         var property = $("input.property_value[value='"+propertyName+"']");
@@ -1791,7 +1791,7 @@
             });
         }
     });
-    */
+
 </script><%
                 
             } catch (Exception e) {
