@@ -37,6 +37,8 @@ public interface ITestCaseCountryPropertiesDAO {
 
     List<String> findCountryByProperty(TestCaseCountryProperties testCaseCountryProperties);
 
+    List<String> findCountryByPropertyNameAndTestCase(String test, String testcase, String property);
+
     List<TestCaseCountryProperties> findListOfPropertyPerTestTestCaseCountry(String test, String testcase, String country);
 
     TestCaseCountryProperties findTestCaseCountryPropertiesByKey(String test, String testcase, String country, String property) throws CerberusException;

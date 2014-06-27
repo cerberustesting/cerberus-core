@@ -22,15 +22,14 @@ package org.cerberus.servlet.testCase;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.cerberus.dao.ITestCaseCountryPropertiesDAO;
 import org.cerberus.entity.TestCaseCountryProperties;
+import org.cerberus.log.MyLogger;
+import org.cerberus.service.ITestCaseCountryPropertiesService;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -64,10 +63,10 @@ public class GetPropertiesForTestCase extends HttpServlet {
             String property = request.getParameter("property");
 
             ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-            ITestCaseCountryPropertiesDAO testCaseCountryPropertiesDAO = appContext.getBean(ITestCaseCountryPropertiesDAO.class);
+            ITestCaseCountryPropertiesService testCaseCountryPropertiesService = appContext.getBean(ITestCaseCountryPropertiesService.class);
 
             JSONArray propertyList = new JSONArray();
-            List<TestCaseCountryProperties> properties = testCaseCountryPropertiesDAO.findDistinctPropertiesOfTestCase(test, testcase);
+            List<TestCaseCountryProperties> properties = testCaseCountryPropertiesService.findDistinctPropertiesOfTestCase(test, testcase);
 
             for (TestCaseCountryProperties prop : properties) {
                 if (property == null || "".equals(property.trim()) || property.equals(prop.getProperty())) {
@@ -81,7 +80,7 @@ public class GetPropertiesForTestCase extends HttpServlet {
                     propertyFound.put("length", prop.getLength());
                     propertyFound.put("rowLimit", prop.getRowLimit());
                     propertyFound.put("nature", prop.getNature());
-                    List<String> countriesSelected = testCaseCountryPropertiesDAO.findCountryByProperty(prop);
+                    List<String> countriesSelected = testCaseCountryPropertiesService.findCountryByProperty(prop);
                     JSONArray countries = new JSONArray();
                     for (String country : countriesSelected) {
                         countries.put(country);
@@ -95,7 +94,7 @@ public class GetPropertiesForTestCase extends HttpServlet {
             response.getWriter().print(propertyList.toString());
 
         } catch (JSONException ex) {
-            Logger.getLogger(GetPropertiesForTestCase.class.getName()).log(Level.SEVERE, null, ex);
+            MyLogger.log(GetPropertiesForTestCase.class.getName(), org.apache.log4j.Level.WARN, ex.toString());
         } finally {
             out.close();
         }

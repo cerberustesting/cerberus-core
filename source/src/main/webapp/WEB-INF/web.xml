@@ -513,6 +513,10 @@
         <servlet-name>GetPropertiesForTestCase</servlet-name>
         <servlet-class>org.cerberus.servlet.testCase.GetPropertiesForTestCase</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>ImportPropertyOfATestCaseToAnOtherTestCase</servlet-name>
+        <servlet-class>org.cerberus.servlet.testCase.ImportPropertyOfATestCaseToAnOtherTestCase</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>RunTestCase</servlet-name>
         <url-pattern>/RunTestCase</url-pattern>
@@ -988,6 +992,10 @@
     <servlet-mapping>
         <servlet-name>GetPropertiesForTestCase</servlet-name>
         <url-pattern>/GetPropertiesForTestCase</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ImportPropertyOfATestCaseToAnOtherTestCase</servlet-name>
+        <url-pattern>/ImportPropertyOfATestCaseToAnOtherTestCase</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>

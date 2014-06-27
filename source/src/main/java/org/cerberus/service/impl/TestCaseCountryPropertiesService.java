@@ -19,14 +19,12 @@
  */
 package org.cerberus.service.impl;
 
-import java.util.ArrayList;
 import java.util.List;
 import org.apache.log4j.Level;
 
 import org.cerberus.dao.ITestCaseCountryPropertiesDAO;
 import org.cerberus.dao.ITestCaseStepActionDAO;
 import org.cerberus.entity.TestCaseCountryProperties;
-import org.cerberus.entity.TestCaseStepAction;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.log.MyLogger;
 import org.cerberus.service.ITestCaseCountryPropertiesService;
@@ -92,5 +90,10 @@ public class TestCaseCountryPropertiesService implements ITestCaseCountryPropert
     public void updateTestCaseCountryProperties(TestCaseCountryProperties testCaseCountryProperties) throws CerberusException {
         testCaseCountryPropertiesDAO.updateTestCaseCountryProperties(testCaseCountryProperties);
     }
-   
+
+    @Override
+    public List<String> findCountryByPropertyNameAndTestCase(String test, String testcase, String property) {
+        return testCaseCountryPropertiesDAO.findCountryByPropertyNameAndTestCase(test, testcase, property);
+    }
+
 }
