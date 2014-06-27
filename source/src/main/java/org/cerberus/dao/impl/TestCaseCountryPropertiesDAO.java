@@ -436,5 +436,56 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
             throw new CerberusException(new MessageGeneral(MessageGeneralEnum.CANNOT_UPDATE_TABLE));
         }
     }
-                
+
+    @Override
+    public List<String> findCountryByPropertyNameAndTestCase(String test, String testcase, String property) {
+        List<String> result = new ArrayList<String>();
+
+        final String query = "SELECT country FROM testcasecountryproperties WHERE test = ? AND testcase = ? AND property = ?";
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            try {
+                preStat.setString(1, test);
+                preStat.setString(2, testcase);
+                preStat.setString(3, property);
+
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+                    while (resultSet.next()) {
+                        String country = resultSet.getString("country");
+                        if (country != null && !"".equals(country)) {
+                            result.add(country);
+                        }
+                    }
+                } catch (SQLException exception) {
+                    MyLogger.log(TestCaseCountryPropertiesDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                } finally {
+                    resultSet.close();
+                }
+            } catch (SQLException exception) {
+                MyLogger.log(TestCaseCountryPropertiesDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(TestCaseCountryPropertiesDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(TestCaseCountryPropertiesDAO.class.getName(), Level.WARN, e.toString());
+            }
+        }
+
+        if (result.size() == 0) {
+            return null;
+        }
+
+        return result;
+    }
+
 }
