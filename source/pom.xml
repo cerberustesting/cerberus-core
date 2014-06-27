@@ -55,7 +55,7 @@
             <artifactId>harlib</artifactId>
             <version>1.1.1</version>
             <scope>system</scope>    
-            <systemPath>${basedir}/lib/harlib-1.1.1.jar</systemPath> 
+            <systemPath>${basedir}/src/main/webapp/WEB-INF/lib/harlib-1.1.1.jar</systemPath> 
         </dependency>
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
@@ -180,7 +180,7 @@
             <artifactId>elfinder-servlet</artifactId>
             <version>1.2.0</version>
             <scope>system</scope>    
-            <systemPath>${basedir}/lib/elfinder-servlet-1.2.0.jar</systemPath>
+            <systemPath>${basedir}/src/main/webapp/WEB-INF/lib/elfinder-servlet-1.2.0.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
