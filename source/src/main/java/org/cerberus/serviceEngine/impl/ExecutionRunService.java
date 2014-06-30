@@ -535,9 +535,16 @@ public class ExecutionRunService implements IExecutionRunService {
                 && (testCaseStepActionExecution.getActionResultMessage().isDoScreenshot()))) {
 
             if (testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getApplication().getType().equals("GUI")) {
-                
+                /**
+                 * Only if the return code is not equal to Cancel, meaning lost connectivity with selenium.
+                 */
+                if (!testCaseStepActionExecution.getReturnCode().equals("CA")){
                 String screenshotPath = recorderService.recordScreenshotAndGetName(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution(),testCaseStepActionExecution, 0);
                 testCaseStepActionExecution.setScreenshotFilename(screenshotPath);
+                } else{
+                MyLogger.log(RunTestCaseService.class.getName(), Level.INFO, "Not Doing screenshot because connectivity with selenium server lost.");
+                }
+        
                 
             } else if (testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getApplication().getType().equals("WS")) {
                 String screenshotPath = recorderService.recordXMLAndGetName(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution(),testCaseStepActionExecution, 0);
