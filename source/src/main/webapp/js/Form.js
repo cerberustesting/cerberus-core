@@ -1501,8 +1501,8 @@ function calculateProperty() {
     $.get('CalculatePropertyForTestCase', query, function(data) {
 
         if (data !== null && data.resultList !== null) {
-            $("#result").empty().text(data.resultList);
-            $("#propdesc").empty().text(data.description);
+            $("#result").empty().text("Value: '"+data.resultList+"'");
+            $("#propdesc").empty().text("Description: '"+data.description+"'");
         } else {
             $("#result").empty().append("<b>Unable to retrieve property in database !</b>");
         }
@@ -1523,8 +1523,7 @@ function deleteTestCase(test, testcase, page) {
 }
 
 function alertOnProperties() {
-    alert("At least one property has empty name or no country selected, please correct before save !");
-    return false;
+    return confirm("At least one property has empty name or no country selected, would you like to save, these properties will be deleted !");
 }
 
 function checkForm() {

@@ -1026,7 +1026,7 @@
                                                     int testcase_stepaction_maxlength_sequence = 10; // Default max length values for javascript adding if any actions set by default
                                                     int testcase_stepaction_maxlength_action = 45;
                                                     int testcase_stepaction_maxlength_object = 200;
-                                                    int testcase_stepaction_maxlength_property = 45;
+                                                    int testcase_stepaction_maxlength_property = 150;
                                                     int testcase_stepaction_maxlength_description = 1000;
                                                     Integer i1 = 0;
                                                     boolean isStepExist = false;
@@ -1776,7 +1776,7 @@
             $(this).before("<img class='property_ko' data-property-name='"+this.value+"' src='./images/ko.png' title='Property Missing' style='display:inline;' width='16px' height='16px' />");
         }
     });
-    /*
+
     $("img.property_ko").on("click",function(event){
         var propertyName = $(event.target).data("property-name");
         var property = $("input.property_value[value='"+propertyName+"']");
@@ -1791,7 +1791,7 @@
             });
         }
     });
-    */
+
 </script><%
                 
             } catch (Exception e) {
