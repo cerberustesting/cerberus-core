@@ -32,4 +32,6 @@ public interface IXmlUnitService {
     boolean isTextInElement(TestCaseExecution tCExecution, String element, String text);
     
     boolean isSimilarTree(TestCaseExecution tCExecution, String element, String text);
+    
+    String getFromXml(TestCaseExecution tCExecution, String url, String element);
 }

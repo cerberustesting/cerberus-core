@@ -385,7 +385,7 @@ public class ActionService implements IActionService {
 
     private MessageEvent doActionMakeSoapCall(TestCaseExecution tCExecution, String object) {
         MessageEvent message;
-        if (tCExecution.getApplication().getType().equalsIgnoreCase("WS")) {
+        //if (tCExecution.getApplication().getType().equalsIgnoreCase("WS")) {
             try {
                 SoapLibrary soapLibrary = soapLibraryService.findSoapLibraryByKey(object);
                 return soapService.callSOAPAndStoreResponseInMemory(tCExecution, soapLibrary.getEnvelope(), tCExecution.getCountryEnvironmentApplication().getIp(), soapLibrary.getMethod());
@@ -393,7 +393,7 @@ public class ActionService implements IActionService {
                 message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSOAP);
                 message.setDescription(message.getDescription().replaceAll("%SOAPNAME%", object));
             }
-        }
+        //}
         message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
         message.setDescription(message.getDescription().replaceAll("%ACTION%", "callSoapWithBase"));
         message.setDescription(message.getDescription().replaceAll("%APPLICATIONTYPE%", tCExecution.getApplication().getType()));

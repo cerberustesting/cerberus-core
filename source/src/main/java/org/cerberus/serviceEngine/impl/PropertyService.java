@@ -26,11 +26,11 @@ import org.apache.log4j.Level;
 import org.cerberus.entity.MessageEvent;
 import org.cerberus.entity.MessageEventEnum;
 import org.cerberus.entity.Property;
+import org.cerberus.entity.SoapLibrary;
 import org.cerberus.entity.TestCaseCountryProperties;
 import org.cerberus.entity.TestCaseExecution;
 import org.cerberus.entity.TestCaseExecutionData;
 import org.cerberus.entity.TestCaseStepActionExecution;
-import org.cerberus.entity.SoapLibrary;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.log.MyLogger;
 import org.cerberus.service.ISoapLibraryService;
@@ -40,6 +40,7 @@ import org.cerberus.serviceEngine.IPropertyService;
 import org.cerberus.serviceEngine.ISQLService;
 import org.cerberus.serviceEngine.ISeleniumService;
 import org.cerberus.serviceEngine.ISoapService;
+import org.cerberus.serviceEngine.IXmlUnitService;
 import org.cerberus.util.DateUtil;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
@@ -68,6 +69,8 @@ public class PropertyService implements IPropertyService {
     private ISoapService soapService;
     @Autowired
     private ISQLService sQLService;
+    @Autowired
+    private IXmlUnitService xmlUnitService;
 
     @Override
     public TestCaseExecutionData calculateProperty(TestCaseExecutionData testCaseExecutionData, TestCaseStepActionExecution testCaseStepActionExecution, TestCaseCountryProperties testCaseCountryProperty) {
@@ -104,6 +107,8 @@ public class PropertyService implements IPropertyService {
             testCaseExecutionData = this.getFromTestData(testCaseExecutionData, tCExecution, testCaseCountryProperty);
         } else if (testCaseCountryProperty.getType().equals("getAttributeFromHtml")) {
             testCaseExecutionData = this.getAttributeFromHtml(testCaseExecutionData, tCExecution, testCaseCountryProperty);
+        } else if (testCaseCountryProperty.getType().equals("getFromXml")) {
+            testCaseExecutionData = this.getFromXml(testCaseExecutionData, tCExecution, testCaseCountryProperty);
         } else if ("executeSoapFromLib".equals(testCaseCountryProperty.getType())) {
             testCaseExecutionData = this.executeSoapFromLib(testCaseExecutionData, tCExecution, testCaseCountryProperty);
         } else {
@@ -337,6 +342,26 @@ public class PropertyService implements IPropertyService {
             MyLogger.log(PropertyService.class.getName(), Level.DEBUG, exception.toString());
             MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_HTMLVISIBLE_ELEMENTDONOTEXIST);
             res.setDescription(res.getDescription().replaceAll("%ELEMENT%", testCaseCountryProperty.getValue1()));
+            testCaseExecutionData.setPropertyResultMessage(res);
+        }
+        return testCaseExecutionData;
+    }
+
+    private TestCaseExecutionData getFromXml(TestCaseExecutionData testCaseExecutionData, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseCountryProperty) {
+        try{
+            String valueFromXml = xmlUnitService.getFromXml(tCExecution, testCaseCountryProperty.getValue1(), testCaseCountryProperty.getValue2());
+            if (valueFromXml != null) {
+                testCaseExecutionData.setValue(valueFromXml);
+                MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMXML);
+                res.setDescription(res.getDescription().replaceAll("%VALUE1%", testCaseCountryProperty.getValue1()));
+                res.setDescription(res.getDescription().replaceAll("%VALUE2%", testCaseCountryProperty.getValue2()));
+                testCaseExecutionData.setPropertyResultMessage(res);
+            }
+        } catch (Exception ex){
+            MyLogger.log(PropertyService.class.getName(), Level.DEBUG, ex.toString());
+            MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMXML);
+            res.setDescription(res.getDescription().replaceAll("%VALUE1%", testCaseCountryProperty.getValue1()));
+            res.setDescription(res.getDescription().replaceAll("%VALUE2%", testCaseCountryProperty.getValue2()));
             testCaseExecutionData.setPropertyResultMessage(res);
         }
         return testCaseExecutionData;

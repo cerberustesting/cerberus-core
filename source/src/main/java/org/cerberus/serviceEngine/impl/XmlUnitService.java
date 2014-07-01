@@ -20,8 +20,10 @@
 package org.cerberus.serviceEngine.impl;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -220,6 +222,49 @@ public class XmlUnitService implements IXmlUnitService{
             return false;
         }
         
+    }
+
+    @Override
+    public String getFromXml(TestCaseExecution tCExecution, String url, String element) {
+        try {
+            URL u = new URL(url);
+            InputStream in = u.openConnection().getInputStream();
+            InputSource source = new InputSource(in);
+
+            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            DocumentBuilder db = dbf.newDocumentBuilder();
+            Document document = db.parse(source);
+
+            XPathFactory xpathFactory = XPathFactory.newInstance();
+            XPath xpath = xpathFactory.newXPath();
+            
+            XPathExpression expr = xpath.compile(element+"/text()");
+            Object result = expr.evaluate(document, XPathConstants.NODESET);
+            NodeList nodes = (NodeList) result;
+            String res = "";
+            for (int i = 0; i < nodes.getLength(); i++) {
+            res = nodes.item(i).getNodeValue();
+            MyLogger.log(XmlUnitService.class.getName(), org.apache.log4j.Level.INFO, nodes.item(i).getNodeValue());
+            MyLogger.log(XmlUnitService.class.getName(), org.apache.log4j.Level.INFO, ""+nodes.getLength());
+            }
+        
+            
+            MyLogger.log(XmlUnitService.class.getName(), org.apache.log4j.Level.INFO, res);
+            return res;
+        
+        } catch (XPathExpressionException ex) {
+            Logger.getLogger(XmlUnitService.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ParserConfigurationException ex) {
+            Logger.getLogger(XmlUnitService.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SAXException ex) {
+            Logger.getLogger(XmlUnitService.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(XmlUnitService.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (NullPointerException ex) {
+            Logger.getLogger(XmlUnitService.class.getName()).log(Level.INFO, null, ex);
+        }
+
+        return null;
     }
     
     
