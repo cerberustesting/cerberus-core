@@ -159,6 +159,8 @@ public class ActionService implements IActionService {
         } else if (testCaseStepActionExecution.getAction().equals("takeScreenshot")) {
             res = this.doActionTakeScreenshot(testCaseStepActionExecution);
             //res = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_TAKESCREENSHOT);
+        } else if (testCaseStepActionExecution.getAction().equals("getPageSource")) {
+            res = this.doActionGetPageSource(testCaseStepActionExecution);
         } else {
             res = new MessageEvent(MessageEventEnum.ACTION_FAILED_UNKNOWNACTION);
             res.setDescription(res.getDescription().replaceAll("%ACTION%", testCaseStepActionExecution.getAction()));
@@ -387,7 +389,7 @@ public class ActionService implements IActionService {
             try {
                 SoapLibrary soapLibrary = soapLibraryService.findSoapLibraryByKey(object);
                 return soapService.callSOAPAndStoreResponseInMemory(tCExecution, soapLibrary.getEnvelope(), tCExecution.getCountryEnvironmentApplication().getIp(), soapLibrary.getMethod());
-            } catch (CerberusException ex)  {
+            } catch (CerberusException ex) {
                 message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSOAP);
                 message.setDescription(message.getDescription().replaceAll("%SOAPNAME%", object));
             }
@@ -400,7 +402,7 @@ public class ActionService implements IActionService {
     }
 
     private MessageEvent doActionMouseDownMouseUp(TestCaseExecution tCExecution, String object, String property) {
-         MessageEvent message;
+        MessageEvent message;
         if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")) {
             return seleniumService.doSeleniumActionMouseDownMouseUp(tCExecution.getSelenium(), object, property);
         }
@@ -409,24 +411,35 @@ public class ActionService implements IActionService {
         message.setDescription(message.getDescription().replaceAll("%APPLICATIONTYPE%", tCExecution.getApplication().getType()));
         return message;
     }
-    
+
     private MessageEvent doActionTakeScreenshot(TestCaseStepActionExecution testCaseStepActionExecution) {
-         MessageEvent message;
+        MessageEvent message;
         if (testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getApplication().getType().equalsIgnoreCase("GUI")) {
             String screenshotPath = recorderService.recordScreenshotAndGetName(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution(),
-                        testCaseStepActionExecution, 0);
-                testCaseStepActionExecution.setScreenshotFilename(screenshotPath);
-        message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_TAKESCREENSHOT);
-        return message;    
+                    testCaseStepActionExecution, 0);
+            testCaseStepActionExecution.setScreenshotFilename(screenshotPath);
+            message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_TAKESCREENSHOT);
+            return message;
         }
         message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
         message.setDescription(message.getDescription().replaceAll("%ACTION%", "Click"));
         message.setDescription(message.getDescription().replaceAll("%APPLICATIONTYPE%", testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getApplication().getType()));
         return message;
     }
-    
-    
 
-    
+    private MessageEvent doActionGetPageSource(TestCaseStepActionExecution testCaseStepActionExecution) {
+        MessageEvent message;
+        if (testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getApplication().getType().equalsIgnoreCase("GUI")) {
+            String screenshotPath = recorderService.recordPageSourceAndGetName(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution(),
+                    testCaseStepActionExecution, 0);
+            testCaseStepActionExecution.setScreenshotFilename(screenshotPath);
+            message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_GETPAGESOURCE);
+            return message;
+        }
+        message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
+        message.setDescription(message.getDescription().replaceAll("%ACTION%", "Click"));
+        message.setDescription(message.getDescription().replaceAll("%APPLICATIONTYPE%", testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getApplication().getType()));
+        return message;
+    }
 
 }

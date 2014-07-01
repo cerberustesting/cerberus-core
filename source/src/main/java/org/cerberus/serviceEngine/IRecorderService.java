@@ -33,4 +33,7 @@ public interface IRecorderService {
     
     String recordXMLAndGetName(TestCaseExecution testCaseExecution,
             TestCaseStepActionExecution testCaseStepActionExecution,Integer control);
+    
+    String recordPageSourceAndGetName(TestCaseExecution testCaseExecution,
+            TestCaseStepActionExecution testCaseStepActionExecution,Integer control);
 }

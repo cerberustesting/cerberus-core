@@ -59,24 +59,10 @@ public class RecorderService implements IRecorderService {
         String testCase = testCaseExecution.getTestCase();
         String step = String.valueOf(testCaseStepActionExecution.getStep());
         String sequence = String.valueOf(testCaseStepActionExecution.getSequence());
+        String controlString = control.equals(0)?null:String.valueOf(control);
 
         MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Doing screenshot.");
-        File myFile = null;
-        StringBuilder sbScreenshotFilename = new StringBuilder();
-        sbScreenshotFilename.append(test);
-        sbScreenshotFilename.append("-");
-        sbScreenshotFilename.append(testCase);
-        sbScreenshotFilename.append("-St");
-        sbScreenshotFilename.append(step);
-        sbScreenshotFilename.append("Sq");
-        sbScreenshotFilename.append(sequence);
-        if (control != 0) {
-            sbScreenshotFilename.append("Ct");
-            sbScreenshotFilename.append(control);
-        }
-        sbScreenshotFilename.append(".jpg");
-
-        String screenshotFilename = sbScreenshotFilename.toString().replaceAll(" ", "");
+        String screenshotFilename = this.generateScreenshotFilename(test, testCase, step, sequence, controlString, "jpg");
 
         this.seleniumService.doScreenShot(testCaseExecution.getSelenium(), Long.toString(testCaseExecution.getId()), screenshotFilename);
         String screenshotPath = Long.toString(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getId()) + File.separator + screenshotFilename;
@@ -86,6 +72,29 @@ public class RecorderService implements IRecorderService {
 
     }
 
+    private String generateScreenshotFilename(String test, String testCase, String step, String sequence, String control, String extension){
+    
+        StringBuilder sbScreenshotFilename = new StringBuilder();
+        sbScreenshotFilename.append(test);
+        sbScreenshotFilename.append("-");
+        sbScreenshotFilename.append(testCase);
+        sbScreenshotFilename.append("-St");
+        sbScreenshotFilename.append(step);
+        sbScreenshotFilename.append("Sq");
+        sbScreenshotFilename.append(sequence);
+        if (control != null) {
+            sbScreenshotFilename.append("Ct");
+            sbScreenshotFilename.append(control);
+        }
+        sbScreenshotFilename.append(".");
+        sbScreenshotFilename.append(extension);
+
+        String screenshotFilename = sbScreenshotFilename.toString().replaceAll(" ", "");
+    
+        return screenshotFilename;
+    }
+    
+    
     @Override
     public String recordXMLAndGetName(TestCaseExecution testCaseExecution, TestCaseStepActionExecution testCaseStepActionExecution, Integer control) {
 
@@ -95,22 +104,9 @@ public class RecorderService implements IRecorderService {
         String testCase = testCaseExecution.getTestCase();
         String step = String.valueOf(testCaseStepActionExecution.getStep());
         String sequence = String.valueOf(testCaseStepActionExecution.getSequence());
+        String controlString = control.equals(0)?null:String.valueOf(control);
 
-        StringBuilder sbScreenshotFilename = new StringBuilder();
-        sbScreenshotFilename.append(test);
-        sbScreenshotFilename.append("-");
-        sbScreenshotFilename.append(testCase);
-        sbScreenshotFilename.append("-St");
-        sbScreenshotFilename.append(step);
-        sbScreenshotFilename.append("Sq");
-        sbScreenshotFilename.append(sequence);
-        if (control != 0) {
-            sbScreenshotFilename.append("Ct");
-            sbScreenshotFilename.append(control);
-        }
-        sbScreenshotFilename.append(".xml");
-
-        String screenshotFilename = sbScreenshotFilename.toString().replaceAll(" ", "");
+        String screenshotFilename = this.generateScreenshotFilename(test, testCase, step, sequence, controlString, "xml");
 
         String imgPath = "";
         try {
@@ -128,6 +124,47 @@ public class RecorderService implements IRecorderService {
         try {
             fileOutputStream = new FileOutputStream(file);
             fileOutputStream.write(eSResponse.getExecutionSOAPResponse(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getExecutionUUID()).getBytes());
+            fileOutputStream.close();
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(ExecutionRunService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(ExecutionRunService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+
+        String screenshotPath = Long.toString(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getId()) + File.separator + screenshotFilename;
+        MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Screenshot done in : " + screenshotPath);
+
+        return screenshotPath;
+    }
+
+    @Override
+    public String recordPageSourceAndGetName(TestCaseExecution testCaseExecution, TestCaseStepActionExecution testCaseStepActionExecution, Integer control) {
+        MyLogger.log(RunTestCaseService.class.getName(), Level.INFO, "Saving File.");
+
+        String test = testCaseExecution.getTest();
+        String testCase = testCaseExecution.getTestCase();
+        String step = String.valueOf(testCaseStepActionExecution.getStep());
+        String sequence = String.valueOf(testCaseStepActionExecution.getSequence());
+        String controlString = control.equals(0)?null:String.valueOf(control);
+
+        String screenshotFilename = this.generateScreenshotFilename(test, testCase, step, sequence, controlString, "html");
+
+        String imgPath = "";
+        try {
+            imgPath = parameterService.findParameterByKey("cerberus_picture_path", "").getValue();
+        } catch (CerberusException ex) {
+            Logger.getLogger(ExecutionRunService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        File dir = new File(imgPath + testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getId());
+        dir.mkdirs();
+
+        File file = new File(dir.getAbsolutePath() + File.separator + screenshotFilename);
+        System.err.println(" FILE : " + file.getAbsolutePath());
+
+        FileOutputStream fileOutputStream = null;
+        try {
+            fileOutputStream = new FileOutputStream(file);
+            fileOutputStream.write(this.seleniumService.getPageSource(testCaseExecution.getSelenium()).getBytes());
             fileOutputStream.close();
         } catch (FileNotFoundException ex) {
             Logger.getLogger(ExecutionRunService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
