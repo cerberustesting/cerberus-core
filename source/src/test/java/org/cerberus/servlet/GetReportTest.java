@@ -25,13 +25,11 @@ import org.cerberus.factory.impl.FactoryTCase;
 import org.cerberus.service.impl.TestCaseExecutionService;
 import org.cerberus.service.impl.TestCaseService;
 import org.cerberus.servlet.reporting.GetReport;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Matchers;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -44,6 +42,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import org.junit.Ignore;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.when;
 
@@ -77,8 +76,9 @@ public class GetReportTest {
 //    }
 
     @Test
+    @Ignore
     public void testGetTestCaseFromRequest() throws ServletException, IOException {
-        String test = null;
+        String test = "TEST";
         String creator = null;
         String implementer = null;
         String project = null;

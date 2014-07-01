@@ -59,8 +59,8 @@ public class GetReport extends HttpServlet {
                 array.put(tc.getShortDescription());
                 array.put(tc.getPriority());
                 array.put(tc.getStatus());
-                for (String country : req.getParameterValues("Country[]")) {
-                    for (String browser : req.getParameterValues("Browser[]")) {
+                for (String country : req.getParameterValues("Country")) {
+                    for (String browser : req.getParameterValues("Browser")) {
                         TestCaseExecution tce = testCaseExecutionService.findLastTCExecutionByCriteria(tc.getTest(), tc.getTestCase(),
                                 environment, country, build, revision, browser, browserVersion, ip, port, tag);
                         if (tce != null) {
@@ -125,14 +125,14 @@ public class GetReport extends HttpServlet {
     private String getValue(HttpServletRequest req, String valueName) {
         String value = null;
         if (req.getParameter(valueName) != null && !req.getParameter(valueName).equalsIgnoreCase("All")) {
-            value = req.getParameter(valueName + "[]");
+            value = req.getParameter(valueName);
         }
         return value;
     }
 
     private String getValues(HttpServletRequest req, String valueName) {
         StringBuilder whereClause = new StringBuilder();
-        String[] values = req.getParameterValues(valueName + "[]");
+        String[] values = req.getParameterValues(valueName);
 
         if (values != null) {
             if (values.length == 1) {

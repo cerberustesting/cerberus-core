@@ -73,7 +73,7 @@
         $('#formReporting').submit(function(e){
             e.preventDefault();
 
-            postData = $(this).serializeArray();
+            postData = $(this).serialize();
             country = $('#Country').val();
             browser= $('#Browser').val();
 
@@ -90,7 +90,7 @@
 
             oTable = $('#reporting').dataTable({
                 "bServerSide": true,
-                "sAjaxSource": "GetReport",
+                "sAjaxSource": "GetReport?"+postData,
                 "bJQueryUI": true,
                 "bProcessing": true,
                 "bFilter": false,
@@ -117,17 +117,12 @@
                         }
                     }
                 ],
-                "fnServerParams": function (aoData) {
-                    $.each(postData, function(index, data){
-                        aoData.push({"name": data.name+"[]", "value": data.value});
-                    });
-                },
                 "fnInitComplete": function (oSettings, json) {
-//                    new FixedHeader(oTable, {
+                    new FixedHeader(oTable, {
 //                        left: true,
 //                        leftColumns: 2,
-//                        zTop: 98
-//                    });
+                        zTop: 98
+                    });
 
 //                    $('.FixedHeader_Left table tr#tableCountry th').remove();
 //                    $('.FixedHeader_Left table tr#TCResult th').remove();
@@ -174,29 +169,39 @@
         });
     });
 
-        function filterDisplay(checked) {
-            if(checked) {
-                $('#reporting tbody tr').hide();
+    function filterDisplay(checked) {
+        if(checked) {
+            $('#reporting tbody tr').hide();
 
-                $('input.filterCheckbox').removeAttr('disabled');
-                $('input.filterDisplay').attr('checked','checked');
-            } else {
-                $('#reporting tbody tr').show();
+            $('input.filterCheckbox').removeAttr('disabled');
+            $('input.filterDisplay').attr('checked','checked');
+        } else {
+            $('#reporting tbody tr').show();
 
-                $('input.filterCheckbox').attr('disabled','disabled').removeAttr('checked');
-                $('input.filterDisplay').removeAttr('checked');
-            }
+            $('input.filterCheckbox').attr('disabled','disabled').removeAttr('checked');
+            $('input.filterDisplay').removeAttr('checked');
         }
+    }
 
-        function toogleDisplay(input) {
-            input = $(input);
-            var value = input.val();
-            if(input.is(':checked')) {
-                $('td.'+value).parent().show();
-            } else {
-                $('td.'+value).parent().hide();
-            }
+    function toogleDisplay(input) {
+        input = $(input);
+        var value = input.val();
+        if(input.is(':checked')) {
+            $('td.'+value).parent().show();
+        } else {
+            $('td.'+value).parent().hide();
         }
+    }
+
+    function saveFilters(){
+        var data = $('#formReporting').serialize();
+
+        $.ajax({
+            type: "POST",
+            url: "UpdateUserReporting",
+            data: data
+        });
+    }
     </script>
     <style>
         .underlinedDiv{
