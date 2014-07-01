@@ -244,12 +244,10 @@ public class XmlUnitService implements IXmlUnitService{
             String res = "";
             for (int i = 0; i < nodes.getLength(); i++) {
             res = nodes.item(i).getNodeValue();
-            MyLogger.log(XmlUnitService.class.getName(), org.apache.log4j.Level.INFO, nodes.item(i).getNodeValue());
-            MyLogger.log(XmlUnitService.class.getName(), org.apache.log4j.Level.INFO, ""+nodes.getLength());
             }
         
             
-            MyLogger.log(XmlUnitService.class.getName(), org.apache.log4j.Level.INFO, res);
+            MyLogger.log(XmlUnitService.class.getName(), org.apache.log4j.Level.DEBUG, res);
             return res;
         
         } catch (XPathExpressionException ex) {
