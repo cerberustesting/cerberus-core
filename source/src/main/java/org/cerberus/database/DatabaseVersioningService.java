@@ -3554,6 +3554,12 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ('ACTION', 'getPageSource', '210', 'getPageSource', '');");
         SQLInstruction.add(SQLS.toString());
         
+//Add documentation getPageSource
+//-- ------------------------ 499      
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `DocLabel`, `DocDesc`) VALUES ");
+        SQLS.append("('testcasestepaction', 'Action', 'getPageSource', 'getPageSource', '<code class=\\'doc-fixed\\'>getPageSource</code> will allow you to record the source of the page opened.<br><br> The result will be stored in a file which will be available in the execution detail<br><br>Usage :<br><doc class=\"usage\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Field</th><th class=\\'ex\\'>Usage</th><tr><td class=\\'ex\\'>Object</td><td class=\\'ex\\'></td></tr><tr><td class=\\'ex\\'>Property</td><td class=\\'ex\\'></td></tr></table></doc><br><br>Examples :<br><doc class=\"examples\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Object</th><th class=\\'ex\\'>Property</th><th class=\\'ex\\'>Result</th><tr><td class=\\'ex\\'></td><td class=\\'ex\\'> </td><td class=\\'ex\\'>Source will be recorded</td></tr></table></doc>')");
+        SQLInstruction.add(SQLS.toString());
         
         return SQLInstruction;
     }
