@@ -802,7 +802,7 @@
                 </table>
                 <%  }
                 %>
-                <input visibility="hidden" id="refreshAuto">
+                <input style="display:none" id="refreshAuto">
 
                 <%
                         stmt0.close();

@@ -211,7 +211,7 @@
                         if (request.getParameter("synchroneous") != null && request.getParameter("synchroneous").compareTo("") != 0) {
                             synchroneous = request.getParameter("synchroneous");
                         } else {
-                            synchroneous = new String("N");
+                            synchroneous = new String("");
                         }
 
                         String timeout;
@@ -734,7 +734,15 @@
                     }
 
                     setCookie('ScreenshotPreference', 'screenshot');
-
+                    
+                    var screenCookie = getCookie('ScreenshotPreference');
+                    
+                    if (screenCookie === "" && pl === ""){
+                        pl="1";
+                    }
+                    
+                    
+                    
                     $("#screenshot").find('option').each(function(i, opt) {
                         if (opt.value === pl) {
                             $(opt).attr('selected', 'selected');
@@ -868,6 +876,17 @@
                         document.getElementById(element).value = val;
                     }
                 }
+            }
+        </script>
+        <script>
+            function getCookie(cname) {
+                var name = cname + "=";
+    var ca = document.cookie.split(';');
+    for(var i=0; i<ca.length; i++) {
+        var c = ca[i].trim();
+        if (c.indexOf(name) === 0) return c.substring(name.length,c.length);
+    }
+    return "";
             }
         </script>
     </body>
