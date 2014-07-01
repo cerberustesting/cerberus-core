@@ -830,7 +830,7 @@
                                 <tr id ="header">
                                     <td class="wob" style="width: 650px"><%out.print(docService.findLabelHTML("testcase", "comment", "Comment"));%></td>
                                 </tr><tr> 
-                                    <td class="wob"><input id="comment" style="width: 640px;" name="editComment" 
+                                    <td class="wob"><input id="comment" style="width: 1200px;" name="editComment" 
                                                            value="<%=rs_testcase_general_info.getString("tc.Comment") == null ? "" : rs_testcase_general_info.getString("tc.Comment")%>"></td></tr>
 
                             </table>

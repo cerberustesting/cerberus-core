@@ -141,7 +141,6 @@
 
 
 
-
                 /*
                  * Get Execution Information
                  */
@@ -149,7 +148,7 @@
                         + "tce.Build, tce.Revision, tce.Environment, tce.Country, tce.Browser, tce.BrowserFullVersion, "
                         + "tce.Start, tce.End, tce.ControlStatus, tce.Application, tce.browser, tce.browserfullversion, "
                         + "tce.Ip, tce.URL, UNIX_TIMESTAMP(tce.End)-UNIX_TIMESTAMP(tce.Start) time_elapsed, "
-                        + "tce.port, tce.tag, tce.verbose, tce.controlmessage, tce.status, tce.CrbVersion "
+                        + "tce.port, tce.tag, tce.verbose, tce.controlmessage, tce.status, tce.CrbVersion, tc.Comment, tc.BugID "
                         + " FROM testcaseexecution tce "
                         + " JOIN testcase tc "
                         + " ON tc.test=tce.test and tc.testcase=tce.testcase "
@@ -160,6 +159,9 @@
                 String myApplication = "";
                 String environment = "";
                 String tcGroup = "";
+                String comment = "";
+                String bugid = "";
+                String newBugURL = "";
 
                 if (rs_inf.first()) {
 
@@ -174,11 +176,30 @@
                     revision = rs_inf.getString("Revision");
                     browser = rs_inf.getString("Browser");
                     exedate = rs_inf.getString("start");
+                    bugid = rs_inf.getString("BugID");
+                    comment = rs_inf.getString("Comment");
                     browserFullVersion = rs_inf.getString("BrowserFullVersion");
                     IApplicationService applicationService = appContext.getBean(IApplicationService.class);
                     appSystem = applicationService.findApplicationByKey(myApplication).getSystem();
                     TCase myTestCase = testCaseService.findTestCaseByKey(test, testCase);
                     tcGroup = myTestCase.getGroup();
+                    
+
+                    newBugURL = myApplicationService.findApplicationByKey(myApplication).getBugTrackerNewUrl();
+                    if (!StringUtil.isNullOrEmpty(newBugURL)) {
+                        newBugURL = newBugURL.replaceAll("%EXEID%", id_filter);
+                        newBugURL = newBugURL.replaceAll("%EXEDATE%", exedate);
+                        newBugURL = newBugURL.replaceAll("%TEST%", test);
+                        newBugURL = newBugURL.replaceAll("%TESTCASE%", testCase);
+                        newBugURL = newBugURL.replaceAll("%TESTCASEDESC%", testCaseDesc);
+                        newBugURL = newBugURL.replaceAll("%COUNTRY%", country);
+                        newBugURL = newBugURL.replaceAll("%ENV%", environment);
+                        newBugURL = newBugURL.replaceAll("%BUILD%", build);
+                        newBugURL = newBugURL.replaceAll("%REV%", revision);
+                        newBugURL = newBugURL.replaceAll("%BROWSER%", browser);
+                        newBugURL = newBugURL.replaceAll("%BROWSERFULLVERSION%", browserFullVersion);
+                    }
+
             %>
             <div style="clear:both" id="table">
                 <br>
@@ -273,6 +294,32 @@
                         <td><span id="exeverbose"><%= rs_inf.getString("verbose") == null ? "" : rs_inf.getString("verbose")%></span></td>
                         <td><span id="exestatus"><%= rs_inf.getString("status") == null ? "" : rs_inf.getString("status")%></span></td>
                         <td><span id="execrbversion"><%= rs_inf.getString("crbversion") == null ? "" : rs_inf.getString("crbversion")%></span></td>
+                    </tr>
+                    <tr style="font-style: italic">
+                        <td style="font-weight: bold; width: 140px" colspan=10><%out.print(docService.findLabelHTML("testcase", "Comment", "Comment"));%></td>
+                        <td style="font-weight: bold; width: 140px" colspan=4><%out.print(docService.findLabelHTML("testcase", "BugID", "Bug ID"));%></td>
+                    </tr>
+                    <tr>
+                        <td colspan=10>
+                            <span id="comment"><%= comment == null ? "" : comment %></span>
+                            <br>
+                            <a href="TestCase.jsp?Test=<%=test%>&TestCase=<%=testCase%>&Load=Load&Tinf=Y">Modify the Test Case comment.</a>
+                        </td>
+                        <td colspan=4><span id="bugid"><%
+                            if (StringUtil.isNullOrEmpty(bugid)) {
+                                %><a href="<%= newBugURL%>" target='_blank' title="title">Open a bug.</a><%
+                            } else {
+                                
+                                String bugURL = myApplicationService.findApplicationByKey(myApplication).getBugTrackerUrl();
+                                if (StringUtil.isNullOrEmpty(bugURL)) {
+                                    %><%=bugid %><%
+                                } else {
+                                    bugURL = bugURL.replaceAll("%BUGID%", bugid);
+                                    %><a href="<%= bugURL%>" target='_blank' title="title"><%=bugid%></a><%
+                                }
+                            }
+                        %>
+                        </td>
                     </tr>
                 </table>
             </div>
@@ -740,22 +787,12 @@
                         </td>
                         <td>
                             <%
-                                String newBugURL = myApplicationService.findApplicationByKey(myApplication).getBugTrackerNewUrl();
-                                if (StringUtil.isNullOrEmpty(newBugURL)) {
+                            if (StringUtil.isNullOrEmpty(newBugURL)) {
                             %>
                             <a href="javascript:void(0)" title="Define the New Bug URL at the application level in order to open a bug from here.">Open a bug.</a> 
-                            <%                              } else {
-                                newBugURL = newBugURL.replaceAll("%EXEID%", id_filter);
-                                newBugURL = newBugURL.replaceAll("%EXEDATE%", exedate);
-                                newBugURL = newBugURL.replaceAll("%TEST%", test);
-                                newBugURL = newBugURL.replaceAll("%TESTCASE%", testCase);
-                                newBugURL = newBugURL.replaceAll("%TESTCASEDESC%", testCaseDesc);
-                                newBugURL = newBugURL.replaceAll("%COUNTRY%", country);
-                                newBugURL = newBugURL.replaceAll("%ENV%", environment);
-                                newBugURL = newBugURL.replaceAll("%BUILD%", build);
-                                newBugURL = newBugURL.replaceAll("%REV%", revision);
-                                newBugURL = newBugURL.replaceAll("%BROWSER%", browser);
-                                newBugURL = newBugURL.replaceAll("%BROWSERFULLVERSION%", browserFullVersion);%>
+                            <%
+                                } else {
+                            %>
                             <a href="<%= newBugURL%>" target='_blank' title="title">Open a bug.</a> 
                             <%                                }
 
@@ -770,7 +807,8 @@
                 <%
                         stmt0.close();
 
-                    } catch (Exception e) {
+                    }
+                    catch(Exception e) {
                         out.println("<br> error message : " + e.getMessage() + " " + e.toString() + "<br>");
                         MyLogger.log("ExecutionDetail.jsp", Level.FATAL, " Exception catched." + e);
                     } finally {
