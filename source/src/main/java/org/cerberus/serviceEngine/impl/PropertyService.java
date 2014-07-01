@@ -130,6 +130,7 @@ public class PropertyService implements IPropertyService {
         myString = StringUtil.replaceAllProperties(myString, "%SYS_SSIP%", tCExecution.getSeleniumIP());
         myString = StringUtil.replaceAllProperties(myString, "%SYS_SSPORT%", tCExecution.getSeleniumPort());
         myString = StringUtil.replaceAllProperties(myString, "%SYS_TAG%", tCExecution.getTag());
+        myString = StringUtil.replaceAllProperties(myString, "%SYS_EXECUTIONID%", String.valueOf(tCExecution.getId()));
 
         /**
          * Trying to replace date variables .
