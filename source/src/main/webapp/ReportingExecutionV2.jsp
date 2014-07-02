@@ -119,13 +119,8 @@
                 ],
                 "fnInitComplete": function (oSettings, json) {
                     new FixedHeader(oTable, {
-//                        left: true,
-//                        leftColumns: 2,
                         zTop: 98
                     });
-
-//                    $('.FixedHeader_Left table tr#tableCountry th').remove();
-//                    $('.FixedHeader_Left table tr#TCResult th').remove();
 
                     $('.ui-corner-tl').append("<div style='font-weight: bold;font-family: Trebuchet MS; clear: both'>")
                             .append("<div style='float: left'>Legend : </div>")
@@ -162,8 +157,6 @@
                             }
                         }
                     });
-
-                    alert(countTest);
                 }
             });
         });
@@ -199,7 +192,7 @@
         $.ajax({
             type: "POST",
             url: "UpdateUserReporting",
-            data: data
+            data: {reporting: data, login: "<%=request.getUserPrincipal().getName()%>"}
         });
     }
     </script>
@@ -270,8 +263,7 @@
         if (request.getParameter("system") != null && !request.getParameter("system").isEmpty()) {
             systemBR = request.getParameter("system");
         } else {
-//            systemBR = request.getAttribute("MySystem").toString();
-            systemBR = "VC";
+            systemBR = request.getAttribute("MySystem").toString();
         }
     }
 %>
@@ -288,9 +280,8 @@
 
     TreeMap<String, String> options = new TreeMap<String, String>();
 
-//    User usr = userService.findUserByKey(request.getUserPrincipal().getName());
-//    String reportingFavorite = "ReportingExecution.jsp?"+usr.getReportingFavorite();
-    String reportingFavorite = "ReportingExecution.jsp?";
+    User usr = userService.findUserByKey(request.getUserPrincipal().getName());
+    String reportingFavorite = "ReportingExecution.jsp?"+usr.getReportingFavorite();
 %>
 <div class="filters" style="text-align: left; width:100%;">
 <div style="display: block; width: 100%">
