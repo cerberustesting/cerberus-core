@@ -1349,8 +1349,9 @@
                                                                                    hidebutton('AddStepButton')">
 
                                     <input type="button" value="Import Step" id="ImportStepButton" style="display:inline"
-                                           onclick="displayImportStep()">
-                                    
+                                           onclick="displayImportStep('importStep()')">
+                                    <input type="button" value="Use Step" id="UseStepButton" style="display:inline"
+                                           onclick="displayImportStep('useStep()')">
 
 
                                 </td></tr>
@@ -1383,7 +1384,10 @@
                                             <td  class="wob" style="font-weight: bold;">To Step : <input type="text" class="wob" style="width: 60px; font-weight: bold;font-style: italic; color: #FF0000;" value="" name="import_step" id="import_step" ></td>
                                         </tr>
                                         <tr>
-                                            <td  class="wob" ><input id="importbutton" class="button" type="button" name="Import" value="Import" onclick="importStep();"></td>
+                                            <td  class="wob" style="font-weight: bold;">Description : <input type="text" class="wob" style="width: 600px; font-weight: bold;font-style: italic; color: #FF0000;display:none" value="" name="import_description" id="import_description" ></td>
+                                        </tr>
+                                        <tr>
+                                            <td  class="wob" ><input id="importbutton" class="button" type="button" name="Import" value="Validate" onclick="importStep();"></td>
                                         </tr>
                                     </table>
                                 </td>

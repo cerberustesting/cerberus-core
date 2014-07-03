@@ -1331,7 +1331,7 @@ function getMaxValueForParentElementIdAndElementName(parentElementId, elementNam
 }
 
 
-function displayImportStep() {
+function displayImportStep(attribute) {
     var value = getMaxValueForParentElementIdAndElementName(null, 'testcasestep_hidden');
     if (value && parseInt(value) > 0) {
         value = parseInt(value) + 10;
@@ -1343,6 +1343,10 @@ function displayImportStep() {
 
     $('#ImportStepButton').hide();
     $('#ImportStepTable').fadeIn(1000);
+    $('#importbutton').removeAttr('onclick').attr('onclick', attribute);
+    if (attribute === "useStep()"){
+    document.getElementById('import_description').style.display="inline";
+    }
 }
 
 function getTestCasesForImportStep() {
@@ -1390,7 +1394,7 @@ function importStep() {
 
 
     var importStep = document.getElementById('import_step').value;
-
+    
     var urlImportStep = './ImportTestCaseStep?';
     urlImportStep += 'Test=' + encodeURI(test);
     urlImportStep += '&TestCase=' + encodeURI(testCase);
@@ -1399,6 +1403,49 @@ function importStep() {
     urlImportStep += '&FromTestCase=' + encodeURI(fromTestCase);
     urlImportStep += '&FromStep=' + encodeURI(fromStep);
     urlImportStep += '&ImportProperty=' + encodeURI(importProperty);
+
+    location.href = urlImportStep;
+}
+
+function useStep() {
+
+
+    var selectTest = document.getElementById('filtertest');
+    var test = selectTest.options[selectTest.selectedIndex].value;
+
+    selectTest = document.getElementById('filtertestcase');
+    var testCase = selectTest.options[selectTest.selectedIndex].value;
+
+    selectTest = document.getElementById('fromTest');
+    var fromTest = selectTest.options[selectTest.selectedIndex].value;
+
+    selectTest = document.getElementById('fromTestCase');
+    var fromTestCase = selectTest.options[selectTest.selectedIndex].value;
+
+    selectTest = document.getElementById('fromStep');
+    var fromStep = selectTest.options[selectTest.selectedIndex].value;
+
+    selectTest = document.getElementById('ImportProperty');
+    var importProperty;
+    if (selectTest.checked) {
+        importProperty = selectTest.value;
+    } else {
+        importProperty = "N";
+    }
+
+
+    var importStep = document.getElementById('import_step').value;
+    var importDescription = document.getElementById('import_description').value;
+    
+    var urlImportStep = './UseTestCaseStep?';
+    urlImportStep += 'Test=' + encodeURI(test);
+    urlImportStep += '&TestCase=' + encodeURI(testCase);
+    urlImportStep += '&Step=' + encodeURI(importStep);
+    urlImportStep += '&FromTest=' + encodeURI(fromTest);
+    urlImportStep += '&FromTestCase=' + encodeURI(fromTestCase);
+    urlImportStep += '&FromStep=' + encodeURI(fromStep);
+    urlImportStep += '&ImportProperty=' + encodeURI(importProperty);
+    urlImportStep += '&Description=' + encodeURI(importDescription);
 
     location.href = urlImportStep;
 }
