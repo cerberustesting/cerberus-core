@@ -1119,6 +1119,7 @@
             <url-pattern>/GetTestBySystem</url-pattern>
             <url-pattern>/GetCountryForTestCase</url-pattern>
             <url-pattern>/GetTestCaseForTest</url-pattern>
+            <url-pattern>/UseTestCaseStep</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <description>Test</description>
