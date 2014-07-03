@@ -139,6 +139,12 @@ public class ControlService implements IControlService {
             } else if (testCaseStepActionControlExecution.getControlType().equals("verifyTitle")) {
                 res = this.verifyTitle(tCExecution, testCaseStepActionControlExecution.getControlProperty());
 
+            } else if (testCaseStepActionControlExecution.getControlType().equals("verifyElementClickable")) {
+                res = this.verifyElementClickable(tCExecution, testCaseStepActionControlExecution.getControlProperty());
+
+            } else if (testCaseStepActionControlExecution.getControlType().equals("verifyElementNotClickable")) {
+                res = this.verifyElementNotClickable(tCExecution, testCaseStepActionControlExecution.getControlProperty());
+
             } else if (testCaseStepActionControlExecution.getControlType().equals("verifyUrl")) {
                 res = this.verifyUrl(tCExecution, testCaseStepActionControlExecution.getControlProperty());
             } else if (testCaseStepActionControlExecution.getControlType().equals("verifyStringContains")) {
@@ -694,6 +700,64 @@ public class ControlService implements IControlService {
         MyLogger.log(SeleniumService.class.getName(), Level.FATAL, exception.toString());
         mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED);
         return mes;
+        }
+    }
+
+    private MessageEvent verifyElementClickable(TestCaseExecution tCExecution, String html) {
+        MyLogger.log(ControlService.class.getName(), Level.DEBUG, "Control : verifyElementClickable : " + html);
+        MessageEvent mes;
+        if (!StringUtil.isNull(html)) {
+            if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")) {
+                try {
+                    if (this.seleniumService.isElementClickable(tCExecution.getSelenium(), html)) {
+                        mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_CLICKABLE);
+                        mes.setDescription(mes.getDescription().replaceAll("%ELEMENT%", html));
+                        return mes;
+                    } else {
+                        mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_CLICKABLE);
+                        mes.setDescription(mes.getDescription().replaceAll("%ELEMENT%", html));
+                        return mes;
+                    }
+                } catch (WebDriverException exception) {
+                    return parseWebDriverException(exception);
+                }
+            } else {
+                mes = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
+                mes.setDescription(mes.getDescription().replaceAll("%CONTROL%", "verifyElementClickable"));
+                mes.setDescription(mes.getDescription().replaceAll("%APPLICATIONTYPE%", tCExecution.getApplication().getType()));
+                return mes;
+            }
+        } else {
+            return new MessageEvent(MessageEventEnum.CONTROL_FAILED_CLICKABLE_NULL);
+        }
+    }
+
+    private MessageEvent verifyElementNotClickable(TestCaseExecution tCExecution, String html) {
+        MyLogger.log(ControlService.class.getName(), Level.DEBUG, "Control : verifyElementNotClickable on : " + html);
+        MessageEvent mes;
+        if (!StringUtil.isNull(html)) {
+            if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")) {
+                try {
+                    if (this.seleniumService.isElementNotClickable(tCExecution.getSelenium(), html)) {
+                        mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_NOTCLICKABLE);
+                        mes.setDescription(mes.getDescription().replaceAll("%ELEMENT%", html));
+                        return mes;
+                    } else {
+                        mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_NOTCLICKABLE);
+                        mes.setDescription(mes.getDescription().replaceAll("%ELEMENT%", html));
+                        return mes;
+                    }
+                } catch (WebDriverException exception) {
+                    return parseWebDriverException(exception);
+                }
+            } else {
+                mes = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
+                mes.setDescription(mes.getDescription().replaceAll("%CONTROL%", "VerifyElementNotClickable"));
+                mes.setDescription(mes.getDescription().replaceAll("%APPLICATIONTYPE%", tCExecution.getApplication().getType()));
+                return mes;
+            }
+        } else {
+            return new MessageEvent(MessageEventEnum.CONTROL_FAILED_NOTCLICKABLE_NULL);
         }
     }
 }
