@@ -42,6 +42,7 @@ public class MessageEvent {
     private String description;
     private boolean stopTest;
     private boolean doScreenshot;
+    private boolean getPageSource;
     private MessageGeneralEnum message;
 
     public MessageEvent(MessageEventEnum tempMessage) {
@@ -51,6 +52,7 @@ public class MessageEvent {
         this.stopTest = tempMessage.isStopTest();
         this.doScreenshot = tempMessage.isDoScreenshot();
         this.message = tempMessage.getMessage();
+        this.getPageSource = tempMessage.isGetPageSource();
     }
 
     public MessageGeneralEnum getMessage() {
@@ -63,6 +65,10 @@ public class MessageEvent {
 
     public boolean isDoScreenshot() {
         return doScreenshot;
+    }
+    
+    public boolean isGetPageSource() {
+        return getPageSource;
     }
 
     public int getCode() {

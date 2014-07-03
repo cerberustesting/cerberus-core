@@ -85,6 +85,7 @@ public class PropertyService implements IPropertyService {
         if (testCaseCountryProperty.getValue1().contains("%")) {
             String decodedValue = this.decodeValue(testCaseCountryProperty.getValue1(), testCaseStepActionExecution.getTestCaseExecutionDataList(), tCExecution);
             testCaseExecutionData.setValue(decodedValue);
+            testCaseExecutionData.setValue1(decodedValue);
             testCaseCountryProperty.setValue1(decodedValue);
         }
 

@@ -148,7 +148,10 @@ public class ActionService implements IActionService {
             res = this.doActionManageDialog(tCExecution, object, property);
 
         } else if (testCaseStepActionExecution.getAction().equals("callSoapWithBase")) {
-            res = this.doActionMakeSoapCall(tCExecution, object);
+            res = this.doActionMakeSoapCall(tCExecution, object, true);
+
+        } else if (testCaseStepActionExecution.getAction().equals("callSoap")) {
+            res = this.doActionMakeSoapCall(tCExecution, object, false);
 
         } else if (testCaseStepActionExecution.getAction().equals("mouseDownMouseUp")) {
             res = this.doActionMouseDownMouseUp(tCExecution, object, property);
@@ -383,12 +386,18 @@ public class ActionService implements IActionService {
 
     }
 
-    private MessageEvent doActionMakeSoapCall(TestCaseExecution tCExecution, String object) {
+    private MessageEvent doActionMakeSoapCall(TestCaseExecution tCExecution, String object, boolean withBase) {
         MessageEvent message;
         //if (tCExecution.getApplication().getType().equalsIgnoreCase("WS")) {
             try {
                 SoapLibrary soapLibrary = soapLibraryService.findSoapLibraryByKey(object);
-                return soapService.callSOAPAndStoreResponseInMemory(tCExecution, soapLibrary.getEnvelope(), tCExecution.getCountryEnvironmentApplication().getIp(), soapLibrary.getMethod());
+                String servicePath;
+                if (withBase){
+                servicePath = tCExecution.getCountryEnvironmentApplication().getIp();
+                } else {
+                servicePath = soapLibrary.getServicePath();
+                }
+                return soapService.callSOAPAndStoreResponseInMemory(tCExecution, soapLibrary.getEnvelope(),servicePath , soapLibrary.getMethod());
             } catch (CerberusException ex) {
                 message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSOAP);
                 message.setDescription(message.getDescription().replaceAll("%SOAPNAME%", object));

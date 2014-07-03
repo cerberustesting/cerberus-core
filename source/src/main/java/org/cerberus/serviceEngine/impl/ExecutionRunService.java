@@ -528,7 +528,7 @@ public class ExecutionRunService implements IExecutionRunService {
         /**
          * Screenshot only done when : screenshot parameter is eq to 2 or
          * screenshot parameter is eq to 1 with the correct doScreenshot flag on
-         * the last action MessageEvent or Action perform is to take screenshot.
+         * the last action MessageEvent.
          */
         if ((testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getScreenshot() == 2)
                 || ((testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getScreenshot() == 1)
@@ -536,22 +536,33 @@ public class ExecutionRunService implements IExecutionRunService {
 
             if (testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getApplication().getType().equals("GUI")) {
                 /**
-                 * Only if the return code is not equal to Cancel, meaning lost connectivity with selenium.
+                 * Only if the return code is not equal to Cancel, meaning lost
+                 * connectivity with selenium.
                  */
-                if (!testCaseStepActionExecution.getReturnCode().equals("CA")){
-                String screenshotPath = recorderService.recordScreenshotAndGetName(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution(),testCaseStepActionExecution, 0);
-                testCaseStepActionExecution.setScreenshotFilename(screenshotPath);
-                } else{
-                MyLogger.log(RunTestCaseService.class.getName(), Level.INFO, "Not Doing screenshot because connectivity with selenium server lost.");
+                if (!testCaseStepActionExecution.getReturnCode().equals("CA")) {
+                    String screenshotPath = recorderService.recordScreenshotAndGetName(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution(), testCaseStepActionExecution, 0);
+                    testCaseStepActionExecution.setScreenshotFilename(screenshotPath);
+                } else {
+                    MyLogger.log(RunTestCaseService.class.getName(), Level.INFO, "Not Doing screenshot because connectivity with selenium server lost.");
                 }
-        
-                
+
             } else if (testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getApplication().getType().equals("WS")) {
-                String screenshotPath = recorderService.recordXMLAndGetName(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution(),testCaseStepActionExecution, 0);
+                String screenshotPath = recorderService.recordXMLAndGetName(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution(), testCaseStepActionExecution, 0);
                 testCaseStepActionExecution.setScreenshotFilename(screenshotPath);
             }
         } else {
             MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Not Doing screenshot after action because of the screenshot parameter or flag on the last Action result.");
+        }
+        
+        /**
+         * Get PageSource if requested by the last Action MessageEvent.
+         * TODO: implement execution parameter getPageSource with 3 possibilities (Never, on KO or always).
+         */
+        if (testCaseStepActionExecution.getActionResultMessage().isGetPageSource()){
+            if (testCaseStepActionExecution.getAction().contains("callSoap")){
+            String screenshotPath = recorderService.recordXMLAndGetName(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution(), testCaseStepActionExecution, 0);
+            testCaseStepActionExecution.setScreenshotFilename(screenshotPath);
+            }
         }
 
         /**
@@ -627,23 +638,34 @@ public class ExecutionRunService implements IExecutionRunService {
          */
         if ((myExecution.getScreenshot() == 2)
                 || ((myExecution.getScreenshot() == 1) && (testCaseStepActionControlExecution.getControlResultMessage().isDoScreenshot()))) {
-            if (testCaseStepActionControlExecution.getTestCaseStepActionExecution().getTestCaseStepExecution().gettCExecution().getApplication().getType().equals("GUI")) {
-                String screenshotPath = recorderService.recordScreenshotAndGetName(testCaseStepActionControlExecution.getTestCaseStepActionExecution().getTestCaseStepExecution().gettCExecution(),
-                        testCaseStepActionControlExecution.getTestCaseStepActionExecution(), testCaseStepActionControlExecution.getControl());
-                testCaseStepActionControlExecution.setScreenshotFilename(screenshotPath);
-            }
-        } else {
-            MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Not Doing screenshot after control because of parameter of result of last control execution.");
-        }
-        /**
-         * Register Control in database
-         */
-        MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Registering Control : " + testCaseStepActionControlExecution.getControl());
-        this.testCaseStepActionControlExecutionService.updateTestCaseStepActionControlExecution(testCaseStepActionControlExecution);
-        MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Registered Control");
 
-        return testCaseStepActionControlExecution;
-    }
+            if (testCaseStepActionControlExecution.getTestCaseStepActionExecution().getTestCaseStepExecution().gettCExecution().getApplication().getType().equals("GUI")) {
+                /**
+                 * Only if the return code is not equal to Cancel, meaning lost
+                 * connectivity with selenium.
+                 */
+                if (!testCaseStepActionControlExecution.getReturnCode().equals("CA")) {
+                    String screenshotPath = recorderService.recordScreenshotAndGetName(testCaseStepActionControlExecution.getTestCaseStepActionExecution().getTestCaseStepExecution().gettCExecution(),
+                            testCaseStepActionControlExecution.getTestCaseStepActionExecution(), testCaseStepActionControlExecution.getControl());
+                    testCaseStepActionControlExecution.setScreenshotFilename(screenshotPath);
+                } else {
+                    MyLogger.log(RunTestCaseService.class.getName(), Level.INFO, "Not Doing screenshot because connectivity with selenium server lost.");
+                }
+            }
+            } else {
+                MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Not Doing screenshot after control because of parameter of result of last control execution.");
+            }
+            /**
+             * Register Control in database
+             */
+            MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Registering Control : " + testCaseStepActionControlExecution.getControl());
+            this.testCaseStepActionControlExecutionService.updateTestCaseStepActionControlExecution(testCaseStepActionControlExecution);
+            MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Registered Control");
+
+            return testCaseStepActionControlExecution;
+        }
+
+    
 
     private TestCaseExecution stopRunTestCase(TestCaseExecution tCExecution) {
         if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")) {
