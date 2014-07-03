@@ -1089,7 +1089,7 @@ function hideSqlDetails(valueId, buttonOneId, buttonTwoId) {
 }
 
 function activateDatabaseBox(value, fieldOneId, fieldTwoId) {
-    if (value == "executeSql" || value == "executeSqlFromLib" || value == "executeSoapFromLib") {
+    if (value === "executeSql" || value === "executeSqlFromLib" || value === "executeSoapFromLib") {
         $("#"+fieldOneId).empty().append($('#'+fieldTwoId).html());
     } else
     {
@@ -1098,7 +1098,7 @@ function activateDatabaseBox(value, fieldOneId, fieldTwoId) {
 }
 
 function activateValue2(value, fieldOneId, fieldTwoId, fieldThreeId, size2) {
-    if (value == "getAttributeFromHtml") {
+    if ((value === "getAttributeFromHtml") || value === "getFromXml") {
         var size3 = 1 * size2 / 3;
         var size4 = (2 * size2 / 3) - 5;
         document.getElementById(fieldOneId).style.display = "inline";
