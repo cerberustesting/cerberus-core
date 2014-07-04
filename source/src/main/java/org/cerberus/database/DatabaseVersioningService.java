@@ -3569,6 +3569,14 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(" ('PROPERTYTYPE', 'getFromXml', '50', 'getFromXml', '');");
         SQLInstruction.add(SQLS.toString());
         
+//Add documentation getFromXml
+//-- ------------------------ 501      
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `DocLabel`, `DocDesc`) VALUES ");
+        SQLS.append("('testcasecountryproperties', 'Type', 'getFromXML', 'Get a value from an XML file.', '<code class=\\'doc-fixed\\'>getFromXml</code> will allow you to get value from an XML file specifying the URL of the file and the xpath to eecute to get the data.<br><br>Usage :<br><doc class=\"usage\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Field</th><th class=\\'ex\\'>Usage</th><tr><td class=\\'ex\\'>DTB</td><td class=\\'ex\\'>Not used.</td></tr><tr><td class=\\'ex\\'>Value1</td><td class=\\'ex\\'>URL to the Xml file to parse.</td></tr><tr><td class=\\'ex\\'>Value2</td><td class=\\'ex\\'>xpath information to get data.</td></tr><tr><td class=\\'ex\\'>Length</td><td class=\\'ex\\'>Not used</td></tr><tr><td class=\\'ex\\'>RowLimit</td><td class=\\'ex\\'>Not used.</td></tr><tr><td class=\\'ex\\'>Nature</td><td class=\\'ex\\'>Not used.</td></tr></table></doc><br><br>Examples :<br>Parsing a file www.cerberus-testing.org/test.xml which contains an xml structure with ResponseCode element equals to OK and ResponseValue equals to 12345, it should be configured that way:<br><ResponseCode<doc class=\"examples\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Value1</th><th class=\\'ex\\'>Value2</th><th class=\\'ex\\'>Result</th><tr><td class=\\'ex\\'>www.cerberus-testing.org/test.xml</td><td class=\\'ex\\'>//ResponseCode</td><td class=\\'ex\\'>OK</td></tr><tr><td class=\\'ex\\'>www.cerberus-testing.org/test.xml</td><td class=\\'ex\\'>//ResponseValue</td><td class=\\'ex\\'>12345</td></tr></table></doc>')");
+        SQLInstruction.add(SQLS.toString());
+       
+        
         return SQLInstruction;
     }
 }
