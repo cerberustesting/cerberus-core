@@ -108,6 +108,8 @@ public class PropertyService implements IPropertyService {
             testCaseExecutionData = this.getFromTestData(testCaseExecutionData, tCExecution, testCaseCountryProperty);
         } else if (testCaseCountryProperty.getType().equals("getAttributeFromHtml")) {
             testCaseExecutionData = this.getAttributeFromHtml(testCaseExecutionData, tCExecution, testCaseCountryProperty);
+        } else if (testCaseCountryProperty.getType().equals("getFromCookie")) {
+            testCaseExecutionData = this.getFromCookie(testCaseExecutionData, tCExecution, testCaseCountryProperty);
         } else if (testCaseCountryProperty.getType().equals("getFromXml")) {
             testCaseExecutionData = this.getFromXml(testCaseExecutionData, tCExecution, testCaseCountryProperty);
         } else if ("executeSoapFromLib".equals(testCaseCountryProperty.getType())) {
@@ -366,6 +368,10 @@ public class PropertyService implements IPropertyService {
             testCaseExecutionData.setPropertyResultMessage(res);
         }
         return testCaseExecutionData;
+    }
+
+    private TestCaseExecutionData getFromCookie(TestCaseExecutionData testCaseExecutionData, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseCountryProperty) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }
