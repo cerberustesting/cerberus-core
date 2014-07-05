@@ -1484,4 +1484,36 @@ public class SeleniumService implements ISeleniumService {
         return new MessageEvent(MessageEventEnum.ACTION_FAILED_NO_ELEMENT_TO_CLICK);
     }
 
+    @Override
+    public String getFromCookie(Selenium selenium, String cookieName, String cookieParameter) {
+        Cookie cookie = selenium.getDriver().manage().getCookieNamed(cookieName);
+        if (cookie!=null){
+        if (cookieParameter.equals("name")){
+        return cookie.getName();
+        }
+        if (cookieParameter.equals("expiry")){
+        return cookie.getExpiry().toString();
+        }
+        if (cookieParameter.equals("value")){
+        return cookie.getValue();
+        }
+        if (cookieParameter.equals("domain")){
+        return cookie.getDomain();
+        }
+        if (cookieParameter.equals("path")){
+        return cookie.getPath();
+        }
+        if (cookieParameter.equals("isHttpOnly")){
+        return String.valueOf(cookie.isHttpOnly());
+        }
+        if (cookieParameter.equals("isSecure")){
+        return String.valueOf(cookie.isSecure());
+        }
+        } else {
+        //TODO cookie not found  
+                }
+        //TODO parameter not known
+        return null;    
+    }
+
 }

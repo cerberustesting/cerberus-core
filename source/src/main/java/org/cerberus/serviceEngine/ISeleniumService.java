@@ -81,6 +81,8 @@ public interface ISeleniumService {
     Capabilities getUsedCapabilities(Selenium selenium);
      
     String getAttributeFromHtml(Selenium selenium, String locator, String attribute);
+    
+    String getFromCookie(Selenium selenium, String cookieName, String cookieParameter);
 
     void doScreenShot(Selenium selenium, String runId, String path);
     

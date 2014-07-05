@@ -371,7 +371,24 @@ public class PropertyService implements IPropertyService {
     }
 
     private TestCaseExecutionData getFromCookie(TestCaseExecutionData testCaseExecutionData, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseCountryProperty) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try {
+            String valueFromCookie = this.seleniumService.getFromCookie(tCExecution.getSelenium(), testCaseCountryProperty.getValue1(), testCaseCountryProperty.getValue2());
+            if (valueFromCookie != null) {
+                testCaseExecutionData.setValue(valueFromCookie);
+                MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMCOOKIE);
+                res.setDescription(res.getDescription().replaceAll("%COOKIE%", testCaseCountryProperty.getValue1()));
+                res.setDescription(res.getDescription().replaceAll("%PARAM%", testCaseCountryProperty.getValue2()));
+                res.setDescription(res.getDescription().replaceAll("%VALUE%", valueFromCookie));
+                testCaseExecutionData.setPropertyResultMessage(res);
+            }
+        } catch (Exception exception) {
+            MyLogger.log(PropertyService.class.getName(), Level.DEBUG, exception.toString());
+            MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMCOOKIE_COOKIENOTFOUND);
+            res.setDescription(res.getDescription().replaceAll("%COOKIE%", testCaseCountryProperty.getValue1()));
+            res.setDescription(res.getDescription().replaceAll("%PARAM%", testCaseCountryProperty.getValue2()));
+            testCaseExecutionData.setPropertyResultMessage(res);
+        }
+        return testCaseExecutionData;
     }
 
 }
