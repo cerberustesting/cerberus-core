@@ -374,11 +374,23 @@ public class PropertyService implements IPropertyService {
         try {
             String valueFromCookie = this.seleniumService.getFromCookie(tCExecution.getSelenium(), testCaseCountryProperty.getValue1(), testCaseCountryProperty.getValue2());
             if (valueFromCookie != null) {
+                if (!valueFromCookie.equals("cookieNotFound")){
                 testCaseExecutionData.setValue(valueFromCookie);
                 MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMCOOKIE);
                 res.setDescription(res.getDescription().replaceAll("%COOKIE%", testCaseCountryProperty.getValue1()));
                 res.setDescription(res.getDescription().replaceAll("%PARAM%", testCaseCountryProperty.getValue2()));
                 res.setDescription(res.getDescription().replaceAll("%VALUE%", valueFromCookie));
+                testCaseExecutionData.setPropertyResultMessage(res);
+                } else {
+                MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMCOOKIE_COOKIENOTFOUND);
+                res.setDescription(res.getDescription().replaceAll("%COOKIE%", testCaseCountryProperty.getValue1()));
+                res.setDescription(res.getDescription().replaceAll("%PARAM%", testCaseCountryProperty.getValue2()));
+                testCaseExecutionData.setPropertyResultMessage(res);
+                }
+            } else {
+                MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMCOOKIE_PARAMETERNOTFOUND);
+                res.setDescription(res.getDescription().replaceAll("%COOKIE%", testCaseCountryProperty.getValue1()));
+                res.setDescription(res.getDescription().replaceAll("%PARAM%", testCaseCountryProperty.getValue2()));
                 testCaseExecutionData.setPropertyResultMessage(res);
             }
         } catch (Exception exception) {
