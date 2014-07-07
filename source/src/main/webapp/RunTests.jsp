@@ -86,6 +86,7 @@
                                         || sName.compareTo("Tag") == 0 || sName.compareTo("outputformat") == 0
                                         || sName.compareTo("verbose") == 0 || sName.compareTo("screenshot") == 0
                                         || sName.compareTo("synchroneous") == 0 || sName.compareTo("timeout") == 0
+                                        || sName.compareTo("seleniumLog") == 0 || sName.compareTo("pageSource") == 0
                                         || sName.compareTo("platform") == 0 || sName.compareTo("os") == 0
                                         || sName.compareTo("robot") == 0) {
                                     String[] sMultiple = request.getParameterValues(sName);
@@ -206,6 +207,20 @@
                         } else {
                             screenshot = new String("");
                         }
+                        
+                        String pageSource;
+                        if (request.getParameter("pageSource") != null && request.getParameter("pageSource").compareTo("") != 0) {
+                            pageSource = request.getParameter("pageSource");
+                        } else {
+                            pageSource = new String("");
+                        }
+                        
+                        String seleniumLog;
+                        if (request.getParameter("seleniumLog") != null && request.getParameter("seleniumLog").compareTo("") != 0) {
+                            seleniumLog = request.getParameter("seleniumLog");
+                        } else {
+                            seleniumLog = new String("");
+                        }
 
                         String synchroneous;
                         if (request.getParameter("synchroneous") != null && request.getParameter("synchroneous").compareTo("") != 0) {
@@ -268,6 +283,8 @@
                 <input hidden="hidden" id="defScreenshot" value="<%=screenshot%>">
                 <input hidden="hidden" id="defSynchroneous" value="<%=synchroneous%>">
                 <input hidden="hidden" id="defTimeout" value="<%=timeout%>">
+                <input hidden="hidden" id="defSeleniumLog" value="<%=seleniumLog%>">
+                <input hidden="hidden" id="defPageSource" value="<%=pageSource%>">
                 <div class="filters" style="clear:both; width:100%">
                     <p style="float:left" class="dttTitle">Choose Test</p>
                     <div id="dropDownDownArrow" style="float:left">
@@ -476,6 +493,22 @@
                         </div>
                         <div style="float:left">
                             <select id="screenshot" name="screenshot" style="width: 200px">
+                            </select>
+                        </div>
+                    </div>
+                    <div style="clear:both">
+                        <div style="float:left;width:150px; text-align:left"><% out.print(docService.findLabelHTML("page_runtests", "pageSource", ""));%>
+                        </div>
+                        <div style="float:left">
+                            <select id="pageSource" name="pageSource" style="width: 200px">
+                            </select>
+                        </div>
+                    </div>
+                    <div style="clear:both">
+                        <div style="float:left;width:150px; text-align:left"><% out.print(docService.findLabelHTML("page_runtests", "seleniumLog", ""));%>
+                        </div>
+                        <div style="float:left">
+                            <select id="seleniumLog" name="seleniumLog" style="width: 200px">
                             </select>
                         </div>
                     </div>
@@ -756,6 +789,72 @@
         </script>
         <script type="text/javascript">
             $(document).ready(function() {
+                $.getJSON('FindInvariantByID?idName=pageSource', function(data) {
+                    $("#pageSource").empty();
+                    var pl = document.getElementById("defPageSource").value;
+
+                    for (var i = 0; i < data.length; i++) {
+                        $("#pageSource").append($("<option></option>")
+                                .attr("value", data[i].value)
+                                .text(data[i].value + " ( " + data[i].description + " )"));
+                    }
+
+                    setCookie('PageSourcePreference', 'pageSource');
+                    
+                    var pageCookie = getCookie('PageSourcePreference');
+                    
+                    if (pageCookie === "" && pl === ""){
+                        pl="1";
+                    }
+                    
+                    
+                    
+                    $("#pageSource").find('option').each(function(i, opt) {
+                        if (opt.value === pl) {
+                            $(opt).attr('selected', 'selected');
+                        }
+
+
+                    });
+                })
+            });
+
+        </script>
+        <script type="text/javascript">
+            $(document).ready(function() {
+                $.getJSON('FindInvariantByID?idName=seleniumLog', function(data) {
+                    $("#seleniumLog").empty();
+                    var pl = document.getElementById("defSeleniumLog").value;
+
+                    for (var i = 0; i < data.length; i++) {
+                        $("#seleniumLog").append($("<option></option>")
+                                .attr("value", data[i].value)
+                                .text(data[i].value + " ( " + data[i].description + " )"));
+                    }
+
+                    setCookie('SeleniumLogPreference', 'seleniumLog');
+                    
+                    var seleniumLogCookie = getCookie('SeleniumLogPreference');
+                    
+                    if (seleniumLogCookie === "" && pl === ""){
+                        pl="1";
+                    }
+                    
+                    
+                    
+                    $("#seleniumLog").find('option').each(function(i, opt) {
+                        if (opt.value === pl) {
+                            $(opt).attr('selected', 'selected');
+                        }
+
+
+                    });
+                })
+            });
+
+        </script>
+        <script type="text/javascript">
+            $(document).ready(function() {
                 $.getJSON('FindInvariantByID?idName=browser', function(data) {
                     $("#browser").empty();
                     var pl = document.getElementById("defBrowser").value;
@@ -857,12 +956,16 @@
                 var prefScreen = $("#screenshot").val();
                 var prefSynch = $("#synchroneous").val();
                 var prefTimeOut = $("#timeout").val();
+                var prefPS = $("#pageSource").val();
+                var prefSL = $("#seleniumLog").val();
                 document.cookie = "TagPreference=" + prefTag + ";expires=" + expiration_date.toGMTString();
                 document.cookie = "OutputFormatPreference=" + prefOf + ";expires=" + expiration_date.toGMTString();
                 document.cookie = "VerbosePreference=" + prefVerb + ";expires=" + expiration_date.toGMTString();
                 document.cookie = "ScreenshotPreference=" + prefScreen + ";expires=" + expiration_date.toGMTString();
                 document.cookie = "SynchroneousPreference=" + prefSynch + ";expires=" + expiration_date.toGMTString();
                 document.cookie = "TimeoutPreference=" + prefTimeOut + ";expires=" + expiration_date.toGMTString();
+                document.cookie = "PageSourcePreference=" + prefPS + ";expires=" + expiration_date.toGMTString();
+                document.cookie = "SeleniumLogPreference=" + prefSL + ";expires=" + expiration_date.toGMTString();
             }
         </script>
         <script>
