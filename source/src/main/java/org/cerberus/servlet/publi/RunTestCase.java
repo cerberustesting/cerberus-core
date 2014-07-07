@@ -93,6 +93,8 @@ public class RunTestCase extends HttpServlet {
         String active = "";
         String timeout = "";
         boolean synchroneous = true;
+        int getPageSource = 0;
+        int getSeleniumLog = 0;
 
         if (robot.equals("")) {
             robotHost = ParameterParserUtil.parseStringParam(policy.sanitize(request.getParameter("ss_ip")), "");
@@ -104,8 +106,6 @@ public class RunTestCase extends HttpServlet {
             }
             version = ParameterParserUtil.parseStringParam(policy.sanitize(request.getParameter("version")), "");
             platform = ParameterParserUtil.parseStringParam(policy.sanitize(request.getParameter("platform")), "");
-            timeout = ParameterParserUtil.parseStringParam(policy.sanitize(request.getParameter("timeout")), "");
-            synchroneous = ParameterParserUtil.parseBooleanParam(policy.sanitize(request.getParameter("synchroneous")), true);
         } else {
             IRobotService robotService = appContext.getBean(IRobotService.class);
             try {
@@ -120,7 +120,7 @@ public class RunTestCase extends HttpServlet {
                 Logger.getLogger(RunTestCase.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
             }
         }
-
+                
         //Test
         String test = ParameterParserUtil.parseStringParam(policy.sanitize(request.getParameter("Test")), "");
         String testCase = ParameterParserUtil.parseStringParam(policy.sanitize(request.getParameter("TestCase")), "");
@@ -141,6 +141,10 @@ public class RunTestCase extends HttpServlet {
         String outputFormat = ParameterParserUtil.parseStringParam(policy.sanitize(request.getParameter("outputformat")), "compact");
         int screenshot = ParameterParserUtil.parseIntegerParam(policy.sanitize(request.getParameter("screenshot")), 1);
         int verbose = ParameterParserUtil.parseIntegerParam(policy.sanitize(request.getParameter("verbose")), 0);
+        timeout = ParameterParserUtil.parseStringParam(policy.sanitize(request.getParameter("timeout")), "");
+        synchroneous = ParameterParserUtil.parseBooleanParam(policy.sanitize(request.getParameter("synchroneous")), true);
+        getPageSource = ParameterParserUtil.parseIntegerParam(policy.sanitize(request.getParameter("pageSource")), 0);
+        getSeleniumLog = ParameterParserUtil.parseIntegerParam(policy.sanitize(request.getParameter("seleniumLog")), 0);
 
         String helpMessage = "\nThis servlet is used to start the execution of a test case.\n"
                 + "Parameter list :\n"
@@ -164,7 +168,9 @@ public class RunTestCase extends HttpServlet {
                 + "- screenshot : Activate or not the screenshots. [" + screenshot + "]\n"
                 + "- verbose : Verbose level of the execution. [" + verbose + "]\n"
                 + "- timeout : Timeout used for the action. If empty, the default value will be the one configured in parameter table. [" + timeout + "]\n"
-                + "- synchroneous : Synchroneous define if the servlet wait for the end of the execution to redirect to the execution report. [" + synchroneous + "\n";
+                + "- synchroneous : Synchroneous define if the servlet wait for the end of the execution to redirect to the execution report. [" + synchroneous + "\n"
+                + "- pageSource : Record Page Source during the execution. [" + getPageSource + "]\n"
+                + "- seleniumLog : Get the SeleniumLog at the end of the execution. [" + getSeleniumLog + "]\n";
 
         boolean error = false;
 
