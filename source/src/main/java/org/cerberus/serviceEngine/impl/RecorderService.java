@@ -62,7 +62,7 @@ public class RecorderService implements IRecorderService {
         String controlString = control.equals(0)?null:String.valueOf(control);
 
         MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Doing screenshot.");
-        String screenshotFilename = this.generateScreenshotFilename(test, testCase, step, sequence, controlString, "jpg");
+        String screenshotFilename = this.generateScreenshotFilename(test, testCase, step, sequence, controlString,null, "jpg");
 
         this.seleniumService.doScreenShot(testCaseExecution.getSelenium(), Long.toString(testCaseExecution.getId()), screenshotFilename);
         String screenshotPath = Long.toString(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getId()) + File.separator + screenshotFilename;
@@ -72,9 +72,23 @@ public class RecorderService implements IRecorderService {
 
     }
 
-    private String generateScreenshotFilename(String test, String testCase, String step, String sequence, String control, String extension){
+    /**
+     * Generate ScreenshotFileName using 2 method :
+     * If pictureName is not null, use it directly.
+     * If picture name is null, generate name using test, testcase, step sequence and control.
+     * @param test
+     * @param testCase
+     * @param step
+     * @param sequence
+     * @param control
+     * @param pictureName
+     * @param extension
+     * @return 
+     */
+    private String generateScreenshotFilename(String test, String testCase, String step, String sequence, String control,String pictureName, String extension){
     
         StringBuilder sbScreenshotFilename = new StringBuilder();
+        if (pictureName==null){
         sbScreenshotFilename.append(test);
         sbScreenshotFilename.append("-");
         sbScreenshotFilename.append(testCase);
@@ -85,6 +99,9 @@ public class RecorderService implements IRecorderService {
         if (control != null) {
             sbScreenshotFilename.append("Ct");
             sbScreenshotFilename.append(control);
+        }
+        } else {
+        sbScreenshotFilename.append(pictureName);
         }
         sbScreenshotFilename.append(".");
         sbScreenshotFilename.append(extension);
@@ -105,8 +122,9 @@ public class RecorderService implements IRecorderService {
         String step = String.valueOf(testCaseStepActionExecution.getStep());
         String sequence = String.valueOf(testCaseStepActionExecution.getSequence());
         String controlString = control.equals(0)?null:String.valueOf(control);
+        String fileName = testCaseStepActionExecution.getProperty().equalsIgnoreCase("")?null:testCaseStepActionExecution.getProperty();
 
-        String screenshotFilename = this.generateScreenshotFilename(test, testCase, step, sequence, controlString, "xml");
+        String screenshotFilename = this.generateScreenshotFilename(test, testCase, step, sequence, controlString,fileName,  "xml");
 
         String imgPath = "";
         try {
@@ -147,7 +165,7 @@ public class RecorderService implements IRecorderService {
         String sequence = String.valueOf(testCaseStepActionExecution.getSequence());
         String controlString = control.equals(0)?null:String.valueOf(control);
 
-        String screenshotFilename = this.generateScreenshotFilename(test, testCase, step, sequence, controlString, "html");
+        String screenshotFilename = this.generateScreenshotFilename(test, testCase, step, sequence, controlString,null,  "html");
 
         String imgPath = "";
         try {
