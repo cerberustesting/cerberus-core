@@ -3590,6 +3590,28 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(" ('PROPERTYTYPE', 'getFromCookie', '60', 'getFromCookie', '');");
         SQLInstruction.add(SQLS.toString());
         
+//Add documentation seleniumLog and pageSource
+//-- ------------------------ 504      
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `DocLabel`, `DocDesc`) VALUES ");
+        SQLS.append(" ('page_runtests','pageSource','','pageSource','This define whether Page Source will be recorded during the execution of the test.<br><br><b>0</b> : No Page Source are recorded. This is to be used when a massive amout of tests are performed.<br><b>1</b> : Page Source are taken only when action or control provide unexpected result.<br><b>2</b> : Page Source are always taken on every selenium action. This is to be used only on very specific cases where all actions needs to take page source (For debug mode for example.')");
+        SQLS.append(",('page_runtests','SeleniumLog','','SeleniumLog','This define whether Selenium Log will be recorded during the execution of the test.<br><br><b>0</b> : No  Selenium Log are recorded. This is to be used when a massive amout of tests are performed.<br><b>1</b> : Selenium Log are taken only when action or control provide unexpected result.<br><b>2</b> : Selenium Log are always taken on execution. This is to be used only on very specific cases where all actions needs to take Selenium Log (For debug mode for example.')");
+        SQLInstruction.add(SQLS.toString());
+        
+//Add invariant seleniumLog and pageSource
+//-- ------------------------ 505      
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ");
+        SQLS.append(" ('INVARIANTPRIVATE', 'PAGESOURCE', '440', '', ''),");
+        SQLS.append(" ('INVARIANTPRIVATE', 'SELENIUMLOG', '450', '', ''),");
+        SQLS.append(" ('PAGESOURCE', '0', '10', 'Never get Page Source', ''),");
+        SQLS.append(" ('PAGESOURCE', '1', '20', 'Get Page Source on error only', ''),");
+        SQLS.append(" ('PAGESOURCE', '2', '30', 'Get Page Source after each action', ''),");
+        SQLS.append(" ('SELENIUMLOG', '0', '10', 'Never record Selenium Log', ''),");
+        SQLS.append(" ('SELENIUMLOG', '1', '20', 'Record Selenium Log on error only', ''),");
+        SQLS.append(" ('SELENIUMLOG', '2', '30', 'Record Selenium Log on testcase', '');");
+        SQLInstruction.add(SQLS.toString());
+        
         return SQLInstruction;
     }
 }
