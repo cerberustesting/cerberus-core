@@ -20,6 +20,7 @@
 package org.cerberus.serviceEngine.impl;
 
 import java.util.Date;
+import java.util.List;
 import java.util.logging.Logger;
 import org.apache.log4j.Level;
 import org.cerberus.entity.MessageEvent;
@@ -28,6 +29,7 @@ import org.cerberus.entity.MessageGeneral;
 import org.cerberus.entity.MessageGeneralEnum;
 import org.cerberus.entity.SoapLibrary;
 import org.cerberus.entity.TestCaseExecution;
+import org.cerberus.entity.TestCaseExecutionData;
 import org.cerberus.entity.TestCaseStepActionExecution;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.log.MyLogger;
@@ -148,10 +150,10 @@ public class ActionService implements IActionService {
             res = this.doActionManageDialog(tCExecution, object, property);
 
         } else if (testCaseStepActionExecution.getAction().equals("callSoapWithBase")) {
-            res = this.doActionMakeSoapCall(tCExecution, object, true);
+            res = this.doActionMakeSoapCall(tCExecution,testCaseStepActionExecution.getTestCaseExecutionDataList(), object, true);
 
         } else if (testCaseStepActionExecution.getAction().equals("callSoap")) {
-            res = this.doActionMakeSoapCall(tCExecution, object, false);
+            res = this.doActionMakeSoapCall(tCExecution,testCaseStepActionExecution.getTestCaseExecutionDataList(), object, false);
 
         } else if (testCaseStepActionExecution.getAction().equals("mouseDownMouseUp")) {
             res = this.doActionMouseDownMouseUp(tCExecution, object, property);
@@ -386,22 +388,29 @@ public class ActionService implements IActionService {
 
     }
 
-    private MessageEvent doActionMakeSoapCall(TestCaseExecution tCExecution, String object, boolean withBase) {
+    private MessageEvent doActionMakeSoapCall(TestCaseExecution tCExecution,List<TestCaseExecutionData> testCaseExecutionDataList, String object, boolean withBase) {
         MessageEvent message;
         //if (tCExecution.getApplication().getType().equalsIgnoreCase("WS")) {
-            try {
-                SoapLibrary soapLibrary = soapLibraryService.findSoapLibraryByKey(object);
-                String servicePath;
-                if (withBase){
+        try {
+            SoapLibrary soapLibrary = soapLibraryService.findSoapLibraryByKey(object);
+            String servicePath;
+            if (withBase) {
                 servicePath = tCExecution.getCountryEnvironmentApplication().getIp();
-                } else {
+            } else {
                 servicePath = soapLibrary.getServicePath();
-                }
-                return soapService.callSOAPAndStoreResponseInMemory(tCExecution, soapLibrary.getEnvelope(),servicePath , soapLibrary.getMethod());
-            } catch (CerberusException ex) {
-                message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSOAP);
-                message.setDescription(message.getDescription().replaceAll("%SOAPNAME%", object));
             }
+            /**
+             * Decode Enveloppe replacing properties encaplsulated with %
+             */
+            String decodedEnveloppe = soapLibrary.getEnvelope();
+            if (soapLibrary.getEnvelope().contains("%")) {
+                decodedEnveloppe = propertyService.decodeValue(soapLibrary.getEnvelope(), testCaseExecutionDataList, tCExecution);
+            }
+            return soapService.callSOAPAndStoreResponseInMemory(tCExecution, decodedEnveloppe, servicePath, soapLibrary.getMethod());
+        } catch (CerberusException ex) {
+            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSOAP);
+            message.setDescription(message.getDescription().replaceAll("%SOAPNAME%", object));
+        }
         //}
         message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
         message.setDescription(message.getDescription().replaceAll("%ACTION%", "callSoapWithBase"));
