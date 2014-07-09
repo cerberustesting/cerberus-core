@@ -35,9 +35,26 @@ import org.xml.sax.SAXException;
  */
 public interface ISoapService {
 
+    /**
+     * 
+     * @param pBody Body of the SOAP message
+     * @param method Method/Action of the WSDL which will be used
+     * @return SOAPMessage generated
+     * @throws SOAPException
+     * @throws IOException
+     * @throws SAXException
+     * @throws ParserConfigurationException 
+     */
     SOAPMessage createSoapRequest(final String pBody, final String method) throws SOAPException, IOException, SAXException, ParserConfigurationException;
     
-    MessageEvent callSOAPAndStoreResponseInMemory(TestCaseExecution tCExecution, final String envelope, final String servicePath, final String method);
+    /**
+     * 
+     * @param uuid uuid of the execution or of the request
+     * @param envelope The envelope of the the SOAP
+     * @param servicePath The servicePath (WSDL) of the SOAP
+     * @param method The name of the method of the SOAP
+     * @return MessageEvent with the status of the call
+     */
+    MessageEvent callSOAPAndStoreResponseInMemory(String uuid, final String envelope, final String servicePath, final String method);
     
-    String calculatePropertyFromSOAPResponse(final SoapLibrary pSoapLibrary, org.cerberus.entity.TestCaseCountryProperties pTestCaseCountry, org.cerberus.entity.TestCaseExecution pTestCaseExecution) throws CerberusException;
 }

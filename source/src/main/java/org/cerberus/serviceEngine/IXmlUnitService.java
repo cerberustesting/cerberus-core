@@ -33,5 +33,5 @@ public interface IXmlUnitService {
     
     boolean isSimilarTree(TestCaseExecution tCExecution, String element, String text);
     
-    String getFromXml(TestCaseExecution tCExecution, String url, String element);
+    String getFromXml(String uuid, String url, String element);
 }

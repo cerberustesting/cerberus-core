@@ -64,7 +64,7 @@ import org.xml.sax.SAXException;
  * @author bcivel
  */
 @Service
-public class XmlUnitService implements IXmlUnitService{
+public class XmlUnitService implements IXmlUnitService {
 
     @Autowired
     ExecutionSOAPResponse executionSOAPResponse;
@@ -82,11 +82,12 @@ public class XmlUnitService implements IXmlUnitService{
 
             XPathFactory xpathFactory = XPathFactory.newInstance();
             XPath xpath = xpathFactory.newXPath();
-            
+
             xpath.evaluate(element, document);
             Node node = (Node) xpath.evaluate(element, document, XPathConstants.NODE);
-            if (node!=null){
-            return true;}
+            if (node != null) {
+                return true;
+            }
 
         } catch (XPathExpressionException ex) {
             Logger.getLogger(XmlUnitService.class.getName()).log(Level.SEVERE, null, ex);
@@ -115,21 +116,21 @@ public class XmlUnitService implements IXmlUnitService{
 
             XPathFactory xpathFactory = XPathFactory.newInstance();
             XPath xpath = xpathFactory.newXPath();
-            
-            XPathExpression expr = xpath.compile(element+"/text()");
+
+            XPathExpression expr = xpath.compile(element + "/text()");
             Object result = expr.evaluate(document, XPathConstants.NODESET);
             NodeList nodes = (NodeList) result;
             String res = "";
             for (int i = 0; i < nodes.getLength(); i++) {
-            res = nodes.item(i).getNodeValue();
-            MyLogger.log(XmlUnitService.class.getName(), org.apache.log4j.Level.INFO, nodes.item(i).getNodeValue());
-            MyLogger.log(XmlUnitService.class.getName(), org.apache.log4j.Level.INFO, ""+nodes.getLength());
+                res = nodes.item(i).getNodeValue();
+                MyLogger.log(XmlUnitService.class.getName(), org.apache.log4j.Level.INFO, nodes.item(i).getNodeValue());
+                MyLogger.log(XmlUnitService.class.getName(), org.apache.log4j.Level.INFO, "" + nodes.getLength());
             }
-        
-            
-            MyLogger.log(XmlUnitService.class.getName(), org.apache.log4j.Level.INFO, res+element+text);
-            if (res.equals(text)){
-            return true;}
+
+            MyLogger.log(XmlUnitService.class.getName(), org.apache.log4j.Level.INFO, res + element + text);
+            if (res.equals(text)) {
+                return true;
+            }
 
         } catch (XPathExpressionException ex) {
             Logger.getLogger(XmlUnitService.class.getName()).log(Level.SEVERE, null, ex);
@@ -158,53 +159,51 @@ public class XmlUnitService implements IXmlUnitService{
 
             XPathFactory xpathFactory = XPathFactory.newInstance();
             XPath xpath = xpathFactory.newXPath();
-  
+
             XPathExpression expr = xpath.compile(element);
             Object result = expr.evaluate(document, XPathConstants.NODE);
             Node nodes = (Node) result;
-            
+
             NodeList nl = nodes.getChildNodes();
-            
-            
+
             int length = nl.getLength();
-            String[] copy = new String[length+1];
-      
-            if (nodes.hasChildNodes()){
-            for (int n = 0; n < length; ++n){
-            copy[n] = nl.item(n).getNodeName();
-            }
+            String[] copy = new String[length + 1];
+
+            if (nodes.hasChildNodes()) {
+                for (int n = 0; n < length; ++n) {
+                    copy[n] = nl.item(n).getNodeName();
+                }
             }
             copy[length] = nodes.getNodeName();
-            
+
             StreamResult xmlOutput = new StreamResult(new StringWriter());
             Transformer transformer = TransformerFactory.newInstance().newTransformer();
             transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
             transformer.transform(new DOMSource(nodes), xmlOutput);
-            String nodeAsAString = xmlOutput.getWriter().toString(); 
-            
+            String nodeAsAString = xmlOutput.getWriter().toString();
+
             XMLUnit.setIgnoreWhitespace(true);
             XMLUnit.setIgnoreDiffBetweenTextAndCDATA(true);
-           
+
             //System.out.println("Compare "+nodeAsAString+" with "+text);
-            
             Diff diff = new Diff(nodeAsAString, text);
-            
+
             DetailedDiff detDiff = new DetailedDiff(diff);
             List differences = detDiff.getAllDifferences();
             List d = new ArrayList();
             xmlUnitUtil xuu = new xmlUnitUtil(copy);
             for (Object object : differences) {
-                Difference difference = (Difference)object;
+                Difference difference = (Difference) object;
 //                System.out.println("***********************");
 //                System.out.println(difference);
 //                System.out.println("***********************");
                 xuu.differenceFound(difference);
             }
-              
+
             diff.overrideDifferenceListener(xuu);
-            
-                return diff.similar();
-                
+
+            return diff.similar();
+
         } catch (SAXException e) {
             e.printStackTrace();
             return false;
@@ -217,19 +216,25 @@ public class XmlUnitService implements IXmlUnitService{
         } catch (XPathExpressionException ex) {
             Logger.getLogger(XmlUnitService.class.getName()).log(Level.SEVERE, null, ex);
             return false;
-        }  catch (Exception ex) {
+        } catch (Exception ex) {
             Logger.getLogger(XmlUnitService.class.getName()).log(Level.SEVERE, null, ex);
             return false;
         }
-        
+
     }
 
     @Override
-    public String getFromXml(TestCaseExecution tCExecution, String url, String element) {
+    public String getFromXml(String uuid, String url, String element) {
         try {
-            URL u = new URL(url);
-            InputStream in = u.openConnection().getInputStream();
-            InputSource source = new InputSource(in);
+            InputSource source = null;
+            if (url == null) {
+                String xml = executionSOAPResponse.getExecutionSOAPResponse(uuid);
+                source = new InputSource(new StringReader(xml));
+            } else {
+                URL u = new URL(url);
+                InputStream in = u.openConnection().getInputStream();
+                source = new InputSource(in);
+            }
 
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
             DocumentBuilder db = dbf.newDocumentBuilder();
@@ -237,19 +242,18 @@ public class XmlUnitService implements IXmlUnitService{
 
             XPathFactory xpathFactory = XPathFactory.newInstance();
             XPath xpath = xpathFactory.newXPath();
-            
-            XPathExpression expr = xpath.compile(element+"/text()");
+
+            XPathExpression expr = xpath.compile(element + "/text()");
             Object result = expr.evaluate(document, XPathConstants.NODESET);
             NodeList nodes = (NodeList) result;
             String res = "";
             for (int i = 0; i < nodes.getLength(); i++) {
-            res = nodes.item(i).getNodeValue();
+                res = nodes.item(i).getNodeValue();
             }
-        
-            
+
             MyLogger.log(XmlUnitService.class.getName(), org.apache.log4j.Level.DEBUG, res);
             return res;
-        
+
         } catch (XPathExpressionException ex) {
             Logger.getLogger(XmlUnitService.class.getName()).log(Level.SEVERE, null, ex);
         } catch (ParserConfigurationException ex) {
@@ -264,9 +268,5 @@ public class XmlUnitService implements IXmlUnitService{
 
         return null;
     }
-    
-    
-    
-    
-    
+
 }

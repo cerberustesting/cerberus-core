@@ -406,7 +406,7 @@ public class ActionService implements IActionService {
             if (soapLibrary.getEnvelope().contains("%")) {
                 decodedEnveloppe = propertyService.decodeValue(soapLibrary.getEnvelope(), testCaseExecutionDataList, tCExecution);
             }
-            return soapService.callSOAPAndStoreResponseInMemory(tCExecution, decodedEnveloppe, servicePath, soapLibrary.getMethod());
+            return soapService.callSOAPAndStoreResponseInMemory(tCExecution.getExecutionUUID(), decodedEnveloppe, servicePath, soapLibrary.getMethod());
         } catch (CerberusException ex) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSOAP);
             message.setDescription(message.getDescription().replaceAll("%SOAPNAME%", object));

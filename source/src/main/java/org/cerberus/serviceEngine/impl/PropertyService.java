@@ -316,7 +316,8 @@ public class PropertyService implements IPropertyService {
             SoapLibrary soapLib = this.soapLibraryService.findSoapLibraryByKey(testCaseCountryProperty.getValue1());
             if (soapLib != null) {
 
-                String result = soapService.calculatePropertyFromSOAPResponse(soapLib, testCaseCountryProperty, tCExecution);
+                MessageEvent mes = soapService.callSOAPAndStoreResponseInMemory(tCExecution.getExecutionUUID(),soapLib.getEnvelope(), soapLib.getServicePath(), soapLib.getMethod());
+                String result = xmlUnitService.getFromXml(tCExecution.getExecutionUUID(), null, soapLib.getParsingAnswer());
                 if (result != null) {
                     testCaseExecutionData.setValue(result);
                     testCaseExecutionData.setPropertyResultMessage(new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_SOAP));
@@ -352,7 +353,7 @@ public class PropertyService implements IPropertyService {
 
     private TestCaseExecutionData getFromXml(TestCaseExecutionData testCaseExecutionData, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseCountryProperty) {
         try{
-            String valueFromXml = xmlUnitService.getFromXml(tCExecution, testCaseCountryProperty.getValue1(), testCaseCountryProperty.getValue2());
+            String valueFromXml = xmlUnitService.getFromXml(tCExecution.getExecutionUUID(), testCaseCountryProperty.getValue1(), testCaseCountryProperty.getValue2());
             if (valueFromXml != null) {
                 testCaseExecutionData.setValue(valueFromXml);
                 MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMXML);
