@@ -3612,6 +3612,22 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(" ('SELENIUMLOG', '2', '30', 'Record Selenium Log on testcase', '');");
         SQLInstruction.add(SQLS.toString());
         
+//Add PageSource filename on testcasestepactionexecution table
+//-- ------------------------ 506      
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepactionexecution` ");
+        SQLS.append("ADD COLUMN `PageSourceFileName` VARCHAR(150) NULL DEFAULT NULL AFTER `ScreenshotFilename`;");
+        SQLInstruction.add(SQLS.toString());
+        
+//Add PageSource filename on testcasestepactioncontrolexecution table
+//-- ------------------------ 507      
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepactioncontrolexecution` ");
+        SQLS.append("ADD COLUMN `PageSourceFilename` VARCHAR(150) NULL DEFAULT NULL AFTER `ScreenshotFilename`;");
+        SQLInstruction.add(SQLS.toString());
+        
+
+        
         return SQLInstruction;
     }
 }

@@ -195,4 +195,9 @@ public class RecorderService implements IRecorderService {
 
         return screenshotPath;
     }
+
+    @Override
+    public String recordSeleniumLogAndGetName(TestCaseExecution testCaseExecution) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }

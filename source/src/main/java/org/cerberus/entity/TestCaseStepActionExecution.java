@@ -39,6 +39,7 @@ public class TestCaseStepActionExecution {
     private long startLong;
     private long endLong;
     private String screenshotFilename;
+    private String pageSourceFilename;
     /**
      * From here are data outside database model.
      */
@@ -49,6 +50,14 @@ public class TestCaseStepActionExecution {
     private String propertyName; // Property name is stored in order to keep track of the property name. property is replaced by the value of it.
     private boolean stopExecution;
     private List<TestCaseExecutionData> testCaseExecutionDataList; // Host the full list of data that was previously calculated and that will be used to calculate during the calculation of any property during the action.
+
+    public String getPageSourceFilename() {
+        return pageSourceFilename;
+    }
+
+    public void setPageSourceFilename(String pageSourceFilename) {
+        this.pageSourceFilename = pageSourceFilename;
+    }
     
     public String getPropertyName() {
         return propertyName;

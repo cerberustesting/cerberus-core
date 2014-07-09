@@ -36,4 +36,6 @@ public interface IRecorderService {
     
     String recordPageSourceAndGetName(TestCaseExecution testCaseExecution,
             TestCaseStepActionExecution testCaseStepActionExecution,Integer control);
+    
+    String recordSeleniumLogAndGetName(TestCaseExecution testCaseExecution);
 }

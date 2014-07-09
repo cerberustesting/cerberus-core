@@ -39,6 +39,7 @@ public class TestCaseStepActionControlExecution {
     private long startLong;
     private long endLong;
     private String screenshotFilename;
+    private String pageSourceFilename;
     /**
      *
      */
@@ -51,6 +52,14 @@ public class TestCaseStepActionControlExecution {
         return controlResultMessage;
     }
 
+    public String getPageSourceFilename() {
+        return pageSourceFilename;
+    }
+
+    public void setPageSourceFilename(String pageSourceFilename) {
+        this.pageSourceFilename = pageSourceFilename;
+    }
+    
     public void setControlResultMessage(MessageEvent controlResultMessage) {
         this.controlResultMessage = controlResultMessage;
         if (controlResultMessage != null) {

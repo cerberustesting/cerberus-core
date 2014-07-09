@@ -401,7 +401,7 @@ public class ExecutionRunService implements IExecutionRunService {
                     testCaseStepExecution.getId(), testCaseStepAction.getTest(), testCaseStepAction.getTestCase(),
                     testCaseStepAction.getStep(), testCaseStepAction.getSequence(),
                     null, null, testCaseStepAction.getAction(), testCaseStepAction.getObject(), testCaseStepAction.getProperty(),
-                    startAction, 0, startAction, 0, null, new MessageEvent(MessageEventEnum.ACTION_PENDING), testCaseStepAction, testCaseStepExecution);
+                    startAction, 0, startAction, 0, null,null, new MessageEvent(MessageEventEnum.ACTION_PENDING), testCaseStepAction, testCaseStepExecution);
             this.testCaseStepActionExecutionService.insertTestCaseStepActionExecution(testCaseStepActionExecution);
 
             /**
@@ -595,7 +595,7 @@ public class ExecutionRunService implements IExecutionRunService {
                     = factoryTestCaseStepActionControlExecution.create(testCaseStepActionExecution.getId(), testCaseStepActionControl.getTest(),
                             testCaseStepActionControl.getTestCase(), testCaseStepActionControl.getStep(), testCaseStepActionControl.getSequence(), testCaseStepActionControl.getControl(),
                             null, null, testCaseStepActionControl.getType(), testCaseStepActionControl.getControlProperty(), testCaseStepActionControl.getControlValue(),
-                            testCaseStepActionControl.getFatal(), startControl, 0, 0, 0, null, testCaseStepActionExecution, new MessageEvent(MessageEventEnum.CONTROL_PENDING));
+                            testCaseStepActionControl.getFatal(), startControl, 0, 0, 0, null,null, testCaseStepActionExecution, new MessageEvent(MessageEventEnum.CONTROL_PENDING));
             this.testCaseStepActionControlExecutionService.insertTestCaseStepActionControlExecution(testCaseStepActionControlExecution);
 
             MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Executing control : " + testCaseStepActionControlExecution.getControl() + " type : " + testCaseStepActionControlExecution.getControlType());

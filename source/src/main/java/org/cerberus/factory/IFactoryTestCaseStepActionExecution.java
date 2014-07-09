@@ -31,6 +31,6 @@ public interface IFactoryTestCaseStepActionExecution {
 
     TestCaseStepActionExecution create(long id, String test, String testCase, int step,
                                        int sequence, String returnCode, String returnMessage, String action, String object,
-                                       String property, long start, long end, long startLong, long endLong, String screenshotFilename,
+                                       String property, long start, long end, long startLong, long endLong, String screenshotFilename,String pageSourceFilename,
                                        MessageEvent resultMessage, TestCaseStepAction testCaseStepAction, TestCaseStepExecution testCaseStepExecution);
 }

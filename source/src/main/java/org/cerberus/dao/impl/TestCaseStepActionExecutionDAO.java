@@ -61,7 +61,7 @@ public class TestCaseStepActionExecutionDAO implements ITestCaseStepActionExecut
     public void updateTestCaseStepActionExecution(TestCaseStepActionExecution testCaseStepActionExecution) {
 
         final String query = "UPDATE testcasestepactionexecution SET ACTION = ?, object = ?, property = ?, start = ?, END = ?"
-                + ", startlong = ?, endlong = ?, returnCode = ?, returnMessage = ?, screenshotfilename = ? "
+                + ", startlong = ?, endlong = ?, returnCode = ?, returnMessage = ?, screenshotfilename = ?, pageSourceFilename = ? "
                 + " WHERE id = ? AND test = ? AND testcase = ? AND step = ? AND sequence = ? ;";
 
         Connection connection = this.databaseSpring.connect();
@@ -87,12 +87,12 @@ public class TestCaseStepActionExecutionDAO implements ITestCaseStepActionExecut
                 preStat.setString(8, testCaseStepActionExecution.getReturnCode());
                 preStat.setString(9, StringUtil.getLeftString(testCaseStepActionExecution.getReturnMessage(), 500));
                 preStat.setString(10, testCaseStepActionExecution.getScreenshotFilename());
-
-                preStat.setLong(11, testCaseStepActionExecution.getId());
-                preStat.setString(12, testCaseStepActionExecution.getTest());
-                preStat.setString(13, testCaseStepActionExecution.getTestCase());
-                preStat.setInt(14, testCaseStepActionExecution.getStep());
-                preStat.setInt(15, testCaseStepActionExecution.getSequence());
+                preStat.setString(11, testCaseStepActionExecution.getPageSourceFilename()); 
+                preStat.setLong(12, testCaseStepActionExecution.getId());
+                preStat.setString(13, testCaseStepActionExecution.getTest());
+                preStat.setString(14, testCaseStepActionExecution.getTestCase());
+                preStat.setInt(15, testCaseStepActionExecution.getStep());
+                preStat.setInt(16, testCaseStepActionExecution.getSequence());
 
                 preStat.executeUpdate();
 
@@ -117,8 +117,8 @@ public class TestCaseStepActionExecutionDAO implements ITestCaseStepActionExecut
     @Override
     public void insertTestCaseStepActionExecution(TestCaseStepActionExecution testCaseStepActionExecution) {
 
-        final String query = "INSERT INTO testcasestepactionexecution(id, step, sequence, ACTION, object, property, start, END, startlong, endlong, returnCode, returnMessage, test, testcase, screenshotfilename) "
-                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        final String query = "INSERT INTO testcasestepactionexecution(id, step, sequence, ACTION, object, property, start, END, startlong, endlong, returnCode, returnMessage, test, testcase, screenshotfilename, pagesourcefilename) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -148,7 +148,7 @@ public class TestCaseStepActionExecutionDAO implements ITestCaseStepActionExecut
                 preStat.setString(13, testCaseStepActionExecution.getTest());
                 preStat.setString(14, testCaseStepActionExecution.getTestCase());
                 preStat.setString(15, testCaseStepActionExecution.getScreenshotFilename());
-
+                preStat.setString(16, testCaseStepActionExecution.getPageSourceFilename());
                 preStat.executeUpdate();
 
             } catch (SQLException exception) {
@@ -270,7 +270,8 @@ public class TestCaseStepActionExecutionDAO implements ITestCaseStepActionExecut
                         long startlong = resultSet.getLong("startlong");
                         long endlong = resultSet.getLong("endlong");
                         String screenshot = resultSet.getString("ScreenshotFilename");
-                        resultData = factoryTestCaseStepActionExecution.create(id, test, testCase, step, seq, returnCode, returnMessage, action, object, property, start, end, startlong, endlong, screenshot, null, null, null);
+                        String pageSource = resultSet.getString("PageSourceFilename");
+                        resultData = factoryTestCaseStepActionExecution.create(id, test, testCase, step, seq, returnCode, returnMessage, action, object, property, start, end, startlong, endlong, screenshot, pageSource, null, null, null);
                         result.add(resultData);
                     }
                 } catch (SQLException exception) {
