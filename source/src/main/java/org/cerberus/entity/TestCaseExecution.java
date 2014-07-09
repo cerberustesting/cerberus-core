@@ -73,7 +73,25 @@ public class TestCaseExecution {
     private MessageGeneral resultMessage;
     private Selenium selenium;
     private String executionUUID;
+    private Integer pageSource;
+    private Integer seleniumLog;
 
+    public Integer getPageSource() {
+        return pageSource;
+    }
+
+    public void setPageSource(Integer pageSource) {
+        this.pageSource = pageSource;
+    }
+
+    public Integer getSeleniumLog() {
+        return seleniumLog;
+    }
+
+    public void setSeleniumLog(Integer seleniumLog) {
+        this.seleniumLog = seleniumLog;
+    }
+    
     public boolean isSynchroneous() {
         return synchroneous;
     }

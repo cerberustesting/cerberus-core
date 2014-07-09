@@ -143,8 +143,8 @@ public class RunTestCase extends HttpServlet {
         int verbose = ParameterParserUtil.parseIntegerParam(policy.sanitize(request.getParameter("verbose")), 0);
         timeout = ParameterParserUtil.parseStringParam(policy.sanitize(request.getParameter("timeout")), "");
         synchroneous = ParameterParserUtil.parseBooleanParam(policy.sanitize(request.getParameter("synchroneous")), true);
-        getPageSource = ParameterParserUtil.parseIntegerParam(policy.sanitize(request.getParameter("pageSource")), 0);
-        getSeleniumLog = ParameterParserUtil.parseIntegerParam(policy.sanitize(request.getParameter("seleniumLog")), 0);
+        getPageSource = ParameterParserUtil.parseIntegerParam(policy.sanitize(request.getParameter("pageSource")), 1);
+        getSeleniumLog = ParameterParserUtil.parseIntegerParam(policy.sanitize(request.getParameter("seleniumLog")), 1);
 
         String helpMessage = "\nThis servlet is used to start the execution of a test case.\n"
                 + "Parameter list :\n"
@@ -205,7 +205,7 @@ public class RunTestCase extends HttpServlet {
             TCase tCase = factoryTCase.create(test, testCase);
 
             TestCaseExecution tCExecution = factoryTCExecution.create(0, test, testCase, null, null, environment, country, browser, version, platform, "",
-                    0, 0, "", "", null, robotHost, null, robotPort, tag, "N", verbose, screenshot, synchroneous, timeout, outputFormat, null,
+                    0, 0, "", "", null, robotHost, null, robotPort, tag, "N", verbose, screenshot, getPageSource, getSeleniumLog, synchroneous, timeout, outputFormat, null,
                     Version.PROJECT_NAME_VERSION, tCase, null, null, manualURL, myHost, myContextRoot, myLoginRelativeURL, myEnvData, robotHost, robotPort, null, new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_TESTSTARTED));
 
             /**
