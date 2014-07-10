@@ -3626,7 +3626,12 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("ADD COLUMN `PageSourceFilename` VARCHAR(150) NULL DEFAULT NULL AFTER `ScreenshotFilename`;");
         SQLInstruction.add(SQLS.toString());
         
-
+//Add Selenium Log in documentation
+//-- ------------------------ 508      
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `DocLabel`, `DocDesc`) ");
+        SQLS.append("VALUES ('page_executiondetail', 'SeleniumLog', '', 'Selenium Log', 'Link to the selenium log file');");
+        SQLInstruction.add(SQLS.toString());
         
         return SQLInstruction;
     }

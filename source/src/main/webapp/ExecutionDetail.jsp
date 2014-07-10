@@ -296,14 +296,20 @@
                         <td><span id="execrbversion"><%= rs_inf.getString("crbversion") == null ? "" : rs_inf.getString("crbversion")%></span></td>
                     </tr>
                     <tr style="font-style: italic">
-                        <td style="font-weight: bold; width: 140px" colspan=10><%out.print(docService.findLabelHTML("testcase", "Comment", "Comment"));%></td>
+                        <td style="font-weight: bold; width: 140px" colspan=9><%out.print(docService.findLabelHTML("testcase", "Comment", "Comment"));%></td>
+                        <td style="font-weight: bold; width: 20px" colspan=1><%out.print(docService.findLabelHTML("page_executiondetail", "SeleniumLog", "Selenium Log"));%></td>
                         <td style="font-weight: bold; width: 140px" colspan=4><%out.print(docService.findLabelHTML("testcase", "BugID", "Bug ID"));%></td>
                     </tr>
                     <tr>
-                        <td colspan=10>
+                        <td colspan=9>
                             <span id="comment"><%= comment == null ? "" : comment %></span>
                             <br>
                             <a href="TestCase.jsp?Test=<%=test%>&TestCase=<%=testCase%>&Load=Load&Tinf=Y">Modify the Test Case comment.</a>
+                        </td>
+                        <td colspan=1>
+                            <span id="seleniumLog">
+                                <a href="<%=PictureURL%>selenium.log">Logs</a>
+                            </span>
                         </td>
                         <td colspan=4><span id="bugid"><%
                             if (StringUtil.isNullOrEmpty(bugid)) {
@@ -501,6 +507,10 @@
                                         <td style="width:20%"><i><span id="ACTMES-<%=myStep + "-" + myActionData.getSequence()%>"><%=myActionData.getReturnMessage()%></span></i></td>
                                         <td style="width:10px"><%if (myActionData.getScreenshotFilename() != null) {%>
                                             <a href="<%=PictureURL%><%=myActionData.getScreenshotFilename().replaceAll("\\\\", "/")%>" id="ACTIMG-<%=myStep + "-" + myActionData.getSequence()%>" class="zoombox  zgallery1">img</a>
+                                            <%}%>
+                                        </td>
+                                        <td style="width:10px"><%if (myActionData.getPageSourceFilename() != null) {%>
+                                            <a href="<%=PictureURL%><%=myActionData.getPageSourceFilename().replaceAll("\\\\", "/")%>" id="ACTPS-<%=myStep + "-" + myActionData.getSequence()%>">src</a>
                                             <%}%>
                                         </td>
                                     </tr>
