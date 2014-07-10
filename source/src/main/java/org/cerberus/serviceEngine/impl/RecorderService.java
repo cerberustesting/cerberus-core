@@ -59,10 +59,10 @@ public class RecorderService implements IRecorderService {
         String testCase = testCaseExecution.getTestCase();
         String step = String.valueOf(testCaseStepActionExecution.getStep());
         String sequence = String.valueOf(testCaseStepActionExecution.getSequence());
-        String controlString = control.equals(0)?null:String.valueOf(control);
+        String controlString = control.equals(0) ? null : String.valueOf(control);
 
-        MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Doing screenshot.");
-        String screenshotFilename = this.generateScreenshotFilename(test, testCase, step, sequence, controlString,null, "jpg");
+        MyLogger.log(RunTestCaseService.class.getName(), Level.INFO, "Doing screenshot.");
+        String screenshotFilename = this.generateScreenshotFilename(test, testCase, step, sequence, controlString, null, "jpg");
 
         this.seleniumService.doScreenShot(testCaseExecution.getSelenium(), Long.toString(testCaseExecution.getId()), screenshotFilename);
         String screenshotPath = Long.toString(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getId()) + File.separator + screenshotFilename;
@@ -73,9 +73,10 @@ public class RecorderService implements IRecorderService {
     }
 
     /**
-     * Generate ScreenshotFileName using 2 method :
-     * If pictureName is not null, use it directly.
-     * If picture name is null, generate name using test, testcase, step sequence and control.
+     * Generate ScreenshotFileName using 2 method : If pictureName is not null,
+     * use it directly. If picture name is null, generate name using test,
+     * testcase, step sequence and control.
+     *
      * @param test
      * @param testCase
      * @param step
@@ -83,35 +84,34 @@ public class RecorderService implements IRecorderService {
      * @param control
      * @param pictureName
      * @param extension
-     * @return 
+     * @return
      */
-    private String generateScreenshotFilename(String test, String testCase, String step, String sequence, String control,String pictureName, String extension){
-    
+    private String generateScreenshotFilename(String test, String testCase, String step, String sequence, String control, String pictureName, String extension) {
+
         StringBuilder sbScreenshotFilename = new StringBuilder();
-        if (pictureName==null){
-        sbScreenshotFilename.append(test);
-        sbScreenshotFilename.append("-");
-        sbScreenshotFilename.append(testCase);
-        sbScreenshotFilename.append("-St");
-        sbScreenshotFilename.append(step);
-        sbScreenshotFilename.append("Sq");
-        sbScreenshotFilename.append(sequence);
-        if (control != null) {
-            sbScreenshotFilename.append("Ct");
-            sbScreenshotFilename.append(control);
-        }
+        if (pictureName == null) {
+            sbScreenshotFilename.append(test);
+            sbScreenshotFilename.append("-");
+            sbScreenshotFilename.append(testCase);
+            sbScreenshotFilename.append("-St");
+            sbScreenshotFilename.append(step);
+            sbScreenshotFilename.append("Sq");
+            sbScreenshotFilename.append(sequence);
+            if (control != null) {
+                sbScreenshotFilename.append("Ct");
+                sbScreenshotFilename.append(control);
+            }
         } else {
-        sbScreenshotFilename.append(pictureName);
+            sbScreenshotFilename.append(pictureName);
         }
         sbScreenshotFilename.append(".");
         sbScreenshotFilename.append(extension);
 
         String screenshotFilename = sbScreenshotFilename.toString().replaceAll(" ", "");
-    
+
         return screenshotFilename;
     }
-    
-    
+
     @Override
     public String recordXMLAndGetName(TestCaseExecution testCaseExecution, TestCaseStepActionExecution testCaseStepActionExecution, Integer control) {
 
@@ -121,10 +121,10 @@ public class RecorderService implements IRecorderService {
         String testCase = testCaseExecution.getTestCase();
         String step = String.valueOf(testCaseStepActionExecution.getStep());
         String sequence = String.valueOf(testCaseStepActionExecution.getSequence());
-        String controlString = control.equals(0)?null:String.valueOf(control);
-        String fileName = testCaseStepActionExecution.getProperty().equalsIgnoreCase("")?null:testCaseStepActionExecution.getProperty();
+        String controlString = control.equals(0) ? null : String.valueOf(control);
+        String fileName = testCaseStepActionExecution.getProperty().equalsIgnoreCase("") ? null : testCaseStepActionExecution.getProperty();
 
-        String screenshotFilename = this.generateScreenshotFilename(test, testCase, step, sequence, controlString,fileName,  "xml");
+        String screenshotFilename = this.generateScreenshotFilename(test, testCase, step, sequence, controlString, fileName, "xml");
 
         String imgPath = "";
         try {
@@ -163,9 +163,9 @@ public class RecorderService implements IRecorderService {
         String testCase = testCaseExecution.getTestCase();
         String step = String.valueOf(testCaseStepActionExecution.getStep());
         String sequence = String.valueOf(testCaseStepActionExecution.getSequence());
-        String controlString = control.equals(0)?null:String.valueOf(control);
+        String controlString = control.equals(0) ? null : String.valueOf(control);
 
-        String screenshotFilename = this.generateScreenshotFilename(test, testCase, step, sequence, controlString,null,  "html");
+        String screenshotFilename = this.generateScreenshotFilename(test, testCase, step, sequence, controlString, null, "html");
 
         String imgPath = "";
         try {
@@ -199,5 +199,106 @@ public class RecorderService implements IRecorderService {
     @Override
     public String recordSeleniumLogAndGetName(TestCaseExecution testCaseExecution) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void recordExecutionInformation(TestCaseStepActionExecution testCaseStepActionExecution, TestCaseStepActionControlExecution testCaseStepActionControlExecution) {
+
+        TestCaseExecution myExecution = null;
+        boolean doScreenshot = false;
+        boolean getPageSource = false;
+        String applicationType = null;
+        String returnCode = null;
+        Integer controlNumber = 0;
+
+        if (testCaseStepActionControlExecution == null) {
+            myExecution = testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution();
+            doScreenshot = testCaseStepActionExecution.getActionResultMessage().isDoScreenshot();
+            getPageSource = testCaseStepActionExecution.getActionResultMessage().isGetPageSource();
+            applicationType = testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getApplication().getType();
+            returnCode = testCaseStepActionExecution.getReturnCode();
+        } else {
+            myExecution = testCaseStepActionControlExecution.getTestCaseStepActionExecution().getTestCaseStepExecution().gettCExecution();
+            doScreenshot = testCaseStepActionControlExecution.getControlResultMessage().isDoScreenshot();
+            getPageSource = testCaseStepActionControlExecution.getControlResultMessage().isGetPageSource();
+            applicationType = testCaseStepActionControlExecution.getTestCaseStepActionExecution().getTestCaseStepExecution().gettCExecution().getApplication().getType();
+            returnCode = testCaseStepActionControlExecution.getReturnCode();
+            controlNumber = testCaseStepActionControlExecution.getControl();
+        }
+
+        /**
+         * Screenshot only done when : screenshot parameter is eq to 2 or
+         * screenshot parameter is eq to 1 with the correct doScreenshot flag on
+         * the last action MessageEvent.
+         */
+        if ((myExecution.getScreenshot() == 2) || ((myExecution.getScreenshot() == 1) && (doScreenshot))) {
+
+            if (applicationType.equals("GUI")) {
+                /**
+                 * Only if the return code is not equal to Cancel, meaning lost
+                 * connectivity with selenium.
+                 */
+                if (!returnCode.equals("CA")) {
+                    String screenshotPath = recordScreenshotAndGetName(myExecution, testCaseStepActionExecution, controlNumber);
+                    System.out.print(screenshotPath);
+                    if (testCaseStepActionControlExecution == null) {
+                        testCaseStepActionExecution.setScreenshotFilename(screenshotPath);
+                    } else {
+                        testCaseStepActionControlExecution.setScreenshotFilename(screenshotPath);
+                    }
+                } else {
+                    MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Not Doing screenshot because connectivity with selenium server lost.");
+                }
+
+            } else if (applicationType.equals("WS")) {
+                String screenshotPath = recordXMLAndGetName(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution(), testCaseStepActionExecution, controlNumber);
+                if (testCaseStepActionControlExecution == null) {
+                    testCaseStepActionExecution.setScreenshotFilename(screenshotPath);
+                } else {
+                    testCaseStepActionControlExecution.setScreenshotFilename(screenshotPath);
+                }
+            }
+        } else {
+            MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Not Doing screenshot because of the screenshot parameter or flag on the last Action result.");
+        }
+
+        /**
+         * Get PageSource if requested by the last Action MessageEvent.
+         */
+        if ((myExecution.getPageSource() == 2) || ((myExecution.getPageSource() == 1) && (getPageSource))) {
+
+            if (applicationType.equals("GUI")) {
+                /**
+                 * Only if the return code is not equal to Cancel, meaning lost
+                 * connectivity with selenium.
+                 */
+                if (!returnCode.equals("CA")) {
+                    String psPath = recordPageSourceAndGetName(myExecution, testCaseStepActionExecution, controlNumber);
+                    if (testCaseStepActionControlExecution == null) {
+                        testCaseStepActionExecution.setPageSourceFilename(psPath);
+                    } else {
+                        testCaseStepActionControlExecution.setPageSourceFilename(psPath);
+                    }
+                } else {
+                    MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Not Doing screenshot because connectivity with selenium server lost.");
+                }
+            } else if (applicationType.equals("WS")) {
+                String screenshotPath = recordXMLAndGetName(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution(), testCaseStepActionExecution, controlNumber);
+                if (testCaseStepActionControlExecution == null) {
+                    testCaseStepActionExecution.setPageSourceFilename(screenshotPath);
+                } else {
+                    testCaseStepActionControlExecution.setPageSourceFilename(screenshotPath);
+                }
+            }
+        } else {
+            MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Not getting page source because of the pageSource parameter or flag on the last Action result.");
+        }
+
+        if (testCaseStepActionExecution.getActionResultMessage().isGetPageSource()) {
+            if (testCaseStepActionExecution.getAction().contains("callSoap")) {
+                String screenshotPath = recordXMLAndGetName(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution(), testCaseStepActionExecution, controlNumber);
+                testCaseStepActionExecution.setScreenshotFilename(screenshotPath);
+            }
+        }
     }
 }

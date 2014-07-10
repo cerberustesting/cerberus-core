@@ -83,6 +83,8 @@ public class FactoryTestCaseExecution implements IFactoryTestCaseExecution {
         newTce.setOutputFormat(outputFormat);
         newTce.setTimeout(timeout);
         newTce.setSynchroneous(synchroneous);
+        newTce.setPageSource(pageSource);
+        newTce.setSeleniumLog(seleniumLog);
         return newTce;
     }
 

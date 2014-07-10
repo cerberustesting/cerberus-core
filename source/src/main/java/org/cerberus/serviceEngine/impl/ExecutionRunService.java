@@ -401,7 +401,7 @@ public class ExecutionRunService implements IExecutionRunService {
                     testCaseStepExecution.getId(), testCaseStepAction.getTest(), testCaseStepAction.getTestCase(),
                     testCaseStepAction.getStep(), testCaseStepAction.getSequence(),
                     null, null, testCaseStepAction.getAction(), testCaseStepAction.getObject(), testCaseStepAction.getProperty(),
-                    startAction, 0, startAction, 0, null,null, new MessageEvent(MessageEventEnum.ACTION_PENDING), testCaseStepAction, testCaseStepExecution);
+                    startAction, 0, startAction, 0, null, null, new MessageEvent(MessageEventEnum.ACTION_PENDING), testCaseStepAction, testCaseStepExecution);
             this.testCaseStepActionExecutionService.insertTestCaseStepActionExecution(testCaseStepActionExecution);
 
             /**
@@ -454,27 +454,9 @@ public class ExecutionRunService implements IExecutionRunService {
                     testCaseStepActionExecution.setExecutionResultMessage(testCaseExecutionData.getExecutionResultMessage());
 
                     /**
-                     * Screenshot only done when : screenshot parameter is eq to
-                     * 2 or screenshot parameter is eq to 1 with the correct
-                     * doScreenshot flag on the last action MessageEvent.
+                     * Record Screenshot, PageSource
                      */
-                    if (((testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getScreenshot() == 2)
-                            || (testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getScreenshot() == 1))
-                            && (testCaseExecutionData.getPropertyResultMessage().isDoScreenshot())) {
-
-                        if (testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getApplication().getType().equals("GUI")) {
-                            MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Doing screenshot.");
-                            File myFile = null;
-                            String screenshotFilename = testCaseStepActionExecution.getTest() + "-" + testCaseStepActionExecution.getTestCase()
-                                    + "-St" + testCaseStepActionExecution.getStep()
-                                    + "Sq" + testCaseStepActionExecution.getSequence() + ".jpg";
-                            screenshotFilename = screenshotFilename.replaceAll(" ", "");
-                            this.seleniumService.doScreenShot(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getSelenium(), Long.toString(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getId()), screenshotFilename);
-                            testCaseStepActionExecution.setScreenshotFilename(Long.toString(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getId()) + File.separator + screenshotFilename);
-                            MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Screenshot done in : " + testCaseStepActionExecution.getScreenshotFilename());
-                        }
-
-                    }
+                    recorderService.recordExecutionInformation(testCaseStepActionExecution, null);
 
                     /**
                      * Register the empty Action in database.
@@ -526,44 +508,9 @@ public class ExecutionRunService implements IExecutionRunService {
         testCaseStepActionExecution = this.actionService.doAction(testCaseStepActionExecution);
 
         /**
-         * Screenshot only done when : screenshot parameter is eq to 2 or
-         * screenshot parameter is eq to 1 with the correct doScreenshot flag on
-         * the last action MessageEvent.
+         * Record Screenshot, PageSource
          */
-        if ((testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getScreenshot() == 2)
-                || ((testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getScreenshot() == 1)
-                && (testCaseStepActionExecution.getActionResultMessage().isDoScreenshot()))) {
-
-            if (testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getApplication().getType().equals("GUI")) {
-                /**
-                 * Only if the return code is not equal to Cancel, meaning lost
-                 * connectivity with selenium.
-                 */
-                if (!testCaseStepActionExecution.getReturnCode().equals("CA")) {
-                    String screenshotPath = recorderService.recordScreenshotAndGetName(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution(), testCaseStepActionExecution, 0);
-                    testCaseStepActionExecution.setScreenshotFilename(screenshotPath);
-                } else {
-                    MyLogger.log(RunTestCaseService.class.getName(), Level.INFO, "Not Doing screenshot because connectivity with selenium server lost.");
-                }
-
-            } else if (testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getApplication().getType().equals("WS")) {
-                String screenshotPath = recorderService.recordXMLAndGetName(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution(), testCaseStepActionExecution, 0);
-                testCaseStepActionExecution.setScreenshotFilename(screenshotPath);
-            }
-        } else {
-            MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Not Doing screenshot after action because of the screenshot parameter or flag on the last Action result.");
-        }
-        
-        /**
-         * Get PageSource if requested by the last Action MessageEvent.
-         * TODO: implement execution parameter getPageSource with 3 possibilities (Never, on KO or always).
-         */
-        if (testCaseStepActionExecution.getActionResultMessage().isGetPageSource()){
-            if (testCaseStepActionExecution.getAction().contains("callSoap")){
-            String screenshotPath = recorderService.recordXMLAndGetName(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution(), testCaseStepActionExecution, 0);
-            testCaseStepActionExecution.setScreenshotFilename(screenshotPath);
-            }
-        }
+        recorderService.recordExecutionInformation(testCaseStepActionExecution, null);
 
         /**
          * Register Action in database
@@ -595,7 +542,7 @@ public class ExecutionRunService implements IExecutionRunService {
                     = factoryTestCaseStepActionControlExecution.create(testCaseStepActionExecution.getId(), testCaseStepActionControl.getTest(),
                             testCaseStepActionControl.getTestCase(), testCaseStepActionControl.getStep(), testCaseStepActionControl.getSequence(), testCaseStepActionControl.getControl(),
                             null, null, testCaseStepActionControl.getType(), testCaseStepActionControl.getControlProperty(), testCaseStepActionControl.getControlValue(),
-                            testCaseStepActionControl.getFatal(), startControl, 0, 0, 0, null,null, testCaseStepActionExecution, new MessageEvent(MessageEventEnum.CONTROL_PENDING));
+                            testCaseStepActionControl.getFatal(), startControl, 0, 0, 0, null, null, testCaseStepActionExecution, new MessageEvent(MessageEventEnum.CONTROL_PENDING));
             this.testCaseStepActionControlExecutionService.insertTestCaseStepActionControlExecution(testCaseStepActionControlExecution);
 
             MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Executing control : " + testCaseStepActionControlExecution.getControl() + " type : " + testCaseStepActionControlExecution.getControlType());
@@ -632,40 +579,19 @@ public class ExecutionRunService implements IExecutionRunService {
         TestCaseExecution myExecution = testCaseStepActionControlExecution.getTestCaseStepActionExecution().getTestCaseStepExecution().gettCExecution();
 
         /**
-         * Screenshot only done when : screenshot parameter is eq to 2 or
-         * screenshot parameter is eq to 1 with the correct doScreenshot flag on
-         * the last control MessageEvent.
+         * Record Screenshot, PageSource
          */
-        if ((myExecution.getScreenshot() == 2)
-                || ((myExecution.getScreenshot() == 1) && (testCaseStepActionControlExecution.getControlResultMessage().isDoScreenshot()))) {
+        recorderService.recordExecutionInformation(testCaseStepActionControlExecution.getTestCaseStepActionExecution(), testCaseStepActionControlExecution);
 
-            if (testCaseStepActionControlExecution.getTestCaseStepActionExecution().getTestCaseStepExecution().gettCExecution().getApplication().getType().equals("GUI")) {
-                /**
-                 * Only if the return code is not equal to Cancel, meaning lost
-                 * connectivity with selenium.
-                 */
-                if (!testCaseStepActionControlExecution.getReturnCode().equals("CA")) {
-                    String screenshotPath = recorderService.recordScreenshotAndGetName(testCaseStepActionControlExecution.getTestCaseStepActionExecution().getTestCaseStepExecution().gettCExecution(),
-                            testCaseStepActionControlExecution.getTestCaseStepActionExecution(), testCaseStepActionControlExecution.getControl());
-                    testCaseStepActionControlExecution.setScreenshotFilename(screenshotPath);
-                } else {
-                    MyLogger.log(RunTestCaseService.class.getName(), Level.INFO, "Not Doing screenshot because connectivity with selenium server lost.");
-                }
-            }
-            } else {
-                MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Not Doing screenshot after control because of parameter of result of last control execution.");
-            }
-            /**
-             * Register Control in database
-             */
-            MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Registering Control : " + testCaseStepActionControlExecution.getControl());
-            this.testCaseStepActionControlExecutionService.updateTestCaseStepActionControlExecution(testCaseStepActionControlExecution);
-            MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Registered Control");
+        /**
+         * Register Control in database
+         */
+        MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Registering Control : " + testCaseStepActionControlExecution.getControl());
+        this.testCaseStepActionControlExecutionService.updateTestCaseStepActionControlExecution(testCaseStepActionControlExecution);
+        MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Registered Control");
 
-            return testCaseStepActionControlExecution;
-        }
-
-    
+        return testCaseStepActionControlExecution;
+    }
 
     private TestCaseExecution stopRunTestCase(TestCaseExecution tCExecution) {
         if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")) {

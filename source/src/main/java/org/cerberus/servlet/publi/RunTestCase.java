@@ -262,6 +262,8 @@ public class RunTestCase extends HttpServlet {
                     out.println("<tr><td>OutputFormat</td><td><span id='OutputFormat'>" + outputFormat + "</span></td></tr>");
                     out.println("<tr><td>Verbose</td><td><span id='Verbose'>" + verbose + "</span></td></tr>");
                     out.println("<tr><td>Screenshot</td><td><span id='Screenshot'>" + screenshot + "</span></td></tr>");
+                    out.println("<tr><td>PageSource</td><td><span id='PageSource'>" + getPageSource + "</span></td></tr>");
+                    out.println("<tr><td>SeleniumLog</td><td><span id='SeleniumLog'>" + getSeleniumLog + "</span></td></tr>");
                     out.println("<tr><td>Robot</td><td><span id='Browser'>" + robot + "</span></td></tr>");
                     out.println("<tr><td>Browser</td><td><span id='Browser'>" + browser + "</span></td></tr>");
                     out.println("<tr><td>Version</td><td><span id='Browser'>" + version + "</span></td></tr>");
@@ -298,6 +300,8 @@ public class RunTestCase extends HttpServlet {
                 out.println("OutputFormat" + separator + outputFormat);
                 out.println("Verbose" + separator + verbose);
                 out.println("Screenshot" + separator + screenshot);
+                out.println("PageSource" + separator + getPageSource);
+                out.println("SeleniumLog" + separator + getSeleniumLog);
                 out.println("Robot" + separator + robot);
                 out.println("Browser" + separator + browser);
                 out.println("Version" + separator + version);

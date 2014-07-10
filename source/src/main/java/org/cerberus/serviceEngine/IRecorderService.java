@@ -20,6 +20,7 @@
 package org.cerberus.serviceEngine;
 
 import org.cerberus.entity.TestCaseExecution;
+import org.cerberus.entity.TestCaseStepActionControlExecution;
 import org.cerberus.entity.TestCaseStepActionExecution;
 
 /**
@@ -29,13 +30,15 @@ import org.cerberus.entity.TestCaseStepActionExecution;
 public interface IRecorderService {
 
     String recordScreenshotAndGetName(TestCaseExecution testCaseExecution,
-            TestCaseStepActionExecution testCaseStepActionExecution,Integer control);
-    
+            TestCaseStepActionExecution testCaseStepActionExecution, Integer control);
+
     String recordXMLAndGetName(TestCaseExecution testCaseExecution,
-            TestCaseStepActionExecution testCaseStepActionExecution,Integer control);
-    
+            TestCaseStepActionExecution testCaseStepActionExecution, Integer control);
+
     String recordPageSourceAndGetName(TestCaseExecution testCaseExecution,
-            TestCaseStepActionExecution testCaseStepActionExecution,Integer control);
-    
+            TestCaseStepActionExecution testCaseStepActionExecution, Integer control);
+
     String recordSeleniumLogAndGetName(TestCaseExecution testCaseExecution);
+
+    void recordExecutionInformation(TestCaseStepActionExecution testCaseStepActionExecution, TestCaseStepActionControlExecution testCaseStepActionControlExecution);
 }
