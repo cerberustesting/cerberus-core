@@ -19,6 +19,8 @@
  */
 package org.cerberus.serviceEngine.impl;
 
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -198,7 +200,52 @@ public class RecorderService implements IRecorderService {
 
     @Override
     public String recordSeleniumLogAndGetName(TestCaseExecution testCaseExecution) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        
+        if (testCaseExecution.getSeleniumLog()==2 || (testCaseExecution.getSeleniumLog()==1 && !testCaseExecution.getStatus().equals("OK"))){
+        MyLogger.log(RunTestCaseService.class.getName(), Level.INFO, "Saving File.");
+
+        String test = testCaseExecution.getTest();
+        String testCase = testCaseExecution.getTestCase();
+
+        String logFilename = "selenium_Log.DRIVER.txt";
+
+        String imgPath = "";
+        try {
+            imgPath = parameterService.findParameterByKey("cerberus_picture_path", "").getValue();
+        } catch (CerberusException ex) {
+            Logger.getLogger(ExecutionRunService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        File dir = new File(imgPath + testCaseExecution.getId());
+        dir.mkdirs();
+
+        File file = new File(dir.getAbsolutePath() + File.separator + logFilename);
+        System.err.println(" FILE : " + file.getAbsolutePath());
+
+        FileOutputStream fileOutputStream = null;
+        try {
+            fileOutputStream = new FileOutputStream(file);
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            DataOutputStream out = new DataOutputStream(baos);
+            for (String element : this.seleniumService.getSeleniumLog(testCaseExecution.getSelenium())) {
+                out.writeBytes(element);
+            }
+            byte[] bytes = baos.toByteArray();
+            fileOutputStream.write(bytes);
+            out.close();
+            baos.close();
+            fileOutputStream.close();
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(ExecutionRunService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(ExecutionRunService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+
+        String seleniumLogPath = Long.toString(testCaseExecution.getId()) + File.separator + logFilename;
+        MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Log recorded in : " + logFilename);
+
+        return seleniumLogPath;
+        }
+        return null;
     }
 
     @Override

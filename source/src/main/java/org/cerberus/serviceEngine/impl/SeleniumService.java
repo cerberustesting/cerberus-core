@@ -25,6 +25,8 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -68,6 +70,10 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.logging.LogEntries;
+import org.openqa.selenium.logging.LogEntry;
+import org.openqa.selenium.logging.LogType;
+import org.openqa.selenium.logging.Logs;
 import org.openqa.selenium.remote.Augmenter;
 import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
@@ -1513,6 +1519,38 @@ public class SeleniumService implements ISeleniumService {
             return "cookieNotFound";
         }
         return null;
+    }
+
+    @Override
+    public List<String> getSeleniumLog(Selenium selenium) {
+        List<String> result = new ArrayList();
+        Logs logs = selenium.getDriver().manage().logs();
+        LogEntries logEntries = logs.get(LogType.DRIVER);
+        
+        result.add("********************DRIVER********************\n");
+        for (LogEntry logEntry : logEntries) {
+            result.add(new Date(logEntry.getTimestamp()) + " : " + logEntry.getLevel() + " : " + logEntry.getMessage()+"\n");
+        }
+        
+        result.add("********************BROWSER********************\n");
+        logEntries = logs.get(LogType.BROWSER);
+        for (LogEntry logEntry : logEntries) {
+            result.add(new Date(logEntry.getTimestamp()) + " : " + logEntry.getLevel() + " : " + logEntry.getMessage()+"\n");
+        }
+        
+        result.add("********************CLIENT********************\n");
+        logEntries = logs.get(LogType.CLIENT);
+        for (LogEntry logEntry : logEntries) {
+            result.add(new Date(logEntry.getTimestamp()) + " : " + logEntry.getLevel() + " : " + logEntry.getMessage()+"\n");
+        }
+        
+        result.add("********************SERVER********************\n");
+        logEntries = logs.get(LogType.SERVER);
+        for (LogEntry logEntry : logEntries) {
+            result.add(new Date(logEntry.getTimestamp()) + " : " + logEntry.getLevel() + " : " + logEntry.getMessage()+"\n");
+        }
+        
+        return result;
     }
 
 }

@@ -19,6 +19,7 @@
  */
 package org.cerberus.serviceEngine;
 
+import java.util.List;
 import java.util.UUID;
 import org.cerberus.entity.MessageEvent;
 import org.cerberus.entity.MessageGeneral;
@@ -85,6 +86,8 @@ public interface ISeleniumService {
     String getFromCookie(Selenium selenium, String cookieName, String cookieParameter);
 
     void doScreenShot(Selenium selenium, String runId, String path);
+    
+    List<String> getSeleniumLog(Selenium selenium);
     
     MessageEvent doSeleniumActionClick(Selenium selenium, String string1, String string2);
     

@@ -312,6 +312,8 @@ public class ExecutionRunService implements IExecutionRunService {
             }
 
         }
+        
+        recorderService.recordSeleniumLogAndGetName(tCExecution);
 
         try {
             tCExecution = this.stopTestCase(tCExecution);
