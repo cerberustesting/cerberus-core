@@ -3633,6 +3633,13 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("VALUES ('page_executiondetail', 'SeleniumLog', '', 'Selenium Log', 'Link to the selenium log file');");
         SQLInstruction.add(SQLS.toString());
         
+//Default value 0 for use step 
+//-- ------------------------ 509      
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestep` ");
+        SQLS.append("CHANGE COLUMN `useStepStep` `useStepStep` INT(10) NOT NULL DEFAULT '0' ;");
+        SQLInstruction.add(SQLS.toString());
+        
         return SQLInstruction;
     }
 }
