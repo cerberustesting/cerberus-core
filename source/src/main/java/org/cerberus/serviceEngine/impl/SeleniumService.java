@@ -409,11 +409,11 @@ public class SeleniumService implements ISeleniumService {
         try {
             WebDriverWait wait = new WebDriverWait(selenium.getDriver(), selenium.getDefaultWait());
             if (visible) {
-                if (clickable) {
-                    wait.until(ExpectedConditions.elementToBeClickable(locator));
-                } else {
+//                if (clickable) {
+//                    wait.until(ExpectedConditions.elementToBeClickable(locator));
+//                } else {
                     wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
-                }
+//                }
             } else {
                 wait.until(ExpectedConditions.presenceOfElementLocated(locator));
             }
