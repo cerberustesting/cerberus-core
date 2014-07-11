@@ -86,7 +86,7 @@
         <%@ include file="include/function.jsp" %>
         <%@ include file="include/header.jsp" %>
 
-        
+
 
         <div id="body">
             <%
@@ -130,16 +130,14 @@
             <div class="filters" style="float:left; width:100%; height:30px">
                 <div style="float:left; width:100px"><p class="dttTitle">Filters</p></div>
                 <div style="float:left; width:1000px;font-weight: bold;">
-                        <form action="ExecutionDetail.jsp" method="get" name="ExecFilters" id="ExecFilters">
-                            Id &nbsp;&nbsp;&nbsp;
-                            <input name="id_tc" id="id_tc" style="width: 350px" OnChange ="document.ExecFilters.submit()" value="<%= id_filter%>">
-                            <input type="submit" value="Apply">
-                        </form>
+                    <form action="ExecutionDetail.jsp" method="get" name="ExecFilters" id="ExecFilters">
+                        Id &nbsp;&nbsp;&nbsp;
+                        <input name="id_tc" id="id_tc" style="width: 350px" OnChange ="document.ExecFilters.submit()" value="<%= id_filter%>">
+                        <input type="submit" value="Apply">
+                    </form>
                 </div>
             </div>
             <%
-
-
 
                 /*
                  * Get Execution Information
@@ -183,7 +181,6 @@
                     appSystem = applicationService.findApplicationByKey(myApplication).getSystem();
                     TCase myTestCase = testCaseService.findTestCaseByKey(test, testCase);
                     tcGroup = myTestCase.getGroup();
-                    
 
                     newBugURL = myApplicationService.findApplicationByKey(myApplication).getBugTrackerNewUrl();
                     if (!StringUtil.isNullOrEmpty(newBugURL)) {
@@ -203,8 +200,8 @@
             %>
             <div style="clear:both" id="table">
                 <br>
-            
-<input id="statushidden" value="<%=rs_inf.getString("ControlStatus")%>" hidden="hidden">
+
+                <input id="statushidden" value="<%=rs_inf.getString("ControlStatus")%>" hidden="hidden">
                 <table class="tableBorder" style="text-align: left" border="1" >
                     <tr id="header" style="font-style: italic">
                         <td style="font-weight: bold; width: 140px"><%out.print(docService.findLabelHTML("testcaseexecution", "id", "ID"));%></td>
@@ -262,22 +259,22 @@
                             // If status is pending, there will be no end timestamp feeded 
                             // and we should not even try to display it.%>
                         <% if (rs_inf.getString("ControlStatus").equalsIgnoreCase("OK")) {
-                        %><td><%= rs_inf.getString("End")%></td>
+%><td><%= rs_inf.getString("End")%></td>
                         <td class="OK"><a class="OKF"><span id="res_status"><%= rs_inf.getString("ControlStatus")%></span></a><br><a style="color :green"><span id="res_elapsedtime"><%= rs_inf.getString("time_elapsed")%></span> s</a></td><%
                         } else if (rs_inf.getString("ControlStatus").equalsIgnoreCase("KO")) {
-                            %><td><%= rs_inf.getString("End")%></td>
+                                    %><td><%= rs_inf.getString("End")%></td>
                         <td class="KO"><a class="KOF"><span id="res_status"><%= rs_inf.getString("ControlStatus")%></span></a></td><%
                         } else if (rs_inf.getString("ControlStatus").equalsIgnoreCase("NA")) {
-                        %><td><%= rs_inf.getString("End")%></td>
+                                %><td><%= rs_inf.getString("End")%></td>
                         <td class="NA"><a class="NAF"><span id="res_status"><%= rs_inf.getString("ControlStatus")%></span></a></td><%
                         } else if (rs_inf.getString("ControlStatus").equalsIgnoreCase("FA")) {
-                        %><td><%= rs_inf.getString("End")%></td>
+                                %><td><%= rs_inf.getString("End")%></td>
                         <td class="FA"><a class="FAF"><span id="res_status"><%= rs_inf.getString("ControlStatus")%></span></a></td><%
                         } else if (rs_inf.getString("ControlStatus").equalsIgnoreCase("PE")) {
-                        %><td>...</td>
+                                %><td>...</td>
                         <td class="PE"><a class="PEF"><span id="res_status"><%= rs_inf.getString("ControlStatus")%></span></a></td><%
                         } else {
-                        %><td><%= rs_inf.getString("End")%></td>
+                                %><td><%= rs_inf.getString("End")%></td>
                         <td><span id="res_status"><%= rs_inf.getString("ControlStatus")%></span></td><%
                             }%>
                     </tr>
@@ -302,7 +299,7 @@
                     </tr>
                     <tr>
                         <td colspan=9>
-                            <span id="comment"><%= comment == null ? "" : comment %></span>
+                            <span id="comment"><%= comment == null ? "" : comment%></span>
                             <br>
                             <a href="TestCase.jsp?Test=<%=test%>&TestCase=<%=testCase%>&Load=Load&Tinf=Y">Modify the Test Case comment.</a>
                         </td>
@@ -314,26 +311,25 @@
                         <td colspan=4><span id="bugid"><%
                             if (StringUtil.isNullOrEmpty(bugid)) {
                                 %><a href="<%= newBugURL%>" target='_blank' title="title">Open a bug.</a><%
-                            } else {
-                                
-                                String bugURL = myApplicationService.findApplicationByKey(myApplication).getBugTrackerUrl();
-                                if (StringUtil.isNullOrEmpty(bugURL)) {
-                                    %><%=bugid %><%
                                 } else {
-                                    bugURL = bugURL.replaceAll("%BUGID%", bugid);
-                                    %><a href="<%= bugURL%>" target='_blank' title="title"><%=bugid%></a><%
-                                }
-                            }
-                        %>
+
+                                    String bugURL = myApplicationService.findApplicationByKey(myApplication).getBugTrackerUrl();
+                                    if (StringUtil.isNullOrEmpty(bugURL)) {
+                                %><%=bugid%><%
+                                    } else {
+                                        bugURL = bugURL.replaceAll("%BUGID%", bugid);
+                                %><a href="<%= bugURL%>" target='_blank' title="title"><%=bugid%></a><%
+                                            }
+                                        }
+                                %>
                         </td>
                     </tr>
                 </table>
             </div>
-                    <input type="button" value="Stop Auto Refresh" onclick="document.getElementById('refreshAuto').value='Stop'">
+            <input type="button" value="Stop Auto Refresh" onclick="document.getElementById('refreshAuto').value = 'Stop'">
             <br/><br/>
             <div id="tablewwwsum">
                 <%
-
                     ITCEwwwSumService tcewwwsumService = appContext.getBean(ITCEwwwSumService.class);
 
                     List<TestcaseExecutionwwwSum> tcewwwsumdetails = tcewwwsumService.getAllDetailsFromTCEwwwSum(Integer.valueOf(id_filter));
@@ -423,11 +419,11 @@
                         ITestCaseExecutionDataService testCaseExecutionDataService = appContext.getBean(ITestCaseExecutionDataService.class);
 
                         List<TestCaseExecutionData> dataList = testCaseExecutionDataService.findTestCaseExecutionDataById(iD);%>
-                    
+
                     <%
                         String myStep = "";
-                            String myAction = "";
-                            Integer myKey = 0;
+                        String myAction = "";
+                        Integer myKey = 0;
 
                         ITestCaseStepExecutionService testCaseStepExecutionService = appContext.getBean(ITestCaseStepExecutionService.class);
                         ITestCaseStepService testCaseStepService = appContext.getBean(ITestCaseStepService.class);
@@ -452,29 +448,32 @@
                                 }
                                 String conditionalDisplay = "inline";
                                 String conditionalHidden = "none";
-                                if (myStepData.getReturnCode().equals("OK")){
-                                conditionalDisplay = "none";
-                                conditionalHidden = "inline";
+                                if (myStepData.getReturnCode().equals("OK")) {
+                                    conditionalDisplay = "none";
+                                    conditionalHidden = "inline";
                                 }
-                                
-                                String stepIdentifier = myStepData.getTest()+myStepData.getTestCase()+myStepData.getStep();
-                                
+
+                                String stepIdentifier = myStepData.getTest() + myStepData.getTestCase() + myStepData.getStep();
+
                         %>
                         <tr class="tableHeader">
                             <td style="width:20px" class="<%=myStepData.getReturnCode()%>"><a class="<%=myStepData.getReturnCode()%>F"><%=myStepData.getReturnCode()%></a></td>
                             <td align="left"><%=styleMainTestCase1%><%=myTCSDesc%><%=styleMainTestCase2%>    (  
-                            <%=myStepData.getTimeElapsed()%> s )
-                            <a id="dropDownUpArrow<%=stepIdentifier%>" style="display:<%=conditionalDisplay%>"
-                            onclick="javascript:switchTableVisibleInvisible('dropDownDownArrow<%=stepIdentifier%>', 'dropDownUpArrow<%=stepIdentifier%>');switchTableVisibleInvisible('dropDownDownArrow<%=stepIdentifier%>', 'actionTable<%=stepIdentifier%>'); "><img src="images/dropdownup.gif"/></a>
-                    
-                        <a id="dropDownDownArrow<%=stepIdentifier%>" style="display:<%=conditionalHidden%>"
-                            onclick="javascript:switchTableVisibleInvisible('actionTable<%=stepIdentifier%>', 'dropDownDownArrow<%=stepIdentifier%>');switchTableVisibleInvisible('dropDownUpArrow<%=stepIdentifier%>','dropDownDownArrow<%=stepIdentifier%>') "><img src="images/dropdown.gif"/></a>
-                    </td>
+                                <%=myStepData.getTimeElapsed()%> s )
+                                <a id="dropDownUpArrow<%=stepIdentifier%>" style="display:<%=conditionalDisplay%>"
+                                   onclick="javascript:switchTableVisibleInvisible('dropDownDownArrow<%=stepIdentifier%>', 'dropDownUpArrow<%=stepIdentifier%>');
+                                           switchTableVisibleInvisible('dropDownDownArrow<%=stepIdentifier%>', 'actionTable<%=stepIdentifier%>');
+                                           "><img src="images/dropdownup.gif"/></a>
+
+                                <a id="dropDownDownArrow<%=stepIdentifier%>" style="display:<%=conditionalHidden%>"
+                                   onclick="javascript:switchTableVisibleInvisible('actionTable<%=stepIdentifier%>', 'dropDownDownArrow<%=stepIdentifier%>');
+                                           switchTableVisibleInvisible('dropDownUpArrow<%=stepIdentifier%>', 'dropDownDownArrow<%=stepIdentifier%>')"><img src="images/dropdown.gif"/></a>
+                            </td>
                             <td align="right"><%=DateUtil.getFormatedDate(myStepData.getFullStart())%>  >>  
-                            <%=DateUtil.getFormatedDate(myStepData.getFullEnd())%> (
-                            <%=styleMainTestCase1%><%=myStepData.getTest()%><%=styleMainTestCase2%> / 
-                            <%=styleMainTestCase1%><%=myStepData.getTestCase()%><%=styleMainTestCase2%> / 
-                            <%=styleMainTestCase1%>Step <%=myStepData.getStep()%><%=styleMainTestCase2%> )
+                                <%=DateUtil.getFormatedDate(myStepData.getFullEnd())%> (
+                                <%=styleMainTestCase1%><%=myStepData.getTest()%><%=styleMainTestCase2%> / 
+                                <%=styleMainTestCase1%><%=myStepData.getTestCase()%><%=styleMainTestCase2%> / 
+                                <%=styleMainTestCase1%>Step <%=myStepData.getStep()%><%=styleMainTestCase2%> )
                             </td>
                         </tr>
                         <tr>
@@ -550,6 +549,10 @@
                                                         <a href="<%=PictureURL%><%=myControlData.getScreenshotFilename().replaceAll("\\\\", "/")%>" class="zoombox  zgallery1">img</a>
                                                         <%}%>
                                                     </td>
+                                                    <td style="width:10px"><%if (myControlData.getPageSourceFilename() != null) {%>
+                                                        <a href="<%=PictureURL%><%=myControlData.getPageSourceFilename().replaceAll("\\\\", "/")%>" id="ACTPS-<%=myStep + "-" + myControlData.getSequence()%>">src</a>
+                                                        <%}%>
+                                                    </td>
                                                 </tr>
                                                 <%
                                                     }
@@ -558,14 +561,12 @@
                                             </table>
                                         </td>
                                     </tr>
-                                    <%
-                                        }
+                                    <%                                        }
 
                                     %>
                                 </table>
                                 <br>
-                                <%
-                                    }
+                                <%                                    }
 
                                 %>
                             </td>
@@ -573,9 +574,8 @@
                     </table>
                     <br><br>
                     <p class="dttTitle">Properties</p>
-                            <table id="dataTable" class="tableBorder">
-                        <%
-                            for (TestCaseExecutionData myData : dataList) {
+                    <table id="dataTable" class="tableBorder">
+                        <%                            for (TestCaseExecutionData myData : dataList) {
                         %>
                         <tr>
                             <td class="<%=myData.getRC()%>"><span class="<%=myData.getRC()%>F" id="PROPSTS-<%=myData.getProperty()%>"><%=myData.getRC()%></span></td>
@@ -589,18 +589,14 @@
                         </tr>
                         <%
                             }
-                            
+
                         %>                        
                     </table>
-                    <%
-
-
-
-//                            GeneratePerformanceString gps = new GeneratePerformanceString();
+                    <%//                            GeneratePerformanceString gps = new GeneratePerformanceString();
 //                            data = gps.gps(conn, test, testCase, country);
-                        data = "";
+                            data = "";
 
-                    } else {
+                        }else {
                     %>
                     <br><br><table id="arrond" style="text-align: left" border="1" >
                         <tr id="header" style="font-style: italic">
@@ -627,17 +623,17 @@
 
                 <script class="code" type="text/javascript">
 
-                    $(document).ready(function(){
+                    $(document).ready(function() {
                         var input = window.document.getElementById("data").value.split("/d/");
                         var maxValue = input[0];
                         var dataList = input[1];
                         var list1 = dataList.split("/k/");
                         var datafin = new Array();
- 
-                        for ( var k = 0 ; k < 2 ; k++ ){
+
+                        for (var k = 0; k < 2; k++) {
                             var datas = list1[k].split("/p/");
                             var data2 = new Array();
-                            for ( var c = 0 ; c < datas.length ; c++){
+                            for (var c = 0; c < datas.length; c++) {
                                 var data3 = new Array();
                                 data3.push(datas[c].split(",")[0]);
                                 data3.push(datas[c].split(",")[1]);
@@ -647,134 +643,126 @@
                             datafin.push(data2);
                         }
                         //alert(datafin);
-                        var plot = $.jqplot (  'chart' , datafin , {
-                            title: 'TestCase Duration' ,
-                            legend: { show: true
-                            },
-    
-    
+                        var plot = $.jqplot('chart', datafin, {
+                            title: 'TestCase Duration',
+                            legend: {show: true
+                        },
                             grid: {
                                 background: '#f3f3f3',
                                 gridLineColor: '#accf9b'
                             },
-                            cursor:{
+                            cursor: {
                                 show: true,
-                                zoom:true,
-                                showTooltip:false
-                            } ,
+                                zoom: true,
+                                showTooltip: false
+                            },
                             axes: {
-                                xaxis: { //customisation de l'axe x
+                                xaxis: {//customisation de l'axe x
                                     renderer: $.jqplot.DateAxisRenderer
                                 },
-                                yaxis:{
-                                    min:0
-                                    //                        ,max:maxValue
-                                }  
+                                yaxis: {
+                                    min: 0
+                                            //                        ,max:maxValue
+                                }
                             }
                             ,
-                
-                            axesDefaults:{useSeriesColor: false}
+                            axesDefaults: {useSeriesColor: false}
                             ,
-                            series:[{showLine:false, markerOptions:{style:'filledDiamond'}, label :'OK'},
-                                {showLine:false, markerOptions:{style:'filledDiamond'}, label:'KO'}],
-                            seriesColors:["#22780F", "#ff5800"],
+                            series: [{showLine: false, markerOptions: {style: 'filledDiamond'}, label: 'OK'},
+                                {showLine: false, markerOptions: {style: 'filledDiamond'}, label: 'KO'}],
+                            seriesColors: ["#22780F", "#ff5800"],
                             //cursor:{show:true, zoom:true, showTooltip:false}, 
                             axesDefaults:{useSeriesColor: false},
-    
-                            highlighter: { //vignette lors du survol des point caracteristique de la courbe
+                            highlighter: {//vignette lors du survol des point caracteristique de la courbe
                                 sizeAdjust: 10,
-                                show:true,
+                                show: true,
                                 tooltipLocation: 'ne',
                                 useAxesFormatters: true,
                                 formatString: '<b>%s >> %s seconds</b>'
                             }
-                        }); 
+                        });
 
                         $('#chart').bind('jqplotDataClick',
-                        function (ev, seriesIndex, pointIndex, datas) {
-                            window.location.href='ExecutionDetail.jsp?id_tc='+datas[2];
-                        } );
+                                function(ev, seriesIndex, pointIndex, datas) {
+                                    window.location.href = 'ExecutionDetail.jsp?id_tc=' + datas[2];
+                                });
                     });
                 </script>
                 <script class="code" type="text/javascript">
 
-                    $(document).ready(function(){
-       
+                    $(document).ready(function() {
+
                         var test = document.getElementById("testValue").innerHTML;
                         var testcase = document.getElementById("testcaseValue").innerHTML;
                         var country = document.getElementById("countryValue").innerHTML;
-       
+
                         var ajaxDataRenderer = function(url, plot, options) {
                             var ret = null;
                             $.ajax({
                                 async: false,
                                 url: url,
-                                dataType:"json",
+                                dataType: "json",
                                 success: function(data) {
-                                    ret = data;}
+                                    ret = data;
+                                }
                             });
                             return ret;
                         };
- 
+
                         // The url for our json data
-                        var jsonurl = "./TestCaseActionExecutionDetail?test="+test+"&testcase="+testcase+"&country="+country;
-                        var legend = "./TestCaseActionExecutionDetail?test="+test+"&testcase="+testcase+"&country="+country;
-  
-                        var plot2 = $.jqplot (  'testchart' , jsonurl ,  {
-        
+                        var jsonurl = "./TestCaseActionExecutionDetail?test=" + test + "&testcase=" + testcase + "&country=" + country;
+                        var legend = "./TestCaseActionExecutionDetail?test=" + test + "&testcase=" + testcase + "&country=" + country;
+
+                        var plot2 = $.jqplot('testchart', jsonurl, {
                             dataRenderer: ajaxDataRenderer,
                             stackSeries: true,
-                            seriesDefaults:{
-                                renderer:$.jqplot.BarRenderer,
+                            seriesDefaults: {
+                                renderer: $.jqplot.BarRenderer,
                                 rendererOptions: {
                                     barWidth: 5,
-                                    highlightMouseDown: true   
+                                    highlightMouseDown: true
                                 },
                                 pointLabels: {show: true}
                             },
-     
-                            title: 'Sequence Duration' ,
+                            title: 'Sequence Duration',
                             legend: {
                                 renderer: $.jqplot.EnhancedLegendRenderer,
-                                show:true,
+                                show: true,
                                 location: 's',
-                                placement:'outside',
+                                placement: 'outside',
                                 yoffset: 30,
-                                rendererOptions:{
+                                rendererOptions: {
                                     numberRows: 2
                                 }
                             },
-    
                             grid: {
                                 background: '#f3f3f3',
                                 gridLineColor: '#accf9b'
                             },
-                            cursor:{
+                            cursor: {
                                 show: true,
-                                zoom:true,
-                                showTooltip:false
-                            } ,
+                                zoom: true,
+                                showTooltip: false
+                            },
                             axes: {
-                                xaxis: { 
+                                xaxis: {
                                     renderer: $.jqplot.DateAxisRenderer
                                 },
-                                yaxis:{
-                                    min:0,
-                                    tickOptions: { showMark: false
+                                yaxis: {
+                                    min: 0,
+                                    tickOptions: {showMark: false
                                     }
                                 }
                             }
                             ,
-                
-                            axesDefaults:{useSeriesColor: false},
-    
-                            highlighter: { 
-                                show:true,
+                            axesDefaults: {useSeriesColor: false},
+                            highlighter: {
+                                show: true,
                                 tooltipLocation: 'ne',
                                 useAxesFormatters: true,
                                 formatString: '<b>%s >> %s seconds</b>'
                             }
-                        }); 
+                        });
 
                     });
                 </script>
@@ -797,11 +785,11 @@
                         </td>
                         <td>
                             <%
-                            if (StringUtil.isNullOrEmpty(newBugURL)) {
+                                if (StringUtil.isNullOrEmpty(newBugURL)) {
                             %>
                             <a href="javascript:void(0)" title="Define the New Bug URL at the application level in order to open a bug from here.">Open a bug.</a> 
                             <%
-                                } else {
+                            } else {
                             %>
                             <a href="<%= newBugURL%>" target='_blank' title="title">Open a bug.</a> 
                             <%                                }
@@ -818,10 +806,16 @@
                         stmt0.close();
 
                     }
-                    catch(Exception e) {
+                    catch(Exception e
+
+                    
+                        ) {
                         out.println("<br> error message : " + e.getMessage() + " " + e.toString() + "<br>");
                         MyLogger.log("ExecutionDetail.jsp", Level.FATAL, " Exception catched." + e);
-                    } finally {
+                    }
+
+                    
+                        finally {
                         try {
                             conn.close();
                         } catch (Exception ex) {
@@ -837,35 +831,38 @@
                  * Or You can also use specific options
                  */
                 $('a.zoombox').zoombox({
-                    theme       : 'zoombox',        //available themes : zoombox,lightbox, prettyphoto, darkprettyphoto, simple
-                    opacity     : 0.8,              // Black overlay opacity
-                    duration    : 800,              // Animation duration
-                    animation   : false,             // Do we have to animate the box ?
-                    width       : 600,              // Default width
-                    height      : 400,              // Default height
-                    gallery     : true,             // Allow gallery thumb view
-                    overflow     : true,             // Allow gallery thumb view
-                    autoplay : false                // Autoplay for video
+                    theme: 'zoombox', //available themes : zoombox,lightbox, prettyphoto, darkprettyphoto, simple
+                    opacity: 0.8, // Black overlay opacity
+                    duration: 800, // Animation duration
+                    animation: false, // Do we have to animate the box ?
+                    width: 600, // Default width
+                    height: 400, // Default height
+                    gallery: true, // Allow gallery thumb view
+                    overflow: true, // Allow gallery thumb view
+                    autoplay: false                // Autoplay for video
                 });
 
                 // Image links displayed as a group
                 //$('a.zoombox').zoombox();
             </script>
             <script>
-    $(document).ready(function() {
-        var stat = document.getElementById("statushidden").value;
-        var idtc = document.getElementById("exeid").innerHTML;
-        
-        
-     if (stat === "PE"){
-         setTimeout(function(){
-             var refresh = document.getElementById("refreshAuto").value;
-             if(refresh !== 'Stop'){
-                 location.href='./ExecutionDetail.jsp?id_tc='+idtc}}, 1000);
-         
-     }
- });
+                $(document).ready(function() {
+                    var stat = document.getElementById("statushidden").value;
+                    var idtc = document.getElementById("exeid").innerHTML;
+
+
+                    if (stat === "PE") {
+                        setTimeout(function() {
+                            var refresh = document.getElementById("refreshAuto").value;
+                            if (refresh !== 'Stop') {
+                                location.href = './ExecutionDetail.jsp?id_tc=' + idtc
+                            }
+                        }, 1000);
+
+                    }
+                });
             </script>
-            <br><% out.print(display_footer(DatePageStart));%>
+            <br><% out.print (display_footer
+            (DatePageStart));%>
             </body>
             </html>

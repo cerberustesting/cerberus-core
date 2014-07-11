@@ -313,6 +313,14 @@ public class ExecutionRunService implements IExecutionRunService {
 
         }
         
+        /**
+         * If at that time the execution is still PE, we move it to OK. It means
+         * that no issue were met.
+         */
+        if ((tCExecution.getResultMessage() == null) || (tCExecution.getResultMessage().equals(new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_TESTSTARTED)))) {
+            tCExecution.setResultMessage(new MessageGeneral(MessageGeneralEnum.EXECUTION_OK));
+        }
+        
         recorderService.recordSeleniumLogAndGetName(tCExecution);
 
         try {
@@ -360,13 +368,7 @@ public class ExecutionRunService implements IExecutionRunService {
          * Saving TestCaseExecution object.
          */
         tCExecution.setEnd(new Date().getTime());
-        /**
-         * If at that time the execution is still PE, we move it to OK. It means
-         * that no issue were met.
-         */
-        if ((tCExecution.getResultMessage() == null) || (tCExecution.getResultMessage().equals(new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_TESTSTARTED)))) {
-            tCExecution.setResultMessage(new MessageGeneral(MessageGeneralEnum.EXECUTION_OK));
-        }
+        
         try {
             testCaseExecutionService.updateTCExecution(tCExecution);
         } catch (CerberusException ex) {

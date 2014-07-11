@@ -201,13 +201,13 @@ public class RecorderService implements IRecorderService {
     @Override
     public String recordSeleniumLogAndGetName(TestCaseExecution testCaseExecution) {
         
-        if (testCaseExecution.getSeleniumLog()==2 || (testCaseExecution.getSeleniumLog()==1 && !testCaseExecution.getStatus().equals("OK"))){
+        if (testCaseExecution.getSeleniumLog()==2 || (testCaseExecution.getSeleniumLog()==1 && !testCaseExecution.getControlStatus().equals("OK"))){
         MyLogger.log(RunTestCaseService.class.getName(), Level.INFO, "Saving File.");
 
         String test = testCaseExecution.getTest();
         String testCase = testCaseExecution.getTestCase();
 
-        String logFilename = "selenium_Log.DRIVER.txt";
+        String logFilename = "selenium_log.txt";
 
         String imgPath = "";
         try {
