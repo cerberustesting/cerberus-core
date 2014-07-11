@@ -409,11 +409,11 @@ public class SeleniumService implements ISeleniumService {
         try {
             WebDriverWait wait = new WebDriverWait(selenium.getDriver(), selenium.getDefaultWait());
             if (visible) {
-//                if (clickable) {
-//                    wait.until(ExpectedConditions.elementToBeClickable(locator));
-//                } else {
+                if (clickable) {
+                    wait.until(ExpectedConditions.elementToBeClickable(locator));
+                } else {
                     wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
-//                }
+                }
             } else {
                 wait.until(ExpectedConditions.presenceOfElementLocated(locator));
             }
@@ -663,6 +663,9 @@ public class SeleniumService implements ISeleniumService {
         try {
             if (!StringUtil.isNull(string1)) {
                 try {
+//                    Actions actions = new Actions(selenium.getDriver());
+//                    actions.click(this.getSeleniumElement(selenium, string1, true, true));
+//                    actions.build().perform();
                     this.getSeleniumElement(selenium, string1, true, true).click();
                     message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CLICK);
                     message.setDescription(message.getDescription().replaceAll("%ELEMENT%", string1));
