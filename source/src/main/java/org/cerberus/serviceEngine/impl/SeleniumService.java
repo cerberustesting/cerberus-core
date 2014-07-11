@@ -409,9 +409,10 @@ public class SeleniumService implements ISeleniumService {
         try {
             WebDriverWait wait = new WebDriverWait(selenium.getDriver(), selenium.getDefaultWait());
             if (visible) {
-                wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
                 if (clickable) {
                     wait.until(ExpectedConditions.elementToBeClickable(locator));
+                } else {
+                    wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
                 }
             } else {
                 wait.until(ExpectedConditions.presenceOfElementLocated(locator));
@@ -1526,30 +1527,30 @@ public class SeleniumService implements ISeleniumService {
         List<String> result = new ArrayList();
         Logs logs = selenium.getDriver().manage().logs();
         LogEntries logEntries = logs.get(LogType.DRIVER);
-        
+
         result.add("********************DRIVER********************\n");
         for (LogEntry logEntry : logEntries) {
-            result.add(new Date(logEntry.getTimestamp()) + " : " + logEntry.getLevel() + " : " + logEntry.getMessage()+"\n");
+            result.add(new Date(logEntry.getTimestamp()) + " : " + logEntry.getLevel() + " : " + logEntry.getMessage() + "\n");
         }
-        
+
         result.add("********************BROWSER********************\n");
         logEntries = logs.get(LogType.BROWSER);
         for (LogEntry logEntry : logEntries) {
-            result.add(new Date(logEntry.getTimestamp()) + " : " + logEntry.getLevel() + " : " + logEntry.getMessage()+"\n");
+            result.add(new Date(logEntry.getTimestamp()) + " : " + logEntry.getLevel() + " : " + logEntry.getMessage() + "\n");
         }
-        
+
         result.add("********************CLIENT********************\n");
         logEntries = logs.get(LogType.CLIENT);
         for (LogEntry logEntry : logEntries) {
-            result.add(new Date(logEntry.getTimestamp()) + " : " + logEntry.getLevel() + " : " + logEntry.getMessage()+"\n");
+            result.add(new Date(logEntry.getTimestamp()) + " : " + logEntry.getLevel() + " : " + logEntry.getMessage() + "\n");
         }
-        
+
         result.add("********************SERVER********************\n");
         logEntries = logs.get(LogType.SERVER);
         for (LogEntry logEntry : logEntries) {
-            result.add(new Date(logEntry.getTimestamp()) + " : " + logEntry.getLevel() + " : " + logEntry.getMessage()+"\n");
+            result.add(new Date(logEntry.getTimestamp()) + " : " + logEntry.getLevel() + " : " + logEntry.getMessage() + "\n");
         }
-        
+
         return result;
     }
 
