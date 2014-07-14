@@ -55,7 +55,8 @@
                 boolean SQLExecuted = false;
                 // SQL that has version equal to SQLLimit will not be executed automatically.
                 //Integer SQLLimit = 331; // 0.9.0 Version LEVEL.
-                Integer SQLLimit = 454; // 0.9.1 Version LEVEL.
+                //Integer SQLLimit = 454; // 0.9.1 Version LEVEL.
+                Integer SQLLimit = 509; // 1.0.0 Version LEVEL.
                 IFactoryMyversion factoryMyversion;
 
                 try {
