@@ -42,9 +42,11 @@ import org.cerberus.entity.Robot;
 import org.cerberus.entity.TestBatteryContent;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.service.ICampaignService;
+import org.cerberus.service.ILogEventService;
 import org.cerberus.service.IParameterService;
 import org.cerberus.service.IRobotService;
 import org.cerberus.service.ITestBatteryService;
+import org.cerberus.service.impl.LogEventService;
 import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;
 import org.springframework.context.ApplicationContext;
@@ -68,6 +70,13 @@ public class GetCampaignExecutionsCommand extends HttpServlet {
         response.setContentType("text/html;charset=UTF-8");
 
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+
+        /**
+         * Adding Log entry.
+         */
+        ILogEventService logEventService = appContext.getBean(LogEventService.class);
+        logEventService.insertLogEventPublicCalls("/GetCampaignExecutionsCommand", "CALL", "GetCampaignExecutionsCommandV0 called : " + request.getRequestURL(), request);
+
         campaignService = appContext.getBean(ICampaignService.class);
         testBatteryService = appContext.getBean(ITestBatteryService.class);
         parameterService = appContext.getBean(IParameterService.class);

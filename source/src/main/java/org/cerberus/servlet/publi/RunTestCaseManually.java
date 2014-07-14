@@ -34,6 +34,8 @@ import org.cerberus.entity.TestCaseStepAction;
 import org.cerberus.entity.TestCaseStepActionControl;
 import org.cerberus.log.MyLogger;
 import org.cerberus.service.ILoadTestCaseService;
+import org.cerberus.service.ILogEventService;
+import org.cerberus.service.impl.LogEventService;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -64,6 +66,13 @@ public class RunTestCaseManually extends HttpServlet {
         PrintWriter out = response.getWriter();
         try {
             ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+
+            /**
+             * Adding Log entry.
+             */
+            ILogEventService logEventService = appContext.getBean(LogEventService.class);
+            logEventService.insertLogEventPublicCalls("/RunTestCaseManually", "CALL", "RunTestCaseManuallyV0 called : " + request.getRequestURL(), request);
+
             ILoadTestCaseService loadTestCaseService = appContext.getBean(ILoadTestCaseService.class);
 
             TCase testCase = new TCase();
