@@ -318,9 +318,9 @@
                             </div>
                         </div>
                         <div style="float:left">
-                            <div style="clear:both; width:60px; text-align: left"><% out.print(docService.findLabelHTML("invariant", "Country", "Country"));%></div>
+                            <div style="clear:both; width:80px; text-align: left"><% out.print(docService.findLabelHTML("invariant", "Country", "Country"));%></div>
                             <div style="clear:both">
-                                <select size="16" id="country" name="Country" style="width: 60px"
+                                <select size="16" id="country" name="Country" style="width: 80px"
                                         onchange="getApplicationList()">
                                 </select>
                             </div>
@@ -335,7 +335,7 @@
                     <div  style="clear:both; width:100%">
                         <div style="clear:both">
                             <div style="float:left; width:100%; text-align: left">
-                                <p style="float:left" class="dttTitle">Choose Environment</p>
+                                <p style="float:left" class="dttTitle">Choose Environment&nbsp;&nbsp;</p>
                                 <div style="float:left; width:100px; text-align: left">
                                     <input type="radio" name="manualURL" value="N" onclick="setEnvAutomatic();
                                             switchDivVisibleInvisible('automatedEnvironmentDiv', 'manualEnvironmentDiv')" checked>Automatic
@@ -378,7 +378,7 @@
                 <br> 
                 <div class="filters" style="float:left; width:49%;height:180px">
                     <div style="clear:both">
-                        <p style="float:left;" class="dttTitle">Choose Robot</p>
+                        <p style="float:left;" class="dttTitle">Choose Robot&nbsp;&nbsp;</p>
                         <div style="float:left; text-align: left">
                             <input type="radio" name="manualRobot" value="Y" onclick="switchDivVisibleInvisible('manualRobotDiv', 'automatedRobotDiv');
                                     setRobotManual()" checked>Manual
