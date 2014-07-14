@@ -168,7 +168,7 @@ public class RunTestCase extends HttpServlet {
                 + "- screenshot : Activate or not the screenshots. [" + screenshot + "]\n"
                 + "- verbose : Verbose level of the execution. [" + verbose + "]\n"
                 + "- timeout : Timeout used for the action. If empty, the default value will be the one configured in parameter table. [" + timeout + "]\n"
-                + "- synchroneous : Synchroneous define if the servlet wait for the end of the execution to redirect to the execution report. [" + synchroneous + "\n"
+                + "- synchroneous : Synchroneous define if the servlet wait for the end of the execution to report its execution. [" + synchroneous + "\n"
                 + "- pageSource : Record Page Source during the execution. [" + getPageSource + "]\n"
                 + "- seleniumLog : Get the SeleniumLog at the end of the execution. [" + getSeleniumLog + "]\n";
 
@@ -264,10 +264,10 @@ public class RunTestCase extends HttpServlet {
                     out.println("<tr><td>Screenshot</td><td><span id='Screenshot'>" + screenshot + "</span></td></tr>");
                     out.println("<tr><td>PageSource</td><td><span id='PageSource'>" + getPageSource + "</span></td></tr>");
                     out.println("<tr><td>SeleniumLog</td><td><span id='SeleniumLog'>" + getSeleniumLog + "</span></td></tr>");
-                    out.println("<tr><td>Robot</td><td><span id='Browser'>" + robot + "</span></td></tr>");
+                    out.println("<tr><td>Robot</td><td><span id='Robot'>" + robot + "</span></td></tr>");
                     out.println("<tr><td>Browser</td><td><span id='Browser'>" + browser + "</span></td></tr>");
-                    out.println("<tr><td>Version</td><td><span id='Browser'>" + version + "</span></td></tr>");
-                    out.println("<tr><td>Platform</td><td><span id='Browser'>" + platform + "</span></td></tr>");
+                    out.println("<tr><td>Version</td><td><span id='Version'>" + version + "</span></td></tr>");
+                    out.println("<tr><td>Platform</td><td><span id='Platform'>" + platform + "</span></td></tr>");
                     out.println("<tr><td>ManualURL</td><td><span id='ManualURL'>" + tCExecution.isManualURL() + "</span></td></tr>");
                     out.println("<tr><td>MyHost</td><td><span id='MyHost'>" + tCExecution.getMyHost() + "</span></td></tr>");
                     out.println("<tr><td>MyContextRoot</td><td><span id='MyContextRoot'>" + tCExecution.getMyContextRoot() + "</span></td></tr>");
