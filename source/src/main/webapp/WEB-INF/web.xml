@@ -1057,10 +1057,17 @@
             <url-pattern>/ExecutionPerBuildRevision.jsp</url-pattern>
             <url-pattern>/NetworkTraficDetail.jsp</url-pattern>
             <url-pattern>/ReportingExecution.jsp</url-pattern>
+            <url-pattern>/ReportingExecutionV2.jsp</url-pattern>
+            <url-pattern>/ReportingExecutionResult.jsp</url-pattern>
             <url-pattern>/ReportingExecutionTime.jsp</url-pattern>
             <url-pattern>/Test.jsp</url-pattern>
             <url-pattern>/TestCase.jsp</url-pattern>
             <url-pattern>/TestCaseSearch.jsp</url-pattern>
+            <url-pattern>/TestBattery.jsp</url-pattern>
+            <url-pattern>/TestBatteryTestCaseResult.jsp</url-pattern>
+            <url-pattern>/TestBatteryTestCaseSearch.jsp</url-pattern>
+            <url-pattern>/TestCampaign.jsp</url-pattern>
+            <url-pattern>/ViewProperty.jsp</url-pattern>
             <url-pattern>/V2_TestCase2.jsp</url-pattern>
             <url-pattern>/TestPerApplication.jsp</url-pattern>
         </web-resource-collection>
@@ -1095,6 +1102,7 @@
             <url-pattern>/ImportTestCase.jsp</url-pattern>
             <url-pattern>/TestData.jsp</url-pattern>
             <url-pattern>/SqlLibrary.jsp</url-pattern>
+            <url-pattern>/SoapLibrary.jsp</url-pattern>
         </web-resource-collection>
         <web-resource-collection>
             <web-resource-name>servlet</web-resource-name>
