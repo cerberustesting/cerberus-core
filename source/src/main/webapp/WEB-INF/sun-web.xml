@@ -2,7 +2,7 @@
 <!DOCTYPE sun-web-app PUBLIC "-//Sun Microsystems, Inc.//DTD Application Server 9.0 Servlet 2.5//EN" "http://www.sun.com/software/appserver/dtds/sun-web-app_2_5-0.dtd">
 <sun-web-app error-url="">
   <parameter-encoding default-charset="UTF-8"/>
-  <context-root>/Cerberus-1.0.0</context-root>
+  <context-root>/Cerberus-1.0.1-SNAPSHOT</context-root>
   <security-role-mapping>
     <role-name>Administrator</role-name>
     <group-name>Administrator</group-name>
