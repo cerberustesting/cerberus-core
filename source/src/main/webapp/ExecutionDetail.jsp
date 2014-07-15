@@ -305,7 +305,7 @@
                         </td>
                         <td colspan=1>
                             <span id="seleniumLog">
-                                <a href="<%=PictureURL%>selenium_log.txt">Logs</a>
+                                <a href="<%=PictureURL+rs_inf.getString("Id")+"/"%>selenium_log.txt">Logs</a>
                             </span>
                         </td>
                         <td colspan=4><span id="bugid"><%
