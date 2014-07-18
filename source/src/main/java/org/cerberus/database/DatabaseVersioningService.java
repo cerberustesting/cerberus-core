@@ -3640,6 +3640,16 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("CHANGE COLUMN `useStepStep` `useStepStep` INT(10) NOT NULL DEFAULT '0' ;");
         SQLInstruction.add(SQLS.toString());
         
+//Create table usersystem 
+//-- ------------------------ 510   
+        SQLS = new StringBuilder();
+        SQLS.append("CREATE TABLE `usersystem` (");
+        SQLS.append("`Login` VARCHAR(10) NOT NULL,");
+        SQLS.append("`System` VARCHAR(45) NOT NULL,");
+        SQLS.append("PRIMARY KEY (`Login`, `System`));");
+        SQLInstruction.add(SQLS.toString());
+
+        
         return SQLInstruction;
     }
 }
