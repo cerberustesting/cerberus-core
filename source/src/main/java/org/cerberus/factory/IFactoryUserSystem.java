@@ -17,31 +17,15 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.entity;
+package org.cerberus.factory;
+
+import org.cerberus.entity.UserSystem;
 
 /**
  *
  * @author bcivel
  */
-public class UserSystem {
+public interface IFactoryUserSystem {
 
-    private String login;
-    private String system;
-
-    public String getLogin() {
-        return login;
-    }
-
-    public void setLogin(String login) {
-        this.login = login;
-    }
-
-    public String getSystem() {
-        return system;
-    }
-
-    public void setSystem(String system) {
-        this.system = system;
-    }
-
+    UserSystem create(String login, String system);
 }

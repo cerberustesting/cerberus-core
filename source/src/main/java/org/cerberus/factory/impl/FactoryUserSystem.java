@@ -17,31 +17,26 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.entity;
+package org.cerberus.factory.impl;
+
+import org.cerberus.entity.UserSystem;
+import org.cerberus.factory.IFactoryUserSystem;
+import org.springframework.stereotype.Service;
 
 /**
  *
  * @author bcivel
  */
-public class UserSystem {
+@Service
+public class FactoryUserSystem implements IFactoryUserSystem{
 
-    private String login;
-    private String system;
-
-    public String getLogin() {
-        return login;
+    @Override
+    public UserSystem create(String login, String system) {
+        UserSystem result = new UserSystem();
+        result.setLogin(login);
+        result.setSystem(system);
+        return result;
     }
-
-    public void setLogin(String login) {
-        this.login = login;
-    }
-
-    public String getSystem() {
-        return system;
-    }
-
-    public void setSystem(String system) {
-        this.system = system;
-    }
-
+    
+     
 }
