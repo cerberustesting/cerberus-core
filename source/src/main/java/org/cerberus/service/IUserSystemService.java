@@ -20,6 +20,7 @@
 package org.cerberus.service;
 
 import java.util.List;
+import org.cerberus.entity.User;
 import org.cerberus.entity.UserSystem;
 import org.cerberus.exception.CerberusException;
 
@@ -62,9 +63,10 @@ public interface IUserSystemService {
     void deleteUserSystem(UserSystem userSystem) throws CerberusException;
 
     /**
-     * @param userSystem
+     * @param user
+     * @param newSystems
      * @throws CerberusException
      */
-    void updateUserSystem(UserSystem userSystem) throws CerberusException;
-
+    void updateUserSystems(User user, List<UserSystem> newSystems) throws CerberusException;
+    
 }

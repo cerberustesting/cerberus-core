@@ -21,6 +21,7 @@ package org.cerberus.service.impl;
 
 import java.util.List;
 import org.cerberus.dao.IUserSystemDAO;
+import org.cerberus.entity.User;
 import org.cerberus.entity.UserSystem;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.service.IUserSystemService;
@@ -68,8 +69,21 @@ public class UserSystemService implements IUserSystemService {
     }
 
     @Override
-    public void updateUserSystem(UserSystem userSystem) throws CerberusException {
-        userSystemDAO.deleteUserSystem(userSystem);
+    public void updateUserSystems(User user, List<UserSystem> newSystems) throws CerberusException {
+        List<UserSystem> oldSystems = this.findUserSystemByUser(user.getLogin());
+
+        //delete if don't exist in new
+        for (UserSystem old : oldSystems) {
+            if (!newSystems.contains(old)) {
+                this.deleteUserSystem(old);
+            }
+        }
+        //insert if don't exist in old
+        for (UserSystem newS : newSystems) {
+            if (!oldSystems.contains(newS)) {
+                this.insertUserSystem(newS);
+            }
+        }
     }
     
 }

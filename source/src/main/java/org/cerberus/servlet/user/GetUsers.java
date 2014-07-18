@@ -20,20 +20,20 @@
 package org.cerberus.servlet.user;
 
 import java.io.IOException;
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.apache.log4j.Level;
 import org.cerberus.entity.Group;
 import org.cerberus.entity.User;
+import org.cerberus.entity.UserSystem;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.log.MyLogger;
 import org.cerberus.service.IUserGroupService;
 import org.cerberus.service.IUserService;
+import org.cerberus.service.IUserSystemService;
 import org.cerberus.service.impl.UserGroupService;
 import org.cerberus.service.impl.UserService;
 import org.json.JSONArray;
@@ -61,6 +61,7 @@ public class GetUsers extends HttpServlet {
 
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         IUserService userService = appContext.getBean(UserService.class);
+        IUserSystemService userSystemService = appContext.getBean(IUserSystemService.class);
         IUserGroupService userGroupService = appContext.getBean(UserGroupService.class);
         try {
             JSONObject jsonResponse = new JSONObject();
@@ -70,7 +71,7 @@ public class GetUsers extends HttpServlet {
                     u.put("login", myUser.getLogin());
                     u.put("name", myUser.getName());
                     u.put("team", myUser.getTeam());
-                    u.put("system", myUser.getDefaultSystem());
+                    u.put("defaultSystem", myUser.getDefaultSystem());
                     u.put("request", myUser.getRequest());
                     u.put("email", myUser.getEmail());
 
@@ -79,6 +80,12 @@ public class GetUsers extends HttpServlet {
                         groups.put(group.getGroup());
                     }
                     u.put("group", groups);
+                    
+                    JSONArray systems = new JSONArray();
+                    for (UserSystem sys : userSystemService.findUserSystemByUser(myUser.getLogin())) {
+                        systems.put(sys.getSystem());
+                    }
+                    u.put("system", systems);
 
                     data.put(u);
                 }
