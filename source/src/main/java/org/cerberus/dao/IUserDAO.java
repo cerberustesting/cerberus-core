@@ -84,4 +84,25 @@ public interface IUserDAO {
      * @return true if password match and false if password does not match.
      */
     boolean verifyPassword(User user, String password);
+    
+        /**
+     *
+     * @param start first row of the resultSet
+     * @param amount number of row of the resultSet
+     * @param column order the resultSet by this column
+     * @param dir Asc or desc, information for the order by command
+     * @param searchTerm search term on all the column of the resultSet
+     * @param individualSearch search term on a dedicated column of the
+     * resultSet
+     * @return
+     */
+    List<User> findTestDataListByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch);
+    
+    /**
+     * 
+     * @param searchTerm words to be searched in every column (Exemple : article)
+     * @param inds part of the script to add to where clause (Exemple : `type` = 'Article')
+     * @return The number of records for these criterias
+     */
+    Integer getNumberOfUserPerCriteria(String searchTerm, String inds);
 }

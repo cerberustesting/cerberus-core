@@ -362,4 +362,170 @@ public class UserDAO implements IUserDAO {
         factoryUser = new FactoryUser();
         return factoryUser.create(userID, login, password, request, name, team, reportingFavorite, robotHost, robotPort, robotPlatform, robotBrowser, robotVersion, robot, defaultSystem, email);
     }
+
+    @Override
+    public List<User> findTestDataListByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
+        List<User> result = new ArrayList<User>();
+        StringBuilder gSearch = new StringBuilder();
+        StringBuilder searchSQL = new StringBuilder();
+
+        StringBuilder query = new StringBuilder();
+        query.append("SELECT * FROM user ");
+
+        gSearch.append(" where (`login` like '%");
+        gSearch.append(searchTerm);
+        gSearch.append("%'");
+        gSearch.append(" or `name` like '%");
+        gSearch.append(searchTerm);
+        gSearch.append("%'");
+        gSearch.append(" or `team` like '%");
+        gSearch.append(searchTerm);
+        gSearch.append("%'");
+        gSearch.append(" or `defaultSystem` like '%");
+        gSearch.append(searchTerm);
+        gSearch.append("%'");
+        gSearch.append(" or `email` like '%");
+        gSearch.append(searchTerm);
+        gSearch.append("%'");
+        gSearch.append(" or `request` like '%");
+        gSearch.append(searchTerm);
+        gSearch.append("%')");
+
+        if (!searchTerm.equals("") && !individualSearch.equals("")) {
+            searchSQL.append(gSearch.toString());
+            searchSQL.append(" and ");
+            searchSQL.append(individualSearch);
+        } else if (!individualSearch.equals("")) {
+            searchSQL.append(" where `");
+            searchSQL.append(individualSearch);
+            searchSQL.append("`");
+        } else if (!searchTerm.equals("")) {
+            searchSQL.append(gSearch.toString());
+        }
+
+        query.append(searchSQL);
+        query.append("order by `");
+        query.append(column);
+        query.append("` ");
+        query.append(dir);
+        query.append(" limit ");
+        query.append(start);
+        query.append(" , ");
+        query.append(amount);
+
+        User user;
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query.toString());
+            try {
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+
+                    while (resultSet.next()) {
+                        result.add(this.loadUserFromResultSet(resultSet));
+                    }
+
+                } catch (SQLException exception) {
+                    MyLogger.log(UserDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                } finally {
+                    resultSet.close();
+                }
+
+            } catch (SQLException exception) {
+                MyLogger.log(UserDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+            } finally {
+                preStat.close();
+            }
+
+        } catch (SQLException exception) {
+            MyLogger.log(UserDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(UserDAO.class.getName(), Level.ERROR, e.toString());
+            }
+        }
+
+        return result;
+    }
+    
+    @Override
+    public Integer getNumberOfUserPerCriteria(String searchTerm, String inds) {
+        Integer result = 0;
+        StringBuilder query = new StringBuilder();
+        StringBuilder gSearch = new StringBuilder();
+        String searchSQL = "";
+
+        query.append("SELECT count(*) FROM `user` ");
+
+        gSearch.append(" where (`login` like '%");
+        gSearch.append(searchTerm);
+        gSearch.append("%'");
+        gSearch.append(" or `name` like '%");
+        gSearch.append(searchTerm);
+        gSearch.append("%'");
+        gSearch.append(" or `team` like '%");
+        gSearch.append(searchTerm);
+        gSearch.append("%'");
+        gSearch.append(" or `defaultSystem` like '%");
+        gSearch.append(searchTerm);
+        gSearch.append("%'");
+        gSearch.append(" or `email` like '%");
+        gSearch.append(searchTerm);
+        gSearch.append("%'");
+        gSearch.append(" or `request` like '%");
+        gSearch.append(searchTerm);
+        gSearch.append("%')");
+
+        if (!searchTerm.equals("") && !inds.equals("")) {
+            searchSQL = gSearch.toString() + " and " + inds;
+        } else if (!inds.equals("")) {
+            searchSQL = " where " + inds;
+        } else if (!searchTerm.equals("")) {
+            searchSQL = gSearch.toString();
+        }
+
+        query.append(searchSQL);
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query.toString());
+            try {
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+
+                    if (resultSet.first()) {
+                        result = resultSet.getInt(1);
+                    }
+
+                } catch (SQLException exception) {
+                    MyLogger.log(UserDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                } finally {
+                    resultSet.close();
+                }
+
+            } catch (SQLException exception) {
+                MyLogger.log(UserDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+            } finally {
+                preStat.close();
+            }
+
+        } catch (SQLException exception) {
+            MyLogger.log(UserDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(UserDAO.class.getName(), Level.ERROR, e.toString());
+            }
+        }
+        return result;
+
+    }
 }

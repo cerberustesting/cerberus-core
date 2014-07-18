@@ -112,6 +112,16 @@ public class UserService implements IUserService {
             return false;
         }
     }
+
+    @Override
+    public List<User> findUserListByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
+        return userDAO.findTestDataListByCriteria(start, amount, column, dir, searchTerm, individualSearch);
+    }
+    
+    @Override
+    public Integer getNumberOfUserPerCrtiteria(String searchTerm, String inds) {
+        return userDAO.getNumberOfUserPerCriteria(searchTerm, inds);
+    }
     
     
 }

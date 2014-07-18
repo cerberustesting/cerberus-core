@@ -521,6 +521,10 @@
         <servlet-name>UseTestCaseStep</servlet-name>
         <servlet-class>org.cerberus.servlet.testCase.UseTestCaseStep</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>FindAllUsers</servlet-name>
+        <servlet-class>org.cerberus.servlet.user.FindAllUsers</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>RunTestCase</servlet-name>
         <url-pattern>/RunTestCase</url-pattern>
@@ -1004,6 +1008,10 @@
     <servlet-mapping>
         <servlet-name>UseTestCaseStep</servlet-name>
         <url-pattern>/UseTestCaseStep</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>FindAllUsers</servlet-name>
+        <url-pattern>/FindAllUsers</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>

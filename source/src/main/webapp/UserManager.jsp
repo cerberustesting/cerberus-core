@@ -50,9 +50,9 @@
                         [20, 50, 100, 200, -1],
                         [20, 50, 100, 200, "All"]
                     ],
-                    "iDisplayLength": 50,
+                    "iDisplayLength": 20,
                     "bServerSide": true,
-                    "sAjaxSource": "GetUsers",
+                    "sAjaxSource": "FindAllUsers",
                     "bJQueryUI": true,
                     "bProcessing": true,
                     "sPaginationType": "full_numbers",
@@ -248,7 +248,7 @@
             <table id="usersTable" class="display">
                 <thead>
                     <tr>
-                        <th></th>
+                        <th>Groups</th>
                         <th>Login</th>
                         <th>Name</th>
                         <th>Team</th>
@@ -277,8 +277,8 @@
                 <label for="team">Team</label>
                 <%=ComboInvariantAjax(conn, "team", "", "team", "3", "TEAM", "", "", false)%>
                 <br /><br />
-                <label for="groups">User Group</label>
-                <%=ComboInvariantMultipleAjax(conn, "systems", "", "systems", "4", "SYSTEMS", "", "", false)%>
+                <label for="groups">Systems</label>
+                <%=ComboInvariantMultipleAjax(conn, "systems", "", "systems", "4", "SYSTEM", "", "", false)%>
                 <br /><br />
                 <label for="defaultSystem">Default System</label>
                 <%=ComboInvariantAjax(conn, "defaultSystem", "", "defaultSystem", "5", "SYSTEM", "", "", false)%>
