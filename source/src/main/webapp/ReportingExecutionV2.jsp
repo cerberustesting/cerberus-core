@@ -80,6 +80,7 @@
             $('#jsAdded').remove();
             $.each(country, function (index, elem) {
                 $('#TCComment').before("<th id='jsAdded' colspan='" + (browser.length * 2) + "'>" + elem + "</th>");
+//                $('#statistic').append("<th id='jsAdded' colspan='" + (6) + "'>" + elem + "</th>");
                 $.each(browser, function (i, e) {
                     $('#tableCountry').append("<th id='jsAdded' colspan='2'>" + e + "</th>");
                     $('#TCResult').append("<th id='jsAdded' class='TCResult'></th><th id='jsAdded'></th>");
@@ -139,23 +140,15 @@
                         $(this).addClass('row_selected');
                     });
 
-                    var countTest = {};
-                    countTest.Total = {};
-                    var countGroup = {};
-
-                    $.each(json.aaData, function(index, elem){
-                        var test = elem[0];
-                        var res = elem[6].result;
-                        if(res != ""){
-                            if(typeof countTest[test] == "undefined"){
-                                countTest[test] = {};
-                                countTest[test][res] = 1;
-                            } else if (typeof countTest[test][res] == "undefined"){
-                                countTest[test][res] = 1;
-                            } else{
-                                countTest[test][res] += 1;
-                            }
-                        }
+                    $('#statistic').dataTable({
+                        "aaData": json.statistic.aaData,
+                        "bJQueryUI": true,
+                        "bFilter": false,
+                        "bInfo": false,
+                        "bSort": false,
+                        "bPaginate": false,
+                        "bDestroy": true,
+                        "iDisplayLength": -1
                     });
                 }
             });
@@ -238,7 +231,7 @@
         for (String key : options.keySet()) {
             select += " <option value=\"" + key + "\"";
 
-            if ((parameter != null) && (parameter.indexOf(key + ",") >= 0)) {
+            if (parameter.contains(key + ",")) {
                 select += " SELECTED ";
             }
             select += ">" + options.get(key) + "</option>\n";
@@ -669,6 +662,42 @@
         <tr id="TCResult"></tr>
         </thead>
         <tbody></tbody>
+    </table>
+</div>
+
+<div id="divStatistic" style="margin-top: 25px">
+    <table id="statistic" class="display" style="color: #555555;font-family: Trebuchet MS;font-weight: bold;">
+        <thead>
+            <tr>
+                <th rowspan="2">Tests</th>
+                <th colspan="7">BE</th>
+                <th colspan="7">ES</th>
+                <th colspan="7">PT</th>
+            </tr>
+            <tr>
+                <th>OK</th>
+                <th>KO</th>
+                <th>FA</th>
+                <th>PE</th>
+                <th>NA</th>
+                <th>NE</th>
+                <th>TOTAL</th>
+                <th>OK</th>
+                <th>KO</th>
+                <th>FA</th>
+                <th>PE</th>
+                <th>NA</th>
+                <th>NE</th>
+                <th>TOTAL</th>
+                <th>OK</th>
+                <th>KO</th>
+                <th>FA</th>
+                <th>PE</th>
+                <th>NA</th>
+                <th>NE</th>
+                <th>TOTAL</th>
+            </tr>
+        </thead>
     </table>
 </div>
 </body>
