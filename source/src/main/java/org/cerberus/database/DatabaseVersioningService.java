@@ -3648,8 +3648,14 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("`System` VARCHAR(45) NOT NULL,");
         SQLS.append("PRIMARY KEY (`Login`, `System`));");
         SQLInstruction.add(SQLS.toString());
-
         
+//Create table usersystem 
+//-- ------------------------ 511   
+        SQLS = new StringBuilder();
+        SQLS.append("insert into usersystem ");
+        SQLS.append("select u.login, i.value from user u, invariant i where i.idname='SYSTEM';");
+        SQLInstruction.add(SQLS.toString());
+
         return SQLInstruction;
     }
 }
