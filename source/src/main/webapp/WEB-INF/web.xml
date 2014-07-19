@@ -1283,6 +1283,7 @@
             <url-pattern>/GetParameterSystem</url-pattern>
             <url-pattern>/UpdateParameter</url-pattern>
             <url-pattern>/GetUsers</url-pattern>
+            <url-pattern>/FindAllUsers</url-pattern>
             <url-pattern>/AddUser</url-pattern>
             <url-pattern>/UpdateUser</url-pattern>
             <url-pattern>/DeleteUser</url-pattern>
