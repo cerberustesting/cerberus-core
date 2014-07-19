@@ -22,32 +22,35 @@ package org.cerberus.servlet.user;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.cerberus.entity.Group;
 import org.cerberus.entity.User;
+import org.cerberus.entity.UserSystem;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.factory.IFactoryGroup;
 import org.cerberus.factory.IFactoryLogEvent;
 import org.cerberus.factory.IFactoryUser;
+import org.cerberus.factory.IFactoryUserSystem;
 import org.cerberus.factory.impl.FactoryGroup;
 import org.cerberus.factory.impl.FactoryLogEvent;
 import org.cerberus.factory.impl.FactoryUser;
+import org.cerberus.factory.impl.FactoryUserSystem;
 import org.cerberus.service.ILogEventService;
 import org.cerberus.service.IParameterService;
 import org.cerberus.service.IUserGroupService;
 import org.cerberus.service.IUserService;
+import org.cerberus.service.IUserSystemService;
 import org.cerberus.service.impl.LogEventService;
 import org.cerberus.service.impl.ParameterService;
 import org.cerberus.service.impl.UserGroupService;
 import org.cerberus.service.impl.UserService;
+import org.cerberus.service.impl.UserSystemService;
 import org.cerberus.serviceEmail.IEmailGeneration;
 import org.cerberus.serviceEmail.impl.EmailGeneration;
 import org.cerberus.util.ParameterParserUtil;
@@ -82,6 +85,7 @@ public class AddUser extends HttpServlet {
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         IUserService userService = appContext.getBean(UserService.class);
         IUserGroupService userGroupService = appContext.getBean(UserGroupService.class);
+        IUserSystemService userSystemService = appContext.getBean(UserSystemService.class);
         IEmailGeneration generateEmailService = appContext.getBean(EmailGeneration.class);
         IFactoryUser factory = appContext.getBean(FactoryUser.class);
         IParameterService parameterService = appContext.getBean(ParameterService.class);
@@ -104,6 +108,12 @@ public class AddUser extends HttpServlet {
             for (String group : request.getParameterValues("groups")) {
                 groups.add(factoryGroup.create(group));
             }
+            
+            IFactoryUserSystem factorySystem = new FactoryUserSystem();
+            List<UserSystem> systems = new ArrayList<UserSystem>();
+            for (String sys : request.getParameterValues("systems")) {
+                systems.add(factorySystem.create(login, sys));
+            }
 
             /**
              * Creating user.
@@ -112,6 +122,10 @@ public class AddUser extends HttpServlet {
 
             userService.insertUser(myUser);
             userGroupService.updateUserGroups(myUser, groups);
+            
+            for (UserSystem us : systems){
+            userSystemService.insertUserSystem(us);
+            }
 
             /**
              * Send Email to explain how to connect Cerberus if
