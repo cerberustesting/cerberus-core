@@ -1,9 +1,12 @@
 package org.cerberus.servlet.reporting;
 
+import org.cerberus.entity.Invariant;
 import org.cerberus.entity.TCase;
 import org.cerberus.entity.TestCaseExecution;
+import org.cerberus.exception.CerberusException;
 import org.cerberus.factory.IFactoryTCase;
 import org.cerberus.factory.impl.FactoryTCase;
+import org.cerberus.service.IInvariantService;
 import org.cerberus.service.ITestCaseExecutionService;
 import org.cerberus.service.ITestCaseService;
 import org.cerberus.util.StringUtil;
@@ -22,8 +25,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @WebServlet(name = "GetReport", urlPatterns = {"/GetReport"})
 @Component
@@ -33,6 +35,7 @@ public class GetReport extends HttpServlet {
         ApplicationContext applicationContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         ITestCaseService testCaseService = applicationContext.getBean(ITestCaseService.class);
         ITestCaseExecutionService testCaseExecutionService = applicationContext.getBean(ITestCaseExecutionService.class);
+        IInvariantService invariantService = applicationContext.getBean(IInvariantService.class);
 
         TCase tCase = this.getTestCaseFromRequest(req);
 
@@ -46,12 +49,16 @@ public class GetReport extends HttpServlet {
         String port = this.getValue(req, "Port");
         String tag = this.getValue(req, "Tag");
         String browserVersion = this.getValue(req, "BrowserFullVersion");
-        List<TCase> list = testCaseService.findTestCaseByAllCriteria(tCase, "", "VC");
+        String system = this.getValues(req, "System");
+        List<TCase> list = testCaseService.findTestCaseByAllCriteria(tCase, "", system);
 
         JSONArray data = new JSONArray();
+        Map<String, Map<String, Map<String, Integer>>> mapTests = new LinkedHashMap<String, Map<String, Map<String, Integer>>>();
         try {
+            List<Invariant> tcestatus = invariantService.findListOfInvariantById("TCESTATUS");
 
             for (TCase tc : list) {
+                Map<String, Map<String, Integer>> map = new LinkedHashMap<String, Map<String, Integer>>();
                 JSONArray array = new JSONArray();
                 array.put(tc.getTest());
                 array.put(tc.getTestCase());
@@ -60,6 +67,10 @@ public class GetReport extends HttpServlet {
                 array.put(tc.getPriority());
                 array.put(tc.getStatus());
                 for (String country : req.getParameterValues("Country")) {
+                    Map<String, Integer> status = new HashMap<String, Integer>();
+                    for (Invariant inv : tcestatus){
+                        status.put(inv.getValue(), 0);
+                    }
                     for (String browser : req.getParameterValues("Browser")) {
                         TestCaseExecution tce = testCaseExecutionService.findLastTCExecutionByCriteria(tc.getTest(), tc.getTestCase(),
                                 environment, country, build, revision, browser, browserVersion, ip, port, tag);
@@ -71,29 +82,52 @@ public class GetReport extends HttpServlet {
                             Date date = new Date(tce.getStart());
                             DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
                             array.put(formatter.format(date));
+                            status.put(tce.getControlStatus(), status.get(tce.getControlStatus())+1);
                         } else {
                             array.put("");
                             array.put("");
                         }
                     }
+                    map.put(country, status);
                 }
                 array.put(tc.getComment());
                 array.put(tc.getBugID() + "for " + tc.getTargetSprint() + "/" + tc.getTargetRevision());
                 array.put(tc.getGroup());
 
                 data.put(array);
-
+                mapTests.put(tc.getTest(), map);
             }
 
             JSONObject json = new JSONObject();
 
+            JSONObject statistic = new JSONObject();
+
+            JSONArray test = new JSONArray();
+            for (Map.Entry<String, Map<String, Map<String, Integer>>> entryTest : mapTests.entrySet()){
+                JSONArray status = new JSONArray();
+                status.put(entryTest.getKey());
+                for (Map.Entry<String, Map<String, Integer>> entryCountry : entryTest.getValue().entrySet()){
+                    int total = 0;
+                    for (Map.Entry<String, Integer> entryStatus : entryCountry.getValue().entrySet()){
+                        status.put(entryStatus.getValue());
+                        total += entryStatus.getValue();
+                    }
+                    status.put(total);
+                }
+                test.put(status);
+            }
+            statistic.put("aaData", test);
+
             json.put("aaData", data);
+            json.put("statistic", statistic);
             json.put("iTotalRecords", data.length());
             json.put("iTotalDisplayRecords", data.length());
             resp.setContentType("application/json");
             resp.getWriter().print(json.toString());
 
         } catch (JSONException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        } catch (CerberusException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
     }
