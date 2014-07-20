@@ -20,8 +20,8 @@
 package org.cerberus.version;
 public final class Version {
     public static final String PROJECT_NAME = "Cerberus";
-    public static final String VERSION = "1.0.1-SNAPSHOT";
-    public static final String PROJECT_NAME_VERSION = "Cerberus-1.0.1-SNAPSHOT";
+    public static final String VERSION = "1.0.1";
+    public static final String PROJECT_NAME_VERSION = "Cerberus-1.0.1";
     private Version() {
         //empty and commented construcotr to comply with Sonar rules
     }
