@@ -1,4 +1,12 @@
-Release 1.0
+Release 1.0.1
+
+#267  [bcivel]     Creation of UserSystem table. BuildContent.jsp not showing users and Sprint content cannot be correctly filled 			https://github.com/vertigo17/Cerberus/issues/267
+#265  [bcivel]     GetFromCookie does not show value2 on property 			https://github.com/vertigo17/Cerberus/commit/6e907e854d6ce40aefd81dd25a344370cea03120
+#262  [bcivel]     Enlarge function field on testcase page 			https://github.com/vertigo17/Cerberus/commit/156b41e6c9c85c20e885e38090d644e5a921a3bd
+#259  [bcivel]     In Execution Detail Page, Link to Selenium logs is not correct 			https://github.com/vertigo17/Cerberus/commit/f43de4c66bef20651c64463b6624ce3f505adf2d
+
+
+Release 1.0.0
 
 #22 	[bdumont] 	  Fixed issue in delete an application #22. 	https://github.com/vertigo17/Cerberus/commit/83bcc517d328ca42a9d4812afc6229346a512a6f
 #174	[bdumont] 	 Fixed issue in homepage with data not displayed #174. 	https://github.com/vertigo17/Cerberus/commit/38d78d7772f84abf7cf97a9e99382dad1e6f9f23
