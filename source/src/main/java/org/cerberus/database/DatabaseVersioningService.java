@@ -3655,6 +3655,13 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("insert into usersystem ");
         SQLS.append("select u.login, i.value from user u, invariant i where i.idname='SYSTEM';");
         SQLInstruction.add(SQLS.toString());
+        
+//Default value in sort on application table 
+//-- ------------------------ 512   
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `application` ");
+        SQLS.append("CHANGE COLUMN `sort` `sort` INT(11) NOT NULL DEFAULT 10 ;");
+        SQLInstruction.add(SQLS.toString());
 
         return SQLInstruction;
     }

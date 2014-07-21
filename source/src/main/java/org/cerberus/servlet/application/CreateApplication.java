@@ -60,9 +60,11 @@ public class CreateApplication extends HttpServlet {
             String bugTrackerURL = request.getParameter("BugTrackerURL");
             String newBugURL = request.getParameter("NewBugURL");
             String description = request.getParameter("Description");
-            Integer sort = 0;
+            Integer sort = 10;
             try {
+                if (request.getParameter("Sort")!=null && !request.getParameter("Sort").equals("")){
                 sort = Integer.valueOf(request.getParameter("Sort"));
+                }
 
                 ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
                 IApplicationService applicationService = appContext.getBean(IApplicationService.class);
