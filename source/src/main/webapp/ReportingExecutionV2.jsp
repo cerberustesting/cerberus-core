@@ -142,7 +142,7 @@
 
                     $('#statistic').dataTable({
                         "aaData": json.statistic.aaData,
-                        "bJQueryUI": true,
+                        "bJQueryUI": false,
                         "bFilter": false,
                         "bInfo": false,
                         "bSort": false,
@@ -666,7 +666,7 @@
 </div>
 
 <div id="divStatistic" style="margin-top: 25px">
-    <table id="statistic" class="display" style="color: #555555;font-family: Trebuchet MS;font-weight: bold;">
+    <table id="statistic" style="color: #555555;font-family: Trebuchet MS;font-weight: bold;">
         <thead>
             <tr>
                 <th rowspan="2">Tests</th>
