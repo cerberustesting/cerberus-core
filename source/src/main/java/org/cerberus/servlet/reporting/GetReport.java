@@ -56,9 +56,12 @@ public class GetReport extends HttpServlet {
         Map<String, Map<String, Map<String, Integer>>> mapTests = new LinkedHashMap<String, Map<String, Map<String, Integer>>>();
         try {
             List<Invariant> tcestatus = invariantService.findListOfInvariantById("TCESTATUS");
-
+            String oldTest = "";
+            Map<String, Map<String, Integer>> map = new LinkedHashMap<String, Map<String, Integer>>();
             for (TCase tc : list) {
-                Map<String, Map<String, Integer>> map = new LinkedHashMap<String, Map<String, Integer>>();
+                if (!tc.getTest().equals(oldTest)){
+                    map = new LinkedHashMap<String, Map<String, Integer>>();
+                }
                 JSONArray array = new JSONArray();
                 array.put(tc.getTest());
                 array.put(tc.getTestCase());
@@ -67,9 +70,14 @@ public class GetReport extends HttpServlet {
                 array.put(tc.getPriority());
                 array.put(tc.getStatus());
                 for (String country : req.getParameterValues("Country")) {
-                    Map<String, Integer> status = new HashMap<String, Integer>();
-                    for (Invariant inv : tcestatus){
-                        status.put(inv.getValue(), 0);
+                    Map<String, Integer> status;
+                    if (!tc.getTest().equals(oldTest)){
+                        status = new HashMap<String, Integer>();
+                        for (Invariant inv : tcestatus){
+                            status.put(inv.getValue(), 0);
+                        }
+                    } else {
+                        status = mapTests.get(tc.getTest()).get(country);
                     }
                     for (String browser : req.getParameterValues("Browser")) {
                         TestCaseExecution tce = testCaseExecutionService.findLastTCExecutionByCriteria(tc.getTest(), tc.getTestCase(),
@@ -96,6 +104,7 @@ public class GetReport extends HttpServlet {
 
                 data.put(array);
                 mapTests.put(tc.getTest(), map);
+                oldTest = tc.getTest();
             }
 
             JSONObject json = new JSONObject();
