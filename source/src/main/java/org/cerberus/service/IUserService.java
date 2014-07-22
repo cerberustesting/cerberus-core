@@ -107,4 +107,11 @@ public interface IUserService {
      * @return The number of records for these criterias
      */
     Integer getNumberOfUserPerCrtiteria(String searchTerm, String inds);
+    
+    /**
+     * @param login
+     * @return the user that match the login
+     * @throws CerberusException
+     */
+    User findUserByKeyWithDependencies(String login) throws CerberusException;
 }

@@ -19,7 +19,10 @@
  */
 package org.cerberus.factory;
 
+import java.util.List;
+import org.cerberus.entity.Group;
 import org.cerberus.entity.User;
+import org.cerberus.entity.UserSystem;
 
 /**
  * @author vertigo
@@ -42,11 +45,13 @@ public interface IFactoryUser {
      * @param robotVersion
      * @param robot
      * @param email             email of the user
+     * @param userSystems       List of system allowed to the user
+     * @param userGroups        List of group of the user
      * @return A User.
      */
     User create(int userID, String login, String password, String request, String name, 
             String team, String reportingFavorite, String robotHost,String robotPort, 
             String robotPlatform, String robotBrowser
-            ,String robotVersion, String robot, String defaultSystem, String email);
+            ,String robotVersion, String robot, String defaultSystem, String email, List<UserSystem> userSystems, List<Group> userGroups);
 
 }

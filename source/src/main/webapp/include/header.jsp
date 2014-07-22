@@ -17,6 +17,8 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
+<%@page import="java.util.Set"%>
+<%@page import="org.cerberus.entity.UserSystem"%>
 <%@page import="org.apache.log4j.Level"%>
 <%@page import="org.cerberus.log.MyLogger"%>
 <%@page import="org.cerberus.service.IDatabaseVersioningService"%>
@@ -58,9 +60,9 @@
                     <img src="images/dropdown.gif"/></a>
                 <ul class="subnav" id="subnavlist">
                     <li id="subactive"><a name="menu" id="menuEditTest" href="Test.jsp" style="width:160px">Edit Test</a></li>
-                    <% if (request.getUserPrincipal() != null && (request.isUserInRole("Test"))) {%>
+                        <% if (request.getUserPrincipal() != null && (request.isUserInRole("Test"))) {%>
                     <li id="subactive"><a name="menu" id="menuCreateTest" href="TestCreate.jsp" style="width:160px">Create Test</a></li>
-                    <% }%>
+                        <% }%>
                     <li id="subactive"><a name="menu" id="menuTestPerApplication" href="TestPerApplication.jsp" style="width:160px">Test Per Application</a></li>
                     <li id="subactive"><a name="menu" id="menuTestCampaign" href="TestCampaign.jsp" style="width:160px">Test Campaign</a></li>
                 </ul>
@@ -69,9 +71,9 @@
                     <img src="images/dropdown.gif"/></a>
                 <ul class="subnav" id="subnavlist">
                     <li id="subactive"><a name="menu" id="menuEditTestCase" href="TestCase.jsp" style="width:130px">Edit TestCase</a></li>
-                    <% if (request.getUserPrincipal() != null && (request.isUserInRole("Test"))) {%>
+                        <% if (request.getUserPrincipal() != null && (request.isUserInRole("Test"))) {%>
                     <li id="subactive"><a name="menu" id="menuCreateTestCase" href="TestCaseCreate.jsp" style="width:130px">Create TestCase</a></li>
-                    <% }%>
+                        <% }%>
                     <li id="subactive"><a name="menu" id="menuSearchTestCase" href="TestCaseSearch.jsp" style="width:130px">Search TestCase</a></li>
                     <li id="subactive"><a name="menu" id="menuTestBattery" href="TestBattery.jsp" style="width:130px">Test Battery</a></li>
                 </ul>
@@ -92,7 +94,7 @@
                     <img src="images/dropdown.gif"/></a>
                 <ul class="subnav" id="subnavlist">
                     <li id="subactive"><a name="menu" id="menuRunTestCase" href="RunTests.jsp" style="width:130px">Run Tests</a></li>
-                    <%--                              <li><a name="menu" id="menuResumeTestCase" href="ResumeTests.jsp" style="width:130px">Resume Tests</a></li> --%>
+                        <%--                              <li><a name="menu" id="menuResumeTestCase" href="ResumeTests.jsp" style="width:130px">Resume Tests</a></li> --%>
                     <li id="subactive"><a name="menu" id="menuRunManualTestCase" href="RunManualTestCase.jsp" style="width:130px">Run Manual Tests</a></li>
                 </ul>
             </li>
@@ -155,7 +157,7 @@
                         if (!(MyUser.equals(""))) {
 
                             // We load the user object.
-                            User MyUserobj = myUserService.findUserByKey(MyUser);
+                            User MyUserobj = myUserService.findUserByKeyWithDependencies(MyUser);
 
                             // If we are not already in changepassword page and user needs to change its password,
                             //    --> we redirect to Change Password page.
@@ -170,15 +172,27 @@
                                 MySystem = MyUserobj.getDefaultSystem();
                             } else {
                                 if (!(MyUserobj.getDefaultSystem().equals(MySystem))) {
-                                    MyUserobj.setDefaultSystem(MySystem);
-                                    myUserService.updateUser(MyUserobj);
-                                }
-                            }
+                                    List<String> systems = new ArrayList<String>();
+                                    for (UserSystem us : MyUserobj.getUserSystems()) {
+                                        systems.add(us.getSystem());
+                                    }
+                                    if (!systems.contains(MySystem)) {
+                %>
+                <script>alert("You're not allowed to navigate on this part !\n\nPlease, contact your Cerberus Administrator to modify your account permission.\n\nYou'll be redirected to your Default System.");
+                    location.href = location;
+                </script><%
+                                      } else {
 
-                        }
-                    }
+                                          MyUserobj.setDefaultSystem(MySystem);
+                                          myUserService.updateUser(MyUserobj);
+                                      }
+                                  }
+                              }
 
-                    request.setAttribute("MySystem", MySystem);
+                          }
+                      }
+
+                      request.setAttribute("MySystem", MySystem);
                 %>                
                 <select id="MySystem" style="" name="MySystem" onchange="document.SysFilter.submit()">
                     <%

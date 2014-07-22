@@ -360,7 +360,7 @@ public class UserDAO implements IUserDAO {
         String robot = ParameterParserUtil.parseStringParam(rs.getString("robot"), "");
         //TODO remove when working in test with mockito and autowired
         factoryUser = new FactoryUser();
-        return factoryUser.create(userID, login, password, request, name, team, reportingFavorite, robotHost, robotPort, robotPlatform, robotBrowser, robotVersion, robot, defaultSystem, email);
+        return factoryUser.create(userID, login, password, request, name, team, reportingFavorite, robotHost, robotPort, robotPlatform, robotBrowser, robotVersion, robot, defaultSystem, email, null, null);
     }
 
     @Override
