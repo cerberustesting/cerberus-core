@@ -19,7 +19,10 @@
  */
 package org.cerberus.factory.impl;
 
+import java.util.List;
+import org.cerberus.entity.Group;
 import org.cerberus.entity.User;
+import org.cerberus.entity.UserSystem;
 import org.cerberus.factory.IFactoryUser;
 import org.springframework.stereotype.Service;
 
@@ -33,7 +36,7 @@ public class FactoryUser implements IFactoryUser {
     public User create(int userID, String login, String password, String request, String name, String team,
             String reportingFavorite, String robotHost,String robotPort, 
             String robotPlatform, String robotBrowser
-            ,String robotVersion, String robot, String defaultSystem, String email) {
+            ,String robotVersion, String robot, String defaultSystem, String email, List<UserSystem> userSystems, List<Group> userGroups) {
         User newUser = new User();
         newUser.setUserID(userID);
         newUser.setLogin(login);
@@ -50,6 +53,8 @@ public class FactoryUser implements IFactoryUser {
         newUser.setRobotPort(robotPort);
         newUser.setRobotVersion(robotVersion);
         newUser.setRobot(robot);
+        newUser.setUserSystems(userSystems);
+        newUser.setUserGroups(userGroups);
         return newUser;
     }
 }

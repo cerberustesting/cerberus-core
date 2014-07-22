@@ -38,6 +38,7 @@ public interface IUserSystemDAO {
     List<UserSystem> findallUser() throws CerberusException;
     
     /**
+     * @param login
      * @return a list of all the userSystem of a user
      * @throws CerberusException
      */

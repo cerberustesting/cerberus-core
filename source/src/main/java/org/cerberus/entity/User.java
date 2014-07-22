@@ -17,6 +17,8 @@
  */
 package org.cerberus.entity;
 
+import java.util.List;
+
 /**
  * @author vertigo
  */
@@ -35,9 +37,26 @@ public class User {
     private String robotBrowser;
     private String robotVersion;
     private String robot;
-
     private String defaultSystem;
     private String email;
+    private List<UserSystem> userSystems;
+    private List<Group> userGroups;
+
+    public List<Group> getUserGroups() {
+        return userGroups;
+    }
+
+    public void setUserGroups(List<Group> userGroups) {
+        this.userGroups = userGroups;
+    }
+
+    public List<UserSystem> getUserSystems() {
+        return userSystems;
+    }
+
+    public void setUserSystems(List<UserSystem> userSystems) {
+        this.userSystems = userSystems;
+    }
 
     public String getRobotPort() {
         return robotPort;

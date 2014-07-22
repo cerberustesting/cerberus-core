@@ -20,13 +20,14 @@
 package org.cerberus.service.impl;
 
 import java.util.List;
-
 import org.cerberus.dao.IUserDAO;
 import org.cerberus.entity.MessageGeneral;
 import org.cerberus.entity.MessageGeneralEnum;
 import org.cerberus.entity.User;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.service.IUserGroupService;
 import org.cerberus.service.IUserService;
+import org.cerberus.service.IUserSystemService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -38,6 +39,10 @@ public class UserService implements IUserService {
 
     @Autowired
     private IUserDAO userDAO;
+    @Autowired
+    private IUserGroupService userGroupService;
+    @Autowired
+    private IUserSystemService userSystemService;
 
     @Override
     public User findUserByKey(String login) throws CerberusException {
@@ -122,6 +127,13 @@ public class UserService implements IUserService {
     public Integer getNumberOfUserPerCrtiteria(String searchTerm, String inds) {
         return userDAO.getNumberOfUserPerCriteria(searchTerm, inds);
     }
-    
-    
+
+    @Override
+    public User findUserByKeyWithDependencies(String login) throws CerberusException {
+        User result = this.findUserByKey(login);
+        result.setUserGroups(userGroupService.findGroupByKey(login));
+        result.setUserSystems(userSystemService.findUserSystemByUser(login));
+        return result;
+    }
+       
 }
