@@ -453,11 +453,6 @@ public class ExecutionRunService implements IExecutionRunService {
                     testCaseStepActionExecution.setExecutionResultMessage(testCaseExecutionData.getExecutionResultMessage());
 
                     /**
-                     * Record Screenshot, PageSource
-                     */
-                    recorderService.recordExecutionInformation(testCaseStepActionExecution, null);
-
-                    /**
                      * Register the empty Action in database.
                      */
                     if (testCaseExecutionData.getPropertyResultMessage().equals(new MessageEvent(MessageEventEnum.PROPERTY_FAILED_NO_PROPERTY_DEFINITION))) {
@@ -471,6 +466,12 @@ public class ExecutionRunService implements IExecutionRunService {
                                 testCaseExecutionData.getPropertyResultMessage().isDoScreenshot())
                         );
                     }
+
+                    /**
+                     * Record Screenshot, PageSource
+                     */
+                    recorderService.recordExecutionInformation(testCaseStepActionExecution, null);
+
                     MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Registering Action : " + testCaseStepActionExecution.getAction());
                     this.testCaseStepActionExecutionService.updateTestCaseStepActionExecution(testCaseStepActionExecution);
                     MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Registered Action");
