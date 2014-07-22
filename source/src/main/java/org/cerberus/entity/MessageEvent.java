@@ -37,13 +37,13 @@ public class MessageEvent {
      * option is set to 1). - the corresponding Execution message that will be
      * updated at the execution level.
      */
-    private int code;
-    private String codeString;
+    private final int code;
+    private final String codeString;
     private String description;
-    private boolean stopTest;
-    private boolean doScreenshot;
-    private boolean getPageSource;
-    private MessageGeneralEnum message;
+    private final boolean stopTest;
+    private final boolean doScreenshot;
+    private final boolean getPageSource;
+    private final MessageGeneralEnum message;
 
     public MessageEvent(MessageEventEnum tempMessage) {
         this.code = tempMessage.getCode();
@@ -53,6 +53,16 @@ public class MessageEvent {
         this.doScreenshot = tempMessage.isDoScreenshot();
         this.message = tempMessage.getMessage();
         this.getPageSource = tempMessage.isGetPageSource();
+    }
+
+    public MessageEvent(MessageEventEnum tempMessage, boolean pageSource, boolean doScreenshot) {
+        this.code = tempMessage.getCode();
+        this.codeString = tempMessage.getCodeString();
+        this.description = tempMessage.getDescription();
+        this.stopTest = tempMessage.isStopTest();
+        this.doScreenshot = doScreenshot;
+        this.message = tempMessage.getMessage();
+        this.getPageSource = pageSource;
     }
 
     public MessageGeneralEnum getMessage() {

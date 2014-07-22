@@ -19,10 +19,6 @@
  */
 package org.cerberus.serviceEngine.impl;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -57,7 +53,6 @@ import org.cerberus.log.MyLogger;
 import org.cerberus.service.ICountryEnvLinkService;
 import org.cerberus.service.ICountryEnvParamService;
 import org.cerberus.service.ILoadTestCaseService;
-import org.cerberus.service.IParameterService;
 import org.cerberus.service.ITestCaseCountryPropertiesService;
 import org.cerberus.service.ITestCaseExecutionDataService;
 import org.cerberus.service.ITestCaseExecutionService;
@@ -312,7 +307,7 @@ public class ExecutionRunService implements IExecutionRunService {
             }
 
         }
-        
+
         /**
          * If at that time the execution is still PE, we move it to OK. It means
          * that no issue were met.
@@ -320,7 +315,7 @@ public class ExecutionRunService implements IExecutionRunService {
         if ((tCExecution.getResultMessage() == null) || (tCExecution.getResultMessage().equals(new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_TESTSTARTED)))) {
             tCExecution.setResultMessage(new MessageGeneral(MessageGeneralEnum.EXECUTION_OK));
         }
-        
+
         recorderService.recordSeleniumLogAndGetName(tCExecution);
 
         try {
@@ -368,7 +363,7 @@ public class ExecutionRunService implements IExecutionRunService {
          * Saving TestCaseExecution object.
          */
         tCExecution.setEnd(new Date().getTime());
-        
+
         try {
             testCaseExecutionService.updateTCExecution(tCExecution);
         } catch (CerberusException ex) {
@@ -458,11 +453,6 @@ public class ExecutionRunService implements IExecutionRunService {
                     testCaseStepActionExecution.setExecutionResultMessage(testCaseExecutionData.getExecutionResultMessage());
 
                     /**
-                     * Record Screenshot, PageSource
-                     */
-                    recorderService.recordExecutionInformation(testCaseStepActionExecution, null);
-
-                    /**
                      * Register the empty Action in database.
                      */
                     if (testCaseExecutionData.getPropertyResultMessage().equals(new MessageEvent(MessageEventEnum.PROPERTY_FAILED_NO_PROPERTY_DEFINITION))) {
@@ -471,8 +461,17 @@ public class ExecutionRunService implements IExecutionRunService {
                         mes.setDescription(mes.getDescription().replaceAll("%COUNTRY%", testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getCountry()));
                         testCaseStepActionExecution.setActionResultMessage(mes);
                     } else {
-                        testCaseStepActionExecution.setActionResultMessage(new MessageEvent(MessageEventEnum.ACTION_FAILED_PROPERTYFAILED));
+                        testCaseStepActionExecution.setActionResultMessage(new MessageEvent(MessageEventEnum.ACTION_FAILED_PROPERTYFAILED,
+                                testCaseExecutionData.getPropertyResultMessage().isGetPageSource(),
+                                testCaseExecutionData.getPropertyResultMessage().isDoScreenshot())
+                        );
                     }
+
+                    /**
+                     * Record Screenshot, PageSource
+                     */
+                    recorderService.recordExecutionInformation(testCaseStepActionExecution, null);
+
                     MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Registering Action : " + testCaseStepActionExecution.getAction());
                     this.testCaseStepActionExecutionService.updateTestCaseStepActionExecution(testCaseStepActionExecution);
                     MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Registered Action");
