@@ -316,12 +316,16 @@ public class ExecutionRunService implements IExecutionRunService {
             tCExecution.setResultMessage(new MessageGeneral(MessageGeneralEnum.EXECUTION_OK));
         }
 
+        try {
         recorderService.recordSeleniumLogAndGetName(tCExecution);
+        } catch (Exception ex){
+            MyLogger.log(RunTestCaseService.class.getName(), Level.FATAL, "Exception Getting Selenium Logs "+tCExecution.getId()+" Exception :" + ex.toString());
+        }
 
         try {
             tCExecution = this.stopTestCase(tCExecution);
         } catch (Exception ex) {
-            MyLogger.log(RunTestCaseService.class.getName(), Level.FATAL, "Exception Stopping Test: " + ex.toString());
+            MyLogger.log(RunTestCaseService.class.getName(), Level.FATAL, "Exception Stopping Test "+tCExecution.getId()+" Exception :" + ex.toString());
         }
 
         try {
@@ -351,13 +355,17 @@ public class ExecutionRunService implements IExecutionRunService {
         /**
          * Stop Execution
          */
-        MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, tCExecution.getId() + " - Stop the execution.");
+        MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, tCExecution.getId() + " - Stop the execution "+tCExecution.getId()+" UUID:"+tCExecution.getExecutionUUID());
         this.stopRunTestCase(tCExecution);
 
         /**
          * Collecting and calculating Statistics.
          */
-        this.collectExecutionStats(tCExecution);
+        try {
+            this.collectExecutionStats(tCExecution);
+        } catch (Exception ex) {
+            MyLogger.log(RunTestCaseService.class.getName(), Level.FATAL, "Exception collecting stats for execution "+tCExecution.getId()+" Exception:" + ex.toString());
+        }
 
         /**
          * Saving TestCaseExecution object.
@@ -367,7 +375,7 @@ public class ExecutionRunService implements IExecutionRunService {
         try {
             testCaseExecutionService.updateTCExecution(tCExecution);
         } catch (CerberusException ex) {
-            Logger.getLogger(RunTestCaseService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            MyLogger.log(RunTestCaseService.class.getName(), Level.FATAL, "Exception updating Execution :"+tCExecution.getId()+" Exception:" + ex.toString());
         }
 
         return tCExecution;
