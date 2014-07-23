@@ -24,6 +24,16 @@
 <%@ page import="org.cerberus.entity.*" %>
 
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%
+    ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+    IDocumentationService docService = appContext.getBean(IDocumentationService.class);
+    ITestService testService = appContext.getBean(ITestService.class);
+    IProjectService projectService = appContext.getBean(IProjectService.class);
+    IInvariantService invariantService = appContext.getBean(InvariantService.class);
+    IBuildRevisionInvariantService buildRevisionInvariantService = appContext.getBean(IBuildRevisionInvariantService.class);
+    IApplicationService applicationService = appContext.getBean(IApplicationService.class);
+    IUserService userService = appContext.getBean(IUserService.class);
+%>
 
 <!DOCTYPE html>
 <html>
@@ -78,7 +88,13 @@
             postData = $(this).serialize();
             country = $('#Country').val();
             browser= $('#Browser').val();
-            var status = ["OK", "KO", "FA", "PE", "NA", "NE"];
+            var status = [
+            <%
+                for (Invariant status : invariantService.findListOfInvariantById("TCESTATUS")){
+                    out.print("'" + status.getValue() + "',");
+                }
+            %>
+                    ];
 
             $('#jsAdded').remove();
 
@@ -302,15 +318,6 @@
 %>
 
 <%
-    ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-    IDocumentationService docService = appContext.getBean(IDocumentationService.class);
-    ITestService testService = appContext.getBean(ITestService.class);
-    IProjectService projectService = appContext.getBean(IProjectService.class);
-    IInvariantService invariantService = appContext.getBean(InvariantService.class);
-    IBuildRevisionInvariantService buildRevisionInvariantService = appContext.getBean(IBuildRevisionInvariantService.class);
-    IApplicationService applicationService = appContext.getBean(IApplicationService.class);
-    IUserService userService = appContext.getBean(IUserService.class);
-
     TreeMap<String, String> options = new TreeMap<String, String>();
 
     User usr = userService.findUserByKey(request.getUserPrincipal().getName());

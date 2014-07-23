@@ -72,7 +72,7 @@ public class GetReport extends HttpServlet {
                 for (String country : req.getParameterValues("Country")) {
                     Map<String, Integer> status;
                     if (!tc.getTest().equals(oldTest)){
-                        status = new HashMap<String, Integer>();
+                        status = new LinkedHashMap<String, Integer>();
                         for (Invariant inv : tcestatus){
                             status.put(inv.getValue(), 0);
                         }
