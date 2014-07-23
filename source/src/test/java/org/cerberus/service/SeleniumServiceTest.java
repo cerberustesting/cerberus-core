@@ -327,7 +327,7 @@ public class SeleniumServiceTest {
     public void testDoActionOpenURLWithBaseObjectNullAndPropertyNotNull() {
         String object = "null";
         String property = "/test";
-        String msg = "Opened URL '" + property + "'.";
+        String msg = "Opened URL 'http://" + property + property + "'.";
 
         when(selenium.getDriver()).thenReturn(driver);
 
@@ -340,7 +340,7 @@ public class SeleniumServiceTest {
     public void testDoActionOpenURLWithBaseObjectNullAndPropertyNull() {
         String object = "null";
         String property = "null";
-        String msg = "Failed to open '" + object + "'.";
+        String msg = "Failed to open 'http://" + property + object + "'.";
 
         when(selenium.getDriver()).thenReturn(driver);
 
