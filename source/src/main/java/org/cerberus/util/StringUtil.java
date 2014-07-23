@@ -183,9 +183,11 @@ public final class StringUtil {
     }
 
     public static String replaceUrlByLinkInString(String text) {
-        Matcher matcher = urlMatch.matcher(text);
-        if (matcher.matches()) {
-            return matcher.replaceAll("<a href=\"$1\">$1</a>");
+        if (text != null && text.length() > 0) {
+            Matcher matcher = urlMatch.matcher(text);
+            if (matcher.matches()) {
+                return matcher.replaceAll("<a href=\"$1\">$1</a>");
+            }
         }
         return text;
     }
