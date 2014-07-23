@@ -39,7 +39,7 @@ public final class StringUtil {
      */
     public static final String NULL = "null";
 
-    private static final Pattern urlMatch = Pattern.compile("(.*://[^<>[:space:]]+[[:alnum:]/])");
+    private static final Pattern urlMatch = Pattern.compile("([a-zA-Z]*://[^<>[:space:]]+[[:alnum:]/])");
 
     /**
      * To avoid instanciation of utility class
