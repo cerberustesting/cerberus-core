@@ -501,8 +501,8 @@
                                         <td style="width:5%"><%=DateUtil.getFormatedElapsed(myActionData.getStartLong(), myActionData.getEndLong())%></td>
                                         <td style="width:5%"><%=myActionData.getSequence()%></td>
                                         <td style="width:20%"<%=actionDesc%>><b><%=myActionData.getAction()%></b></td>
-                                        <td style="width:20%"><%=myActionData.getObject()%></td>
-                                        <td style="width:20%"><%=myActionData.getProperty()%></td>
+                                        <td style="width:20%"><%=StringUtil.replaceUrlByLinkInString(myActionData.getObject())%></td>
+                                        <td style="width:20%"><%=StringUtil.replaceUrlByLinkInString(myActionData.getProperty())%></td>
                                         <td style="width:20%"><i><span id="ACTMES-<%=myStep + "-" + myActionData.getSequence()%>"><%=myActionData.getReturnMessage()%></span></i></td>
                                         <td style="width:10px"><%if (myActionData.getScreenshotFilename() != null) {%>
                                             <a href="<%=PictureURL%><%=myActionData.getScreenshotFilename().replaceAll("\\\\", "/")%>" id="ACTIMG-<%=myStep + "-" + myActionData.getSequence()%>" class="zoombox  zgallery1">img</a>
@@ -544,7 +544,7 @@
                                                     <td><%=myControlData.getControlProperty()%></td>
                                                     <td><%=myControlData.getControlValue()%></td>
                                                     <td><%=myControlData.getFatal()%></td>
-                                                    <td><i><span id="CTLMES-<%=myAction + "-" + myControlData.getControl()%>"><%=myControlData.getReturnMessage()%></span></i></td>
+                                                    <td><i><span id="CTLMES-<%=myAction + "-" + myControlData.getControl()%>"><%=StringUtil.replaceUrlByLinkInString(myControlData.getReturnMessage())%></span></i></td>
                                                     <td><%if (myControlData.getScreenshotFilename() != null) {%>
                                                         <a href="<%=PictureURL%><%=myControlData.getScreenshotFilename().replaceAll("\\\\", "/")%>" class="zoombox  zgallery1">img</a>
                                                         <%}%>

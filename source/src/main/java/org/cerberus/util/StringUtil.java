@@ -20,6 +20,8 @@
 package org.cerberus.util;
 
 import java.util.Random;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;
 
@@ -36,6 +38,8 @@ public final class StringUtil {
      * Represent null string
      */
     public static final String NULL = "null";
+
+    private static final Pattern urlMatch = Pattern.compile("(.*://[^<>[:space:]]+[[:alnum:]/])");
 
     /**
      * To avoid instanciation of utility class
@@ -176,5 +180,13 @@ public final class StringUtil {
     public static String sanitize(String inputString) {
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
         return policy.sanitize(inputString);
+    }
+
+    public static String replaceUrlByLinkInString(String text) {
+        Matcher matcher = urlMatch.matcher(text);
+        if (matcher.matches()) {
+            return matcher.replaceAll("<a href=\"$1\">$1</a>");
+        }
+        return text;
     }
 }
