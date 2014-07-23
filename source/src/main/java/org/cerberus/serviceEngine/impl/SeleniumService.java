@@ -1246,10 +1246,10 @@ public class SeleniumService implements ISeleniumService {
             }
             if (!StringUtil.isNull(url)) {
                 if (withBase) {
-                    selenium.getDriver().get("http://" + selenium.getIp() + url);
-                } else {
-                    selenium.getDriver().get(url);
+                    url = "http://" + selenium.getIp() + url;
                 }
+                selenium.getDriver().get(url);
+
                 message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_OPENURL);
                 message.setDescription(message.getDescription().replaceAll("%URL%", url));
                 return message;

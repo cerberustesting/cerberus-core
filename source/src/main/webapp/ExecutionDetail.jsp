@@ -541,10 +541,10 @@
                                                     <td><%=DateUtil.getFormatedElapsed(myControlData.getStartLong(), myControlData.getEndLong())%></td>
                                                     <td><%=myControlData.getControl()%></td>
                                                     <td<%=controlDesc%>><b><%=myControlData.getControlType()%></b></td>
-                                                    <td><%=myControlData.getControlProperty()%></td>
-                                                    <td><%=myControlData.getControlValue()%></td>
+                                                    <td><%=StringUtil.replaceUrlByLinkInString(myControlData.getControlProperty())%></td>
+                                                    <td><%=StringUtil.replaceUrlByLinkInString(myControlData.getControlValue())%></td>
                                                     <td><%=myControlData.getFatal()%></td>
-                                                    <td><i><span id="CTLMES-<%=myAction + "-" + myControlData.getControl()%>"><%=StringUtil.replaceUrlByLinkInString(myControlData.getReturnMessage())%></span></i></td>
+                                                    <td><i><span id="CTLMES-<%=myAction + "-" + myControlData.getControl()%>"><%=myControlData.getReturnMessage()%></span></i></td>
                                                     <td><%if (myControlData.getScreenshotFilename() != null) {%>
                                                         <a href="<%=PictureURL%><%=myControlData.getScreenshotFilename().replaceAll("\\\\", "/")%>" class="zoombox  zgallery1">img</a>
                                                         <%}%>
