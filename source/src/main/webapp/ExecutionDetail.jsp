@@ -66,6 +66,7 @@
         <link type="text/css" rel="stylesheet" href="js/zoombox/zoombox.css" >
         <script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>
         <script type="text/javascript" src="js/jquery-migrate-1.2.1.min.js"></script>
+        <script type="text/javascript" src="js/jquery-ui-1.10.2.js"></script>
         <script type="text/javascript" src="js/jqplot/jquery.jqplot.min.js"></script>
         <script type="text/javascript" src="js/jqplot/plugins/jqplot.dateAxisRenderer.min.js"></script>
         <script type="text/javascript" src="js/jqplot/plugins/jqplot.cursor.min.js"></script>
@@ -876,7 +877,8 @@
                     //dmp.diff_cleanupEfficiency(d);
 
                     // generate pretty html diff and display it in popin dialog
-                    $('#dialogTheDiff').empty().html(dmp.diff_prettyHtml(d)).dialog();
+                    $('#dialogTheDiff').empty().html(dmp.diff_prettyHtml(d))
+                    $('#dialogTheDiff').dialog();
                 }
             </SCRIPT>
                 <br><%=display_footer(DatePageStart)%>
