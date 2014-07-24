@@ -3662,6 +3662,13 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("ALTER TABLE `application` ");
         SQLS.append("CHANGE COLUMN `sort` `sort` INT(11) NOT NULL DEFAULT 10 ;");
         SQLInstruction.add(SQLS.toString());
+        
+//Add application type WS  
+//-- ------------------------ 513   
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`) VALUES ");
+        SQLS.append("('APPLITYPE', 'WS', '30', 'Web Service Application');");
+        SQLInstruction.add(SQLS.toString());
 
         return SQLInstruction;
     }
