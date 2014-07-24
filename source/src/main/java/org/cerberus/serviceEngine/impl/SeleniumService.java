@@ -23,6 +23,9 @@ import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringWriter;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -34,6 +37,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 import javax.imageio.ImageIO;
+import org.apache.commons.io.IOUtils;
+import org.apache.http.HttpHost;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.message.BasicHttpEntityEnclosingRequest;
 import org.apache.log4j.Level;
 import org.cerberus.entity.Invariant;
 import org.cerberus.entity.MessageEvent;
@@ -52,6 +61,8 @@ import org.cerberus.service.IParameterService;
 import org.cerberus.serviceEngine.ISeleniumService;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Capabilities;
@@ -77,7 +88,9 @@ import org.openqa.selenium.logging.Logs;
 import org.openqa.selenium.remote.Augmenter;
 import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.remote.HttpCommandExecutor;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import org.openqa.selenium.remote.SessionId;
 import org.openqa.selenium.remote.UnreachableBrowserException;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
@@ -274,8 +287,8 @@ public class SeleniumService implements ISeleniumService {
             MyLogger.log(SeleniumService.class.getName(), Level.DEBUG, "Set Driver");
             WebDriver driver = new RemoteWebDriver(new URL("http://" + selenium.getHost() + ":" + selenium.getPort() + "/wd/hub"), capabilities);
             selenium.setDriver(driver);
+            tCExecution = getIPOfNode(tCExecution);
             tCExecution.setSelenium(selenium);
-            //MyLogger.log(SeleniumService.class.getName(), Level.ERROR, driver.manage().logs().get(LogType.SERVER).toString());
         } catch (CerberusException exception) {
             MyLogger.log(Selenium.class.getName(), Level.ERROR, exception.toString());
             throw new CerberusException(exception.getMessageError());
@@ -597,6 +610,38 @@ public class SeleniumService implements ISeleniumService {
 
         Capabilities caps = ((RemoteWebDriver) selenium.getDriver()).getCapabilities();
         return caps;
+    }
+
+    private static TestCaseExecution getIPOfNode(TestCaseExecution tCExecution) {
+        try {
+            Selenium selenium = tCExecution.getSelenium();
+            HttpCommandExecutor ce = (HttpCommandExecutor) ((RemoteWebDriver) selenium.getDriver()).getCommandExecutor();
+            SessionId sessionId = ((RemoteWebDriver) selenium.getDriver()).getSessionId();
+            String hostName = ce.getAddressOfRemoteServer().getHost();
+            int port = ce.getAddressOfRemoteServer().getPort();
+            HttpHost host = new HttpHost(hostName, port);
+            HttpClient client = HttpClientBuilder.create().build();
+            URL sessionURL = new URL("http://" + selenium.getHost() + ":" + selenium.getPort() + "/grid/api/testsession?session=" + sessionId);
+            BasicHttpEntityEnclosingRequest r = new BasicHttpEntityEnclosingRequest("POST", sessionURL.toExternalForm());
+            HttpResponse response = client.execute(host, r);
+            if (!response.getStatusLine().toString().contains("403")){
+            InputStream contents = response.getEntity().getContent();
+            StringWriter writer = new StringWriter();
+            IOUtils.copy(contents, writer, "UTF8");
+            JSONObject object = new JSONObject(writer.toString());
+            URL myURL = new URL(object.getString("proxyId"));
+            if ((myURL.getHost() != null) && (myURL.getPort() != -1)) {
+                tCExecution.setIp(myURL.getHost());
+                tCExecution.setPort(String.valueOf(myURL.getPort()));
+            }
+            }
+
+        } catch (IOException ex) {
+            Logger.getLogger(SeleniumService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (JSONException ex) {
+            Logger.getLogger(SeleniumService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        return tCExecution;
     }
 
     @Override
