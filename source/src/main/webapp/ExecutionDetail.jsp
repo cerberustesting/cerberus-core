@@ -66,6 +66,7 @@
         <link type="text/css" rel="stylesheet" href="js/zoombox/zoombox.css" >
         <script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>
         <script type="text/javascript" src="js/jquery-migrate-1.2.1.min.js"></script>
+        <script type="text/javascript" src="js/jquery-ui-1.10.2.js"></script>
         <script type="text/javascript" src="js/jqplot/jquery.jqplot.min.js"></script>
         <script type="text/javascript" src="js/jqplot/plugins/jqplot.dateAxisRenderer.min.js"></script>
         <script type="text/javascript" src="js/jqplot/plugins/jqplot.cursor.min.js"></script>
@@ -77,6 +78,7 @@
         <script type="text/javascript" src="js/jqplot/plugins/jqplot.canvasAxisTickRenderer.min.js"></script>
         <script type="text/javascript" src="js/jqplot/plugins/jqplot.barRenderer.min.js"></script>
         <script type="text/javascript" src="js/zoombox/zoombox.js"></script>
+        <script type="text/javascript" src="js/diff_match_patch/diff_match_patch.js"></script>
         <title>Execution Detail</title>
 
 
@@ -547,14 +549,14 @@
                                                 %>
                                                 <tr class="tableContent">
                                                     <td>&nbsp;&nbsp;&nbsp;&nbsp;</td>
-                                                    <td class="<%=myControlData.getReturnCode()%>"><span class="<%=myControlData.getReturnCode()%>F" id="CTLSTS-<%=myAction + "-" + myControlData.getControl()%>"><%=myControlData.getReturnCode()%></span></td>
+                                                    <td class="<%=myControlData.getReturnCode()%>" onclick="dialogTheDiff('<%=myAction + "-" + myControlData.getControl()%>')"><span class="<%=myControlData.getReturnCode()%>F" id="CTLSTS-<%=myAction + "-" + myControlData.getControl()%>"><%=myControlData.getReturnCode()%></span></td>
                                                     <td><%=DateUtil.getFormatedDate(myControlData.getStartLong())%></td>
                                                     <td><%=DateUtil.getFormatedElapsed(myControlData.getStartLong(), myControlData.getEndLong())%></td>
                                                     <td><%=myControlData.getControl()%></td>
                                                     <td<%=controlDesc%>><%=descControl%></td>
                                                     <td<%=controlDesc%>><b><%=myControlData.getControlType()%></b></td>
-                                                    <td><%=StringUtil.replaceUrlByLinkInString(myControlData.getControlProperty())%></td>
-                                                    <td><%=StringUtil.replaceUrlByLinkInString(myControlData.getControlValue())%></td>
+                                                    <td id="CTLPRP-<%=myAction + "-" + myControlData.getControl()%>"><%=StringUtil.replaceUrlByLinkInString(myControlData.getControlProperty())%></td>
+                                                    <td id="CTLVAL-<%=myAction + "-" + myControlData.getControl()%>"><%=StringUtil.replaceUrlByLinkInString(myControlData.getControlValue())%></td>
                                                     <td><%=myControlData.getFatal()%></td>
                                                     <td><%if (myControlData.getScreenshotFilename() != null) {%>
                                                         <a href="<%=PictureURL%><%=myControlData.getScreenshotFilename().replaceAll("\\\\", "/")%>" class="zoombox  zgallery1">img</a>
@@ -825,17 +827,11 @@
                 <%
                         stmt0.close();
 
-                    }
-                    catch(Exception e
-
-                    
-                        ) {
-                        out.println("<br> error message : " + e.getMessage() + " " + e.toString() + "<br>");
+                    } catch(Exception e) {
+                        %><br>error message : <%=e.getMessage()%> <%=e.toString()%><br><%
+                        e.printStackTrace();
                         MyLogger.log("ExecutionDetail.jsp", Level.FATAL, " Exception catched." + e);
-                    }
-
-                    
-                        finally {
+                    } finally {
                         try {
                             conn.close();
                         } catch (Exception ex) {
@@ -846,25 +842,6 @@
                 %>
 
             </div>
-            <script>
-                /**
-                 * Or You can also use specific options
-                 */
-                $('a.zoombox').zoombox({
-                    theme: 'zoombox', //available themes : zoombox,lightbox, prettyphoto, darkprettyphoto, simple
-                    opacity: 0.8, // Black overlay opacity
-                    duration: 800, // Animation duration
-                    animation: false, // Do we have to animate the box ?
-                    width: 600, // Default width
-                    height: 400, // Default height
-                    gallery: true, // Allow gallery thumb view
-                    overflow: true, // Allow gallery thumb view
-                    autoplay: false                // Autoplay for video
-                });
-
-                // Image links displayed as a group
-                //$('a.zoombox').zoombox();
-            </script>
             <script>
                 $(document).ready(function() {
                     var stat = document.getElementById("statushidden").value;
@@ -880,9 +857,51 @@
                         }, 1000);
 
                     }
+
+                    // Zoombox is the lightbox to display image
+                    $('a.zoombox').zoombox({
+                        theme: 'zoombox', //available themes : zoombox,lightbox, prettyphoto, darkprettyphoto, simple
+                        opacity: 0.8, // Black overlay opacity
+                        duration: 800, // Animation duration
+                        animation: false, // Do we have to animate the box ?
+                        width: 600, // Default width
+                        height: 400, // Default height
+                        gallery: true, // Allow gallery thumb view
+                        overflow: true, // Allow gallery thumb view
+                        autoplay: false                // Autoplay for video
+                    });
+
+                    // Image links displayed as a group
+                    //$('a.zoombox').zoombox();
+
                 });
-            </script>
-            <br><% out.print (display_footer
-            (DatePageStart));%>
+
+                function dialogTheDiff(controlId) {
+                    
+                    var text1 = $('#CTLPRP-'+controlId).html();
+                    var text2 = $('#CTLVAL-'+controlId).html();
+                    
+                    // create match library object
+                    var dmp = new diff_match_patch();
+                    
+                    // instanciate edit cost to 6 for clean up semantic method
+                    dmp.Diff_EditCost = 6;
+
+                    // make the diff between text1 and text2
+                    var d = dmp.diff_main(text1, text2);
+
+                    // generate semantic diff on text and clean it
+                    dmp.diff_cleanupSemantic(d);
+                    
+                    // another type of diff (like semantic)
+                    //dmp.diff_cleanupEfficiency(d);
+
+                    // generate pretty html diff and display it in popin dialog
+                    $('#dialogTheDiff').empty().html(dmp.diff_prettyHtml(d))
+                    $('#dialogTheDiff').dialog();
+                }
+            </SCRIPT>
+                <br><%=display_footer(DatePageStart)%>
+                <div id="dialogTheDiff"></div>
             </body>
             </html>
