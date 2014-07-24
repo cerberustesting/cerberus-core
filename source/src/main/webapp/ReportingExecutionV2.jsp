@@ -24,6 +24,16 @@
 <%@ page import="org.cerberus.entity.*" %>
 
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%
+    ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+    IDocumentationService docService = appContext.getBean(IDocumentationService.class);
+    ITestService testService = appContext.getBean(ITestService.class);
+    IProjectService projectService = appContext.getBean(IProjectService.class);
+    IInvariantService invariantService = appContext.getBean(InvariantService.class);
+    IBuildRevisionInvariantService buildRevisionInvariantService = appContext.getBean(IBuildRevisionInvariantService.class);
+    IApplicationService applicationService = appContext.getBean(IApplicationService.class);
+    IUserService userService = appContext.getBean(IUserService.class);
+%>
 
 <!DOCTYPE html>
 <html>
@@ -46,6 +56,8 @@
 
     <script type="text/javascript">
         var oTable;
+        var fixedTable;
+        var oTableStatistic;
         var postData;
 
         var country = [];
@@ -76,15 +88,29 @@
             postData = $(this).serialize();
             country = $('#Country').val();
             browser= $('#Browser').val();
+            var status = [
+            <%
+                for (Invariant status : invariantService.findListOfInvariantById("TCESTATUS")){
+                    out.print("'" + status.getValue() + "',");
+                }
+            %>
+                    ];
 
             $('#jsAdded').remove();
+
+
             $.each(country, function (index, elem) {
                 $('#TCComment').before("<th id='jsAdded' colspan='" + (browser.length * 2) + "'>" + elem + "</th>");
-//                $('#statistic').append("<th id='jsAdded' colspan='" + (6) + "'>" + elem + "</th>");
                 $.each(browser, function (i, e) {
                     $('#tableCountry').append("<th id='jsAdded' colspan='2'>" + e + "</th>");
                     $('#TCResult').append("<th id='jsAdded' class='TCResult'></th><th id='jsAdded'></th>");
                 });
+
+                $('#statisticCountry').append("<th colspan='" + (status.length + 1) +"'>" + elem + "</th>");
+                $.each(status, function(i, e){
+                    $('#statisticStatus').append("<th class='"+e+" "+e+"F'>"+ e +"</th>");
+                });
+                $('#statisticStatus').append("<th style='color:#000000'>TOTAL</th>");
             });
 
             $('#divReporting').show();
@@ -119,11 +145,12 @@
                     }
                 ],
                 "fnInitComplete": function (oSettings, json) {
-                    new FixedHeader(oTable, {
+                    fixedTable = new FixedHeader(oTable, {
                         zTop: 98
                     });
 
                     $('.ui-corner-tl').append("<div style='font-weight: bold;font-family: Trebuchet MS; clear: both'>")
+                            .append("<div style='float: left'><input id='ShowS' type='button' onclick='showStatistic();' value='Show Summary'></div>")
                             .append("<div style='float: left'>Legend : </div>")
                             .append("<div style='float: left;margin-left: 3px;margin-right: 3px;' title='FILTER : Use this checkbox to filter status.'><input type='checkbox' name='FILTER' class='filterDisplay' value='FILTER' onchange='filterDisplay($(this).is(\":checked\"))'><label title='FILTER'>FILTER</label></div>")
                             .append("<div class='OK' style='float: left;margin-left: 3px;margin-right: 3px;' title='OK : Test was fully executed and no bug are to be reported.'><input type='checkbox' id='FOK' name='OK' value='OK' class='filterCheckbox' disabled='disabled' onchange='toogleDisplay(this)'><label class='OKF' title='OK'>OK</label></div>")
@@ -140,7 +167,8 @@
                         $(this).addClass('row_selected');
                     });
 
-                    $('#statistic').dataTable({
+                    $('#divStatistic').show();
+                    oTableStatistic = $('#statistic').dataTable({
                         "aaData": json.statistic.aaData,
                         "bJQueryUI": false,
                         "bFilter": false,
@@ -148,7 +176,13 @@
                         "bSort": false,
                         "bPaginate": false,
                         "bDestroy": true,
-                        "iDisplayLength": -1
+                        "bAutoWidth": false,
+                        "iDisplayLength": -1,
+                        "fnInitComplete": function () {
+                            $('#statistic thead th').css('padding', '0px');
+                            $('#statistic').css({'width': 'auto', 'margin': '0px'});
+                            $('#divStatistic').hide();
+                        }
                     });
                 }
             });
@@ -186,6 +220,28 @@
             type: "POST",
             url: "UpdateUserReporting",
             data: {reporting: data, login: "<%=request.getUserPrincipal().getName()%>"}
+        });
+    }
+
+    function showStatistic(){
+        $('.fixedHeader').remove();
+
+        $('#divReporting').hide();
+        $('#divStatistic').show();
+
+        new FixedHeader(oTableStatistic, {
+            zTop: 98
+        });
+    }
+
+    function hideStatistic(){
+        $('.fixedHeader').remove();
+
+        $('#divStatistic').hide();
+        $('#divReporting').show();
+
+        new FixedHeader(oTable, {
+            zTop: 98
         });
     }
     </script>
@@ -262,15 +318,6 @@
 %>
 
 <%
-    ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-    IDocumentationService docService = appContext.getBean(IDocumentationService.class);
-    ITestService testService = appContext.getBean(ITestService.class);
-    IProjectService projectService = appContext.getBean(IProjectService.class);
-    IInvariantService invariantService = appContext.getBean(InvariantService.class);
-    IBuildRevisionInvariantService buildRevisionInvariantService = appContext.getBean(IBuildRevisionInvariantService.class);
-    IApplicationService applicationService = appContext.getBean(IApplicationService.class);
-    IUserService userService = appContext.getBean(IUserService.class);
-
     TreeMap<String, String> options = new TreeMap<String, String>();
 
     User usr = userService.findUserByKey(request.getUserPrincipal().getName());
@@ -665,37 +712,16 @@
     </table>
 </div>
 
-<div id="divStatistic" style="margin-top: 25px">
+<div id="divStatistic" style="margin-top: 25px; display: none">
+    <div style='float: left'>
+        <input id='ShowD' type='button' onclick='hideStatistic();' value='Show Details'>
+    </div>
     <table id="statistic" style="color: #555555;font-family: Trebuchet MS;font-weight: bold;">
         <thead>
-            <tr>
+            <tr id="statisticCountry">
                 <th rowspan="2">Tests</th>
-                <th colspan="7">BE</th>
-                <th colspan="7">ES</th>
-                <th colspan="7">PT</th>
             </tr>
-            <tr>
-                <th>OK</th>
-                <th>KO</th>
-                <th>FA</th>
-                <th>PE</th>
-                <th>NA</th>
-                <th>NE</th>
-                <th>TOTAL</th>
-                <th>OK</th>
-                <th>KO</th>
-                <th>FA</th>
-                <th>PE</th>
-                <th>NA</th>
-                <th>NE</th>
-                <th>TOTAL</th>
-                <th>OK</th>
-                <th>KO</th>
-                <th>FA</th>
-                <th>PE</th>
-                <th>NA</th>
-                <th>NE</th>
-                <th>TOTAL</th>
+            <tr id="statisticStatus">
             </tr>
         </thead>
     </table>
