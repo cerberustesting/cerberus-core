@@ -784,6 +784,9 @@
                             <a href="TestCase.jsp?Test=<%=test%>&TestCase=<%=testCase%>&Load=Load">Modify the Test Case.</a>
                         </td>
                         <td>
+                    <a href="ExecutionDetailList.jsp?test=<%=test%>&testcase=<%=testCase%>&MySystem=<%=appSystem%>">See Last Executions..</a>
+                </td>
+                        <td>
                             <%
                                 if (StringUtil.isNullOrEmpty(newBugURL)) {
                             %>
