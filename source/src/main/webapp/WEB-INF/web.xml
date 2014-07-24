@@ -525,6 +525,14 @@
         <servlet-name>FindAllUsers</servlet-name>
         <servlet-class>org.cerberus.servlet.user.FindAllUsers</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>ExportTestCase</servlet-name>
+        <servlet-class>org.cerberus.servlet.testCase.ExportTestCase</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ImportTestCaseFromJson</servlet-name>
+        <servlet-class>org.cerberus.servlet.testCase.ImportTestCaseFromJson</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>RunTestCase</servlet-name>
         <url-pattern>/RunTestCase</url-pattern>
@@ -1012,6 +1020,14 @@
     <servlet-mapping>
         <servlet-name>FindAllUsers</servlet-name>
         <url-pattern>/FindAllUsers</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ExportTestCase</servlet-name>
+        <url-pattern>/ExportTestCase</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ImportTestCaseFromJson</servlet-name>
+        <url-pattern>/ImportTestCaseFromJson</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>

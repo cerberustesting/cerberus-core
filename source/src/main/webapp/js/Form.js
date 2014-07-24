@@ -1569,6 +1569,10 @@ function deleteTestCase(test, testcase, page) {
 
 }
 
+function exportTestCase(test, testcase, page) {
+        location.href=("ExportTestCase?test="+test+"&testcase="+testcase);
+    }
+
 function alertOnProperties() {
     return confirm("At least one property has empty name or no country selected, would you like to save, these properties will be deleted !");
 }

@@ -460,6 +460,7 @@
                         <% }%>
                         <%  if (canDelete) {%>
                         <input type="button" id="deleteTC" name="deleteTC" value="delete" onclick="javascript:deleteTestCase('<%=test%>', '<%=testcase%>', 'TestCase.jsp')">
+                        <input type="button" id="exportTC" name="exportTC" value="exportTestCase" onclick="javascript:exportTestCase('<%=test%>', '<%=testcase%>', 'TestCase.jsp')">
                         <div id="deleteTCDiv"></div>
                         <% }%>
                     </td>
@@ -1174,14 +1175,14 @@
                                                                                 <td class="technical_part" style="background-color: <%=actionColor%>"><input  class="wob property_value" style="width: 210px; background-color: <%=actionColor%>; color:<%=actionFontColor%>"
                                                                                                                                                               value="<%=rs_stepaction.getString("Property")%>"
                                                                                                                                                               <%
-                                                                                                                                                                if(useStep) {
-                                                                                                                                                                    %>
-                                                                                                                                                                    data-usestep-test="<%=testForQuery%>"
-                                                                                                                                                                    data-usestep-testcase="<%=testcaseForQuery%>"
-                                                                                                                                                                    data-usestep-step="<%=stepForQuery%>"
-                                                                                                                                                                    <%
-                                                                                                                                                                }
-                                                                                                                                                              
+                                                                                                                                                                  if (useStep) {
+                                                                                                                                                              %>
+                                                                                                                                                              data-usestep-test="<%=testForQuery%>"
+                                                                                                                                                              data-usestep-testcase="<%=testcaseForQuery%>"
+                                                                                                                                                              data-usestep-step="<%=stepForQuery%>"
+                                                                                                                                                              <%
+                                                                                                                                                                  }
+
                                                                                                                                                               %>
                                                                                                                                                               name="actions_property<%=complementName%>" <%=isReadonly%>
                                                                                                                                                               onchange="trackChanges(this.value, '<%=rs_stepaction.getString("Property")%>', 'submitButtonAction')">
@@ -1288,9 +1289,9 @@
                                                                                                                                                                           name="controls_controlproperty<%=complementName%>"
                                                                                                                                                                           onchange="trackChanges(this.value, '<%=rs_controls.getString("ControlProperty")%>', 'submitButtonChanges')"></td>
                                                                                             <td class="technical_part" style="background-color: <%=controlColor%>"><input class="wob" style="width: 180px;background-color: <%=controlColor%>; color:<%=actionFontColor%>"
-                                                                                                                                                                             value="<%=rs_controls.getString("ControlValue")%>"
-                                                                                                                                                                             name="controls_controlvalue<%=complementName%>"
-                                                                                                                                                                             onchange="trackChanges(this.value, '<%=rs_controls.getString("ControlDescription")%>', 'submitButtonChanges')"></td>
+                                                                                                                                                                          value="<%=rs_controls.getString("ControlValue")%>"
+                                                                                                                                                                          name="controls_controlvalue<%=complementName%>"
+                                                                                                                                                                          onchange="trackChanges(this.value, '<%=rs_controls.getString("ControlDescription")%>', 'submitButtonChanges')"></td>
                                                                                             <td class="technical_part" style="background-color: <%=controlColor%>"><%=ComboInvariant(conn, "controls_fatal" + complementName, "width: 40px; background-color:" + controlColor + ";color:" + actionFontColor, "controls_fatal", "wob", "CTRLFATAL", rs_controls.getString("Fatal"), "trackChanges(this.value, '" + rs_controls.getString("Fatal") + "', 'submitButtonChanges')", null)%></td>
                                                                                             <td class="functional_description_control" style="background-color: <%=controlColor%>"><input class="wob" class="functional_description_control" style="width: 100%;background-color: <%=controlColor%>; color:<%=actionFontColor%>"
                                                                                                                                                                                           value="<%=rs_controls.getString("ControlDescription")%>"
@@ -1528,9 +1529,9 @@
                                             size3 = 0;
                                             size4 = size2;
                                             String styleValue2 = "none";
-                                            if (rs_properties.getString("a.Type").equals("getAttributeFromHtml")||
-                                                    rs_properties.getString("a.Type").equals("getFromXml")||
-                                                    rs_properties.getString("a.Type").equals("getFromCookie")) {
+                                            if (rs_properties.getString("a.Type").equals("getAttributeFromHtml")
+                                                    || rs_properties.getString("a.Type").equals("getFromXml")
+                                                    || rs_properties.getString("a.Type").equals("getFromCookie")) {
                                                 size3 = 1 * size2 / 3;
                                                 size4 = (2 * size2 / 3) - 5;
                                                 styleValue2 = "inline";
@@ -1573,7 +1574,7 @@
                                             <%}%>
                                             <input type="hidden" name="property_hidden" value="<%=rowNumber%>">
                                             <% rs_tccountry.first();
-                                                            do {%>
+                                                do {%>
                                             <input type="hidden" name="old_property_hidden" value="<%=rowNumber%> - <%=rs_tccountry.getString("Country")%> - <%=rs_properties.getString("a.Property")%>">
                                             <% 		} while (rs_tccountry.next());%></td>
 
@@ -1583,7 +1584,7 @@
                                                    onchange="trackChanges(this.value, '<%=rs_properties.getString("a.Property")%>', 'SavePropertyChanges')"></td>
                                         <td style="font-size : x-small ; width: <%=size%>px;"><table><tr>
                                                     <% rs_tccountry.first();
-                                                                    do {%>
+                                                        do {%>
                                                     <td class="wob"><%=rs_tccountry.getString("Country")%></td> 
                                                     <% 		} while (rs_tccountry.next());
                                                     %></tr><tr><%
@@ -1706,9 +1707,9 @@
                             do {%>
                         <%=rs_tccountry.getString("Country")%> 
                         <%
-                                        } while (rs_tccountry.next());%><br><%
-                            rs_tccountry.first();
-                            do {
+                            } while (rs_tccountry.next());%><br><%
+                                            rs_tccountry.first();
+                                            do {
                         %>
                         <input value="<%=rowNumber%> - <%=rs_tccountry.getString("Country")%>" type="checkbox" id="properties_country" 
                                name="properties_country" >
@@ -1755,60 +1756,60 @@
              */
         %>
         <%
-                }
-                rs_testcase_general_info.close();
-
-                if (stmt != null) {
-                    stmt.close();
-                }
-                if (stmt1 != null) {
-                    stmt1.close();
-                }
-                if (stmt2 != null) {
-                    stmt2.close();
-                }
-                if (stmt21 != null) {
-                    stmt21.close();
-                }
-                if (stmt22 != null) {
-                    stmt22.close();
-                }
-
-%><script>
-    $("input.property_value").each(function(){
-        //var jinput = $(this);
-        if(this.value && this.value !== "" && isNaN(this.value) && $("input.property_name[value='"+this.value+"']").length === 0) {
-            this.style.width = '192px';
-            $(this).before("<img class='property_ko' data-property-name='"+this.value+"' src='./images/ko.png' title='Property Missing' style='display:inline;' width='16px' height='16px' />");
-        }
-    });
-
-    $("img.property_ko").on("click",function(event){
-        var propertyName = $(event.target).data("property-name");
-        var property = $("input.property_value[value='"+propertyName+"']");
-        if(property.data("usestep-step") !== null) {
-            var useTest = property.data("usestep-test");
-            var useTestcase = property.data("usestep-testcase");
-            var useStep = property.data("usestep-step");
-            $.get("./ImportPropertyOfATestCaseToAnOtherTestCase",{"fromtest": useTest, "fromtestcase": useTestcase,
-                                                                    "totest": "<%=test%>", "totestcase": "<%=testcase%>",
-                                                                    "property": propertyName}, function(data){
-                $("#UpdateTestCaseDetail").submit();
-            });
-        }
-    });
-
-</script><%
-                
-            } catch (Exception e) {
-                out.println("<br> error message : " + e.getMessage() + " "
-                        + e.toString() + "<br>");
-            } finally {
-                try {
-                    conn.close();
-                } catch (Exception ex) {
-                }
             }
+            rs_testcase_general_info.close();
+
+            if (stmt != null) {
+                stmt.close();
+            }
+            if (stmt1 != null) {
+                stmt1.close();
+            }
+            if (stmt2 != null) {
+                stmt2.close();
+            }
+            if (stmt21 != null) {
+                stmt21.close();
+            }
+            if (stmt22 != null) {
+                stmt22.close();
+            }
+
+        %><script>
+            $("input.property_value").each(function() {
+                //var jinput = $(this);
+                if (this.value && this.value !== "" && isNaN(this.value) && $("input.property_name[value='" + this.value + "']").length === 0) {
+                    this.style.width = '192px';
+                    $(this).before("<img class='property_ko' data-property-name='" + this.value + "' src='./images/ko.png' title='Property Missing' style='display:inline;' width='16px' height='16px' />");
+                }
+            });
+
+            $("img.property_ko").on("click", function(event) {
+                var propertyName = $(event.target).data("property-name");
+                var property = $("input.property_value[value='" + propertyName + "']");
+                if (property.data("usestep-step") !== null) {
+                    var useTest = property.data("usestep-test");
+                    var useTestcase = property.data("usestep-testcase");
+                    var useStep = property.data("usestep-step");
+                    $.get("./ImportPropertyOfATestCaseToAnOtherTestCase", {"fromtest": useTest, "fromtestcase": useTestcase,
+                        "totest": "<%=test%>", "totestcase": "<%=testcase%>",
+                        "property": propertyName}, function(data) {
+                        $("#UpdateTestCaseDetail").submit();
+                    });
+                }
+            });
+
+        </script><%
+
+    } catch (Exception e) {
+        out.println("<br> error message : " + e.getMessage() + " "
+                + e.toString() + "<br>");
+    } finally {
+        try {
+            conn.close();
+        } catch (Exception ex) {
+        }
+    }
         %>
 
     </div>
