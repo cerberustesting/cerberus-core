@@ -80,16 +80,17 @@
         
         <%
             IUserService userService = appContext.getBean(IUserService.class);
+            User myUser = userService.findUserByKey(request.getUserPrincipal().getName());
             String MySystem = ParameterParserUtil.parseStringParam(request.getParameter("MySystem"), "");
 
-//            if (MySystem.equals("")) {
-//                MySystem = myUser.getDefaultSystem();
-//            } else {
-//                if (!(myUser.getDefaultSystem().equals(MySystem))) {
-//                    myUser.setDefaultSystem(MySystem);
-//                    userService.updateUser(myUser);
-//                }
-//            }
+            if (MySystem.equals("")) {
+                MySystem = myUser.getDefaultSystem();
+            } else {
+                if (!(myUser.getDefaultSystem().equals(MySystem))) {
+                    myUser.setDefaultSystem(MySystem);
+                    userService.updateUser(myUser);
+                }
+            }
 
             String appSel = "";
             boolean filterApp = false;
