@@ -435,7 +435,7 @@
                     <p class="dttTitle">TestCase Execution Result</p>
                     <table id="stepTable" class="tableBorder" style="border-collapse: collapse">
                         <%
-                            for (TestCaseStepExecution myStepData : stepList) {
+                        for (TestCaseStepExecution myStepData : stepList) {
                                 myKey++;
                                 TestCaseStep myTCS;
                                 myTCS = testCaseStepService.findTestCaseStep(myStepData.getTest(), myStepData.getTestCase(), myStepData.getStep());
@@ -472,11 +472,12 @@
                                    onclick="javascript:switchTableVisibleInvisible('actionTable<%=stepIdentifier%>', 'dropDownDownArrow<%=stepIdentifier%>');
                                            switchTableVisibleInvisible('dropDownUpArrow<%=stepIdentifier%>', 'dropDownDownArrow<%=stepIdentifier%>')"><img src="images/dropdown.gif"/></a>
                             </td>
-                            <td align="right"><%=DateUtil.getFormatedDate(myStepData.getFullStart())%>  >>  
+                            <td align="right"><a href="./TestCase.jsp?Test=<%=test%>&TestCase=<%=testCase%>&Load=Load#stepAnchor_<%=myKey%>"><%=DateUtil.getFormatedDate(myStepData.getFullStart())%>  >>  
                                 <%=DateUtil.getFormatedDate(myStepData.getFullEnd())%> (
                                 <%=styleMainTestCase1%><%=myStepData.getTest()%><%=styleMainTestCase2%> / 
                                 <%=styleMainTestCase1%><%=myStepData.getTestCase()%><%=styleMainTestCase2%> / 
                                 <%=styleMainTestCase1%>Step <%=myStepData.getStep()%><%=styleMainTestCase2%> )
+                                </a>
                             </td>
                         </tr>
                         <tr>
@@ -491,10 +492,12 @@
                                         myStep = String.valueOf(myKey);
                                         for (TestCaseStepActionExecution myActionData : actionList) {
                                             TestCaseStepAction myTCSA;
+                                            String descAction = "";
                                             myTCSA = testCaseStepActionService.findTestCaseStepActionbyKey(myStepData.getTest(), myStepData.getTestCase(), myStepData.getStep(), myActionData.getSequence());
                                             String actionDesc = "";
                                             if ((myTCSA != null) && !(myTCSA.getDescription().trim().equalsIgnoreCase(""))) {
                                                 actionDesc = " title='" + myTCSA.getDescription() + "'";
+                                                descAction = myTCSA.getDescription();
                                             }
                                     %>
                                     <tr class="tableContent">
@@ -503,10 +506,10 @@
                                         <td style="width:90px"><%=DateUtil.getFormatedDate(myActionData.getStartLong())%></td>
                                         <td style="width:5%"><%=DateUtil.getFormatedElapsed(myActionData.getStartLong(), myActionData.getEndLong())%></td>
                                         <td style="width:5%"><%=myActionData.getSequence()%></td>
+                                        <td style="width:20%"<%=actionDesc%>><%=descAction%></td>
                                         <td style="width:20%"<%=actionDesc%>><b><%=myActionData.getAction()%></b></td>
                                         <td style="width:20%"><%=StringUtil.replaceUrlByLinkInString(myActionData.getObject())%></td>
                                         <td style="width:20%"><%=StringUtil.replaceUrlByLinkInString(myActionData.getProperty())%></td>
-                                        <td style="width:20%"><i><span id="ACTMES-<%=myStep + "-" + myActionData.getSequence()%>"><%=StringUtil.replaceUrlByLinkInString(myActionData.getReturnMessage())%></span></i></td>
                                         <td style="width:10px"><%if (myActionData.getScreenshotFilename() != null) {%>
                                             <a href="<%=PictureURL%><%=myActionData.getScreenshotFilename().replaceAll("\\\\", "/")%>" id="ACTIMG-<%=myStep + "-" + myActionData.getSequence()%>" class="zoombox  zgallery1">img</a>
                                             <%}%>
@@ -516,6 +519,12 @@
                                             <%}%>
                                         </td>
                                     </tr>
+                                    <tr class="tableContent">
+                                        <td style="width:10px">&nbsp;&nbsp;&nbsp;&nbsp;</td>
+                                        <td style="width:20px" class="<%=myActionData.getReturnCode()%>">>></td>
+                                        <td colspan="8" class="<%=myActionData.getReturnCode()%>F"><i><span id="ACTMES-<%=myStep + "-" + myActionData.getSequence()%>"><%=StringUtil.replaceUrlByLinkInString(myActionData.getReturnMessage())%></span></i></td>
+                                    </tr>
+                                    
                                     <tr>
                                         <td colspan="9">
                                             <%
@@ -532,22 +541,24 @@
                                                         TestCaseStepActionControl myTCSAC;
                                                         myTCSAC = testCaseStepActionControlService.findTestCaseStepActionControlByKey(myStepData.getTest(), myStepData.getTestCase(), myStepData.getStep(), myActionData.getSequence(), myControlData.getControl());
                                                         String controlDesc = "";
+                                                        String descControl = "";
                                                         if ((myTCSAC != null) && !(myTCSAC.getDescription().trim().equalsIgnoreCase(""))) {
                                                             controlDesc = " title='" + myTCSAC.getDescription() + "'";
+                                                            descControl = myTCSAC.getDescription();
                                                         }
 
                                                 %>
-                                                <tr  class="tableContent">
+                                                <tr class="tableContent">
                                                     <td>&nbsp;&nbsp;&nbsp;&nbsp;</td>
                                                     <td class="<%=myControlData.getReturnCode()%>" onclick="dialogTheDiff('<%=myAction + "-" + myControlData.getControl()%>')"><span class="<%=myControlData.getReturnCode()%>F" id="CTLSTS-<%=myAction + "-" + myControlData.getControl()%>"><%=myControlData.getReturnCode()%></span></td>
                                                     <td><%=DateUtil.getFormatedDate(myControlData.getStartLong())%></td>
                                                     <td><%=DateUtil.getFormatedElapsed(myControlData.getStartLong(), myControlData.getEndLong())%></td>
                                                     <td><%=myControlData.getControl()%></td>
+                                                    <td<%=controlDesc%>><%=descControl%></td>
                                                     <td<%=controlDesc%>><b><%=myControlData.getControlType()%></b></td>
                                                     <td id="CTLPRP-<%=myAction + "-" + myControlData.getControl()%>"><%=StringUtil.replaceUrlByLinkInString(myControlData.getControlProperty())%></td>
                                                     <td id="CTLVAL-<%=myAction + "-" + myControlData.getControl()%>"><%=StringUtil.replaceUrlByLinkInString(myControlData.getControlValue())%></td>
                                                     <td><%=myControlData.getFatal()%></td>
-                                                    <td><i><span id="CTLMES-<%=myAction + "-" + myControlData.getControl()%>"><%=StringUtil.replaceUrlByLinkInString(myControlData.getReturnMessage())%></span></i></td>
                                                     <td><%if (myControlData.getScreenshotFilename() != null) {%>
                                                         <a href="<%=PictureURL%><%=myControlData.getScreenshotFilename().replaceAll("\\\\", "/")%>" class="zoombox  zgallery1">img</a>
                                                         <%}%>
@@ -557,6 +568,12 @@
                                                         <%}%>
                                                     </td>
                                                 </tr>
+                                                <tr class="tableContent">
+                                        <td style="width:10px">&nbsp;&nbsp;&nbsp;&nbsp;</td>
+                                        <td style="width:20px" class="<%=myControlData.getReturnCode()%>">>></td>
+                                        <td colspan="8" class="<%=myControlData.getReturnCode()%>F"><i><span id="CTLMES-<%=myAction + "-" + myControlData.getControl()%>"><%=StringUtil.replaceUrlByLinkInString(myControlData.getReturnMessage())%></span></i></td>
+                                    </tr>
+                                    <tr></tr>
                                                 <%
                                                     }
 
@@ -786,6 +803,9 @@
                         <td>
                             <a href="TestCase.jsp?Test=<%=test%>&TestCase=<%=testCase%>&Load=Load">Modify the Test Case.</a>
                         </td>
+                        <td>
+                    <a href="ExecutionDetailList.jsp?test=<%=test%>&testcase=<%=testCase%>&MySystem=<%=appSystem%>">See Last Executions..</a>
+                </td>
                         <td>
                             <%
                                 if (StringUtil.isNullOrEmpty(newBugURL)) {
