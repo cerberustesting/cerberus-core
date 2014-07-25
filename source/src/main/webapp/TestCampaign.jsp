@@ -390,11 +390,11 @@
                 });
             }
             
-            
             function viewListOfTests(id) {
               $.get('./GetCampaign','action=findAllCampaignContent&campaign='+id,function(data){
+                $("#listOfTests ul").empty();
                 for(index=0;index<data.CampaignContents.length;index++) {
-                    $.get('./GetTestBattery','action=findAllTestBatteryContent&testBattery='+data.CampaignContents[index][0],function(tests){
+                    $.get('./GetTestBattery','action=findAllTestBatteryContent&testBattery='+data.CampaignContents[index][2],function(tests){
                         for(indexTest=0;indexTest<tests.TestBatteryContents.length;indexTest++) {
                             $("#listOfTests ul").append("<li>"+tests.TestBatteryContents[indexTest][1]+" - "+tests.TestBatteryContents[indexTest][2]+" - "+tests.TestBatteryContents[indexTest][3]+" - "+tests.TestBatteryContents[indexTest][4]+"</li>");
                         }
