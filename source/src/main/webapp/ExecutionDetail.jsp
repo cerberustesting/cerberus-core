@@ -60,6 +60,7 @@
         <meta name="refresh" HTTP-EQUIV="Refresh">
         <link rel="stylesheet" type="text/css" href="css/crb_style.css">
         <link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico" />
+        <link rel="stylesheet" type="text/css" href="css/jquery-ui.css" >
         <link rel="stylesheet" type="text/css" href="js/jqplot/jquery.jqplot.min.css" >
         <link type="text/css" rel="stylesheet" href="js/jqplot/syntaxhighlighter/styles/shCoreDefault.min.css" >
         <link type="text/css" rel="stylesheet" href="js/jqplot/syntaxhighlighter/styles/shThemejqPlot.min.css" >
