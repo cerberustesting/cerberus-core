@@ -80,7 +80,6 @@
         
         <%
             IUserService userService = appContext.getBean(IUserService.class);
-            User myUser = userService.findUserByKey(request.getUserPrincipal().getName());
             String MySystem = ParameterParserUtil.parseStringParam(request.getParameter("MySystem"), "");
 
 //            if (MySystem.equals("")) {
@@ -132,6 +131,7 @@
                         <div style="clear:both"><br></div>
  <p class="dttTitle">Test Coverage Per Application</p> 
  <div id="tableList" style="display:none">
+     <input id="systemSelected" value="<%=MySystem%>" style="display:none">
         <%    
             if (filterApp){
                 appList=new ArrayList();
@@ -140,11 +140,10 @@
                                 
             for (Application applicationL : appList){
         %>
-        <input id="systemSelected" value="<%=MySystem%>" style="display:none">
         <br>
-        <p class="dttTitle" style="font-size:12px"><%=applicationL%></p>
+        <p class="dttTitle" style="font-size:12px"><%=applicationL.getApplication()%></p>
         <div style="width: 100%; font: 90% sans-serif">
-            <table id="testTable<%=applicationL%>" class="display">
+            <table id="testTable<%=applicationL.getApplication()%>" class="display">
                 <thead>
                     <tr>
                         <th>Test</th>
@@ -167,8 +166,9 @@
 
             $(document).ready(function() {
                 var mySys = getSys();
-                var myApp = '<%=applicationL%>';
-                var oTable = $('#testTable<%=applicationL%>').dataTable({
+                var myApp = '<%=applicationL.getApplication()%>';
+                var tableName = '#testTable'+myApp.replace('.','\\.');
+                var oTable = $(tableName).dataTable({
                     "aaSorting": [[0, "asc"]],
                     "bServerSide": false,
                     "sAjaxSource": "FindTestImplementationStatusPerApplication?MySystem="+mySys+"&Application="+myApp,
