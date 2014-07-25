@@ -500,7 +500,7 @@
                                             }
                                     %>
                                     <tr class="tableContent">
-                                        <td style="width:10px">&nbsp;&nbsp;&nbsp;&nbsp;</td>
+                                        <td style="width:20px">&nbsp;&nbsp;&nbsp;&nbsp;</td>
                                         <td style="width:20px" class="<%=myActionData.getReturnCode()%>"><span class="<%=myActionData.getReturnCode()%>F" id="ACTSTS-<%=myStep + "-" + myActionData.getSequence()%>"><%=myActionData.getReturnCode()%></span></td>
                                         <td style="width:90px"><%=DateUtil.getFormatedDate(myActionData.getStartLong())%></td>
                                         <td style="width:5%"><%=DateUtil.getFormatedElapsed(myActionData.getStartLong(), myActionData.getEndLong())%></td>
@@ -548,7 +548,8 @@
 
                                                 %>
                                                 <tr class="tableContent">
-                                                    <td>&nbsp;&nbsp;&nbsp;&nbsp;</td>
+                                                    <td style="width:20px">&nbsp;&nbsp;&nbsp;&nbsp;</td>
+                                                    <td style="width:20px">&nbsp;&nbsp;&nbsp;&nbsp;</td>
                                                     <td class="<%=myControlData.getReturnCode()%>" onclick="dialogTheDiff('<%=myAction + "-" + myControlData.getControl()%>')"><span class="<%=myControlData.getReturnCode()%>F" id="CTLSTS-<%=myAction + "-" + myControlData.getControl()%>"><%=myControlData.getReturnCode()%></span></td>
                                                     <td><%=DateUtil.getFormatedDate(myControlData.getStartLong())%></td>
                                                     <td><%=DateUtil.getFormatedElapsed(myControlData.getStartLong(), myControlData.getEndLong())%></td>
@@ -569,6 +570,7 @@
                                                 </tr>
                                                 <tr class="tableContent">
                                         <td style="width:10px">&nbsp;&nbsp;&nbsp;&nbsp;</td>
+                                        <td>&nbsp;&nbsp;&nbsp;&nbsp;</td>
                                         <td style="width:20px" class="<%=myControlData.getReturnCode()%>">>></td>
                                         <td colspan="8" class="<%=myControlData.getReturnCode()%>F"><i><span id="CTLMES-<%=myAction + "-" + myControlData.getControl()%>"><%=StringUtil.replaceUrlByLinkInString(myControlData.getReturnMessage())%></span></i></td>
                                     </tr>
