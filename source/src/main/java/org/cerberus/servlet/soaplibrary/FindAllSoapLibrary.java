@@ -25,6 +25,7 @@ import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
+import org.springframework.web.util.HtmlUtils;
 
 /**
  *
@@ -74,7 +75,7 @@ public class FindAllSoapLibrary extends HttpServlet{
             
             name = policy.sanitize(request.getParameter("sSearch_0"));
             type = policy.sanitize(request.getParameter("sSearch_1"));
-            envelope = policy.sanitize(request.getParameter("sSearch_2"));
+            envelope = HtmlUtils.htmlEscape(request.getParameter("sSearch_2"));
             description = policy.sanitize(request.getParameter("sSearch_3"));
             servicePath = policy.sanitize(request.getParameter("sSearch_4"));
             parsingAnswer = policy.sanitize(request.getParameter("sSearch_5"));
@@ -169,7 +170,7 @@ public class FindAllSoapLibrary extends HttpServlet{
                 JSONArray row = new JSONArray();
                 row.put(soapLib.getName())
                         .put(soapLib.getType())
-                        .put(soapLib.getEnvelope())
+                        .put(HtmlUtils.htmlUnescape(soapLib.getEnvelope()))
                         .put(soapLib.getDescription())
                         .put(soapLib.getServicePath())
                         .put(soapLib.getMethod())
