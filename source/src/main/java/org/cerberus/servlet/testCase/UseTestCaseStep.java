@@ -20,7 +20,6 @@
 package org.cerberus.servlet.testCase;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -34,13 +33,11 @@ import org.cerberus.database.DatabaseSpring;
 import org.cerberus.entity.TestCaseCountryProperties;
 import org.cerberus.entity.TestCaseStep;
 import org.cerberus.entity.TestCaseStepAction;
-import org.cerberus.entity.TestCaseStepActionControl;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.factory.IFactoryTestCaseStep;
 import org.cerberus.log.MyLogger;
 import org.cerberus.service.ITestCaseCountryPropertiesService;
 import org.cerberus.service.ITestCaseCountryService;
-import org.cerberus.service.ITestCaseStepActionControlService;
 import org.cerberus.service.ITestCaseStepActionService;
 import org.cerberus.service.ITestCaseStepService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,6 +61,7 @@ public class UseTestCaseStep extends HttpServlet {
         response.setContentType("text/html;charset=UTF-8");
 
         appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+        ITestCaseStepActionService testCaseStepActionService = appContext.getBean(ITestCaseStepActionService.class);
         ITestCaseStepService testCaseStepService = appContext.getBean(ITestCaseStepService.class);
         IFactoryTestCaseStep testCaseStepFactory = appContext.getBean(IFactoryTestCaseStep.class);
         ITestCaseCountryService testCaseCountry = appContext.getBean(ITestCaseCountryService.class);
@@ -89,47 +87,62 @@ public class UseTestCaseStep extends HttpServlet {
         }
 
         TestCaseStep tcs = testCaseStepFactory.create(test, testCase, step, description, "Y", fromTest, fromTestCase, fromStep);
-        /**
-         * Get List of Country of the origin testcase and the destination
-         * Testcase
-         */
-        List<String> tccListString = null;
-        List<String> tccFromListString = null;
-        List<TestCaseCountryProperties> tccpList = null;
-        if (importProperty.equalsIgnoreCase("Y")) {
-            tccListString = testCaseCountry.findListOfCountryByTestTestCase(test, testCase);
-            tccFromListString = testCaseCountry.findListOfCountryByTestTestCase(test, testCase);
-        }
-        
-        /**
-         * For the country defined in the destination testcase, insert the
-         * properties of the origine testcase
-         */
-        List<TestCaseCountryProperties> tccpToImport = new ArrayList();
-        if (importProperty.equalsIgnoreCase("Y")) {
-            MyLogger.log(ImportTestCaseStep.class.getName(), org.apache.log4j.Level.DEBUG, "Rewrite TestCaseCountryProperties");
-            if (tccListString != null) {
-                tccListString.retainAll(tccFromListString);
-                if (!tccListString.isEmpty()) {
-                    for (String country : tccListString) {
-                        tccpList = testCaseCountryProperties.findListOfPropertyPerTestTestCaseCountry(fromTest, fromTestCase, country);
-                        for (TestCaseCountryProperties tccp : tccpList) {
-                            tccp.setTest(test);
-                            tccp.setTestCase(testCase);
-                            tccpToImport.add(tccp);
-                        }
-                    }
-                }
-            }
-        }
-        
+
         /**
          * Import Step, properties
          */
         MyLogger.log(ImportTestCaseStep.class.getName(), org.apache.log4j.Level.DEBUG, "Use Step");
         testCaseStepService.insertTestCaseStep(tcs);
         if (importProperty.equalsIgnoreCase("Y")) {
-          testCaseCountryProperties.insertListTestCaseCountryProperties(tccpToImport);
+            /**
+             * Get List of Country of the origin testcase and the destination
+             * Testcase
+             */
+            List<String> tccListString = null;
+            List<String> tccFromListString = null;
+            List<TestCaseCountryProperties> tccpList = null;
+            if (importProperty.equalsIgnoreCase("Y")) {
+                tccListString = testCaseCountry.findListOfCountryByTestTestCase(test, testCase);
+                tccFromListString = testCaseCountry.findListOfCountryByTestTestCase(test, testCase);
+            }
+
+            /**
+             * For the country defined in the destination testcase, insert the
+             * properties of the origine testcase
+             */
+            // retrieve list of property name used in the step
+            List<String> propertyNamesOfStep = new ArrayList<String>();
+            List<TestCaseStepAction> testCaseStepActions = testCaseStepActionService.getListOfAction(fromTest, fromTestCase, step);
+            for (TestCaseStepAction action : testCaseStepActions) {
+                if (!propertyNamesOfStep.contains(action.getProperty())) {
+                    propertyNamesOfStep.add(action.getProperty());
+                }
+            }
+
+            MyLogger.log(ImportTestCaseStep.class.getName(), org.apache.log4j.Level.DEBUG, "Rewrite TestCaseCountryProperties");
+            if (tccListString != null) {
+                tccListString.retainAll(tccFromListString);
+                if (!tccListString.isEmpty() && !propertyNamesOfStep.isEmpty()) {
+                    List<TestCaseCountryProperties> tccpToImport = new ArrayList();
+                    for (String country : tccListString) {
+                        tccpList = testCaseCountryProperties.findListOfPropertyPerTestTestCaseCountry(fromTest, fromTestCase, country);
+                        for (TestCaseCountryProperties tccp : tccpList) {
+                            // only add property of the test case if it is used by the step
+                            if (propertyNamesOfStep.contains(tccp.getProperty())) {
+                                tccp.setTest(test);
+                                tccp.setTestCase(testCase);
+                                tccpToImport.add(tccp);
+                            }
+                        }
+                    }
+
+                    // if the list of property to import is not empty, insert them.
+                    if (!tccpToImport.isEmpty()) {
+                        testCaseCountryProperties.insertListTestCaseCountryProperties(tccpToImport);
+                    }
+                }
+            }
+
         }
 
         response.sendRedirect("TestCase.jsp?Load=Load&Test=" + test + "&TestCase=" + testCase);
@@ -182,5 +195,4 @@ public class UseTestCaseStep extends HttpServlet {
     public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
-
 }
