@@ -82,13 +82,10 @@ public class CountryEnvironmentParametersDAO implements ICountryEnvironmentParam
 
                 ResultSet resultSet = preStat.executeQuery();
                 try {
-                    String ip = "";
-                    String url = "";
-                    String urlLogin = "";
                     if (resultSet.first()) {
-                        ip = resultSet.getString("IP");
-                        url = resultSet.getString("URL");
-                        urlLogin = resultSet.getString("URLLOGIN");
+                        String ip = resultSet.getString("IP");
+                        String url = resultSet.getString("URL");
+                        String urlLogin = resultSet.getString("URLLOGIN");
                         result = factoryCountryEnvironmentApplication.create(system, country, environment, application, ip, url, urlLogin);
                     } else {
                         throwException = true;
@@ -176,7 +173,7 @@ public class CountryEnvironmentParametersDAO implements ICountryEnvironmentParam
 
     @Override
     public List<CountryEnvironmentApplication> findCountryEnvironmentApplicationByCriteria(CountryEnvironmentApplication countryEnvironmentParameter) throws CerberusException {
-        List<CountryEnvironmentApplication> result = new ArrayList();
+        List<CountryEnvironmentApplication> result = new ArrayList<CountryEnvironmentApplication>();
         boolean throwex = false;
         StringBuilder query = new StringBuilder();
         query.append("SELECT `system`, country, environment, Application, IP,URL, URLLOGIN FROM countryenvironmentparameters ");
@@ -202,7 +199,7 @@ public class CountryEnvironmentParametersDAO implements ICountryEnvironmentParam
                         String country = resultSet.getString("country");
                         String application = resultSet.getString("application");
                         String environment = resultSet.getString("environment");
-                        String ip = ip = resultSet.getString("IP");
+                        String ip = resultSet.getString("IP");
                         String url = resultSet.getString("URL");
                         String urlLogin = resultSet.getString("URLLOGIN");
                         result.add(factoryCountryEnvironmentApplication.create(system, country, environment, application, ip, url, urlLogin));
