@@ -3663,11 +3663,25 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("CHANGE COLUMN `sort` `sort` INT(11) NOT NULL DEFAULT 10 ;");
         SQLInstruction.add(SQLS.toString());
         
-//Add application type WS  
-//-- ------------------------ 513   
+//Add application type WS
+//-- ------------------------ 513
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`) VALUES ");
         SQLS.append("('APPLITYPE', 'WS', '30', 'Web Service Application');");
+        SQLInstruction.add(SQLS.toString());
+
+//Add executor (user login or selenium) in testcaseexecution table
+//-- ------------------------ 514
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE testcaseexecution ");
+        SQLS.append("ADD COLUMN `Executor` VARCHAR(10) NULL;");
+        SQLInstruction.add(SQLS.toString());
+
+// New updated Documentation.
+//-- ------------------------ 515
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `documentation` VALUES ");
+        SQLS.append("('testcaseexecution','executor','','Executor user','This is the name of the executor user that executed the <code class=\\'doc-crbvvoca\\'>test case</code>.<br>This data has been created for tracability purpose as the result of Cerberus Test could varry between human and selenium test.');");
         SQLInstruction.add(SQLS.toString());
 
         return SQLInstruction;

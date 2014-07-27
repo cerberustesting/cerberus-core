@@ -39,5 +39,5 @@ public interface IFactoryTestCaseExecution {
                        Application application, String ip, String url, String port, String tag, String finished, int verbose, int screenshot,int pageSource, int seleniumLog, boolean synchroneous, String timeout,
                        String outputFormat, String status, String crbVersion, TCase tCase, CountryEnvParam countryEnvParam,
                        CountryEnvironmentApplication countryEnvironmentApplication, boolean manualURL, String myHost, String myContextRoot, String myLoginRelativeURL, String myEnvData,
-                       String seleniumIP, String seleniumPort, List<TestCaseStepExecution> testCaseStepExecution, MessageGeneral resultMessage);
+            String seleniumIP, String seleniumPort, List<TestCaseStepExecution> testCaseStepExecution, MessageGeneral resultMessage, String executor);
 }

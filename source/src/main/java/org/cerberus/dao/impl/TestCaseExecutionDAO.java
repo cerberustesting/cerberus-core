@@ -62,7 +62,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
     public long insertTCExecution(TestCaseExecution tCExecution) throws CerberusException {
         boolean throwEx = false;
         final String query = "INSERT INTO testcaseexecution(test, testcase, build, revision, environment, country, browser, application, ip, "
-                + "url, port, tag, verbose, status, start, end, controlstatus, controlMessage, crbversion, finished, browserFullVersion) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                + "url, port, tag, verbose, status, start, end, controlstatus, controlMessage, crbversion, finished, browserFullVersion, executor) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -97,6 +97,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                 preStat.setString(19, tCExecution.getCrbVersion());
                 preStat.setString(20, tCExecution.getFinished());
                 preStat.setString(21, tCExecution.getBrowserFullVersion());
+                preStat.setString(22, tCExecution.getExecutor());
 
                 preStat.executeUpdate();
                 ResultSet resultSet = preStat.getGeneratedKeys();
@@ -140,7 +141,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         boolean throwEx = false;
         final String query = "UPDATE testcaseexecution SET test = ?, testcase = ?, build = ?, revision = ?, environment = ?, country = ?"
                 + ", browser = ?, application = ?, ip = ?, url = ?, port = ?, tag = ?, verbose = ?, status = ?"
-                + ", start = ?, end = ? , controlstatus = ?, controlMessage = ?, crbversion = ?, finished = ? , browserFullVersion = ?, version = ?, platform = ? WHERE id = ?";
+                + ", start = ?, end = ? , controlstatus = ?, controlMessage = ?, crbversion = ?, finished = ? , browserFullVersion = ?, version = ?, platform = ?, executor = ? WHERE id = ?";
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -177,7 +178,8 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                 preStat.setString(21, tCExecution.getBrowserFullVersion());
                 preStat.setString(22, tCExecution.getVersion());
                 preStat.setString(23, tCExecution.getPlatform());
-                preStat.setLong(24, tCExecution.getId());
+                preStat.setString(24, tCExecution.getExecutor());
+                preStat.setLong(25, tCExecution.getId());
 
                 preStat.executeUpdate();
             } catch (SQLException exception) {
@@ -439,9 +441,10 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         int verbose = resultSet.getInt("verbose");
         String status = resultSet.getString("status");
         String crbVersion = resultSet.getString("crbVersion");
+        String executor = resultSet.getString("executor");
         return factoryTCExecution.create(id, test, testcase, build, revision, environment,
                 country, browser, version, platform, browserFullVersion, start, end, controlStatus, controlMessage, null, ip, url,
                 port, tag, finished, verbose, 0, 0,0, true, "", "", status, crbVersion, null, null, null,
-                false, null, null, null, null, null, null, null, null);
+                false, null, null, null, null, null, null, null, null, executor);
     }
 }

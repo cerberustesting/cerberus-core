@@ -149,7 +149,7 @@
                         + "tce.Build, tce.Revision, tce.Environment, tce.Country, tce.Browser, tce.BrowserFullVersion, "
                         + "tce.Start, tce.End, tce.ControlStatus, tce.Application, tce.browser, tce.browserfullversion, "
                         + "tce.Ip, tce.URL, UNIX_TIMESTAMP(tce.End)-UNIX_TIMESTAMP(tce.Start) time_elapsed, "
-                        + "tce.port, tce.tag, tce.verbose, tce.controlmessage, tce.status, tce.CrbVersion, tc.Comment, tc.BugID "
+                        + "tce.port, tce.tag, tce.verbose, tce.controlmessage, tce.status, tce.CrbVersion, tc.Comment, tc.BugID, tce.executor "
                         + " FROM testcaseexecution tce "
                         + " JOIN testcase tc "
                         + " ON tc.test=tce.test and tc.testcase=tce.testcase "
@@ -163,6 +163,7 @@
                 String comment = "";
                 String bugid = "";
                 String newBugURL = "";
+                String executor = "";
 
                 if (rs_inf.first()) {
 
@@ -179,6 +180,10 @@
                     exedate = rs_inf.getString("start");
                     bugid = rs_inf.getString("BugID");
                     comment = rs_inf.getString("Comment");
+                    executor = rs_inf.getString("executor");
+                    if(executor == null) {
+                        executor = "";
+                    }
                     browserFullVersion = rs_inf.getString("BrowserFullVersion");
                     IApplicationService applicationService = appContext.getBean(IApplicationService.class);
                     appSystem = applicationService.findApplicationByKey(myApplication).getSystem();
@@ -283,14 +288,16 @@
                     </tr>
                     <tr style="font-style: italic">
                         <td style="font-weight: bold; width: 140px" colspan=3><%out.print(docService.findLabelHTML("testcaseexecution", "tag", "Tag"));%></td>
-                        <td style="font-weight: bold; width: 140px" colspan=8><%out.print(docService.findLabelHTML("testcaseexecution", "controlmessage", "Message"));%></td>
+                        <td style="font-weight: bold; width: 140px" colspan=7><%out.print(docService.findLabelHTML("testcaseexecution", "controlmessage", "Message"));%></td>
+                        <td style="font-weight: bold;"><%out.print(docService.findLabelHTML("testcaseexecution", "Executor", "Executor"));%></td>
                         <td style="font-weight: bold; width: 140px"><%out.print(docService.findLabelHTML("testcaseexecution", "verbose", "Verbose"));%></td>
                         <td style="font-weight: bold; width: 140px"><%out.print(docService.findLabelHTML("testcaseexecution", "status", "Status"));%></td>
                         <td style="font-weight: bold; width: 140px"><%out.print(docService.findLabelHTML("testcaseexecution", "crbversion", "Engine Version"));%></td>
                     </tr>
                     <tr>
                         <td colspan=3><span id="exetag"><%= rs_inf.getString("tag") == null ? "" : rs_inf.getString("tag")%></span></td>
-                        <td colspan=8><span id="exemsg"><%= rs_inf.getString("ControlMessage") == null ? "" : rs_inf.getString("ControlMessage")%></span></td>
+                        <td colspan=7><span id="exemsg"><%= rs_inf.getString("ControlMessage") == null ? "" : rs_inf.getString("ControlMessage")%></span></td>
+                        <td><span id="exemsg"><%=executor%></span></td>
                         <td><span id="exeverbose"><%= rs_inf.getString("verbose") == null ? "" : rs_inf.getString("verbose")%></span></td>
                         <td><span id="exestatus"><%= rs_inf.getString("status") == null ? "" : rs_inf.getString("status")%></span></td>
                         <td><span id="execrbversion"><%= rs_inf.getString("crbversion") == null ? "" : rs_inf.getString("crbversion")%></span></td>
@@ -551,10 +558,10 @@
                                                 <tr class="tableContent">
                                                     <td style="width:20px">&nbsp;&nbsp;&nbsp;&nbsp;</td>
                                                     <td style="width:20px">&nbsp;&nbsp;&nbsp;&nbsp;</td>
-                                                    <td class="<%=myControlData.getReturnCode()%>" onclick="dialogTheDiff('<%=myAction + "-" + myControlData.getControl()%>')"><span class="<%=myControlData.getReturnCode()%>F" id="CTLSTS-<%=myAction + "-" + myControlData.getControl()%>"><%=myControlData.getReturnCode()%></span></td>
+                                                    <td class="<%=myControlData.getReturnCode()%>"><span class="<%=myControlData.getReturnCode()%>F" id="CTLSTS-<%=myAction + "-" + myControlData.getControl()%>"><%=myControlData.getReturnCode()%></span></td>
                                                     <td><%=DateUtil.getFormatedDate(myControlData.getStartLong())%></td>
                                                     <td><%=DateUtil.getFormatedElapsed(myControlData.getStartLong(), myControlData.getEndLong())%></td>
-                                                    <td><%=myControlData.getControl()%></td>
+                                                    <td data-id="<%=myAction + "-" + myControlData.getControl()%>" class="control <%=myControlData.getControl()%>"><%=myControlData.getControl()%></td>
                                                     <td<%=controlDesc%>><%=descControl%></td>
                                                     <td<%=controlDesc%>><b><%=myControlData.getControlType()%></b></td>
                                                     <td id="CTLPRP-<%=myAction + "-" + myControlData.getControl()%>"><%=StringUtil.replaceUrlByLinkInString(myControlData.getControlProperty())%></td>
@@ -877,7 +884,13 @@
                     // Image links displayed as a group
                     //$('a.zoombox').zoombox();
 
+                    $('td.control').css('cursor','pointer');
+                    $('td.control').click(function(){
+                        dialogTheDiff($(this).data('id'));
+                    });
+
                 });
+
 
                 function dialogTheDiff(controlId) {
                     

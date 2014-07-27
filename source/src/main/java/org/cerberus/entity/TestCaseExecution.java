@@ -50,6 +50,8 @@ public class TestCaseExecution {
     private String crbVersion;
     private boolean synchroneous;
     private String timeout;
+    private String executor;
+
     /**
      * From here are data outside database model.
      */
@@ -464,4 +466,11 @@ public class TestCaseExecution {
         this.testCaseExecutionDataList = testCaseExecutionDataList;
     }
 
+    public String getExecutor() {
+        return executor;
+    }
+
+    public void setExecutor(String executor) {
+        this.executor = executor;
+    }
 }

@@ -21,20 +21,18 @@ package org.cerberus.servlet.manualTestCase;
 
 import java.io.IOException;
 import java.util.Date;
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.apache.log4j.Level;
 import org.cerberus.entity.Application;
 import org.cerberus.entity.CountryEnvParam;
 import org.cerberus.entity.MessageGeneral;
 import org.cerberus.entity.MessageGeneralEnum;
-import org.cerberus.entity.TestCaseExecution;
 import org.cerberus.entity.TCase;
+import org.cerberus.entity.TestCaseExecution;
 import org.cerberus.entity.TestCaseExecutionSysVer;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.factory.IFactoryTestCaseExecution;
@@ -45,6 +43,7 @@ import org.cerberus.service.ICountryEnvParamService;
 import org.cerberus.service.ITestCaseExecutionService;
 import org.cerberus.service.ITestCaseExecutionSysVerService;
 import org.cerberus.service.ITestCaseService;
+import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.version.Version;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
@@ -96,11 +95,20 @@ public class SaveManualExecution extends HttpServlet {
             String build = countryEnvParam.getBuild();
             String revision = countryEnvParam.getRevision();
             long now = new Date().getTime();
-            String version = "Cerberus-"+Version.VERSION;
+            String version = "Cerberus-" + Version.VERSION;
+
+            String myUser = "";
+            if (!(req.getUserPrincipal() == null)) {
+                myUser = ParameterParserUtil.parseStringParam(req.getUserPrincipal().getName(), "");
+            }
+
+            if (myUser == null || myUser.length() <= 0) {
+                myUser = "Manual";
+            }
 
             TestCaseExecution execution = factoryTCExecution.create(0, test, testCase, build, revision, env, country, browser, "", "", browserVersion, now, now,
-                    controlStatus, controlMessage, application, "", "", "", tag, "Y", 0, 0,0 ,0 ,true,"", "", tCase.getStatus(), version,
-                    null, null, null, false, "", "", "", "", "", "", null, null);
+                    controlStatus, controlMessage, application, "", "", "", tag, "Y", 0, 0, 0, 0, true, "", "", tCase.getStatus(), version,
+                    null, null, null, false, "", "", "", "", "", "", null, null, myUser);
 
             testCaseExecutionService.insertTCExecution(execution);
 
