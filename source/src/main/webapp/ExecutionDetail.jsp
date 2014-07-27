@@ -210,26 +210,26 @@
                 <br>
 
                 <input id="statushidden" value="<%=rs_inf.getString("ControlStatus")%>" hidden="hidden">
-                <table class="tableBorder" style="text-align: left" border="1" >
+                <table class="tableBorder wrapAll" style="text-align: left" border="1" >
                     <tr id="header" style="font-style: italic">
-                        <td style="font-weight: bold; width: 140px"><%out.print(docService.findLabelHTML("testcaseexecution", "id", "ID"));%></td>
-                        <td style="font-weight: bold; width: 140px"><%out.print(docService.findLabelHTML("test", "test", "Test"));%></td>
-                        <td style="font-weight: bold; width: 140px"><%out.print(docService.findLabelHTML("testcase", "testcase", "TestCase"));%></td>
-                        <td style="font-weight: bold; width: 140px"><%out.print(docService.findLabelHTML("invariant", "country", "Country"));%></td>
-                        <td style="font-weight: bold; width: 140px"><%out.print(docService.findLabelHTML("invariant", "environment", "Environment"));%></td>
-                        <td style="font-weight: bold; width: 140px"><%out.print(docService.findLabelHTML("page_executiondetail", "buildrevision", ""));%></td>
-                        <td style="font-weight: bold; width: 140px"><%out.print(docService.findLabelHTML("page_executiondetail", "buildrevisionlink", ""));%></td>
-                        <td style="font-weight: bold; width: 140px"><%out.print(docService.findLabelHTML("application", "Application", "Application"));%></td>
-                        <td style="font-weight: bold; width: 140px"><%out.print(docService.findLabelHTML("testcaseexecution", "URL", "URL"));%></td>
-                        <td style="font-weight: bold; width: 140px"><%out.print(docService.findLabelHTML("testcaseexecution", "IP", "Ip"));
+                        <td style="font-weight: bold; width: 7%"><%out.print(docService.findLabelHTML("testcaseexecution", "id", "ID"));%></td>
+                        <td style="font-weight: bold; width: 7%"><%out.print(docService.findLabelHTML("test", "test", "Test"));%></td>
+                        <td style="font-weight: bold; width: 9%"><%out.print(docService.findLabelHTML("testcase", "testcase", "TestCase"));%></td>
+                        <td style="font-weight: bold; width: 7%"><%out.print(docService.findLabelHTML("invariant", "country", "Country"));%></td>
+                        <td style="font-weight: bold; width: 7%"><%out.print(docService.findLabelHTML("invariant", "environment", "Environment"));%></td>
+                        <td style="font-weight: bold; width: 7%"><%out.print(docService.findLabelHTML("page_executiondetail", "buildrevision", ""));%></td>
+                        <td style="font-weight: bold; width: 7%"><%out.print(docService.findLabelHTML("page_executiondetail", "buildrevisionlink", ""));%></td>
+                        <td style="font-weight: bold; width: 7%"><%out.print(docService.findLabelHTML("application", "Application", "Application"));%></td>
+                        <td style="font-weight: bold; width: 7%"><%out.print(docService.findLabelHTML("testcaseexecution", "URL", "URL"));%></td>
+                        <td style="font-weight: bold; width: 7%"><%out.print(docService.findLabelHTML("testcaseexecution", "IP", "Ip"));
                             out.print("<br>");
                             out.print(docService.findLabelHTML("testcaseexecution", "port", "Port"));%></td>
-                        <td style="font-weight: bold; width: 140px"><%out.print(docService.findLabelHTML("testcaseexecution", "browser", "Browser"));
+                        <td style="font-weight: bold; width: 7%"><%out.print(docService.findLabelHTML("testcaseexecution", "browser", "Browser"));
                             out.print("<br>[");
                             out.print(docService.findLabelHTML("testcaseexecution", "browserFullVersion", ""));%>]</td>
-                        <td style="font-weight: bold; width: 140px"><%out.print(docService.findLabelHTML("testcaseexecution", "start", "Start"));%></td>
-                        <td style="font-weight: bold; width: 140px"><%out.print(docService.findLabelHTML("testcaseexecution", "end", "End"));%></td>
-                        <td style="font-weight: bold; width: 140px"><%out.print(docService.findLabelHTML("testcaseexecution", "controlstatus", "ControlStatus"));%></td>
+                        <td style="font-weight: bold; width: 7%"><%out.print(docService.findLabelHTML("testcaseexecution", "start", "Start"));%></td>
+                        <td style="font-weight: bold; width: 7%"><%out.print(docService.findLabelHTML("testcaseexecution", "end", "End"));%></td>
+                        <td style="font-weight: bold; width: 7%"><%out.print(docService.findLabelHTML("testcaseexecution", "controlstatus", "ControlStatus"));%></td>
                     </tr>            
                     <tr>
 
@@ -287,12 +287,12 @@
                             }%>
                     </tr>
                     <tr style="font-style: italic">
-                        <td style="font-weight: bold; width: 140px" colspan=3><%out.print(docService.findLabelHTML("testcaseexecution", "tag", "Tag"));%></td>
-                        <td style="font-weight: bold; width: 140px" colspan=7><%out.print(docService.findLabelHTML("testcaseexecution", "controlmessage", "Message"));%></td>
+                        <td style="font-weight: bold;" colspan=3><%out.print(docService.findLabelHTML("testcaseexecution", "tag", "Tag"));%></td>
+                        <td style="font-weight: bold;" colspan=7><%out.print(docService.findLabelHTML("testcaseexecution", "controlmessage", "Message"));%></td>
                         <td style="font-weight: bold;"><%out.print(docService.findLabelHTML("testcaseexecution", "Executor", "Executor"));%></td>
-                        <td style="font-weight: bold; width: 140px"><%out.print(docService.findLabelHTML("testcaseexecution", "verbose", "Verbose"));%></td>
-                        <td style="font-weight: bold; width: 140px"><%out.print(docService.findLabelHTML("testcaseexecution", "status", "Status"));%></td>
-                        <td style="font-weight: bold; width: 140px"><%out.print(docService.findLabelHTML("testcaseexecution", "crbversion", "Engine Version"));%></td>
+                        <td style="font-weight: bold;"><%out.print(docService.findLabelHTML("testcaseexecution", "verbose", "Verbose"));%></td>
+                        <td style="font-weight: bold;"><%out.print(docService.findLabelHTML("testcaseexecution", "status", "Status"));%></td>
+                        <td style="font-weight: bold;"><%out.print(docService.findLabelHTML("testcaseexecution", "crbversion", "Engine Version"));%></td>
                     </tr>
                     <tr>
                         <td colspan=3><span id="exetag"><%= rs_inf.getString("tag") == null ? "" : rs_inf.getString("tag")%></span></td>
@@ -303,9 +303,9 @@
                         <td><span id="execrbversion"><%= rs_inf.getString("crbversion") == null ? "" : rs_inf.getString("crbversion")%></span></td>
                     </tr>
                     <tr style="font-style: italic">
-                        <td style="font-weight: bold; width: 140px" colspan=9><%out.print(docService.findLabelHTML("testcase", "Comment", "Comment"));%></td>
-                        <td style="font-weight: bold; width: 20px" colspan=1><%out.print(docService.findLabelHTML("page_executiondetail", "SeleniumLog", "Selenium Log"));%></td>
-                        <td style="font-weight: bold; width: 140px" colspan=4><%out.print(docService.findLabelHTML("testcase", "BugID", "Bug ID"));%></td>
+                        <td style="font-weight: bold;" colspan=9><%out.print(docService.findLabelHTML("testcase", "Comment", "Comment"));%></td>
+                        <td style="font-weight: bold;" colspan=1><%out.print(docService.findLabelHTML("page_executiondetail", "SeleniumLog", "Selenium Log"));%></td>
+                        <td style="font-weight: bold;" colspan=4><%out.print(docService.findLabelHTML("testcase", "BugID", "Bug ID"));%></td>
                     </tr>
                     <tr>
                         <td colspan=9>
@@ -494,7 +494,7 @@
                                     ITestCaseStepActionService testCaseStepActionService = appContext.getBean(ITestCaseStepActionService.class);
 
                                     List<TestCaseStepActionExecution> actionList = testCaseStepActionExecutionService.findTestCaseStepActionExecutionByCriteria(iD, myStepData.getTest(), myStepData.getTestCase(), myStepData.getStep());%>
-                                <table id="actionTable<%=stepIdentifier%>"  style="border-collapse: collapse; display:<%=conditionalDisplay%>">
+                                <table id="actionTable<%=stepIdentifier%>"  style="border-collapse: collapse; display:<%=conditionalDisplay%>; width:100%">
                                     <%
                                         myStep = String.valueOf(myKey);
                                         for (TestCaseStepActionExecution myActionData : actionList) {
@@ -508,32 +508,32 @@
                                             }
                                     %>
                                     <tr class="tableContent">
-                                        <td style="width:20px">&nbsp;&nbsp;&nbsp;&nbsp;</td>
-                                        <td style="width:20px" class="<%=myActionData.getReturnCode()%>"><span class="<%=myActionData.getReturnCode()%>F" id="ACTSTS-<%=myStep + "-" + myActionData.getSequence()%>"><%=myActionData.getReturnCode()%></span></td>
-                                        <td style="width:90px"><%=DateUtil.getFormatedDate(myActionData.getStartLong())%></td>
+                                        <td style="width:1%">&nbsp;&nbsp;&nbsp;&nbsp;</td>
+                                        <td style="width:1%" class="<%=myActionData.getReturnCode()%>"><span class="<%=myActionData.getReturnCode()%>F" id="ACTSTS-<%=myStep + "-" + myActionData.getSequence()%>"><%=myActionData.getReturnCode()%></span></td>
+                                        <td style="width:4%"><%=DateUtil.getFormatedDate(myActionData.getStartLong())%></td>
                                         <td style="width:5%"><%=DateUtil.getFormatedElapsed(myActionData.getStartLong(), myActionData.getEndLong())%></td>
                                         <td style="width:5%"><%=myActionData.getSequence()%></td>
                                         <td style="width:20%"<%=actionDesc%>><%=descAction%></td>
                                         <td style="width:20%"<%=actionDesc%>><b><%=myActionData.getAction()%></b></td>
                                         <td style="width:20%"><%=StringUtil.replaceUrlByLinkInString(myActionData.getObject())%></td>
                                         <td style="width:20%"><%=StringUtil.replaceUrlByLinkInString(myActionData.getProperty())%></td>
-                                        <td style="width:10px"><%if (myActionData.getScreenshotFilename() != null) {%>
+                                        <td style="width:2%"><%if (myActionData.getScreenshotFilename() != null) {%>
                                             <a href="<%=PictureURL%><%=myActionData.getScreenshotFilename().replaceAll("\\\\", "/")%>" id="ACTIMG-<%=myStep + "-" + myActionData.getSequence()%>" class="zoombox  zgallery1">img</a>
                                             <%}%>
                                         </td>
-                                        <td style="width:10px"><%if (myActionData.getPageSourceFilename() != null) {%>
+                                        <td style="width:2%"><%if (myActionData.getPageSourceFilename() != null) {%>
                                             <a href="<%=PictureURL%><%=myActionData.getPageSourceFilename().replaceAll("\\\\", "/")%>" id="ACTPS-<%=myStep + "-" + myActionData.getSequence()%>">src</a>
                                             <%}%>
                                         </td>
                                     </tr>
                                     <tr class="tableContent">
-                                        <td style="width:10px">&nbsp;&nbsp;&nbsp;&nbsp;</td>
-                                        <td style="width:20px" class="<%=myActionData.getReturnCode()%>">>></td>
-                                        <td colspan="8" class="<%=myActionData.getReturnCode()%>F"><i><span id="ACTMES-<%=myStep + "-" + myActionData.getSequence()%>"><%=StringUtil.replaceUrlByLinkInString(myActionData.getReturnMessage())%></span></i></td>
+                                        <td style="width:1%">&nbsp;&nbsp;&nbsp;&nbsp;</td>
+                                        <td style="width:1%" class="<%=myActionData.getReturnCode()%>">>></td>
+                                        <td colspan="9" class="<%=myActionData.getReturnCode()%>F"><i><span id="ACTMES-<%=myStep + "-" + myActionData.getSequence()%>"><%=StringUtil.replaceUrlByLinkInString(myActionData.getReturnMessage())%></span></i></td>
                                     </tr>
                                     
                                     <tr>
-                                        <td colspan="9">
+                                        <td colspan="11">
                                             <%
 
                                                 ITestCaseStepActionControlExecutionService testCaseStepActionControlExecutionService = appContext.getBean(ITestCaseStepActionControlExecutionService.class);
@@ -580,7 +580,7 @@
                                         <td style="width:10px">&nbsp;&nbsp;&nbsp;&nbsp;</td>
                                         <td>&nbsp;&nbsp;&nbsp;&nbsp;</td>
                                         <td style="width:20px" class="<%=myControlData.getReturnCode()%>">>></td>
-                                        <td colspan="8" class="<%=myControlData.getReturnCode()%>F"><i><span id="CTLMES-<%=myAction + "-" + myControlData.getControl()%>"><%=StringUtil.replaceUrlByLinkInString(myControlData.getReturnMessage())%></span></i></td>
+                                        <td colspan="10" class="<%=myControlData.getReturnCode()%>F"><i><span id="CTLMES-<%=myAction + "-" + myControlData.getControl()%>"><%=StringUtil.replaceUrlByLinkInString(myControlData.getReturnMessage())%></span></i></td>
                                     </tr>
                                     <tr></tr>
                                                 <%

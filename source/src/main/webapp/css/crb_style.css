@@ -102,8 +102,7 @@ text-align: center;
 }
 
 .tableContent{
-background-color: white;   
-    
+background-color: white;
 }
 
 .tableBorder{
@@ -663,4 +662,15 @@ input#submitButtonDuplicate {
     border: 1px solid lightgray;
     width: 130px;
     cursor: pointer;
+}
+
+#controlTable {
+    width: 100%;
+}
+
+table.wrapAll td,
+table.wrapAll th {
+    white-space: pre-line;
+    word-wrap: break-word; /*CSS3*/
+    word-break: break-all;
 }
