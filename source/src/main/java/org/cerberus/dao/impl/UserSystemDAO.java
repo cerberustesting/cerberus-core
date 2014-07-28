@@ -23,7 +23,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.log4j.Level;
@@ -54,7 +53,7 @@ public class UserSystemDAO implements IUserSystemDAO{
     @Override
     public UserSystem findUserSystemByKey(String login, String system) throws CerberusException {
         UserSystem result = null;
-        final String query = "SELECT * FROM userSystem u WHERE u.`login` = ? and u.`system`";
+        final String query = "SELECT * FROM usersystem u WHERE u.`login` = ? and u.`system`";
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -95,7 +94,7 @@ public class UserSystemDAO implements IUserSystemDAO{
     @Override
     public List<UserSystem> findallUser() throws CerberusException {
         List<UserSystem> list = null;
-        final String query = "SELECT * FROM userSystem ORDER BY `login`";
+        final String query = "SELECT * FROM usersystem ORDER BY `login`";
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -135,7 +134,7 @@ public class UserSystemDAO implements IUserSystemDAO{
     @Override
     public List<UserSystem> findUserSystemByUser(String login) throws CerberusException {
         List<UserSystem> list = null;
-        final String query = "SELECT * FROM userSystem u WHERE u.`login` = ? ";
+        final String query = "SELECT * FROM usersystem u WHERE u.`login` = ? ";
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -177,7 +176,7 @@ public class UserSystemDAO implements IUserSystemDAO{
     @Override
     public List<UserSystem> findUserSystemBySystem(String system) throws CerberusException {
         List<UserSystem> list = null;
-        final String query = "SELECT * FROM userSystem u WHERE u.`system` = ? ";
+        final String query = "SELECT * FROM usersystem u WHERE u.`system` = ? ";
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -218,7 +217,7 @@ public class UserSystemDAO implements IUserSystemDAO{
 
     @Override
     public void insertUserSystem(UserSystem userSystem) throws CerberusException {
-        final String query = "INSERT INTO userSystem (`login`, `system`) VALUES (?, ?)";
+        final String query = "INSERT INTO usersystem (`login`, `system`) VALUES (?, ?)";
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -251,7 +250,7 @@ public class UserSystemDAO implements IUserSystemDAO{
 
     @Override
     public void deleteUserSystem(UserSystem userSystem) throws CerberusException {
-        final String query = "DELETE FROM userSystem WHERE `login` = ? and `system` = ?";
+        final String query = "DELETE FROM usersystem WHERE `login` = ? and `system` = ?";
 
         Connection connection = this.databaseSpring.connect();
         try {
