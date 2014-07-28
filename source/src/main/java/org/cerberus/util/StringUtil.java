@@ -39,7 +39,7 @@ public final class StringUtil {
      */
     public static final String NULL = "null";
 
-    private static final Pattern urlMatch = Pattern.compile("([a-zA-Z]*://[^<>[:space:]]+[[:alnum:]/])");
+    private static final Pattern urlMatch = Pattern.compile("(.*[<>' \"^]+)([a-zA-Z]+://[^<>[:space:]]+[[:alnum:]/]*)([$<> ' \"].*)");
 
     /**
      * To avoid instanciation of utility class
@@ -186,7 +186,7 @@ public final class StringUtil {
         if (text != null && text.length() > 0) {
             Matcher matcher = urlMatch.matcher(text);
             if (matcher.matches()) {
-                return matcher.replaceAll("<a href=\"$1\">$1</a>");
+                return matcher.replaceAll("$1<a href=\\\"$2\\\">$2</a>$3");
             }
         }
         return text;
