@@ -427,8 +427,18 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         String version = resultSet.getString("version");
         String platform = resultSet.getString("platform");
         String browserFullVersion = resultSet.getString("browserFullVersion");
-        long start = resultSet.getTimestamp("start").getTime();
-        long end = resultSet.getTimestamp("end").getTime();
+        long start;
+        if (resultSet.getLong("start") != 0L) {
+            start = resultSet.getTimestamp("start").getTime();
+        } else {
+            start = 0L;
+        }
+        long end;
+        if (resultSet.getLong("end") != 0L) {
+            end = resultSet.getTimestamp("end").getTime();
+        } else {
+            end = 0L;
+        }
         String controlStatus = resultSet.getString("controlStatus");
         String controlMessage = resultSet.getString("controlMessage");
         //TODO get Application
