@@ -447,4 +447,44 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                 port, tag, finished, verbose, 0, 0,0, true, "", "", status, crbVersion, null, null, null,
                 false, null, null, null, null, null, null, null, null, executor);
     }
+
+    @Override
+    public TestCaseExecution findTCExecutionByKey(long id) throws CerberusException {
+        TestCaseExecution result = null;
+        final String query = "SELECT * FROM testcaseexecution WHERE ID = ?";
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            preStat.setLong(1, id);
+
+            try {
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+                    if (resultSet.first()) {
+                        result = this.loadFromResultSet(resultSet);
+                    }
+                } catch (SQLException exception) {
+                    MyLogger.log(TestCaseExecutionDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                } finally {
+                    resultSet.close();
+                }
+            } catch (SQLException exception) {
+                MyLogger.log(TestCaseExecutionDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(TestCaseExecutionDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(TestCaseExecutionDAO.class.getName(), Level.WARN, e.toString());
+            }
+        }
+        return result;
+    }
 }

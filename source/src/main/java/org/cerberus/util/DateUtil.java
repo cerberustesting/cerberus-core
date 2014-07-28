@@ -93,6 +93,22 @@ public class DateUtil {
     }
 
     /**
+     * @param mysqlDate
+     * @return a String that contains a timestamp sent as a parameter.
+     */
+    public static String getFormatedMySQLTimestamp(long mysqlDate) {
+        // Calculating today + n minutes.
+        //
+        Date today = new Date(); // Getting now.
+        SimpleDateFormat formater; // Define the MySQL Format.
+        formater = new SimpleDateFormat(DateUtil.DATE_FORMAT_DISPLAY);
+
+        Calendar cal = Calendar.getInstance();
+        cal.setTimeInMillis(mysqlDate);
+        return formater.format(cal.getTime());
+    }
+
+    /**
      * This is still to be implemented and should return a string with formated
      * time elapsed between the 2 timestamps.
      *

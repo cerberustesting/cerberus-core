@@ -91,4 +91,9 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
         }
         return runID;
     }
+
+    @Override
+    public TestCaseExecution findTCExecutionByKey(long id) throws CerberusException {
+        return testCaseExecutionDao.findTCExecutionByKey(id);
+    }
 }

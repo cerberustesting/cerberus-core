@@ -72,4 +72,12 @@ public interface ITestCaseExecutionDAO {
      * @throws CerberusException when no executions can be found.
      */
     List<TestCaseExecution> findExecutionbyCriteria1(String dateLimitFrom, String test, String testCase, String application, String country, String environment, String controlStatus, String status) throws CerberusException;
+
+    /**
+     *
+     * @param id of the test case execution
+     * @return the test case execution object
+     * @throws CerberusException
+     */
+    TestCaseExecution findTCExecutionByKey(long id) throws CerberusException;
 }

@@ -17,6 +17,8 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
+<%@page import="org.cerberus.entity.TestCaseExecution"%>
+<%@page import="org.cerberus.service.ITestCaseExecutionService"%>
 <%@page import="java.sql.Statement"%>
 <%@page import="java.sql.ResultSet"%>
 <%@page import="org.apache.log4j.Level"%>
@@ -93,23 +95,18 @@
 
         <div id="body">
             <%
-                Connection conn = db.connect();
                 IDocumentationService docService = appContext.getBean(IDocumentationService.class);
-
-                try {
 
                     /*
                      * Filter requests
                      */
-                    Statement stmt0 = conn.createStatement();
-
                     IParameterService myParameterService = appContext.getBean(IParameterService.class);
                     IApplicationService myApplicationService = appContext.getBean(IApplicationService.class);
                     ITestCaseService testCaseService = appContext.getBean(ITestCaseService.class);
+                    ITestCaseExecutionService testCaseExecutionService = appContext.getBean(ITestCaseExecutionService.class);
 
-                    String PictureURL;
-                    String MyPictureURL;
-                    PictureURL = myParameterService.findParameterByKey("cerberus_picture_url", "").getValue();
+                    String PictureURL = myParameterService.findParameterByKey("cerberus_picture_url", "").getValue();
+
 
                     /*
                      * Manage Filters
@@ -145,50 +142,41 @@
                 /*
                  * Get Execution Information
                  */
-                ResultSet rs_inf = stmt0.executeQuery("SELECT tce.Id, tce.Test, tce.TestCase, tc.Description, "
-                        + "tce.Build, tce.Revision, tce.Environment, tce.Country, tce.Browser, tce.BrowserFullVersion, "
-                        + "tce.Start, tce.End, tce.ControlStatus, tce.Application, tce.browser, tce.browserfullversion, "
-                        + "tce.Ip, tce.URL, UNIX_TIMESTAMP(tce.End)-UNIX_TIMESTAMP(tce.Start) time_elapsed, "
-                        + "tce.port, tce.tag, tce.verbose, tce.controlmessage, tce.status, tce.CrbVersion, tc.Comment, tc.BugID, tce.executor "
-                        + " FROM testcaseexecution tce "
-                        + " JOIN testcase tc "
-                        + " ON tc.test=tce.test and tc.testcase=tce.testcase "
-                        + " WHERE id = '" + id_filter + "'");
+                TestCaseExecution testCaseExecution = testCaseExecutionService.findTCExecutionByKey(Long.parseLong(id_filter));
+            
+                if(testCaseExecution != null) {
+                    test = testCaseExecution.getTest();
+                    testCase = testCaseExecution.getTestCase();
 
-                String max_id = "-1";
-                String data = "";
-                String myApplication = "";
-                String environment = "";
-                String tcGroup = "";
-                String comment = "";
-                String bugid = "";
+                    TCase tCase = testCaseService.findTestCaseByKey(test, testCase);
+
+                String max_id = String.valueOf(testCaseExecution.getId());
+
+                String myApplication = tCase.getApplication();
+                String environment = testCaseExecution.getEnvironment();
+
+                String comment = tCase.getComment();
+                String bugid = tCase.getBugID();
                 String newBugURL = "";
-                String executor = "";
+                String executor = testCaseExecution.getExecutor();
+                String controlStatus = testCaseExecution.getControlStatus();
 
-                if (rs_inf.first()) {
 
-                    max_id = rs_inf.getString("Id");
-                    myApplication = rs_inf.getString("Application");
-                    test = rs_inf.getString("Test");
-                    testCase = rs_inf.getString("TestCase");
-                    testCaseDesc = rs_inf.getString("Description");
-                    country = rs_inf.getString("Country");
-                    environment = rs_inf.getString("Environment");
-                    build = rs_inf.getString("Build");
-                    revision = rs_inf.getString("Revision");
-                    browser = rs_inf.getString("Browser");
-                    exedate = rs_inf.getString("start");
-                    bugid = rs_inf.getString("BugID");
-                    comment = rs_inf.getString("Comment");
-                    executor = rs_inf.getString("executor");
+                    testCaseDesc = tCase.getDescription();
+                    country = testCaseExecution.getCountry();
+
+                    build = testCaseExecution.getBuild();
+                    revision = testCaseExecution.getRevision();
+                    browser = testCaseExecution.getBrowser();
+                    exedate = DateUtil.getFormatedMySQLTimestamp(testCaseExecution.getStart());
+
+
                     if(executor == null) {
                         executor = "";
                     }
-                    browserFullVersion = rs_inf.getString("BrowserFullVersion");
-                    IApplicationService applicationService = appContext.getBean(IApplicationService.class);
-                    appSystem = applicationService.findApplicationByKey(myApplication).getSystem();
-                    TCase myTestCase = testCaseService.findTestCaseByKey(test, testCase);
-                    tcGroup = myTestCase.getGroup();
+                    browserFullVersion = testCaseExecution.getBrowserFullVersion();
+
+                    String tcGroup = tCase.getGroup();
 
                     newBugURL = myApplicationService.findApplicationByKey(myApplication).getBugTrackerNewUrl();
                     if (!StringUtil.isNullOrEmpty(newBugURL)) {
@@ -209,7 +197,7 @@
             <div style="clear:both" id="table">
                 <br>
 
-                <input id="statushidden" value="<%=rs_inf.getString("ControlStatus")%>" hidden="hidden">
+                <input id="statushidden" value="<%=controlStatus %>" hidden="hidden">
                 <table class="tableBorder wrapAll" style="text-align: left" border="1" >
                     <tr id="header" style="font-style: italic">
                         <td style="font-weight: bold; width: 7%"><%out.print(docService.findLabelHTML("testcaseexecution", "id", "ID"));%></td>
@@ -233,17 +221,17 @@
                     </tr>            
                     <tr>
 
-                        <td><span id="exeid"><%= rs_inf.getString("Id")%></span></td>
-                        <td id="testValue"><b><%= test = rs_inf.getString("Test")%></b></td>
+                        <td><span id="exeid"><%= max_id %></span></td>
+                        <td id="testValue"><b><%= test%></b></td>
                         <td id="testcaseValue"><b><%= testCase%></b><br><%= testCaseDesc%></td>
                         <td id="countryValue"><b><%= country%></b></td>
                         <td><b><%= environment%></b></td>
-                        <td>[<%=appSystem%>]<br><%= rs_inf.getString("Build")%> / <%= rs_inf.getString("Revision")%></td>
+                        <td>[<%=appSystem%>]<br><%= build %> / <%= revision %></td>
                         <td>
                             <table>
                                 <%
                                     ITestCaseExecutionSysVerService testCaseExecutionSysVerService = appContext.getBean(ITestCaseExecutionSysVerService.class);
-                                    List<TestCaseExecutionSysVer> listSysVer = testCaseExecutionSysVerService.findTestCaseExecutionSysVerById(Long.valueOf(rs_inf.getString("Id")));
+                                    List<TestCaseExecutionSysVer> listSysVer = testCaseExecutionSysVerService.findTestCaseExecutionSysVerById(testCaseExecution.getId());
                                     for (TestCaseExecutionSysVer mySysVer : listSysVer) {
                                         if (!(appSystem.equals(mySysVer.getSystem()))) {
                                 %>
@@ -258,33 +246,20 @@
                                 %>
                             </table>
                         </td>
-                        <td><%= rs_inf.getString("Application")%></td>
-                        <td><%= rs_inf.getString("URL")%></td>
-                        <td><span id="exeip"><%= rs_inf.getString("Ip")%></span><br><span id="exeport"><%= rs_inf.getString("port")%></span></td>
-                        <td><span id="exebrowser"><%= rs_inf.getString("Browser")%></span><br>[<span id="exebrowserver"><%= rs_inf.getString("BrowserFullVersion")%></span>]</td>
-                        <td><%= rs_inf.getString("Start")%></td>
+                        <td><%= myApplication %></td>
+                        <td><%= testCaseExecution.getUrl() %></td>
+                        <td><span id="exeip"><%= testCaseExecution.getIp() %></span><br><span id="exeport"><%= testCaseExecution.getPort() %></span></td>
+                        <td><span id="exebrowser"><%= browser %></span><br>[<span id="exebrowserver"><%= browserFullVersion %></span>]</td>
+                        <td><%= exedate %></td>
                         <%
                             // If status is pending, there will be no end timestamp feeded 
-                            // and we should not even try to display it.%>
-                        <% if (rs_inf.getString("ControlStatus").equalsIgnoreCase("OK")) {
-%><td><%= rs_inf.getString("End")%></td>
-                        <td class="OK"><a class="OKF"><span id="res_status"><%= rs_inf.getString("ControlStatus")%></span></a><br><a style="color :green"><span id="res_elapsedtime"><%= rs_inf.getString("time_elapsed")%></span> s</a></td><%
-                        } else if (rs_inf.getString("ControlStatus").equalsIgnoreCase("KO")) {
-                                    %><td><%= rs_inf.getString("End")%></td>
-                        <td class="KO"><a class="KOF"><span id="res_status"><%= rs_inf.getString("ControlStatus")%></span></a></td><%
-                        } else if (rs_inf.getString("ControlStatus").equalsIgnoreCase("NA")) {
-                                %><td><%= rs_inf.getString("End")%></td>
-                        <td class="NA"><a class="NAF"><span id="res_status"><%= rs_inf.getString("ControlStatus")%></span></a></td><%
-                        } else if (rs_inf.getString("ControlStatus").equalsIgnoreCase("FA")) {
-                                %><td><%= rs_inf.getString("End")%></td>
-                        <td class="FA"><a class="FAF"><span id="res_status"><%= rs_inf.getString("ControlStatus")%></span></a></td><%
-                        } else if (rs_inf.getString("ControlStatus").equalsIgnoreCase("PE")) {
-                                %><td>...</td>
-                        <td class="PE"><a class="PEF"><span id="res_status"><%= rs_inf.getString("ControlStatus")%></span></a></td><%
-                        } else {
-                                %><td><%= rs_inf.getString("End")%></td>
-                        <td><span id="res_status"><%= rs_inf.getString("ControlStatus")%></span></td><%
-                            }%>
+                            // and we should not even try to display it.
+                            if("PE".equalsIgnoreCase(controlStatus)) {
+                                %><td>...</td><%
+                            } else {
+                                %><td><%= DateUtil.getFormatedMySQLTimestamp(testCaseExecution.getEnd()) %></td><%
+                            }
+                            %><td class="<%=controlStatus%>"><a class="<%=controlStatus%>F"><span id="res_status"><%=controlStatus%></span></a></td>
                     </tr>
                     <tr style="font-style: italic">
                         <td style="font-weight: bold;" colspan=3><%out.print(docService.findLabelHTML("testcaseexecution", "tag", "Tag"));%></td>
@@ -295,12 +270,12 @@
                         <td style="font-weight: bold;"><%out.print(docService.findLabelHTML("testcaseexecution", "crbversion", "Engine Version"));%></td>
                     </tr>
                     <tr>
-                        <td colspan=3><span id="exetag"><%= rs_inf.getString("tag") == null ? "" : rs_inf.getString("tag")%></span></td>
-                        <td colspan=7><span id="exemsg"><%= rs_inf.getString("ControlMessage") == null ? "" : rs_inf.getString("ControlMessage")%></span></td>
+                        <td colspan=3><span id="exetag"><%= testCaseExecution.getTag() == null ? "" : testCaseExecution.getTag()%></span></td>
+                        <td colspan=7><span id="exemsg"><%= testCaseExecution.getControlMessage() == null ? "" : testCaseExecution.getControlMessage() %></span></td>
                         <td><span id="exemsg"><%=executor%></span></td>
-                        <td><span id="exeverbose"><%= rs_inf.getString("verbose") == null ? "" : rs_inf.getString("verbose")%></span></td>
-                        <td><span id="exestatus"><%= rs_inf.getString("status") == null ? "" : rs_inf.getString("status")%></span></td>
-                        <td><span id="execrbversion"><%= rs_inf.getString("crbversion") == null ? "" : rs_inf.getString("crbversion")%></span></td>
+                        <td><span id="exeverbose"><%= String.valueOf(testCaseExecution.getVerbose()) %></span></td>
+                        <td><span id="exestatus"><%= testCaseExecution.getStatus() == null ? "" : testCaseExecution.getStatus() %></span></td>
+                        <td><span id="execrbversion"><%= testCaseExecution.getCrbVersion() == null ? "" : testCaseExecution.getCrbVersion() %></span></td>
                     </tr>
                     <tr style="font-style: italic">
                         <td style="font-weight: bold;" colspan=9><%out.print(docService.findLabelHTML("testcase", "Comment", "Comment"));%></td>
@@ -315,7 +290,7 @@
                         </td>
                         <td colspan=1>
                             <span id="seleniumLog">
-                                <a href="<%=PictureURL+rs_inf.getString("Id")+"/"%>selenium_log.txt">Logs</a>
+                                <a href="<%=PictureURL+max_id+"/"%>selenium_log.txt">Logs</a>
                             </span>
                         </td>
                         <td colspan=4><span id="bugid"><%
@@ -414,8 +389,7 @@
 
                     </table>
                     <br><br>
-                    <%String verbose = rs_inf.getString("tce.verbose") == null ? "0" : rs_inf.getString("tce.verbose");
-                        if (verbose.equals("2")) {%>
+                    <%if (testCaseExecution.getVerbose() == 2) {%>
                     <input type="button" value ="Show Network Trafic Detail" onclick="javascript:popupNT('NetworkTraficDetail.jsp?id=<%=id_filter%>')">
                     <%}
                             }
@@ -621,183 +595,6 @@
 
                         %>                        
                     </table>
-                    <%//                            GeneratePerformanceString gps = new GeneratePerformanceString();
-//                            data = gps.gps(conn, test, testCase, country);
-                            data = "";
-
-                        }else {
-                    %>
-                    <br><br><table id="arrond" style="text-align: left" border="1" >
-                        <tr id="header" style="font-style: italic">
-                            <td style="font-weight: bold; width: 140px"><b><i>Execution ID not found...</i></b></td>
-                        </tr>
-                    </table>
-                    <%                        }
-                        rs_inf.close();
-
-                        if (!data.equals("")) {
-                    %>
-                </div><input id="data" value="<%=data%>" style="display:none">
-                <table>
-                    <tr>
-                        <td style="width:1200px"><%=testCase%> 
-                            <div id="chart" name="chart" style="height:200px; width:1200px; display:block" >
-                            </div>
-                            <div id="testchart" name="testchart" style="height:200px; width:1200px; display:block" >
-                            </div>
-                        </td>
-                    </tr>
-                </table>
-                <br>
-
-                <script class="code" type="text/javascript">
-
-                    $(document).ready(function() {
-                        var input = window.document.getElementById("data").value.split("/d/");
-                        var maxValue = input[0];
-                        var dataList = input[1];
-                        var list1 = dataList.split("/k/");
-                        var datafin = new Array();
-
-                        for (var k = 0; k < 2; k++) {
-                            var datas = list1[k].split("/p/");
-                            var data2 = new Array();
-                            for (var c = 0; c < datas.length; c++) {
-                                var data3 = new Array();
-                                data3.push(datas[c].split(",")[0]);
-                                data3.push(datas[c].split(",")[1]);
-                                data3.push(datas[c].split(",")[2]);
-                                data2.push(data3);
-                            }
-                            datafin.push(data2);
-                        }
-                        //alert(datafin);
-                        var plot = $.jqplot('chart', datafin, {
-                            title: 'TestCase Duration',
-                            legend: {show: true
-                        },
-                            grid: {
-                                background: '#f3f3f3',
-                                gridLineColor: '#accf9b'
-                            },
-                            cursor: {
-                                show: true,
-                                zoom: true,
-                                showTooltip: false
-                            },
-                            axes: {
-                                xaxis: {//customisation de l'axe x
-                                    renderer: $.jqplot.DateAxisRenderer
-                                },
-                                yaxis: {
-                                    min: 0
-                                            //                        ,max:maxValue
-                                }
-                            }
-                            ,
-                            axesDefaults: {useSeriesColor: false}
-                            ,
-                            series: [{showLine: false, markerOptions: {style: 'filledDiamond'}, label: 'OK'},
-                                {showLine: false, markerOptions: {style: 'filledDiamond'}, label: 'KO'}],
-                            seriesColors: ["#22780F", "#ff5800"],
-                            //cursor:{show:true, zoom:true, showTooltip:false}, 
-                            axesDefaults:{useSeriesColor: false},
-                            highlighter: {//vignette lors du survol des point caracteristique de la courbe
-                                sizeAdjust: 10,
-                                show: true,
-                                tooltipLocation: 'ne',
-                                useAxesFormatters: true,
-                                formatString: '<b>%s >> %s seconds</b>'
-                            }
-                        });
-
-                        $('#chart').bind('jqplotDataClick',
-                                function(ev, seriesIndex, pointIndex, datas) {
-                                    window.location.href = 'ExecutionDetail.jsp?id_tc=' + datas[2];
-                                });
-                    });
-                </script>
-                <script class="code" type="text/javascript">
-
-                    $(document).ready(function() {
-
-                        var test = document.getElementById("testValue").innerHTML;
-                        var testcase = document.getElementById("testcaseValue").innerHTML;
-                        var country = document.getElementById("countryValue").innerHTML;
-
-                        var ajaxDataRenderer = function(url, plot, options) {
-                            var ret = null;
-                            $.ajax({
-                                async: false,
-                                url: url,
-                                dataType: "json",
-                                success: function(data) {
-                                    ret = data;
-                                }
-                            });
-                            return ret;
-                        };
-
-                        // The url for our json data
-                        var jsonurl = "./TestCaseActionExecutionDetail?test=" + test + "&testcase=" + testcase + "&country=" + country;
-                        var legend = "./TestCaseActionExecutionDetail?test=" + test + "&testcase=" + testcase + "&country=" + country;
-
-                        var plot2 = $.jqplot('testchart', jsonurl, {
-                            dataRenderer: ajaxDataRenderer,
-                            stackSeries: true,
-                            seriesDefaults: {
-                                renderer: $.jqplot.BarRenderer,
-                                rendererOptions: {
-                                    barWidth: 5,
-                                    highlightMouseDown: true
-                                },
-                                pointLabels: {show: true}
-                            },
-                            title: 'Sequence Duration',
-                            legend: {
-                                renderer: $.jqplot.EnhancedLegendRenderer,
-                                show: true,
-                                location: 's',
-                                placement: 'outside',
-                                yoffset: 30,
-                                rendererOptions: {
-                                    numberRows: 2
-                                }
-                            },
-                            grid: {
-                                background: '#f3f3f3',
-                                gridLineColor: '#accf9b'
-                            },
-                            cursor: {
-                                show: true,
-                                zoom: true,
-                                showTooltip: false
-                            },
-                            axes: {
-                                xaxis: {
-                                    renderer: $.jqplot.DateAxisRenderer
-                                },
-                                yaxis: {
-                                    min: 0,
-                                    tickOptions: {showMark: false
-                                    }
-                                }
-                            }
-                            ,
-                            axesDefaults: {useSeriesColor: false},
-                            highlighter: {
-                                show: true,
-                                tooltipLocation: 'ne',
-                                useAxesFormatters: true,
-                                formatString: '<b>%s >> %s seconds</b>'
-                            }
-                        });
-
-                    });
-                </script>
-
-                <%  }
-                %>
                 <br><br>
                 <%  if (!(myApplication.equalsIgnoreCase(""))) {
                 %>
@@ -831,26 +628,17 @@
                     </tr>
                 </table>
                 <%  }
-                %>
+                        }else {
+                    %>
+                    <br><br><table id="arrond" style="text-align: left" border="1" >
+                        <tr id="header" style="font-style: italic">
+                            <td style="font-weight: bold; width: 140px"><b><i>Execution ID not found...</i></b></td>
+                        </tr>
+                    </table>
+                    <%              }          
+                    %>
+
                 <input style="display:none" id="refreshAuto">
-
-                <%
-                        stmt0.close();
-
-                    } catch(Exception e) {
-                        %><br>error message : <%=e.getMessage()%> <%=e.toString()%><br><%
-                        e.printStackTrace();
-                        MyLogger.log("ExecutionDetail.jsp", Level.FATAL, " Exception catched." + e);
-                    } finally {
-                        try {
-                            conn.close();
-                        } catch (Exception ex) {
-                            MyLogger.log("ExecutionDetail.jsp", Level.FATAL, " Exception catched on close." + ex);
-                        }
-                    }
-
-                %>
-
             </div>
             <script>
                 $(document).ready(function() {
