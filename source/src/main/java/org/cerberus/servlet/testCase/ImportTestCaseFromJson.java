@@ -53,10 +53,10 @@ public class ImportTestCaseFromJson extends HttpServlet {
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
      *
-     * @param request servlet request
+     * @param request  servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * @throws IOException      if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -64,16 +64,16 @@ public class ImportTestCaseFromJson extends HttpServlet {
         String testcase = "";
         JSONObject jo = null;
         FileItem item = null;
-        
+
         if (ServletFileUpload.isMultipartContent(request)) {
             FileItemFactory factory = new DiskFileItemFactory();
             ServletFileUpload upload = new ServletFileUpload(factory);
 
             try {
-            
+
                 List items = upload.parseRequest(request);
                 Iterator iterator = items.iterator();
-                
+
                 while (iterator.hasNext()) {
                     item = (FileItem) iterator.next();
 
@@ -88,33 +88,34 @@ public class ImportTestCaseFromJson extends HttpServlet {
                             System.out.println(testcase);
                         }
                     } else {
-                     InputStream inputStream = item.getInputStream();
-                                        
-                    BufferedReader streamReader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8")); 
-                    StringBuilder responseStrBuilder = new StringBuilder();
+                        InputStream inputStream = item.getInputStream();
 
-                    String inputStr;
-                    while ((inputStr = streamReader.readLine()) != null)
-                        responseStrBuilder.append(inputStr);
-                    jo = new JSONObject(responseStrBuilder.toString());
-                    inputStream.close();
-                                        }
-                    
+                        BufferedReader streamReader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
+                        StringBuilder responseStrBuilder = new StringBuilder();
+
+                        String inputStr;
+                        while ((inputStr = streamReader.readLine()) != null)
+                            responseStrBuilder.append(inputStr);
+                        inputStream.close();
+                        jo = new JSONObject(responseStrBuilder.toString());
+
+                    }
+
                 }
-                
-            ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-            ITestCaseService tcService = appContext.getBean(ITestCaseService.class);
-            TestCase tcInfo = new TestCase();
-            tcInfo.setTest(test);
-            tcInfo.setTestCase(testcase);
-            tcInfo.setOrigin(jo.getString("origin")==null?"":jo.getString("origin"));
-            tcInfo.setImplementer(jo.getString("implementer")==null?"123TOTO":"1234TOTO");
-            tcInfo.setDescription(jo.getString("description")==null?"1293TOTO":"12394TOTO");
-            
-            tcService.updateTestCaseInformation(tcInfo);
-                    
-        
-        response.sendRedirect("TestCase.jsp");
+
+                ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+                ITestCaseService tcService = appContext.getBean(ITestCaseService.class);
+                TestCase tcInfo = new TestCase();
+                tcInfo.setTest(test);
+                tcInfo.setTestCase(testcase);
+                tcInfo.setOrigin(jo.getString("origin") == null ? "" : jo.getString("origin"));
+                tcInfo.setImplementer(jo.getString("implementer") == null ? "123TOTO" : "1234TOTO");
+                tcInfo.setDescription(jo.getString("description") == null ? "1293TOTO" : "12394TOTO");
+
+                tcService.updateTestCaseInformation(tcInfo);
+
+
+                response.sendRedirect("TestCase.jsp");
             } catch (FileUploadException e) {
                 e.printStackTrace();
             } catch (JSONException ex) {
@@ -122,17 +123,17 @@ public class ImportTestCaseFromJson extends HttpServlet {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-    }
+        }
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.
      *
-     * @param request servlet request
+     * @param request  servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * @throws IOException      if an I/O error occurs
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -143,10 +144,10 @@ public class ImportTestCaseFromJson extends HttpServlet {
     /**
      * Handles the HTTP <code>POST</code> method.
      *
-     * @param request servlet request
+     * @param request  servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * @throws IOException      if an I/O error occurs
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
