@@ -99,7 +99,6 @@ public class DateUtil {
     public static String getFormatedMySQLTimestamp(long mysqlDate) {
         // Calculating today + n minutes.
         //
-        Date today = new Date(); // Getting now.
         SimpleDateFormat formater; // Define the MySQL Format.
         formater = new SimpleDateFormat(DateUtil.DATE_FORMAT_DISPLAY);
 

@@ -24,7 +24,6 @@ import java.io.InputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -49,7 +48,6 @@ import org.cerberus.util.xmlUnitUtil;
 import org.custommonkey.xmlunit.DetailedDiff;
 import org.custommonkey.xmlunit.Diff;
 import org.custommonkey.xmlunit.Difference;
-import org.custommonkey.xmlunit.DifferenceListener;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -190,7 +188,6 @@ public class XmlUnitService implements IXmlUnitService {
 
             DetailedDiff detDiff = new DetailedDiff(diff);
             List differences = detDiff.getAllDifferences();
-            List d = new ArrayList();
             xmlUnitUtil xuu = new xmlUnitUtil(copy);
             for (Object object : differences) {
                 Difference difference = (Difference) object;

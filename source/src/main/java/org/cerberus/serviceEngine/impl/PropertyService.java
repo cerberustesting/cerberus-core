@@ -316,7 +316,7 @@ public class PropertyService implements IPropertyService {
             SoapLibrary soapLib = this.soapLibraryService.findSoapLibraryByKey(testCaseCountryProperty.getValue1());
             if (soapLib != null) {
 
-                MessageEvent mes = soapService.callSOAPAndStoreResponseInMemory(tCExecution.getExecutionUUID(),soapLib.getEnvelope(), soapLib.getServicePath(), soapLib.getMethod());
+                soapService.callSOAPAndStoreResponseInMemory(tCExecution.getExecutionUUID(),soapLib.getEnvelope(), soapLib.getServicePath(), soapLib.getMethod());
                 String result = xmlUnitService.getFromXml(tCExecution.getExecutionUUID(), null, soapLib.getParsingAnswer());
                 if (result != null) {
                     testCaseExecutionData.setValue(result);

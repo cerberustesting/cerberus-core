@@ -20,7 +20,6 @@
 package org.cerberus.servlet.testCase;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -56,7 +55,6 @@ public class DeleteTestCase extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        PrintWriter out = response.getWriter();
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
         String test = policy.sanitize(request.getParameter("test"));
         String testcase = policy.sanitize(request.getParameter("testcase"));

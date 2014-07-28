@@ -20,11 +20,9 @@
 package org.cerberus.servlet.testCase;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
@@ -38,10 +36,7 @@ import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
-import org.cerberus.entity.TCase;
 import org.cerberus.entity.TestCase;
-import org.cerberus.factory.IFactoryTCase;
-import org.cerberus.factory.IFactoryTestCase;
 import org.cerberus.service.ITestCaseService;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -109,7 +104,6 @@ public class ImportTestCaseFromJson extends HttpServlet {
                 
             ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
             ITestCaseService tcService = appContext.getBean(ITestCaseService.class);
-            IFactoryTCase factoryTestCase = appContext.getBean(IFactoryTCase.class);
             TestCase tcInfo = new TestCase();
             tcInfo.setTest(test);
             tcInfo.setTestCase(testcase);

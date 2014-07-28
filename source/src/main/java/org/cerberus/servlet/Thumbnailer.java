@@ -57,7 +57,7 @@ public class Thumbnailer extends HttpServlet{
         b = rop.filter(image, null);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ImageIO.write(b, "png", baos);
-        byte[] bytesOut = baos.toByteArray();
+//        byte[] bytesOut = baos.toByteArray();
 
         response.setHeader("Last-Modified", DateUtils.addDays(Calendar.getInstance().getTime(), 2 * 360).toGMTString());
         response.setHeader("Expires", DateUtils.addDays(Calendar.getInstance().getTime(), 2 * 360).toGMTString());

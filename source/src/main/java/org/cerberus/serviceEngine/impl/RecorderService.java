@@ -109,9 +109,7 @@ public class RecorderService implements IRecorderService {
         sbScreenshotFilename.append(".");
         sbScreenshotFilename.append(extension);
 
-        String screenshotFilename = sbScreenshotFilename.toString().replaceAll(" ", "");
-
-        return screenshotFilename;
+        return sbScreenshotFilename.toString().replaceAll(" ", "");
     }
 
     @Override
@@ -203,9 +201,6 @@ public class RecorderService implements IRecorderService {
         
         if (testCaseExecution.getSeleniumLog()==2 || (testCaseExecution.getSeleniumLog()==1 && !testCaseExecution.getControlStatus().equals("OK"))){
         MyLogger.log(RunTestCaseService.class.getName(), Level.INFO, "Saving File.");
-
-        String test = testCaseExecution.getTest();
-        String testCase = testCaseExecution.getTestCase();
 
         String logFilename = "selenium_log.txt";
 

@@ -32,7 +32,6 @@ import org.cerberus.entity.TestCaseStepActionControl;
 import org.cerberus.factory.IFactoryTCase;
 import org.cerberus.factory.IFactoryTestCaseCountry;
 import org.cerberus.factory.IFactoryTestCaseStep;
-import org.cerberus.factory.impl.FactoryTestCaseStep;
 import org.cerberus.log.MyLogger;
 import org.cerberus.service.ILoadTestCaseService;
 import org.cerberus.service.ITestCaseCountryPropertiesService;
@@ -162,7 +161,7 @@ public class LoadTestCaseService implements ILoadTestCaseService {
 
     public List<TestCaseStepAction> loadTestCaseStepAction(TestCaseStep testCaseStep, TestCaseStep UsedTestCaseStep) {
         List<TestCaseStepAction> result = new ArrayList<TestCaseStepAction>();
-        List<TestCaseStepAction> tcsaToAdd = new ArrayList<TestCaseStepAction>();
+        List<TestCaseStepAction> tcsaToAdd;
         /**
          * If use Step, take the List of action and control of the used step
          */

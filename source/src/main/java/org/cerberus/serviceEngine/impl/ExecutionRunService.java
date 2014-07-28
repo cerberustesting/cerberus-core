@@ -587,7 +587,7 @@ public class ExecutionRunService implements IExecutionRunService {
 
         testCaseStepActionControlExecution = this.controlService.doControl(testCaseStepActionControlExecution);
 
-        TestCaseExecution myExecution = testCaseStepActionControlExecution.getTestCaseStepActionExecution().getTestCaseStepExecution().gettCExecution();
+        testCaseStepActionControlExecution.getTestCaseStepActionExecution().getTestCaseStepExecution().gettCExecution();
 
         /**
          * Record Screenshot, PageSource

@@ -29,9 +29,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Level;
 import org.cerberus.entity.CountryEnvironmentDatabase;
-import org.cerberus.entity.ExecutionSOAPResponse;
 import org.cerberus.entity.ExecutionUUID;
-import org.cerberus.entity.MessageEvent;
 import org.cerberus.entity.SoapLibrary;
 import org.cerberus.entity.SqlLibrary;
 import org.cerberus.entity.TCase;
@@ -51,11 +49,9 @@ import org.cerberus.service.impl.SoapLibraryService;
 import org.cerberus.service.impl.SqlLibraryService;
 import org.cerberus.service.impl.TestCaseService;
 import org.cerberus.service.impl.TestDataService;
-import org.cerberus.serviceEngine.IPropertyService;
 import org.cerberus.serviceEngine.ISQLService;
 import org.cerberus.serviceEngine.ISoapService;
 import org.cerberus.serviceEngine.IXmlUnitService;
-import org.cerberus.serviceEngine.impl.PropertyService;
 import org.cerberus.util.StringUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -95,13 +91,12 @@ public class CalculatePropertyForTestCase extends HttpServlet {
                 ISoapLibraryService soapLibraryService = appContext.getBean(SoapLibraryService.class);
                 ISoapService soapService = appContext.getBean(ISoapService.class);
                 IXmlUnitService xmlUnitService = appContext.getBean(IXmlUnitService.class);
-                ExecutionSOAPResponse esr = appContext.getBean(ExecutionSOAPResponse.class);
                 SoapLibrary soapLib = soapLibraryService.findSoapLibraryByKey(property);
                 if (soapLib != null) {
                     ExecutionUUID executionUUIDObject = appContext.getBean(ExecutionUUID.class);
                     UUID executionUUID = UUID.randomUUID();
                     executionUUIDObject.setExecutionUUID(executionUUID.toString(), 0);
-                    MessageEvent mes = soapService.callSOAPAndStoreResponseInMemory(executionUUID.toString(),soapLib.getEnvelope(), soapLib.getServicePath(), soapLib.getMethod());
+                    soapService.callSOAPAndStoreResponseInMemory(executionUUID.toString(),soapLib.getEnvelope(), soapLib.getServicePath(), soapLib.getMethod());
                     result = xmlUnitService.getFromXml(executionUUID.toString(), null, soapLib.getParsingAnswer());
                     description = soapLib.getDescription();
                     executionUUIDObject.removeExecutionUUID(executionUUID.toString());
@@ -159,7 +154,6 @@ public class CalculatePropertyForTestCase extends HttpServlet {
 
         if (result != null) {
             try {
-                JSONArray array = new JSONArray();
                 JSONObject jsonObject = new JSONObject();
 
                 jsonObject.put("resultList", result);

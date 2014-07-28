@@ -21,12 +21,10 @@ package org.cerberus.serviceEngine.impl;
 
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Logger;
 import org.apache.log4j.Level;
 import org.cerberus.entity.MessageEvent;
 import org.cerberus.entity.MessageEventEnum;
 import org.cerberus.entity.MessageGeneral;
-import org.cerberus.entity.MessageGeneralEnum;
 import org.cerberus.entity.SoapLibrary;
 import org.cerberus.entity.TestCaseExecution;
 import org.cerberus.entity.TestCaseExecutionData;
@@ -85,7 +83,6 @@ public class ActionService implements IActionService {
         MessageEvent res = null;
 
         TestCaseExecution tCExecution = testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution();
-        String applicationType = testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getApplication().getType();
         //TODO On JDK 7 implement switch with string
         if (testCaseStepActionExecution.getAction().equals("click")) {
             res = this.doActionClick(tCExecution, object, property);
