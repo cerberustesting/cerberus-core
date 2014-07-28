@@ -94,9 +94,11 @@ public class ImportTestCaseFromJson extends HttpServlet {
                         StringBuilder responseStrBuilder = new StringBuilder();
 
                         String inputStr;
-                        while ((inputStr = streamReader.readLine()) != null)
+                        while ((inputStr = streamReader.readLine()) != null){
                             responseStrBuilder.append(inputStr);
+                        }
                         inputStream.close();
+                        streamReader.close();
                         jo = new JSONObject(responseStrBuilder.toString());
 
                     }
