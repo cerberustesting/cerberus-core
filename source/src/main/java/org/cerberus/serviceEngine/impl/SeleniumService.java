@@ -25,7 +25,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
-import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -474,7 +473,7 @@ public class SeleniumService implements ISeleniumService {
     @Override
     public String getValueFromHTML(Selenium selenium, String locator) {
         WebElement webElement = this.getSeleniumElement(selenium, locator, false, false);
-        String result;
+        String result = null;
 
         if (webElement.getTagName().equalsIgnoreCase("select")) {
             if (webElement.getAttribute("disabled") == null || webElement.getAttribute("disabled").isEmpty()) {
@@ -494,7 +493,11 @@ public class SeleniumService implements ISeleniumService {
          */
         if (StringUtil.isNullOrEmpty(result)) {
             String script = "return arguments[0].innerHTML";
-            result = (String) ((JavascriptExecutor) selenium.getDriver()).executeScript(script, webElement);
+            try {
+                result = (String) ((JavascriptExecutor) selenium.getDriver()).executeScript(script, webElement);
+            } catch (Exception e) {
+                MyLogger.log(SeleniumService.class.getName(), Level.DEBUG, "getValueFromHTML locator : '" + locator + "', exception : " + e.getMessage());
+            }
         }
 
         return result;
