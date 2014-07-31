@@ -22,7 +22,7 @@ package org.cerberus.serviceEngine.impl.input;
 import org.apache.commons.lang3.StringUtils;
 
 /**
- * Utility class for {@link InputTranslator}
+ * Utility class for {@link InputTranslator}.
  * 
  * @author abourdon
  *
@@ -31,6 +31,13 @@ public final class InputTranslatorUtil {
 
 	public static final String DELIMITER = "=";
 
+	/**
+	 * Gets prefix from the given data input.
+	 * 
+	 * @param input
+	 *            the data input to get prefix.
+	 * @return the prefix contained into the data input, or <code>null</code> if not existing.
+	 */
 	public static String getPrefix(String input) {
 		if (!isPrefixed(input)) {
 			return null;
@@ -38,6 +45,17 @@ public final class InputTranslatorUtil {
 		return input.split(DELIMITER)[0];
 	}
 
+	/**
+	 * Gets value from the given data input.
+	 * 
+	 * <p>
+	 * Entire data input is returned if data input is not prefixed.
+	 * </p>
+	 * 
+	 * @param input
+	 *            the data input to get value.
+	 * @return the value from the given data input.
+	 */
 	public static String getValue(String input) {
 		if (!isPrefixed(input)) {
 			return input;
@@ -49,12 +67,19 @@ public final class InputTranslatorUtil {
 		return StringUtils.join(splitInput, DELIMITER, 1, splitInput.length);
 	}
 
+	/**
+	 * Checks if the data input is prefixed or not.
+	 * 
+	 * @param input
+	 *            the data input to test.
+	 * @return <code>true</code> if the given data input is prefixed, <code>false</code> otherwise.
+	 */
 	private static boolean isPrefixed(String input) {
 		return input.contains(DELIMITER);
 	}
 
 	/**
-	 * Utility class then private constructor
+	 * Utility class then private constructor.
 	 */
 	private InputTranslatorUtil() {
 
