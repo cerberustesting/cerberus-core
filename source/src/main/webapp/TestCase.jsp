@@ -1531,7 +1531,8 @@
                                             String styleValue2 = "none";
                                             if (rs_properties.getString("a.Type").equals("getAttributeFromHtml")
                                                     || rs_properties.getString("a.Type").equals("getFromXml")
-                                                    || rs_properties.getString("a.Type").equals("getFromCookie")) {
+                                                    || rs_properties.getString("a.Type").equals("getFromCookie")
+                                                    || rs_properties.getString("a.Type").equals("getDifferencesFromXml")) {
                                                 size3 = 1 * size2 / 3;
                                                 size4 = (2 * size2 / 3) - 5;
                                                 styleValue2 = "inline";
