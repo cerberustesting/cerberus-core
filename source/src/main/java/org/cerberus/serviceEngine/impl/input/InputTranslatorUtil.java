@@ -21,6 +21,12 @@ package org.cerberus.serviceEngine.impl.input;
 
 import org.apache.commons.lang3.StringUtils;
 
+/**
+ * Utility class for {@link InputTranslator}
+ * 
+ * @author abourdon
+ *
+ */
 public final class InputTranslatorUtil {
 
 	public static final String DELIMITER = "=";

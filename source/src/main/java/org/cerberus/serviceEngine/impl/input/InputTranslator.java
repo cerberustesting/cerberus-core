@@ -19,12 +19,54 @@
  */
 package org.cerberus.serviceEngine.impl.input;
 
+/**
+ * A {@link InputTranslator} is used to translate a data input based on its format.
+ * 
+ * <p>
+ * A data input format respects the following pattern: <code>(prefix=)?value</code>.
+ * </p>
+ * 
+ * <p>
+ * Prefix is used to let value to be represented by using a given format, e.g, URL.
+ * </p>
+ * 
+ * <p>
+ * A {@link InputTranslator} can so translate a data input which contains a given prefix. Thus, it is defined by a given {@link #getPrefix()} and translate data input by using the
+ * {@link #translate(String)} method
+ * </p>
+ * 
+ * @author abourdon
+ *
+ * @param <T>
+ *            the translate result type
+ */
 public interface InputTranslator<T> {
 
+	/**
+	 * If this {@link InputTranslator} can translate the given data input which follows a given format.
+	 * 
+	 * @param input
+	 *            the data input to test.
+	 * @return <code>true</code> if this {@link InputTranslator} can translate the given data input, <code>false</code> otherwise.
+	 */
 	boolean canTranslate(String input);
 
+	/**
+	 * Gets the associated prefix to this {@link InputTranslator}
+	 * 
+	 * @return the associated prefix to this {@link InputTranslator}
+	 */
 	String getPrefix();
 
+	/**
+	 * Translates the given data input
+	 * 
+	 * @param input
+	 *            the data input to translate
+	 * @return the translation result
+	 * @throws InputTranslatorException
+	 *             if data input does not respect format used by this {@link InputTranslator}
+	 */
 	T translate(String input) throws InputTranslatorException;
 
 }

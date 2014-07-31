@@ -19,10 +19,24 @@
  */
 package org.cerberus.serviceEngine.impl.input;
 
+/**
+ * Common implementation of a {@link InputTranslator}
+ * 
+ * @author abourdon
+ *
+ * @param <T>
+ */
 public abstract class AInputTranslator<T> implements InputTranslator<T> {
 
+	/** Associated prefix to this {@link InputTranslator} */
 	private String prefix;
 
+	/**
+	 * Creates a new {@link InputTranslator} identified by the given prefix
+	 * 
+	 * @param prefix
+	 *            the prefix used to identified this {@link InputTranslator}
+	 */
 	public AInputTranslator(String prefix) {
 		this.prefix = prefix;
 	}
