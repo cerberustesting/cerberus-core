@@ -325,12 +325,19 @@ public class DuplicateTestCase extends HttpServlet {
                 ResultSet rs = preStat.executeQuery();
                 try {
                     while (rs.next()) {
-                        PreparedStatement preStat2 = connection.prepareStatement("INSERT INTO testcasestep (`Test`,`Testcase`,`Step`,`Description`) VALUES (?, ?, ?, ?)");
+                        PreparedStatement preStat2 = connection.prepareStatement("INSERT INTO testcasestep (`Test`,`Testcase`,`Step`,`Description`,"
+                                + "`useStep`, `useStepTest`, `useStepTestCase`, `useStepStep`)"
+                                + " VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+
                         try {
                             preStat2.setString(1, newTest);
                             preStat2.setString(2, newTestCase);
                             preStat2.setString(3, rs.getString("Step"));
                             preStat2.setString(4, rs.getString("Description"));
+                            preStat2.setString(5, rs.getString("useStep"));
+                            preStat2.setString(6, rs.getString("useStepTest"));
+                            preStat2.setString(7, rs.getString("useStepTestCase"));
+                            preStat2.setString(8, rs.getString("useStepStep"));
 
                             preStat2.executeUpdate();
                         } catch (SQLException e) {
