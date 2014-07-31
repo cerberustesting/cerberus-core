@@ -18,7 +18,7 @@
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.cerberus.dao;
+package org.cerberus.dao.impl;
 
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
@@ -32,7 +32,6 @@ import java.sql.Statement;
 
 import junit.framework.Assert;
 
-import org.cerberus.dao.impl.UserDAO;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.entity.User;
 import org.junit.Test;

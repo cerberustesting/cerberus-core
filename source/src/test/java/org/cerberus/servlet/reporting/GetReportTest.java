@@ -18,13 +18,12 @@
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.cerberus.servlet;
+package org.cerberus.servlet.reporting;
 
 import org.cerberus.entity.TCase;
 import org.cerberus.factory.impl.FactoryTCase;
 import org.cerberus.service.impl.TestCaseExecutionService;
 import org.cerberus.service.impl.TestCaseService;
-import org.cerberus.servlet.reporting.GetReport;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
