@@ -22,7 +22,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.cerberus.dao;
+package org.cerberus.dao.impl;
 
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.anyString;
@@ -34,7 +34,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
-import org.cerberus.dao.impl.TestDAO;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.factory.impl.FactoryTest;
 import org.junit.Test;

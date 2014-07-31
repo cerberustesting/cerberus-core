@@ -114,6 +114,8 @@ public class PropertyService implements IPropertyService {
             testCaseExecutionData = this.getFromXml(testCaseExecutionData, tCExecution, testCaseCountryProperty);
         } else if ("executeSoapFromLib".equals(testCaseCountryProperty.getType())) {
             testCaseExecutionData = this.executeSoapFromLib(testCaseExecutionData, tCExecution, testCaseCountryProperty);
+        } else if ("getDifferencesFromXml".equals(testCaseCountryProperty.getType())) {
+        	testCaseExecutionData = this.getDifferencesFromXml(testCaseExecutionData, tCExecution, testCaseCountryProperty);
         } else {
             res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_UNKNOWNPROPERTY);
             res.setDescription(res.getDescription().replaceAll("%PROPERTY%", testCaseCountryProperty.getType()));
@@ -399,6 +401,42 @@ public class PropertyService implements IPropertyService {
             MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMCOOKIE_COOKIENOTFOUND);
             res.setDescription(res.getDescription().replaceAll("%COOKIE%", testCaseCountryProperty.getValue1()));
             res.setDescription(res.getDescription().replaceAll("%PARAM%", testCaseCountryProperty.getValue2()));
+            testCaseExecutionData.setPropertyResultMessage(res);
+        }
+        return testCaseExecutionData;
+    }
+    
+	/**
+	 * Execution method for the <code>getDifferencesFromXml</code> property service
+	 * 
+	 * @param testCaseExecutionData
+	 * @param tCExecution
+	 * @param testCaseCountryProperty
+	 * @return the {@link TestCaseExecutionData} added by the <code>getDifferencesFromXML</code> result
+	 */
+    private TestCaseExecutionData getDifferencesFromXml(TestCaseExecutionData testCaseExecutionData, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseCountryProperty) {
+    	try{
+    		MyLogger.log(PropertyService.class.getName(), Level.INFO, "Computing differences between " + testCaseCountryProperty.getValue1() + " and " + testCaseCountryProperty.getValue2());
+            String differences = xmlUnitService.getDifferencesFromXml(tCExecution, testCaseCountryProperty.getValue1(), testCaseCountryProperty.getValue2());
+            if (differences != null) {
+            	MyLogger.log(PropertyService.class.getName(), Level.INFO, "Computing done.");
+                testCaseExecutionData.setValue(differences);
+                MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETDIFFERENCESFROMXML);
+                res.setDescription(res.getDescription().replaceAll("%VALUE1%", testCaseCountryProperty.getValue1()));
+                res.setDescription(res.getDescription().replaceAll("%VALUE2%", testCaseCountryProperty.getValue2()));
+                testCaseExecutionData.setPropertyResultMessage(res);
+            } else {
+            	MyLogger.log(PropertyService.class.getName(), Level.INFO, "Computing failed.");
+                MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETDIFFERENCESFROMXML);
+                res.setDescription(res.getDescription().replaceAll("%VALUE1%", testCaseCountryProperty.getValue1()));
+                res.setDescription(res.getDescription().replaceAll("%VALUE2%", testCaseCountryProperty.getValue2()));
+                testCaseExecutionData.setPropertyResultMessage(res);
+            }
+        } catch (Exception ex){
+            MyLogger.log(PropertyService.class.getName(), Level.INFO, ex.toString());
+            MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETDIFFERENCESFROMXML);
+            res.setDescription(res.getDescription().replaceAll("%VALUE1%", testCaseCountryProperty.getValue1()));
+            res.setDescription(res.getDescription().replaceAll("%VALUE2%", testCaseCountryProperty.getValue2()));
             testCaseExecutionData.setPropertyResultMessage(res);
         }
         return testCaseExecutionData;

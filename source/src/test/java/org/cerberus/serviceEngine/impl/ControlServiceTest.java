@@ -18,7 +18,7 @@
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.cerberus.service;
+package org.cerberus.serviceEngine.impl;
 
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
@@ -29,9 +29,6 @@ import org.cerberus.entity.TestCaseExecution;
 import org.cerberus.entity.TestCaseStepActionControlExecution;
 import org.cerberus.entity.TestCaseStepActionExecution;
 import org.cerberus.entity.TestCaseStepExecution;
-import org.cerberus.serviceEngine.impl.ControlService;
-import org.cerberus.serviceEngine.impl.PropertyService;
-import org.cerberus.serviceEngine.impl.SeleniumService;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;

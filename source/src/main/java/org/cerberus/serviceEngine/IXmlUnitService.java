@@ -34,4 +34,43 @@ public interface IXmlUnitService {
     boolean isSimilarTree(TestCaseExecution tCExecution, String element, String text);
     
     String getFromXml(String uuid, String url, String element);
+    
+	/**
+	 * Gets differences from XML representations given in argument.
+	 * 
+	 * <p>
+	 * XML representation can be:
+	 * <ul>
+	 * <li>a raw XML from a {@link String}</li>
+	 * <li>an URL to a XML file. In this case, XML representation must be prefixed by <code>url=</code></li>
+	 * </ul>
+	 * </p>
+	 * 
+	 * <p>
+	 * Differences are computed by using left as base. So, results are left relative.
+	 * </p>
+	 * 
+	 * <p>
+	 * Differences are represented by a list of XPath contained into the following XML structure:
+	 * 
+	 * <pre>
+	 * {@code
+	 * 	<differences>
+	 * 		<difference>/xpath/to/the/first/difference</difference>
+	 * 		<difference>/xpath/to/the/second/difference</difference>
+	 * 	</differences>
+	 * }
+	 * </pre>
+	 * 
+	 * </p>
+	 * 
+	 * @param tCExecution
+	 *            the associated {@link TestCaseExecution}
+	 * @param left
+	 *            the base XML representation to compare
+	 * @param right
+	 *            the XML representation to compare from the <code>left</code>
+	 * @return a list of XPath
+	 */
+	String getDifferencesFromXml(TestCaseExecution tCExecution, String left, String right);
 }

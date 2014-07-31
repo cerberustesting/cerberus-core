@@ -3683,6 +3683,13 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("INSERT INTO `documentation` VALUES ");
         SQLS.append("('testcaseexecution','executor','','Executor user','This is the name of the executor user that executed the <code class=\\'doc-crbvvoca\\'>test case</code>.<br>This data has been created for tracability purpose as the result of Cerberus Test could varry between human and selenium test.');");
         SQLInstruction.add(SQLS.toString());
+     
+// Add invariant getDifferencesFromXml.
+//-- ------------------------ 516
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`) VALUES ");
+        SQLS.append("('PROPERTYTYPE', 'getDifferencesFromXml', '51', 'Get differences from XML files');");
+        SQLInstruction.add(SQLS.toString());
 
         return SQLInstruction;
     }

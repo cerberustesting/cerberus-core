@@ -18,7 +18,7 @@
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.cerberus.dao;
+package org.cerberus.dao.impl;
 
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
@@ -29,7 +29,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
-import org.cerberus.dao.impl.ApplicationDAO;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.entity.Application;
 import org.cerberus.exception.CerberusException;
