@@ -24,12 +24,10 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
 
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactoryConfigurationError;
-
-import org.cerberus.entity.TestCaseExecution;
-import org.cerberus.util.XmlUtil;
+import org.cerberus.serviceEngine.impl.diff.Difference;
+import org.cerberus.serviceEngine.impl.diff.Differences;
+import org.cerberus.util.XmlUtilException;
+import org.custommonkey.xmlunit.DetailedDiff;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.junit.Assert;
 import org.junit.Before;
@@ -39,8 +37,6 @@ import org.mockito.InjectMocks;
 import org.mockito.MockitoAnnotations;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.springframework.test.context.ContextConfiguration;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
 /**
@@ -55,11 +51,7 @@ public class XmlUnitServiceTest {
 	@InjectMocks
 	private XmlUnitService xmlUnitService;
 
-	private Document resultDoc;
-
-	private Element resultRoot;
-
-	private TestCaseExecution tCExecution;
+	private Differences differences;
 
 	@BeforeClass
 	public static void beforeClass() {
@@ -73,10 +65,8 @@ public class XmlUnitServiceTest {
 	}
 
 	@Before
-	public void before() throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException, ParserConfigurationException {
-		resultDoc = XmlUtil.createNewDocument();
-		resultRoot = resultDoc.createElement(XmlUnitService.RESULT_NODE_NAME_DIFFERENCES);
-		tCExecution = new TestCaseExecution();
+	public void before() throws XmlUtilException, SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException {
+		differences = new Differences();
 
 		MockitoAnnotations.initMocks(this);
 		Method init = xmlUnitService.getClass().getDeclaredMethod("init");
@@ -85,54 +75,67 @@ public class XmlUnitServiceTest {
 	}
 
 	@Test
-	public void testGetDifferencesFromXmlWithNoDifference() throws SAXException, IOException, TransformerFactoryConfigurationError, TransformerException {
-		String expected = XmlUtil.convertToString(resultRoot);
-		String actual = xmlUnitService.getDifferencesFromXml(tCExecution, "<root><a>1</a></root>", "<root><a>1</a></root>");
+	public void testGetDifferencesFromXmlWithNoDifference() throws XmlUtilException {
+		String expected = differences.toString();
+		String actual = xmlUnitService.getDifferencesFromXml("<root><a>1</a></root>", "<root><a>1</a></root>");
 		Assert.assertEquals(expected, actual);
 	}
 
 	@Test
-	public void testGetDifferencesFromXmlWithValueDifference() throws TransformerFactoryConfigurationError, TransformerException {
-		Element diff = resultDoc.createElement(XmlUnitService.RESULT_NODE_NAME_DIFFERENCE);
-		diff.appendChild(resultDoc.createTextNode("/root[1]/a[1]/text()[1]"));
-		resultRoot.appendChild(diff);
+	public void testGetDifferencesFromXmlWithValueDifference() throws XmlUtilException {
+		differences.addDifference(new Difference("/root[1]/a[1]/text()[1]"));
 
-		String expected = XmlUtil.convertToString(resultRoot);
-		String actual = xmlUnitService.getDifferencesFromXml(tCExecution, "<root><a>1</a></root>", "<root><a>2</a></root>");
+		String expected = differences.toString();
+		String actual = xmlUnitService.getDifferencesFromXml("<root><a>1</a></root>", "<root><a>2</a></root>");
 		Assert.assertEquals(expected, actual);
 	}
 
 	@Test
-	public void testGetDifferencesFromXmlWithStructureDifference() throws TransformerFactoryConfigurationError, TransformerException {
-		Element firstDiff = resultDoc.createElement(XmlUnitService.RESULT_NODE_NAME_DIFFERENCE);
-		firstDiff.appendChild(resultDoc.createTextNode("/root[1]/a[1]"));
-		resultRoot.appendChild(firstDiff);
+	public void testGetDifferencesFromXmlWithStructureDifference() throws XmlUtilException {
+		differences.addDifference(new Difference("/root[1]/a[1]"));
+		differences.addDifference(new Difference(XmlUnitService.NULL_XPATH));
 
-		Element secondDiff = resultDoc.createElement(XmlUnitService.RESULT_NODE_NAME_DIFFERENCE);
-		secondDiff.appendChild(resultDoc.createTextNode("null"));
-		resultRoot.appendChild(secondDiff);
-
-		String expected = XmlUtil.convertToString(resultRoot);
-		String diff = xmlUnitService.getDifferencesFromXml(tCExecution, "<root><a>1</a></root>", "<root><b>1</b></root>");
+		String expected = differences.toString();
+		String diff = xmlUnitService.getDifferencesFromXml("<root><a>1</a></root>", "<root><b>1</b></root>");
 		Assert.assertEquals(expected, diff);
 	}
 
 	@Test
-	public void testGetDifferencesFromXmlByUsingURL() throws TransformerFactoryConfigurationError, TransformerException {
-		Element firstDiff = resultDoc.createElement(XmlUnitService.RESULT_NODE_NAME_DIFFERENCE);
-		firstDiff.appendChild(resultDoc.createTextNode("/root[1]/a[1]"));
-		resultRoot.appendChild(firstDiff);
+	public void testGetDifferencesFromXmlByUsingURL() throws XmlUtilException {
+		differences.addDifference(new Difference("/root[1]/a[1]"));
+		differences.addDifference(new Difference(XmlUnitService.NULL_XPATH));
 
-		Element secondDiff = resultDoc.createElement(XmlUnitService.RESULT_NODE_NAME_DIFFERENCE);
-		secondDiff.appendChild(resultDoc.createTextNode("null"));
-		resultRoot.appendChild(secondDiff);
-
-		String expected = XmlUtil.convertToString(resultRoot);
+		String expected = differences.toString();
 
 		URL left = getClass().getResource("/org/cerberus/serviceEngine/impl/left.xml");
 		URL right = getClass().getResource("/org/cerberus/serviceEngine/impl/right.xml");
-		String diff = xmlUnitService.getDifferencesFromXml(tCExecution, "url=" + left, "url=" + right);
-		Assert.assertEquals(expected, diff);
+		String actual = xmlUnitService.getDifferencesFromXml("url=" + left, "url=" + right);
+		Assert.assertEquals(expected, actual);
+	}
+
+	@Test
+	public void testRemoveDifferenceWhenDifferenceMatch() throws XmlUtilException, SAXException, IOException {
+		differences.addDifference(new Difference("/root[1]/a[1]"));
+		differences.addDifference(new Difference("/root[1]/a[2]"));
+		differences.addDifference(new Difference(XmlUnitService.NULL_XPATH));
+
+		String actual = xmlUnitService.removeDifference("/root\\[1\\]/a\\[[1-2]\\]", differences.toString());
+		String expected = "<differences><difference>null</difference></differences>";
+
+		DetailedDiff diff = new DetailedDiff(XMLUnit.compareXML(expected, actual));
+		Assert.assertTrue(diff.toString(), diff.similar());
+	}
+
+	@Test
+	public void testRemoveDifferenceWhenNoDifferenceMatch() throws XmlUtilException, SAXException, IOException {
+		differences.addDifference(new Difference("/root[1]/a[1]"));
+		differences.addDifference(new Difference(XmlUnitService.NULL_XPATH));
+
+		String actual = xmlUnitService.removeDifference("toto", differences.toString());
+		String expected = "<differences><difference>/root[1]/a[1]</difference><difference>null</difference></differences>";
+
+		DetailedDiff diff = new DetailedDiff(XMLUnit.compareXML(expected, actual));
+		Assert.assertTrue(diff.toString(), diff.similar());
 	}
 
 }

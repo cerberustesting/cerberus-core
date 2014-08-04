@@ -21,6 +21,7 @@ package org.cerberus.serviceEngine.impl;
 
 import java.util.Date;
 import java.util.List;
+
 import org.apache.log4j.Level;
 import org.cerberus.entity.MessageEvent;
 import org.cerberus.entity.MessageEventEnum;
@@ -37,6 +38,7 @@ import org.cerberus.serviceEngine.IPropertyService;
 import org.cerberus.serviceEngine.IRecorderService;
 import org.cerberus.serviceEngine.ISeleniumService;
 import org.cerberus.serviceEngine.ISoapService;
+import org.cerberus.serviceEngine.IXmlUnitService;
 import org.cerberus.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -58,6 +60,8 @@ public class ActionService implements IActionService {
     private ISoapLibraryService soapLibraryService;
     @Autowired
     private IRecorderService recorderService;
+    @Autowired
+    private IXmlUnitService xmlUnitService;
 
     @Override
     public TestCaseStepActionExecution doAction(TestCaseStepActionExecution testCaseStepActionExecution) {
@@ -163,6 +167,8 @@ public class ActionService implements IActionService {
             //res = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_TAKESCREENSHOT);
         } else if (testCaseStepActionExecution.getAction().equals("getPageSource")) {
             res = this.doActionGetPageSource(testCaseStepActionExecution);
+        } else if (testCaseStepActionExecution.getAction().equals("removeDifference")) {
+            res = this.doActionRemoveDifference(testCaseStepActionExecution, object, property);
         } else {
             res = new MessageEvent(MessageEventEnum.ACTION_FAILED_UNKNOWNACTION);
             res.setDescription(res.getDescription().replaceAll("%ACTION%", testCaseStepActionExecution.getAction()));
@@ -456,5 +462,32 @@ public class ActionService implements IActionService {
         message.setDescription(message.getDescription().replaceAll("%APPLICATIONTYPE%", testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getApplication().getType()));
         return message;
     }
+    
+	private MessageEvent doActionRemoveDifference(TestCaseStepActionExecution testCaseStepActionExecution, String object, String property) {
+		// Filters differences from the given object pattern
+		String filteredDifferences = xmlUnitService.removeDifference(object, property);
+		
+		// If filtered differences are null then service has returned with errors
+		if (filteredDifferences == null) {
+			MessageEvent message = new MessageEvent(MessageEventEnum.ACTION_FAILED_REMOVEDIFFERENCE);
+			message.setDescription(message.getDescription().replaceAll("%DIFFERENCE%", object));
+			message.setDescription(message.getDescription().replaceAll("%DIFFERENCES%", property));
+			return message;
+		}
+
+		// Sets the property value to the new filtered one
+		for (TestCaseExecutionData data : testCaseStepActionExecution.getTestCaseExecutionDataList()) {
+			if (data.getProperty().equals(testCaseStepActionExecution.getPropertyName())) {
+				data.setValue(filteredDifferences);
+				break;
+			}
+		}
+		
+		// Sends success
+		MessageEvent message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_REMOVEDIFFERENCE);
+		message.setDescription(message.getDescription().replaceAll("%DIFFERENCE%", object));
+		message.setDescription(message.getDescription().replaceAll("%DIFFERENCES%", property));
+		return message;
+	}
 
 }

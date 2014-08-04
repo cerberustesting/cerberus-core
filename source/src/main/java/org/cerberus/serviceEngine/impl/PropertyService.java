@@ -417,7 +417,7 @@ public class PropertyService implements IPropertyService {
     private TestCaseExecutionData getDifferencesFromXml(TestCaseExecutionData testCaseExecutionData, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseCountryProperty) {
     	try{
     		MyLogger.log(PropertyService.class.getName(), Level.INFO, "Computing differences between " + testCaseCountryProperty.getValue1() + " and " + testCaseCountryProperty.getValue2());
-            String differences = xmlUnitService.getDifferencesFromXml(tCExecution, testCaseCountryProperty.getValue1(), testCaseCountryProperty.getValue2());
+            String differences = xmlUnitService.getDifferencesFromXml(testCaseCountryProperty.getValue1(), testCaseCountryProperty.getValue2());
             if (differences != null) {
             	MyLogger.log(PropertyService.class.getName(), Level.INFO, "Computing done.");
                 testCaseExecutionData.setValue(differences);

@@ -64,13 +64,22 @@ public interface IXmlUnitService {
 	 * 
 	 * </p>
 	 * 
-	 * @param tCExecution
-	 *            the associated {@link TestCaseExecution}
 	 * @param left
 	 *            the base XML representation to compare
 	 * @param right
 	 *            the XML representation to compare from the <code>left</code>
 	 * @return a list of XPath
 	 */
-	String getDifferencesFromXml(TestCaseExecution tCExecution, String left, String right);
+	String getDifferencesFromXml(String left, String right);
+	
+	/**
+	 * Removes differences found by applying the given pattern.
+	 * 
+	 * @param pattern
+	 *            the pattern used to find differences to remove
+	 * @param differences
+	 *            the differences variable to filter
+	 * @return a new filtered differences variable
+	 */
+	String removeDifference(String pattern, String differences);
 }

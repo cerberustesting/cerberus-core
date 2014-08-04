@@ -3691,6 +3691,13 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("('PROPERTYTYPE', 'getDifferencesFromXml', '51', 'Get differences from XML files');");
         SQLInstruction.add(SQLS.toString());
 
-        return SQLInstruction;
+// Add invariant getDifferencesFromXml.
+//-- ------------------------ 517
+		SQLS = new StringBuilder();
+		SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`) VALUES ");
+		SQLS.append("('ACTION', 'removeDifference', '220', 'Remove differences from the given pattern');");
+		SQLInstruction.add(SQLS.toString());
+		
+		return SQLInstruction;
     }
 }

@@ -21,10 +21,6 @@ package org.cerberus.util;
 
 import java.io.IOException;
 
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactoryConfigurationError;
-
 import junit.framework.Assert;
 
 import org.custommonkey.xmlunit.DetailedDiff;
@@ -54,22 +50,50 @@ public class XmlUtilTest {
 	}
 
 	@Test
-	public void testCreateNewDocument() throws ParserConfigurationException {
-		Assert.assertTrue(XmlUtil.createNewDocument() instanceof Document);
+	public void testNewDocument() throws XmlUtilException {
+		Assert.assertTrue(XmlUtil.newDocument() instanceof Document);
 	}
 
 	@Test
-	public void convertToString() throws ParserConfigurationException, SAXException, IOException, TransformerFactoryConfigurationError, TransformerException {
-		Document doc = XmlUtil.createNewDocument();
+	public void testToString() throws XmlUtilException, SAXException, IOException  {
+		Document doc = XmlUtil.newDocument();
 		Element expected = doc.createElement("root");
 		doc.appendChild(expected);
 		Element child = doc.createElement("child");
 		expected.appendChild(child);
 
-		String actual = XmlUtil.convertToString(expected);
+		String actual = XmlUtil.toString(expected);
 		DetailedDiff diff = new DetailedDiff(XMLUnit.compareXML("<root><child/></root>", actual));
 
-		Assert.assertTrue(diff.similar());
+		Assert.assertTrue(diff.toString(), diff.similar());
+	}
+	
+	@Test
+	public void testFromString() throws XmlUtilException {
+		Document expected = XmlUtil.newDocument();
+		Element element = expected.createElement("root");
+		expected.appendChild(element);
+		Element child = expected.createElement("child");
+		element.appendChild(child);
+		
+		Document actual = XmlUtil.fromString("<root><child/></root>");
+		
+		DetailedDiff diff = new DetailedDiff(XMLUnit.compareXML(expected, actual));
+		Assert.assertTrue(diff.toString(), diff.similar());
 	}
 
+	@Test
+	public void testFromURL() throws XmlUtilException {
+		Document expected = XmlUtil.newDocument();
+		Element element = expected.createElement("root");
+		expected.appendChild(element);
+		Element child = expected.createElement("child");
+		child.appendChild(expected.createTextNode("a"));
+		element.appendChild(child);
+		
+		Document actual = XmlUtil.fromURL(getClass().getResource("input.xml"));
+		
+		DetailedDiff diff = new DetailedDiff(XMLUnit.compareXML(expected, actual));
+		Assert.assertTrue(diff.toString(), diff.similar());
+	}
 }
