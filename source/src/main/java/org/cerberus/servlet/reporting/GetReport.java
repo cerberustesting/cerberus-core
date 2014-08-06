@@ -64,7 +64,9 @@ public class GetReport extends HttpServlet {
             String oldTest = "";
             Map<String, Map<String, Integer>> map = new LinkedHashMap<String, Map<String, Integer>>();
             Map<String, Integer> group = new LinkedHashMap<String, Integer>();
+            Map<String, Integer> groupTotal = new LinkedHashMap<String, Integer>();
             Map<String, Integer> stat = new LinkedHashMap<String, Integer>();
+            Map<String, Integer> statTotal = new LinkedHashMap<String, Integer>();
             for (TCase tc : list) {
                 if (!tc.getTest().equals(oldTest)) {
                     map = new LinkedHashMap<String, Map<String, Integer>>();
@@ -110,14 +112,26 @@ public class GetReport extends HttpServlet {
                 }
                 if (group.containsKey(tc.getGroup())) {
                     group.put(tc.getGroup(), group.get(tc.getGroup()) + 1);
+                    groupTotal.put(tc.getGroup(), groupTotal.get(tc.getGroup()) + 1);
                 } else {
                     group.put(tc.getGroup(), 1);
+                    if (groupTotal.containsKey(tc.getGroup())){
+                        groupTotal.put(tc.getGroup(), groupTotal.get(tc.getGroup()) + 1);
+                    } else {
+                        groupTotal.put(tc.getGroup(), 1);
+                    }
                 }
 
                 if (stat.containsKey(tc.getStatus())) {
                     stat.put(tc.getStatus(), stat.get(tc.getStatus()) + 1);
+                    statTotal.put(tc.getStatus(), statTotal.get(tc.getStatus()) + 1);
                 } else {
                     stat.put(tc.getStatus(), 1);
+                    if (statTotal.containsKey(tc.getStatus())){
+                        statTotal.put(tc.getStatus(), statTotal.get(tc.getStatus()) + 1);
+                    } else {
+                        statTotal.put(tc.getStatus(), 1);
+                    }
                 }
 
                 array.put(tc.getComment());
@@ -130,6 +144,8 @@ public class GetReport extends HttpServlet {
                 mapStatus.put(tc.getTest(), stat);
                 oldTest = tc.getTest();
             }
+            mapGroups.put("TOTAL", groupTotal);
+            mapStatus.put("TOTAL", statTotal);
 
             JSONObject json = new JSONObject();
 
