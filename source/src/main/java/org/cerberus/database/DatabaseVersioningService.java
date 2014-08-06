@@ -3710,7 +3710,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
 // Add update primary key to test data at key / application / environment / country level.
 //-- ------------------------ 519
         SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `cerberus`.`testdata` ");
+        SQLS.append("ALTER TABLE `testdata` ");
         SQLS.append("DROP PRIMARY KEY, ADD PRIMARY KEY (`key`, `Environment`, `Country`, `Application`);");
         SQLInstruction.add(SQLS.toString());
 
