@@ -56,7 +56,6 @@
 
     <script type="text/javascript">
         var oTable;
-        var fixedTable;
         var oTableStatistic;
         var postData;
 
@@ -96,14 +95,15 @@
             %>
                     ];
 
-            $('#jsAdded').remove();
+            $('.fixedHeader').remove();
+            $('.jsAdded').remove();
 
 
             $.each(country, function (index, elem) {
-                $('#TCComment').before("<th id='jsAdded' colspan='" + (browser.length * 2) + "'>" + elem + "</th>");
+                $('#TCComment').before("<th class='jsAdded' colspan='" + (browser.length * 2) + "'>" + elem + "</th>");
                 $.each(browser, function (i, e) {
-                    $('#tableCountry').append("<th id='jsAdded' colspan='2'>" + e + "</th>");
-                    $('#TCResult').append("<th id='jsAdded' class='TCResult'></th><th id='jsAdded'></th>");
+                    $('#tableCountry').append("<th class='jsAdded' colspan='2'>" + e + "</th>");
+                    $('#TCResult').append("<th class='TCResult jsAdded'></th><th class='jsAdded'></th>");
                 });
 
                 $('#statisticCountry').append("<th colspan='" + (status.length + 1) +"'>" + elem + "</th>");
@@ -144,8 +144,11 @@
                         }
                     }
                 ],
+                "fnFooterCallback": function( nFoot, aData, iStart, iEnd, aiDisplay ) {
+
+                },
                 "fnInitComplete": function (oSettings, json) {
-                    fixedTable = new FixedHeader(oTable, {
+                    new FixedHeader(oTable, {
                         zTop: 98
                     });
 
@@ -182,6 +185,44 @@
                             $('#statistic thead th').css('padding', '0px');
                             $('#statistic').css({'width': 'auto', 'margin': '0px'});
                             $('#divStatistic').hide();
+                        }
+                    });
+
+                    $('#divStatus').show();
+                    $('#tableStatus').dataTable({
+                        "aaData": json.status.aaData,
+                        "bJQueryUI": false,
+                        "bFilter": false,
+                        "bInfo": false,
+                        "bSort": false,
+                        "bPaginate": false,
+                        "bDestroy": true,
+                        "bAutoWidth": false,
+                        "iDisplayLength": -1,
+                        "fnInitComplete": function () {
+                            $('#tableStatus thead th').css('padding', '0px');
+                            $('#tableStatus td').css('padding', '0px');
+                            $('#tableStatus').css({'width': 'auto', 'margin': '0px', 'text-align': 'center'});
+                            $('#divStatus').hide();
+                        }
+                    });
+
+                    $('#divGroup').show();
+                    $('#tableGroup').dataTable({
+                        "aaData": json.groups.aaData,
+                        "bJQueryUI": false,
+                        "bFilter": false,
+                        "bInfo": false,
+                        "bSort": false,
+                        "bPaginate": false,
+                        "bDestroy": true,
+                        "bAutoWidth": false,
+                        "iDisplayLength": -1,
+                        "fnInitComplete": function () {
+                            $('#tableGroup thead th').css('padding', '0px');
+                            $('#tableGroup td').css('padding', '0px');
+                            $('#tableGroup').css({'width': 'auto', 'margin': '0px', 'text-align': 'center'});
+                            $('#divGroup').hide();
                         }
                     });
                 }
@@ -228,6 +269,8 @@
 
         $('#divReporting').hide();
         $('#divStatistic').show();
+        $('#divStatus').show();
+        $('#divGroup').show();
 
         new FixedHeader(oTableStatistic, {
             zTop: 98
@@ -238,6 +281,8 @@
         $('.fixedHeader').remove();
 
         $('#divStatistic').hide();
+        $('#divStatus').hide();
+        $('#divGroup').hide();
         $('#divReporting').show();
 
         new FixedHeader(oTable, {
@@ -455,7 +500,8 @@
                 <div>
                     <%
                         options.clear();
-                        for (Invariant statusInv : invariantService.findListOfInvariantById("TCSTATUS")) {
+                        List<Invariant> statusList = invariantService.findListOfInvariantById("TCSTATUS");
+                        for (Invariant statusInv : statusList) {
                             options.put(statusInv.getValue(), statusInv.getValue());
                         }
                     %>
@@ -472,7 +518,9 @@
                 <div>
                     <%
                         options.clear();
-                        for (Invariant statusInv : invariantService.findListOfInvariantById("GROUP")) {
+                        List<Invariant> groupList = invariantService.findListOfInvariantById("GROUP");
+                        groupList.remove(0);
+                        for (Invariant statusInv : groupList) {
                             if(!statusInv.getValue().isEmpty()){
                                 options.put(statusInv.getValue(), statusInv.getValue());
                             }
@@ -726,5 +774,38 @@
         </thead>
     </table>
 </div>
+
+<div id="divGroup" style="margin-top: 25px; display: none">
+    <table id="tableGroup" style="color: #555555;font-family: Trebuchet MS;font-weight: bold;">
+        <thead>
+            <tr id="groupHeader">
+                <th>Tests</th>
+                <%
+                    for(Invariant inv : groupList){
+                        out.println("<th>"+inv.getValue()+"</th>");
+                    }
+                %>
+                <th>TOTAL</th>
+            </tr>
+        </thead>
+    </table>
+</div>
+
+<div id="divStatus" style="margin-top: 25px; display: none;">
+    <table id="tableStatus" style="color: #555555;font-family: Trebuchet MS;font-weight: bold;">
+        <thead>
+            <tr id="statusHeader">
+                <th>Tests</th>
+                <%
+                    for(Invariant inv : statusList){
+                        out.println("<th>"+inv.getValue()+"</th>");
+                    }
+                %>
+                <th>TOTAL</th>
+            </tr>
+        </thead>
+    </table>
+</div>
+
 </body>
 </html>

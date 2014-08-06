@@ -54,13 +54,22 @@ public class GetReport extends HttpServlet {
 
         JSONArray data = new JSONArray();
         Map<String, Map<String, Map<String, Integer>>> mapTests = new LinkedHashMap<String, Map<String, Map<String, Integer>>>();
+        Map<String, Map<String, Integer>> mapGroups = new LinkedHashMap<String, Map<String, Integer>>();
+        Map<String, Map<String, Integer>> mapStatus = new LinkedHashMap<String, Map<String, Integer>>();
         try {
             List<Invariant> tcestatus = invariantService.findListOfInvariantById("TCESTATUS");
+            List<Invariant> tcgroups = invariantService.findListOfInvariantById("GROUP");
+            tcgroups.remove(0);
+            List<Invariant> tcstatus = invariantService.findListOfInvariantById("TCSTATUS");
             String oldTest = "";
             Map<String, Map<String, Integer>> map = new LinkedHashMap<String, Map<String, Integer>>();
+            Map<String, Integer> group = new LinkedHashMap<String, Integer>();
+            Map<String, Integer> stat = new LinkedHashMap<String, Integer>();
             for (TCase tc : list) {
-                if (!tc.getTest().equals(oldTest)){
+                if (!tc.getTest().equals(oldTest)) {
                     map = new LinkedHashMap<String, Map<String, Integer>>();
+                    group = new LinkedHashMap<String, Integer>();
+                    stat = new LinkedHashMap<String, Integer>();
                 }
                 JSONArray array = new JSONArray();
                 array.put(tc.getTest());
@@ -71,9 +80,9 @@ public class GetReport extends HttpServlet {
                 array.put(tc.getStatus());
                 for (String country : req.getParameterValues("Country")) {
                     Map<String, Integer> status;
-                    if (!tc.getTest().equals(oldTest)){
+                    if (!tc.getTest().equals(oldTest)) {
                         status = new LinkedHashMap<String, Integer>();
-                        for (Invariant inv : tcestatus){
+                        for (Invariant inv : tcestatus) {
                             status.put(inv.getValue(), 0);
                         }
                     } else {
@@ -90,7 +99,8 @@ public class GetReport extends HttpServlet {
                             Date date = new Date(tce.getStart());
                             DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
                             array.put(formatter.format(date));
-                            status.put(tce.getControlStatus(), status.get(tce.getControlStatus())+1);
+                            status.put(tce.getControlStatus(), status.get(tce.getControlStatus()) + 1);
+                            status.put(tce.getControlStatus(), status.get(tce.getControlStatus()) + 1);
                         } else {
                             array.put("");
                             array.put("");
@@ -98,12 +108,26 @@ public class GetReport extends HttpServlet {
                     }
                     map.put(country, status);
                 }
+                if (group.containsKey(tc.getGroup())) {
+                    group.put(tc.getGroup(), group.get(tc.getGroup()) + 1);
+                } else {
+                    group.put(tc.getGroup(), 1);
+                }
+
+                if (stat.containsKey(tc.getStatus())) {
+                    stat.put(tc.getStatus(), stat.get(tc.getStatus()) + 1);
+                } else {
+                    stat.put(tc.getStatus(), 1);
+                }
+
                 array.put(tc.getComment());
                 array.put(tc.getBugID() + "for " + tc.getTargetSprint() + "/" + tc.getTargetRevision());
                 array.put(tc.getGroup());
 
                 data.put(array);
                 mapTests.put(tc.getTest(), map);
+                mapGroups.put(tc.getTest(), group);
+                mapStatus.put(tc.getTest(), stat);
                 oldTest = tc.getTest();
             }
 
@@ -112,12 +136,12 @@ public class GetReport extends HttpServlet {
             JSONObject statistic = new JSONObject();
 
             JSONArray test = new JSONArray();
-            for (Map.Entry<String, Map<String, Map<String, Integer>>> entryTest : mapTests.entrySet()){
+            for (Map.Entry<String, Map<String, Map<String, Integer>>> entryTest : mapTests.entrySet()) {
                 JSONArray status = new JSONArray();
                 status.put(entryTest.getKey());
-                for (Map.Entry<String, Map<String, Integer>> entryCountry : entryTest.getValue().entrySet()){
+                for (Map.Entry<String, Map<String, Integer>> entryCountry : entryTest.getValue().entrySet()) {
                     int total = 0;
-                    for (Map.Entry<String, Integer> entryStatus : entryCountry.getValue().entrySet()){
+                    for (Map.Entry<String, Integer> entryStatus : entryCountry.getValue().entrySet()) {
                         status.put(entryStatus.getValue());
                         total += entryStatus.getValue();
                     }
@@ -126,9 +150,49 @@ public class GetReport extends HttpServlet {
                 test.put(status);
             }
             statistic.put("aaData", test);
+            json.put("statistic", statistic);
+
+            statistic = new JSONObject();
+            test = new JSONArray();
+            for (Map.Entry<String, Map<String, Integer>> entry : mapGroups.entrySet()) {
+                JSONArray status = new JSONArray();
+                status.put(entry.getKey());
+                int total = 0;
+                for (Invariant inv : tcgroups){
+                    if (entry.getValue().containsKey(inv.getValue())){
+                        status.put(entry.getValue().get(inv.getValue()));
+                        total += entry.getValue().get(inv.getValue());
+                    } else{
+                        status.put("");
+                    }
+                }
+                status.put(total);
+                test.put(status);
+            }
+            statistic.put("aaData", test);
+            json.put("groups", statistic);
+
+            statistic = new JSONObject();
+            test = new JSONArray();
+            for (Map.Entry<String, Map<String, Integer>> entry : mapStatus.entrySet()) {
+                JSONArray status = new JSONArray();
+                status.put(entry.getKey());
+                int total = 0;
+                for (Invariant inv : tcstatus){
+                    if (entry.getValue().containsKey(inv.getValue())){
+                        status.put(entry.getValue().get(inv.getValue()));
+                        total += entry.getValue().get(inv.getValue());
+                    } else{
+                        status.put("");
+                    }
+                }
+                status.put(total);
+                test.put(status);
+            }
+            statistic.put("aaData", test);
+            json.put("status", statistic);
 
             json.put("aaData", data);
-            json.put("statistic", statistic);
             json.put("iTotalRecords", data.length());
             json.put("iTotalDisplayRecords", data.length());
             resp.setContentType("application/json");
