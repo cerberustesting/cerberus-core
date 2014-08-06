@@ -3693,11 +3693,27 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
 
 // Add invariant getDifferencesFromXml.
 //-- ------------------------ 517
-		SQLS = new StringBuilder();
-		SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`) VALUES ");
-		SQLS.append("('ACTION', 'removeDifference', '220', 'Remove differences from the given pattern');");
-		SQLInstruction.add(SQLS.toString());
-		
-		return SQLInstruction;
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`) VALUES ");
+        SQLS.append("('ACTION', 'removeDifference', '220', 'Remove differences from the given pattern');");
+        SQLInstruction.add(SQLS.toString());
+
+// Add colums to use test data at application / environment / country level.
+//-- ------------------------ 518
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testdata` ");
+        SQLS.append("ADD COLUMN `Application` VARCHAR(45) NOT NULL DEFAULT '' AFTER `Description`,");
+        SQLS.append("ADD COLUMN `Country` VARCHAR(2) NOT NULL DEFAULT '' AFTER `Application`,");
+        SQLS.append("ADD COLUMN `Environment` VARCHAR(45) NOT NULL DEFAULT '' AFTER `Country`;");
+        SQLInstruction.add(SQLS.toString());
+
+// Add update primary key to test data at key / application / environment / country level.
+//-- ------------------------ 519
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `cerberus`.`testdata` ");
+        SQLS.append("DROP PRIMARY KEY, ADD PRIMARY KEY (`key`, `Environment`, `Country`, `Application`);");
+        SQLInstruction.add(SQLS.toString());
+
+        return SQLInstruction;
     }
 }

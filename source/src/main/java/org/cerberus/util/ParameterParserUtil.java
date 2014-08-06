@@ -27,6 +27,8 @@ package org.cerberus.util;
  */
 public final class ParameterParserUtil {
 
+    private static final String DEFAULT_SQL_STRING_VALUE = "";
+
     /**
      * To avoid instanciation of utility.
      */
@@ -59,7 +61,7 @@ public final class ParameterParserUtil {
         return sb.toString();
     }
     
-   /**
+    /**
      * @param inParam
      * @return an empty string if the inParam is empty or null. It returns
      * inParam if OK.
@@ -69,6 +71,18 @@ public final class ParameterParserUtil {
             return inParam;
         }
         return defaultVal;
+    }
+
+    /**
+     * @param inParam
+     * @return an empty string if the inParam is null. It returns inParam if OK.
+     */
+    public static String returnEmptyStringIfNull(String inParam) {
+        if (inParam != null) {
+            return inParam;
+        }
+
+        return DEFAULT_SQL_STRING_VALUE;
     }
 
     /**

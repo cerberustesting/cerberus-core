@@ -52,5 +52,10 @@ public class CountryEnvironmentApplicationService implements ICountryEnvironment
     public List<CountryEnvironmentApplication> findCountryEnvironmentApplicationByCriteria(CountryEnvironmentApplication countryEnvironmentParameter) throws CerberusException {
         return countryEnvironmentParametersDao.findCountryEnvironmentApplicationByCriteria(countryEnvironmentParameter);
     }
-    
+
+    @Override
+    public List<String> getDistinctEnvironmentNames() throws CerberusException {
+        return countryEnvironmentParametersDao.getDistinctEnvironmentNames();
+    }
+
 }

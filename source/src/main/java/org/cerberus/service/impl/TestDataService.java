@@ -61,8 +61,8 @@ public class TestDataService implements ITestDataService {
     }
 
     @Override
-    public TestData findTestDataByKey(String key) throws CerberusException {
-        return TestDataDAO.findTestDataByKey(key);
+    public TestData findTestDataByKey(String key, String application, String environment, String country) throws CerberusException {
+        return TestDataDAO.findTestDataByKey(key, application, environment, country);
     }
 
     @Override

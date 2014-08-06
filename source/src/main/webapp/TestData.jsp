@@ -54,7 +54,10 @@
                     "aoColumns": [
                         {"sName": "Key", "sWidth": "20%"},
                         {"sName": "Value", "sWidth": "30%", "sClass": "center"},
-                        {"sName": "Description", "sWidth": "50%", "sClass": "center"}
+                        {"sName": "Description", "sWidth": "40%", "sClass": "center"},
+                        {"sName": "Application", "sWidth": "5%", "sClass": "center"},
+                        {"sName": "Environment", "sWidth": "3%", "sClass": "center"},
+                        {"sName": "Country", "sWidth": "2%", "sClass": "center"}
                     ]
                 }
             ).makeEditable({
@@ -90,7 +93,38 @@
                             placeholder: ''}
 
                     ]
-                })
+                });
+
+                $.get('./GetApplicationList','',function(data){
+                    $("#Application").empty();
+                    for(index=0;index<data.parameterList.length;index++) {
+                        $("#Application").append("<option value=\""+data.parameterList[index]+"\">"+data.parameterList[index]+"</option>");
+                    }
+                });
+
+                $.get('./GetApplicationList','',function(data){
+                    $("#Application").empty();
+                    $("#Application").append("<option value=\"\"> </option>");
+                    for(index=0;index<data.parameterList.length;index++) {
+                        $("#Application").append("<option value=\""+data.parameterList[index]+"\">"+data.parameterList[index]+"</option>");
+                    }
+                });
+
+                $.get('./FindInvariantByID','idName=ENVIRONMENT',function(data){
+                    $("#Environment").empty();
+                    $("#Environment").append("<option value=\"\"> </option>");
+                    for(index=0;index<data.length;index++) {
+                        $("#Environment").append("<option value=\""+data[index].value+"\">"+data[index].value+" - "+data[index].description+"</option>");
+                    }
+                });
+
+                $.get('./FindInvariantByID','idName=COUNTRY',function(data){
+                    $("#Country").empty();
+                    $("#Country").append("<option value=\"\"> </option>");
+                    for(index=0;index<data.length;index++) {
+                        $("#Country").append("<option value=\""+data[index].value+"\">"+data[index].value+" - "+data[index].description+"</option>");
+                    }
+                });
             });
 
 
@@ -109,6 +143,9 @@
                         <th>Key</th>
                         <th>Value</th>
                         <th>Description</th>
+                        <th>Application</th>
+                        <th>Environment</th>
+                        <th>Country</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -128,6 +165,24 @@
                 <label for="Description" style="font-weight:bold">Description</label>
                 <input id="Description" name="Description" style="width:800px;" 
                        class="ncdetailstext" rel="2" >
+                <br />
+                <br />
+                <label for="Application" style="font-weight:bold">Application</label>
+                <select id="Application" name="Application" 
+                       class="ncdetailstext" rel="3" >
+                </select>
+                <br />
+                <br />
+                <label for="Environment" style="font-weight:bold">Environment</label>
+                <select id="Environment" name="Environment" 
+                       class="ncdetailstext" rel="4" >
+                </select>
+                <br />
+                <br />
+                <label for="Country" style="font-weight:bold">Country</label>
+                <select id="Country" name="Country"
+                       class="ncdetailstext" rel="5" >
+                </select>
                 <br />
                 <br />
                 <div style="width: 250px; float:right">

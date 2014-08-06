@@ -73,7 +73,7 @@ public interface ITestDataDAO {
      * @return
      * @throws org.cerberus.exception.CerberusException
      */
-    TestData findTestDataByKey(String key) throws CerberusException;
+    TestData findTestDataByKey(String key, String application, String environment, String country) throws CerberusException;
 
     /**
      *

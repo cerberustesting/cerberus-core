@@ -31,7 +31,9 @@ public interface IFactoryTestData {
      *
      * @param key Key of the data. Should be unique
      * @param value Value related to the key
+     * @param description
      * @return a TestData
      */
-    TestData create(String key, String value, String description);
+    TestData create(String key, String value, String description,
+            String application, String environment, String country);
 }

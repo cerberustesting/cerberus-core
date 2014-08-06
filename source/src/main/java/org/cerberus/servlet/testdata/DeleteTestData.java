@@ -49,12 +49,15 @@ public class DeleteTestData extends HttpServlet {
             //String key = request.getParameter("Key");
             String key = request.getParameter("id");
             String value = request.getParameter("value");
+            String application = request.getParameter("Application");
+            String environment = request.getParameter("Environment");
+            String country = request.getParameter("Country");
 
             ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
             ITestDataService testDataService = appContext.getBean(ITestDataService.class);
             IFactoryTestData factoryTestData = appContext.getBean(IFactoryTestData.class);
 
-            TestData testData = factoryTestData.create(key, value, "");
+            TestData testData = factoryTestData.create(key, value, "", application, environment, country);
             testDataService.deleteTestData(testData);
 
             /**

@@ -230,4 +230,49 @@ public class CountryEnvironmentParametersDAO implements ICountryEnvironmentParam
         }
         return result;
     }
+
+    @Override
+    public List<String> getDistinctEnvironmentNames() throws CerberusException {
+        List<String> result = new ArrayList<String>();
+        boolean throwex = false;
+        StringBuilder query = new StringBuilder();
+        query.append("SELECT DISTINCT environment FROM countryenvironmentparameters ");
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query.toString());
+            try {
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+                    while (resultSet.next()) {
+                        if (resultSet.getString("environment") != null) {
+                            result.add(resultSet.getString("environment"));
+                        }
+                    }
+                } catch (SQLException exception) {
+                    MyLogger.log(CountryEnvironmentParametersDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                } finally {
+                    resultSet.close();
+                }
+            } catch (SQLException exception) {
+                MyLogger.log(CountryEnvironmentParametersDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(CountryEnvironmentParametersDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(CountryEnvironmentParametersDAO.class.getName(), Level.WARN, e.toString());
+            }
+        }
+        if (throwex) {
+            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
+        }
+        return result;
+    }
 }

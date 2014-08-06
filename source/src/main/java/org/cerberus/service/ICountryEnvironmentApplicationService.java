@@ -36,4 +36,5 @@ public interface ICountryEnvironmentApplicationService {
     
     List<CountryEnvironmentApplication> findCountryEnvironmentApplicationByCriteria(CountryEnvironmentApplication countryEnvironmentParameter) throws CerberusException;
 
+    public List<String> getDistinctEnvironmentNames() throws CerberusException;
 }

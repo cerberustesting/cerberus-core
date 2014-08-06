@@ -274,9 +274,11 @@ public class PropertyService implements IPropertyService {
 
     private TestCaseExecutionData getFromTestData(TestCaseExecutionData testCaseExecutionData, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseCountryProperty) {
         String propertyValue = "";
+
         try {
             propertyValue = testCaseCountryProperty.getValue1();
-            String valueFromTestData = testDataService.findTestDataByKey(propertyValue).getValue();
+            String valueFromTestData = testDataService.findTestDataByKey(propertyValue, tCExecution.getApplication().getApplication(),
+                    tCExecution.getEnvironment(), tCExecution.getCountry()).getValue();
             if (valueFromTestData != null) {
                 testCaseExecutionData.setValue(valueFromTestData);
                 MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_TESTDATA);

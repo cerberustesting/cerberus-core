@@ -50,7 +50,7 @@ public class FindAllTestData extends HttpServlet {
             String sCol = request.getParameter("iSortCol_0");
             String sdir = request.getParameter("sSortDir_0");
             String dir = "asc";
-            String[] cols = {"Key", "Value", "Description"};
+            String[] cols = {"Key", "Value", "Description", "Application", "Environment", "Country"};
 
             /*            JSONObject result = new JSONObject();
              JSONArray array = new JSONArray();*/
@@ -61,9 +61,17 @@ public class FindAllTestData extends HttpServlet {
 
             String key = "";
             String value = "";
+            String description = "";
+            String application = "";
+            String environment = "";
+            String country = "";
 
             key = request.getParameter("sSearch_0");
             value = request.getParameter("sSearch_1");
+            description = request.getParameter("sSearch_2");
+            application = request.getParameter("sSearch_3");
+            environment = request.getParameter("sSearch_4");
+            country = request.getParameter("sSearch_5");
 
             List<String> sArray = new ArrayList<String>();
             if (!key.equals("")) {
@@ -72,6 +80,26 @@ public class FindAllTestData extends HttpServlet {
             }
             if (!value.equals("")) {
                 String sValue = " value like '%" + value + "%'";
+                sArray.add(sValue);
+            }
+
+            if (!description.equals("")) {
+                String sValue = " description like '%" + description + "%'";
+                sArray.add(sValue);
+            }
+
+            if (!application.equals("")) {
+                String sValue = " application like '%" + application + "%'";
+                sArray.add(sValue);
+            }
+
+            if (!environment.equals("")) {
+                String sValue = " environment like '%" + environment + "%'";
+                sArray.add(sValue);
+            }
+
+            if (!country.equals("")) {
+                String sValue = " country like '%" + country + "%'";
                 sArray.add(sValue);
             }
 
@@ -132,7 +160,10 @@ public class FindAllTestData extends HttpServlet {
                 JSONArray row = new JSONArray();
                 row.put(testData.getKey())
                         .put(testData.getValue())
-                        .put(testData.getDescription());
+                        .put(testData.getDescription())
+                        .put(testData.getApplication())
+                        .put(testData.getEnvironment())
+                        .put(testData.getCountry());
 
                 data.put(row);
             }

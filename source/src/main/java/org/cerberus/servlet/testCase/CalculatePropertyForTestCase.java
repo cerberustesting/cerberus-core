@@ -53,7 +53,6 @@ import org.cerberus.serviceEngine.ISQLService;
 import org.cerberus.serviceEngine.ISoapService;
 import org.cerberus.serviceEngine.IXmlUnitService;
 import org.cerberus.util.StringUtil;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.owasp.html.PolicyFactory;
@@ -79,11 +78,29 @@ public class CalculatePropertyForTestCase extends HttpServlet {
 
         String result = null;
         String description = null;
+
         String property = httpServletRequest.getParameter("property");
+        String testName = policy.sanitize(httpServletRequest.getParameter("test"));
+        String testCaseName = policy.sanitize(httpServletRequest.getParameter("testCase"));
+        String country = policy.sanitize(httpServletRequest.getParameter("country"));
+        String environment = policy.sanitize(httpServletRequest.getParameter("environment"));
         try {
             if (type.equals("getFromTestData")) {
                 ITestDataService testDataService = appContext.getBean(TestDataService.class);
-                TestData td = testDataService.findTestDataByKey(property);
+
+                String application = null;
+
+                try {
+                    ITestCaseService testCaseService = appContext.getBean(TestCaseService.class);
+                    IApplicationService applicationService = appContext.getBean(ApplicationService.class);
+
+                    TCase testCase = testCaseService.findTestCaseByKey(testName, testCaseName);
+                    application = applicationService.findApplicationByKey(testCase.getApplication()).getApplication();
+                } catch (CerberusException ex) {
+                    Logger.getLogger(CalculatePropertyForTestCase.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+                }
+
+                TestData td = testDataService.findTestDataByKey(property, application, environment, country);
                 result = td.getValue();
                 description = td.getDescription();
 
@@ -105,10 +122,6 @@ public class CalculatePropertyForTestCase extends HttpServlet {
             } else {
                 String system = null;
                 try {
-                    String testName = policy.sanitize(httpServletRequest.getParameter("test"));
-                    String testCaseName = policy.sanitize(httpServletRequest.getParameter("testCase"));
-
-
                     ITestCaseService testCaseService = appContext.getBean(TestCaseService.class);
                     IApplicationService applicationService = appContext.getBean(ApplicationService.class);
 
@@ -118,8 +131,6 @@ public class CalculatePropertyForTestCase extends HttpServlet {
                     Logger.getLogger(CalculatePropertyForTestCase.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
                 }
                 if (system != null) {
-                    String country = policy.sanitize(httpServletRequest.getParameter("country"));
-                    String environment = policy.sanitize(httpServletRequest.getParameter("environment"));
                     String database = policy.sanitize(httpServletRequest.getParameter("database"));
 
                     ICountryEnvironmentDatabaseService countryEnvironmentDatabaseService = appContext.getBean(CountryEnvironmentDatabaseService.class);
@@ -133,12 +144,13 @@ public class CalculatePropertyForTestCase extends HttpServlet {
                         SqlLibrary sl = sqlLibraryService.findSqlLibraryByKey(policy.sanitize(property));
                         property = sl.getScript();
                     
-                    if (!(StringUtil.isNullOrEmpty(connectionName)) && !(StringUtil.isNullOrEmpty(policy.sanitize(property)))) {
-                        ISQLService sqlService = appContext.getBean(ISQLService.class);
-                        result = sqlService.queryDatabase(connectionName, policy.sanitize(property), 1).get(0);
-                        description = sl.getDescription();
+                        if (!(StringUtil.isNullOrEmpty(connectionName)) && !(StringUtil.isNullOrEmpty(policy.sanitize(property)))) {
+                            ISQLService sqlService = appContext.getBean(ISQLService.class);
+                            result = sqlService.queryDatabase(connectionName, policy.sanitize(property), 1).get(0);
+                            description = sl.getDescription();
                         }
-                }}
+                    }
+                }
             }
 
 

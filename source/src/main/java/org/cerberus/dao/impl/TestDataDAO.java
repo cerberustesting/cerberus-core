@@ -21,7 +21,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.log4j.Level;
@@ -33,6 +32,7 @@ import org.cerberus.entity.TestData;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.factory.IFactoryTestData;
 import org.cerberus.log.MyLogger;
+import org.cerberus.util.ParameterParserUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -52,8 +52,8 @@ public class TestDataDAO implements ITestDataDAO {
     public void createTestData(TestData testData) throws CerberusException {
         boolean throwExcep = false;
         StringBuilder query = new StringBuilder();
-        query.append("INSERT INTO testdata (`key`, `value`, `description`) ");
-        query.append("VALUES (?,?,?)");
+        query.append("INSERT INTO testdata (`key`, `value`, `description`, `application`, `environment`, `country`) ");
+        query.append("VALUES (?,?,?,?,?,?)");
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -62,6 +62,9 @@ public class TestDataDAO implements ITestDataDAO {
                 preStat.setString(1, testData.getKey());
                 preStat.setString(2, testData.getValue());
                 preStat.setString(3, testData.getDescription());
+                preStat.setString(4, ParameterParserUtil.returnEmptyStringIfNull(testData.getApplication()));
+                preStat.setString(5, ParameterParserUtil.returnEmptyStringIfNull(testData.getEnvironment()));
+                preStat.setString(6, ParameterParserUtil.returnEmptyStringIfNull(testData.getCountry()));
 
                 preStat.executeUpdate();
                 throwExcep = false;
@@ -91,7 +94,7 @@ public class TestDataDAO implements ITestDataDAO {
     public void updateTestData(TestData testData) throws CerberusException {
         boolean throwExcep = false;
         StringBuilder query = new StringBuilder();
-        query.append("update testdata set `value`= ?, `description`= ? where `key`= ? ");
+        query.append("update testdata set `value`= ?, `description`= ? where `key`= ? and `application`=? and `environment`=? and `country`=? ");
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -100,6 +103,9 @@ public class TestDataDAO implements ITestDataDAO {
                 preStat.setString(1, testData.getValue());
                 preStat.setString(2, testData.getDescription());
                 preStat.setString(3, testData.getKey());
+                preStat.setString(4, ParameterParserUtil.returnEmptyStringIfNull(testData.getApplication()));
+                preStat.setString(5, ParameterParserUtil.returnEmptyStringIfNull(testData.getEnvironment()));
+                preStat.setString(6, ParameterParserUtil.returnEmptyStringIfNull(testData.getCountry()));
 
                 preStat.executeUpdate();
                 throwExcep = false;
@@ -129,13 +135,16 @@ public class TestDataDAO implements ITestDataDAO {
     public void deleteTestData(TestData testData) throws CerberusException {
         boolean throwExcep = false;
         StringBuilder query = new StringBuilder();
-        query.append("delete from testdata where `key`=? ");
+        query.append("delete from testdata where `key`=? and `application`=? and `environment`=? and `country`=? ");
 
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
             try {
                 preStat.setString(1, testData.getKey());
+                preStat.setString(2, ParameterParserUtil.returnEmptyStringIfNull(testData.getApplication()));
+                preStat.setString(3, ParameterParserUtil.returnEmptyStringIfNull(testData.getEnvironment()));
+                preStat.setString(4, ParameterParserUtil.returnEmptyStringIfNull(testData.getCountry()));
 
                 preStat.executeUpdate();
                 throwExcep = false;
@@ -217,6 +226,15 @@ public class TestDataDAO implements ITestDataDAO {
         gSearch.append("%'");
         gSearch.append(" or `description` like '%");
         gSearch.append(searchTerm);
+        gSearch.append("%'");
+        gSearch.append(" or `application` like '%");
+        gSearch.append(searchTerm);
+        gSearch.append("%'");
+        gSearch.append(" or `environment` like '%");
+        gSearch.append(searchTerm);
+        gSearch.append("%'");
+        gSearch.append(" or `country` like '%");
+        gSearch.append(searchTerm);
         gSearch.append("%')");
 
         if (!searchTerm.equals("") && !individualSearch.equals("")) {
@@ -240,8 +258,6 @@ public class TestDataDAO implements ITestDataDAO {
         query.append(start);
         query.append(" , ");
         query.append(amount);
-
-        TestData testData;
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -285,19 +301,30 @@ public class TestDataDAO implements ITestDataDAO {
         String key = resultSet.getString("key");
         String value = resultSet.getString("value");
         String description = resultSet.getString("description");
+        String application = ParameterParserUtil.returnEmptyStringIfNull(resultSet.getString("application"));
+        String environment = ParameterParserUtil.returnEmptyStringIfNull(resultSet.getString("environment"));
+        String country = ParameterParserUtil.returnEmptyStringIfNull(resultSet.getString("country"));
 
-        return factoryTestData.create(key, value, description);
+        return factoryTestData.create(key, value, description, application, environment, country);
     }
 
     @Override
-    public TestData findTestDataByKey(String key) throws CerberusException {
+    public TestData findTestDataByKey(String key, String application, String environment, String country) throws CerberusException {
         TestData result = null;
-        final String query = "SELECT * FROM testdata where `key`=?";
+        final String query = new StringBuilder("SELECT * FROM testdata where `key`=?")
+                .append(" and (`application` = ? or `application` = '')")
+                .append(" and (`environment` = ? or `environment` = '')")
+                .append(" and (`country` = ? or `country` = '')")
+                .append(" order by `key` DESC, application DESC, environment DESC, country DESC")
+                .append(" limit 1").toString();
 
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
             preStat.setString(1, key);
+            preStat.setString(2, ParameterParserUtil.returnEmptyStringIfNull(application));
+            preStat.setString(3, ParameterParserUtil.returnEmptyStringIfNull(environment));
+            preStat.setString(4, ParameterParserUtil.returnEmptyStringIfNull(country));
             try {
                 ResultSet resultSet = preStat.executeQuery();
                 try {
@@ -343,6 +370,15 @@ public class TestDataDAO implements ITestDataDAO {
         gSearch.append(searchTerm);
         gSearch.append("%'");
         gSearch.append(" or `value` like '%");
+        gSearch.append(searchTerm);
+        gSearch.append("%'");
+        gSearch.append(" or `application` like '%");
+        gSearch.append(searchTerm);
+        gSearch.append("%'");
+        gSearch.append(" or `environment` like '%");
+        gSearch.append(searchTerm);
+        gSearch.append("%'");
+        gSearch.append(" or `country` like '%");
         gSearch.append(searchTerm);
         gSearch.append("%'");
         gSearch.append(" or `description` like '%");

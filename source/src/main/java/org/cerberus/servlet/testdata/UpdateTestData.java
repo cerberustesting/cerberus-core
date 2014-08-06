@@ -46,13 +46,16 @@ public class UpdateTestData extends HttpServlet {
         PrintWriter out = response.getWriter();
         try {
             String key = request.getParameter("id");
+            String application = request.getParameter("environment");
+            String environment = request.getParameter("application");
+            String country = request.getParameter("country");
             int columnPosition = Integer.parseInt(request.getParameter("columnPosition"));
             String value = request.getParameter("value").replaceAll("'", "");
 
             ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
             ITestDataService testDataService = appContext.getBean(ITestDataService.class);
 
-            TestData testData = testDataService.findTestDataByKey(key);
+            TestData testData = testDataService.findTestDataByKey(key, application, environment, country);
 
             switch (columnPosition) {
                 case 0:
