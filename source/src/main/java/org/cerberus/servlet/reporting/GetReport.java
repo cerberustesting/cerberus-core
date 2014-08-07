@@ -57,6 +57,7 @@ public class GetReport extends HttpServlet {
         String system = this.getValues(req, "System");
         String[] countries = req.getParameterValues("Country");
         String[] browsers = req.getParameterValues("Browser");
+
         List<TCase> list = testCaseService.findTestCaseByAllCriteria(tCase, "", system);
 
         JSONArray data = new JSONArray();
@@ -208,6 +209,8 @@ public class GetReport extends HttpServlet {
         Map<String, Map<String, Integer>> map = new LinkedHashMap<String, Map<String, Integer>>();
         Map<String, Integer> group = new LinkedHashMap<String, Integer>();
         Map<String, Integer> stat = new LinkedHashMap<String, Integer>();
+        Map<String, Map<String, Integer>> mapTotal = new LinkedHashMap<String, Map<String, Integer>>();
+        Map<String, Integer> statusTotal;
         Map<String, Integer> groupTotal = new LinkedHashMap<String, Integer>();
         Map<String, Integer> statTotal = new LinkedHashMap<String, Integer>();
 
@@ -234,6 +237,14 @@ public class GetReport extends HttpServlet {
                 } else {
                     status = mapTests.get(tc.getTest()).get(country);
                 }
+                if(mapTotal.containsKey(country)){
+                    statusTotal = mapTotal.get(country);
+                } else {
+                    statusTotal = new LinkedHashMap<String, Integer>();
+                    for (Invariant inv : tceStatus) {
+                        statusTotal.put(inv.getValue(), 0);
+                    }
+                }
                 for (String browser : browsers) {
                     TestCaseExecution tce = this.testCaseExecutionService.findLastTCExecutionByCriteria(tc.getTest(),
                             tc.getTestCase(), environment, country, build, revision, browser, browserVersion, ip, port, tag);
@@ -246,12 +257,14 @@ public class GetReport extends HttpServlet {
                         DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
                         array.put(formatter.format(date));
                         status.put(tce.getControlStatus(), status.get(tce.getControlStatus()) + 1);
+                        statusTotal.put(tce.getControlStatus(), statusTotal.get(tce.getControlStatus()) + 1);
                     } else {
                         array.put("");
                         array.put("");
                     }
                 }
                 map.put(country, status);
+                mapTotal.put(country, statusTotal);
             }
             array.put(tc.getComment());
             array.put(tc.getBugID() + "for " + tc.getTargetSprint() + "/" + tc.getTargetRevision());
@@ -267,6 +280,7 @@ public class GetReport extends HttpServlet {
 
             oldTest = tc.getTest();
         }
+        mapTests.put("TOTAL", mapTotal);
         mapGroups.put("TOTAL", groupTotal);
         mapStatus.put("TOTAL", statTotal);
     }
