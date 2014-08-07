@@ -106,11 +106,11 @@
                     $('#TCResult').append("<th class='TCResult jsAdded'></th><th class='jsAdded'></th>");
                 });
 
-                $('#statisticCountry').append("<th colspan='" + (status.length + 1) +"'>" + elem + "</th>");
+                $('#statisticCountry').append("<th class='jsAdded' colspan='" + (status.length + 1) +"'>" + elem + "</th>");
                 $.each(status, function(i, e){
-                    $('#statisticStatus').append("<th class='"+e+" "+e+"F'>"+ e +"</th>");
+                    $('#statisticStatus').append("<th class='"+e+" "+e+"F jsAdded'>"+ e +"</th>");
                 });
-                $('#statisticStatus').append("<th style='color:#000000'>TOTAL</th>");
+                $('#statisticStatus').append("<th class='jsAdded' style='color:#000000'>TOTAL</th>");
             });
 
             $('#divReporting').show();
@@ -225,6 +225,8 @@
                             $('#divGroup').hide();
                         }
                     });
+
+                    $('html, body').animate({scrollTop : 425},800);
                 }
             });
         });
