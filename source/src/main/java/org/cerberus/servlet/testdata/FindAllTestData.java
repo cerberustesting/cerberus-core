@@ -173,7 +173,7 @@ public class FindAllTestData extends HttpServlet {
 
             if (data.length() <= 0) {
                 JSONArray row = new JSONArray();
-                row.put("").put("").put("");
+                row.put("").put("").put("").put("").put("").put("");
                 data.put(row);
             }
             jsonResponse.put("aaData", data);
