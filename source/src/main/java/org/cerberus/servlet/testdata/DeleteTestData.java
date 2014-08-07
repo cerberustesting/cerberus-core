@@ -22,6 +22,8 @@ import org.cerberus.service.ILogEventService;
 import org.cerberus.service.ITestDataService;
 import org.cerberus.service.impl.LogEventService;
 import org.cerberus.service.impl.UserService;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -46,19 +48,23 @@ public class DeleteTestData extends HttpServlet {
         response.setContentType("text/html;charset=UTF-8");
         PrintWriter out = response.getWriter();
         try {
-            //String key = request.getParameter("Key");
-            String key = request.getParameter("id");
-            String value = request.getParameter("value");
-            String application = request.getParameter("Application");
-            String environment = request.getParameter("Environment");
-            String country = request.getParameter("Country");
-
             ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-            ITestDataService testDataService = appContext.getBean(ITestDataService.class);
-            IFactoryTestData factoryTestData = appContext.getBean(IFactoryTestData.class);
+            String key = request.getParameter("id");
+            try {
+                //String key = request.getParameter("Key");
+                JSONObject testDataKey = null;
+                testDataKey = new JSONObject(key);
 
-            TestData testData = factoryTestData.create(key, value, "", application, environment, country);
-            testDataService.deleteTestData(testData);
+                ITestDataService testDataService = appContext.getBean(ITestDataService.class);
+                IFactoryTestData factoryTestData = appContext.getBean(IFactoryTestData.class);
+
+                TestData testData = factoryTestData.create(testDataKey.getString("id"), "", "",
+                        testDataKey.getString("Application"), testDataKey.getString("Environment"),
+                        testDataKey.getString("Country"));
+                testDataService.deleteTestData(testData);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
 
             /**
              * Adding Log entry.

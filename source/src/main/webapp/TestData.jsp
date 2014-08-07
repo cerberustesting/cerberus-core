@@ -38,6 +38,8 @@
         <script type="text/javascript" src="js/jquery.validate.min.js"></script>
         <script type="text/javascript">
 
+            var deleteParams;
+
             $(document).ready(function() {
                 var oTable = $('#testDataList').dataTable({
                     "aaSorting": [[0, "asc"]],
@@ -76,6 +78,14 @@
                         icons: {primary: 'ui-icon-trash'}
                     },
                     sUpdateURL: "UpdateTestData",
+                    fnOnDeleting: function (tr, id, fnDeleteRow) {
+                        var param = "{ id: '"+id+"',"
+                            +"Application: '"+$(tr).children()[3].innerHTML+"',"
+                            +"Environment: '"+$(tr).children()[4].innerHTML+"',"
+                            +"Country: '"+$(tr).children()[5].innerHTML+"' }";
+                        fnDeleteRow( param );
+                        return false;
+                    },
                     fnOnEdited: function(status) {
                         $(".dataTables_processing").css('visibility', 'hidden');
                     },
