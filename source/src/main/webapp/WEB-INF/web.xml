@@ -533,6 +533,10 @@
         <servlet-name>ImportTestCaseFromJson</servlet-name>
         <servlet-class>org.cerberus.servlet.testCase.ImportTestCaseFromJson</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>CampaignExecutionReport</servlet-name>
+        <servlet-class>org.cerberus.servlet.campaign.CampaignExecutionReport</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>RunTestCase</servlet-name>
         <url-pattern>/RunTestCase</url-pattern>
@@ -1029,6 +1033,10 @@
         <servlet-name>ImportTestCaseFromJson</servlet-name>
         <url-pattern>/ImportTestCaseFromJson</url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>CampaignExecutionReport</servlet-name>
+        <url-pattern>/CampaignExecutionReport</url-pattern>
+    </servlet-mapping>
     <session-config>
         <session-timeout>
             60
@@ -1108,6 +1116,7 @@
             <url-pattern>/GenerateGraph</url-pattern>
             <url-pattern>/TestCaseActionExecutionDetail</url-pattern>
             <url-pattern>/ExecutionPerBuildRevision</url-pattern>
+            <url-pattern>/FindInvariantByID</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <description>TestRO</description>
@@ -1146,6 +1155,7 @@
             <url-pattern>/DeleteTestData</url-pattern>
             <url-pattern>/UpdateTestData</url-pattern>
             <url-pattern>/FindAllTestData</url-pattern>
+            <url-pattern>/GetApplicationList</url-pattern>
             <url-pattern>/FindAllSqlLibrary</url-pattern>
             <url-pattern>/PictureConnector</url-pattern>
             <url-pattern>/GetTestBySystem</url-pattern>
@@ -1214,7 +1224,6 @@
         <web-resource-collection>
             <web-resource-name>servlet</web-resource-name>
             <description>servlet</description>
-            <url-pattern>/GetApplicationList</url-pattern>
             <url-pattern>/GetApplication</url-pattern>
             <url-pattern>/GetShortTests</url-pattern>
             <url-pattern>/GetInvariantsForTest</url-pattern>
