@@ -75,7 +75,7 @@ public class Differences {
 	 */
 	public static Differences fromString(String stringDiff) throws DifferencesException {
 		try {
-			return stringDiff != null && stringDiff.isEmpty() ? new Differences() : fromDocument(XmlUtil.fromString(stringDiff));
+			return EMPTY_DIFFERENCES_STRING.equals(stringDiff) ? new Differences() : fromDocument(XmlUtil.fromString(stringDiff));
 		} catch (XmlUtilException e) {
 			throw new DifferencesException(e);
 		}
