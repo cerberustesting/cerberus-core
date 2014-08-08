@@ -68,6 +68,11 @@ public class XmlUtilTest {
 		Assert.assertTrue(diff.toString(), diff.similar());
 	}
 	
+	@Test(expected = XmlUtilException.class)
+	public void testToStringWithNullArguments() throws XmlUtilException {
+		XmlUtil.toString(null);
+	}
+	
 	@Test
 	public void testFromString() throws XmlUtilException {
 		Document expected = XmlUtil.newDocument();
@@ -82,6 +87,11 @@ public class XmlUtilTest {
 		Assert.assertTrue(diff.toString(), diff.similar());
 	}
 
+	@Test(expected = XmlUtilException.class)
+	public void testFromStringWithNullArguments() throws XmlUtilException {
+		XmlUtil.fromString(null);
+	}
+	
 	@Test
 	public void testFromURL() throws XmlUtilException {
 		Document expected = XmlUtil.newDocument();
@@ -95,5 +105,10 @@ public class XmlUtilTest {
 		
 		DetailedDiff diff = new DetailedDiff(XMLUnit.compareXML(expected, actual));
 		Assert.assertTrue(diff.toString(), diff.similar());
+	}
+	
+	@Test(expected = XmlUtilException.class)
+	public void testFromURLWithNullArguments() throws XmlUtilException {
+		XmlUtil.fromURL(null);
 	}
 }

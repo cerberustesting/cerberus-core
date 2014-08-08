@@ -76,6 +76,10 @@ public final class XmlUtil {
 	 *             if {@link Node} cannot be represented as a {@link String}
 	 */
 	public static String toString(Node node) throws XmlUtilException {
+		if (node == null) {
+			throw new XmlUtilException("Cannot parse a null node");
+		}
+		
 		try {
 			StreamResult xmlOutput = new StreamResult(new StringWriter());
 			Transformer transformer = TransformerFactory.newInstance().newTransformer();
@@ -101,6 +105,10 @@ public final class XmlUtil {
 	 *             if {@link String} cannot be represented as a {@link Document}
 	 */
 	public static Document fromString(String xml) throws XmlUtilException {
+		if (xml == null) {
+			throw new XmlUtilException("Cannot parse a null XML file");
+		}
+		
 		try {
 			InputSource sourceInput = new InputSource(new StringReader(xml));
 			DocumentBuilder dBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
@@ -124,6 +132,10 @@ public final class XmlUtil {
 	 *             if {@link URL} cannot be represented as a {@link Document}
 	 */
 	public static Document fromURL(URL url) throws XmlUtilException {
+		if (url == null) {
+			throw new XmlUtilException("Cannot parse a null URL");
+		}
+		
 		try {
 			BufferedInputStream streamInput = new BufferedInputStream(url.openStream());
 			DocumentBuilder dBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
