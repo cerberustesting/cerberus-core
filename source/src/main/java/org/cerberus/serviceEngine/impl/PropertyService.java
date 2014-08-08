@@ -88,6 +88,11 @@ public class PropertyService implements IPropertyService {
             testCaseExecutionData.setValue1(decodedValue);
             testCaseCountryProperty.setValue1(decodedValue);
         }
+        if (testCaseCountryProperty.getValue2() != null && testCaseCountryProperty.getValue2().contains("%")) {
+            String decodedValue = this.decodeValue(testCaseCountryProperty.getValue2(), testCaseStepActionExecution.getTestCaseExecutionDataList(), tCExecution);
+            testCaseExecutionData.setValue2(decodedValue);
+            testCaseCountryProperty.setValue2(decodedValue);
+        }
 
         /**
          * Calculate Property regarding the type
