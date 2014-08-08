@@ -137,5 +137,12 @@ public class XmlUnitServiceTest {
 		DetailedDiff diff = new DetailedDiff(XMLUnit.compareXML(expected, actual));
 		Assert.assertTrue(diff.toString(), diff.similar());
 	}
+	
+	@Test
+	public void testRemoveDifferenceFromEmptyDifferences() throws XmlUtilException {
+		String expected = Differences.EMPTY_DIFFERENCES_STRING;
+		String actual = xmlUnitService.removeDifference("foo", Differences.EMPTY_DIFFERENCES_STRING);
+		Assert.assertEquals(expected, actual);
+	}
 
 }
