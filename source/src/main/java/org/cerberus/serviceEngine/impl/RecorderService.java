@@ -63,12 +63,12 @@ public class RecorderService implements IRecorderService {
         String sequence = String.valueOf(testCaseStepActionExecution.getSequence());
         String controlString = control.equals(0) ? null : String.valueOf(control);
 
-        MyLogger.log(RunTestCaseService.class.getName(), Level.INFO, "Doing screenshot.");
+        MyLogger.log(RecorderService.class.getName(), Level.INFO, "Doing screenshot.");
         String screenshotFilename = this.generateScreenshotFilename(test, testCase, step, sequence, controlString, null, "jpg");
 
         this.seleniumService.doScreenShot(testCaseExecution.getSelenium(), Long.toString(testCaseExecution.getId()), screenshotFilename);
         String screenshotPath = Long.toString(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getId()) + File.separator + screenshotFilename;
-        MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Screenshot done in : " + screenshotPath);
+        MyLogger.log(RecorderService.class.getName(), Level.DEBUG, "Screenshot done in : " + screenshotPath);
 
         return screenshotPath;
 
@@ -115,7 +115,7 @@ public class RecorderService implements IRecorderService {
     @Override
     public String recordXMLAndGetName(TestCaseExecution testCaseExecution, TestCaseStepActionExecution testCaseStepActionExecution, Integer control) {
 
-        MyLogger.log(RunTestCaseService.class.getName(), Level.INFO, "Saving File.");
+        MyLogger.log(RecorderService.class.getName(), Level.INFO, "Saving File.");
 
         String test = testCaseExecution.getTest();
         String testCase = testCaseExecution.getTestCase();
@@ -136,7 +136,6 @@ public class RecorderService implements IRecorderService {
         dir.mkdirs();
 
         File file = new File(dir.getAbsolutePath() + File.separator + screenshotFilename);
-        System.err.println(" FILE : " + file.getAbsolutePath());
 
         FileOutputStream fileOutputStream = null;
         try {
@@ -150,14 +149,14 @@ public class RecorderService implements IRecorderService {
         }
 
         String screenshotPath = Long.toString(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getId()) + File.separator + screenshotFilename;
-        MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Screenshot done in : " + screenshotPath);
+        MyLogger.log(RecorderService.class.getName(), Level.DEBUG, "Screenshot done in : " + screenshotPath);
 
         return screenshotPath;
     }
 
     @Override
     public String recordPageSourceAndGetName(TestCaseExecution testCaseExecution, TestCaseStepActionExecution testCaseStepActionExecution, Integer control) {
-        MyLogger.log(RunTestCaseService.class.getName(), Level.INFO, "Saving File.");
+        MyLogger.log(RecorderService.class.getName(), Level.INFO, "Saving File.");
 
         String test = testCaseExecution.getTest();
         String testCase = testCaseExecution.getTestCase();
@@ -177,7 +176,6 @@ public class RecorderService implements IRecorderService {
         dir.mkdirs();
 
         File file = new File(dir.getAbsolutePath() + File.separator + screenshotFilename);
-        System.err.println(" FILE : " + file.getAbsolutePath());
 
         FileOutputStream fileOutputStream = null;
         try {
@@ -191,7 +189,7 @@ public class RecorderService implements IRecorderService {
         }
 
         String screenshotPath = Long.toString(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getId()) + File.separator + screenshotFilename;
-        MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Screenshot done in : " + screenshotPath);
+        MyLogger.log(RecorderService.class.getName(), Level.DEBUG, "Screenshot done in : " + screenshotPath);
 
         return screenshotPath;
     }
@@ -200,7 +198,7 @@ public class RecorderService implements IRecorderService {
     public String recordSeleniumLogAndGetName(TestCaseExecution testCaseExecution) {
         
         if (testCaseExecution.getSeleniumLog()==2 || (testCaseExecution.getSeleniumLog()==1 && !testCaseExecution.getControlStatus().equals("OK"))){
-        MyLogger.log(RunTestCaseService.class.getName(), Level.INFO, "Saving File.");
+        MyLogger.log(RecorderService.class.getName(), Level.INFO, "Saving File.");
 
         String logFilename = "selenium_log.txt";
 
@@ -214,7 +212,6 @@ public class RecorderService implements IRecorderService {
         dir.mkdirs();
 
         File file = new File(dir.getAbsolutePath() + File.separator + logFilename);
-        System.err.println(" FILE : " + file.getAbsolutePath());
 
         FileOutputStream fileOutputStream = null;
         try {
@@ -236,7 +233,7 @@ public class RecorderService implements IRecorderService {
         }
 
         String seleniumLogPath = Long.toString(testCaseExecution.getId()) + File.separator + logFilename;
-        MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Log recorded in : " + logFilename);
+        MyLogger.log(RecorderService.class.getName(), Level.DEBUG, "Log recorded in : " + logFilename);
 
         return seleniumLogPath;
         }
@@ -289,7 +286,7 @@ public class RecorderService implements IRecorderService {
                         testCaseStepActionControlExecution.setScreenshotFilename(screenshotPath);
                     }
                 } else {
-                    MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Not Doing screenshot because connectivity with selenium server lost.");
+                    MyLogger.log(RecorderService.class.getName(), Level.DEBUG, "Not Doing screenshot because connectivity with selenium server lost.");
                 }
 
             } else if (applicationType.equals("WS")) {
@@ -301,7 +298,7 @@ public class RecorderService implements IRecorderService {
                 }
             }
         } else {
-            MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Not Doing screenshot because of the screenshot parameter or flag on the last Action result.");
+            MyLogger.log(RecorderService.class.getName(), Level.DEBUG, "Not Doing screenshot because of the screenshot parameter or flag on the last Action result.");
         }
 
         /**
@@ -322,7 +319,7 @@ public class RecorderService implements IRecorderService {
                         testCaseStepActionControlExecution.setPageSourceFilename(psPath);
                     }
                 } else {
-                    MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Not Doing screenshot because connectivity with selenium server lost.");
+                    MyLogger.log(RecorderService.class.getName(), Level.DEBUG, "Not Doing screenshot because connectivity with selenium server lost.");
                 }
             } else if (applicationType.equals("WS")) {
                 String screenshotPath = recordXMLAndGetName(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution(), testCaseStepActionExecution, controlNumber);
@@ -333,7 +330,7 @@ public class RecorderService implements IRecorderService {
                 }
             }
         } else {
-            MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Not getting page source because of the pageSource parameter or flag on the last Action result.");
+            MyLogger.log(RecorderService.class.getName(), Level.DEBUG, "Not getting page source because of the pageSource parameter or flag on the last Action result.");
         }
 
         if (testCaseStepActionExecution.getActionResultMessage().isGetPageSource()) {
