@@ -1788,18 +1788,27 @@
             $("img.property_ko").on("click", function(event) {
                 var propertyName = $(event.target).data("property-name");
                 var property = $("input.property_value[value='" + propertyName + "']");
-                if (property.data("usestep-step") !== null) {
+
+                if (property.data("usestep-step") != null 
+                        && property.data("usestep-step") != "") {
                     var useTest = property.data("usestep-test");
                     var useTestcase = property.data("usestep-testcase");
-                    var useStep = property.data("usestep-step");
                     $.get("./ImportPropertyOfATestCaseToAnOtherTestCase", {"fromtest": useTest, "fromtestcase": useTestcase,
-                        "totest": "<%=test%>", "totestcase": "<%=testcase%>",
-                        "property": propertyName}, function(data) {
-                        $("#UpdateTestCaseDetail").submit();
-                    });
+                            "totest": "<%=test%>", "totestcase": "<%=testcase%>",
+                            "property": propertyName}
+                        , function(data) {
+                            $("#UpdateTestCaseDetail").submit();
+                        }
+                    );
+                } else {
+                    $.get("./CreateNotDefinedProperty", {"totest": "<%=test%>", "totestcase": "<%=testcase%>",
+                            "property": propertyName}
+                        , function(data) {
+                            $("#UpdateTestCaseDetail").submit();
+                        }
+                    );
                 }
             });
-
         </script><%
 
     } catch (Exception e) {

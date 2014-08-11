@@ -21,7 +21,6 @@ package org.cerberus.servlet.testCase;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -31,10 +30,8 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.cerberus.dao.impl.TestCaseStepDAO;
 
 import org.cerberus.database.DatabaseSpring;
-import org.cerberus.entity.TestCaseCountry;
 import org.cerberus.entity.TestCaseCountryProperties;
 import org.cerberus.entity.TestCaseStep;
 import org.cerberus.entity.TestCaseStepAction;
@@ -120,11 +117,16 @@ public class ImportTestCaseStep extends HttpServlet {
 
         MyLogger.log(ImportTestCaseStep.class.getName(), org.apache.log4j.Level.DEBUG, "Rewrite TestCaseStepAction");
         List<TestCaseStepAction> tcsaToImport = new ArrayList();
+        // retrieve list of property name used in the step
+        List<String> propertyNamesOfStep = new ArrayList<String>();
         for (TestCaseStepAction tcsa : fromTcsa) {
             tcsa.setTest(test);
             tcsa.setTestCase(testCase);
             tcsa.setStep(step);
             tcsaToImport.add(tcsa);
+            if (!propertyNamesOfStep.contains(tcsa.getProperty())) {
+                propertyNamesOfStep.add(tcsa.getProperty());
+            }
         }
 
         MyLogger.log(ImportTestCaseStep.class.getName(), org.apache.log4j.Level.DEBUG, "Rewrite TestCaseStepActionControl");
@@ -149,9 +151,11 @@ public class ImportTestCaseStep extends HttpServlet {
                     for (String country : tccListString) {
                         tccpList = testCaseCountryProperties.findListOfPropertyPerTestTestCaseCountry(fromTest, fromTestCase, country);
                         for (TestCaseCountryProperties tccp : tccpList) {
-                            tccp.setTest(test);
-                            tccp.setTestCase(testCase);
-                            tccpToImport.add(tccp);
+                            if (propertyNamesOfStep.contains(tccp.getProperty())) {
+                                tccp.setTest(test);
+                                tccp.setTestCase(testCase);
+                                tccpToImport.add(tccp);
+                            }
                         }
                     }
                 }
