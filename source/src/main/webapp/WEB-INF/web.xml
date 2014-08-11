@@ -518,6 +518,10 @@
         <servlet-class>org.cerberus.servlet.testCase.ImportPropertyOfATestCaseToAnOtherTestCase</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>CreateNotDefinedProperty</servlet-name>
+        <servlet-class>org.cerberus.servlet.testCase.CreateNotDefinedProperty</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>UseTestCaseStep</servlet-name>
         <servlet-class>org.cerberus.servlet.testCase.UseTestCaseStep</servlet-class>
     </servlet>
@@ -1022,6 +1026,10 @@
         <url-pattern>/ImportPropertyOfATestCaseToAnOtherTestCase</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
+        <servlet-name>CreateNotDefinedProperty</servlet-name>
+        <url-pattern>/CreateNotDefinedProperty</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
         <servlet-name>UseTestCaseStep</servlet-name>
         <url-pattern>/UseTestCaseStep</url-pattern>
     </servlet-mapping>
@@ -1159,6 +1167,8 @@
             <url-pattern>/UpdateTestCaseDetail</url-pattern>
             <url-pattern>/ImportSeleniumIDE</url-pattern>
             <url-pattern>/ImportTestCaseStep</url-pattern>
+            <url-pattern>/ImportPropertyOfATestCaseToAnOtherTestCase</url-pattern>
+            <url-pattern>/CreateNotDefinedProperty</url-pattern>
             <url-pattern>/CreateTestData</url-pattern>
             <url-pattern>/DeleteTestData</url-pattern>
             <url-pattern>/UpdateTestData</url-pattern>
