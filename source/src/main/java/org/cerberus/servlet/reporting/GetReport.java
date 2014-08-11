@@ -29,6 +29,12 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+/**
+ * Build data for detail table and calculate data dor statistics tables
+ *
+ * @version 1.0
+ * @since 2014-05-27
+ */
 @WebServlet(name = "GetReport", urlPatterns = {"/GetReport"})
 @Component
 public class GetReport extends HttpServlet {
@@ -42,13 +48,13 @@ public class GetReport extends HttpServlet {
         this.testCaseExecutionService = applicationContext.getBean(ITestCaseExecutionService.class);
         IInvariantService invariantService = applicationContext.getBean(IInvariantService.class);
 
+        //Get all input parameters from user form
         TCase tCase = this.getTestCaseFromRequest(req);
-
-        //TODO only keep the last parameter
+        //TODO only keeping the last parameter
         String environment = this.getValue(req, "Environment");
-        //TODO only keep the last parameter
+        //TODO only keeping the last parameter
         String build = this.getValue(req, "Build");
-        //TODO only keep the last parameter
+        //TODO only keeping the last parameter
         String revision = this.getValue(req, "Revision");
         String ip = this.getValue(req, "Ip");
         String port = this.getValue(req, "Port");
@@ -58,21 +64,27 @@ public class GetReport extends HttpServlet {
         String[] countries = req.getParameterValues("Country");
         String[] browsers = req.getParameterValues("Browser");
 
+        //Get all test cases that match the user input
         List<TCase> list = testCaseService.findTestCaseByAllCriteria(tCase, "", system);
 
+        //Create object to be filled and then added to JSON response
         JSONArray data = new JSONArray();
         Map<String, Map<String, Map<String, Integer>>> mapTests = new LinkedHashMap<String, Map<String, Map<String, Integer>>>();
         Map<String, Map<String, Integer>> mapGroups = new LinkedHashMap<String, Map<String, Integer>>();
         Map<String, Map<String, Integer>> mapStatus = new LinkedHashMap<String, Map<String, Integer>>();
         try {
+            //Get invariant for know the columns
             List<Invariant> tceStatus = invariantService.findListOfInvariantById("TCESTATUS");
             List<Invariant> tcGroups = invariantService.findListOfInvariantById("GROUP");
+            //removed first item because is empty
             tcGroups.remove(0);
             List<Invariant> tcStatus = invariantService.findListOfInvariantById("TCSTATUS");
 
-            this.getDataToMap(list, countries, browsers, tceStatus, mapTests, mapGroups, mapStatus, data, environment,
+            //Build data for detail table and calculate data dor statistics tables
+            this.calculateStatistics(list, countries, browsers, tceStatus, mapTests, mapGroups, mapStatus, data, environment,
                     build, revision, browserVersion, ip, port, tag);
 
+            //Build JSON response
             JSONObject json = new JSONObject();
             json.put("statistic", this.getJSONObjectFromMap(mapTests));
             json.put("groups", this.getJSONObjectFromMap(mapGroups, tcGroups));
@@ -80,6 +92,8 @@ public class GetReport extends HttpServlet {
             json.put("aaData", data);
             json.put("iTotalRecords", data.length());
             json.put("iTotalDisplayRecords", data.length());
+
+            //Return JSON response
             resp.setContentType("application/json");
             resp.getWriter().print(json.toString());
 
@@ -90,6 +104,12 @@ public class GetReport extends HttpServlet {
         }
     }
 
+    /**
+     * Map all input from form page to a TCase object
+     *
+     * @param req http request with all form input
+     * @return TCase object with information of form
+     */
     private TCase getTestCaseFromRequest(HttpServletRequest req) {
         String test = this.getValues(req, "Test");
         String project = this.getValues(req, "Project");
@@ -114,6 +134,13 @@ public class GetReport extends HttpServlet {
                 status, null, null, null, active, null, null, null, null, null, null, targetBuild, targetRev, comment, null, null, null, null);
     }
 
+    /**
+     * Get value from request parameter.
+     *
+     * @param req       http request with all form input
+     * @param valueName name of the parameter to return
+     * @return value of parameter or null if parameter null or 'All'
+     */
     private String getValue(HttpServletRequest req, String valueName) {
         String value = null;
         if (req.getParameter(valueName) != null && !req.getParameter(valueName).equalsIgnoreCase("All")) {
@@ -122,6 +149,13 @@ public class GetReport extends HttpServlet {
         return value;
     }
 
+    /**
+     * Convert list of values from request parameter to string.
+     *
+     * @param req       http request with all form input
+     * @param valueName name of the parameter to return
+     * @return string containing all values of parameter or null if parameter null
+     */
     private String getValues(HttpServletRequest req, String valueName) {
         StringBuilder whereClause = new StringBuilder();
         String[] values = req.getParameterValues(valueName);
@@ -143,6 +177,18 @@ public class GetReport extends HttpServlet {
         return null;
     }
 
+    /**
+     * Convert map object to JSONObject, with all columns of list
+     * <p/>
+     * Convert Map object Map<Test, Map<Column, Value>>} to JSONObject
+     * {'aaData', [[Test 1, Value of Column 1, ..., Value of Column N, Total 1], ..., [Test N, Value of Column 1, ..., Value of Column N, Total N]]}
+     * This JSONObject will be decoded by Datatables plugin and converted to dynamic table.
+     *
+     * @param map     map object Map<Test, Map<Column, Value>>
+     * @param invList list of Invariant corresponding to the columns of the table
+     * @return JSONObject with the array to populate the table
+     * @throws JSONException
+     */
     private JSONObject getJSONObjectFromMap(Map<String, Map<String, Integer>> map, List<Invariant> invList) throws JSONException {
         JSONObject statistic = new JSONObject();
         JSONArray array = new JSONArray();
@@ -150,11 +196,11 @@ public class GetReport extends HttpServlet {
             JSONArray arr = new JSONArray();
             arr.put(entry.getKey());
             int total = 0;
-            for (Invariant inv : invList){
-                if (entry.getValue().containsKey(inv.getValue())){
+            for (Invariant inv : invList) {
+                if (entry.getValue().containsKey(inv.getValue())) {
                     arr.put(entry.getValue().get(inv.getValue()));
                     total += entry.getValue().get(inv.getValue());
-                } else{
+                } else {
                     arr.put("");
                 }
             }
@@ -165,6 +211,13 @@ public class GetReport extends HttpServlet {
         return statistic;
     }
 
+    /**
+     * Convert map object to JSONObject
+     *
+     * @param map object Map<Test, Map<Country, Map<Column, Value>>>
+     * @return JSONObject with the array to populate the table
+     * @throws JSONException
+     */
     private JSONObject getJSONObjectFromMap(Map<String, Map<String, Map<String, Integer>>> map) throws JSONException {
         JSONObject statistic = new JSONObject();
 
@@ -187,13 +240,18 @@ public class GetReport extends HttpServlet {
         return statistic;
     }
 
-    private void incrementMapValue(Map<String, Integer> map, Map<String, Integer> total, String value){
+    /**
+     * @param map   map that keep the values to count
+     * @param total map that keep the total to count
+     * @param value string to increment
+     */
+    private void incrementMapValue(Map<String, Integer> map, Map<String, Integer> total, String value) {
         if (map.containsKey(value)) {
             map.put(value, map.get(value) + 1);
             total.put(value, total.get(value) + 1);
         } else {
             map.put(value, 1);
-            if (total.containsKey(value)){
+            if (total.containsKey(value)) {
                 total.put(value, total.get(value) + 1);
             } else {
                 total.put(value, 1);
@@ -201,10 +259,29 @@ public class GetReport extends HttpServlet {
         }
     }
 
-    private void getDataToMap(List<TCase> tCaseList, String[] countries, String[] browsers, List<Invariant> tceStatus,
-                        Map<String, Map<String, Map<String, Integer>>> mapTests, Map<String, Map<String, Integer>> mapGroups,
-                        Map<String, Map<String, Integer>> mapStatus, JSONArray data, String environment, String build,
-                        String revision, String browserVersion, String ip, String port, String tag) throws JSONException {
+    /**
+     * @param tCaseList      list of test cases to calculate statistics
+     * @param countries      array of countries to search testcaseexecution
+     * @param browsers       array of browsers to search testcaseexecution
+     * @param tceStatus      list of control status
+     * @param mapTests       map for countries and control status
+     * @param mapGroups      map for test cases groups
+     * @param mapStatus      map for test cases status
+     * @param data           JSONObject for details table
+     * @param environment    environment for test case execution filter
+     * @param build          build for test case execution filter
+     * @param revision       revision for test case execution filter
+     * @param browserVersion browser version for test case execution filter
+     * @param ip             ip of execution for test case execution filter
+     * @param port           port of execution for test case execution filter
+     * @param tag            tag for test case execution filter
+     * @throws JSONException
+     */
+    private void calculateStatistics(List<TCase> tCaseList, String[] countries, String[] browsers, List<Invariant> tceStatus,
+                                     Map<String, Map<String, Map<String, Integer>>> mapTests, Map<String, Map<String, Integer>> mapGroups,
+                                     Map<String, Map<String, Integer>> mapStatus, JSONArray data, String environment, String build,
+                                     String revision, String browserVersion, String ip, String port, String tag) throws JSONException {
+
         String oldTest = "";
         Map<String, Map<String, Integer>> map = new LinkedHashMap<String, Map<String, Integer>>();
         Map<String, Integer> group = new LinkedHashMap<String, Integer>();
@@ -214,12 +291,14 @@ public class GetReport extends HttpServlet {
         Map<String, Integer> groupTotal = new LinkedHashMap<String, Integer>();
         Map<String, Integer> statTotal = new LinkedHashMap<String, Integer>();
 
+        //loop for all test cases
         for (TCase tc : tCaseList) {
             if (!tc.getTest().equals(oldTest)) {
                 map = new LinkedHashMap<String, Map<String, Integer>>();
                 group = new LinkedHashMap<String, Integer>();
                 stat = new LinkedHashMap<String, Integer>();
             }
+            //Create new line on table
             JSONArray array = new JSONArray();
             array.put(tc.getTest());
             array.put(tc.getTestCase());
@@ -227,8 +306,12 @@ public class GetReport extends HttpServlet {
             array.put(tc.getShortDescription());
             array.put(tc.getPriority());
             array.put(tc.getStatus());
+
+            //loop for all countries to create country columns
             for (String country : countries) {
                 Map<String, Integer> status;
+
+                //get or initialize line of control status statistic table
                 if (!tc.getTest().equals(oldTest)) {
                     status = new LinkedHashMap<String, Integer>();
                     for (Invariant inv : tceStatus) {
@@ -237,7 +320,9 @@ public class GetReport extends HttpServlet {
                 } else {
                     status = mapTests.get(tc.getTest()).get(country);
                 }
-                if(mapTotal.containsKey(country)){
+
+                //get or initialize Total line of control status statistic table
+                if (mapTotal.containsKey(country)) {
                     statusTotal = mapTotal.get(country);
                 } else {
                     statusTotal = new LinkedHashMap<String, Integer>();
@@ -245,41 +330,58 @@ public class GetReport extends HttpServlet {
                         statusTotal.put(inv.getValue(), 0);
                     }
                 }
+
+                //loop for all browsers to create browser columns
                 for (String browser : browsers) {
+                    //get information of execution
                     TestCaseExecution tce = this.testCaseExecutionService.findLastTCExecutionByCriteria(tc.getTest(),
                             tc.getTestCase(), environment, country, build, revision, browser, browserVersion, ip, port, tag);
+
                     if (tce != null) {
+                        //send JSONObject to create link with jquery
                         JSONObject obj = new JSONObject();
                         obj.put("result", tce.getControlStatus());
                         obj.put("execID", tce.getId());
                         array.put(obj);
+
+                        //add date of execution
                         Date date = new Date(tce.getStart());
                         DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
                         array.put(formatter.format(date));
+
+                        //add 1 to Test/Country/Browser/ControlStatus counter
                         status.put(tce.getControlStatus(), status.get(tce.getControlStatus()) + 1);
+                        //add 1 to Test/Country/Browser/Total counter
                         statusTotal.put(tce.getControlStatus(), statusTotal.get(tce.getControlStatus()) + 1);
                     } else {
                         array.put("");
                         array.put("");
                     }
                 }
+                //add line to statistic table
                 map.put(country, status);
+                //store for TOTAL line
                 mapTotal.put(country, statusTotal);
             }
+
             array.put(tc.getComment());
             array.put(tc.getBugID() + "for " + tc.getTargetSprint() + "/" + tc.getTargetRevision());
             array.put(tc.getGroup());
-
+            //add line to detail table
             data.put(array);
 
+            //add 1 to Total counter (groups and status)
             this.incrementMapValue(group, groupTotal, tc.getGroup());
             this.incrementMapValue(stat, statTotal, tc.getStatus());
+
+            //store statistics lines on table
             mapTests.put(tc.getTest(), map);
             mapGroups.put(tc.getTest(), group);
             mapStatus.put(tc.getTest(), stat);
 
             oldTest = tc.getTest();
         }
+        //add TOTAL lines to tables
         mapTests.put("TOTAL", mapTotal);
         mapGroups.put("TOTAL", groupTotal);
         mapStatus.put("TOTAL", statTotal);
