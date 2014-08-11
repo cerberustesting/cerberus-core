@@ -112,7 +112,7 @@ public class UseTestCaseStep extends HttpServlet {
              */
             // retrieve list of property name used in the step
             List<String> propertyNamesOfStep = new ArrayList<String>();
-            List<TestCaseStepAction> testCaseStepActions = testCaseStepActionService.getListOfAction(fromTest, fromTestCase, step);
+            List<TestCaseStepAction> testCaseStepActions = testCaseStepActionService.getListOfAction(fromTest, fromTestCase, fromStep);
             for (TestCaseStepAction action : testCaseStepActions) {
                 if (!propertyNamesOfStep.contains(action.getProperty())) {
                     propertyNamesOfStep.add(action.getProperty());
@@ -122,7 +122,7 @@ public class UseTestCaseStep extends HttpServlet {
             MyLogger.log(ImportTestCaseStep.class.getName(), org.apache.log4j.Level.DEBUG, "Rewrite TestCaseCountryProperties");
             if (tccListString != null) {
                 tccListString.retainAll(tccFromListString);
-                if (!tccListString.isEmpty() && !propertyNamesOfStep.isEmpty()) {
+                if (tccListString.size() > 0 && propertyNamesOfStep.size() > 0) {
                     List<TestCaseCountryProperties> tccpToImport = new ArrayList();
                     for (String country : tccListString) {
                         tccpList = testCaseCountryProperties.findListOfPropertyPerTestTestCaseCountry(fromTest, fromTestCase, country);
