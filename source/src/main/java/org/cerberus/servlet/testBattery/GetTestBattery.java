@@ -57,6 +57,7 @@ public class GetTestBattery extends HttpServlet {
 
         String action = policy.sanitize(request.getParameter("action"));
         String testBattery = policy.sanitize(request.getParameter("testBattery"));
+        String testBatteryName = policy.sanitize(request.getParameter("testBatteryName"));
 
         try {
             JSONObject jsonResponse = new JSONObject();
@@ -64,7 +65,10 @@ public class GetTestBattery extends HttpServlet {
                 if (action != null && "findAllTestBattery".equals(action.trim())) {
                     jsonResponse.put("TestBatteries", findAllTestBatteryToJSON());
                 } else if (action != null && "findAllTestBatteryContent".equals(action.trim())) {
-                    jsonResponse.put("TestBatteryContents", findAllTestBatteryContentToJSON(testBatteryService.findTestBatteryByKey(Integer.parseInt(testBattery)).getTestbattery()));
+                    if (testBatteryName == null || "".equals(testBatteryName)) {
+                        testBatteryName = testBatteryService.findTestBatteryByKey(Integer.parseInt(testBattery)).getTestbattery();
+                    }
+                    jsonResponse.put("TestBatteryContents", findAllTestBatteryContentToJSON(testBatteryName));
                 }
             } catch (CerberusException ex) {
                 response.setContentType("text/html");
