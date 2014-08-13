@@ -626,16 +626,16 @@ public class SeleniumService implements ISeleniumService {
             URL sessionURL = new URL("http://" + selenium.getHost() + ":" + selenium.getPort() + "/grid/api/testsession?session=" + sessionId);
             BasicHttpEntityEnclosingRequest r = new BasicHttpEntityEnclosingRequest("POST", sessionURL.toExternalForm());
             HttpResponse response = client.execute(host, r);
-            if (!response.getStatusLine().toString().contains("403")){
-            InputStream contents = response.getEntity().getContent();
-            StringWriter writer = new StringWriter();
-            IOUtils.copy(contents, writer, "UTF8");
-            JSONObject object = new JSONObject(writer.toString());
-            URL myURL = new URL(object.getString("proxyId"));
-            if ((myURL.getHost() != null) && (myURL.getPort() != -1)) {
-                tCExecution.setIp(myURL.getHost());
-                tCExecution.setPort(String.valueOf(myURL.getPort()));
-            }
+            if (!response.getStatusLine().toString().contains("403")) {
+                InputStream contents = response.getEntity().getContent();
+                StringWriter writer = new StringWriter();
+                IOUtils.copy(contents, writer, "UTF8");
+                JSONObject object = new JSONObject(writer.toString());
+                URL myURL = new URL(object.getString("proxyId"));
+                if ((myURL.getHost() != null) && (myURL.getPort() != -1)) {
+                    tCExecution.setIp(myURL.getHost());
+                    tCExecution.setPort(String.valueOf(myURL.getPort()));
+                }
             }
 
         } catch (IOException ex) {
