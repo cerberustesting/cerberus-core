@@ -138,9 +138,6 @@ public class FindAllUsers extends HttpServlet {
             }
             if (sAmount != null) {
                 amount = Integer.parseInt(sAmount);
-                if (amount < 10 || amount > 100) {
-                    amount = 10;
-                }
             }
 
             if (sCol != null) {
