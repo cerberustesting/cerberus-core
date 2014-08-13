@@ -356,7 +356,11 @@ public class ExecutionRunService implements IExecutionRunService {
          * Stop Execution
          */
         MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, tCExecution.getId() + " - Stop the execution "+tCExecution.getId()+" UUID:"+tCExecution.getExecutionUUID());
-        this.stopRunTestCase(tCExecution);
+        try {
+            this.stopRunTestCase(tCExecution);
+        } catch (Exception ex) {
+            MyLogger.log(ExecutionRunService.class.getName(), Level.FATAL, "Exception Stopping Execution "+tCExecution.getId()+" Exception :" + ex.toString());
+        }
 
         /**
          * Collecting and calculating Statistics.
