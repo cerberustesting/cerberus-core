@@ -3714,6 +3714,13 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("DROP PRIMARY KEY, ADD PRIMARY KEY (`key`, `Environment`, `Country`, `Application`);");
         SQLInstruction.add(SQLS.toString());
 
+// Increase soaplibray's name column size from 45 to 255.
+//-- ------------------------ 520
+		SQLS = new StringBuilder();
+		SQLS.append("ALTER TABLE `soaplibrary` ");
+		SQLS.append("CHANGE COLUMN `Name` `Name` VARCHAR(255) NOT NULL DEFAULT '' ;");
+		SQLInstruction.add(SQLS.toString());
+        
         return SQLInstruction;
     }
 }
