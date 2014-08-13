@@ -709,7 +709,9 @@
                             LastExeMessage = LastExeMessage + " in "
                                     + rs_testcase_last_exe.getString("Environment") + " in "
                                     + rs_testcase_last_exe.getString("Country") + " on "
-                                    + rs_testcase_last_exe.getString("End");
+                                    + rs_testcase_last_exe.getString("End")
+                                    + "<a width : 390px ; href=\"RunTests.jsp?Test=" + test + "&TestCase=" + testcase + "&MySystem=" + appSystem 
+                                    + "&Country=" + rs_testcase_last_exe.getString("Country") + "&Environment=" + rs_testcase_last_exe.getString("Environment") + "\"><i> (Run it again) </i></a>";
                         }
                         if ((rs_testcase_general_info.getString("tc.BugID") != null)
                                 && (rs_testcase_general_info.getString("tc.BugID").compareToIgnoreCase("") != 0)
