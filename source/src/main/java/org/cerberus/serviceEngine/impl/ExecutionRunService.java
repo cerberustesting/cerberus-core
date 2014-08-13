@@ -147,7 +147,7 @@ public class ExecutionRunService implements IExecutionRunService {
                 myExeSysVer = factoryTestCaseExecutionSysVer.create(runID, tCExecution.getApplication().getSystem(), tCExecution.getBuild(), tCExecution.getRevision());
                 testCaseExecutionSysVerService.insertTestCaseExecutionSysVer(myExeSysVer);
             } catch (CerberusException ex) {
-                MyLogger.log(RunTestCaseService.class.getName(), Level.INFO, ex.getMessage());
+                MyLogger.log(ExecutionRunService.class.getName(), Level.INFO, ex.getMessage());
             }
 
             /**
@@ -157,9 +157,9 @@ public class ExecutionRunService implements IExecutionRunService {
             try {
                 List<CountryEnvLink> ceLink = null;
                 ceLink = countryEnvLinkService.findCountryEnvLinkByCriteria(tCExecution.getApplication().getSystem(), tCExecution.getCountry(), tCExecution.getEnvironment());
-                MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, tCExecution.getId() + " - Linked environment found.");
+                MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, tCExecution.getId() + " - Linked environment found.");
                 for (CountryEnvLink myCeLink : ceLink) {
-                    MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, tCExecution.getId() + " - Linked environment found : " + myCeLink.getSystemLink() + myCeLink.getCountryLink() + myCeLink.getEnvironmentLink());
+                    MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, tCExecution.getId() + " - Linked environment found : " + myCeLink.getSystemLink() + myCeLink.getCountryLink() + myCeLink.getEnvironmentLink());
 
                     CountryEnvParam mycountEnvParam;
                     try {
@@ -168,12 +168,12 @@ public class ExecutionRunService implements IExecutionRunService {
                         testCaseExecutionSysVerService.insertTestCaseExecutionSysVer(myExeSysVer);
                     } catch (CerberusException ex) {
                         // Referencial Integrity link between countryEnvLink and CountryEnvParam table should secure that exception to never happen.
-                        MyLogger.log(RunTestCaseService.class.getName(), Level.FATAL, ex.getMessage());
+                        MyLogger.log(ExecutionRunService.class.getName(), Level.FATAL, ex.getMessage());
                         throw new CerberusException(ex.getMessageError());
                     }
                 }
             } catch (CerberusException ex) {
-                MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, tCExecution.getId() + " - No Linked environment found.");
+                MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, tCExecution.getId() + " - No Linked environment found.");
             }
         }
 
@@ -187,7 +187,7 @@ public class ExecutionRunService implements IExecutionRunService {
                 tCExecution.setVersion(caps.getVersion());
                 tCExecution.setPlatform(caps.getPlatform().toString());
             } catch (Exception ex) {
-                MyLogger.log(RunTestCaseService.class.getName(), Level.ERROR, "exception on selenium getting Used Capabilities :" + ex.toString());
+                MyLogger.log(ExecutionRunService.class.getName(), Level.ERROR, "exception on selenium getting Used Capabilities :" + ex.toString());
             }
         } else {
             // If Selenium is not needed, the selenium and browser info is set to empty.
@@ -203,26 +203,26 @@ public class ExecutionRunService implements IExecutionRunService {
          * TestCaseExecution object
          */
         tCExecution.setResultMessage(new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_LOADINGDETAILEDDATA));
-        MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, runID + " - Loading Pre testcases.");
+        MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, runID + " - Loading Pre testcases.");
         List<TCase> preTests = testCaseService.findTestCaseActiveByCriteria("Pre Testing", tCExecution.gettCase().getApplication(), tCExecution.getCountry());
         tCExecution.setPreTCase(preTests);
         if (!(preTests == null)) {
-            MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, runID + " - Loaded PreTest List. " + tCExecution.getPreTCase().size() + " found.");
+            MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, runID + " - Loaded PreTest List. " + tCExecution.getPreTCase().size() + " found.");
         }
 
         /**
          * Load Main TestCase with Step dependencies (Actions/Control)
          */
-        MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, runID + " - Loading all Steps information of main testcase.");
+        MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, runID + " - Loading all Steps information of main testcase.");
         List<TestCaseStep> testCaseStepList;
         testCaseStepList = this.loadTestCaseService.loadTestCaseStep(tCExecution.gettCase());
         tCExecution.gettCase().setTestCaseStep(testCaseStepList);
-        MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, runID + " - Loaded all Steps information of main testcase. " + tCExecution.gettCase().getTestCaseStep().size() + " Step(s) found.");
+        MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, runID + " - Loaded all Steps information of main testcase. " + tCExecution.gettCase().getTestCaseStep().size() + " Step(s) found.");
 
         /**
          * Load Pre TestCase with Step dependencies (Actions/Control)
          */
-        MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, runID + " - Loading all Steps information of all pre testcase.");
+        MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, runID + " - Loading all Steps information of all pre testcase.");
         //TODO Pretest this.loadTestCaseService.loadTestCaseStep(tCExecution.getPreTCase());
         List<TestCaseStep> preTestCaseStepList = new ArrayList<TestCaseStep>();
         List<TCase> preTestCase = new ArrayList<TCase>();
@@ -230,7 +230,7 @@ public class ExecutionRunService implements IExecutionRunService {
             myTCase.setTestCaseStep(this.loadTestCaseService.loadTestCaseStep(myTCase));
             preTestCaseStepList.addAll(myTCase.getTestCaseStep());
             preTestCase.add(myTCase);
-            MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, runID + " - Pre testcase : " + myTCase.getTest() + "-" + myTCase.getTestCase() + " With " + myTCase.getTestCaseStep().size() + " Step(s) found.");
+            MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, runID + " - Pre testcase : " + myTCase.getTest() + "-" + myTCase.getTestCase() + " With " + myTCase.getTestCaseStep().size() + " Step(s) found.");
         }
         tCExecution.setPreTCase(preTestCase);
 
@@ -240,7 +240,7 @@ public class ExecutionRunService implements IExecutionRunService {
          * execute for both pretest and test. This is where we schedule the
          * execution of the steps using mainExecutionTestCaseStepList object.
          */
-        MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, runID + " - Starting the execution with step iteration.");
+        MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, runID + " - Starting the execution with step iteration.");
         List<TestCaseStep> mainExecutionTestCaseStepList;
         mainExecutionTestCaseStepList = new ArrayList<TestCaseStep>();
         mainExecutionTestCaseStepList.addAll(preTestCaseStepList);
@@ -254,7 +254,7 @@ public class ExecutionRunService implements IExecutionRunService {
         try {
             testCaseExecutionService.updateTCExecution(tCExecution);
         } catch (CerberusException ex) {
-            Logger.getLogger(RunTestCaseService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            Logger.getLogger(ExecutionRunService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         List<TestCaseExecutionData> myExecutionDataList = new ArrayList<TestCaseExecutionData>();
         tCExecution.setTestCaseExecutionDataList(myExecutionDataList);
@@ -279,7 +279,7 @@ public class ExecutionRunService implements IExecutionRunService {
             /**
              * Execute Step
              */
-            MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, runID + " - Executing step : " + testCaseStepExecution.getTest() + "-" + testCaseStepExecution.getTestCase() + "-" + testCaseStepExecution.getStep());
+            MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, runID + " - Executing step : " + testCaseStepExecution.getTest() + "-" + testCaseStepExecution.getTestCase() + "-" + testCaseStepExecution.getStep());
             testCaseStepExecution = this.executeStep(testCaseStepExecution);
 
             /**
@@ -319,31 +319,31 @@ public class ExecutionRunService implements IExecutionRunService {
         try {
         recorderService.recordSeleniumLogAndGetName(tCExecution);
         } catch (Exception ex){
-            MyLogger.log(RunTestCaseService.class.getName(), Level.FATAL, "Exception Getting Selenium Logs "+tCExecution.getId()+" Exception :" + ex.toString());
+            MyLogger.log(ExecutionRunService.class.getName(), Level.FATAL, "Exception Getting Selenium Logs "+tCExecution.getId()+" Exception :" + ex.toString());
         }
 
         try {
             tCExecution = this.stopTestCase(tCExecution);
         } catch (Exception ex) {
-            MyLogger.log(RunTestCaseService.class.getName(), Level.FATAL, "Exception Stopping Test "+tCExecution.getId()+" Exception :" + ex.toString());
+            MyLogger.log(ExecutionRunService.class.getName(), Level.FATAL, "Exception Stopping Test "+tCExecution.getId()+" Exception :" + ex.toString());
         }
 
         try {
             if (!tCExecution.isSynchroneous()) {
                 if (executionUUID.getExecutionID(tCExecution.getExecutionUUID()) != 0) {
                     executionUUID.removeExecutionUUID(tCExecution.getExecutionUUID());
-                    MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Clean ExecutionUUID");
+                    MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, "Clean ExecutionUUID");
                 }
                 if (eSResponse.getExecutionSOAPResponse(tCExecution.getExecutionUUID()) != null) {
                     eSResponse.removeExecutionSOAPResponse(tCExecution.getExecutionUUID());
-                    MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Clean ExecutionSOAPResponse");
+                    MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, "Clean ExecutionSOAPResponse");
                 }
             }
         } catch (Exception ex) {
-            MyLogger.log(RunTestCaseService.class.getName(), Level.FATAL, "Exception cleaning Memory: " + ex.toString());
+            MyLogger.log(ExecutionRunService.class.getName(), Level.FATAL, "Exception cleaning Memory: " + ex.toString());
         }
 
-        MyLogger.log(RunTestCaseService.class.getName(), Level.INFO, "Execution Finished : UUID=" + tCExecution.getExecutionUUID() + "__ID=" + tCExecution.getId() + "__RC=" + tCExecution.getControlStatus());
+        MyLogger.log(ExecutionRunService.class.getName(), Level.INFO, "Execution Finished : UUID=" + tCExecution.getExecutionUUID() + "__ID=" + tCExecution.getId() + "__RC=" + tCExecution.getControlStatus());
 
         return tCExecution;
 
@@ -355,7 +355,7 @@ public class ExecutionRunService implements IExecutionRunService {
         /**
          * Stop Execution
          */
-        MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, tCExecution.getId() + " - Stop the execution "+tCExecution.getId()+" UUID:"+tCExecution.getExecutionUUID());
+        MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, tCExecution.getId() + " - Stop the execution "+tCExecution.getId()+" UUID:"+tCExecution.getExecutionUUID());
         this.stopRunTestCase(tCExecution);
 
         /**
@@ -364,7 +364,7 @@ public class ExecutionRunService implements IExecutionRunService {
         try {
             this.collectExecutionStats(tCExecution);
         } catch (Exception ex) {
-            MyLogger.log(RunTestCaseService.class.getName(), Level.FATAL, "Exception collecting stats for execution "+tCExecution.getId()+" Exception:" + ex.toString());
+            MyLogger.log(ExecutionRunService.class.getName(), Level.FATAL, "Exception collecting stats for execution "+tCExecution.getId()+" Exception:" + ex.toString());
         }
 
         /**
@@ -375,7 +375,7 @@ public class ExecutionRunService implements IExecutionRunService {
         try {
             testCaseExecutionService.updateTCExecution(tCExecution);
         } catch (CerberusException ex) {
-            MyLogger.log(RunTestCaseService.class.getName(), Level.FATAL, "Exception updating Execution :"+tCExecution.getId()+" Exception:" + ex.toString());
+            MyLogger.log(ExecutionRunService.class.getName(), Level.FATAL, "Exception updating Execution :"+tCExecution.getId()+" Exception:" + ex.toString());
         }
 
         return tCExecution;
@@ -392,7 +392,7 @@ public class ExecutionRunService implements IExecutionRunService {
          * Iterate Actions
          */
         List<TestCaseStepAction> testCaseStepActionList = testCaseStepExecution.getTestCaseStep().getTestCaseStepAction();
-        MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Getting list of actions of the step. " + testCaseStepActionList.size() + " action(s) to perform.");
+        MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, "Getting list of actions of the step. " + testCaseStepActionList.size() + " action(s) to perform.");
 
         for (TestCaseStepAction testCaseStepAction : testCaseStepActionList) {
 
@@ -429,7 +429,7 @@ public class ExecutionRunService implements IExecutionRunService {
                 /**
                  * Only calculate property if it is feed.
                  */
-                MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Calculating property : " + propertyToCalculate);
+                MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, "Calculating property : " + propertyToCalculate);
                 /**
                  * Calculating the data (Property).
                  */
@@ -449,7 +449,7 @@ public class ExecutionRunService implements IExecutionRunService {
                      */
                     testCaseStepActionExecution.setProperty(testCaseExecutionData.getValue());
                     testCaseStepActionExecution.setPropertyName(testCaseExecutionData.getProperty());
-                    MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Executing action : " + testCaseStepActionExecution.getAction() + " with property : " + testCaseStepActionExecution.getProperty());
+                    MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, "Executing action : " + testCaseStepActionExecution.getAction() + " with property : " + testCaseStepActionExecution.getProperty());
                     testCaseStepActionExecution = this.executeAction(testCaseStepActionExecution);
                 } else {
                     /**
@@ -480,16 +480,16 @@ public class ExecutionRunService implements IExecutionRunService {
                      */
                     recorderService.recordExecutionInformation(testCaseStepActionExecution, null);
 
-                    MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Registering Action : " + testCaseStepActionExecution.getAction());
+                    MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, "Registering Action : " + testCaseStepActionExecution.getAction());
                     this.testCaseStepActionExecutionService.updateTestCaseStepActionExecution(testCaseStepActionExecution);
-                    MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Registered Action");
+                    MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, "Registered Action");
 
                 }
             } else {
                 /**
                  * If no property defined, we just execute the action.
                  */
-                MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Executing action : " + testCaseStepActionExecution.getAction() + " without property.");
+                MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, "Executing action : " + testCaseStepActionExecution.getAction() + " without property.");
                 testCaseStepActionExecution = this.executeAction(testCaseStepActionExecution);
             }
 
@@ -526,9 +526,9 @@ public class ExecutionRunService implements IExecutionRunService {
         /**
          * Register Action in database
          */
-        MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Registering Action : " + testCaseStepActionExecution.getAction());
+        MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, "Registering Action : " + testCaseStepActionExecution.getAction());
         this.testCaseStepActionExecutionService.updateTestCaseStepActionExecution(testCaseStepActionExecution);
-        MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Registered Action");
+        MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, "Registered Action");
 
         if (testCaseStepActionExecution.isStopExecution()) {
             return testCaseStepActionExecution;
@@ -548,7 +548,7 @@ public class ExecutionRunService implements IExecutionRunService {
             /**
              * Create and Register TestCaseStepActionControlExecution
              */
-            MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Creating TestCaseStepActionControlExecution");
+            MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, "Creating TestCaseStepActionControlExecution");
             TestCaseStepActionControlExecution testCaseStepActionControlExecution
                     = factoryTestCaseStepActionControlExecution.create(testCaseStepActionExecution.getId(), testCaseStepActionControl.getTest(),
                             testCaseStepActionControl.getTestCase(), testCaseStepActionControl.getStep(), testCaseStepActionControl.getSequence(), testCaseStepActionControl.getControl(),
@@ -556,7 +556,7 @@ public class ExecutionRunService implements IExecutionRunService {
                             testCaseStepActionControl.getFatal(), startControl, 0, 0, 0, null, null, testCaseStepActionExecution, new MessageEvent(MessageEventEnum.CONTROL_PENDING));
             this.testCaseStepActionControlExecutionService.insertTestCaseStepActionControlExecution(testCaseStepActionControlExecution);
 
-            MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Executing control : " + testCaseStepActionControlExecution.getControl() + " type : " + testCaseStepActionControlExecution.getControlType());
+            MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, "Executing control : " + testCaseStepActionControlExecution.getControl() + " type : " + testCaseStepActionControlExecution.getControlType());
             testCaseStepActionControlExecution = executeControl(testCaseStepActionControlExecution);
 
             /**
@@ -587,8 +587,6 @@ public class ExecutionRunService implements IExecutionRunService {
 
         testCaseStepActionControlExecution = this.controlService.doControl(testCaseStepActionControlExecution);
 
-        testCaseStepActionControlExecution.getTestCaseStepActionExecution().getTestCaseStepExecution().gettCExecution();
-
         /**
          * Record Screenshot, PageSource
          */
@@ -597,9 +595,9 @@ public class ExecutionRunService implements IExecutionRunService {
         /**
          * Register Control in database
          */
-        MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Registering Control : " + testCaseStepActionControlExecution.getControl());
+        MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, "Registering Control : " + testCaseStepActionControlExecution.getControl());
         this.testCaseStepActionControlExecutionService.updateTestCaseStepActionControlExecution(testCaseStepActionControlExecution);
-        MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Registered Control");
+        MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, "Registered Control");
 
         return testCaseStepActionControlExecution;
     }
@@ -609,7 +607,7 @@ public class ExecutionRunService implements IExecutionRunService {
             try {
                 this.seleniumService.stopSeleniumServer(tCExecution.getSelenium());
             } catch (UnreachableBrowserException exception) {
-                MyLogger.log(RunTestCaseService.class.getName(), Level.FATAL, "Selenium didn't manage to close browser - " + exception.toString());
+                MyLogger.log(ExecutionRunService.class.getName(), Level.FATAL, "Selenium didn't manage to close browser - " + exception.toString());
             }
         }
         return tCExecution;
@@ -647,7 +645,7 @@ public class ExecutionRunService implements IExecutionRunService {
         /**
          * Find TestCaseCountryProperty from database.
          */
-        MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Getting TestCaseCountryProperty definition from database : " + test + "-" + testCase + "-" + country + "-" + propertyName);
+        MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, "Getting TestCaseCountryProperty definition from database : " + test + "-" + testCase + "-" + country + "-" + propertyName);
         TestCaseCountryProperties testCaseCountryProperty = null;
         try {
             testCaseCountryProperty = testCaseCountryPropertiesService.findTestCaseCountryPropertiesByKey(test, testCase, country, propertyName);
@@ -658,7 +656,7 @@ public class ExecutionRunService implements IExecutionRunService {
             testCaseExecutionData.setValue1(testCaseCountryProperty.getValue1());
             testCaseExecutionData.setValue2(testCaseCountryProperty.getValue2());
             testCaseExecutionData.setTestCaseCountryProperties(testCaseCountryProperty);
-            MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Calculating property : " + testCaseCountryProperty.getProperty());
+            MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, "Calculating property : " + testCaseCountryProperty.getProperty());
             testCaseExecutionData = this.propertyService.calculateProperty(testCaseExecutionData, testCaseStepActionExecution, testCaseCountryProperty);
             try {
                 /**
@@ -666,7 +664,7 @@ public class ExecutionRunService implements IExecutionRunService {
                  */
                 testCaseExecutionDataService.insertTestCaseExecutionData(testCaseExecutionData);
             } catch (CerberusException ex1) {
-                Logger.getLogger(RunTestCaseService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex1);
+                Logger.getLogger(ExecutionRunService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex1);
             }
 
         } catch (CerberusException ex) {
@@ -678,7 +676,7 @@ public class ExecutionRunService implements IExecutionRunService {
             try {
                 testCaseExecutionDataService.insertTestCaseExecutionData(testCaseExecutionData);
             } catch (CerberusException ex1) {
-                Logger.getLogger(RunTestCaseService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex1);
+                Logger.getLogger(ExecutionRunService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex1);
             }
         }
 
