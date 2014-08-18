@@ -417,7 +417,9 @@
                     <table id="stepTable" class="tableBorder" style="border-collapse: collapse">
                         <%
                         for (TestCaseStepExecution myStepData : stepList) {
-                                myKey++;
+                                if (!myStepData.getTest().equals("Pre Testing")){
+                                    myKey++;
+                                    }
                                 TestCaseStep myTCS;
                                 myTCS = testCaseStepService.findTestCaseStep(myStepData.getTest(), myStepData.getTestCase(), myStepData.getStep());
                                 String myTCSDesc = "";
@@ -453,7 +455,7 @@
                                    onclick="javascript:switchTableVisibleInvisible('actionTable<%=stepIdentifier%>', 'dropDownDownArrow<%=stepIdentifier%>');
                                            switchTableVisibleInvisible('dropDownUpArrow<%=stepIdentifier%>', 'dropDownDownArrow<%=stepIdentifier%>')"><img src="images/dropdown.gif"/></a>
                             </td>
-                            <td align="right"><a href="./TestCase.jsp?Test=<%=test%>&TestCase=<%=testCase%>&Load=Load#stepAnchor_<%=myKey%>"><%=DateUtil.getFormatedDate(myStepData.getFullStart())%>  >>  
+                            <td align="right"><a href="./TestCase.jsp?Test=<%=myStepData.getTest()%>&TestCase=<%=myStepData.getTestCase()%>&Load=Load#stepAnchor_<%=myKey%>"><%=DateUtil.getFormatedDate(myStepData.getFullStart())%>  >>  
                                 <%=DateUtil.getFormatedDate(myStepData.getFullEnd())%> (
                                 <%=styleMainTestCase1%><%=myStepData.getTest()%><%=styleMainTestCase2%> / 
                                 <%=styleMainTestCase1%><%=myStepData.getTestCase()%><%=styleMainTestCase2%> / 
