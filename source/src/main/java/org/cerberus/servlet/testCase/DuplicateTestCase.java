@@ -94,13 +94,13 @@ public class DuplicateTestCase extends HttpServlet {
                 if (!request.isUserInRole("TestAdmin") && testService.findTestByKey(newTest) == null) {
                     throw new CerberusException(new MessageGeneral(MessageGeneralEnum.GUI_TEST_CREATION_NOT_HAVE_RIGHT));
                 } else {
-                    if (testService.findTestByKey(newTest) == null){
-                    Test newT = testService.findTestByKey(test);
-                    newT.setTest(newTest);
-                    testService.createTest(newT);
+                    if (testService.findTestByKey(newTest) == null) {
+                        Test newT = testService.findTestByKey(test);
+                        newT.setTest(newTest);
+                        testService.createTest(newT);
                     }
                 }
-                
+
                 /**
                  * Insert TestCase
                  */
@@ -109,69 +109,64 @@ public class DuplicateTestCase extends HttpServlet {
                 newTc.setTest(newTest);
                 newTc.setTestCase(newTestCase);
                 testCaseService.createTestCase(newTc);
-                
+
                 /**
                  * Insert Countries
                  */
                 List<TestCaseCountry> newTccList = new ArrayList();
                 List<TestCaseCountry> tccList = testCaseCountryService.findTestCaseCountryByTestTestCase(test, testCase);
-                for (TestCaseCountry tcc : tccList){
-                tcc.setTest(newTest);
-                tcc.setTestCase(newTestCase);
-                newTccList.add(tcc);
-                testCaseCountryService.insertListTestCaseCountry(newTccList);
+                for (TestCaseCountry tcc : tccList) {
+                    tcc.setTest(newTest);
+                    tcc.setTestCase(newTestCase);
+                    newTccList.add(tcc);
+                    testCaseCountryService.insertListTestCaseCountry(newTccList);
                     /**
                      * Insert Properties
                      */
                     List<TestCaseCountryProperties> newTccpList = new ArrayList();
                     List<TestCaseCountryProperties> tccpList = testCaseCountryPropertiesService.findListOfPropertyPerTestTestCaseCountry(test, testCase, tcc.getCountry());
-                    for (TestCaseCountryProperties tccp : tccpList){
-                    tccp.setTest(newTest);
-                    tccp.setTestCase(newTestCase);
-                    newTccpList.add(tccp);
+                    for (TestCaseCountryProperties tccp : tccpList) {
+                        tccp.setTest(newTest);
+                        tccp.setTestCase(newTestCase);
+                        newTccpList.add(tccp);
                     }
                     testCaseCountryPropertiesService.insertListTestCaseCountryProperties(newTccpList);
                 }
-                
-                
-                
+
                 /**
                  * Insert Step
                  */
                 List<TestCaseStep> newTcsList = new ArrayList();
+                List<TestCaseStepAction> newTcsaList = new ArrayList();
+                List<TestCaseStepActionControl> newTcsacList = new ArrayList();
                 List<TestCaseStep> tcsList = testCaseStepService.getListOfSteps(test, testCase);
-                for (TestCaseStep tcs : tcsList){
-                tcs.setTest(newTest);
-                tcs.setTestCase(newTestCase);
-                newTcsList.add(tcs);
-                testCaseStepService.insertListTestCaseStep(newTcsList);
+                for (TestCaseStep tcs : tcsList) {
+                    tcs.setTest(newTest);
+                    tcs.setTestCase(newTestCase);
+                    newTcsList.add(tcs);
                     /**
                      * Insert Actions
                      */
-                    List<TestCaseStepAction> newTcsaList = new ArrayList();
                     List<TestCaseStepAction> tcsaList = testCaseStepActionService.getListOfAction(test, testCase, tcs.getStep());
-                    for (TestCaseStepAction tcsa : tcsaList){
-                    tcsa.setTest(newTest);
-                    tcsa.setTestCase(newTestCase);
-                    newTcsaList.add(tcsa);
-                    testCaseStepActionService.insertListTestCaseStepAction(newTcsaList);
+                    for (TestCaseStepAction tcsa : tcsaList) {
+                        tcsa.setTest(newTest);
+                        tcsa.setTestCase(newTestCase);
+                        newTcsaList.add(tcsa);
                         /**
                          * Insert Controls
                          */
-                        List<TestCaseStepActionControl> newTcsacList = new ArrayList();
                         List<TestCaseStepActionControl> tcsacList = testCaseStepActionControlService.findControlByTestTestCaseStepSequence(test, testCase, tcs.getStep(), tcsa.getSequence());
-                        for (TestCaseStepActionControl tcsac : tcsacList){
-                        tcsac.setTest(newTest);
-                        tcsac.setTestCase(newTestCase);
-                        newTcsacList.add(tcsac);
-                        testCaseStepActionControlService.insertListTestCaseStepActionControl(newTcsacList);
+                        for (TestCaseStepActionControl tcsac : tcsacList) {
+                            tcsac.setTest(newTest);
+                            tcsac.setTestCase(newTestCase);
+                            newTcsacList.add(tcsac);
                         }
-                        
                     }
-                    
                 }
-                
-                
+                testCaseStepService.insertListTestCaseStep(newTcsList);
+                testCaseStepActionService.insertListTestCaseStepAction(newTcsaList);
+                testCaseStepActionControlService.insertListTestCaseStepActionControl(newTcsacList);
+
                 /**
                  * Adding Log entry.
                  */
