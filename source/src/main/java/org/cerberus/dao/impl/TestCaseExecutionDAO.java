@@ -497,4 +497,68 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         }
         return result;
     }
+
+    @Override
+    public List<TestCaseExecution> findExecutionsByCampaignNameAndTag(String campaign, String tag) throws CerberusException {
+        List<TestCaseExecution> campaignTestCaseExecutions = null;
+        boolean throwException = false;
+        final String query = new StringBuffer("select tce.* ")
+                .append(" from testcaseexecution tce ")
+                .append(" inner join testbatterycontent tbc ")
+                .append(" on tbc.Test = tce.Test ")
+                .append(" and tbc.TestCase = tce.TestCase ")
+                .append(" inner join campaigncontent cc ")
+                .append(" on cc.testbattery = tbc.testbattery ")
+                .append(" where tag is not null ")
+                .append(" and cc.campaign = ? ")
+                .append(" and tag = ? ")
+                .append(" group by Test,TestCase ").toString();
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            try {
+                preStat.setString(1, campaign);
+                preStat.setString(2, tag);
+
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+                    if (!(resultSet.first())) {
+                        throwException = true;
+                    } else {
+                        campaignTestCaseExecutions = new ArrayList<TestCaseExecution>();
+                        do {
+                            campaignTestCaseExecutions.add(this.loadFromResultSet(resultSet));
+                        } while (resultSet.next());
+                    }
+                } catch (SQLException exception) {
+                    MyLogger.log(TestCaseExecutionDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                } finally {
+                    if (!(resultSet == null)) {
+                        resultSet.close();
+                    }
+                }
+            } catch (Exception exception) {
+                MyLogger.log(TestCaseExecutionDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            } finally {
+                preStat.close();
+            }
+        } catch (Exception exception) {
+            MyLogger.log(TestCaseExecutionDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(TestCaseExecutionDAO.class.getName(), Level.WARN, e.toString());
+            }
+        }
+        if (throwException) {
+            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.EXECUTION_FA));
+        }
+
+        return campaignTestCaseExecutions;
+    }
+
 }
