@@ -69,12 +69,8 @@ public class findEnvironmentByCriteria extends HttpServlet {
         ICountryEnvParamService ceService = appContext.getBean(ICountryEnvParamService.class);
 
         JSONArray array = new JSONArray();
-        for (CountryEnvParam ce : ceService.findActiveEnvironmentBySystemCountryApplication(system, country, application)) {
-                JSONObject jsonObject = new JSONObject();
-                jsonObject.put("environment", ce.getEnvironment());
-                jsonObject.put("build", ce.getBuild());
-                jsonObject.put("revision", ce.getRevision());
-                array.put(jsonObject);
+        for (JSONObject ce : ceService.findActiveEnvironmentBySystemCountryApplication(system, country, application)) {
+                array.put(ce);
         }
         response.setContentType("application/json");
         response.getWriter().print(array);

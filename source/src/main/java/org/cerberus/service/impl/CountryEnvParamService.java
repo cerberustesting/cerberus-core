@@ -21,6 +21,8 @@ package org.cerberus.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.cerberus.dao.ICountryEnvParamDAO;
 import org.cerberus.entity.CountryEnvParam;
 import org.cerberus.entity.CountryEnvironmentApplication;
@@ -29,6 +31,8 @@ import org.cerberus.factory.IFactoryCountryEnvParam;
 import org.cerberus.factory.IFactoryCountryEnvironmentApplication;
 import org.cerberus.service.ICountryEnvParamService;
 import org.cerberus.service.ICountryEnvironmentApplicationService;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -56,24 +60,36 @@ public class CountryEnvParamService implements ICountryEnvParamService {
     @Override
     public List<CountryEnvParam> findCountryEnvParamByCriteria(CountryEnvParam countryEnvParam) throws CerberusException {
         return countryEnvParamDao.findCountryEnvParamByCriteria(countryEnvParam);
-        
+
     }
 
     @Override
-    public List<CountryEnvParam> findActiveEnvironmentBySystemCountryApplication(String system, String country, String application) throws CerberusException {
-        List<CountryEnvParam> result = new ArrayList();
+    public List<JSONObject> findActiveEnvironmentBySystemCountryApplication(String system, String country, String application) throws CerberusException {
+        List<JSONObject> result = new ArrayList();
         CountryEnvParam countryEnvParam = countryEnvParamFactory.create(system, country, true);
         CountryEnvironmentApplication countryEnvironmentApplication = countryEnvironmentApplicationFactory.create(system, country, null, application, null, null, null);
 
         List<CountryEnvironmentApplication> ceaList = countryEnvironmentApplicationService.findCountryEnvironmentApplicationByCriteria(countryEnvironmentApplication);
         List<CountryEnvParam> ceList = this.findCountryEnvParamByCriteria(countryEnvParam);
 
-        for (CountryEnvironmentApplication cea : ceaList) {
-            for (CountryEnvParam ce : ceList) {
-                if (cea.getEnvironment().equals(ce.getEnvironment())) {
-                    result.add(ce);
+        try {
+            for (CountryEnvironmentApplication cea : ceaList) {
+                for (CountryEnvParam ce : ceList) {
+                    if (cea.getEnvironment().equals(ce.getEnvironment())) {
+
+                        JSONObject jsonObject = new JSONObject();
+                        jsonObject.put("environment", ce.getEnvironment());
+                        jsonObject.put("build", ce.getBuild());
+                        jsonObject.put("revision", ce.getRevision());
+                        jsonObject.put("ip", cea.getIp());
+                        jsonObject.put("url", cea.getUrl());
+                        result.add(jsonObject);
+
+                    }
                 }
             }
+        } catch (JSONException ex) {
+            Logger.getLogger(CountryEnvParamService.class.getName()).log(Level.SEVERE, null, ex);
         }
         return result;
     }

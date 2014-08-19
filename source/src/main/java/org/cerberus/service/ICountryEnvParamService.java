@@ -22,6 +22,7 @@ package org.cerberus.service;
 import java.util.List;
 import org.cerberus.entity.CountryEnvParam;
 import org.cerberus.exception.CerberusException;
+import org.json.JSONObject;
 
 /**
  *
@@ -33,5 +34,5 @@ public interface ICountryEnvParamService {
 
     List<CountryEnvParam> findCountryEnvParamByCriteria(CountryEnvParam countryEnvParam) throws CerberusException;
     
-    List<CountryEnvParam> findActiveEnvironmentBySystemCountryApplication(String system, String country, String application) throws CerberusException;
+    List<JSONObject> findActiveEnvironmentBySystemCountryApplication(String system, String country, String application) throws CerberusException;
 }

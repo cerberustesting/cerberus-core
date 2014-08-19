@@ -671,10 +671,10 @@
                     for (var i = 0; i < data.length; i++) {
                         $("#environment").append($("<option></option>")
                                 .attr("value", data[i].environment)
-                                .text(data[i].environment + " with Build :" + data[i].build + " and Revision :" + data[i].revision));
+                                .text(data[i].environment + " [ "+data[i].ip+data[i].url+" ] with Build :" + data[i].build + " and Revision :" + data[i].revision));
                         $("#myenvdata").append($("<option></option>")
                                 .attr("value", data[i].environment)
-                                .text(data[i].environment + " with Build :" + data[i].build + " and Revision :" + data[i].revision));
+                                .text(data[i].environment + " [ "+data[i].ip+data[i].url+" ] with Build :" + data[i].build + " and Revision :" + data[i].revision));
                     }
                     $("#environment").find('option').each(function(i, opt) {
                         if (opt.value === env)
