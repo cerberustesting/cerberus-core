@@ -633,7 +633,7 @@
                                                         do {
                                                 %>
                                                 <td class="wob" style="width:1px"><input value="<%=rs_testcasecountrygeneral.getString("value")%>" type="checkbox" <% if (StringUtils.isNotBlank(rs_country_gen.getString(rs_testcasecountrygeneral.getString("value")))) {%>  CHECKED  <% }%>
-                                                                                         name="testcase_country_general"></td> 
+                                                                                         name="testcase_country_general" onclick="javascript:checkDeletePropertiesUncheckingCountry(this.value)"></td> 
                                                     <%} while (rs_testcasecountrygeneral.next());
                                                     } else {
                                                         rs_testcasecountrygeneral.first();
@@ -1852,6 +1852,15 @@
             }
         });
     });
+</script>
+<script>
+    function checkDeletePropertiesUncheckingCountry(country){
+    for (var a=0; a < document.getElementsByName('properties_delete').length; a++){
+        if (document.getElementsByName('properties_delete')[a].value.contains(country)){
+        alert("BEWARE : Unchecking this country will automatically delete the associated properties saving the testcase");
+        }
+    };
+    };
 </script>
 <%}%>
 <div id="popin"></div>
