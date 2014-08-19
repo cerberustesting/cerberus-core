@@ -80,7 +80,7 @@ public class TestCaseService implements ITestCaseService {
     }
 
     @Override
-    public boolean createTestCase(TestCase testCase) {
+    public boolean createTestCase(TCase testCase) {
         return testCaseDao.createTestCase(testCase);
     }
 

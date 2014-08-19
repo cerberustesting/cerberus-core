@@ -184,25 +184,25 @@ public class TestCaseDAO implements ITestCaseDAO {
                 preStat.setString(5, testCase.isRunUAT() ? "Y" : "N");
                 preStat.setString(6, testCase.isRunPROD() ? "Y" : "N");
                 preStat.setString(7, Integer.toString(testCase.getPriority()));
-                preStat.setString(8, testCase.getStatus());
+                preStat.setString(8, ParameterParserUtil.parseStringParam(testCase.getStatus(),""));
                 preStat.setString(9, testCase.isActive() ? "Y" : "N");
-                preStat.setString(10, testCase.getShortDescription());
-                preStat.setString(11, testCase.getGroup());
-                preStat.setString(12, testCase.getHowTo());
-                preStat.setString(13, testCase.getComment());
-                preStat.setString(14, testCase.getTicket());
-                preStat.setString(15, testCase.getFromSprint());
-                preStat.setString(16, testCase.getFromRevision());
-                preStat.setString(17, testCase.getToSprint());
-                preStat.setString(18, testCase.getToRevision());
-                preStat.setString(19, testCase.getBugID());
-                preStat.setString(20, testCase.getTargetSprint());
-                preStat.setString(21, testCase.getImplementer());
-                preStat.setString(22, testCase.getLastModifier());
-                preStat.setString(23, testCase.getTargetRevision());
-                preStat.setString(24, testCase.getFunction());
-                preStat.setString(25, testCase.getTest());
-                preStat.setString(26, testCase.getTestCase());
+                preStat.setString(10, ParameterParserUtil.parseStringParam(testCase.getShortDescription(),""));
+                preStat.setString(11, ParameterParserUtil.parseStringParam(testCase.getGroup(),""));
+                preStat.setString(12, ParameterParserUtil.parseStringParam(testCase.getHowTo(),""));
+                preStat.setString(13, ParameterParserUtil.parseStringParam(testCase.getComment(),""));
+                preStat.setString(14, ParameterParserUtil.parseStringParam(testCase.getTicket(),""));
+                preStat.setString(15, ParameterParserUtil.parseStringParam(testCase.getFromSprint(),""));
+                preStat.setString(16, ParameterParserUtil.parseStringParam(testCase.getFromRevision(),""));
+                preStat.setString(17, ParameterParserUtil.parseStringParam(testCase.getToSprint(),""));
+                preStat.setString(18, ParameterParserUtil.parseStringParam(testCase.getToRevision(),""));
+                preStat.setString(19, ParameterParserUtil.parseStringParam(testCase.getBugID(),""));
+                preStat.setString(20, ParameterParserUtil.parseStringParam(testCase.getTargetSprint(),""));
+                preStat.setString(21, ParameterParserUtil.parseStringParam(testCase.getImplementer(),""));
+                preStat.setString(22, ParameterParserUtil.parseStringParam(testCase.getLastModifier(),""));
+                preStat.setString(23, ParameterParserUtil.parseStringParam(testCase.getTargetRevision(),""));
+                preStat.setString(24, ParameterParserUtil.parseStringParam(testCase.getFunction(),""));
+                preStat.setString(25, ParameterParserUtil.parseStringParam(testCase.getTest(),""));
+                preStat.setString(26, ParameterParserUtil.parseStringParam(testCase.getTestCase(),""));
 
                 res = preStat.executeUpdate() > 0;
             } catch (SQLException exception) {
@@ -304,62 +304,56 @@ public class TestCaseDAO implements ITestCaseDAO {
     }
 
     @Override
-    public boolean createTestCase(TestCase testCase) {
+    public boolean createTestCase(TCase testCase) {
         boolean res = false;
 
-        final StringBuffer sql = new StringBuffer("INSERT INTO `cerberus`.`testcase` ")
+        final StringBuffer sql = new StringBuffer("INSERT INTO `testcase` ")
                 .append(" ( `Test`, `TestCase`, `Application`, `Project`, `Ticket`, ")
                 .append("`Description`, `BehaviorOrValueExpected`, ")
                 .append("`ChainNumberNeeded`, `Priority`, `Status`, `TcActive`, ")
                 .append("`Group`, `Origine`, `RefOrigine`, `HowTo`, `Comment`, ")
                 .append("`FromBuild`, `FromRev`, `ToBuild`, `ToRev`, ")
                 .append("`BugID`, `TargetBuild`, `TargetRev`, `Creator`, ")
-                .append("`Implementer`, `LastModifier`, `Sla`, `function`) ")
-                .append("VALUES ( ?, ?, ?, ?, ?, ?, ")
-                .append("?, ?, ")
-                .append("?, ?, ?, ?, ")
-                .append("?, ?, ?, ?, ?, ")
-                .append("?, ?, ?, ?, ")
-                .append("?, ?, ?, ?, ")
-                .append("?, ?, ? ")
-                .append("); ");
+                .append("`Implementer`, `LastModifier`, `Sla`, `function`, `activeQA`, `activeUAT`, `activePROD`) ")
+                .append("VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ")
+                .append("?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? ); ");
 
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(sql.toString());
             try {
-                preStat.setString(1, testCase.getTest());
-                preStat.setString(2, testCase.getTestCase());
-                preStat.setString(3, testCase.getApplication());
-                preStat.setString(4, testCase.getProject());
-                preStat.setString(5, testCase.getTicket());
-                preStat.setString(6, testCase.getShortDescription());
-                preStat.setString(7, testCase.getDescription());
-                preStat.setString(9, "");
+                preStat.setString(1, ParameterParserUtil.parseStringParam(testCase.getTest(), ""));
+                preStat.setString(2, ParameterParserUtil.parseStringParam(testCase.getTestCase(), ""));
+                preStat.setString(3, ParameterParserUtil.parseStringParam(testCase.getApplication(), ""));
+                preStat.setString(4, ParameterParserUtil.parseStringParam(testCase.getProject(), ""));
+                preStat.setString(5, ParameterParserUtil.parseStringParam(testCase.getTicket(), ""));
+                preStat.setString(6, ParameterParserUtil.parseStringParam(testCase.getShortDescription(), ""));
+                preStat.setString(7, ParameterParserUtil.parseStringParam(testCase.getDescription(), ""));
+                preStat.setString(8, null);
                 preStat.setString(9, Integer.toString(testCase.getPriority()));
-                preStat.setString(10, testCase.getStatus());
-                preStat.setString(11, testCase.isActive() ? "Y" : "N");
-                preStat.setString(12, testCase.getGroup());
+                preStat.setString(10, ParameterParserUtil.parseStringParam(testCase.getStatus(), ""));
+                preStat.setString(11, testCase.getActive()!=null && !testCase.getActive().equals("Y") ? "N" : "Y");
+                preStat.setString(12, ParameterParserUtil.parseStringParam(testCase.getGroup(), ""));
                 preStat.setString(13, "");
                 preStat.setString(14, "");
-                preStat.setString(15, testCase.getHowTo());
-                preStat.setString(16, testCase.getComment());
-                preStat.setString(17, testCase.getFromSprint());
-                preStat.setString(18, testCase.getFromRevision());
-                preStat.setString(17, testCase.getToSprint());
-                preStat.setString(19, testCase.getToRevision());
-                preStat.setString(20, testCase.getBugID());
-                preStat.setString(21, testCase.getTargetSprint());
-                preStat.setString(22, testCase.getTargetRevision());
-                preStat.setString(23, "");
-                preStat.setString(24, testCase.getImplementer());
-                preStat.setString(25, testCase.getLastModifier());
-                preStat.setString(26, "");
-                preStat.setString(27, testCase.getFunction());
-                /*        preStat.setString(4, testCase.isRunQA() ? "Y" : "N");
-                 preStat.setString(5, testCase.isRunUAT() ? "Y" : "N");
-                 preStat.setString(6, testCase.isRunPROD() ? "Y" : "N");
-                 */
+                preStat.setString(15, ParameterParserUtil.parseStringParam(testCase.getHowTo(), ""));
+                preStat.setString(16, ParameterParserUtil.parseStringParam(testCase.getComment(), ""));
+                preStat.setString(17, ParameterParserUtil.parseStringParam(testCase.getFromSprint(), ""));
+                preStat.setString(18, ParameterParserUtil.parseStringParam(testCase.getFromRevision(), ""));
+                preStat.setString(19, ParameterParserUtil.parseStringParam(testCase.getToSprint(), ""));
+                preStat.setString(20, ParameterParserUtil.parseStringParam(testCase.getToRevision(), ""));
+                preStat.setString(21, ParameterParserUtil.parseStringParam(testCase.getBugID(), ""));
+                preStat.setString(22, ParameterParserUtil.parseStringParam(testCase.getTargetSprint(), ""));
+                preStat.setString(23, ParameterParserUtil.parseStringParam(testCase.getTargetRevision(), ""));
+                preStat.setString(24, "");
+                preStat.setString(25, ParameterParserUtil.parseStringParam(testCase.getImplementer(), ""));
+                preStat.setString(26, ParameterParserUtil.parseStringParam(testCase.getLastModifier(), ""));
+                preStat.setString(27, "");
+                preStat.setString(28, ParameterParserUtil.parseStringParam(testCase.getFunction(), ""));
+                preStat.setString(29, testCase.getRunQA()!=null && !testCase.getRunQA().equals("Y") ? "N" : "Y");
+                preStat.setString(30, testCase.getRunQA()!=null && !testCase.getRunQA().equals("Y") ? "N" : "Y");
+                preStat.setString(31, testCase.getRunQA()!=null && !testCase.getRunQA().equals("N") ? "Y" : "N");
+                
                 res = preStat.executeUpdate() > 0;
             } catch (SQLException exception) {
                 MyLogger.log(TestCaseDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
