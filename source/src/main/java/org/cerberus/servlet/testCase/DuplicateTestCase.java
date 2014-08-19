@@ -48,6 +48,7 @@ import org.cerberus.refactor.TestCaseStepActionControl;
 import org.cerberus.service.IInvariantService;
 import org.cerberus.service.ILogEventService;
 import org.cerberus.service.ITestCaseService;
+import org.cerberus.service.ITestService;
 import org.cerberus.service.impl.LogEventService;
 import org.cerberus.service.impl.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,6 +71,7 @@ public class DuplicateTestCase extends HttpServlet {
 
         appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         ITestCaseService testCaseService = appContext.getBean(ITestCaseService.class);
+        ITestService testService = appContext.getBean(ITestService.class);
         this.database = appContext.getBean(DatabaseSpring.class);
 
         String test = request.getParameter("Test");
@@ -79,7 +81,7 @@ public class DuplicateTestCase extends HttpServlet {
 
         try {
             if (testCaseService.findTestCaseByKey(test, testCase) != null) {
-                if (!request.isUserInRole("TestAdmin") && !test.equals(newTest)){
+                if (!request.isUserInRole("TestAdmin") && testService.findTestByKey(newTest)==null){
                     throw new CerberusException(new MessageGeneral(MessageGeneralEnum.GUI_TEST_CREATION_NOT_HAVE_RIGHT));
                 }
                 
@@ -101,10 +103,7 @@ public class DuplicateTestCase extends HttpServlet {
                             + newTestCase);
                 }
             } else {
-                request.getSession().setAttribute("flashMessage",
-                        "Error Duplicating Test");
-                response.sendRedirect("TestCase.jsp?Load=Load&Test="
-                        + test + "&TestCase=" + testCase);
+                throw new CerberusException(new MessageGeneral(MessageGeneralEnum.GUI_TEST_DUPLICATION_NOT_EXISTING_TEST));
             }
         } catch (CerberusException exception) {
 //TODO : Choose the way we raise error : 
