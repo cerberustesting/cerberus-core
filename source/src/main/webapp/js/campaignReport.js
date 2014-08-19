@@ -18,7 +18,6 @@
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 var config = {
     //String - Colour of the grid lines
     scaleGridLineColor: "rgba(0,0,0,0.2)",
@@ -26,18 +25,6 @@ var config = {
     legendTemplate: "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<segments.length; i++){%><li><span style=\"display:inline-block;width:30px;height:30px;margin:5px;background-color:<%=segments[i].fillColor%>\"><%if(segments[i].label){%><%=segments[i].label%><%}%></span></li><%}%></ul>"
 
 };
-
-
-var testCaseStatusLine = $("<tr class='testcase'>" +
-        "<td class='ID'></td>" +
-        "<td class='Test'></td>" +
-        "<td class='TestCase'></td>" +
-        "<td class='Control'></td>" +
-        "<td class='Status'></td>" +
-        "<td class='TestBattery'></td>" +
-        "<td class='BugID'></td>" +
-        "<td class='Comment'></td>" +
-        "</tr>");
 
 var data = {
     labels: ["OK", "KO", "FA", "NA", "PE"],
@@ -101,19 +88,41 @@ var dataFunction = {
     ]
 };
 
+var testCaseStatusLine = $("<tr class='testcase'>" +
+        "<td class='ID'></td>" +
+        "<td class='Test'></td>" +
+        "<td class='TestCase'></td>" +
+        "<td class='Control'></td>" +
+        "<td class='Status'></td>" +
+        "<td class='TestBattery'></td>" +
+        "<td class='BugID'></td>" +
+        "<td class='Comment'></td>" +
+        "</tr>");
+
+var executionLink = $("<a target='executionFromReport' href='ExecutionDetail.jsp?id_tc='></a>");
+var testcaseLink = $("<a target='testcaseFromReport' href='TestCase.jsp?Load=Load&Test='></a>");
+
 function addTestCaseToStatusTabs(testcase) {
     var statusTable = $("#Status" + testcase.ControlStatus + " tbody");
-    statusTestCaseStatusLine = testCaseStatusLine.clone();
-    statusTestCaseStatusLine.find(".ID").text(testcase.ID);
+
+    var statusTestCaseStatusLine = testCaseStatusLine.clone();
+
+    var statusExecutionLink = executionLink.clone();
+    statusExecutionLink.attr('href', statusExecutionLink.attr('href') + testcase.ID);
+    statusExecutionLink.text(testcase.ID);
+    statusTestCaseStatusLine.find(".ID").append(statusExecutionLink);
+
+    var statusTestcaseLink = testcaseLink.clone();
+    statusTestcaseLink.attr('href', statusTestcaseLink.attr('href') + testcase.Test 
+            + "&TestCase="+testcase.TestCase);
+    statusTestcaseLink.text(testcase.TestCase);    
+    statusTestCaseStatusLine.find(".TestCase").append(statusTestcaseLink);
+
     statusTestCaseStatusLine.find(".Test").text(testcase.Test);
-    statusTestCaseStatusLine.find(".TestCase").text(testcase.TestCase);
     statusTestCaseStatusLine.find(".Control").text(testcase.ControlStatus);
     statusTestCaseStatusLine.find(".Status").text(testcase.Status);
-    statusTestCaseStatusLine.find(".ID").text(testcase.ID);
     statusTestCaseStatusLine.find(".BugID").text(testcase.BugID);
     statusTestCaseStatusLine.find(".Comment").text(testcase.Comment);
-
-    console.log(statusTable.find("tr"));
 
     if (statusTable.find("tr").length % 2) {
         statusTestCaseStatusLine.addClass("odd");

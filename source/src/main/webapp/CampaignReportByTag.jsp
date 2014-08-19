@@ -42,15 +42,17 @@
 
         <script>
             Chart.defaults.global.responsive = true;
-            Chart.defaults.global.showTooltips = false;
+            //Chart.defaults.global.showTooltips = false;
                 
             <%
                 String campaignName = request.getParameter("campaignName");
                 String tag = request.getParameter("tag");
                 String environment = request.getParameter("Environment");
             %>
+            var executionStatus,pieExecutionStatus;
 
             $(document).ready(function(){
+                
                 $.get("./CampaignExecutionReport","campaignName=<%=campaignName%>&Environment=<%=environment%>&tag=<%=tag%>", function(report) {
                     // Get context with jQuery - using jQuery's .get() method.
                     var ctx = [];
@@ -110,18 +112,52 @@
                             .append($("<td></td>").text(testCaseTotal))
                     );
 
-                    new Chart(ctx[0]).BarColors(data,config);
+                    executionStatus = new Chart(ctx[0]).BarColors(data,config);
+                    pieExecutionStatus = new Chart(ctx[1]).Pie(dataDonut);
+
+                    $("#myDonut").on('click',function(evt){
+                        var activePoints = pieExecutionStatus.getSegmentsAtEvent(evt);
+
+                        var anchor = $('a[name="Status'+activePoints[0].label+'"]');
+                        $('html').animate({  
+                            scrollTop:anchor.offset().top  
+                        }, 'slow');  
+
+                        return false;  
+
+                        // => activePoints is an array of segments on the canvas that are at the same position as the click event.
+                    });
+
+                    $("canvas.executionStatus").on('click',function(evt){
+                        var activePoints = executionStatus.getBarsAtEvent(evt);
+
+                        var anchor = $('a[name="Status'+activePoints[0].label+'"]');
+                        $('html').animate({  
+                            scrollTop:anchor.offset().top  
+                        }, 'slow');  
+
+                        return false;  
+
+                        // => activePoints is an array of segments on the canvas that are at the same position as the click event.
+                    });
 
                     // And for a doughnut chart
-                    $("div.executionStatusLegend").html(new Chart(ctx[1]).Pie(dataDonut,{animateScale:true}).generateLegend());
+                    $("div.executionStatusLegend").html(pieExecutionStatus.generateLegend());
 
-//                    new Chart(ctx[2]).HorizontalBar(dataFunction);
+                    //new Chart(ctx[2]).HorizontalBar(dataFunction);
                     new Chart(ctx[2]).Radar(dataFunction);
 
                 });
             });
         </script>
         <style>
+            
+            html, body { 
+                    height: 100%;
+                    padding:0; margin:0;
+                    background: white;
+            }
+
             table {
                 margin-bottom: 15px;
             }
@@ -130,6 +166,25 @@
                 width: 100%;
             }
             
+            a.StatusOK {
+                color: #00EE00;
+            }
+
+            a.StatusKO {
+                color: #F7464A;
+            }
+
+            a.StatusFA {
+                color: #FDB45C;
+            }
+
+            a.StatusNA {
+                color: #EEEE00;
+            }
+
+            a.StatusPE {
+                color: #555555;
+            }
         </style>
     </head>
     <body>
@@ -160,7 +215,7 @@
                 </tr>
             
             </table>
-            <h1><a name="StatusKO">Status KO</a></h1>
+            <h1><a name="StatusKO" class="StatusKO">Status KO</a></h1>
             <table id="StatusKO" class="arrondTable fullSize">
                 <thead>
                     <tr>
@@ -177,7 +232,7 @@
                 <tbody>
                 </tbody>
             </table>
-            <h1><a name="StatusFA">Status FA</a></h1>
+            <h1><a name="StatusFA" class="StatusFA">Status FA</a></h1>
             <table id="StatusFA" class="arrondTable fullSize">
                 <thead>
                     <tr>
@@ -194,7 +249,7 @@
                 <tbody>
                 </tbody>
             </table>
-            <h1><a name="StatusNA">Status NA</a></h1>
+            <h1><a name="StatusNA" class="StatusNA">Status NA</a></h1>
             <table id="StatusNA" class="arrondTable fullSize">
                 <thead>
                     <tr>
@@ -211,7 +266,7 @@
                 <tbody>
                 </tbody>
             </table>
-            <h1><a name="StatusPE">Status PE</a></h1>
+            <h1><a name="StatusPE" class="StatusPE">Status PE</a></h1>
             <table id="StatusPE" class="arrondTable fullSize">
                 <thead>
                     <tr>
@@ -228,7 +283,7 @@
                 <tbody>
                 </tbody>
             </table>
-            <h1><a name="StatusOK">Status OK</a></h1>
+            <h1><a name="StatusOK" class="StatusOK">Status OK</a></h1>
             <table id="StatusOK" class="arrondTable fullSize">
                 <thead>
                     <tr>
