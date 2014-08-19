@@ -40,7 +40,6 @@ import org.cerberus.exception.CerberusException;
 import org.cerberus.factory.IFactoryLogEvent;
 import org.cerberus.factory.impl.FactoryLogEvent;
 import org.cerberus.log.MyLogger;
-import org.cerberus.refactor.AddTest;
 import org.cerberus.service.ILogEventService;
 import org.cerberus.service.impl.LogEventService;
 import org.cerberus.service.impl.UserService;
@@ -207,14 +206,14 @@ public class CreateTest extends HttpServlet {
             response.sendRedirect("Test.jsp?stestbox=" + test);
 
         } catch (SQLException ex) {
-            MyLogger.log(AddTest.class.getName(), Level.FATAL, "" + ex);
+            MyLogger.log(CreateTest.class.getName(), Level.FATAL, "" + ex);
         } finally {
             try {
                 if (connection != null) {
                     connection.close();
                 }
             } catch (SQLException e) {
-                MyLogger.log(AddTest.class.getName(), Level.WARN, e.toString());
+                MyLogger.log(CreateTest.class.getName(), Level.WARN, e.toString());
             }
             out.close();
         }
