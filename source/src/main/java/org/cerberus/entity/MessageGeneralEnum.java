@@ -88,11 +88,10 @@ public enum MessageGeneralEnum {
     NO_DATA_FOUND(102, "FA", "Missing data."),
     SQLLIB_NOT_FOUND(103, "FA", "SQL Library was not found."),
     CANNOT_UPDATE_TABLE(104, "", "Cannot update table."),
-    
     SOAPLIB_NOT_FOUND(105, "FA", "SOAP Library was not found"),
     
+    GUI_TEST_CREATION_NOT_HAVE_RIGHT(403, "", "Error : You dont have the user right to create a Test. Please contact your Cerberus Administrator");
     
-    ;
 
     private final int code;
     private final String codeString;

@@ -17,6 +17,7 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
+<%@page import="java.util.Enumeration"%>
 <%@page import="org.cerberus.entity.Parameter"%>
 <%@page import="java.util.ArrayList"%>
 <%@page import="java.util.List"%>
@@ -147,6 +148,11 @@
                     window.track = 0;
                     disableField(element);
                 }
+            }
+        </script>
+        <script>
+            function alertMessage(message) {
+                alert(message);
             }
         </script>
 
@@ -293,9 +299,19 @@
                                     "Duplicate") == 0) {
                         load = true;
                     }
+                    
+            //Raise alert if Flash Message fed
+                    if (request.getAttribute("flashMessage") != null
+                            && !request.getAttribute("flashMessage").equals("")) {
+                        String message = (String) request.getAttribute("flashMessage");
+                        request.removeAttribute("flashMessage");
+            %>
+            <script>alertMessage('<%=message%>');</script>
+            <%
+                }
 
-                    Statement stQueryTest = conn.createStatement();
-                    Statement stQueryTestCase = conn.createStatement();
+                Statement stQueryTest = conn.createStatement();
+                Statement stQueryTestCase = conn.createStatement();
             %>
             <input id="urlForListOffunction" value="<%=listOfFunction%>" style="display:none">
             <form action="TestCase.jsp" method="post" name="selectTestCase" id="selectTestCase">
@@ -710,7 +726,7 @@
                                     + rs_testcase_last_exe.getString("Environment") + " in "
                                     + rs_testcase_last_exe.getString("Country") + " on "
                                     + rs_testcase_last_exe.getString("End")
-                                    + "<a width : 390px ; href=\"RunTests.jsp?Test=" + test + "&TestCase=" + testcase + "&MySystem=" + appSystem 
+                                    + "<a width : 390px ; href=\"RunTests.jsp?Test=" + test + "&TestCase=" + testcase + "&MySystem=" + appSystem
                                     + "&Country=" + rs_testcase_last_exe.getString("Country") + "&Environment=" + rs_testcase_last_exe.getString("Environment") + "\"><i> (Run it again) </i></a>";
                         }
                         if ((rs_testcase_general_info.getString("tc.BugID") != null)
@@ -1711,8 +1727,8 @@
                         <%=rs_tccountry.getString("Country")%> 
                         <%
                             } while (rs_tccountry.next());%><br><%
-                                            rs_tccountry.first();
-                                            do {
+                            rs_tccountry.first();
+                            do {
                         %>
                         <input value="<%=rowNumber%> - <%=rs_tccountry.getString("Country")%>" type="checkbox" id="properties_country" 
                                name="properties_country" >
@@ -1791,37 +1807,37 @@
                 var propertyName = $(event.target).data("property-name");
                 var property = $("input.property_value[value='" + propertyName + "']");
 
-                if (property.data("usestep-step") != null 
+                if (property.data("usestep-step") != null
                         && property.data("usestep-step") != "") {
                     var useTest = property.data("usestep-test");
                     var useTestcase = property.data("usestep-testcase");
                     $.get("./ImportPropertyOfATestCaseToAnOtherTestCase", {"fromtest": useTest, "fromtestcase": useTestcase,
-                            "totest": "<%=test%>", "totestcase": "<%=testcase%>",
-                            "property": propertyName}
-                        , function(data) {
-                            $("#UpdateTestCaseDetail").submit();
-                        }
+                        "totest": "<%=test%>", "totestcase": "<%=testcase%>",
+                        "property": propertyName}
+                    , function(data) {
+                        $("#UpdateTestCaseDetail").submit();
+                    }
                     );
                 } else {
                     $.get("./CreateNotDefinedProperty", {"totest": "<%=test%>", "totestcase": "<%=testcase%>",
-                            "property": propertyName}
-                        , function(data) {
-                            $("#UpdateTestCaseDetail").submit();
-                        }
+                        "property": propertyName}
+                    , function(data) {
+                        $("#UpdateTestCaseDetail").submit();
+                    }
                     );
                 }
             });
         </script><%
 
-    } catch (Exception e) {
-        out.println("<br> error message : " + e.getMessage() + " "
-                + e.toString() + "<br>");
-    } finally {
-        try {
-            conn.close();
-        } catch (Exception ex) {
-        }
-    }
+            } catch (Exception e) {
+                out.println("<br> error message : " + e.getMessage() + " "
+                        + e.toString() + "<br>");
+            } finally {
+                try {
+                    conn.close();
+                } catch (Exception ex) {
+                }
+            }
         %>
 
     </div>

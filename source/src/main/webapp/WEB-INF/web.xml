@@ -1058,6 +1058,10 @@
             60
         </session-timeout>
     </session-config>
+    <error-page>
+        <error-code>403</error-code>
+        <location>/ErrorPages/Error403.jsp</location>
+    </error-page>
     <!-- Start JAAS Configuration -->
     <security-role>
         <description/>
@@ -1146,7 +1150,6 @@
             <description>jsp</description>
             <url-pattern>/SqlLib.jsp</url-pattern>
             <url-pattern>/TestCaseCreate.jsp</url-pattern>
-            <url-pattern>/TestCreate.jsp</url-pattern>
             <url-pattern>/ImportHTML.jsp</url-pattern>
             <url-pattern>/ImportTestCase.jsp</url-pattern>
             <url-pattern>/TestData.jsp</url-pattern>
@@ -1156,14 +1159,11 @@
         <web-resource-collection>
             <web-resource-name>servlet</web-resource-name>
             <description>servlet</description>
-            <url-pattern>/AddTest</url-pattern>
-            <url-pattern>/UpdateTest</url-pattern>
             <url-pattern>/DuplicateTestCase</url-pattern>
             <url-pattern>/UpdateTestCase</url-pattern>
             <url-pattern>/CalculatePropertyForTestCase</url-pattern>
             <url-pattern>/UpdateProperties</url-pattern>
             <url-pattern>/CreateTestCase</url-pattern>
-            <url-pattern>/CreateTest</url-pattern>
             <url-pattern>/UpdateTestCaseDetail</url-pattern>
             <url-pattern>/ImportSeleniumIDE</url-pattern>
             <url-pattern>/ImportTestCaseStep</url-pattern>
@@ -1189,13 +1189,21 @@
     <security-constraint>
         <display-name>TestAdmin</display-name>
         <web-resource-collection>
+            <web-resource-name>jsp</web-resource-name>
+            <description>jsp</description>
+            <url-pattern>/TestCreate.jsp</url-pattern>
+        </web-resource-collection>
+        <web-resource-collection>
             <web-resource-name>servlet</web-resource-name>
             <description>servlet</description>
+            <url-pattern>/AddTest</url-pattern>
+            <url-pattern>/CreateTest</url-pattern>
             <url-pattern>/DeleteTest</url-pattern>
             <url-pattern>/DeleteTestCase</url-pattern>
             <url-pattern>/CreateSqlLibrary</url-pattern>
             <url-pattern>/DeleteSqlLibrary</url-pattern>
             <url-pattern>/UpdateSqlLibrary</url-pattern>
+            <url-pattern>/UpdateTest</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <description>TestAdmin</description>
@@ -1419,7 +1427,7 @@
     <login-config>
         <auth-method>FORM</auth-method>
         <!--        Default Realm defined on Cluster->Security
-            <realm-name>securityCerberusQA</realm-name>-->
+        <realm-name>securityCerberusQA</realm-name>-->
         <form-login-config>
             <form-login-page>/Login.jsp</form-login-page>
             <form-error-page>/Login.jsp?error=1</form-error-page>

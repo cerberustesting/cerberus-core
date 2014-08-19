@@ -25,17 +25,19 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
-
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
+import javax.servlet.http.HttpSession;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.entity.Invariant;
+import org.cerberus.entity.MessageGeneral;
+import org.cerberus.entity.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.factory.IFactoryLogEvent;
 import org.cerberus.factory.impl.FactoryLogEvent;
@@ -77,6 +79,10 @@ public class DuplicateTestCase extends HttpServlet {
 
         try {
             if (testCaseService.findTestCaseByKey(test, testCase) != null) {
+                if (!request.isUserInRole("TestAdmin") && !test.equals(newTest)){
+                    throw new CerberusException(new MessageGeneral(MessageGeneralEnum.GUI_TEST_CREATION_NOT_HAVE_RIGHT));
+                }
+                
                 if (this.duplicateTestRunner(request.getUserPrincipal().getName(), test, testCase, newTest, newTestCase)) {
 
                     /**
@@ -101,8 +107,14 @@ public class DuplicateTestCase extends HttpServlet {
                         + test + "&TestCase=" + testCase);
             }
         } catch (CerberusException exception) {
-            request.getSession().setAttribute("flashMessage", exception.getMessageError());
-            response.sendRedirect("TestCase.jsp?Load=Load&Test=" + test + "&TestCase=" + testCase);
+//TODO : Choose the way we raise error : 
+//    > Using commented lines below and javascript message
+//            request.setAttribute("flashMessage", exception.getMessageError().getDescription());
+//            RequestDispatcher rd = request.getRequestDispatcher("TestCase.jsp?Load=Load&Test=" + test + "&TestCase=" + testCase);  
+//            rd.forward(request, response); 
+            
+//    > Using http error pages as below
+            response.sendError(exception.getMessageError().getCode(), exception.getMessageError().getDescription());
         }
     }
 
