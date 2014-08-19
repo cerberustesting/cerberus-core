@@ -139,7 +139,7 @@ public enum MessageEventEnum {
     ACTION_FAILED_MOUSEDOWN_NO_SUCH_ELEMENT(283, "FA", "Failed to left click because could not find element '%ELEMENT%'!", true, true ,true , MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_SWITCHTOWINDOW_NO_SUCH_ELEMENT(280, "FA", "Failed to switch to window because could not find element '%WINDOW%'!", true, true ,true , MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_CLOSE_ALERT(280, "FA", "Failed to close to alert popup !", true, true ,true , MessageGeneralEnum.EXECUTION_FA_ACTION),
-    ACTION_FAILED_CALLSOAP(286, "FA", "Failed to call the SOAP '%SOAPNAME%'!", true, true ,false , MessageGeneralEnum.EXECUTION_FA_ACTION),
+    ACTION_FAILED_CALLSOAP(286, "FA", "Failed to call the SOAP '%SOAPNAME%'! Caused by : %DESCRIPTION%", true, true ,false , MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_REMOVEDIFFERENCE(287, "FA", "Failed to remove difference '%DIFFERENCE%' from '%DIFFERENCES%'", true, true ,false , MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_NOTEXECUTED_NO_PROPERTY_DEFINITION(290, "NA", "Not executed because Property '%PROP%' is not defined for the country '%COUNTRY%'.", false, false ,false , MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION(291, "FA", "Not executed because Action '%ACTION%' is not supported for application type '%APPLICATIONTYPE%'.", true, true ,false , MessageGeneralEnum.EXECUTION_FA_ACTION),

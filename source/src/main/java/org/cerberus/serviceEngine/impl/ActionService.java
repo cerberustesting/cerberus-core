@@ -413,13 +413,10 @@ public class ActionService implements IActionService {
         } catch (CerberusException ex) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSOAP);
             message.setDescription(message.getDescription().replaceAll("%SOAPNAME%", object));
+            message.setDescription(message.getDescription().replaceAll("%DESCRIPTION%", ex.getMessageError().getDescription()));
+            return message;
         }
         //}
-        message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
-        message.setDescription(message.getDescription().replaceAll("%ACTION%", "callSoapWithBase"));
-        message.setDescription(message.getDescription().replaceAll("%APPLICATIONTYPE%", tCExecution.getApplication().getType()));
-        return message;
-
     }
 
     private MessageEvent doActionMouseDownMouseUp(TestCaseExecution tCExecution, String object, String property) {
