@@ -91,8 +91,9 @@ public enum MessageGeneralEnum {
     SOAPLIB_NOT_FOUND(105, "FA", "SOAP Library was not found"),
     
     GUI_TEST_CREATION_NOT_HAVE_RIGHT(403, "", "Error : You dont have the user right to create a Test. Please contact your Cerberus Administrator"),
-    GUI_TEST_DUPLICATION_NOT_EXISTING_TEST(403, "", "Error : You're trying to duplicate a test which does not exist anymore.");
-    
+    GUI_TEST_DUPLICATION_NOT_EXISTING_TEST(403, "", "Error : You're trying to duplicate a test which does not exist anymore."),
+    GUI_ERROR_INSERTING_DATA(403, "", "Error : A problem has been found inserting data in database. Please try later or contact your Cerberus Administrator with the following details : %DETAILS%"),
+    GUI_TESTCASE_DUPLICATION_ALREADY_EXISTS(403, "", "Error : You're trying to duplicate a testcase which already exists");
 
     private final int code;
     private final String codeString;

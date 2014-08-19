@@ -19,6 +19,7 @@ package org.cerberus.dao;
 
 import java.util.List;
 import org.cerberus.entity.Test;
+import org.cerberus.exception.CerberusException;
 
 /**
  * {Insert class description here}
@@ -33,7 +34,7 @@ public interface ITestDAO {
 
     List<Test> findTestByCriteria(Test test);
 
-    boolean createTest(Test test);
+    boolean createTest(Test test) throws CerberusException;
 
     boolean deleteTest(Test test);
     
