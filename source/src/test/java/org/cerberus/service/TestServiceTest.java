@@ -20,6 +20,7 @@
 package org.cerberus.service;
 
 import junit.framework.Assert;
+import org.cerberus.exception.CerberusException;
 import org.cerberus.factory.IFactoryTest;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -39,7 +40,7 @@ public class TestServiceTest {
 
     @Ignore
     @Test
-    public void testCreateTestInDatabase() {
+    public void testCreateTestInDatabase() throws CerberusException {
         boolean result;
         boolean expected = true;
 
