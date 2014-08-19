@@ -38,6 +38,7 @@ import org.cerberus.entity.TCase;
 import org.cerberus.entity.TestBatteryContent;
 import org.cerberus.entity.TestCaseExecution;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.service.IApplicationService;
 import org.cerberus.service.ICampaignService;
 import org.cerberus.service.ITestBatteryService;
 import org.cerberus.service.ITestCaseExecutionService;
@@ -76,6 +77,9 @@ public class CampaignExecutionReport extends HttpServlet {
             ApplicationContext appContext = WebApplicationContextUtils
                     .getWebApplicationContext(this.getServletContext());
 
+            IApplicationService applicationService = appContext
+                    .getBean(IApplicationService.class);
+
             ICampaignService campaignService = appContext
                     .getBean(ICampaignService.class);
 
@@ -97,6 +101,7 @@ public class CampaignExecutionReport extends HttpServlet {
 
             JSONArray jSONResult = new JSONArray();
 
+            HashMap<String, String> bugURLForApplication = new HashMap<String, String>();
 
             List<CampaignParameter> campaignParameters = campaignService
                     .findCampaignParametersByCampaignName(campaignName);
@@ -151,7 +156,23 @@ public class CampaignExecutionReport extends HttpServlet {
                     if (hmTestCaseExecutionByTestCase.containsKey(key)) {
                         for (TestCaseExecution testCaseExecution : hmTestCaseExecutionByTestCase.get(key)) {
                             try {
-                                jSONResult.put(testCaseExecutionToJSONObject(testCaseExecution, tCase));
+                                /*
+                                 if (bugURLForApplication.containsKey(out)) {
+
+                                } else {
+                                                                        if (testCaseExecution.getApplication() != null) {
+                                        myApplication = applicationService.findApplicationByKey(testCaseExecution.getApplication());
+                                        appSystem = myApplication.getSystem();
+                                        SitdmossBugtrackingURL = myApplication.getBugTrackerUrl();
+                                    } else {
+                                        appSystem = "";
+                                        SitdmossBugtrackingURL = "";
+                                    }
+
+                                 }
+                                */
+                                String bugURL = "";
+                                jSONResult.put(testCaseExecutionToJSONObject(testCaseExecution, tCase, bugURL));
                             } catch (JSONException ex) {
                                 Logger.getLogger(CampaignExecutionReport.class.getName()).log(Level.SEVERE, null, ex);
                             }
@@ -219,7 +240,7 @@ public class CampaignExecutionReport extends HttpServlet {
 	 *             the JSON exception
 	 */
     private JSONObject testCaseExecutionToJSONObject(
-            TestCaseExecution testCaseExecutions, TCase testCase) throws JSONException {
+            TestCaseExecution testCaseExecutions, TCase testCase, String bugURL) throws JSONException {
         JSONObject result = new JSONObject();
 
         result.put("ID", String.valueOf(testCaseExecutions.getId()));
@@ -234,6 +255,7 @@ public class CampaignExecutionReport extends HttpServlet {
         result.put("BugID", JavaScriptUtils.javaScriptEscape(testCase.getBugID()));
         result.put("Comment", JavaScriptUtils.javaScriptEscape(testCase.getComment()));
         result.put("Function", JavaScriptUtils.javaScriptEscape(testCase.getFunction()));
+        result.put("Application", JavaScriptUtils.javaScriptEscape(testCase.getApplication()));
 
         return result;
     }

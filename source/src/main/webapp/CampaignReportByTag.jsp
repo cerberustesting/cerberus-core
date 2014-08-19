@@ -17,7 +17,11 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
-
+<%
+    String campaignName = request.getParameter("campaignName");
+    String tag = request.getParameter("tag");
+    String environment = request.getParameter("Environment");
+%>
 <% Date DatePageStart = new Date();%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
@@ -37,135 +41,104 @@
         <script type="text/javascript" src="js/jquery-ui-1.10.2.js"></script>
         <script type="text/javascript" src="js/Chartjs/Chart.js"></script>
         <script type="text/javascript" src="js/Chartjs/extensions/Chart.ColoredBar.js"></script>
-        <script type="text/javascript" src="js/Chartjs/extensions/Chart.HorizontalBar.js"></script>
+        <script type="text/javascript" src="js/Chartjs/extensions/Chart.StackedBar.js"></script>
         <script type="text/javascript" src="js/campaignReport.js"></script>
 
         <script>
             Chart.defaults.global.responsive = true;
-            //Chart.defaults.global.showTooltips = false;
-                
-            <%
-                String campaignName = request.getParameter("campaignName");
-                String tag = request.getParameter("tag");
-                String environment = request.getParameter("Environment");
-            %>
-            var executionStatus,pieExecutionStatus;
+            // Number - Scale label font size in pixels
+            Chart.defaults.global.scaleFontSize= '14';
 
-            $(document).ready(function(){
-                
-                $.get("./CampaignExecutionReport","campaignName=<%=campaignName%>&Environment=<%=environment%>&tag=<%=tag%>", function(report) {
+            var executionStatus, pieExecutionStatus;
+
+            $(document).ready(function () {
+
+                $.get("./CampaignExecutionReport", "campaignName=<%=campaignName%>&Environment=<%=environment%>&tag=<%=tag%>", function (report) {
                     // Get context with jQuery - using jQuery's .get() method.
                     var ctx = [];
                     ctx[0] = $("canvas.executionStatus").get(0).getContext("2d");
                     ctx[1] = $("#myDonut").get(0).getContext("2d");
                     ctx[2] = $("#functionBar").get(0).getContext("2d");
 
-                   //console.log(data.labels);
-
-                    var controlStatus,testCaseFunction;
+                    var controlStatus, testCaseFunction;
                     var testCaseTotal = 0;
-                    var functionFound = false;
-                    for(var index=0; index<report.length; index++) {
+                    for (var index = 0; index < report.length; index++) {
                         testCaseTotal++;
                         controlStatus = report[index].ControlStatus;
                         addTestCaseToStatusTabs(report[index]);
+                        addTestCaseToPercentRadar(report[index]);
                         testCaseFunction = report[index].Function || report[index].Test;
-                        for(var label=0; label<data.labels.length; label++) {
-                            if(controlStatus == data.labels[label]) {
-                               data.datasets[0].data[label] = parseInt(data.datasets[0].data[label])+1;
+                        for (var label = 0; label < data.labels.length; label++) {
+                            if (controlStatus == data.labels[label]) {
+                                data.datasets[0].data[label] = parseInt(data.datasets[0].data[label]) + 1;
                             }
                         }
-                        for(var donut=0; donut<dataDonut.length; donut++) {
-                            if(controlStatus == dataDonut[donut].label) {
-                               dataDonut[donut].value = parseInt(dataDonut[donut].value)+1;
+                        for (var donut = 0; donut < dataDonut.length; donut++) {
+                            if (controlStatus == dataDonut[donut].label) {
+                                dataDonut[donut].value = parseInt(dataDonut[donut].value) + 1;
                             }
                         }
-
-                        functionFound = false;
-                        for(var label=0; label<dataFunction.labels.length; label++) {
-                            if(testCaseFunction == dataFunction.labels[label]) {
-                               dataFunction.datasets[0].data[label] = parseInt(dataFunction.datasets[0].data[label])+1;
-                               //console.log(dataFunction.labels[label]+"="+dataFunction.datasets[0].data[label]);
-                               functionFound = true;
-                            }
-                        }
-                        if(!functionFound) {
-                            var lengthLabel = dataFunction.labels.length;
-                            dataFunction.labels[lengthLabel] = testCaseFunction;
-                            dataFunction.datasets[0].data[lengthLabel] = 1;
-                        }
-
                     }
 
-                    $("div.executionStatus").empty().append("<table width='100%'><thead><tr><th colspan=2>Execution status</th></tr></thead><tbody><tr></tr></tbody></table>");
-                    for(var index=0; index<data.labels.length; index++) {
+                    $("div.executionStatus").empty().append("<table  class='arrondTable fullSize'><thead><tr><th>Execution status</th><th>TestCase Number</th></tr></thead><tbody></tbody></table>");
+                    for (var index = 0; index < data.labels.length; index++) {
                         $("div.executionStatus table tbody").append(
                                 $("<tr></tr>").append(
-                                    $("<th></th>").text(data.labels[index]))
-                                    .append($("<td></td>").text(data.datasets[0].data[index]))
+                                $("<td></td>").text(data.labels[index]))
+                                .append($("<td></td>").text(data.datasets[0].data[index]))
                                 );
-                        //$("div.executionStatus table tbody tr").append($("<td></td>").text(data.datasets[0].data[index]));
                     }
                     $("div.executionStatus table tbody").append(
-                        $("<tr></tr>").append(
+                            $("<tr></tr>").append(
                             $("<th>Total</th>"))
-                            .append($("<td></td>").text(testCaseTotal))
-                    );
+                            .append($("<th></th>").text(testCaseTotal))
+                            );
 
-                    executionStatus = new Chart(ctx[0]).BarColors(data,config);
+                    executionStatus = new Chart(ctx[0]).BarColors(data, config);
                     pieExecutionStatus = new Chart(ctx[1]).Pie(dataDonut);
 
-                    $("#myDonut").on('click',function(evt){
+                    $("#myDonut").on('click', function (evt) {
                         var activePoints = pieExecutionStatus.getSegmentsAtEvent(evt);
 
-                        var anchor = $('a[name="Status'+activePoints[0].label+'"]');
-                        $('html').animate({  
-                            scrollTop:anchor.offset().top  
-                        }, 'slow');  
+                        var anchor = $('a[name="Status' + activePoints[0].label + '"]');
+                        $('html').animate({
+                            scrollTop: anchor.offset().top
+                        }, 'slow');
 
-                        return false;  
-
-                        // => activePoints is an array of segments on the canvas that are at the same position as the click event.
+                        return false;
                     });
 
-                    $("canvas.executionStatus").on('click',function(evt){
+                    $("canvas.executionStatus").on('click', function (evt) {
                         var activePoints = executionStatus.getBarsAtEvent(evt);
 
-                        var anchor = $('a[name="Status'+activePoints[0].label+'"]');
-                        $('html').animate({  
-                            scrollTop:anchor.offset().top  
-                        }, 'slow');  
+                        var anchor = $('a[name="Status' + activePoints[0].label + '"]');
+                        $('html').animate({
+                            scrollTop: anchor.offset().top
+                        }, 'slow');
 
-                        return false;  
-
-                        // => activePoints is an array of segments on the canvas that are at the same position as the click event.
+                        return false;
                     });
 
-                    // And for a doughnut chart
-                    $("div.executionStatusLegend").html(pieExecutionStatus.generateLegend());
-
-                    //new Chart(ctx[2]).HorizontalBar(dataFunction);
-                    new Chart(ctx[2]).Radar(dataFunction);
-
+                    computePercentDataRadar(ctx[2]);
                 });
             });
         </script>
         <style>
-            
+
             html, body { 
-                    height: 100%;
-                    padding:0; margin:0;
-                    background: white;
+                height: 100%;
+                padding:0; margin:0;
+                background: white;
             }
 
             table {
                 margin-bottom: 15px;
             }
-            
+
             table.fullSize {
                 width: 100%;
             }
-            
+
             a.StatusOK {
                 color: #00EE00;
             }
@@ -193,27 +166,26 @@
 
 
         <div id="main">
-            <table>
+            <table class="fullSize">
                 <tr>
-                    <td>
+                    <td colspan="2">
                         <div class="executionStatus"></div>
                     </td>
-                    <td><div class="executionStatusLegend"></div></td>
                 </tr>
                 <tr>
                     <td>
-                        <canvas class="executionStatus" width="400%" height="400%"></canvas>
+                        <canvas class="executionStatus"></canvas>
                     </td>
                     <td>
-                        <canvas id="myDonut" width="400%" height="400%"></canvas>
+                        <canvas id="myDonut"></canvas>
                     </td>
                 </tr>
                 <tr>
                     <td colspan="2">
-                        <canvas id="functionBar" width="800%" height="800%"></canvas>
+                        <canvas id="functionBar"></canvas>
                     </td>
                 </tr>
-            
+
             </table>
             <h1><a name="StatusKO" class="StatusKO">Status KO</a></h1>
             <table id="StatusKO" class="arrondTable fullSize">
@@ -224,7 +196,7 @@
                         <th>TestCase</th>
                         <th>Control</th>
                         <th>Status</th>
-                        <th>TestBattery</th>
+                        <th>Application</th>
                         <th>BugID</th>
                         <th>Comment</th>
                     </tr>
@@ -241,7 +213,7 @@
                         <th>TestCase</th>
                         <th>Control</th>
                         <th>Status</th>
-                        <th>TestBattery</th>
+                        <th>Application</th>
                         <th>BugID</th>
                         <th>Comment</th>
                     </tr>
@@ -258,7 +230,7 @@
                         <th>TestCase</th>
                         <th>Control</th>
                         <th>Status</th>
-                        <th>TestBattery</th>
+                        <th>Application</th>
                         <th>BugID</th>
                         <th>Comment</th>
                     </tr>
@@ -275,7 +247,7 @@
                         <th>TestCase</th>
                         <th>Control</th>
                         <th>Status</th>
-                        <th>TestBattery</th>
+                        <th>Application</th>
                         <th>BugID</th>
                         <th>Comment</th>
                     </tr>
@@ -292,7 +264,7 @@
                         <th>TestCase</th>
                         <th>Control</th>
                         <th>Status</th>
-                        <th>TestBattery</th>
+                        <th>Application</th>
                         <th>BugID</th>
                         <th>Comment</th>
                     </tr>

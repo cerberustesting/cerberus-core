@@ -73,6 +73,9 @@ var dataDonut = [
     }
 ];
 
+var dataPercent = {};
+
+var dataPercentLabels = {};
 
 var dataFunction = {
     labels: [],
@@ -94,7 +97,7 @@ var testCaseStatusLine = $("<tr class='testcase'>" +
         "<td class='TestCase'></td>" +
         "<td class='Control'></td>" +
         "<td class='Status'></td>" +
-        "<td class='TestBattery'></td>" +
+        "<td class='Application'></td>" +
         "<td class='BugID'></td>" +
         "<td class='Comment'></td>" +
         "</tr>");
@@ -122,14 +125,104 @@ function addTestCaseToStatusTabs(testcase) {
     statusTestCaseStatusLine.find(".Control").text(testcase.ControlStatus);
     statusTestCaseStatusLine.find(".Status").text(testcase.Status);
     statusTestCaseStatusLine.find(".BugID").text(testcase.BugID);
-    statusTestCaseStatusLine.find(".Comment").text(testcase.Comment);
+    statusTestCaseStatusLine.find(".Application").text(testcase.Application);
 
     if (statusTable.find("tr").length % 2) {
         statusTestCaseStatusLine.addClass("odd");
     } else {
         statusTestCaseStatusLine.addClass("even");
     }
-
+    
     statusTable.append(statusTestCaseStatusLine);
-}
+};
 
+function addTestCaseToPercentRadar(testcase) {
+    
+    if(!dataPercent[testcase.Test]) {
+        dataPercent[testcase.Test] = {
+            OK: 0,
+            KO: 0,
+            FA: 0,
+            NA: 0,
+            total: 0
+            };
+    }
+    
+    dataPercent[testcase.Test]['total'] = eval(dataPercent[testcase.Test]['total'] + 1);
+    dataPercent[testcase.Test][testcase.ControlStatus] = eval(dataPercent[testcase.Test][testcase.ControlStatus] + 1);
+};
+
+
+
+function computePercentDataRadar(ctx) {
+    
+    var data = {
+        labels: [],
+        datasets: [
+            {
+                label: "OK",
+                fillColor: "#00EE00",
+                strokeColor: "#00EE00",
+                pointColor: "#33DD33",
+                pointStrokeColor: "#fff",
+                pointHighlightFill: "#33DD33",
+                pointHighlightStroke: "#00EE00",
+                data: []
+            },
+            {
+                label: "KO",
+                fillColor: "#F7464A",
+                strokeColor: "#F7464A",
+                pointColor: "#FF5A5E",
+                pointStrokeColor: "#fff",
+                pointHighlightFill: "#FF5A5E",
+                pointHighlightStroke: "#F7464A",
+                data: []
+            },
+            {
+                label: "FA",
+                fillColor: "#FDB45C",
+                strokeColor: "#FDB45C",
+                pointColor: "#FFC870",
+                pointStrokeColor: "#fff",
+                pointHighlightFill: "#FFC870",
+                pointHighlightStroke: "#FDB45C",
+                data: []
+            },
+            {
+                label: "NA",
+                fillColor: "#EEEE00",
+                strokeColor: "#EEEE00",
+                pointColor: "#EEEE55",
+                pointStrokeColor: "#fff",
+                pointHighlightFill: "#EEEE55",
+                pointHighlightStroke: "#EEEE00",
+                data: []
+            },
+            {
+                label: "PE",
+                fillColor: "#555555",
+                strokeColor: "#555555",
+                pointColor: "#333333",
+                pointStrokeColor: "#fff",
+                pointHighlightFill: "#333333",
+                pointHighlightStroke: "#555555",
+                data: []
+            },
+        ]
+    };
+
+    $.each(dataPercent, function(key, val){
+        data.datasets[0].data[data.labels.length] = (val.OK ? val.OK : 0);
+        data.datasets[1].data[data.labels.length] = (val.KO ? val.KO : 0);
+        data.datasets[2].data[data.labels.length] = (val.FA ? val.FA : 0);
+        data.datasets[3].data[data.labels.length] = (val.NA ? val.NA : 0);
+        data.datasets[4].data[data.labels.length] = (val.PE ? val.PE : 0);
+
+        data.labels[data.labels.length] = key;
+
+    });
+    console.log(data);
+    new Chart(ctx).StackedBar(data);
+   // return data;
+}
