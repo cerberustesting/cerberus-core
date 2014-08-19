@@ -96,4 +96,9 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
     public TestCaseExecution findTCExecutionByKey(long id) throws CerberusException {
         return testCaseExecutionDao.findTCExecutionByKey(id);
     }
+
+    @Override
+    public List<TestCaseExecution> findExecutionsByCampaignNameAndTag(String campaign, String tag) throws CerberusException {
+        return testCaseExecutionDao.findExecutionsByCampaignNameAndTag(campaign, tag);
+    }
 }
