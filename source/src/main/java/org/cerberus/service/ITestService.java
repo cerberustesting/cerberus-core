@@ -21,6 +21,7 @@ package org.cerberus.service;
 
 import java.util.List;
 import org.cerberus.entity.Test;
+import org.cerberus.exception.CerberusException;
 
 /**
  * {Insert class description here}
@@ -46,8 +47,9 @@ public interface ITestService {
      *
      * @param test need to be created in database
      * @return TRUE if test have been inserted successfully
+     * @throws org.cerberus.exception.CerberusException
      */
-    boolean createTest(Test test);
+    boolean createTest(Test test) throws CerberusException;
 
     /**
      *

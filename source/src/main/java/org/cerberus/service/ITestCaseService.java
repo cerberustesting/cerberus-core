@@ -50,7 +50,7 @@ public interface ITestCaseService {
 
     boolean updateTestCaseInformationCountries(TestCase tc);
 
-    boolean createTestCase(TestCase testCase);
+    boolean createTestCase(TCase testCase);
     
     /**
      * @since 0.9.1

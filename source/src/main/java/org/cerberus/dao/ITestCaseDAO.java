@@ -42,7 +42,7 @@ public interface ITestCaseDAO {
     
     boolean updateTestCaseInformationCountries(TestCase tc);
     
-    boolean createTestCase(TestCase testCase);
+    boolean createTestCase(TCase testCase);
     
     List<TCase> findTestCaseByCriteria(String test, String application, String country, String active);
 
@@ -66,7 +66,7 @@ public interface ITestCaseDAO {
     
     /**
      * 
-     * @param name Key of the table
+     * @param tc
      * @param columnName Name of the column to update
      * @param value New value of the field columnName for the key name 
      */

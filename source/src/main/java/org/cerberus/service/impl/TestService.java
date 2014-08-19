@@ -22,7 +22,9 @@ package org.cerberus.service.impl;
 import java.util.ArrayList;
 import java.util.List;
 import org.cerberus.access.ITestAccess;
+import org.cerberus.dao.ITestDAO;
 import org.cerberus.entity.Test;
+import org.cerberus.exception.CerberusException;
 import org.cerberus.service.ITestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -39,6 +41,8 @@ public class TestService implements ITestService {
 
     @Autowired
     private ITestAccess testAccess;
+    @Autowired
+    private ITestDAO testDao;
 
     @Override
     public List<String> getListOfTests() {
@@ -59,8 +63,8 @@ public class TestService implements ITestService {
     }
 
     @Override
-    public boolean createTest(Test test) {
-        return testAccess.createTest(test);
+    public boolean createTest(Test test) throws CerberusException {
+        return testDao.createTest(test);
     }
 
     @Override

@@ -20,34 +20,36 @@
 package org.cerberus.servlet.testCase;
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.cerberus.database.DatabaseSpring;
-import org.cerberus.entity.Invariant;
 import org.cerberus.entity.MessageGeneral;
 import org.cerberus.entity.MessageGeneralEnum;
+import org.cerberus.entity.TCase;
+import org.cerberus.entity.Test;
+import org.cerberus.entity.TestCaseCountry;
+import org.cerberus.entity.TestCaseCountryProperties;
+import org.cerberus.entity.TestCaseStep;
+import org.cerberus.entity.TestCaseStepAction;
+import org.cerberus.entity.TestCaseStepActionControl;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.factory.IFactoryLogEvent;
 import org.cerberus.factory.impl.FactoryLogEvent;
-import org.cerberus.log.MyLogger;
-import org.cerberus.refactor.TestCaseCountryProperties;
-import org.cerberus.refactor.TestCaseStepAction;
-import org.cerberus.refactor.TestCaseStepActionControl;
-import org.cerberus.service.IInvariantService;
 import org.cerberus.service.ILogEventService;
+import org.cerberus.service.ITestCaseCountryPropertiesService;
+import org.cerberus.service.ITestCaseCountryService;
 import org.cerberus.service.ITestCaseService;
+import org.cerberus.service.ITestCaseStepActionControlService;
+import org.cerberus.service.ITestCaseStepActionService;
+import org.cerberus.service.ITestCaseStepService;
+import org.cerberus.service.ITestService;
 import org.cerberus.service.impl.LogEventService;
 import org.cerberus.service.impl.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,6 +72,12 @@ public class DuplicateTestCase extends HttpServlet {
 
         appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         ITestCaseService testCaseService = appContext.getBean(ITestCaseService.class);
+        ITestService testService = appContext.getBean(ITestService.class);
+        ITestCaseCountryService testCaseCountryService = appContext.getBean(ITestCaseCountryService.class);
+        ITestCaseCountryPropertiesService testCaseCountryPropertiesService = appContext.getBean(ITestCaseCountryPropertiesService.class);
+        ITestCaseStepService testCaseStepService = appContext.getBean(ITestCaseStepService.class);
+        ITestCaseStepActionService testCaseStepActionService = appContext.getBean(ITestCaseStepActionService.class);
+        ITestCaseStepActionControlService testCaseStepActionControlService = appContext.getBean(ITestCaseStepActionControlService.class);
         this.database = appContext.getBean(DatabaseSpring.class);
 
         String test = request.getParameter("Test");
@@ -79,32 +87,106 @@ public class DuplicateTestCase extends HttpServlet {
 
         try {
             if (testCaseService.findTestCaseByKey(test, testCase) != null) {
-                if (!request.isUserInRole("TestAdmin") && !test.equals(newTest)){
+                /**
+                 * Insert Test if user is TestAdmin and if the test doesn't
+                 * exists
+                 */
+                if (!request.isUserInRole("TestAdmin") && testService.findTestByKey(newTest) == null) {
                     throw new CerberusException(new MessageGeneral(MessageGeneralEnum.GUI_TEST_CREATION_NOT_HAVE_RIGHT));
-                }
-                
-                if (this.duplicateTestRunner(request.getUserPrincipal().getName(), test, testCase, newTest, newTestCase)) {
-
-                    /**
-                     * Adding Log entry.
-                     */
-                    ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                    IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
-                    try {
-                        logEventService.insertLogEvent(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/DuplicateTestCase", "CREATE", "Duplicate testcase From : ['" + test + "'|'" + testCase + "'] To : ['" + newTest + "'|'" + newTestCase + "']", "", ""));
-                    } catch (CerberusException ex) {
-                        Logger.getLogger(UserService.class.getName()).log(Level.ERROR, null, ex);
+                } else {
+                    if (testService.findTestByKey(newTest) == null) {
+                        Test newT = testService.findTestByKey(test);
+                        newT.setTest(newTest);
+                        testService.createTest(newT);
                     }
-
-                    response.sendRedirect("TestCase.jsp?Load=Load&Test="
-                            + newTest + "&TestCase="
-                            + newTestCase);
                 }
-            } else {
-                request.getSession().setAttribute("flashMessage",
-                        "Error Duplicating Test");
+
+                /**
+                 * Insert TestCase if not already exists
+                 */
+                if (testCaseService.findTestCaseByKey(newTest, newTestCase) != null) {
+                    throw new CerberusException(new MessageGeneral(MessageGeneralEnum.GUI_TESTCASE_DUPLICATION_ALREADY_EXISTS));
+                }
+                TCase newTc = testCaseService.findTestCaseByKey(test, testCase);
+                newTc.setCreator(request.getUserPrincipal().getName());
+                newTc.setTest(newTest);
+                newTc.setTestCase(newTestCase);
+                testCaseService.createTestCase(newTc);
+
+                /**
+                 * Insert Countries
+                 */
+                List<TestCaseCountry> newTccList = new ArrayList();
+                List<TestCaseCountry> tccList = testCaseCountryService.findTestCaseCountryByTestTestCase(test, testCase);
+                for (TestCaseCountry tcc : tccList) {
+                    tcc.setTest(newTest);
+                    tcc.setTestCase(newTestCase);
+                    newTccList.add(tcc);
+                    testCaseCountryService.insertListTestCaseCountry(newTccList);
+                    /**
+                     * Insert Properties
+                     */
+                    List<TestCaseCountryProperties> newTccpList = new ArrayList();
+                    List<TestCaseCountryProperties> tccpList = testCaseCountryPropertiesService.findListOfPropertyPerTestTestCaseCountry(test, testCase, tcc.getCountry());
+                    for (TestCaseCountryProperties tccp : tccpList) {
+                        tccp.setTest(newTest);
+                        tccp.setTestCase(newTestCase);
+                        newTccpList.add(tccp);
+                    }
+                    testCaseCountryPropertiesService.insertListTestCaseCountryProperties(newTccpList);
+                }
+
+                /**
+                 * Insert Step
+                 */
+                List<TestCaseStep> newTcsList = new ArrayList();
+                List<TestCaseStepAction> newTcsaList = new ArrayList();
+                List<TestCaseStepActionControl> newTcsacList = new ArrayList();
+                List<TestCaseStep> tcsList = testCaseStepService.getListOfSteps(test, testCase);
+                for (TestCaseStep tcs : tcsList) {
+                    tcs.setTest(newTest);
+                    tcs.setTestCase(newTestCase);
+                    newTcsList.add(tcs);
+                    /**
+                     * Insert Actions
+                     */
+                    List<TestCaseStepAction> tcsaList = testCaseStepActionService.getListOfAction(test, testCase, tcs.getStep());
+                    for (TestCaseStepAction tcsa : tcsaList) {
+                        tcsa.setTest(newTest);
+                        tcsa.setTestCase(newTestCase);
+                        newTcsaList.add(tcsa);
+                        /**
+                         * Insert Controls
+                         */
+                        List<TestCaseStepActionControl> tcsacList = testCaseStepActionControlService.findControlByTestTestCaseStepSequence(test, testCase, tcs.getStep(), tcsa.getSequence());
+                        for (TestCaseStepActionControl tcsac : tcsacList) {
+                            tcsac.setTest(newTest);
+                            tcsac.setTestCase(newTestCase);
+                            newTcsacList.add(tcsac);
+                        }
+                    }
+                }
+                testCaseStepService.insertListTestCaseStep(newTcsList);
+                testCaseStepActionService.insertListTestCaseStepAction(newTcsaList);
+                testCaseStepActionControlService.insertListTestCaseStepActionControl(newTcsacList);
+
+                /**
+                 * Adding Log entry.
+                 */
+                ILogEventService logEventService = appContext.getBean(LogEventService.class);
+                IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
+                try {
+                    logEventService.insertLogEvent(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/DuplicateTestCase", "CREATE", "Duplicate testcase From : ['" + test + "'|'" + testCase + "'] To : ['" + newTest + "'|'" + newTestCase + "']", "", ""));
+                } catch (CerberusException ex) {
+                    Logger.getLogger(UserService.class.getName()).log(Level.ERROR, null, ex);
+                }
+
                 response.sendRedirect("TestCase.jsp?Load=Load&Test="
-                        + test + "&TestCase=" + testCase);
+                        + newTest + "&TestCase="
+                        + newTestCase);
+
+            } else {
+                throw new CerberusException(new MessageGeneral(MessageGeneralEnum.GUI_TEST_DUPLICATION_NOT_EXISTING_TEST));
             }
         } catch (CerberusException exception) {
 //TODO : Choose the way we raise error : 
@@ -112,443 +194,14 @@ public class DuplicateTestCase extends HttpServlet {
 //            request.setAttribute("flashMessage", exception.getMessageError().getDescription());
 //            RequestDispatcher rd = request.getRequestDispatcher("TestCase.jsp?Load=Load&Test=" + test + "&TestCase=" + testCase);  
 //            rd.forward(request, response); 
-            
+
 //    > Using http error pages as below
             response.sendError(exception.getMessageError().getCode(), exception.getMessageError().getDescription());
         }
-    }
-
-    private Boolean duplicateActions(String test, String testCase, String newTest, String newTestCase) {
-
-        Connection connection = this.database.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement("SELECT * FROM testcasestepaction WHERE test LIKE ? AND testcase LIKE ?");
-            try {
-                preStat.setString(1, test);
-                preStat.setString(2, testCase);
-
-                ResultSet rs = preStat.executeQuery();
-                try {
-                    TestCaseStepAction insert = appContext.getBean(TestCaseStepAction.class);
-                    while (rs.next()) {
-                        insert.importResultSet(rs);
-
-                        insert.setTest(newTest);
-                        insert.setTestcase(newTestCase);
-
-                        insert.insert();
-
-                    }
-                    return true;
-                } catch (SQLException e) {
-                    MyLogger.log(DuplicateTestCase.class.getName(), Level.FATAL, "Error inserting duplicated actions" + e.toString());
-                } finally {
-                    rs.close();
-                }
-            } catch (SQLException exception) {
-                MyLogger.log(DuplicateTestCase.class.getName(), Level.ERROR, exception.toString());
-            } finally {
-                preStat.close();
-            }
-        } catch (SQLException exception) {
-            MyLogger.log(DuplicateTestCase.class.getName(), Level.ERROR, exception.toString());
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                MyLogger.log(DuplicateTestCase.class.getName(), Level.WARN, e.toString());
-            }
-        }
-
-        return false;
-    }
-
-    /*
-     * `testcasestepactioncontrol`.`Test`,
-     * `testcasestepactioncontrol`.`TestCase`,
-     * `testcasestepactioncontrol`.`Step`,
-     * `testcasestepactioncontrol`.`Sequence`,
-     * `testcasestepactioncontrol`.`Control`,
-     * `testcasestepactioncontrol`.`Type`,
-     * `testcasestepactioncontrol`.`ControlValue`,
-     * `testcasestepactioncontrol`.`ControlProperty`
-     */
-    private Boolean duplicateControls(String test, String testCase, String newTest, String newTestCase) {
-
-        Connection connection = this.database.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement("SELECT * FROM testcasestepactioncontrol WHERE test LIKE ? AND testcase LIKE ?");
-            try {
-                preStat.setString(1, test);
-                preStat.setString(2, testCase);
-
-                ResultSet rs = preStat.executeQuery();
-                try {
-                    TestCaseStepActionControl insert = appContext.getBean(TestCaseStepActionControl.class);
-
-                    while (rs.next()) {
-                        insert.importResultSet(rs);
-
-                        insert.setTest(newTest);
-                        insert.setTestcase(newTestCase);
-
-                        insert.insert();
-                    }
-                    return true;
-                } catch (SQLException e) {
-                    MyLogger.log(DuplicateTestCase.class.getName(), Level.FATAL, "Error inserting duplicated controls" + e.toString());
-                } finally {
-                    rs.close();
-                }
-            } catch (SQLException exception) {
-                MyLogger.log(DuplicateTestCase.class.getName(), Level.ERROR, exception.toString());
-            } finally {
-                preStat.close();
-            }
-        } catch (SQLException exception) {
-            MyLogger.log(DuplicateTestCase.class.getName(), Level.ERROR, exception.toString());
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                MyLogger.log(DuplicateTestCase.class.getName(), Level.WARN, e.toString());
-            }
-        }
-        return false;
-    }
-
-    /*
-     * `testcasecountry`.`Test`, `testcasecountry`.`TestCase`,
-     * `testcasecountry`.`Country`
-     */
-    private Boolean duplicateCountries(String test, String testCase, String newTest, String newTestCase) {
-
-        Connection connection = this.database.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement("SELECT * FROM testcasecountry WHERE test LIKE ? AND testcase LIKE ?");
-            try {
-                preStat.setString(1, test);
-                preStat.setString(2, testCase);
-
-                ResultSet rs = preStat.executeQuery();
-                try {
-                    while (rs.next()) {
-                        PreparedStatement preStat2 = connection.prepareStatement("INSERT INTO testcasecountry (`Test`,`Testcase`,`Country`) VALUES (?, ?, ?)");
-                        try {
-                            preStat2.setString(1, newTest);
-                            preStat2.setString(2, newTestCase);
-                            preStat2.setString(3, rs.getString("Country"));
-
-                            preStat2.executeUpdate();
-                        } catch (SQLException e) {
-                            MyLogger.log(DuplicateTestCase.class.getName(), Level.ERROR, e.toString());
-                        } finally {
-                            preStat2.close();
-                        }
-                    }
-                    return true;
-                } catch (SQLException e) {
-                    MyLogger.log(DuplicateTestCase.class.getName(), Level.FATAL, "Error inserting duplicated countries" + e.toString());
-                } finally {
-                    rs.close();
-                }
-            } catch (SQLException exception) {
-                MyLogger.log(DuplicateTestCase.class.getName(), Level.ERROR, exception.toString());
-            } finally {
-                preStat.close();
-            }
-        } catch (SQLException exception) {
-            MyLogger.log(DuplicateTestCase.class.getName(), Level.ERROR, exception.toString());
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                MyLogger.log(DuplicateTestCase.class.getName(), Level.WARN, e.toString());
-            }
-        }
-        return false;
-    }
-
-    private Boolean duplicateProperties(String test, String testCase, String newTest, String newTestCase) {
-
-        Connection connection = this.database.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement("SELECT * FROM testcasecountryproperties WHERE test LIKE ? AND testcase LIKE ?");
-            try {
-                preStat.setString(1, test);
-                preStat.setString(2, testCase);
-
-                ResultSet rs = preStat.executeQuery();
-                try {
-                    TestCaseCountryProperties insert = appContext.getBean(TestCaseCountryProperties.class);
-                    while (rs.next()) {
-                        insert.importResultSet(rs);
-
-                        insert.setTest(newTest);
-                        insert.setTestcase(newTestCase);
-
-                        insert.insert();
-                    }
-                    return true;
-                } catch (SQLException e) {
-                    MyLogger.log(DuplicateTestCase.class.getName(), Level.FATAL, "Error inserting duplicated properties" + e.toString());
-                } finally {
-                    rs.close();
-                }
-            } catch (SQLException exception) {
-                MyLogger.log(DuplicateTestCase.class.getName(), Level.ERROR, exception.toString());
-            } finally {
-                preStat.close();
-            }
-        } catch (SQLException exception) {
-            MyLogger.log(DuplicateTestCase.class.getName(), Level.ERROR, exception.toString());
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                MyLogger.log(DuplicateTestCase.class.getName(), Level.WARN, e.toString());
-            }
-        }
-
-        return false;
-    }
-
-    /*
-     * `testcasestep`.`Test`, `testcasestep`.`TestCase`, `testcasestep`.`Step`,
-     * `testcasestep`.`Description`
-     */
-    private Boolean duplicateStep(String test, String testCase, String newTest, String newTestCase) {
-
-        Connection connection = this.database.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement("SELECT * FROM testcasestep WHERE test LIKE ? AND testcase LIKE ?");
-            try {
-                preStat.setString(1, test);
-                preStat.setString(2, testCase);
-
-                ResultSet rs = preStat.executeQuery();
-                try {
-                    while (rs.next()) {
-                        PreparedStatement preStat2 = connection.prepareStatement("INSERT INTO testcasestep (`Test`,`Testcase`,`Step`,`Description`,"
-                                + "`useStep`, `useStepTest`, `useStepTestCase`, `useStepStep`)"
-                                + " VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-
-                        try {
-                            preStat2.setString(1, newTest);
-                            preStat2.setString(2, newTestCase);
-                            preStat2.setString(3, rs.getString("Step"));
-                            preStat2.setString(4, rs.getString("Description"));
-                            preStat2.setString(5, rs.getString("useStep"));
-                            preStat2.setString(6, rs.getString("useStepTest"));
-                            preStat2.setString(7, rs.getString("useStepTestCase"));
-                            preStat2.setString(8, rs.getString("useStepStep"));
-
-                            preStat2.executeUpdate();
-                        } catch (SQLException e) {
-                            MyLogger.log(DuplicateTestCase.class.getName(), Level.ERROR, e.toString());
-                        } finally {
-                            preStat2.close();
-                        }
-                    }
-                    return true;
-                } catch (SQLException e) {
-                    MyLogger.log(DuplicateTestCase.class.getName(), Level.FATAL, "Error inserting duplicated step" + e.toString());
-                } finally {
-                    rs.close();
-                }
-            } catch (SQLException exception) {
-                MyLogger.log(DuplicateTestCase.class.getName(), Level.ERROR, exception.toString());
-            } finally {
-                preStat.close();
-            }
-        } catch (SQLException exception) {
-            MyLogger.log(DuplicateTestCase.class.getName(), Level.ERROR, exception.toString());
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                MyLogger.log(DuplicateTestCase.class.getName(), Level.WARN, e.toString());
-            }
-        }
-
-        return false;
-    }
-
-    /*
-     * `test`.`Test`, `test`.`Description`, `test`.`Active`, `test`.`Automated`,
-     * `test`.`Origine`
-     */
-    private Boolean duplicateTest(String test, String newTest) {
-
-        Connection connection = this.database.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement("SELECT * FROM test WHERE test LIKE ?");
-            try {
-                preStat.setString(1, test);
-
-                ResultSet rs = preStat.executeQuery();
-                try {
-                    while (rs.next()) {
-                        PreparedStatement preStat2 = connection.prepareStatement("INSERT INTO test (`Test`,`Description`,`Active`,`Automated`) VALUES (?, ?, ?, ?)");
-                        try {
-                            preStat2.setString(1, newTest);
-                            preStat2.setString(2, rs.getString("Description"));
-                            preStat2.setString(3, rs.getString("Active"));
-                            preStat2.setString(4, rs.getString("Automated"));
-
-                            preStat2.executeUpdate();
-                        } catch (SQLException e) {
-                            MyLogger.log(DuplicateTestCase.class.getName(), Level.ERROR, e.toString());
-                        } finally {
-                            preStat2.close();
-                        }
-                    }
-                    return true;
-                } catch (SQLException e) {
-                    MyLogger.log(DuplicateTestCase.class.getName(), Level.FATAL, "Error inserting duplicated test" + e.toString());
-                } finally {
-                    rs.close();
-                }
-            } catch (SQLException exception) {
-                MyLogger.log(DuplicateTestCase.class.getName(), Level.ERROR, exception.toString());
-            } finally {
-                preStat.close();
-            }
-        } catch (SQLException exception) {
-            MyLogger.log(DuplicateTestCase.class.getName(), Level.ERROR, exception.toString());
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                MyLogger.log(DuplicateTestCase.class.getName(), Level.WARN, e.toString());
-            }
-        }
-
-        return false;
-    }
-
-    private Boolean duplicateTestCase(String creator, String test, String testCase, String newTest, String newTestCase) {
-
-        String defaultStatus = "";
-        ApplicationContext myAppContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-        IInvariantService invariantService = myAppContext.getBean(IInvariantService.class);
-        try {
-            List<Invariant> myInvariant = invariantService.findListOfInvariantById("TCSTATUS");
-            defaultStatus = myInvariant.get(0).getValue();
-        } catch (CerberusException ex) {
-            MyLogger.log(DuplicateTestCase.class.getName(), Level.ERROR, ex.toString());
-        }
-
-        Connection connection = this.database.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement("SELECT * FROM testcase WHERE test LIKE ? AND testcase LIKE ?");
-            try {
-                preStat.setString(1, test);
-                preStat.setString(2, testCase);
-
-                ResultSet rs = preStat.executeQuery();
-                try {
-                    while (rs.next()) {
-                        PreparedStatement preStat2 = connection.prepareStatement("INSERT INTO testcase (`Test`,`Testcase`,`Application`,`Project`,`Description`,`BehaviorOrValueExpected`,"
-                                + "`activeQA`,`activeUAT`,`activePROD`,`Priority`,`Status`,`TcActive`,`Group`,`Origine`,`RefOrigine`,`HowTo`, `Creator`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-                        try {
-                            preStat2.setString(1, newTest);
-                            preStat2.setString(2, newTestCase);
-                            preStat2.setString(3, rs.getString("Application"));
-                            preStat2.setString(4, rs.getString("Project"));
-                            preStat2.setString(5, rs.getString("Description"));
-                            preStat2.setString(6, rs.getString("BehaviorOrValueExpected"));
-                            preStat2.setString(7, rs.getString("activeQA"));
-                            preStat2.setString(8, rs.getString("activeUAT"));
-                            preStat2.setString(9, rs.getString("activePROD"));
-                            preStat2.setString(10, rs.getString("Priority"));
-                            preStat2.setString(11, defaultStatus);
-                            preStat2.setString(12, rs.getString("TcActive"));
-                            preStat2.setString(13, rs.getString("Group"));
-                            preStat2.setString(14, rs.getString("Origine"));
-                            preStat2.setString(15, rs.getString("RefOrigine"));
-                            preStat2.setString(16, rs.getString("HowTo"));
-                            preStat2.setString(17, creator);
-
-                            preStat2.executeUpdate();
-                        } catch (SQLException e) {
-                            MyLogger.log(DuplicateTestCase.class.getName(), Level.ERROR, e.toString());
-                        } finally {
-                            preStat2.close();
-                        }
-                    }
-                    return true;
-                } catch (SQLException e) {
-                    MyLogger.log(DuplicateTestCase.class.getName(), Level.FATAL, "Error inserting duplicated step" + e.toString());
-                } finally {
-                    rs.close();
-                }
-            } catch (SQLException exception) {
-                MyLogger.log(DuplicateTestCase.class.getName(), Level.ERROR, exception.toString());
-            } finally {
-                preStat.close();
-            }
-        } catch (SQLException exception) {
-            MyLogger.log(DuplicateTestCase.class.getName(), Level.ERROR, exception.toString());
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                MyLogger.log(DuplicateTestCase.class.getName(), Level.WARN, e.toString());
-            }
-        }
-
-        return false;
-    }
-
-    public Boolean duplicateTestRunner(String creator, String test, String testCase, String newTest, String newTestCase) {
-
-        // System.out.println ( "New Test : " + this.newTest +
-        // " New Testcase : " + this.newTestCase ) ;
-        // System.out.println ( "Test : " + this.test + " Testcase : " +
-        // this.testCase ) ;
-        Boolean run = true;
-        run = this.duplicateTest(test, newTest);
-        if (run) {
-            run = this.duplicateTestCase(creator, test, testCase, newTest, newTestCase);
-        }
-        if (run) {
-            run = this.duplicateCountries(test, testCase, newTest, newTestCase);
-        }
-        if (run) {
-            run = this.duplicateStep(test, testCase, newTest, newTestCase);
-        }
-        if (run) {
-            run = this.duplicateActions(test, testCase, newTest, newTestCase);
-        }
-        if (run) {
-            run = this.duplicateProperties(test, testCase, newTest, newTestCase);
-        }
-        if (run) {
-            run = this.duplicateControls(test, testCase, newTest, newTestCase);
-        }
-
-        return run;
-    }
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
+    }   // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
 
     /**
-     * Handles the HTTP
-     * <code>GET</code> method.
+     * Handles the HTTP <code>GET</code> method.
      *
      * @param request servlet request
      * @param response servlet response
@@ -562,8 +215,7 @@ public class DuplicateTestCase extends HttpServlet {
     }
 
     /**
-     * Handles the HTTP
-     * <code>POST</code> method.
+     * Handles the HTTP <code>POST</code> method.
      *
      * @param request servlet request
      * @param response servlet response

@@ -23,6 +23,7 @@ import java.util.List;
 import org.cerberus.access.ITestAccess;
 import org.cerberus.dao.ITestDAO;
 import org.cerberus.entity.Test;
+import org.cerberus.exception.CerberusException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -47,7 +48,7 @@ public class TestAccess implements ITestAccess {
     }
 
     @Override
-    public boolean createTest(Test test) {
+    public boolean createTest(Test test) throws CerberusException {
         return this.testDAO.createTest(test);
     }
 
