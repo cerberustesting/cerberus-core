@@ -194,7 +194,7 @@
                         <th>Status</th>
                         <th>Application</th>
                         <th>BugID</th>
-                        <th>Comment</th>
+                        <th class="wrapAll">Comment</th>
                         <th>Start</th>
                         <th>End</th>
                     </tr>
@@ -213,7 +213,7 @@
                         <th>Status</th>
                         <th>Application</th>
                         <th>BugID</th>
-                        <th>Comment</th>
+                        <th class="wrapAll">Comment</th>
                         <th>Start</th>
                         <th>End</th>
                     </tr>
@@ -232,7 +232,7 @@
                         <th>Status</th>
                         <th>Application</th>
                         <th>BugID</th>
-                        <th>Comment</th>
+                        <th class="wrapAll">Comment</th>
                         <th>Start</th>
                         <th>End</th>
                     </tr>
@@ -251,7 +251,7 @@
                         <th>Status</th>
                         <th>Application</th>
                         <th>BugID</th>
-                        <th>Comment</th>
+                        <th class="wrapAll">Comment</th>
                         <th>Start</th>
                         <th>End</th>
                     </tr>
@@ -270,7 +270,7 @@
                         <th>Status</th>
                         <th>Application</th>
                         <th>BugID</th>
-                        <th>Comment</th>
+                        <th class="wrapAll">Comment</th>
                         <th>Start</th>
                         <th>End</th>
                     </tr>
