@@ -117,7 +117,8 @@
                     IDocumentationService docService = appContext.getBean(IDocumentationService.class);
 
             %>
-        <div style="width: 80%; padding: 25px; font: 90% sans-serif">
+        <p class="dttTitle">Project</p>
+        <div style="width: 100%;  font: 90% sans-serif">
             <table id="projectsTable" class="display">
                 <thead>
                     <tr>
