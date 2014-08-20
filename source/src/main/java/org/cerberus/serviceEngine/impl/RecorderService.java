@@ -196,7 +196,7 @@ public class RecorderService implements IRecorderService {
 
     @Override
     public String recordSeleniumLogAndGetName(TestCaseExecution testCaseExecution) {
-        
+        if (testCaseExecution.getApplication().getType().equals("GUI")){
         if (testCaseExecution.getSeleniumLog()==2 || (testCaseExecution.getSeleniumLog()==1 && !testCaseExecution.getControlStatus().equals("OK"))){
         MyLogger.log(RecorderService.class.getName(), Level.INFO, "Saving File.");
 
@@ -236,6 +236,9 @@ public class RecorderService implements IRecorderService {
         MyLogger.log(RecorderService.class.getName(), Level.DEBUG, "Log recorded in : " + logFilename);
 
         return seleniumLogPath;
+        }
+        } else {
+        MyLogger.log(RecorderService.class.getName(), Level.INFO, "Selenium Log not recorded because test on non GUI application");
         }
         return null;
     }
