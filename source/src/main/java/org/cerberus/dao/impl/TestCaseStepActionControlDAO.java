@@ -272,4 +272,9 @@ public class TestCaseStepActionControlDAO implements ITestCaseStepActionControlD
         return list;
     }
 
+    @Override
+    public void updateTestCaseStepActionControl(TestCaseStepActionControl control) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
 }

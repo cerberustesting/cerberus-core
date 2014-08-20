@@ -72,4 +72,9 @@ public class TestCaseStepActionService implements ITestCaseStepActionService {
     public boolean changeTestCaseStepActionSequence(String test, String testCase, int step, int oldSequence, int newSequence) {
         return testCaseStepActionDAO.changeTestCaseStepActionSequence(test, testCase, step, oldSequence, newSequence);
     }
+
+    @Override
+    public void updateTestCaseStepAction(TestCaseStepAction tcsa) {
+        testCaseStepActionDAO.updateTestCaseStepAction(tcsa);
+    }
 }

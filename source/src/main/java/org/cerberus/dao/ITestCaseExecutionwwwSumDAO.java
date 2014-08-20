@@ -17,7 +17,9 @@
  */
 package org.cerberus.dao;
 
+import java.util.List;
 import org.cerberus.entity.StatisticSummary;
+import org.cerberus.entity.TestCaseExecutionwwwSum;
 
 /**
  * {Insert class description here}
@@ -26,7 +28,9 @@ import org.cerberus.entity.StatisticSummary;
  * @version 1.0, 03/01/2013
  * @since 2.0.0
  */
-public interface ITestCaseExecutionWWWSumDAO {
+public interface ITestCaseExecutionwwwSumDAO {
 
     void register(long runID, StatisticSummary summary);
+    
+    List<TestCaseExecutionwwwSum> getAllDetailsFromTCEwwwSum(int id);
 }

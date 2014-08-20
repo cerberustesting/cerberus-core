@@ -20,13 +20,12 @@
 package org.cerberus.refactor;
 
 import java.io.IOException;
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
+import org.cerberus.service.ITestCaseStepActionExecutionService;
 import org.json.JSONArray;
 import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;
@@ -48,7 +47,7 @@ public class TestCaseActionExecutionDetail extends HttpServlet {
     protected void doPost(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws ServletException, IOException {
 
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-        ITestCaseExecutionDetailService testCaseExecutionDetailService = appContext.getBean(ITestCaseExecutionDetailService.class);
+        ITestCaseStepActionExecutionService testCaseExecutionDetailService = appContext.getBean(ITestCaseStepActionExecutionService.class);
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
 
         String test = policy.sanitize(httpServletRequest.getParameter("test"));

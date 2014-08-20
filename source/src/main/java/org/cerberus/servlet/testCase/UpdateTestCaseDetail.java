@@ -31,27 +31,29 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.entity.TestCaseCountryProperties;
+import org.cerberus.entity.TestCaseStepAction;
+import org.cerberus.entity.TestCaseStepActionControl;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.factory.IFactoryLogEvent;
 import org.cerberus.factory.IFactoryTestCaseCountryProperties;
+import org.cerberus.factory.IFactoryTestCaseStepAction;
+import org.cerberus.factory.IFactoryTestCaseStepActionControl;
 import org.cerberus.factory.impl.FactoryLogEvent;
 import org.cerberus.log.MyLogger;
-import org.cerberus.refactor.TestCaseStepAction;
-import org.cerberus.refactor.TestCaseStepActionControl;
 import org.cerberus.service.ILogEventService;
-import org.cerberus.service.impl.LogEventService;
 import org.cerberus.service.ITestCaseCountryPropertiesService;
+import org.cerberus.service.ITestCaseStepActionControlService;
+import org.cerberus.service.ITestCaseStepActionService;
+import org.cerberus.service.impl.LogEventService;
 import org.cerberus.service.impl.UserService;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
@@ -726,29 +728,23 @@ public class UpdateTestCaseDetail extends HttpServlet {
                         // System.out.println ( "Step Key : " + sql ) ;
                         ResultSet rs_stepaction = stmt4.executeQuery(sql);
                         try {
-                            TestCaseStepAction action = appContext.getBean(TestCaseStepAction.class);
-                            action.setTest(test_testcase_format[0]);
-                            action.setTestcase(test_testcase_format[1]);
-                            action.setStep(Integer.parseInt(step_number_hide[i]));
-                            action.setSequence(Integer.parseInt(step_sequence[i]));
-                            action.setAction(step_action[i]);
-                            action.setObject(step_object[i]);
-                            action.setProperty(step_property[i]);
-
-                            action.setDescription(step_description[i]);
-
+                            IFactoryTestCaseStepAction actionFactory = appContext.getBean(IFactoryTestCaseStepAction.class);
+                            ITestCaseStepActionService actionService = appContext.getBean(ITestCaseStepActionService.class);
+                            TestCaseStepAction tcsa = actionFactory.create(test_testcase_format[0], test_testcase_format[1], Integer.parseInt(step_number_hide[i]), Integer.parseInt(step_sequence[i]),
+                                    step_action[i], step_object[i], step_property[i], step_description[i]);
+                            
                             if (rs_stepaction.next()) { /*
                          * Update
                          */
 
-                                action.update();
+                                actionService.updateTestCaseStepAction(tcsa);
 
 
                             } else { /*
                          * Insert
                          */
                                 if (this.formIsFullFill(testcase_actions_info, i)) {
-                                    action.insert();
+                                    actionService.insertTestCaseStepAction(tcsa);
 
                                 }
                             }
@@ -780,32 +776,22 @@ public class UpdateTestCaseDetail extends HttpServlet {
                         // System.out.println ( "Step Key : " + sql ) ;
                         ResultSet rs_stepactioncontrol = stmt4.executeQuery(sql);
                         try {
-                        TestCaseStepActionControl control = appContext.getBean(TestCaseStepActionControl.class);
-                        control.setTest(test_testcase_format[0]);
-                        control.setTestcase(test_testcase_format[1]);
-                        control.setStep(Integer.parseInt(controls_step[i]));
-                        control.setSequence(Integer.parseInt(controls_sequence[i]));
-                        control.setControl(Integer.parseInt(controls_control[i]));
-                        control.setType(controls_type[i]);
-                        control.setControlValue((controls_controlvalue[i]));
-                        if ((controls_fatal[i]).compareTo("Y") == 0) {
-                            control.setFatal(true);
-                        } else {
-                            control.setFatal(false);
-                        }
-
-                        control.setControlProperty(controls_controlproperty[i]);
-                        control.setControlDescription(controls_controldescription[i]);
+                        IFactoryTestCaseStepActionControl controlFactory = appContext.getBean(IFactoryTestCaseStepActionControl.class);
+                        ITestCaseStepActionControlService controlService = appContext.getBean(ITestCaseStepActionControlService.class);
+                        TestCaseStepActionControl control = controlFactory.create(test_testcase_format[0], test_testcase_format[1], Integer.parseInt(controls_step[i]),
+                                Integer.parseInt(controls_sequence[i]), Integer.parseInt(controls_control[i]), controls_type[i], (controls_controlvalue[i]),
+                                controls_controlproperty[i], controls_fatal[i], controls_controldescription[i]);
+                        
 
                         if (rs_stepactioncontrol.next()) {
 
-                            control.update();
+                            controlService.updateTestCaseStepActionControl(control);
 
 
                         } else {
 //                        if (this.formIsFullFill(testcase_controls_info, i)) {
 
-                            control.insert();
+                            controlService.insertTestCaseStepActionControl(control);
 
 
 //                        }

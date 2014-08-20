@@ -17,6 +17,8 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
+<%@page import="org.cerberus.entity.TestCaseExecutionwwwSum"%>
+<%@page import="org.cerberus.service.ITestCaseExecutionwwwSumService"%>
 <%@page import="org.cerberus.entity.TestCaseExecution"%>
 <%@page import="org.cerberus.service.ITestCaseExecutionService"%>
 <%@page import="java.sql.Statement"%>
@@ -45,8 +47,6 @@
 <%@page import="org.cerberus.service.ITestCaseStepActionExecutionService"%>
 <%@page import="org.cerberus.service.ITestCaseStepExecutionService"%>
 <%@page import="org.cerberus.service.ITestCaseExecutionDataService"%>
-<%@page import="org.cerberus.refactor.TestcaseExecutionwwwSum"%>
-<%@page import="org.cerberus.refactor.ITCEwwwSumService"%>
 <%@page import="org.cerberus.util.StringUtil"%>
 <%@page import="org.cerberus.util.DateUtil"%>
 <%@page import="org.cerberus.util.ParameterParserUtil"%>
@@ -315,11 +315,11 @@
             <br/><br/>
             <div id="tablewwwsum">
                 <%
-                    ITCEwwwSumService tcewwwsumService = appContext.getBean(ITCEwwwSumService.class);
+                    ITestCaseExecutionwwwSumService tcewwwsumService = appContext.getBean(ITestCaseExecutionwwwSumService.class);
 
-                    List<TestcaseExecutionwwwSum> tcewwwsumdetails = tcewwwsumService.getAllDetailsFromTCEwwwSum(Integer.valueOf(id_filter));
+                    List<TestCaseExecutionwwwSum> tcewwwsumdetails = tcewwwsumService.getAllDetailsFromTCEwwwSum(Integer.valueOf(id_filter));
                     if (tcewwwsumdetails != null) {
-                        for (TestcaseExecutionwwwSum wwwsumdetails : tcewwwsumdetails) {
+                        for (TestCaseExecutionwwwSum wwwsumdetails : tcewwwsumdetails) {
                 %>
                 <div id="tablewwwsum">
 

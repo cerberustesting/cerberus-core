@@ -18,8 +18,10 @@
 package org.cerberus.dao;
 
 import java.util.List;
-
 import org.cerberus.entity.StatisticDetail;
+import org.cerberus.entity.TestCase;
+import org.cerberus.entity.TestCaseExecutionwwwDet;
+import org.cerberus.entity.TestCaseExecutionwwwSumHistoric;
 
 /**
  * {Insert class description here}
@@ -28,9 +30,13 @@ import org.cerberus.entity.StatisticDetail;
  * @version 1.0, 03/01/2013
  * @since 2.0.0
  */
-public interface ITestCaseExecutionWWWDetDAO {
+public interface ITestCaseExecutionwwwDetDAO {
 
     void register(long runId, StatisticDetail detail);
 
     List<StatisticDetail> getStatistics(long runId);
+    
+    List<TestCaseExecutionwwwDet> getListOfDetail(int execId);
+    
+    List<TestCaseExecutionwwwSumHistoric> getHistoricForParameter(TestCase testcase, String parameter);
 }

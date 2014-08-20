@@ -22,6 +22,7 @@ package org.cerberus.service;
 import java.util.List;
 
 import org.cerberus.entity.TestCaseStepActionExecution;
+import org.json.JSONArray;
 
 /**
  *
@@ -47,4 +48,14 @@ public interface ITestCaseStepActionExecutionService {
      * @return List of testCaseStepExecution that correspond to the Id.
      */
     List<TestCaseStepActionExecution> findTestCaseStepActionExecutionByCriteria(long id, String test, String testCase, int step);
+    
+    
+    /**
+     * 
+     * @param test
+     * @param testcase
+     * @param country
+     * @return 
+     */
+    JSONArray lastActionExecutionDuration(String test, String testcase, String country);
 }

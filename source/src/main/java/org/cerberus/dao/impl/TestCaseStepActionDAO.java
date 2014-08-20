@@ -274,4 +274,9 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
         return false;
     }
 
+    @Override
+    public void updateTestCaseStepAction(TestCaseStepAction tcsa) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
 }

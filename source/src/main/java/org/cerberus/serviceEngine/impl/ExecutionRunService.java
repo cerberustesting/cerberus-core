@@ -57,7 +57,7 @@ import org.cerberus.service.ITestCaseCountryPropertiesService;
 import org.cerberus.service.ITestCaseExecutionDataService;
 import org.cerberus.service.ITestCaseExecutionService;
 import org.cerberus.service.ITestCaseExecutionSysVerService;
-import org.cerberus.service.ITestCaseExecutionWWWService;
+import org.cerberus.service.ITestCaseExecutionwwwSumService;
 import org.cerberus.service.ITestCaseService;
 import org.cerberus.service.ITestCaseStepActionControlExecutionService;
 import org.cerberus.service.ITestCaseStepActionExecutionService;
@@ -105,7 +105,7 @@ public class ExecutionRunService implements IExecutionRunService {
     @Autowired
     private ICountryEnvLinkService countryEnvLinkService;
     @Autowired
-    private ITestCaseExecutionWWWService testCaseExecutionWWWService;
+    private ITestCaseExecutionwwwSumService testCaseExecutionwwwSumService;
     @Autowired
     private ITestCaseCountryPropertiesService testCaseCountryPropertiesService;
     @Autowired
@@ -619,7 +619,7 @@ public class ExecutionRunService implements IExecutionRunService {
 
     private TestCaseExecution collectExecutionStats(TestCaseExecution tCExecution) {
         if (tCExecution.getVerbose() > 0) {
-            this.testCaseExecutionWWWService.registerSummary(tCExecution.getId());
+            this.testCaseExecutionwwwSumService.registerSummary(tCExecution.getId());
         }
         return tCExecution;
     }

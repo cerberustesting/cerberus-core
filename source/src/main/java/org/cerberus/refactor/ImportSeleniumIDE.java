@@ -29,16 +29,16 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.apache.log4j.Level;
 import org.cerberus.database.DatabaseSpring;
+import org.cerberus.factory.IFactoryTestCaseCountryProperties;
 import org.cerberus.log.MyLogger;
+import org.cerberus.service.ITestCaseCountryPropertiesService;
 import org.cerberus.servlet.testCase.CreateTestCase;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
@@ -157,19 +157,10 @@ public class ImportSeleniumIDE extends HttpServlet {
                     // INSERT A PROPERTY
                     if (!propertyName[j].equals("null")) //or  if (StringUtils.isNotBlank(property[i]))
                     {
-                        TestCaseCountryProperties properties = appContext.getBean(TestCaseCountryProperties.class);
-                        properties.setTest(test);
-                        properties.setTestcase(testcase);
-                        properties.setCountry(countryList.get(k));
-                        properties.setProperty(propertyName[j]);
-                        properties.setNature("STATIC");
-                        properties.setRowlimit(0);
-                        properties.setLength(0);
-                        properties.setValue1(propertyValue[j]);
-                        //properties.setValue2(???);
-                        properties.setType("text");
-                        properties.setDatabase("");
-                        properties.insert();
+                        ITestCaseCountryPropertiesService propertyService = appContext.getBean(ITestCaseCountryPropertiesService.class);
+                        IFactoryTestCaseCountryProperties propertyFactory = appContext.getBean(IFactoryTestCaseCountryProperties.class);
+                        propertyService.insertTestCaseCountryProperties(propertyFactory.create(test, testcase, countryList.get(k), propertyName[j], "text", "", propertyValue[j], "", 0, 0, "STATIC"));
+                        
                     }
                 }
             }

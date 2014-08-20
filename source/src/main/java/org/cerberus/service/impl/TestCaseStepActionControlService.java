@@ -72,4 +72,9 @@ public class TestCaseStepActionControlService implements ITestCaseStepActionCont
     public List<TestCaseStepActionControl> findControlByTestTestCaseStep(String test, String testcase, int step) {
         return testCaseStepActionControlDao.findControlByTestTestCaseStep(test, testcase, step);
     }
+
+    @Override
+    public void updateTestCaseStepActionControl(TestCaseStepActionControl control) {
+        testCaseStepActionControlDao.updateTestCaseStepActionControl(control);
+    }
 }

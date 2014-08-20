@@ -3,6 +3,7 @@
 # Package Files #
 *.jar
 *.ear
-.directory
+#.directory
 *~
 *.bak
+/source/target/

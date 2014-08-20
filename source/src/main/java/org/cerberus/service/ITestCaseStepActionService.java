@@ -23,6 +23,7 @@ import java.util.List;
 
 import org.cerberus.entity.TestCaseStepAction;
 import org.cerberus.exception.CerberusException;
+import org.json.JSONArray;
 
 /**
  *
@@ -39,4 +40,6 @@ public interface ITestCaseStepActionService {
     boolean insertListTestCaseStepAction(List<TestCaseStepAction> testCaseStepActionList);
     
     boolean changeTestCaseStepActionSequence(String test, String testCase, int step, int oldSequence, int newSequence);
+
+    public void updateTestCaseStepAction(TestCaseStepAction tcsa);
 }

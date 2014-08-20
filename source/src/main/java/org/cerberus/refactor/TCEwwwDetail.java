@@ -21,13 +21,13 @@ package org.cerberus.refactor;
 
 import java.io.IOException;
 import java.util.List;
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
+import org.cerberus.entity.TestCaseExecutionwwwDet;
+import org.cerberus.service.ITestCaseExecutionwwwDetService;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -79,17 +79,17 @@ public class TCEwwwDetail extends HttpServlet {
 
         JSONArray data = new JSONArray(); //data that will be shown in the table
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-        ITCEwwwDetService tCEwwwDetService = appContext.getBean(ITCEwwwDetService.class);
+        ITestCaseExecutionwwwDetService tCEwwwDetService = appContext.getBean(ITestCaseExecutionwwwDetService.class);
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
 
         String id = policy.sanitize(httpServletRequest.getParameter("id"));
 
-        List<TestcaseExecutionwwwDet> detailList = tCEwwwDetService.getListOfDetail(Integer.valueOf(id));
+        List<TestCaseExecutionwwwDet> detailList = tCEwwwDetService.getListOfDetail(Integer.valueOf(id));
 
             try {
             JSONObject jsonResponse = new JSONObject();
 
-            for (TestcaseExecutionwwwDet detail : detailList) {
+            for (TestCaseExecutionwwwDet detail : detailList) {
                 JSONArray row = new JSONArray();
                 //"<a href=\'javascript:popup(\"qualitynonconformitydetails.jsp?ncid="+listofnonconformities.getIdqualitynonconformities()+"\")\'>"+listofnonconformities.getIdqualitynonconformities()+"</a>"
                 row.put(detail.getId())

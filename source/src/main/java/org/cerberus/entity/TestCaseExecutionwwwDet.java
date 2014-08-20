@@ -17,37 +17,26 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.refactor;
+package org.cerberus.entity;
 
 /**
  *
  * @author bcivel
  */
-public class TestcaseExecutionwwwDet {
+public class TestCaseExecutionwwwDet {
 
-   int id;
-   
-   int execID;
-   
-   String start;
-   
-   String url;
-   
-   String end;
-   
-   String ext;
-   
-   int statusCode;
-   
-   String method;
-   
-   int bytes;
-   
-   int timeInMillis;
-   
-   String reqHeader_Host;
-   
-   String resHeader_ContentType;
+    int id;
+    int execID;
+    String start;
+    String url;
+    String end;
+    String ext;
+    int statusCode;
+    String method;
+    int bytes;
+    int timeInMillis;
+    String reqHeader_Host;
+    String resHeader_ContentType;
 
     public int getBytes() {
         return bytes;
@@ -144,7 +133,5 @@ public class TestcaseExecutionwwwDet {
     public void setUrl(String url) {
         this.url = url;
     }
-   
-   
-    
+
 }

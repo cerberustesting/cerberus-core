@@ -21,18 +21,18 @@ package org.cerberus.servlet.engine;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.apache.log4j.Level;
 import org.cerberus.entity.ExecutionUUID;
 import org.cerberus.log.MyLogger;
-import org.cerberus.service.ITestCaseExecutionWWWService;
-import org.cerberus.service.impl.TestCaseExecutionWWWService;
+import org.cerberus.service.ITestCaseExecutionwwwDetService;
+import org.cerberus.service.ITestCaseExecutionwwwSumService;
+import org.cerberus.service.impl.TestCaseExecutionwwwDetService;
+import org.cerberus.service.impl.TestCaseExecutionwwwSumService;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -65,11 +65,11 @@ public class SaveStatistic extends HttpServlet {
         }
 
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-        ITestCaseExecutionWWWService testCaseExecutionWWWService = appContext.getBean(TestCaseExecutionWWWService.class);
+        ITestCaseExecutionwwwDetService testCaseExecutionwwwDetService = appContext.getBean(TestCaseExecutionwwwDetService.class);
         ExecutionUUID executionUUID = appContext.getBean(ExecutionUUID.class);
         long executionId = executionUUID.getExecutionID(runId);
         
-        testCaseExecutionWWWService.registerDetail(executionId, sb.toString(), page);
+        testCaseExecutionwwwDetService.registerDetail(executionId, sb.toString(), page);
 
     }
 

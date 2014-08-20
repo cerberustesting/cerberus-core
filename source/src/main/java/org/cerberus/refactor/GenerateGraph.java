@@ -25,7 +25,6 @@ import java.awt.image.RenderedImage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.imageio.ImageIO;
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
@@ -33,8 +32,8 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.cerberus.entity.TestCase;
+import org.cerberus.service.ITestCaseExecutionwwwDetService;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -92,7 +91,7 @@ public class GenerateGraph extends HttpServlet {
 
 
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-        ITCEwwwDetService tCEwwwDetService = appContext.getBean(ITCEwwwDetService.class);
+        ITestCaseExecutionwwwDetService tCEwwwDetService = appContext.getBean(ITestCaseExecutionwwwDetService.class);
 
         BufferedImage bi = tCEwwwDetService.getHistoricOfParameter(tc, parameter);
 
