@@ -56,15 +56,15 @@
     </servlet>
     <servlet>
         <servlet-name>importXML</servlet-name>
-        <servlet-class>org.cerberus.refactor.ImportSeleniumIDE</servlet-class>
+        <servlet-class>org.cerberus.servlet.testCase.ImportSeleniumIDE</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>importFile</servlet-name>
-        <servlet-class>org.cerberus.refactor.importFile</servlet-class>
+        <servlet-class>org.cerberus.servlet.testCase.importFile</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>AddTest</servlet-name>
-        <servlet-class>org.cerberus.refactor.TestcaseList</servlet-class>
+        <servlet-class>org.cerberus.servlet.testCase.TestcaseList</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>UpdateTest</servlet-name>
@@ -101,11 +101,11 @@
     </servlet>
     <servlet>
         <servlet-name>TestcaseList</servlet-name>
-        <servlet-class>org.cerberus.refactor.TestcaseList</servlet-class>
+        <servlet-class>org.cerberus.servlet.testCase.TestcaseList</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>TestcaseListGrid</servlet-name>
-        <servlet-class>org.cerberus.refactor.TestcaseListGrid</servlet-class>
+        <servlet-class>org.cerberus.servlet.testCase.TestcaseListGrid</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>CreateTestCase</servlet-name>
@@ -145,23 +145,23 @@
     </servlet>
     <servlet>
         <servlet-name>ImportSeleniumIDE</servlet-name>
-        <servlet-class>org.cerberus.refactor.ImportSeleniumIDE</servlet-class>
+        <servlet-class>org.cerberus.servlet.testCase.ImportSeleniumIDE</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>TCEwwwDetail</servlet-name>
-        <servlet-class>org.cerberus.refactor.TCEwwwDetail</servlet-class>
+        <servlet-class>org.cerberus.servlet.reporting.TCEwwwDetail</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>GenerateGraph</servlet-name>
-        <servlet-class>org.cerberus.refactor.GenerateGraph</servlet-class>
+        <servlet-class>org.cerberus.servlet.reporting.GenerateGraph</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>TestCaseActionExecutionDetail</servlet-name>
-        <servlet-class>org.cerberus.refactor.TestCaseActionExecutionDetail</servlet-class>
+        <servlet-class>org.cerberus.servlet.reporting.TestCaseActionExecutionDetail</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>GetConnectionPoolName</servlet-name>
-        <servlet-class>org.cerberus.refactor.GetConnectionPoolName</servlet-class>
+        <servlet-class>org.cerberus.servlet.GetConnectionPoolName</servlet-class>
     </servlet>
     <servlet>
         <description>This Servlet is used to Record a new Release inside the pending sprint.</description>
