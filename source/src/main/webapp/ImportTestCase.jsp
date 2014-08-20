@@ -69,7 +69,9 @@
         <select id="fromTestCase" name="FromTestCase" onchange="getTestCasesForImportStep()">
             <%
                 if (test.compareTo("%%") == 0) {
-            %><option value="All">-- Choose Test First --</option><%                    } else {
+            %><option value="All">-- Choose Test First --</option><%                    } else {%>
+            <option value="---">-- Choose TestCase --</option>
+            <%
                 String sql = "SELECT TestCase, Application,  Description, tcactive FROM testcase where TestCase IS NOT NULL and test like '" + test + "'Order by TestCase asc";
                 ResultSet rsTestCase = stQueryTestCase.executeQuery(sql);
                 while (rsTestCase.next()) {
@@ -89,7 +91,9 @@
         <select id="fromStep" name="FromStep">
             <%
                 if (testcase.compareTo("%%") == 0) {
-            %><option value="All">-- Choose Test Case First --</option><%                    } else {
+            %><option value="All">-- Choose Test Case First --</option><%                    } else {%>
+            <option value="---">-- Choose Step --</option>
+            <%
 
                 String sql = "SELECT Step, Description FROM testcasestep WHERE Test like '" + test + "' and TestCase like '" + testcase + "' Order by Step asc";
                 //String sql = "SELECT TestCase, Application,  Description, tcactive FROM testcase where TestCase IS NOT NULL and test like '" + test + "'Order by TestCase asc";
