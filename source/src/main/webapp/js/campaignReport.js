@@ -126,6 +126,7 @@ function addTestCaseToStatusTabs(testcase) {
     statusTestCaseStatusLine.find(".Status").text(testcase.Status);
     statusTestCaseStatusLine.find(".BugID").text(testcase.BugID);
     statusTestCaseStatusLine.find(".Application").text(testcase.Application);
+    statusTestCaseStatusLine.find(".Comment").text(testcase.Comment);
 
     if (statusTable.find("tr").length % 2) {
         statusTestCaseStatusLine.addClass("odd");
