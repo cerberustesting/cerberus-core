@@ -31,7 +31,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class TestCaseStepActionControl implements DatabaseCRUD {
+public class TestCaseStepActionControl {
 
     private static final String COLUMNS = "`Test`, `TestCase`, `Step`, `Sequence`, `Control`, `Type`, `ControlValue`, `ControlProperty`, `ControlDescription`, `Fatal`";
     private static final String TABLE = "testcasestepactioncontrol";
@@ -157,7 +157,6 @@ public class TestCaseStepActionControl implements DatabaseCRUD {
         this.type = type;
     }
 
-    @Override
     public void importResultSet(ResultSet rs) {
 
         try {
@@ -176,7 +175,6 @@ public class TestCaseStepActionControl implements DatabaseCRUD {
         }
     }
 
-    @Override
     public void insert() {
 
         String lfatal;
@@ -224,7 +222,6 @@ public class TestCaseStepActionControl implements DatabaseCRUD {
 
     }
 
-    @Override
     public void update() {
         String lfatal;
         if (this.fatal) {
