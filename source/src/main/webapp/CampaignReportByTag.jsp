@@ -39,6 +39,7 @@
         <link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico">
         <script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>
         <script type="text/javascript" src="js/jquery-ui-1.10.2.js"></script>
+        <script type="text/javascript" src="js/sorttable.js"></script>
         <script type="text/javascript" src="js/Chartjs/Chart.js"></script>
         <script type="text/javascript" src="js/Chartjs/extensions/Chart.ColoredBar.js"></script>
         <script type="text/javascript" src="js/Chartjs/extensions/Chart.StackedBar.js"></script>
@@ -120,6 +121,11 @@
                     });
 
                     computePercentDataRadar(ctx[2]);
+                    
+                    $("table.needToBeSort").each(function(){
+                        sorttable.makeSortable(this);
+                    });
+                    
                 });
             });
         </script>
@@ -158,6 +164,10 @@
             a.StatusPE {
                 color: #555555;
             }
+
+            table.sortable th:not(.sorttable_sorted):not(.sorttable_sorted_reverse):not(.sorttable_nosort):after { 
+                content: " \25B4\25BE" 
+            }            
         </style>
     </head>
     <body>
@@ -184,7 +194,7 @@
                 </tr>
             </table>
             <h1><a name="StatusKO" class="StatusKO">Status KO</a></h1>
-            <table id="StatusKO" class="arrondTable fullSize">
+            <table id="StatusKO" class="arrondTable fullSize needToBeSort">
                 <thead>
                     <tr>
                         <th>ID</th>
@@ -203,7 +213,7 @@
                 </tbody>
             </table>
             <h1><a name="StatusFA" class="StatusFA">Status FA</a></h1>
-            <table id="StatusFA" class="arrondTable fullSize">
+            <table id="StatusFA" class="arrondTable fullSize needToBeSort">
                 <thead>
                     <tr>
                         <th>ID</th>
@@ -222,7 +232,7 @@
                 </tbody>
             </table>
             <h1><a name="StatusNA" class="StatusNA">Status NA</a></h1>
-            <table id="StatusNA" class="arrondTable fullSize">
+            <table id="StatusNA" class="arrondTable fullSize needToBeSort">
                 <thead>
                     <tr>
                         <th>ID</th>
@@ -241,7 +251,7 @@
                 </tbody>
             </table>
             <h1><a name="StatusPE" class="StatusPE">Status PE</a></h1>
-            <table id="StatusPE" class="arrondTable fullSize">
+            <table id="StatusPE" class="arrondTable fullSize needToBeSort">
                 <thead>
                     <tr>
                         <th>ID</th>
@@ -260,7 +270,7 @@
                 </tbody>
             </table>
             <h1><a name="StatusOK" class="StatusOK">Status OK</a></h1>
-            <table id="StatusOK" class="arrondTable fullSize">
+            <table id="StatusOK" class="arrondTable fullSize needToBeSort">
                 <thead>
                     <tr>
                         <th>ID</th>
