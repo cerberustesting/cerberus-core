@@ -165,7 +165,7 @@
                 color: #555555;
             }
 
-            table.sortable th:not(.sorttable_sorted):not(.sorttable_sorted_reverse):not(.sorttable_nosort):after { 
+            table.needToBeSort th:not(.sorttable_sorted):not(.sorttable_sorted_reverse):not(.sorttable_nosort):after { 
                 content: " \25B4\25BE" 
             }            
         </style>
