@@ -65,7 +65,7 @@ public class GetReport extends HttpServlet {
         String[] browsers = req.getParameterValues("Browser");
 
         //Get all test cases that match the user input
-        List<TCase> list = testCaseService.findTestCaseByAllCriteria(tCase, "", system);
+        List<TCase> list = testCaseService.findTestCaseByGroupInCriteria(tCase, "", system);
 
         //Create object to be filled and then added to JSON response
         JSONArray data = new JSONArray();
@@ -161,17 +161,13 @@ public class GetReport extends HttpServlet {
         String[] values = req.getParameterValues(valueName);
 
         if (values != null) {
-            if (values.length == 1) {
-                if (!"All".equalsIgnoreCase(values[0]) && !"".equalsIgnoreCase(values[0].trim())) {
-                    whereClause.append(values[0]);
-                }
-            } else {
-                whereClause.append(" ( '").append(values[0]);
-                for (int i = 1; i < values.length; i++) {
+            whereClause.append(" ( '").append(values[0]);
+            for (int i = 1; i < values.length; i++) {
+                if (!"All".equalsIgnoreCase(values[i]) && !"".equalsIgnoreCase(values[i].trim())) {
                     whereClause.append("', '").append(values[i]);
                 }
-                whereClause.append("' ) ");
             }
+            whereClause.append("' ) ");
             return whereClause.toString();
         }
         return null;
