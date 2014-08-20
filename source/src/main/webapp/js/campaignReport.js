@@ -212,6 +212,14 @@ function computePercentDataRadar(ctx) {
         ]
     };
 
+    var config = {
+        // String - Template string for single tooltips
+        tooltipTemplate: "<%if (label){%><%=label%>: <%}%><%= value %>",
+
+        // String - Template string for single tooltips
+        multiTooltipTemplate: "<%if (datasetLabel){%><%=datasetLabel%>: <%}%><%= value %>"
+    }
+
     $.each(dataPercent, function(key, val){
         data.datasets[0].data[data.labels.length] = (val.OK ? val.OK : 0);
         data.datasets[1].data[data.labels.length] = (val.KO ? val.KO : 0);
@@ -222,7 +230,9 @@ function computePercentDataRadar(ctx) {
         data.labels[data.labels.length] = key;
 
     });
+
     console.log(data);
-    new Chart(ctx).StackedBar(data);
+
+    new Chart(ctx).StackedBar(data,config);
    // return data;
 }

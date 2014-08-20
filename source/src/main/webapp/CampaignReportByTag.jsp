@@ -131,8 +131,8 @@
                 background: white;
             }
 
-            table {
-                margin-bottom: 15px;
+            table.noBorder td {
+                border: none;
             }
 
             table.fullSize {
@@ -164,15 +164,12 @@
         <%@ include file="include/function.jsp" %>
         <%@ include file="include/header.jsp" %>
 
-
         <div id="main">
-            <table class="fullSize">
+            <table class="fullSize noBorder">
                 <tr>
-                    <td colspan="2">
+                    <td>
                         <div class="executionStatus"></div>
                     </td>
-                </tr>
-                <tr>
                     <td>
                         <canvas class="executionStatus"></canvas>
                     </td>
@@ -181,11 +178,10 @@
                     </td>
                 </tr>
                 <tr>
-                    <td colspan="2">
+                    <td colspan="3">
                         <canvas id="functionBar"></canvas>
                     </td>
                 </tr>
-
             </table>
             <h1><a name="StatusKO" class="StatusKO">Status KO</a></h1>
             <table id="StatusKO" class="arrondTable fullSize">
