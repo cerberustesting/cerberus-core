@@ -21,7 +21,7 @@
 <%@page import="java.util.TreeMap"%>
 <%@page import="org.springframework.web.context.support.WebApplicationContextUtils"%>
 <%@page import="org.springframework.context.ApplicationContext"%>
-<%@page import="org.cerberus.refactor.Country"%>
+<%@page import="org.cerberus.entity.Country"%>
 <%@page import="java.util.Collection"%>
 <%@page import="java.util.Iterator"%>
 <%@page import="com.mysql.jdbc.ResultSetImpl"%>
@@ -223,7 +223,7 @@
     Boolean checkSelected(Collection<Country> col, String selection) {
         Iterator<Country> it = col.iterator();
         while (it.hasNext()) {
-            if (it.next().getName().compareTo(selection) == 0) {
+            if (it.next().getCountry().compareTo(selection) == 0) {
                 return true;
             }
         }

@@ -29,7 +29,6 @@
 <%@page import="org.springframework.context.ApplicationContext"%>
 <%@page import="org.cerberus.entity.User"%>
 <%@page import="org.cerberus.util.ParameterParserUtil"%>
-<%@page import="org.cerberus.refactor.Country"%>
 <%@page import="java.util.Collection"%>
 <%@page import="java.util.Iterator"%>
 <%@page import="com.mysql.jdbc.ResultSetImpl"%>
