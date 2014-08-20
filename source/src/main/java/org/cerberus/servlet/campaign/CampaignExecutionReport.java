@@ -149,36 +149,36 @@ public class CampaignExecutionReport extends HttpServlet {
                     //jSONResult.put(testCaseExecutionToJSONObject(testCaseExecution));
                 }
             }
-             for (CampaignContent campaignContent : campaignService.findCampaignContentsByCampaignName(campaignName)) {
+            HashMap<String, TestCaseExecution> hmTestCaseExecutionByTestCaseEnvBrowserAndCountry = new HashMap<String, TestCaseExecution>();
+            for (CampaignContent campaignContent : campaignService.findCampaignContentsByCampaignName(campaignName)) {
                 for (TestBatteryContent batteryContent : testBatteryService.findTestBatteryContentsByTestBatteryName(campaignContent.getTestbattery())) {
-                    TCase tCase = testCaseService.findTestCaseByKey(batteryContent.getTest(), batteryContent.getTestCase());
-                    key = tCase.getTest() + tCase.getTestCase();
+                    key = batteryContent.getTest() + batteryContent.getTestCase();
                     if (hmTestCaseExecutionByTestCase.containsKey(key)) {
                         for (TestCaseExecution testCaseExecution : hmTestCaseExecutionByTestCase.get(key)) {
-                            try {
-                                /*
-                                 if (bugURLForApplication.containsKey(out)) {
+                            String keyEnvCountryBrowser = new StringBuffer(testCaseExecution.getTest())
+                                    .append(testCaseExecution.getTestCase())
+                                    .append(testCaseExecution.getEnvironment())
+                                    .append(testCaseExecution.getBrowser())
+                                    .toString();
 
-                                } else {
-                                                                        if (testCaseExecution.getApplication() != null) {
-                                        myApplication = applicationService.findApplicationByKey(testCaseExecution.getApplication());
-                                        appSystem = myApplication.getSystem();
-                                        SitdmossBugtrackingURL = myApplication.getBugTrackerUrl();
-                                    } else {
-                                        appSystem = "";
-                                        SitdmossBugtrackingURL = "";
-                                    }
-
-                                 }
-                                */
-                                String bugURL = "";
-                                jSONResult.put(testCaseExecutionToJSONObject(testCaseExecution, tCase, bugURL));
-                            } catch (JSONException ex) {
-                                Logger.getLogger(CampaignExecutionReport.class.getName()).log(Level.SEVERE, null, ex);
+                            if (!hmTestCaseExecutionByTestCaseEnvBrowserAndCountry.containsKey(keyEnvCountryBrowser)
+                                    || hmTestCaseExecutionByTestCaseEnvBrowserAndCountry.get(keyEnvCountryBrowser).getId() < testCaseExecution.getId()) {
+                                hmTestCaseExecutionByTestCaseEnvBrowserAndCountry.put(keyEnvCountryBrowser, testCaseExecution);
                             }
                         }
                     }
                 }
+            }
+
+            String bugURL = "";
+            for (TestCaseExecution testCaseExecutionByTestCaseEnvBrowserAndCountry : hmTestCaseExecutionByTestCaseEnvBrowserAndCountry.values()) {
+                try {
+                    TCase tCase = testCaseService.findTestCaseByKey(testCaseExecutionByTestCaseEnvBrowserAndCountry.getTest(), testCaseExecutionByTestCaseEnvBrowserAndCountry.getTestCase());
+                    jSONResult.put(testCaseExecutionToJSONObject(testCaseExecutionByTestCaseEnvBrowserAndCountry, tCase, bugURL));
+                } catch (JSONException ex) {
+                    Logger.getLogger(CampaignExecutionReport.class.getName()).log(Level.SEVERE, null, ex);
+                }
+
             }
 
             response.setContentType("application/json");
@@ -192,7 +192,7 @@ public class CampaignExecutionReport extends HttpServlet {
         }
     }
 
-	// <editor-fold defaultstate="collapsed"
+    // <editor-fold defaultstate="collapsed"
     // desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.
@@ -231,14 +231,12 @@ public class CampaignExecutionReport extends HttpServlet {
     }// </editor-fold>
 
     /**
-	 * Test case execution to json object.
-	 *
-	 * @param testCaseExecutions
-	 *            the test case executions
-	 * @return the JSON object
-	 * @throws JSONException
-	 *             the JSON exception
-	 */
+     * Test case execution to json object.
+     *
+     * @param testCaseExecutions the test case executions
+     * @return the JSON object
+     * @throws JSONException the JSON exception
+     */
     private JSONObject testCaseExecutionToJSONObject(
             TestCaseExecution testCaseExecutions, TCase testCase, String bugURL) throws JSONException {
         JSONObject result = new JSONObject();
