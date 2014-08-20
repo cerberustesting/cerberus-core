@@ -247,6 +247,8 @@ public class CampaignExecutionReport extends HttpServlet {
         result.put("Test", JavaScriptUtils.javaScriptEscape(testCaseExecutions.getTest()));
         result.put("TestCase", JavaScriptUtils.javaScriptEscape(testCaseExecutions.getTestCase()));
         result.put("Environment", JavaScriptUtils.javaScriptEscape(testCaseExecutions.getEnvironment()));
+        result.put("Start", String.valueOf(testCaseExecutions.getStart()));
+        result.put("End", String.valueOf(testCaseExecutions.getEnd()));
         result.put("Country", JavaScriptUtils.javaScriptEscape(testCaseExecutions.getCountry()));
         result.put("Browser", JavaScriptUtils.javaScriptEscape(testCaseExecutions.getBrowser()));
         result.put("ControlStatus", JavaScriptUtils.javaScriptEscape(testCaseExecutions.getControlStatus()));

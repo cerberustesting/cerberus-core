@@ -100,6 +100,8 @@ var testCaseStatusLine = $("<tr class='testcase'>" +
         "<td class='Application'></td>" +
         "<td class='BugID'></td>" +
         "<td class='Comment'></td>" +
+        "<td class='Start'></td>" +
+        "<td class='End'></td>" +
         "</tr>");
 
 var executionLink = $("<a target='executionFromReport' href='ExecutionDetail.jsp?id_tc='></a>");
@@ -127,6 +129,13 @@ function addTestCaseToStatusTabs(testcase) {
     statusTestCaseStatusLine.find(".BugID").text(testcase.BugID);
     statusTestCaseStatusLine.find(".Application").text(testcase.Application);
     statusTestCaseStatusLine.find(".Comment").text(testcase.Comment);
+    
+    var date = new Date();
+    date.setTime(testcase.Start);
+    statusTestCaseStatusLine.find(".Start").text(date.toLocaleString());
+    var date = new Date();
+    date.setTime(testcase.End);
+    statusTestCaseStatusLine.find(".End").text(date.toLocaleString());
 
     if (statusTable.find("tr").length % 2) {
         statusTestCaseStatusLine.addClass("odd");
