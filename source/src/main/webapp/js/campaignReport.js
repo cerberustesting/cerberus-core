@@ -100,6 +100,8 @@ var testCaseStatusLine = $("<tr class='testcase'>" +
         "<td class='Application'></td>" +
         "<td class='BugID'></td>" +
         "<td class='Comment'></td>" +
+        "<td class='Start'></td>" +
+        "<td class='End'></td>" +
         "</tr>");
 
 var executionLink = $("<a target='executionFromReport' href='ExecutionDetail.jsp?id_tc='></a>");
@@ -126,6 +128,14 @@ function addTestCaseToStatusTabs(testcase) {
     statusTestCaseStatusLine.find(".Status").text(testcase.Status);
     statusTestCaseStatusLine.find(".BugID").text(testcase.BugID);
     statusTestCaseStatusLine.find(".Application").text(testcase.Application);
+    statusTestCaseStatusLine.find(".Comment").text(testcase.Comment);
+    
+    var date = new Date();
+    date.setTime(testcase.Start);
+    statusTestCaseStatusLine.find(".Start").text(date.toLocaleString());
+    var date = new Date();
+    date.setTime(testcase.End);
+    statusTestCaseStatusLine.find(".End").text(date.toLocaleString());
 
     if (statusTable.find("tr").length % 2) {
         statusTestCaseStatusLine.addClass("odd");
@@ -212,6 +222,14 @@ function computePercentDataRadar(ctx) {
         ]
     };
 
+    var config = {
+        // String - Template string for single tooltips
+        tooltipTemplate: "<%if (label){%><%=label%>: <%}%><%= value %>",
+
+        // String - Template string for single tooltips
+        multiTooltipTemplate: "<%if (datasetLabel){%><%=datasetLabel%>: <%}%><%= value %>"
+    }
+
     $.each(dataPercent, function(key, val){
         data.datasets[0].data[data.labels.length] = (val.OK ? val.OK : 0);
         data.datasets[1].data[data.labels.length] = (val.KO ? val.KO : 0);
@@ -222,7 +240,9 @@ function computePercentDataRadar(ctx) {
         data.labels[data.labels.length] = key;
 
     });
+
     console.log(data);
-    new Chart(ctx).StackedBar(data);
+
+    new Chart(ctx).StackedBar(data,config);
    // return data;
 }

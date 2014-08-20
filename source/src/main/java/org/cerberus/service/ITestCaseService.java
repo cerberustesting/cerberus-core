@@ -91,5 +91,15 @@ public interface ITestCaseService {
      * @param value New value of the columnName
      */
     void updateTestCaseField(TCase tc, String columnName, String value);
+
+    /**
+     *
+     * @param tCase
+     * @param text
+     * @param system
+     * @return
+     * @since 1.0.2
+     */
+    List<TCase> findTestCaseByGroupInCriteria(TCase tCase, String text, String system);
     
 }

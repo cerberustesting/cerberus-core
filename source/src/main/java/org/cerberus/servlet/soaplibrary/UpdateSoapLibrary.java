@@ -50,22 +50,13 @@ public class UpdateSoapLibrary extends HttpServlet {
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
 
         try {
-            final String name = policy.sanitize(request.getParameter("id"));
-            final String columnName = policy.sanitize(request.getParameter("columnName"));
-            // CTE Cas particulier pour cette colonne - Le contenu est du xml on remplace les caractères spéciaux pour avoir un affichage correct
+            final String name = policy.sanitize(request.getParameter("pk"));
+            final String columnName = policy.sanitize(request.getParameter("name"));
             final ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-            if ("Envelope".equals(columnName)) {
-                final String value = request.getParameter("value");
-                final String valueHTML = HtmlUtils.htmlEscape(value);
-                final ISoapLibraryService soapLibService = appContext.getBean(ISoapLibraryService.class);
-                soapLibService.updateSoapLibrary(name, columnName, valueHTML);
-                out.print(valueHTML);
-            } else {
-                final String value = policy.sanitize(request.getParameter("value"));
-                final ISoapLibraryService soapLibService = appContext.getBean(ISoapLibraryService.class);
-                soapLibService.updateSoapLibrary(name, columnName, value);
-                out.print(value);
-            }
+            final String value = "Envelope".equals(columnName) ? HtmlUtils.htmlEscape(request.getParameter("value")) : policy.sanitize(request.getParameter("value"));
+            final ISoapLibraryService soapLibService = appContext.getBean(ISoapLibraryService.class);
+            soapLibService.updateSoapLibrary(name, columnName, value);
+            out.print(value);
 
             /**
              * Adding Log entry.

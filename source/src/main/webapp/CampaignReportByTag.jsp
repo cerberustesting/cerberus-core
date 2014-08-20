@@ -39,6 +39,7 @@
         <link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico">
         <script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>
         <script type="text/javascript" src="js/jquery-ui-1.10.2.js"></script>
+        <script type="text/javascript" src="js/sorttable.js"></script>
         <script type="text/javascript" src="js/Chartjs/Chart.js"></script>
         <script type="text/javascript" src="js/Chartjs/extensions/Chart.ColoredBar.js"></script>
         <script type="text/javascript" src="js/Chartjs/extensions/Chart.StackedBar.js"></script>
@@ -120,6 +121,11 @@
                     });
 
                     computePercentDataRadar(ctx[2]);
+                    
+                    $("table.needToBeSort").each(function(){
+                        sorttable.makeSortable(this);
+                    });
+                    
                 });
             });
         </script>
@@ -131,8 +137,8 @@
                 background: white;
             }
 
-            table {
-                margin-bottom: 15px;
+            table.noBorder td {
+                border: none;
             }
 
             table.fullSize {
@@ -158,21 +164,22 @@
             a.StatusPE {
                 color: #555555;
             }
+
+            table.needToBeSort th:not(.sorttable_sorted):not(.sorttable_sorted_reverse):not(.sorttable_nosort):after { 
+                content: " \25B4\25BE" 
+            }            
         </style>
     </head>
     <body>
         <%@ include file="include/function.jsp" %>
         <%@ include file="include/header.jsp" %>
 
-
         <div id="main">
-            <table class="fullSize">
+            <table class="fullSize noBorder">
                 <tr>
-                    <td colspan="2">
+                    <td>
                         <div class="executionStatus"></div>
                     </td>
-                </tr>
-                <tr>
                     <td>
                         <canvas class="executionStatus"></canvas>
                     </td>
@@ -181,14 +188,13 @@
                     </td>
                 </tr>
                 <tr>
-                    <td colspan="2">
+                    <td colspan="3">
                         <canvas id="functionBar"></canvas>
                     </td>
                 </tr>
-
             </table>
             <h1><a name="StatusKO" class="StatusKO">Status KO</a></h1>
-            <table id="StatusKO" class="arrondTable fullSize">
+            <table id="StatusKO" class="arrondTable fullSize needToBeSort">
                 <thead>
                     <tr>
                         <th>ID</th>
@@ -198,14 +204,16 @@
                         <th>Status</th>
                         <th>Application</th>
                         <th>BugID</th>
-                        <th>Comment</th>
+                        <th class="wrapAll">Comment</th>
+                        <th>Start</th>
+                        <th>End</th>
                     </tr>
                 </thead>
                 <tbody>
                 </tbody>
             </table>
             <h1><a name="StatusFA" class="StatusFA">Status FA</a></h1>
-            <table id="StatusFA" class="arrondTable fullSize">
+            <table id="StatusFA" class="arrondTable fullSize needToBeSort">
                 <thead>
                     <tr>
                         <th>ID</th>
@@ -215,14 +223,16 @@
                         <th>Status</th>
                         <th>Application</th>
                         <th>BugID</th>
-                        <th>Comment</th>
+                        <th class="wrapAll">Comment</th>
+                        <th>Start</th>
+                        <th>End</th>
                     </tr>
                 </thead>
                 <tbody>
                 </tbody>
             </table>
             <h1><a name="StatusNA" class="StatusNA">Status NA</a></h1>
-            <table id="StatusNA" class="arrondTable fullSize">
+            <table id="StatusNA" class="arrondTable fullSize needToBeSort">
                 <thead>
                     <tr>
                         <th>ID</th>
@@ -232,14 +242,16 @@
                         <th>Status</th>
                         <th>Application</th>
                         <th>BugID</th>
-                        <th>Comment</th>
+                        <th class="wrapAll">Comment</th>
+                        <th>Start</th>
+                        <th>End</th>
                     </tr>
                 </thead>
                 <tbody>
                 </tbody>
             </table>
             <h1><a name="StatusPE" class="StatusPE">Status PE</a></h1>
-            <table id="StatusPE" class="arrondTable fullSize">
+            <table id="StatusPE" class="arrondTable fullSize needToBeSort">
                 <thead>
                     <tr>
                         <th>ID</th>
@@ -249,14 +261,16 @@
                         <th>Status</th>
                         <th>Application</th>
                         <th>BugID</th>
-                        <th>Comment</th>
+                        <th class="wrapAll">Comment</th>
+                        <th>Start</th>
+                        <th>End</th>
                     </tr>
                 </thead>
                 <tbody>
                 </tbody>
             </table>
             <h1><a name="StatusOK" class="StatusOK">Status OK</a></h1>
-            <table id="StatusOK" class="arrondTable fullSize">
+            <table id="StatusOK" class="arrondTable fullSize needToBeSort">
                 <thead>
                     <tr>
                         <th>ID</th>
@@ -266,7 +280,9 @@
                         <th>Status</th>
                         <th>Application</th>
                         <th>BugID</th>
-                        <th>Comment</th>
+                        <th class="wrapAll">Comment</th>
+                        <th>Start</th>
+                        <th>End</th>
                     </tr>
                 </thead>
                 <tbody>

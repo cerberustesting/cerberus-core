@@ -668,6 +668,7 @@ input#submitButtonDuplicate {
     width: 100%;
 }
 
+.wrapAll,
 table.wrapAll td,
 table.wrapAll th {
     white-space: pre-line;

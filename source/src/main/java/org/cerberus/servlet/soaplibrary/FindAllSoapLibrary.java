@@ -170,7 +170,7 @@ public class FindAllSoapLibrary extends HttpServlet{
                 JSONArray row = new JSONArray();
                 row.put(soapLib.getName())
                         .put(soapLib.getType())
-                        .put(HtmlUtils.htmlUnescape(soapLib.getEnvelope()))
+                        .put(soapLib.getEnvelope())
                         .put(soapLib.getDescription())
                         .put(soapLib.getServicePath())
                         .put(soapLib.getMethod())

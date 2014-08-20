@@ -35,6 +35,7 @@ import org.cerberus.exception.CerberusException;
 import org.cerberus.factory.IFactoryTCase;
 import org.cerberus.log.MyLogger;
 import org.cerberus.util.ParameterParserUtil;
+import org.cerberus.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -65,7 +66,7 @@ public class TestCaseDAO implements ITestCaseDAO {
      *
      * @param test Name of test group.
      * @return List with a list of 3 strings (name of test case, type of
-     * application, description of test case).
+     *         application, description of test case).
      */
     @Override
     public List<TCase> findTestCaseByTest(String test) {
@@ -113,7 +114,7 @@ public class TestCaseDAO implements ITestCaseDAO {
     /**
      * Get test case information.
      *
-     * @param test Name of test group.
+     * @param test     Name of test group.
      * @param testCase Name of test case.
      * @return TestCase object or null.
      * @see org.cerberus.entity.TestCase
@@ -184,25 +185,25 @@ public class TestCaseDAO implements ITestCaseDAO {
                 preStat.setString(5, testCase.isRunUAT() ? "Y" : "N");
                 preStat.setString(6, testCase.isRunPROD() ? "Y" : "N");
                 preStat.setString(7, Integer.toString(testCase.getPriority()));
-                preStat.setString(8, ParameterParserUtil.parseStringParam(testCase.getStatus(),""));
+                preStat.setString(8, ParameterParserUtil.parseStringParam(testCase.getStatus(), ""));
                 preStat.setString(9, testCase.isActive() ? "Y" : "N");
-                preStat.setString(10, ParameterParserUtil.parseStringParam(testCase.getShortDescription(),""));
-                preStat.setString(11, ParameterParserUtil.parseStringParam(testCase.getGroup(),""));
-                preStat.setString(12, ParameterParserUtil.parseStringParam(testCase.getHowTo(),""));
-                preStat.setString(13, ParameterParserUtil.parseStringParam(testCase.getComment(),""));
-                preStat.setString(14, ParameterParserUtil.parseStringParam(testCase.getTicket(),""));
-                preStat.setString(15, ParameterParserUtil.parseStringParam(testCase.getFromSprint(),""));
-                preStat.setString(16, ParameterParserUtil.parseStringParam(testCase.getFromRevision(),""));
-                preStat.setString(17, ParameterParserUtil.parseStringParam(testCase.getToSprint(),""));
-                preStat.setString(18, ParameterParserUtil.parseStringParam(testCase.getToRevision(),""));
-                preStat.setString(19, ParameterParserUtil.parseStringParam(testCase.getBugID(),""));
-                preStat.setString(20, ParameterParserUtil.parseStringParam(testCase.getTargetSprint(),""));
-                preStat.setString(21, ParameterParserUtil.parseStringParam(testCase.getImplementer(),""));
-                preStat.setString(22, ParameterParserUtil.parseStringParam(testCase.getLastModifier(),""));
-                preStat.setString(23, ParameterParserUtil.parseStringParam(testCase.getTargetRevision(),""));
-                preStat.setString(24, ParameterParserUtil.parseStringParam(testCase.getFunction(),""));
-                preStat.setString(25, ParameterParserUtil.parseStringParam(testCase.getTest(),""));
-                preStat.setString(26, ParameterParserUtil.parseStringParam(testCase.getTestCase(),""));
+                preStat.setString(10, ParameterParserUtil.parseStringParam(testCase.getShortDescription(), ""));
+                preStat.setString(11, ParameterParserUtil.parseStringParam(testCase.getGroup(), ""));
+                preStat.setString(12, ParameterParserUtil.parseStringParam(testCase.getHowTo(), ""));
+                preStat.setString(13, ParameterParserUtil.parseStringParam(testCase.getComment(), ""));
+                preStat.setString(14, ParameterParserUtil.parseStringParam(testCase.getTicket(), ""));
+                preStat.setString(15, ParameterParserUtil.parseStringParam(testCase.getFromSprint(), ""));
+                preStat.setString(16, ParameterParserUtil.parseStringParam(testCase.getFromRevision(), ""));
+                preStat.setString(17, ParameterParserUtil.parseStringParam(testCase.getToSprint(), ""));
+                preStat.setString(18, ParameterParserUtil.parseStringParam(testCase.getToRevision(), ""));
+                preStat.setString(19, ParameterParserUtil.parseStringParam(testCase.getBugID(), ""));
+                preStat.setString(20, ParameterParserUtil.parseStringParam(testCase.getTargetSprint(), ""));
+                preStat.setString(21, ParameterParserUtil.parseStringParam(testCase.getImplementer(), ""));
+                preStat.setString(22, ParameterParserUtil.parseStringParam(testCase.getLastModifier(), ""));
+                preStat.setString(23, ParameterParserUtil.parseStringParam(testCase.getTargetRevision(), ""));
+                preStat.setString(24, ParameterParserUtil.parseStringParam(testCase.getFunction(), ""));
+                preStat.setString(25, ParameterParserUtil.parseStringParam(testCase.getTest(), ""));
+                preStat.setString(26, ParameterParserUtil.parseStringParam(testCase.getTestCase(), ""));
 
                 res = preStat.executeUpdate() > 0;
             } catch (SQLException exception) {
@@ -332,7 +333,7 @@ public class TestCaseDAO implements ITestCaseDAO {
                 preStat.setString(8, null);
                 preStat.setString(9, Integer.toString(testCase.getPriority()));
                 preStat.setString(10, ParameterParserUtil.parseStringParam(testCase.getStatus(), ""));
-                preStat.setString(11, testCase.getActive()!=null && !testCase.getActive().equals("Y") ? "N" : "Y");
+                preStat.setString(11, testCase.getActive() != null && !testCase.getActive().equals("Y") ? "N" : "Y");
                 preStat.setString(12, ParameterParserUtil.parseStringParam(testCase.getGroup(), ""));
                 preStat.setString(13, "");
                 preStat.setString(14, "");
@@ -350,10 +351,10 @@ public class TestCaseDAO implements ITestCaseDAO {
                 preStat.setString(26, ParameterParserUtil.parseStringParam(testCase.getLastModifier(), ""));
                 preStat.setString(27, "");
                 preStat.setString(28, ParameterParserUtil.parseStringParam(testCase.getFunction(), ""));
-                preStat.setString(29, testCase.getRunQA()!=null && !testCase.getRunQA().equals("Y") ? "N" : "Y");
-                preStat.setString(30, testCase.getRunQA()!=null && !testCase.getRunQA().equals("Y") ? "N" : "Y");
-                preStat.setString(31, testCase.getRunQA()!=null && !testCase.getRunQA().equals("N") ? "Y" : "N");
-                
+                preStat.setString(29, testCase.getRunQA() != null && !testCase.getRunQA().equals("Y") ? "N" : "Y");
+                preStat.setString(30, testCase.getRunQA() != null && !testCase.getRunQA().equals("Y") ? "N" : "Y");
+                preStat.setString(31, testCase.getRunQA() != null && !testCase.getRunQA().equals("N") ? "Y" : "N");
+
                 res = preStat.executeUpdate() > 0;
             } catch (SQLException exception) {
                 MyLogger.log(TestCaseDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
@@ -507,7 +508,7 @@ public class TestCaseDAO implements ITestCaseDAO {
         query.append(") AND (t2.function LIKE ");
         query.append(ParameterParserUtil.wildcardOrIsNullIfEmpty("t2.function", testCase.getFunction()));
         query.append(")");
-        
+
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
@@ -633,7 +634,7 @@ public class TestCaseDAO implements ITestCaseDAO {
     @Override
     public boolean deleteTestCase(TCase testCase) {
         boolean bool = false;
-        final String query = "DELETE FROM testcase WHERE test = ? and testcase = ?";
+        final String query = "DELETE FROM testcase WHERE test = ? AND testcase = ?";
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -709,5 +710,157 @@ public class TestCaseDAO implements ITestCaseDAO {
             }
         }
 
+    }
+
+    /**
+     * @param testCase
+     * @param text
+     * @param system
+     * @return
+     * @since 1.0.2
+     */
+    @Override
+    public List<TCase> findTestCaseByGroupInCriteria(TCase testCase, String text, String system) {
+        List<TCase> list = null;
+        StringBuilder query = new StringBuilder();
+        query.append("SELECT t2.* FROM testcase t2 LEFT OUTER JOIN application a ON a.application=t2.application WHERE 1=1");
+        if(!StringUtil.isNull(testCase.getTest())){
+            query.append(" AND t2.test IN ");
+            query.append(testCase.getTest());
+        }
+        if(!StringUtil.isNull(testCase.getProject())){
+            query.append(" AND t2.project IN ");
+            query.append(testCase.getProject());
+        }
+        if(!StringUtil.isNull(testCase.getTicket())){
+            query.append(" AND t2.ticket IN ");
+            query.append(testCase.getTicket());
+        }
+        if(!StringUtil.isNull(testCase.getTicket())){
+            query.append(" AND t2.ticket IN ");
+            query.append(testCase.getTicket());
+        }
+        if(!StringUtil.isNull(testCase.getBugID())){
+            query.append(" AND t2.bugid IN ");
+            query.append(testCase.getBugID());
+        }
+        if(!StringUtil.isNull(testCase.getOrigin())){
+            query.append(" AND t2.origine IN ");
+            query.append(testCase.getOrigin());
+        }
+        if(!StringUtil.isNull(system)){
+            query.append(" AND a.system IN ");
+            query.append(system);
+        }
+        if(!StringUtil.isNull(testCase.getApplication())){
+            query.append(" AND t2.application IN ");
+            query.append(testCase.getApplication());
+        }
+        if(testCase.getPriority() != -1){
+            query.append(" AND t2.priority IN ");
+            query.append(testCase.getPriority());
+        }
+        if(!StringUtil.isNull(testCase.getStatus())){
+            query.append(" AND t2.status IN ");
+            query.append(testCase.getStatus());
+        }
+        if(!StringUtil.isNull(testCase.getGroup())){
+            query.append(" AND t2.group IN ");
+            query.append(testCase.getGroup());
+        }
+        if(!StringUtil.isNull(testCase.getRunPROD())){
+            query.append(" AND t2.activePROD IN ");
+            query.append(testCase.getRunPROD());
+        }
+        if(!StringUtil.isNull(testCase.getRunUAT())){
+            query.append(" AND t2.activeUAT IN ");
+            query.append(testCase.getRunUAT());
+        }
+        if(!StringUtil.isNull(testCase.getRunQA())){
+            query.append(" AND t2.activeQA IN ");
+            query.append(testCase.getRunQA());
+        }
+
+        if(!StringUtil.isNull(text)){
+            query.append(" AND (t2.description LIKE '");
+            query.append(text);
+            query.append("' OR t2.howto LIKE '");
+            query.append(text);
+            query.append("' OR t2.behaviororvalueexpected LIKE '");
+            query.append(text);
+            query.append("' OR t2.comment LIKE '");
+            query.append(text);
+            query.append("')");
+        }
+
+        if(!StringUtil.isNull(testCase.getActive())){
+            query.append(" AND t2.TcActive IN ");
+            query.append(testCase.getActive());
+        }
+        if(!StringUtil.isNull(testCase.getFromSprint())){
+            query.append(" AND t2.frombuild IN ");
+            query.append(testCase.getFromSprint());
+        }
+        if(!StringUtil.isNull(testCase.getFromRevision())){
+            query.append(" AND t2.fromrev IN ");
+            query.append(testCase.getFromRevision());
+        }
+        if(!StringUtil.isNull(testCase.getToSprint())){
+            query.append(" AND t2.tobuild IN ");
+            query.append(testCase.getToSprint());
+        }
+        if(!StringUtil.isNull(testCase.getToRevision())){
+            query.append(" AND t2.torev IN ");
+            query.append(testCase.getToRevision());
+        }
+        if(!StringUtil.isNull(testCase.getTargetSprint())){
+            query.append(" AND t2.targetbuild IN ");
+            query.append(testCase.getTargetSprint());
+        }
+        if(!StringUtil.isNull(testCase.getTargetRevision())){
+            query.append(" AND t2.targetrev IN ");
+            query.append(testCase.getTargetRevision());
+        }
+        if(!StringUtil.isNull(testCase.getTestCase())){
+            query.append(" AND t2.testcase IN ");
+            query.append(testCase.getTestCase());
+        }
+        if(!StringUtil.isNull(testCase.getFunction())){
+            query.append(" AND t2.function IN ");
+            query.append(testCase.getFunction());
+        }
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query.toString());
+            try {
+                ResultSet resultSet = preStat.executeQuery();
+                list = new ArrayList<TCase>();
+                try {
+                    while (resultSet.next()) {
+                        list.add(this.loadTestCaseFromResultSet(resultSet));
+                    }
+                } catch (SQLException exception) {
+                    MyLogger.log(TestCaseDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                } finally {
+                    resultSet.close();
+                }
+            } catch (SQLException exception) {
+                MyLogger.log(TestCaseDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(TestCaseDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(TestCaseDAO.class.getName(), Level.WARN, e.toString());
+            }
+        }
+        return list;
     }
 }

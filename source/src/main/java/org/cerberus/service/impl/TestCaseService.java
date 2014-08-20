@@ -152,4 +152,12 @@ public class TestCaseService implements ITestCaseService {
     public void updateTestCaseField(TCase tc, String columnName, String value) {
     testCaseDao.updateTestCaseField(tc, columnName, value);
     }
+
+    /**
+     * @since 1.0.2
+     */
+    @Override
+    public List<TCase> findTestCaseByGroupInCriteria(TCase tCase, String text, String system) {
+        return this.testCaseDao.findTestCaseByGroupInCriteria(tCase, text, system);
+    }
 }

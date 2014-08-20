@@ -28,6 +28,8 @@
         <link rel="stylesheet" type="text/css" href="css/jquery.dataTables.css">
         <link rel="stylesheet" type="text/css" href="css/jquery-ui.css">
         <link rel="stylesheet" type="text/css" href="css/dataTables_jui.css">
+        <link rel="stylesheet" type="text/css" href="css/jqueryui-editable.css">
+        <link rel="stylesheet" type="text/css" href="css/jqueryui-editable.extend.css">
         <link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico">
         <script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>
         <script type="text/javascript" src="js/jquery-ui-1.10.2.js"></script>
@@ -35,8 +37,20 @@
         <script type="text/javascript" src="js/jquery.dataTables.min.js"></script>
         <script type="text/javascript" src="js/jquery.dataTables.editable.js"></script>
         <script type="text/javascript" src="js/jquery.validate.min.js"></script>
+        <script type="text/javascript" src="js/jqueryui-editable.min.js"></script>
         <script type="text/javascript">
 
+        	// The DataTables columns
+        	var aoColumns =  [
+        		{"sName": "Name", "sWidth": "10%"},
+        	    {"sName": "Type", "sWidth": "10%"},
+        	    {"sName": "Envelope", "sWidth": "40%"},
+        	    {"sName": "Description", "sWidth": "40%"},
+        	    {"sName": "ServicePath", "sWidth": "40%"},
+        	    {"sName": "Method", "sWidth": "40%"},
+        	    {"sName": "ParsingAnswer", "sWidth": "40%"}
+        	];
+        
             $(document).ready(function() {
                 var oTable = $('#soapLibraryList').dataTable({
                     "aaSorting": [[1, "asc"]],
@@ -50,15 +64,36 @@
                     "bSearchable": true,
                     "aTargets": [0],
                     "iDisplayLength": 25,
-                    "aoColumns": [
-                        {"sName": "Name", "sWidth": "10%"},
-                        {"sName": "Type", "sWidth": "10%"},
-                        {"sName": "Envelope", "sWidth": "40%"},
-                        {"sName": "Description", "sWidth": "40%"},
-                        {"sName": "ServicePath", "sWidth": "40%"},
-                        {"sName": "Method", "sWidth": "40%"},
-                        {"sName": "ParsingAnswer", "sWidth": "40%"}
-                    ]
+                    "aoColumns": aoColumns,
+                    "fnRowCallback": function(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
+                    	// Making editable fields
+                    	for (index in aoColumns) {
+                    		// Some of indexes should not be editable 
+                    		if (index == 0) {
+                    			continue;
+                    		}
+                    		
+                    		// Common configuration for each editable cell
+                    		var editConfiguration = {
+                         		pk: $('td:eq(0)', nRow).text(),
+                         		name: aoColumns[index].sName,
+                         		url: 'UpdateSoapLibrary',
+                         		type: 'text',
+                         		send: 'auto',
+                         		mode: 'inline'
+                         	};
+                    		
+                    		// Special case for the Envelope and Description cells
+                    		if (index == 2 || index == 3) {
+                    			jQuery.extend(editConfiguration, {
+                    				type: 'textarea'
+                    			})
+                    		}
+                    		
+                    		// Makes the cell editable
+                    		$("td:eq(" + index + ")", nRow).editable(editConfiguration)
+                    	}
+                     }
                 }
                 ).makeEditable({
                     sAddURL: "CreateSoapLibrary",
@@ -87,22 +122,15 @@
                     },
                     "aoColumns": [
                         null,
-                        {onblur: 'submit',
-                            placeholder: ''}, 
-                        {onblur: 'submit',
-                            placeholder: ''},
-                        {onblur: 'submit',
-                            placeholder: ''},
-                         {onblur: 'submit',
-                            placeholder: ''}, 
-                         {onblur: 'submit',
-                            placeholder: ''},
-                         {onblur: 'submit',
-                            placeholder: ''}
+                        null, 
+                        null,
+                        null,
+                        null, 
+                        null,
+                        null
                     ]
                 });
             });
-
 
         </script>
     </head>
