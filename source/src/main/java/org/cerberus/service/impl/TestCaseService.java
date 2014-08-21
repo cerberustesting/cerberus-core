@@ -157,7 +157,7 @@ public class TestCaseService implements ITestCaseService {
      * @since 1.0.2
      */
     @Override
-    public List<TCase> findTestCaseByGroupInCriteria(TCase tCase, String text, String system) {
-        return this.testCaseDao.findTestCaseByGroupInCriteria(tCase, text, system);
+    public List<TCase> findTestCaseByGroupInCriteria(TCase tCase, String system) {
+        return this.testCaseDao.findTestCaseByGroupInCriteria(tCase, system);
     }
 }
