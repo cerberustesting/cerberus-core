@@ -20,7 +20,30 @@
 <%
     String campaignName = request.getParameter("campaignName");
     String tag = request.getParameter("tag");
-    String environment = request.getParameter("Environment");
+    String[] environments = request.getParameterValues("Environment");
+    String[] countries = request.getParameterValues("Country");
+    String[] browsers = request.getParameterValues("Browser");
+    
+    StringBuffer query = new StringBuffer("campaignName=").append(campaignName);
+    query.append("&tag=").append(tag);
+    
+    if(environments != null && environments.length > 0) {
+        for(String environment : environments) {
+            query.append("&Environment=").append(environment);
+        }
+    }
+    
+    if(countries != null && countries.length > 0) {
+        for(String country : countries) {
+            query.append("&Country=").append(country);
+        }
+    }
+    
+    if(browsers != null && browsers.length > 0) {
+        for(String browser : browsers) {
+            query.append("&Browser=").append(browser);
+        }
+    }
 %>
 <% Date DatePageStart = new Date();%>
 
@@ -54,7 +77,7 @@
 
             $(document).ready(function () {
 
-                $.get("./CampaignExecutionReport", "campaignName=<%=campaignName%>&Environment=<%=environment%>&tag=<%=tag%>", function (report) {
+                $.get("./CampaignExecutionReport", "<%=query.toString() %>", function (report) {
                     // Get context with jQuery - using jQuery's .get() method.
                     var ctx = [];
                     ctx[0] = $("canvas.executionStatus").get(0).getContext("2d");
