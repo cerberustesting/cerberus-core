@@ -511,8 +511,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                 .append(" on cc.testbattery = tbc.testbattery ")
                 .append(" where tag is not null ")
                 .append(" and cc.campaign = ? ")
-                .append(" and tag = ? ")
-                .append(" group by Test,TestCase ").toString();
+                .append(" and tag = ? ").toString();
 
         Connection connection = this.databaseSpring.connect();
         try {
