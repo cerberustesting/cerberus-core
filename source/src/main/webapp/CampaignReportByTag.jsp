@@ -24,6 +24,8 @@
     String[] countries = request.getParameterValues("Country");
     String[] browsers = request.getParameterValues("Browser");
     
+    boolean onlyFunction = ("true".equalsIgnoreCase(request.getParameter("OnlyFunction")));
+
     StringBuffer query = new StringBuffer("campaignName=").append(campaignName);
     query.append("&tag=").append(tag);
     
@@ -88,6 +90,13 @@
                     var testCaseTotal = 0;
                     for (var index = 0; index < report.length; index++) {
                         testCaseTotal++;
+<%
+                            if(!onlyFunction) {
+%>
+                                report[index].Function = (report[index].Function ? report[index].Function : report[index].Test);
+<%
+                            }
+%>
                         controlStatus = report[index].ControlStatus;
                         addTestCaseToStatusTabs(report[index]);
                         addTestCaseToPercentRadar(report[index]);
@@ -223,6 +232,7 @@
                         <th>ID</th>
                         <th>Test</th>
                         <th>TestCase</th>
+                        <th>Function</th>
                         <th>Control</th>
                         <th>Status</th>
                         <th>Application</th>
@@ -242,6 +252,7 @@
                         <th>ID</th>
                         <th>Test</th>
                         <th>TestCase</th>
+                        <th>Function</th>
                         <th>Control</th>
                         <th>Status</th>
                         <th>Application</th>
@@ -261,6 +272,7 @@
                         <th>ID</th>
                         <th>Test</th>
                         <th>TestCase</th>
+                        <th>Function</th>
                         <th>Control</th>
                         <th>Status</th>
                         <th>Application</th>
@@ -280,6 +292,7 @@
                         <th>ID</th>
                         <th>Test</th>
                         <th>TestCase</th>
+                        <th>Function</th>
                         <th>Control</th>
                         <th>Status</th>
                         <th>Application</th>
@@ -299,6 +312,7 @@
                         <th>ID</th>
                         <th>Test</th>
                         <th>TestCase</th>
+                        <th>Function</th>
                         <th>Control</th>
                         <th>Status</th>
                         <th>Application</th>
