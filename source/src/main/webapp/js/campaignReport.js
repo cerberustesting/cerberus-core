@@ -95,6 +95,7 @@ var testCaseStatusLine = $("<tr class='testcase'>" +
         "<td class='ID'></td>" +
         "<td class='Test'></td>" +
         "<td class='TestCase'></td>" +
+        "<td class='Function'></td>" +
         "<td class='Control'></td>" +
         "<td class='Status'></td>" +
         "<td class='Application'></td>" +
@@ -124,6 +125,10 @@ function addTestCaseToStatusTabs(testcase) {
     statusTestCaseStatusLine.find(".TestCase").append(statusTestcaseLink);
 
     statusTestCaseStatusLine.find(".Test").text(testcase.Test);
+
+    var testCaseFunction = testcase.Function || "(function not defined)";
+    statusTestCaseStatusLine.find(".Function").text(testCaseFunction);
+
     statusTestCaseStatusLine.find(".Control").text(testcase.ControlStatus);
     statusTestCaseStatusLine.find(".Status").text(testcase.Status);
     statusTestCaseStatusLine.find(".BugID").text(testcase.BugID);
@@ -148,18 +153,20 @@ function addTestCaseToStatusTabs(testcase) {
 
 function addTestCaseToPercentRadar(testcase) {
     
-    if(!dataPercent[testcase.Test]) {
-        dataPercent[testcase.Test] = {
+    var testCaseFunction = testcase.Function || "(function not defined)";
+    
+    if(!dataPercent[testCaseFunction]) {
+        dataPercent[testCaseFunction] = {
             OK: 0,
             KO: 0,
             FA: 0,
             NA: 0,
             total: 0
-            };
+        };
     }
     
-    dataPercent[testcase.Test]['total'] = eval(dataPercent[testcase.Test]['total'] + 1);
-    dataPercent[testcase.Test][testcase.ControlStatus] = eval(dataPercent[testcase.Test][testcase.ControlStatus] + 1);
+    dataPercent[testCaseFunction]['total'] = eval(dataPercent[testCaseFunction]['total'] + 1);
+    dataPercent[testCaseFunction][testcase.ControlStatus] = eval(dataPercent[testCaseFunction][testcase.ControlStatus] + 1);
 };
 
 
