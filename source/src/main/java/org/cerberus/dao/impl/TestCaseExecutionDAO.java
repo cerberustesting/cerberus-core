@@ -502,16 +502,20 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
     public List<TestCaseExecution> findExecutionsByCampaignNameAndTag(String campaign, String tag) throws CerberusException {
         List<TestCaseExecution> campaignTestCaseExecutions = null;
         boolean throwException = false;
-        final String query = new StringBuffer("select tce.* ")
-                .append(" from testcaseexecution tce ")
-                .append(" inner join testbatterycontent tbc ")
-                .append(" on tbc.Test = tce.Test ")
-                .append(" and tbc.TestCase = tce.TestCase ")
-                .append(" inner join campaigncontent cc ")
-                .append(" on cc.testbattery = tbc.testbattery ")
-                .append(" where tag is not null ")
-                .append(" and cc.campaign = ? ")
-                .append(" and tag = ? ").toString();
+
+        final String query = new StringBuffer("select tce.* from ( ")
+                .append("select tce.* ")
+                .append("from testcaseexecution tce ")
+                .append("inner join testbatterycontent tbc ")
+                .append("on tbc.Test = tce.Test ")
+                .append("and tbc.TestCase = tce.TestCase ")
+                .append("inner join campaigncontent cc ")
+                .append("on cc.testbattery = tbc.testbattery ")
+                .append("where tag is not null ")
+                .append("and cc.campaign = ? ")
+                .append("and tag = ? ")
+                .append("order by test, testcase, ID desc) as tce ")
+                .append("group by tce.test, tce.testcase, tce.Environment, tce.Browser, tce.Country ").toString();
 
         Connection connection = this.databaseSpring.connect();
         try {
