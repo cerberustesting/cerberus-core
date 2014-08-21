@@ -19,35 +19,30 @@
  */
 package org.cerberus.serviceEngine.impl;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringReader;
 import java.util.logging.Logger;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
+
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.soap.MessageFactory;
 import javax.xml.soap.MimeHeaders;
-import javax.xml.soap.SOAPBody;
 import javax.xml.soap.SOAPConnection;
 import javax.xml.soap.SOAPConnectionFactory;
 import javax.xml.soap.SOAPConstants;
 import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPMessage;
+
+import org.apache.commons.io.input.ReaderInputStream;
 import org.apache.log4j.Level;
 import org.cerberus.entity.ExecutionSOAPResponse;
-import org.cerberus.entity.ExecutionUUID;
 import org.cerberus.entity.MessageEvent;
 import org.cerberus.entity.MessageEventEnum;
-import org.cerberus.entity.TestCaseExecution;
 import org.cerberus.log.MyLogger;
-import org.cerberus.service.ICountryEnvironmentDatabaseService;
 import org.cerberus.serviceEngine.ISoapService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.util.HtmlUtils;
-import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
 /**
@@ -62,45 +57,13 @@ public class SoapService implements ISoapService {
 
     @Override
     public SOAPMessage createSoapRequest(String pBody, String method) throws SOAPException, IOException, SAXException, ParserConfigurationException {
-        MessageFactory messageFactory = MessageFactory.newInstance(SOAPConstants.SOAP_1_2_PROTOCOL);
+    	MimeHeaders headers = new MimeHeaders();
+		headers.addHeader("SOAPAction", method);
+		headers.addHeader("Content-Type", "text/xml;charset=UTF-8");
 
-        SOAPMessage soapMessage = messageFactory.createMessage();
-
-        MimeHeaders headers = soapMessage.getMimeHeaders();
-
-        // WSDL Method to call
-        headers.addHeader("SOAPAction", method);
-        // Encode UTF-8
-        headers.addHeader("Content-Type", "text/xml;charset=UTF-8");
-
-        final SOAPBody soapBody = soapMessage.getSOAPBody();
-
-        // convert String into InputStream
-        String unescaped = HtmlUtils.htmlUnescape(pBody);
-
-        InputStream is = new ByteArrayInputStream(unescaped.getBytes());
-        DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
-
-        DocumentBuilder builder = null;
-
-        builderFactory.setNamespaceAware(true);
-        try {
-            builder = builderFactory.newDocumentBuilder();
-
-            Document document = builder.parse(is);
-
-            soapBody.addDocument(document);
-        } catch (ParserConfigurationException e) {
-            MyLogger.log(SoapService.class.getName(), Level.ERROR, e.toString());
-        } finally {
-            is.close();
-            if (builder != null) {
-                builder.reset();
-            }
-        }
-        soapMessage.saveChanges();
-
-        return soapMessage;
+		InputStream input = new ReaderInputStream(new StringReader(pBody));
+		MessageFactory messageFactory = MessageFactory.newInstance(SOAPConstants.SOAP_1_1_PROTOCOL);
+        return messageFactory.createMessage(headers, input);
     }
 
     @Override
