@@ -275,8 +275,62 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
     }
 
     @Override
-    public void updateTestCaseStepAction(TestCaseStepAction tcsa) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void updateTestCaseStepAction(TestCaseStepAction testCaseStepAction) throws CerberusException {
+        boolean throwExcep = false;
+        final String query = new StringBuilder("UPDATE `testcasestepaction` ")
+                .append("SET ")
+                .append("`Test` = ?, ")
+                .append("`TestCase` = ?, ")
+                .append("`Step` = ?, ")
+                .append("`Sequence` = ?, ")
+                .append("`Action` = ?, ")
+                .append("`Object` = ?, ")
+                .append("`Property` = ?, ")
+                .append("`Description` = ? ")
+                .append("WHERE `Test` = ? AND `TestCase` = ? AND `Step` = ? AND `Sequence` = ? ")
+                .toString();
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query.toString());
+            try {
+                preStat.setString(1, testCaseStepAction.getTest());
+                preStat.setString(2, testCaseStepAction.getTestCase());
+                preStat.setInt(3, testCaseStepAction.getStep());
+                preStat.setInt(4, testCaseStepAction.getSequence());
+                preStat.setString(5, testCaseStepAction.getAction());
+                preStat.setString(6, testCaseStepAction.getObject());
+                preStat.setString(7, testCaseStepAction.getProperty());
+                preStat.setString(8, testCaseStepAction.getDescription());
+
+                preStat.setString(9, testCaseStepAction.getTest());
+                preStat.setString(10, testCaseStepAction.getTestCase());
+                preStat.setInt(11, testCaseStepAction.getStep());
+                preStat.setInt(12, testCaseStepAction.getSequence());
+
+                preStat.executeUpdate();
+                throwExcep = false;
+
+            } catch (SQLException exception) {
+                MyLogger.log(TestCaseStepActionDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(TestCaseStepActionDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(TestCaseStepActionDAO.class.getName(), Level.WARN, e.toString());
+            }
+        }
+        if (throwExcep) {
+            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.CANNOT_UPDATE_TABLE));
+        }
     }
+
 
 }

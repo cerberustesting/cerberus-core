@@ -40,5 +40,5 @@ public interface ITestCaseStepActionControlService {
 
     List<TestCaseStepActionControl> findControlByTestTestCaseStep(String test, String testcase, int step);
 
-    public void updateTestCaseStepActionControl(TestCaseStepActionControl control);
+    public boolean updateTestCaseStepActionControl(TestCaseStepActionControl control);
 }

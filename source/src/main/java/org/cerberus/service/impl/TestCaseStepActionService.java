@@ -74,7 +74,13 @@ public class TestCaseStepActionService implements ITestCaseStepActionService {
     }
 
     @Override
-    public void updateTestCaseStepAction(TestCaseStepAction tcsa) {
-        testCaseStepActionDAO.updateTestCaseStepAction(tcsa);
+    public boolean updateTestCaseStepAction(TestCaseStepAction tcsa) {
+        try {
+            testCaseStepActionDAO.updateTestCaseStepAction(tcsa);
+        } catch (CerberusException ex) {
+            Logger.getLogger(TestCaseStepActionService.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+        return true;
     }
 }

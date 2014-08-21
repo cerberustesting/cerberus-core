@@ -39,5 +39,5 @@ public interface ITestCaseStepActionDAO {
 
     boolean changeTestCaseStepActionSequence(String test, String testCase, int step, int oldSequence, int newSequence);
 
-    public void updateTestCaseStepAction(TestCaseStepAction tcsa);
+    public void updateTestCaseStepAction(TestCaseStepAction tcsa) throws CerberusException;
 }
