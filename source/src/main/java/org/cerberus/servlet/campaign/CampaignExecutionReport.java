@@ -22,6 +22,7 @@ package org.cerberus.servlet.campaign;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
@@ -97,7 +98,9 @@ public class CampaignExecutionReport extends HttpServlet {
             String campaignName = policy.sanitize(request
                     .getParameter("campaignName"));
             String tag = policy.sanitize(request.getParameter("tag"));
-            String env = policy.sanitize(request.getParameter("Environment"));
+            String[] env = request.getParameterValues("Environment");
+            String[] country = request.getParameterValues("Country");
+            String[] browser = request.getParameterValues("Browser");
 
             JSONArray jSONResult = new JSONArray();
 
@@ -107,13 +110,18 @@ public class CampaignExecutionReport extends HttpServlet {
                     .findCampaignParametersByCampaignName(campaignName);
 
             List<String> environments = new ArrayList<String>();
-
-            if (env != null && !"".equals(env)) {
-                environments.add(env);
-            }
-
             List<String> countries = new ArrayList<String>();
             List<String> browsers = new ArrayList<String>();
+
+            if (env != null && env.length > 0) {
+                environments.addAll(Arrays.asList(env));
+            }
+            if (country != null && country.length > 0) {
+                countries.addAll(Arrays.asList(country));
+            }
+            if (browser != null && browser.length > 0) {
+                browsers.addAll(Arrays.asList(browser));
+            }
 
             for (CampaignParameter parameter : campaignParameters) {
                 if ("BROWSER".equals(parameter.getParameter())) {
@@ -145,42 +153,24 @@ public class CampaignExecutionReport extends HttpServlet {
                     }
                     testCaseExecutionsByTestCase.add(testCaseExecution);
                     hmTestCaseExecutionByTestCase.put(key, testCaseExecutionsByTestCase);
-
-                    //jSONResult.put(testCaseExecutionToJSONObject(testCaseExecution));
                 }
             }
-            HashMap<String, TestCaseExecution> hmTestCaseExecutionByTestCaseEnvBrowserAndCountry = new HashMap<String, TestCaseExecution>();
+
             for (CampaignContent campaignContent : campaignService.findCampaignContentsByCampaignName(campaignName)) {
                 for (TestBatteryContent batteryContent : testBatteryService.findTestBatteryContentsByTestBatteryName(campaignContent.getTestbattery())) {
                     key = batteryContent.getTest() + batteryContent.getTestCase();
                     if (hmTestCaseExecutionByTestCase.containsKey(key)) {
                         for (TestCaseExecution testCaseExecution : hmTestCaseExecutionByTestCase.get(key)) {
-                            String keyEnvCountryBrowser = new StringBuffer(testCaseExecution.getTest())
-                                    .append(testCaseExecution.getTestCase())
-                                    .append(testCaseExecution.getEnvironment())
-                                    .append(testCaseExecution.getBrowser())
-                                    .toString();
-
-                            if (!hmTestCaseExecutionByTestCaseEnvBrowserAndCountry.containsKey(keyEnvCountryBrowser)
-                                    || hmTestCaseExecutionByTestCaseEnvBrowserAndCountry.get(keyEnvCountryBrowser).getId() < testCaseExecution.getId()) {
-                                hmTestCaseExecutionByTestCaseEnvBrowserAndCountry.put(keyEnvCountryBrowser, testCaseExecution);
+                            try {
+                                TCase tCase = testCaseService.findTestCaseByKey(testCaseExecution.getTest(), testCaseExecution.getTestCase());
+                                jSONResult.put(testCaseExecutionToJSONObject(testCaseExecution, tCase, ""));
+                            } catch (JSONException ex) {
+                                Logger.getLogger(CampaignExecutionReport.class.getName()).log(Level.SEVERE, null, ex);
                             }
                         }
                     }
                 }
             }
-
-            String bugURL = "";
-            for (TestCaseExecution testCaseExecutionByTestCaseEnvBrowserAndCountry : hmTestCaseExecutionByTestCaseEnvBrowserAndCountry.values()) {
-                try {
-                    TCase tCase = testCaseService.findTestCaseByKey(testCaseExecutionByTestCaseEnvBrowserAndCountry.getTest(), testCaseExecutionByTestCaseEnvBrowserAndCountry.getTestCase());
-                    jSONResult.put(testCaseExecutionToJSONObject(testCaseExecutionByTestCaseEnvBrowserAndCountry, tCase, bugURL));
-                } catch (JSONException ex) {
-                    Logger.getLogger(CampaignExecutionReport.class.getName()).log(Level.SEVERE, null, ex);
-                }
-
-            }
-
             response.setContentType("application/json");
             response.getWriter().print(jSONResult);
         } catch (CerberusException ex) {
