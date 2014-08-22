@@ -18,7 +18,6 @@
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
 <%@page import="org.cerberus.service.IDocumentationService"%>
-<%@page import="org.cerberus.refactor.BatchInfo"%>
 <%@page import="org.apache.commons.lang3.StringUtils"%>
 <%@page import="java.util.Enumeration"%>
 <%@page import="java.util.LinkedList"%>
