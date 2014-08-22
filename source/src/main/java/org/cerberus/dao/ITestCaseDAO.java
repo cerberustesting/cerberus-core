@@ -75,10 +75,9 @@ public interface ITestCaseDAO {
     /**
      *
      * @param tCase
-     * @param text
      * @param system
      * @return
      * @since 1.0.2
      */
-    List<TCase> findTestCaseByGroupInCriteria(TCase tCase, String text, String system);
+    List<TCase> findTestCaseByGroupInCriteria(TCase tCase, String system);
 }

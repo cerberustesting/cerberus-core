@@ -74,7 +74,13 @@ public class TestCaseStepActionControlService implements ITestCaseStepActionCont
     }
 
     @Override
-    public void updateTestCaseStepActionControl(TestCaseStepActionControl control) {
-        testCaseStepActionControlDao.updateTestCaseStepActionControl(control);
+    public boolean updateTestCaseStepActionControl(TestCaseStepActionControl control) {
+        try {
+            testCaseStepActionControlDao.updateTestCaseStepActionControl(control);
+        } catch (CerberusException ex) {
+            MyLogger.log(TestCaseStepActionControlService.class.getName(), Level.FATAL, ex.toString());
+            return false;
+        }
+        return true;
     }
 }

@@ -714,13 +714,12 @@ public class TestCaseDAO implements ITestCaseDAO {
 
     /**
      * @param testCase
-     * @param text
      * @param system
      * @return
      * @since 1.0.2
      */
     @Override
-    public List<TCase> findTestCaseByGroupInCriteria(TCase testCase, String text, String system) {
+    public List<TCase> findTestCaseByGroupInCriteria(TCase testCase, String system) {
         List<TCase> list = null;
         StringBuilder query = new StringBuilder();
         query.append("SELECT t2.* FROM testcase t2 LEFT OUTER JOIN application a ON a.application=t2.application WHERE 1=1");
@@ -780,19 +779,26 @@ public class TestCaseDAO implements ITestCaseDAO {
             query.append(" AND t2.activeQA IN ");
             query.append(testCase.getRunQA());
         }
-
-        if(!StringUtil.isNull(text)){
-            query.append(" AND (t2.description LIKE '");
-            query.append(text);
-            query.append("' OR t2.howto LIKE '");
-            query.append(text);
-            query.append("' OR t2.behaviororvalueexpected LIKE '");
-            query.append(text);
-            query.append("' OR t2.comment LIKE '");
-            query.append(text);
-            query.append("')");
+        if(!StringUtil.isNull(testCase.getShortDescription())){
+            query.append(" AND t2.description LIKE '%");
+            query.append(testCase.getShortDescription());
+            query.append("%'");
         }
-
+        if(!StringUtil.isNull(testCase.getHowTo())){
+            query.append(" AND t2.howto LIKE '%");
+            query.append(testCase.getHowTo());
+            query.append("%'");
+        }
+        if(!StringUtil.isNull(testCase.getDescription())){
+            query.append(" AND t2.behaviororvalueexpected LIKE '%");
+            query.append(testCase.getDescription());
+            query.append("%'");
+        }
+        if(!StringUtil.isNull(testCase.getComment())){
+            query.append(" AND t2.comment LIKE '%");
+            query.append(testCase.getComment());
+            query.append("%'");
+        }
         if(!StringUtil.isNull(testCase.getActive())){
             query.append(" AND t2.TcActive IN ");
             query.append(testCase.getActive());

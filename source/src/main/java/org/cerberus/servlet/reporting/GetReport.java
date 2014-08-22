@@ -65,7 +65,7 @@ public class GetReport extends HttpServlet {
         String[] browsers = req.getParameterValues("Browser");
 
         //Get all test cases that match the user input
-        List<TCase> list = testCaseService.findTestCaseByGroupInCriteria(tCase, "", system);
+        List<TCase> list = testCaseService.findTestCaseByGroupInCriteria(tCase, system);
 
         //Create object to be filled and then added to JSON response
         JSONArray data = new JSONArray();
