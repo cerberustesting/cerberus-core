@@ -17,6 +17,7 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
   --%>
+<%@page import="org.cerberus.servlet.reporting.GeneratePerformanceString"%>
 <%@page import="java.util.Calendar"%>
 <%@page import="java.sql.Statement"%>
 <%@page import="java.sql.ResultSet"%>
