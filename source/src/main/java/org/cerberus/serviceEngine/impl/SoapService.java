@@ -23,11 +23,9 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.StringReader;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
-import javax.annotation.PostConstruct;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.soap.MessageFactory;
 import javax.xml.soap.MimeHeaders;
@@ -37,7 +35,6 @@ import javax.xml.soap.SOAPConstants;
 import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPMessage;
 
-import org.apache.commons.io.input.ReaderInputStream;
 import org.apache.log4j.Level;
 import org.cerberus.entity.ExecutionSOAPResponse;
 import org.cerberus.entity.MessageEvent;
@@ -46,6 +43,7 @@ import org.cerberus.log.MyLogger;
 import org.cerberus.serviceEngine.ISoapService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.util.HtmlUtils;
 import org.xml.sax.SAXException;
 
 /**
@@ -63,11 +61,13 @@ public class SoapService implements ISoapService {
 
     @Override
     public SOAPMessage createSoapRequest(String envelope, String method) throws SOAPException, IOException, SAXException, ParserConfigurationException {
+    	String unescapedEnvelope = HtmlUtils.htmlUnescape(envelope);
+    	
     	MimeHeaders headers = new MimeHeaders();
 		headers.addHeader("SOAPAction", method);
-		headers.addHeader("Content-Type", SOAP_1_2_NAMESPACE_PATTERN.matcher(envelope).matches() ? SOAPConstants.SOAP_1_2_CONTENT_TYPE : SOAPConstants.SOAP_1_1_CONTENT_TYPE);
+		headers.addHeader("Content-Type", SOAP_1_2_NAMESPACE_PATTERN.matcher(unescapedEnvelope).matches() ? SOAPConstants.SOAP_1_2_CONTENT_TYPE : SOAPConstants.SOAP_1_1_CONTENT_TYPE);
 
-		InputStream input = new ByteArrayInputStream(envelope.getBytes("UTF-8"));
+		InputStream input = new ByteArrayInputStream(unescapedEnvelope.getBytes("UTF-8"));
 		MessageFactory messageFactory = MessageFactory.newInstance(SOAPConstants.DYNAMIC_SOAP_PROTOCOL);
         return messageFactory.createMessage(headers, input);
     }
