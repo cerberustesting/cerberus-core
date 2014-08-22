@@ -59,18 +59,18 @@ public class SoapService implements ISoapService {
     @Autowired
     ExecutionSOAPResponse executionSOAPResponse;
 
-    @Override
-    public SOAPMessage createSoapRequest(String envelope, String method) throws SOAPException, IOException, SAXException, ParserConfigurationException {
-    	String unescapedEnvelope = HtmlUtils.htmlUnescape(envelope);
-    	
-    	MimeHeaders headers = new MimeHeaders();
+	@Override
+	public SOAPMessage createSoapRequest(String envelope, String method) throws SOAPException, IOException, SAXException, ParserConfigurationException {
+		String unescapedEnvelope = HtmlUtils.htmlUnescape(envelope);
+
+		MimeHeaders headers = new MimeHeaders();
 		headers.addHeader("SOAPAction", method);
 		headers.addHeader("Content-Type", SOAP_1_2_NAMESPACE_PATTERN.matcher(unescapedEnvelope).matches() ? SOAPConstants.SOAP_1_2_CONTENT_TYPE : SOAPConstants.SOAP_1_1_CONTENT_TYPE);
 
 		InputStream input = new ByteArrayInputStream(unescapedEnvelope.getBytes("UTF-8"));
 		MessageFactory messageFactory = MessageFactory.newInstance(SOAPConstants.DYNAMIC_SOAP_PROTOCOL);
-        return messageFactory.createMessage(headers, input);
-    }
+		return messageFactory.createMessage(headers, input);
+	}
 
     @Override
     public MessageEvent callSOAPAndStoreResponseInMemory(String uuid, String envelope, String servicePath, String method) {
