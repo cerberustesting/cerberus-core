@@ -28,7 +28,6 @@
 <%@page import="org.cerberus.service.impl.ApplicationService"%>
 <%@page import="org.cerberus.service.IApplicationService"%>
 <%@page import="org.cerberus.service.IParameterService"%>
-<%@page import="org.cerberus.refactor.GeneratePerformanceString"%>
 <%@page import="org.cerberus.log.MyLogger"%>
 <%@page import="org.cerberus.util.SqlUtil"%>
 <% Date DatePageStart = new Date();%>
