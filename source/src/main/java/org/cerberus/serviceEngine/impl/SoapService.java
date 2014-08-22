@@ -19,12 +19,15 @@
  */
 package org.cerberus.serviceEngine.impl;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 
+import javax.annotation.PostConstruct;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.soap.MessageFactory;
 import javax.xml.soap.MimeHeaders;
@@ -51,18 +54,21 @@ import org.xml.sax.SAXException;
  */
 @Service
 public class SoapService implements ISoapService {
+	
+	/** The SOAP 1.2 namespace pattern */
+	private static final Pattern SOAP_1_2_NAMESPACE_PATTERN = Pattern.compile(SOAPConstants.URI_NS_SOAP_1_2_ENVELOPE);
 
     @Autowired
     ExecutionSOAPResponse executionSOAPResponse;
 
     @Override
-    public SOAPMessage createSoapRequest(String pBody, String method) throws SOAPException, IOException, SAXException, ParserConfigurationException {
+    public SOAPMessage createSoapRequest(String envelope, String method) throws SOAPException, IOException, SAXException, ParserConfigurationException {
     	MimeHeaders headers = new MimeHeaders();
 		headers.addHeader("SOAPAction", method);
-		headers.addHeader("Content-Type", "text/xml;charset=UTF-8");
+		headers.addHeader("Content-Type", SOAP_1_2_NAMESPACE_PATTERN.matcher(envelope).matches() ? SOAPConstants.SOAP_1_2_CONTENT_TYPE : SOAPConstants.SOAP_1_1_CONTENT_TYPE);
 
-		InputStream input = new ReaderInputStream(new StringReader(pBody));
-		MessageFactory messageFactory = MessageFactory.newInstance(SOAPConstants.SOAP_1_1_PROTOCOL);
+		InputStream input = new ByteArrayInputStream(envelope.getBytes("UTF-8"));
+		MessageFactory messageFactory = MessageFactory.newInstance(SOAPConstants.DYNAMIC_SOAP_PROTOCOL);
         return messageFactory.createMessage(headers, input);
     }
 
@@ -76,7 +82,7 @@ public class SoapService implements ISoapService {
             SOAPConnectionFactory soapConnectionFactory;
             SOAPConnection soapConnection = null;
             try {
-                //Initialize SOAP Connection
+            	//Initialize SOAP Connection
                 soapConnectionFactory = SOAPConnectionFactory.newInstance();
                 soapConnection = soapConnectionFactory.createConnection();
                 MyLogger.log(SoapService.class.getName(), Level.INFO, "Connection opened");
@@ -87,7 +93,6 @@ public class SoapService implements ISoapService {
 
                 // Call the WS
                 MyLogger.log(SoapService.class.getName(), Level.INFO, "Calling WS");
-                MyLogger.log(SoapService.class.getName(), Level.INFO, "Input :" + input);
                 SOAPMessage soapResponse = soapConnection.call(input, servicePath);
 
                 out = new ByteArrayOutputStream();
