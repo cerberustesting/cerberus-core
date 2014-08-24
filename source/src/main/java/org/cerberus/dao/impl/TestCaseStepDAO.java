@@ -247,4 +247,14 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
         }
         return result;
     }
+
+    @Override
+    public void deleteTestCaseStep(TestCaseStep tcs) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void updateTestCaseStep(TestCaseStep tcs) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }

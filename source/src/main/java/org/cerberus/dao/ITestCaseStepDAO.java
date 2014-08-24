@@ -38,4 +38,8 @@ public interface ITestCaseStepDAO {
     void insertTestCaseStep(TestCaseStep testCaseStep) throws CerberusException;
     
     TestCaseStep findTestCaseStep(String test, String testcase, Integer Step);
+
+    public void deleteTestCaseStep(TestCaseStep tcs);
+
+    public void updateTestCaseStep(TestCaseStep tcs);
 }

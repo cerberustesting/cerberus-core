@@ -205,4 +205,12 @@ public class TestCaseCountryDAO implements ITestCaseCountryDAO {
             throw new CerberusException(new MessageGeneral(MessageGeneralEnum.CANNOT_UPDATE_TABLE));
         }
     }
+
+    public void updateTestCaseCountry(TestCaseCountry tcc) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public void deleteTestCaseCountry(TestCaseCountry tcc) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }

@@ -63,8 +63,10 @@ public interface ITestCaseStepService {
      */
     TestCaseStep findTestCaseStep(String test, String testcase, Integer step);
 
-    public void updateTestCaseStep(TestCaseStep tcsLeft);
+    public void updateTestCaseStep(TestCaseStep tcsLeft) throws CerberusException ;
 
-    public void deleteListTestCaseStep(List<TestCaseStep> tcsToDelete);
+    public void deleteTestCaseStep(TestCaseStep tcs) throws CerberusException ;
+    
+    public void deleteListTestCaseStep(List<TestCaseStep> tcsToDelete) throws CerberusException ;
 
 }

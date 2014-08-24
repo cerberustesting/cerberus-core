@@ -332,5 +332,15 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
         }
     }
 
+    @Override
+    public void deleteTestCaseStepAction(TestCaseStepAction tcsa) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public List<TestCaseStepAction> findTestCaseStepActionbyTestTestCase(String test, String testCase) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
 
 }

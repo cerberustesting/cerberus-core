@@ -334,4 +334,14 @@ public class TestCaseStepActionControlDAO implements ITestCaseStepActionControlD
         }
     }
 
+    @Override
+    public void deleteTestCaseStepActionControl(TestCaseStepActionControl tcsac) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public List<TestCaseStepActionControl> findControlByTestTestCaseStep(String test, String testCase) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
 }

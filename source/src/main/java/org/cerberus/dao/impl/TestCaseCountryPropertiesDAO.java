@@ -488,4 +488,9 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
         return result;
     }
 
+    @Override
+    public void deleteTestCaseCountryProperties(TestCaseCountryProperties tccp) throws CerberusException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
 }

@@ -160,4 +160,14 @@ public class TestCaseService implements ITestCaseService {
     public List<TCase> findTestCaseByGroupInCriteria(TCase tCase, String system) {
         return this.testCaseDao.findTestCaseByGroupInCriteria(tCase, system);
     }
+
+    @Override
+    public void updateTestCase(TestCase tc) throws CerberusException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void createTestCase(TestCase tc) throws CerberusException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }

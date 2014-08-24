@@ -47,5 +47,7 @@ public interface ITestCaseCountryPropertiesService {
 
     List<String> findCountryByPropertyNameAndTestCase(String test, String testcase, String property);
 
-    public void deleteListTestCaseCountryProperties(List<TestCaseCountryProperties> tccpToDelete);
+    void deleteListTestCaseCountryProperties(List<TestCaseCountryProperties> tccpToDelete) throws CerberusException ;
+    
+    void deleteTestCaseCountryProperties(TestCaseCountryProperties tccp) throws CerberusException ;
 }

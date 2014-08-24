@@ -47,8 +47,10 @@ public interface ITestCaseCountryService {
 
     boolean insertListTestCaseCountry(List<TestCaseCountry> testCaseCountryList);
 
-    public void updateTestCaseCountry(TestCaseCountry tccLeft);
+    void updateTestCaseCountry(TestCaseCountry tccLeft) throws CerberusException;
+    
+    void deleteTestCaseCountry(TestCaseCountry tcc) throws CerberusException;
 
-    public void deleteListTestCaseCountry(List<TestCaseCountry> tccToDelete);
+    void deleteListTestCaseCountry(List<TestCaseCountry> tccToDelete) throws CerberusException;
 
 }

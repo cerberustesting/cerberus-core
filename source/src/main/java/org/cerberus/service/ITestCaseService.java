@@ -101,8 +101,8 @@ public interface ITestCaseService {
      */
     List<TCase> findTestCaseByGroupInCriteria(TCase tCase, String system);
 
-    public void updateTestCase(TestCase tc);
+    public void updateTestCase(TestCase tc) throws CerberusException;
 
-    public void createTestCase(TestCase tc);
+    public void createTestCase(TestCase tc) throws CerberusException;
     
 }
