@@ -545,6 +545,10 @@
         <servlet-name>GetReport</servlet-name>
         <servlet-class>org.cerberus.servlet.reporting.GetReport</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>UpdateTestCaseWithDependencies</servlet-name>
+        <servlet-class>org.cerberus.servlet.testCase.UpdateTestCaseWithDependencies</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>RunTestCase</servlet-name>
         <url-pattern>/RunTestCase</url-pattern>
@@ -1052,6 +1056,10 @@
     <servlet-mapping>
         <servlet-name>GetReport</servlet-name>
         <url-pattern>/GetReport</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>UpdateTestCaseWithDependencies</servlet-name>
+        <url-pattern>/UpdateTestCaseWithDependencies</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>
