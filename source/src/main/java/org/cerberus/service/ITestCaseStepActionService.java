@@ -41,4 +41,8 @@ public interface ITestCaseStepActionService {
     boolean changeTestCaseStepActionSequence(String test, String testCase, int step, int oldSequence, int newSequence);
 
     public boolean updateTestCaseStepAction(TestCaseStepAction tcsa);
+
+    public List<TestCaseStepAction> findTestCaseStepActionbyTestTestCase(String initialTest, String initialTestCase);
+
+    public void deleteListTestCaseStepAction(List<TestCaseStepAction> tcsaToDelete);
 }

@@ -139,4 +139,8 @@ public class TestCaseCountryProperties {
     public void setResult(MessageEvent result) {
         this.result = result;
     }
+
+    public boolean hasSameKey(TestCaseCountryProperties tccpRight) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }

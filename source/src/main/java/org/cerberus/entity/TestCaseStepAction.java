@@ -185,4 +185,8 @@ public class TestCaseStepAction {
                 || this.getAction().equalsIgnoreCase(SELENIUM_TYPE) || this.getAction().equalsIgnoreCase(SELENIUM_WAIT)
                 || this.getAction().equalsIgnoreCase(SELENIUM_SELECTWAIT) || this.getAction().equalsIgnoreCase(SELENIUM_URLLOGIN);
     }
+
+    public boolean hasSameKey(TestCaseStepAction tcsaRight) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }

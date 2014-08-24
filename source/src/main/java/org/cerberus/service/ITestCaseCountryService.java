@@ -47,4 +47,8 @@ public interface ITestCaseCountryService {
 
     boolean insertListTestCaseCountry(List<TestCaseCountry> testCaseCountryList);
 
+    public void updateTestCaseCountry(TestCaseCountry tccLeft);
+
+    public void deleteListTestCaseCountry(List<TestCaseCountry> tccToDelete);
+
 }

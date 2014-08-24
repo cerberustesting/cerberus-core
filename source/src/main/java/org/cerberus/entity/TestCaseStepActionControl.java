@@ -169,4 +169,8 @@ public class TestCaseStepActionControl {
     public boolean isVerifyUrl() {
         return this.getType().equalsIgnoreCase(VERIFY_URL);
     }
+
+    public boolean hasSameKey(TestCaseStepActionControl tcsacRight) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }

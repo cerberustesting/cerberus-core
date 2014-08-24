@@ -105,4 +105,8 @@ public class TestCaseStep {
     public void setTestCase(String testCase) {
         this.testCase = testCase;
     }
+
+    public boolean hasSameKey(TestCaseStep tcsRight) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }

@@ -63,4 +63,8 @@ public interface ITestCaseStepService {
      */
     TestCaseStep findTestCaseStep(String test, String testcase, Integer step);
 
+    public void updateTestCaseStep(TestCaseStep tcsLeft);
+
+    public void deleteListTestCaseStep(List<TestCaseStep> tcsToDelete);
+
 }
