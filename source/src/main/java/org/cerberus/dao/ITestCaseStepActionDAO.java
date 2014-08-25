@@ -41,7 +41,7 @@ public interface ITestCaseStepActionDAO {
 
     public void updateTestCaseStepAction(TestCaseStepAction tcsa) throws CerberusException;
 
-    public void deleteTestCaseStepAction(TestCaseStepAction tcsa);
+    public void deleteTestCaseStepAction(TestCaseStepAction tcsa) throws CerberusException ;
 
-    public List<TestCaseStepAction> findTestCaseStepActionbyTestTestCase(String test, String testCase);
+    public List<TestCaseStepAction> findTestCaseStepActionbyTestTestCase(String test, String testCase) throws CerberusException ;
 }
