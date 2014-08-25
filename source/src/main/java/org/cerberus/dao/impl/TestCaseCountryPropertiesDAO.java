@@ -490,7 +490,38 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
 
     @Override
     public void deleteTestCaseCountryProperties(TestCaseCountryProperties tccp) throws CerberusException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        boolean throwExcep = false;
+        final String query = "DELETE FROM testcasecountryproperties WHERE test = ? and testcase = ? and country = ? and property = ?";
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            try {
+                preStat.setString(1, tccp.getTest());
+                preStat.setString(2, tccp.getTestCase());
+                preStat.setString(3, tccp.getCountry());
+                preStat.setString(4, tccp.getProperty());
+
+                throwExcep = preStat.executeUpdate() == 0;
+            } catch (SQLException exception) {
+                MyLogger.log(TestCaseCountryPropertiesDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(TestCaseCountryPropertiesDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(TestCaseCountryPropertiesDAO.class.getName(), Level.WARN, e.toString());
+            }
+        }
+        if (throwExcep) {
+            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.CANNOT_UPDATE_TABLE));
+        }
     }
 
 }
