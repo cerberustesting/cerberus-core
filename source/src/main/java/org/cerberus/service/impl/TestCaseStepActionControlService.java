@@ -86,7 +86,7 @@ public class TestCaseStepActionControlService implements ITestCaseStepActionCont
 
     @Override
     public List<TestCaseStepActionControl> findControlByTestTestCase(String test, String testCase) throws CerberusException {
-        return testCaseStepActionControlDao.findControlByTestTestCaseStep(test,testCase);
+        return testCaseStepActionControlDao.findControlByTestTestCase(test,testCase);
     }
 
     @Override

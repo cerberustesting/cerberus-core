@@ -335,13 +335,91 @@ public class TestCaseStepActionControlDAO implements ITestCaseStepActionControlD
     }
 
     @Override
-    public void deleteTestCaseStepActionControl(TestCaseStepActionControl tcsac) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void deleteTestCaseStepActionControl(TestCaseStepActionControl tcsac) throws CerberusException {
+        boolean throwExcep = false;
+        final String query = "DELETE FROM testcasestepactioncontrol WHERE test = ? and testcase = ? and step = ? and `sequence` = ? and `control` = ?";
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            try {
+                preStat.setString(1, tcsac.getTest());
+                preStat.setString(2, tcsac.getTestCase());
+                preStat.setInt(3, tcsac.getStep());
+                preStat.setInt(4, tcsac.getSequence());
+                preStat.setInt(5, tcsac.getControl());
+
+                throwExcep = preStat.executeUpdate() == 0;
+            } catch (SQLException exception) {
+                MyLogger.log(TestCaseStepActionControlDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(TestCaseStepActionControlDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(TestCaseStepActionControlDAO.class.getName(), Level.WARN, e.toString());
+            }
+        }
+        if (throwExcep) {
+            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.CANNOT_UPDATE_TABLE));
+        }
     }
 
     @Override
-    public List<TestCaseStepActionControl> findControlByTestTestCaseStep(String test, String testCase) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public List<TestCaseStepActionControl> findControlByTestTestCase(String test, String testCase) throws CerberusException {
+        List<TestCaseStepActionControl> list = null;
+        final String query = "SELECT * FROM testcasestepactioncontrol WHERE test = ? AND testcase = ? ORDER BY step, sequence, control";
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            try {
+                preStat.setString(1, test);
+                preStat.setString(2, testCase);
+
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+                    list = new ArrayList<TestCaseStepActionControl>();
+
+                    while (resultSet.next()) {
+                        int step = resultSet.getInt("Step");
+                        int sequence = resultSet.getInt("Sequence");
+                        int control = resultSet.getInt("Control");
+                        String type = resultSet.getString("Type");
+                        String object = resultSet.getString("ControlValue");
+                        String property = resultSet.getString("ControlProperty");
+                        String fatal = resultSet.getString("Fatal");
+                        String description = resultSet.getString("ControlDescription");
+                        list.add(factoryTestCaseStepActionControl.create(test, testCase, step, sequence, control, type, object, property, fatal, description));
+                    }
+                } catch (SQLException exception) {
+                    MyLogger.log(TestCaseStepActionControlDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                } finally {
+                    resultSet.close();
+                }
+            } catch (SQLException exception) {
+                MyLogger.log(TestCaseStepActionControlDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(TestCaseStepActionControlDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(TestCaseStepActionControlDAO.class.getName(), Level.WARN, e.toString());
+            }
+        }
+        return list;
     }
 
 }
