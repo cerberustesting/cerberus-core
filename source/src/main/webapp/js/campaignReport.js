@@ -131,7 +131,7 @@ function addTestCaseToStatusTabs(testcase) {
 
     statusTestCaseStatusLine.find(".Control").text(testcase.ControlStatus);
     statusTestCaseStatusLine.find(".Status").text(testcase.Status);
-    statusTestCaseStatusLine.find(".BugID").text(testcase.BugID);
+    statusTestCaseStatusLine.find(".BugID").append(testcase.BugID);
     statusTestCaseStatusLine.find(".Application").text(testcase.Application);
     statusTestCaseStatusLine.find(".Comment").text(testcase.Comment);
     
