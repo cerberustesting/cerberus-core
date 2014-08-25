@@ -186,7 +186,78 @@ public class TestCaseStepAction {
                 || this.getAction().equalsIgnoreCase(SELENIUM_SELECTWAIT) || this.getAction().equalsIgnoreCase(SELENIUM_URLLOGIN);
     }
 
-    public boolean hasSameKey(TestCaseStepAction tcsaRight) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public boolean hasSameKey(TestCaseStepAction obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final TestCaseStepAction other = (TestCaseStepAction) obj;
+        if ((this.test == null) ? (other.test != null) : !this.test.equals(other.test)) {
+            return false;
+        }
+        if ((this.testCase == null) ? (other.testCase != null) : !this.testCase.equals(other.testCase)) {
+            return false;
+        }
+        if (this.step != other.step) {
+            return false;
+        }
+        if (this.sequence != other.sequence) {
+            return false;
+        }
+        return true;
     }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 79 * hash + (this.test != null ? this.test.hashCode() : 0);
+        hash = 79 * hash + (this.testCase != null ? this.testCase.hashCode() : 0);
+        hash = 79 * hash + this.step;
+        hash = 79 * hash + this.sequence;
+        hash = 79 * hash + (this.action != null ? this.action.hashCode() : 0);
+        hash = 79 * hash + (this.object != null ? this.object.hashCode() : 0);
+        hash = 79 * hash + (this.property != null ? this.property.hashCode() : 0);
+        hash = 79 * hash + (this.description != null ? this.description.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final TestCaseStepAction other = (TestCaseStepAction) obj;
+        if ((this.test == null) ? (other.test != null) : !this.test.equals(other.test)) {
+            return false;
+        }
+        if ((this.testCase == null) ? (other.testCase != null) : !this.testCase.equals(other.testCase)) {
+            return false;
+        }
+        if (this.step != other.step) {
+            return false;
+        }
+        if (this.sequence != other.sequence) {
+            return false;
+        }
+        if ((this.action == null) ? (other.action != null) : !this.action.equals(other.action)) {
+            return false;
+        }
+        if ((this.object == null) ? (other.object != null) : !this.object.equals(other.object)) {
+            return false;
+        }
+        if ((this.property == null) ? (other.property != null) : !this.property.equals(other.property)) {
+            return false;
+        }
+        if ((this.description == null) ? (other.description != null) : !this.description.equals(other.description)) {
+            return false;
+        }
+        return true;
+    }
+    
+    
 }

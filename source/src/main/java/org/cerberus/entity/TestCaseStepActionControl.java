@@ -170,7 +170,89 @@ public class TestCaseStepActionControl {
         return this.getType().equalsIgnoreCase(VERIFY_URL);
     }
 
-    public boolean hasSameKey(TestCaseStepActionControl tcsacRight) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public boolean hasSameKey(TestCaseStepActionControl obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final TestCaseStepActionControl other = (TestCaseStepActionControl) obj;
+        if ((this.test == null) ? (other.test != null) : !this.test.equals(other.test)) {
+            return false;
+        }
+        if ((this.testCase == null) ? (other.testCase != null) : !this.testCase.equals(other.testCase)) {
+            return false;
+        }
+        if (this.step != other.step) {
+            return false;
+        }
+        if (this.sequence != other.sequence) {
+            return false;
+        }
+        if (this.control != other.control) {
+            return false;
+        }
+        return true;
     }
+
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 67 * hash + (this.test != null ? this.test.hashCode() : 0);
+        hash = 67 * hash + (this.testCase != null ? this.testCase.hashCode() : 0);
+        hash = 67 * hash + this.step;
+        hash = 67 * hash + this.sequence;
+        hash = 67 * hash + this.control;
+        hash = 67 * hash + (this.type != null ? this.type.hashCode() : 0);
+        hash = 67 * hash + (this.controlValue != null ? this.controlValue.hashCode() : 0);
+        hash = 67 * hash + (this.controlProperty != null ? this.controlProperty.hashCode() : 0);
+        hash = 67 * hash + (this.fatal != null ? this.fatal.hashCode() : 0);
+        hash = 67 * hash + (this.description != null ? this.description.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final TestCaseStepActionControl other = (TestCaseStepActionControl) obj;
+        if ((this.test == null) ? (other.test != null) : !this.test.equals(other.test)) {
+            return false;
+        }
+        if ((this.testCase == null) ? (other.testCase != null) : !this.testCase.equals(other.testCase)) {
+            return false;
+        }
+        if (this.step != other.step) {
+            return false;
+        }
+        if (this.sequence != other.sequence) {
+            return false;
+        }
+        if (this.control != other.control) {
+            return false;
+        }
+        if ((this.type == null) ? (other.type != null) : !this.type.equals(other.type)) {
+            return false;
+        }
+        if ((this.controlValue == null) ? (other.controlValue != null) : !this.controlValue.equals(other.controlValue)) {
+            return false;
+        }
+        if ((this.controlProperty == null) ? (other.controlProperty != null) : !this.controlProperty.equals(other.controlProperty)) {
+            return false;
+        }
+        if ((this.fatal == null) ? (other.fatal != null) : !this.fatal.equals(other.fatal)) {
+            return false;
+        }
+        if ((this.description == null) ? (other.description != null) : !this.description.equals(other.description)) {
+            return false;
+        }
+        return true;
+    }
+    
+    
 }
