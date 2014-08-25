@@ -70,6 +70,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
+     * @throws org.cerberus.exception.CerberusException
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, CerberusException {
@@ -134,7 +135,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
         for (TestCaseCountry tccLeft : tccToUpdateOrInsert) {
             for (TestCaseCountry tccRight : tccFromDatabase) {
                 if (tccLeft.hasSameKey(tccRight)) {
-                    tccService.updateTestCaseCountry(tccLeft);
+                    //tccService.updateTestCaseCountry(tccLeft);
                     tccToUpdateOrInsert.remove(tccLeft);
                 }
             }

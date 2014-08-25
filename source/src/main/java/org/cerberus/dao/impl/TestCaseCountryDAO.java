@@ -61,7 +61,6 @@ public class TestCaseCountryDAO implements ITestCaseCountryDAO {
      * more explanations to follow in consecutive paragraphs separated by HTML
      * paragraph breaks.
      *
-     * @param variable Description text text text.
      * @return Description text text text.
      */
     @Override
@@ -186,19 +185,19 @@ public class TestCaseCountryDAO implements ITestCaseCountryDAO {
                 
                 
             } catch (SQLException exception) {
-                MyLogger.log(TestCaseStepDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                MyLogger.log(TestCaseCountryDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(TestCaseStepDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+            MyLogger.log(TestCaseCountryDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
         } finally {
             try {
                 if (connection != null) {
                     connection.close();
                 }
             } catch (SQLException e) {
-                MyLogger.log(TestCaseStepDAO.class.getName(), Level.WARN, e.toString());
+                MyLogger.log(TestCaseCountryDAO.class.getName(), Level.WARN, e.toString());
             }
         }
         if (throwExcep) {
@@ -206,11 +205,38 @@ public class TestCaseCountryDAO implements ITestCaseCountryDAO {
         }
     }
 
-    public void updateTestCaseCountry(TestCaseCountry tcc) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+    @Override
+    public void deleteTestCaseCountry(TestCaseCountry tcc) throws CerberusException{
+        boolean throwExcep = false;
+        final String query = "DELETE FROM testcasecountry WHERE test = ? and testcase = ? and country = ?";
 
-    public void deleteTestCaseCountry(TestCaseCountry tcc) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            try {
+                preStat.setString(1, tcc.getTest());
+                preStat.setString(2, tcc.getTestCase());
+                preStat.setString(3, tcc.getCountry());
+
+                throwExcep = preStat.executeUpdate() == 0;
+            } catch (SQLException exception) {
+                MyLogger.log(TestCaseCountryDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(TestCaseCountryDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(TestCaseCountryDAO.class.getName(), Level.WARN, e.toString());
+            }
+        }
+        if (throwExcep) {
+            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.CANNOT_UPDATE_TABLE));
+        }
     }
 }
