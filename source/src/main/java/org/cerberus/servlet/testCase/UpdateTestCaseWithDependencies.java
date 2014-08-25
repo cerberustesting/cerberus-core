@@ -20,10 +20,7 @@
 package org.cerberus.servlet.testCase;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -34,7 +31,6 @@ import org.apache.log4j.Logger;
 import org.cerberus.entity.MessageGeneralEnum;
 import org.cerberus.entity.TCase;
 import org.cerberus.entity.Test;
-import org.cerberus.entity.TestCase;
 import org.cerberus.entity.TestCaseCountry;
 import org.cerberus.entity.TestCaseCountryProperties;
 import org.cerberus.entity.TestCaseStep;
@@ -43,7 +39,11 @@ import org.cerberus.entity.TestCaseStepActionControl;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.factory.IFactoryLogEvent;
 import org.cerberus.factory.IFactoryTCase;
-import org.cerberus.factory.IFactoryTestCase;
+import org.cerberus.factory.IFactoryTestCaseCountry;
+import org.cerberus.factory.IFactoryTestCaseCountryProperties;
+import org.cerberus.factory.IFactoryTestCaseStep;
+import org.cerberus.factory.IFactoryTestCaseStepAction;
+import org.cerberus.factory.IFactoryTestCaseStepActionControl;
 import org.cerberus.factory.impl.FactoryLogEvent;
 import org.cerberus.service.ILogEventService;
 import org.cerberus.service.ITestCaseCountryPropertiesService;
@@ -76,16 +76,18 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, CerberusException {
+        ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         String initialTest = request.getParameter("test");
         String initialTestCase = request.getParameter("testCase");
-        TCase tc = getTestCaseFromParameter(request);
-        List<TestCaseCountry> tcc = getTestCaseCountryFromParameter(request);
-        List<TestCaseCountryProperties> tccp = getTestCaseCountryPropertiesFromParameter(request);
-        List<TestCaseStep> tcs = getTestCaseStepFromParameter(request);
-        List<TestCaseStepAction> tcsa = getTestCaseStepActionFromParameter(request);
-        List<TestCaseStepActionControl> tcsac = getTestCaseStepActionControlFromParameter(request);
+        String test = request.getParameter("Test");
+        String testCase = request.getParameter("TestCase");
+        TCase tc = getTestCaseFromParameter(request, appContext, test, testCase);
+        List<TestCaseCountry> tcc = getTestCaseCountryFromParameter(request, appContext, test, testCase);
+        List<TestCaseCountryProperties> tccp = getTestCaseCountryPropertiesFromParameter(request, appContext, test, testCase);
+        List<TestCaseStep> tcs = getTestCaseStepFromParameter(request, appContext, test, testCase);
+        List<TestCaseStepAction> tcsa = getTestCaseStepActionFromParameter(request, appContext, test, testCase);
+        List<TestCaseStepActionControl> tcsac = getTestCaseStepActionControlFromParameter(request, appContext, test, testCase);
 
-        ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         ITestService tService = appContext.getBean(ITestService.class);
         ITestCaseService tcService = appContext.getBean(ITestCaseService.class);
         ITestCaseCountryService tccService = appContext.getBean(ITestCaseCountryService.class);
@@ -119,7 +121,6 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
             if (tcService.findTestCaseByKey(tc.getTest(), tc.getTestCase()) == null) {
                 response.sendError(403, MessageGeneralEnum.GUI_TESTCASE_DUPLICATION_ALREADY_EXISTS.getDescription());
             } else {
-                //TODO implement createTestCase
                 tcService.createTestCase(tc);
             }
         }
@@ -291,13 +292,9 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
      * @return TestCase object
      * @see org.cerberus.entity.TestCase
      */
-    private TCase getTestCaseFromParameter(HttpServletRequest request) {
+    private TCase getTestCaseFromParameter(HttpServletRequest request, ApplicationContext appContext, String test, String testCase) {
 
-        ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         IFactoryTCase testCaseFactory = appContext.getBean(IFactoryTCase.class);
-
-        String test = request.getParameter("Test");
-        String testCase = request.getParameter("TestCase");
         String implementer = request.getParameter("editImplementer");
         String lastModifier = request.getUserPrincipal().getName();
         String project = request.getParameter("editProject");
@@ -309,12 +306,6 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
         Integer priority = Integer.parseInt(request.getParameter("editPriority"));
         String group = request.getParameter("editGroup");
         String status = request.getParameter("editStatus");
-        List<String> countries = new ArrayList<String>();
-
-        if (request.getParameterValues("testcase_country_general") != null) {
-            Collections.addAll(countries, request.getParameterValues("testcase_country_general"));
-        }
-
         String shortDescription = request.getParameter("editDescription");
         String description = request.getParameter("valueDetail");
         String howTo = request.getParameter("howtoDetail");
@@ -328,29 +319,104 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
         String targetRevision = request.getParameter("editTargetRev");
         String comment = request.getParameter("editComment");
         String function = request.getParameter("function");
-        return testCaseFactory.create(test, testCase, bugID, description, status, implementer, lastModifier, project, ticket, function, 
-                application, runQA, runUAT, runPROD, priority, group, status, shortDescription, description, howTo, active, fromSprint, 
+        return testCaseFactory.create(test, testCase, bugID, description, status, implementer, lastModifier, project, ticket, function,
+                application, runQA, runUAT, runPROD, priority, group, status, shortDescription, description, howTo, active, fromSprint,
                 fromRevision, toSprint, toRevision, status, bugID, targetSprint, targetRevision, comment, null, null, null, null);
     }
 
-    private List<TestCaseCountry> getTestCaseCountryFromParameter(HttpServletRequest request) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    private List<TestCaseCountry> getTestCaseCountryFromParameter(HttpServletRequest request, ApplicationContext appContext, String test, String testCase) {
+        IFactoryTestCaseCountry testCaseCountryFactory = appContext.getBean(IFactoryTestCaseCountry.class);
+        List<TestCaseCountry> countries = new ArrayList<TestCaseCountry>();
+        if (request.getParameterValues("testcase_country_general") != null) {
+            for (String country : request.getParameterValues("testcase_country_general")) {
+                countries.add(testCaseCountryFactory.create(test, testCase, country));
+            }
+        }
+        return countries;
     }
 
-    private List<TestCaseCountryProperties> getTestCaseCountryPropertiesFromParameter(HttpServletRequest request) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    private List<TestCaseCountryProperties> getTestCaseCountryPropertiesFromParameter(HttpServletRequest request, ApplicationContext appContext, String test, String testCase) {
+        List<TestCaseCountryProperties> testCaseCountryProp = new ArrayList();
+        String[] testcase_properties_increment = request.getParameterValues("properties_increment");
+        IFactoryTestCaseCountryProperties testCaseCountryPropertiesFactory = appContext.getBean(IFactoryTestCaseCountryProperties.class);
+        for (String inc : testcase_properties_increment) {
+            String[] countries = request.getParameterValues("properties_country_" + inc);
+            String delete = request.getParameter("properties_delete_" + inc);
+            String property = request.getParameter("properties_property_" + inc);
+            String type = request.getParameter("properties_type_" + inc);
+            String value = request.getParameter("properties_value_" + inc);
+            String value2 = request.getParameter("properties_value2_" + inc);
+            int length = Integer.valueOf(request.getParameter("properties_length_" + inc));
+            int rowLimit = Integer.valueOf(request.getParameter("properties_rowlimit_" + inc));
+            String nature = request.getParameter("properties_nature_" + inc);
+            String database = request.getParameter("properties_dtb_" + inc);
+            for (String country : countries) {
+                if (delete == null) {
+                    testCaseCountryProp.add(testCaseCountryPropertiesFactory.create(test, testCase, country, property, type, database, value2, value2, length, rowLimit, nature));
+                }
+            }
+
+        }
+        return testCaseCountryProp;
     }
 
-    private List<TestCaseStep> getTestCaseStepFromParameter(HttpServletRequest request) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    private List<TestCaseStep> getTestCaseStepFromParameter(HttpServletRequest request, ApplicationContext appContext, String test, String testCase) {
+        List<TestCaseStep> testCaseStep = new ArrayList();
+        String[] testcase_step_increment = request.getParameterValues("steps_increment");
+        IFactoryTestCaseStep testCaseStepFactory = appContext.getBean(IFactoryTestCaseStep.class);
+        for (String inc : testcase_step_increment) {
+            String delete = request.getParameter("testcasestep_delete_" + inc);
+            int step = Integer.valueOf(request.getParameter("step_number_" + inc));
+            String desc = request.getParameter("step_description_" + inc);
+            String useStep = request.getParameter("step_useStep_" + inc);
+            String useStepTest = request.getParameter("step_useStepTest_" + inc);
+            String useStepTestCase = request.getParameter("step_useStepTestCase_" + inc);
+            int useStepStep = Integer.valueOf(request.getParameter("step_useStepStep_" + inc));
+            if (delete != null) {
+                testCaseStep.add(testCaseStepFactory.create(test, testCase, step, desc, useStep, useStepTest, useStepTestCase, useStepStep));
+            }
+        }
+        return testCaseStep;
     }
 
-    private List<TestCaseStepAction> getTestCaseStepActionFromParameter(HttpServletRequest request) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    private List<TestCaseStepAction> getTestCaseStepActionFromParameter(HttpServletRequest request, ApplicationContext appContext, String test, String testCase) {
+        List<TestCaseStepAction> testCaseStepAction = new ArrayList();
+        String[] stepAction_increment = request.getParameterValues("actions_increment");
+        IFactoryTestCaseStepAction testCaseStepActionFactory = appContext.getBean(IFactoryTestCaseStepAction.class);
+        for (String inc : stepAction_increment) {
+            String delete = request.getParameter("action_delete_" + inc);
+            int step = Integer.valueOf(request.getParameter("action_step_" + inc));
+            int sequence = Integer.valueOf(request.getParameter("action_sequence_" + inc));
+            String action = request.getParameter("action_action_" + inc);
+            String object = request.getParameter("action_object_" + inc);
+            String property = request.getParameter("action_property_" + inc);
+            String description = request.getParameter("action_description_" + inc);
+            if (delete != null) {
+                testCaseStepAction.add(testCaseStepActionFactory.create(test, testCase, step, sequence, action, object, property, description));
+            }
+        }
+        return testCaseStepAction;
     }
 
-    private List<TestCaseStepActionControl> getTestCaseStepActionControlFromParameter(HttpServletRequest request) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    private List<TestCaseStepActionControl> getTestCaseStepActionControlFromParameter(HttpServletRequest request, ApplicationContext appContext, String test, String testCase) {
+        List<TestCaseStepActionControl> testCaseStepActionControl = new ArrayList();
+        String[] stepActionControl_increment = request.getParameterValues("controls_increment");
+        IFactoryTestCaseStepActionControl testCaseStepActionControlFactory = appContext.getBean(IFactoryTestCaseStepActionControl.class);
+        for (String inc : stepActionControl_increment) {
+            String delete = request.getParameter("control_delete_" + inc);
+            int step = Integer.valueOf(request.getParameter("control_step_" + inc));
+            int sequence = Integer.valueOf(request.getParameter("control_sequence_" + inc));
+            int control = Integer.valueOf(request.getParameter("control_control_" + inc));
+            String type = request.getParameter("control_type_" + inc);
+            String controlValue = request.getParameter("control_value_" + inc);
+            String controlProperty = request.getParameter("control_property_" + inc);
+            String fatal = request.getParameter("control_fatal_" + inc);
+            String description = request.getParameter("control_description_" + inc);
+            if (delete != null) {
+                testCaseStepActionControl.add(testCaseStepActionControlFactory.create(test, testCase, step, sequence, control, type, controlValue, controlProperty, fatal, description));
+            }
+        }
+        return testCaseStepActionControl;
     }
 
 // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
