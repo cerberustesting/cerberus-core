@@ -32,6 +32,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.cerberus.entity.MessageGeneralEnum;
+import org.cerberus.entity.TCase;
 import org.cerberus.entity.Test;
 import org.cerberus.entity.TestCase;
 import org.cerberus.entity.TestCaseCountry;
@@ -41,6 +42,7 @@ import org.cerberus.entity.TestCaseStepAction;
 import org.cerberus.entity.TestCaseStepActionControl;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.factory.IFactoryLogEvent;
+import org.cerberus.factory.IFactoryTCase;
 import org.cerberus.factory.IFactoryTestCase;
 import org.cerberus.factory.impl.FactoryLogEvent;
 import org.cerberus.service.ILogEventService;
@@ -76,7 +78,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
             throws ServletException, IOException, CerberusException {
         String initialTest = request.getParameter("test");
         String initialTestCase = request.getParameter("testCase");
-        TestCase tc = getTestCaseFromParameter(request);
+        TCase tc = getTestCaseFromParameter(request);
         List<TestCaseCountry> tcc = getTestCaseCountryFromParameter(request);
         List<TestCaseCountryProperties> tccp = getTestCaseCountryPropertiesFromParameter(request);
         List<TestCaseStep> tcs = getTestCaseStepFromParameter(request);
@@ -289,10 +291,10 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
      * @return TestCase object
      * @see org.cerberus.entity.TestCase
      */
-    private TestCase getTestCaseFromParameter(HttpServletRequest request) {
+    private TCase getTestCaseFromParameter(HttpServletRequest request) {
 
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-        IFactoryTestCase testCaseFactory = appContext.getBean(IFactoryTestCase.class);
+        IFactoryTCase testCaseFactory = appContext.getBean(IFactoryTCase.class);
 
         String test = request.getParameter("Test");
         String testCase = request.getParameter("TestCase");
@@ -326,9 +328,9 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
         String targetRevision = request.getParameter("editTargetRev");
         String comment = request.getParameter("editComment");
         String function = request.getParameter("function");
-        return testCaseFactory.create(test, testCase, bugID, description, status, implementer, lastModifier, project,
-                ticket, application, runQA, runUAT, runPROD, priority, group, status, shortDescription, description,
-                howTo, active, fromSprint, fromRevision, toSprint, toRevision, status, bugID, targetSprint, targetRevision, comment);
+        return testCaseFactory.create(test, testCase, bugID, description, status, implementer, lastModifier, project, ticket, function, 
+                application, runQA, runUAT, runPROD, priority, group, status, shortDescription, description, howTo, active, fromSprint, 
+                fromRevision, toSprint, toRevision, status, bugID, targetSprint, targetRevision, comment, null, null, null, null);
     }
 
     private List<TestCaseCountry> getTestCaseCountryFromParameter(HttpServletRequest request) {

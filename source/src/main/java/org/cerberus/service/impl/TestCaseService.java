@@ -80,7 +80,7 @@ public class TestCaseService implements ITestCaseService {
     }
 
     @Override
-    public boolean createTestCase(TCase testCase) {
+    public boolean createTestCase(TCase testCase) throws CerberusException {
         return testCaseDao.createTestCase(testCase);
     }
 
@@ -162,12 +162,8 @@ public class TestCaseService implements ITestCaseService {
     }
 
     @Override
-    public void updateTestCase(TestCase tc) throws CerberusException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void updateTestCase(TCase tc) throws CerberusException {
+        testCaseDao.updateTestCase(tc);
     }
 
-    @Override
-    public void createTestCase(TestCase tc) throws CerberusException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
 }

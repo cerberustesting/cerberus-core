@@ -869,4 +869,62 @@ public class TestCaseDAO implements ITestCaseDAO {
         }
         return list;
     }
+
+    @Override
+    public void updateTestCase(TCase testCase) throws CerberusException {
+        final String sql = "UPDATE testcase tc SET tc.Application = ?, tc.Project = ?, tc.BehaviorOrValueExpected = ?, tc.activeQA = ?, tc.activeUAT = ?, tc.activePROD = ?, "
+                + "tc.Priority = ?, tc.Status = ?, tc.TcActive = ?, tc.Description = ?, tc.Group = ?, tc.HowTo = ?, tc.Comment = ?, tc.Ticket = ?, tc.FromBuild = ?, "
+                + "tc.FromRev = ?, tc.ToBuild = ?, tc.ToRev = ?, tc.BugID = ?, tc.TargetBuild = ?, tc.Implementer = ?, tc.LastModifier = ?, tc.TargetRev = ?, tc.`function` = ? "
+                + "WHERE tc.Test = ? AND tc.Testcase = ?";
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(sql);
+            try {
+                preStat.setString(1, testCase.getApplication());
+                preStat.setString(2, testCase.getProject());
+                preStat.setString(3, testCase.getDescription());
+                preStat.setString(4, testCase.getRunQA().equals("Y") ? "Y" : "N");
+                preStat.setString(5, testCase.getRunUAT().equals("Y") ? "Y" : "N");
+                preStat.setString(6, testCase.getRunPROD().equals("Y") ? "Y" : "N");
+                preStat.setString(7, Integer.toString(testCase.getPriority()));
+                preStat.setString(8, ParameterParserUtil.parseStringParam(testCase.getStatus(), ""));
+                preStat.setString(9, testCase.getActive().equals("Y") ? "Y" : "N");
+                preStat.setString(10, ParameterParserUtil.parseStringParam(testCase.getShortDescription(), ""));
+                preStat.setString(11, ParameterParserUtil.parseStringParam(testCase.getGroup(), ""));
+                preStat.setString(12, ParameterParserUtil.parseStringParam(testCase.getHowTo(), ""));
+                preStat.setString(13, ParameterParserUtil.parseStringParam(testCase.getComment(), ""));
+                preStat.setString(14, ParameterParserUtil.parseStringParam(testCase.getTicket(), ""));
+                preStat.setString(15, ParameterParserUtil.parseStringParam(testCase.getFromSprint(), ""));
+                preStat.setString(16, ParameterParserUtil.parseStringParam(testCase.getFromRevision(), ""));
+                preStat.setString(17, ParameterParserUtil.parseStringParam(testCase.getToSprint(), ""));
+                preStat.setString(18, ParameterParserUtil.parseStringParam(testCase.getToRevision(), ""));
+                preStat.setString(19, ParameterParserUtil.parseStringParam(testCase.getBugID(), ""));
+                preStat.setString(20, ParameterParserUtil.parseStringParam(testCase.getTargetSprint(), ""));
+                preStat.setString(21, ParameterParserUtil.parseStringParam(testCase.getImplementer(), ""));
+                preStat.setString(22, ParameterParserUtil.parseStringParam(testCase.getLastModifier(), ""));
+                preStat.setString(23, ParameterParserUtil.parseStringParam(testCase.getTargetRevision(), ""));
+                preStat.setString(24, ParameterParserUtil.parseStringParam(testCase.getFunction(), ""));
+                preStat.setString(25, ParameterParserUtil.parseStringParam(testCase.getTest(), ""));
+                preStat.setString(26, ParameterParserUtil.parseStringParam(testCase.getTestCase(), ""));
+
+                preStat.executeUpdate();
+            } catch (SQLException exception) {
+                MyLogger.log(TestCaseDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(TestCaseDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(TestCaseDAO.class.getName(), Level.WARN, e.toString());
+            }
+        }
+
+    }
 }
