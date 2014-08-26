@@ -75,4 +75,13 @@ public interface ITestCaseExecutionService {
      * @throws CerberusException when no executions can be found.
      */
     List<TestCaseExecution> findExecutionsByCampaignNameAndTag(String campaign, String tag) throws CerberusException;
+    
+    /**
+     * 
+     * @param test
+     * @param testCase
+     * @return TestCaseExecution Object
+     * @throws CerberusException 
+     */
+    TestCaseExecution findLastTestCaseExecutionNotPE(String test, String testCase) throws CerberusException;
 }

@@ -17,6 +17,9 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
+<%@page import="org.cerberus.entity.Invariant"%>
+<%@page import="org.cerberus.exception.CerberusException"%>
+<%@page import="org.cerberus.service.IInvariantService"%>
 <%@page import="org.apache.commons.lang3.StringUtils"%>
 <%@page import="java.util.TreeMap"%>
 <%@page import="org.springframework.web.context.support.WebApplicationContextUtils"%>
@@ -37,6 +40,8 @@
 <%@page import="org.cerberus.version.Version"%>
 <%@page import="org.cerberus.database.DatabaseSpring" %>
 <%!
+    ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+
     String ComboInvariant(Connection conn, String HTMLComboName, String HTMLComboStyle, String HTMLId, String HTMLClass, String combonumber, String value, String HTMLOnChange, String firstOption) {
         try {
             Statement stmtQuery = conn.createStatement();
@@ -72,6 +77,35 @@
         } catch (SQLException e) {
             return e.toString();
         }
+    }
+
+    String ComboInvariant(String HTMLComboName, String HTMLComboStyle, String HTMLId, String HTMLClass, String combonumber, String value, String HTMLOnChange, String firstOption) {
+        try {
+            IInvariantService invFunctionService = appContext.getBean(IInvariantService.class);
+            List<Invariant> invFunctionList = invFunctionService.findListOfInvariantById(combonumber);
+            String ret = "<select id=\"" + HTMLId + "\" class=\"" + HTMLClass + "\" style=\"" + HTMLComboStyle + "\" name=\"" + HTMLComboName + "\"";
+            if (HTMLOnChange.compareToIgnoreCase("") != 0) {
+                ret = ret + " onchange=\"" + HTMLOnChange + "\"";
+            }
+            ret = ret + ">";
+            if (firstOption != null) {
+                ret = ret + "<option value=\"" + firstOption + "\">--" + firstOption + "--</option>";
+            }
+            for (Invariant invFunction : invFunctionList) {
+                ret = ret + "<option value=\"" + invFunction.getValue() + "\"";
+                if ((value != null) && (value.compareTo(invFunction.getValue()) == 0)) {
+                    ret = ret + " SELECTED ";
+                }
+                ret = ret + ">" + invFunction.getValue();
+                ret = ret + "</option>";
+            }
+            ret = ret + "</select>";
+
+            return ret;
+
+        } catch (CerberusException e) {
+            return e.toString();
+        } 
     }
 
     String ComboInvariantAjax(Connection conn, String HTMLComboName, String HTMLComboStyle, String HTMLId, String HTMLrel, String combonumber, String value, String HTMLOnChange, boolean emptyfirstoption) {
@@ -257,7 +291,7 @@
         return footer;
     }
 
-    String generateMultiSelect(String parameterName,String[] parameters, TreeMap<String,String> options, String headerText, String noneSeletedText, String selectedText, int selectedList, boolean firstValueAll) {
+    String generateMultiSelect(String parameterName, String[] parameters, TreeMap<String, String> options, String headerText, String noneSeletedText, String selectedText, int selectedList, boolean firstValueAll) {
         String parameter = "";
         if (parameters != null && parameters.length > 0 && (parameters[0]).compareTo("All") != 0) {
             parameter = StringUtils.join(parameters, ",");
@@ -265,40 +299,39 @@
         parameter += ",";
 
         String select = "<select class=\"multiSelectOptions\" multiple  "
-                + "data-header=\""+headerText+"\" "
-                + "data-none-selected-text=\""+noneSeletedText+"\" "
-                + "data-selected-text=\""+selectedText+"\" "
-                + "data-selected-list=\""+selectedList+"\" "
-                + "size=\"3\" id=\""+parameterName+"\" name=\""+parameterName+"\">\n";
-        if (firstValueAll){
-        select += "<option value=\"All\">-- ALL --</option>\n";
+                + "data-header=\"" + headerText + "\" "
+                + "data-none-selected-text=\"" + noneSeletedText + "\" "
+                + "data-selected-text=\"" + selectedText + "\" "
+                + "data-selected-list=\"" + selectedList + "\" "
+                + "size=\"3\" id=\"" + parameterName + "\" name=\"" + parameterName + "\">\n";
+        if (firstValueAll) {
+            select += "<option value=\"All\">-- ALL --</option>\n";
         }
-        for(String key: options.keySet()) {
+        for (String key : options.keySet()) {
             select += " <option value=\"" + key + "\"";
 
             if ((parameter != null) && (parameter.indexOf(key + ",") >= 0)) {
-                select +=  " SELECTED ";
+                select += " SELECTED ";
             }
-            select +=  ">"+options.get(key)+"</option>\n";
+            select += ">" + options.get(key) + "</option>\n";
         }
         select += "</select>\n";
-        select += "<!-- "+parameter+" -->\n";                
+        select += "<!-- " + parameter + " -->\n";
         return select;
     }
-    
-    
-    String generateWhereClausesForParametersAndColumns(String[] parameters,String[] columns,HttpServletRequest request) {
+
+    String generateWhereClausesForParametersAndColumns(String[] parameters, String[] columns, HttpServletRequest request) {
         StringBuffer whereClause = new StringBuffer();
-        for(int index=0; index<parameters.length; index++) {
+        for (int index = 0; index < parameters.length; index++) {
             String[] values = request.getParameterValues(parameters[index]);
-            if(values != null) {
-                if(values.length == 1) {
-                    if(!"all".equalsIgnoreCase(values[0]) && !"".equalsIgnoreCase(values[0].trim())) {
+            if (values != null) {
+                if (values.length == 1) {
+                    if (!"all".equalsIgnoreCase(values[0]) && !"".equalsIgnoreCase(values[0].trim())) {
                         whereClause.append(" AND ").append(columns[index]).append("='").append(values[0]).append("'");
                     }
                 } else {
                     whereClause.append(" AND ( 1!=1 ");
-                    for(String value: values) {
+                    for (String value : values) {
                         whereClause.append(" OR ").append(columns[index]).append("='").append(value).append("'");
                     }
                     whereClause.append(" ) ");
@@ -313,7 +346,6 @@
         session.removeAttribute("flashMessage");
     }
 
-    ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
     DatabaseSpring db = appContext.getBean(DatabaseSpring.class);
 
 %>
