@@ -400,16 +400,8 @@ public class ApplicationDAO implements IApplicationDAO {
         }
     }
 
-    /**
-     * Uses data of ResultSet to create object {@link Application}
-     *
-     * @param rs ResultSet relative to select from table Application
-     * @return object {@link Application}
-     * @throws SQLException when trying to get value from
-     * {@link java.sql.ResultSet#getString(String)}
-     * @see FactoryApplication
-     */
-    private Application loadApplicationFromResultSet(ResultSet rs) throws SQLException {
+    @Override
+    public Application loadApplicationFromResultSet(ResultSet rs) throws SQLException {
         String application = ParameterParserUtil.parseStringParam(rs.getString("application"), "");
         String description = ParameterParserUtil.parseStringParam(rs.getString("description"), "");
         int sort = ParameterParserUtil.parseIntegerParam(rs.getString("sort"), 0);

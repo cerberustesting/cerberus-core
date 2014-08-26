@@ -27,8 +27,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Level;
+import org.cerberus.dao.IApplicationDAO;
 import org.cerberus.dao.ITestCaseExecutionDAO;
 import org.cerberus.database.DatabaseSpring;
+import org.cerberus.entity.Application;
 import org.cerberus.entity.MessageGeneral;
 import org.cerberus.entity.MessageGeneralEnum;
 import org.cerberus.entity.TestCaseExecution;
@@ -57,6 +59,8 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
     private DatabaseSpring databaseSpring;
     @Autowired
     private IFactoryTestCaseExecution factoryTCExecution;
+    @Autowired
+    private IApplicationDAO applicationDAO;
 
     @Override
     public long insertTCExecution(TestCaseExecution tCExecution) throws CerberusException {
@@ -253,8 +257,11 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
     public TestCaseExecution findLastTCExecutionByCriteria(String test, String testcase, String environment, String country,
             String build, String revision) throws CerberusException {
         TestCaseExecution result = null;
-        final String query = "SELECT * FROM testcaseexecution WHERE test = ? AND testcase = ? AND environment = ? AND "
-                + "country = ? AND build = ? AND revision = ? ORDER BY id DESC";
+        final String query = new StringBuffer("SELECT * FROM testcaseexecution tce, application app ")
+                .append("WHERE tce.application = app.application ")
+                .append("AND test = ? AND testcase = ? AND environment = ? ")
+                .append("AND country = ? AND build = ? AND revision = ? ")
+                .append("ORDER BY id DESC").toString();
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -303,9 +310,12 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
             String build, String revision, String browser, String browserVersion,
             String ip, String port, String tag) {
         TestCaseExecution result = null;
-        final String query = "SELECT * FROM testcaseexecution WHERE test = ? AND testcase = ? AND environment LIKE ? AND "
-                + "country = ? AND build LIKE ? AND revision LIKE ? AND browser = ? AND browserfullversion LIKE ? AND ip LIKE ? AND "
-                + "port LIKE ? AND tag LIKE ? ORDER BY id DESC";
+        final String query = new StringBuffer("SELECT * FROM testcaseexecution tce, application app ")
+                .append("WHERE tce.application = app.application AND test = ? AND testcase = ? ")
+                .append("AND environment LIKE ? AND country = ? AND build LIKE ? ")
+                .append("AND revision LIKE ? AND browser = ? AND browserfullversion LIKE ? ")
+                .append("AND ip LIKE ? AND port LIKE ? AND tag LIKE ? ")
+                .append("ORDER BY id DESC").toString();
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -357,8 +367,11 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         List<TestCaseExecution> myTestCaseExecutions = null;
         TestCaseExecution Execution;
         boolean throwException = false;
-        final String query = "SELECT * FROM testcaseexecution WHERE start > ? AND test LIKE ? AND testcase LIKE ? AND environment LIKE ? AND country LIKE ? "
-                + " AND application LIKE ? AND controlstatus LIKE ? AND status LIKE ? ";
+        final String query = new StringBuffer("SELECT * FROM testcaseexecution  tce, application app ")
+                .append("WHERE tce.application = app.application AND start > ? ")
+                .append("AND test LIKE ? AND testcase LIKE ? AND environment LIKE ? ")
+                .append("AND country LIKE ? AND application LIKE ? AND controlstatus LIKE ? ")
+                .append("AND status LIKE ?").toString();
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -442,7 +455,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         String controlStatus = resultSet.getString("controlStatus");
         String controlMessage = resultSet.getString("controlMessage");
         //TODO get Application
-//        String application = resultSet.getString("application");
+        Application application = applicationDAO.loadApplicationFromResultSet(resultSet);
         String ip = resultSet.getString("ip"); // Host the Selenium IP
         String url = resultSet.getString("url");
         String port = resultSet.getString("port"); // host the Selenium Port
@@ -453,7 +466,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         String crbVersion = resultSet.getString("crbVersion");
         String executor = resultSet.getString("executor");
         return factoryTCExecution.create(id, test, testcase, build, revision, environment,
-                country, browser, version, platform, browserFullVersion, start, end, controlStatus, controlMessage, null, ip, url,
+                country, browser, version, platform, browserFullVersion, start, end, controlStatus, controlMessage, application, ip, url,
                 port, tag, finished, verbose, 0, 0,0, true, "", "", status, crbVersion, null, null, null,
                 false, null, null, null, null, null, null, null, null, executor);
     }
@@ -461,7 +474,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
     @Override
     public TestCaseExecution findTCExecutionByKey(long id) throws CerberusException {
         TestCaseExecution result = null;
-        final String query = "SELECT * FROM testcaseexecution WHERE ID = ?";
+        final String query = "SELECT * FROM testcaseexecution tce, application app WHERE tce.application = app.application and ID = ?";
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -503,7 +516,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         List<TestCaseExecution> campaignTestCaseExecutions = null;
         boolean throwException = false;
 
-        final String query = new StringBuffer("select tce.* from ( ")
+        final String query = new StringBuffer("select tce.*, app.* from ( ")
                 .append("select tce.* ")
                 .append("from testcaseexecution tce ")
                 .append("inner join testbatterycontent tbc ")
@@ -514,7 +527,8 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                 .append("where tag is not null ")
                 .append("and cc.campaign = ? ")
                 .append("and tag = ? ")
-                .append("order by test, testcase, ID desc) as tce ")
+                .append("order by test, testcase, ID desc) as tce, application app ")
+                .append("where tce.application = app.application ")
                 .append("group by tce.test, tce.testcase, tce.Environment, tce.Browser, tce.Country ").toString();
 
         Connection connection = this.databaseSpring.connect();
