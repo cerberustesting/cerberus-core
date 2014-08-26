@@ -168,6 +168,44 @@
                 padding:0; margin:0;
                 background: white;
             }
+            
+
+        .ID {
+                width: 5%;
+            }
+        .Test {
+                width: 10%;
+            }
+        .TestCase {
+                width: 5%;
+            }
+        .ShortDescription {
+                width: 32%;
+            }
+        .Function {
+                width: 10%;
+            }
+        .Control {
+                width: 3%;
+            }
+        .Status {
+                width: 5%;
+            }
+        .Application {
+                width: 5%;
+            }
+        .BugID {
+                width: 5%;
+            }
+        .Comment {
+                width: 10%;
+            }
+        .Start {
+                width: 10%;
+            }
+        .End {
+                width: 10%;
+            }
 
             table.noBorder td {
                 border: none;
@@ -230,16 +268,16 @@
                 <thead>
                     <tr>
                         <th>ID</th>
+                        <th>Function</th>
                         <th>Test</th>
                         <th>TestCase</th>
-                        <th>Function</th>
+                        <th>Description</th>
                         <th>Control</th>
                         <th>Status</th>
                         <th>Application</th>
                         <th>BugID</th>
                         <th class="wrapAll">Comment</th>
                         <th>Start</th>
-                        <th>End</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -250,16 +288,16 @@
                 <thead>
                     <tr>
                         <th>ID</th>
+                        <th>Function</th>
                         <th>Test</th>
                         <th>TestCase</th>
-                        <th>Function</th>
+                        <th>Description</th>
                         <th>Control</th>
                         <th>Status</th>
                         <th>Application</th>
                         <th>BugID</th>
                         <th class="wrapAll">Comment</th>
                         <th>Start</th>
-                        <th>End</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -270,16 +308,16 @@
                 <thead>
                     <tr>
                         <th>ID</th>
+                        <th>Function</th>
                         <th>Test</th>
                         <th>TestCase</th>
-                        <th>Function</th>
+                        <th>Description</th>
                         <th>Control</th>
                         <th>Status</th>
                         <th>Application</th>
                         <th>BugID</th>
                         <th class="wrapAll">Comment</th>
                         <th>Start</th>
-                        <th>End</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -290,16 +328,16 @@
                 <thead>
                     <tr>
                         <th>ID</th>
+                        <th>Function</th>
                         <th>Test</th>
                         <th>TestCase</th>
-                        <th>Function</th>
+                        <th>Description</th>
                         <th>Control</th>
                         <th>Status</th>
                         <th>Application</th>
                         <th>BugID</th>
                         <th class="wrapAll">Comment</th>
                         <th>Start</th>
-                        <th>End</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -310,16 +348,16 @@
                 <thead>
                     <tr>
                         <th>ID</th>
+                        <th>Function</th>
                         <th>Test</th>
                         <th>TestCase</th>
-                        <th>Function</th>
+                        <th>Description</th>
                         <th>Control</th>
                         <th>Status</th>
                         <th>Application</th>
                         <th>BugID</th>
                         <th class="wrapAll">Comment</th>
                         <th>Start</th>
-                        <th>End</th>
                     </tr>
                 </thead>
                 <tbody>

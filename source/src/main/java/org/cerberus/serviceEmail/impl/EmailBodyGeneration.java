@@ -66,24 +66,22 @@ public class EmailBodyGeneration implements IEmailBodyGeneration {
             buildContentTable = buildContentTable + "<tr style=\"background-color:#cad3f1; font-style:bold\"><td>"
                     + "Sprint/Rev</td><td>Application</td><td>Subject</td><td>Project</td><td>Bug</td><td>Ticket</td><td>People in Charge</td><td>Release Documentation</td></tr>";
 
-
-            String contentSQL = "SELECT b.`Build`, b.`Revision`, b.`Release` , b.`Link` , "
-                    + " b.`Application`, b.`ReleaseOwner`, b.`BugIDFixed`, b.`TicketIDFixed`, b.`subject`, b.`Project`"
-                    + ", p.`VCCode`, u.Name, a.BugTrackerUrl "
-                    + " from buildrevisionparameters b "
-                    + " left outer join project p on p.idproject=b.project "
-                    + " left outer join user u on u.Login=b.ReleaseOwner "
-                    + " left outer join application a on a.application=b.application "
-                    + " where build = '" + build + "' "
-                    + " and a.application " + inSQL;
-            if (lastBuild.equalsIgnoreCase(build)) {
-                contentSQL += " and revision > '" + lastRevision + "'";
-            }
-            contentSQL += " and revision <= '" + revision + "'"
-                    + " order by b.Build, b.Revision, b.Application, b.Project, b.TicketIDFixed, b.BugIDFixed, b.Release";
+            final String contentSQL = new StringBuffer("SELECT b.`Build`, b.`Revision`, b.`Release` , b.`Link` , ")
+                    .append(" b.`Application`, b.`ReleaseOwner`, b.`BugIDFixed`, b.`TicketIDFixed`, b.`subject`, b.`Project`")
+                    .append(", p.`VCCode`, u.Name, a.BugTrackerUrl ")
+                    .append(" from buildrevisionparameters b ")
+                    .append(" left outer join project p on p.idproject=b.project ")
+                    .append(" left outer join user u on u.Login=b.ReleaseOwner ")
+                    .append(" left outer join application a on a.application=b.application ")
+                    .append(" where build = '").append(build).append("' ")
+                    .append(" and a.application ").append(inSQL)
+                    .append(this.latestBuildOrEmpty(lastBuild, build, lastRevision))
+                    .append(" and revision <= '").append(revision).append("'")
+                    .append(" order by b.Build, b.Revision, b.Application, b.Project,")
+                    .append(" b.TicketIDFixed, b.BugIDFixed, b.Release").toString();
 
             Logger.getLogger(EmailBodyGeneration.class.getName()).log(Level.DEBUG, Version.PROJECT_NAME_VERSION + " - SQL : " + contentSQL);
-            
+
             ResultSet rsBC = stmtBuildContent.executeQuery(contentSQL);
 
             rsBC.first();
@@ -99,7 +97,6 @@ public class EmailBodyGeneration implements IEmailBodyGeneration {
                     bckColor = "White";
                 }
 
-
                 String contentBugURL = "";
                 String contentBuild = "";
                 String contentAppli = "";
@@ -111,7 +108,6 @@ public class EmailBodyGeneration implements IEmailBodyGeneration {
                 String TicketIDFixed = " ";
                 String Project = " ";
                 String ProjectVC = " ";
-
 
                 if (rsBC.getString("a.BugTrackerUrl") != null) {
                     contentBugURL = rsBC.getString("a.BugTrackerUrl");
@@ -250,7 +246,7 @@ public class EmailBodyGeneration implements IEmailBodyGeneration {
                     + " group by i.gp1 order by i.sort;";
 
             Logger.getLogger(EmailBodyGeneration.class.getName()).log(Level.DEBUG, Version.PROJECT_NAME_VERSION + " - SQL : " + contentSQL);
-            
+
             ResultSet rsBC = stmtBuildContent.executeQuery(contentSQL);
             String Cerberus_URL = parameterService.findParameterByKey("cerberus_reporting_url", "").getValue();;
             Cerberus_URL = Cerberus_URL.replaceAll("%env%", "");
@@ -267,7 +263,6 @@ public class EmailBodyGeneration implements IEmailBodyGeneration {
                 CountryList.append("&Country=");
             }
 
-
             String Cerberus_URL_ALL = Cerberus_URL.replaceAll("%country%", CountryList.toString());
             Cerberus_URL = Cerberus_URL.replaceAll("%country%", country);
 
@@ -282,8 +277,6 @@ public class EmailBodyGeneration implements IEmailBodyGeneration {
                 TestRecapTable = TestRecapTable + "<tr style=\"background-color:#cad3f1; font-style:bold\">"
                         + "<td>Env</td><td>Nb Exe</td><td>% OK</td><td>Distinct TestCases</td><td>Distinct Applications</td></tr>";
 
-
-
                 String bckColor = "#f3f6fa";
                 int a = 1;
                 StringBuffer buf = new StringBuffer();
@@ -297,13 +290,11 @@ public class EmailBodyGeneration implements IEmailBodyGeneration {
                         bckColor = "White";
                     }
 
-
                     String contentEnv = "";
                     String contentNBExe = "";
                     String contentPerOK = "";
                     String contentNBDTC = "";
                     String contentNBDAPP = "";
-
 
                     if (rsBC.getString("gp1") != null) {
                         contentEnv = rsBC.getString("gp1");
@@ -322,12 +313,12 @@ public class EmailBodyGeneration implements IEmailBodyGeneration {
                     }
 
 //                    TestRecapTable = TestRecapTable + "<tr style=\"background-color:" + bckColor + "; font-size:80%\"><td>"
-                    buf.append("<tr style=\"background-color:" + bckColor + "; font-size:80%\"><td>"
-                            + contentEnv + "</td><td>"
-                            + contentNBExe + "</td><td>"
-                            + contentPerOK + "</td><td>"
-                            + contentNBDTC + "</td><td>"
-                            + contentNBDAPP + "</td></tr>");
+                    buf.append("<tr style=\"background-color:").append(bckColor).append("; font-size:80%\"><td>")
+                            .append(contentEnv).append("</td><td>")
+                            .append(contentNBExe).append("</td><td>")
+                            .append(contentPerOK).append("</td><td>")
+                            .append(contentNBDTC).append("</td><td>")
+                            .append(contentNBDAPP).append("</td></tr>");
                 } while (rsBC.next());
 
                 TestRecapTable += buf.toString() + "</table><br>";
@@ -352,5 +343,13 @@ public class EmailBodyGeneration implements IEmailBodyGeneration {
 
         return TestRecapTable;
 
+    }
+
+    private String latestBuildOrEmpty(String lastBuild, String build, String lastRevision) {
+        if (lastBuild != null && lastBuild.equalsIgnoreCase(build)) {
+            return new StringBuffer(" and revision > '").append(lastRevision).append("'").toString();
+        }
+
+        return "";
     }
 }
