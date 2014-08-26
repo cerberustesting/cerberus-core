@@ -89,4 +89,24 @@ public interface ITestCaseExecutionDAO {
      * @throws CerberusException when no executions can be found.
      */
     List<TestCaseExecution> findExecutionsByCampaignNameAndTag(String campaign, String tag) throws CerberusException;
-}
+
+    /**
+     *
+     * @param test
+     * @param testCase
+     * @param environment
+     * @param country
+     * @param build
+     * @param revision
+     * @param browser
+     * @param browserVersion
+     * @param ip
+     * @param port
+     * @param tag
+     * @return
+     */
+    public TestCaseExecution findLastTCExecutionInGroup(String test, String testCase, String environment, String country,
+                                                        String build, String revision, String browser, String browserVersion,
+                                                        String ip, String port, String tag);
+
+    }
