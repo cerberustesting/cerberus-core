@@ -17,6 +17,8 @@
  */
 package org.cerberus.dao;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 
 import org.cerberus.entity.Application;
@@ -83,6 +85,15 @@ public interface IApplicationDAO {
 
     public void deleteApplication(Application application) throws CerberusException;
 
-    
-    
+    /**
+     * Uses data of ResultSet to create object {@link Application}
+     *
+     * @param rs ResultSet relative to select from table Application
+     * @return object {@link Application}
+     * @throws SQLException when trying to get value from
+     * {@link java.sql.ResultSet#getString(String)}
+     * @see FactoryApplication
+     */
+    public Application loadApplicationFromResultSet(ResultSet rs) throws SQLException;
+
 }

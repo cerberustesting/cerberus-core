@@ -39,7 +39,6 @@ import org.cerberus.entity.TCase;
 import org.cerberus.entity.TestBatteryContent;
 import org.cerberus.entity.TestCaseExecution;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.service.IApplicationService;
 import org.cerberus.service.ICampaignService;
 import org.cerberus.service.ITestBatteryService;
 import org.cerberus.service.ITestCaseExecutionService;
@@ -78,9 +77,6 @@ public class CampaignExecutionReport extends HttpServlet {
             ApplicationContext appContext = WebApplicationContextUtils
                     .getWebApplicationContext(this.getServletContext());
 
-            IApplicationService applicationService = appContext
-                    .getBean(IApplicationService.class);
-
             ICampaignService campaignService = appContext
                     .getBean(ICampaignService.class);
 
@@ -104,7 +100,7 @@ public class CampaignExecutionReport extends HttpServlet {
 
             JSONArray jSONResult = new JSONArray();
 
-            HashMap<String, String> bugURLForApplication = new HashMap<String, String>();
+            HashMap<String, String> hmBugURLForApplication = new HashMap<String, String>();
 
             List<CampaignParameter> campaignParameters = campaignService
                     .findCampaignParametersByCampaignName(campaignName);
@@ -156,6 +152,8 @@ public class CampaignExecutionReport extends HttpServlet {
                 }
             }
 
+            String bugURL = "";
+
             for (CampaignContent campaignContent : campaignService.findCampaignContentsByCampaignName(campaignName)) {
                 for (TestBatteryContent batteryContent : testBatteryService.findTestBatteryContentsByTestBatteryName(campaignContent.getTestbattery())) {
                     key = batteryContent.getTest() + batteryContent.getTestCase();
@@ -163,7 +161,7 @@ public class CampaignExecutionReport extends HttpServlet {
                         for (TestCaseExecution testCaseExecution : hmTestCaseExecutionByTestCase.get(key)) {
                             try {
                                 TCase tCase = testCaseService.findTestCaseByKey(testCaseExecution.getTest(), testCaseExecution.getTestCase());
-                                jSONResult.put(testCaseExecutionToJSONObject(testCaseExecution, tCase, ""));
+                                jSONResult.put(testCaseExecutionToJSONObject(testCaseExecution, tCase));
                             } catch (JSONException ex) {
                                 Logger.getLogger(CampaignExecutionReport.class.getName()).log(Level.SEVERE, null, ex);
                             }
@@ -228,7 +226,7 @@ public class CampaignExecutionReport extends HttpServlet {
      * @throws JSONException the JSON exception
      */
     private JSONObject testCaseExecutionToJSONObject(
-            TestCaseExecution testCaseExecutions, TCase testCase, String bugURL) throws JSONException {
+            TestCaseExecution testCaseExecutions, TCase testCase) throws JSONException {
         JSONObject result = new JSONObject();
 
         result.put("ID", String.valueOf(testCaseExecutions.getId()));
@@ -242,7 +240,22 @@ public class CampaignExecutionReport extends HttpServlet {
         result.put("ControlStatus", JavaScriptUtils.javaScriptEscape(testCaseExecutions.getControlStatus()));
         result.put("ControlMessage", JavaScriptUtils.javaScriptEscape(testCaseExecutions.getControlMessage()));
         result.put("Status", JavaScriptUtils.javaScriptEscape(testCaseExecutions.getStatus()));
-        result.put("BugID", JavaScriptUtils.javaScriptEscape(testCase.getBugID()));
+
+        String bugId;
+        if (testCaseExecutions.getApplication().getBugTrackerUrl() != null
+                && !"".equals(testCaseExecutions.getApplication().getBugTrackerUrl())) {
+            bugId = testCaseExecutions.getApplication().getBugTrackerUrl().replaceAll("%BUGID%", testCase.getBugID());
+            bugId = new StringBuffer("<a href='")
+                    .append(bugId)
+                    .append("' target='reportBugID'>")
+                    .append(testCase.getBugID())
+                    .append("</a>")
+                    .toString();
+        } else {
+            bugId = testCase.getBugID();
+        }
+        result.put("BugID", bugId);
+
         result.put("Comment", JavaScriptUtils.javaScriptEscape(testCase.getComment()));
         result.put("Function", JavaScriptUtils.javaScriptEscape(testCase.getFunction()));
         result.put("Application", JavaScriptUtils.javaScriptEscape(testCase.getApplication()));
