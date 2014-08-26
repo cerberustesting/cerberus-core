@@ -255,6 +255,7 @@ public class CampaignExecutionReport extends HttpServlet {
         result.put("Comment", JavaScriptUtils.javaScriptEscape(testCase.getComment()));
         result.put("Function", JavaScriptUtils.javaScriptEscape(testCase.getFunction()));
         result.put("Application", JavaScriptUtils.javaScriptEscape(testCase.getApplication()));
+        result.put("ShortDescription", testCase.getShortDescription());
 
         return result;
     }
