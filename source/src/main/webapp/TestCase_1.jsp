@@ -290,10 +290,11 @@
             <script>alertMessage('<%=message%>');</script>
             <% }%>
             <input id="urlForListOffunction" value="<%=listOfFunction%>" style="display:none">
-            <form action="TestCase.jsp" method="post" name="selectTestCase" id="selectTestCase">
-                <div>
-                    <div><%out.print(docService.findLabelHTML("test", "test", "Test"));%></div>
-                    <div><select id="filtertest" name="Test" style="width: 200px" OnChange="document.selectTestCase.submit()">
+            <form action="TestCase_1.jsp" method="post" name="selectTestCase" id="selectTestCase">
+                <div class="filters" style="float:left; width:100%; height:30px">
+                <div style="float:left; width:100px"><p class="dttTitle">Filters</p></div>
+                    <div style="float:left; width:100px;font-weight: bold;"><%out.print(docService.findLabelHTML("test", "test", "Test"));%></div>
+                    <div style="float:left"><select id="filtertest" name="Test" style="width: 200px" OnChange="document.selectTestCase.submit()">
                             <%
                                 String optstyle = "";
                                 if (test.compareTo("%%") == 0) {
@@ -312,8 +313,8 @@
                             %>
                         </select>
                     </div>
-                    <div><%out.print(docService.findLabelHTML("testcase", "testcase", "TestCase"));%></div>
-                    <div>
+                    <div style="float:left"><%out.print(docService.findLabelHTML("testcase", "testcase", "TestCase"));%></div>
+                    <div style="float:left">
                         <select id="filtertestcase" name="TestCase" style="width: 850px" OnChange="document.selectTestCase.submit()">
                             <%
                                 if (test.compareTo("%%") == 0) {
@@ -333,8 +334,9 @@
                             %>
                         </select>
                     </div>
-                    <div><input id="loadbutton" class="button" type="submit" name="Load" value="Load"></div>
-                </div>    
+                    <div style="float:left"><input id="loadbutton" class="button" type="submit" name="Load" value="Load"></div>
+                </div>
+                        <br>
             </form> 
             <br>
             <%
@@ -375,7 +377,7 @@
                 }
 
             %>
-
+            <br>
             <table id="generalparameter" class="arrond"
                    <%if (tinf == false) {%> style="display : none" <%} else {%>style="display : table"<%}%> >
                 <tr>
@@ -456,7 +458,7 @@
                                                 <td class="wob"><input id="implementer" style="width: 90px;" name="editImplementer" value="<%=tcase.getImplementer() == null ? "" : tcase.getImplementer()%>"></td>
                                                 <td class="wob"><input readonly="readonly" id="lastModifier" style="width: 90px; background-color: #DCDCDC" name="editLastModifier" value="<%=tcase.getLastModifier()%>"></td>
                                                 <td class="wob">
-                                                    <% out.print(ComboProject("editProject", "width: 90px", "project", "", tcase.getProject(), "", true, "", "No Project Defined."));%>
+                                                    <% out.print(ComboProject(appContext, "editProject", "width: 90px", "project", "", tcase.getProject(), "", true, "", "No Project Defined."));%>
                                                 </td>
                                                 <td class="wob"><input id="ticket" style="width: 90px;" name="editTicket" value="<%=tcase.getTicket() == null ? "" : tcase.getTicket()%>"></td>
                                                 <td class="wob"><input id="function" style="width: 390px;" list="functions" name="function" value="<%=tcase.getFunction() == null ? "" : tcase.getFunction()%>"></td>
@@ -497,12 +499,12 @@
                                                         %><option value="<%=app.getApplication()%>"<%=tcase.getApplication().compareTo(app.getApplication()) == 0 ? " SELECTED " : ""%>><%=app.getApplication()%></option>
                                                         <% }%>
                                                     </select></td>
-                                                <td class="wob"><%=ComboInvariant("editRunQA", "width: 75px", "editRunQA", "runqa", "RUNQA", tcase.getRunQA(), "", null)%></td>
-                                                <td class="wob"><%=ComboInvariant("editRunUAT", "width: 75px", "editRunUAT", "runuat", "RUNUAT", tcase.getRunUAT(), "", null)%></td>
-                                                <td class="wob"><%=ComboInvariant("editRunPROD", "width: 75px", "editRunPROD", "runprod", "RUNPROD", tcase.getRunPROD(), "", null)%></td>
-                                                <td class="wob"><%=ComboInvariant("editPriority", "width: 75px", "editPriority", "priority", "PRIORITY", String.valueOf(tcase.getPriority()), "", null)%></td>
-                                                <td class="wob"><%=ComboInvariant("editGroup", "width: 140px", "editGroup", "editgroup", "GROUP", group, "", null)%></td>
-                                                <td class="wob"><%=ComboInvariant("editStatus", "width: 140px", "editStatus", "editStatus", "TCSTATUS", status, "", null)%></td>
+                                                <td class="wob"><%=ComboInvariant(appContext,"editRunQA", "width: 75px", "editRunQA", "runqa", "RUNQA", tcase.getRunQA(), "", null)%></td>
+                                                <td class="wob"><%=ComboInvariant(appContext,"editRunUAT", "width: 75px", "editRunUAT", "runuat", "RUNUAT", tcase.getRunUAT(), "", null)%></td>
+                                                <td class="wob"><%=ComboInvariant(appContext,"editRunPROD", "width: 75px", "editRunPROD", "runprod", "RUNPROD", tcase.getRunPROD(), "", null)%></td>
+                                                <td class="wob"><%=ComboInvariant(appContext,"editPriority", "width: 75px", "editPriority", "priority", "PRIORITY", String.valueOf(tcase.getPriority()), "", null)%></td>
+                                                <td class="wob"><%=ComboInvariant(appContext,"editGroup", "width: 140px", "editGroup", "editgroup", "GROUP", group, "", null)%></td>
+                                                <td class="wob"><%=ComboInvariant(appContext,"editStatus", "width: 140px", "editStatus", "editStatus", "TCSTATUS", status, "", null)%></td>
                                                 <%
                                                     for (Invariant countryL : countryListInvariant) {
                                                 %>
@@ -611,7 +613,7 @@
 
                                 </tr>
                                 <tr>
-                                    <td class="wob"><%=ComboInvariant("editTcActive", "width: 50px", "editTcActive", "active", "TCACTIVE", tcase.getActive(), "", null)%></td>
+                                    <td class="wob"><%=ComboInvariant(appContext,"editTcActive", "width: 50px", "editTcActive", "active", "TCACTIVE", tcase.getActive(), "", null)%></td>
                                     <td class="wob">
                                         <select id="editFromBuild" name="editFromBuild" class="active" style="width: 70px" >
                                             <% String fromBuild = "";
@@ -909,7 +911,7 @@
                                                                                                                                       value="<%=tcsa.getSequence()%>"
                                                                                                                                       name="actions_sequence<%=complementName%>" readonly="readonly">
                                                                                 </td>
-                                                                                <td style="background-color: <%=actionColor%>"><%=ComboInvariant("actions_action" + complementName, "width: 136px; background-color:" + actionColor + ";color:" + actionFontColor, "actions_action", "wob", "ACTION", tcsa.getAction(), "trackChanges(0, this.selectedIndex, 'submitButtonAction')", null)%></td>
+                                                                                <td style="background-color: <%=actionColor%>"><%=ComboInvariant(appContext,"actions_action" + complementName, "width: 136px; background-color:" + actionColor + ";color:" + actionFontColor, "actions_action", "wob", "ACTION", tcsa.getAction(), "trackChanges(0, this.selectedIndex, 'submitButtonAction')", null)%></td>
                                                                                 <td class="technical_part" style="background-color: <%=actionColor%>"><input class="wob" style="width: 350px; background-color: <%=actionColor%>; color:<%=actionFontColor%>"
                                                                                                                                                              value="<%=tcsa.getObject()%>"
                                                                                                                                                              name="actions_object<%=complementName%>" <%=isReadonly%>
@@ -953,7 +955,7 @@
                                                                                 <td id="wob"><input type="button" value="import HTML Scenario" onclick="importer('ImportHTML.jsp?Test=<%=test%>&Testcase=<%=testcase%>&Step=<%=tcs.getStep()%>')"></td>
                                                                             </td><td id="wob"><input value="Save Changes" onclick="submitTestCaseModification('stepAnchor_<%=i1%>');" id="submitButtonAction" name="submitChanges"
                                                                                                      type="button" >
-                                                                            <%=ComboInvariant("actions_action_", "width: 150px;visibility:hidden", "actions_action_", "actions_action_", "ACTION", "", "", null)%></td></tr></table></td></tr>
+                                                                            <%=ComboInvariant(appContext,"actions_action_", "width: 150px;visibility:hidden", "actions_action_", "actions_action_", "ACTION", "", "", null)%></td></tr></table></td></tr>
                                                                             <% }%>
 
 
@@ -1016,7 +1018,7 @@
                                                                                             <td style="background-color: <%=controlColor%>"><input class="wob" style="width: 60px; font-weight: bold;background-color: <%=controlColor%>; color:<%=actionFontColor%>"
                                                                                                                                                    value="<%=tcsac.getControl()%>"
                                                                                                                                                    name="controls_control<%=complementName%>" readonly="readonly"></td>
-                                                                                            <td style="background-color: <%=controlColor%>"><%=ComboInvariant("controls_type" + complementName, "width: 150px; background-color:" + controlColor + ";color:" + actionFontColor, "controls_type", "wob", "CONTROL", tcsac.getType(), "trackChanges(this.value, '" + tcsac.getType() + "', 'submitButtonChanges')", null)%></td>
+                                                                                            <td style="background-color: <%=controlColor%>"><%=ComboInvariant(appContext,"controls_type" + complementName, "width: 150px; background-color:" + controlColor + ";color:" + actionFontColor, "controls_type", "wob", "CONTROL", tcsac.getType(), "trackChanges(this.value, '" + tcsac.getType() + "', 'submitButtonChanges')", null)%></td>
                                                                                             <td class="technical_part" style="background-color: <%=controlColor%>"><input class="wob" style="width: 260px;background-color: <%=controlColor%>; color:<%=actionFontColor%>"
                                                                                                                                                                           value="<%=tcsac.getControlProperty()%>"
                                                                                                                                                                           name="controls_controlproperty<%=complementName%>"
@@ -1025,7 +1027,7 @@
                                                                                                                                                                           value="<%=tcsac.getControlValue()%>"
                                                                                                                                                                           name="controls_controlvalue<%=complementName%>"
                                                                                                                                                                           onchange="trackChanges(this.value, '<%=tcsac.getDescription()%>', 'submitButtonChanges')"></td>
-                                                                                            <td class="technical_part" style="background-color: <%=controlColor%>"><%=ComboInvariant("controls_fatal" + complementName, "width: 40px; background-color:" + controlColor + ";color:" + actionFontColor, "controls_fatal", "wob", "CTRLFATAL", tcsac.getFatal(), "trackChanges(this.value, '" + tcsac.getFatal() + "', 'submitButtonChanges')", null)%></td>
+                                                                                            <td class="technical_part" style="background-color: <%=controlColor%>"><%=ComboInvariant(appContext,"controls_fatal" + complementName, "width: 40px; background-color:" + controlColor + ";color:" + actionFontColor, "controls_fatal", "wob", "CTRLFATAL", tcsac.getFatal(), "trackChanges(this.value, '" + tcsac.getFatal() + "', 'submitButtonChanges')", null)%></td>
                                                                                             <td class="functional_description_control" style="background-color: <%=controlColor%>"><input class="wob" class="functional_description_control" style="width: 100%;background-color: <%=controlColor%>; color:<%=actionFontColor%>"
                                                                                                                                                                                           value="<%=tcsac.getDescription()%>"
                                                                                                                                                                                           name="controls_controldescription<%=complementName%>"
@@ -1042,11 +1044,11 @@
                                                                                     %>
                                                                                 </table>
                                                                                 <%  if (canEdit && !useStep) {%>
-                                                                                <%=ComboInvariant("controls_type_", "width: 200px;visibility:hidden", "controls_type_", "controls_type_", "CONTROL", "", "", null)%>
-                                                                                <%=ComboInvariant("controls_fatal_", "width: 40px;visibility:hidden", "controls_fatal_", "controls_fatal_", "CTRLFATAL", "", "", null)%>
+                                                                                <%=ComboInvariant(appContext,"controls_type_", "width: 200px;visibility:hidden", "controls_type_", "controls_type_", "CONTROL", "", "", null)%>
+                                                                                <%=ComboInvariant(appContext,"controls_fatal_", "width: 40px;visibility:hidden", "controls_fatal_", "controls_fatal_", "CTRLFATAL", "", "", null)%>
                                                                                 <table><tr><td id="wob"><input type="button"
                                                                                                                value="Add Control"
-                                                                                                               onclick="addTestCaseControl('control_table<%=tcs.getStep()%>',<%=tcs.getStep()%>);
+                                                                                                               onclick="addTestCaseControl('control_table<%=tcs.getStep()%>','<%=tcs.getStep()%>');
                                                                                                                        enableField('submitButtonChanges');">
                                                                                         </td><td id="wob"><input value="Save Changes" onclick="submitTestCaseModification('#stepAnchor_<%=i1%>');" id="submitButtonAction" name="submitChanges"
                                                                                                                  type="button" ></td></tr></table>
@@ -1153,13 +1155,15 @@
                                         <td style="width: 80px"><%out.print(docService.findLabelHTML("testcasecountryproperties", "nature", "Nature"));%></td>
                                     </tr>
                                     <%
-                                        List<TestCaseCountryProperties> tccpList = tccpService.findListOfPropertyPerTestTestCase(test, testcase);
+                                        List<TestCaseCountryProperties> tccpList = tccpService.findDistinctPropertiesOfTestCase(test, testcase);
                                             if (tccpList != null) {
                                     %><div id="cache_properties">
-                                        <%=ComboInvariant("properties_dtb_type_ID", "display: none;", "properties_dtb_type_ID", "wob", "PROPERTYDATABASE", tccpList.get(1).getDatabase(), "", null)%>
+                                        <%=ComboInvariant(appContext,"properties_dtb_type_ID", "display: none;", "properties_dtb_type_ID", "wob", "PROPERTYDATABASE", tccpList.get(0).getDatabase(), "", null)%>
                                     </div><%
 
                                         for (TestCaseCountryProperties tccp : tccpList) {
+                                            
+                                            List<String> countryOfProperty = tccpService.findCountryByProperty(tccp);
 
                                             List<String> type_toselect = new ArrayList<String>();
                                             type_toselect.add(tccp.getType().toUpperCase());
@@ -1219,7 +1223,7 @@
                                             <input type="hidden" name="property_hidden" value="<%//rowNumber%>">
                                             <input type="hidden" name="old_property_hidden" value="">
                                             </td>
-                                        <td><input class="wob" style="width: 100px; font-weight: bold; background-color : <%=color%>"
+                                        <td><input class="wob properties_id_<%=rowNumber%> property_name" style="width: 100px; font-weight: bold; background-color : <%=color%>"
                                                    name="properties_property"
                                                    value="<%=tccp.getProperty()%>"
                                                    onchange="trackChanges(this.value, '<%=tccp.getProperty()%>', 'SavePropertyChanges')"></td>
@@ -1230,19 +1234,19 @@
                                                     %></tr><tr><%
                                                         for (String c : countryListTestcase) {
                                                     %>
-                                                    <td class="wob"><input value="<%=rowNumber%> - <%=c%>" type="checkbox" <% if (tccp.getCountry().equals(c)) {%>  CHECKED  <% }%>
+                                                    <td class="wob"><input value="<%=rowNumber%> - <%=c%>" type="checkbox" <% if (countryOfProperty.contains(c)) {%>  CHECKED  <% }%>
                                                                            class="properties_id_<%=rowNumber%>"
                                                                            name="properties_country" onchange="trackChanges(this.value, '<%=c%>', 'SavePropertyChanges')"></td>
                                                         <% //onclick="return false"
                                                             } 
                                                         %>
                                                 </tr></table></td>
-                                        <td><%=ComboInvariant("properties_type", "width: 120px; background-color:" + color, typeID, "wob", "PROPERTYTYPE", tccp.getType(), "activateDatabaseBox(this.value, '" + properties_dtbID + "' ,'" + properties_dtbID + "' );activateValue2(this.value, 'tdValue2_" + rowNumber + "', '" + valueID + "','" + valueID + "_2','" + size2 + "')", null)%></td>
+                                        <td><%=ComboInvariant(appContext,"properties_type", "width: 120px; background-color:" + color, typeID, "wob", "PROPERTYTYPE", tccp.getType(), "activateDatabaseBox(this.value, '" + properties_dtbID + "' ,'" + properties_dtbID + "' );activateValue2(this.value, 'tdValue2_" + rowNumber + "', '" + valueID + "','" + valueID + "_2','" + size2 + "')", null)%></td>
                                         <td>
                                             <%
                                                 if (tccp.getType().equals("executeSqlFromLib") || tccp.getType().equals("executeSql") || tccp.getType().equals("executeSoapFromLib")) {
                                             %>
-                                            <%=ComboInvariant("properties_dtb", "width: 40px; display: inline ; background-color:" + color, properties_dtbID, "wob", "PROPERTYDATABASE", tccp.getDatabase(), "", null)%>
+                                            <%=ComboInvariant(appContext,"properties_dtb", "width: 40px; display: inline ; background-color:" + color, properties_dtbID, "wob", "PROPERTYDATABASE", tccp.getDatabase(), "", null)%>
                                             <%
                                             } else {
                                             %><select name="properties_dtb" style="width: 40px; display: inline ; background-color:<%=color%>" class="wob" id="<%=properties_dtbID%>">
@@ -1299,7 +1303,7 @@
                                                    value="<%=tccp.getRowLimit()%>"
                                                    onchange="trackChanges(this.value, '<%=tccp.getRowLimit()%>', 'SavePropertyChanges')">
                                         </td>
-                                        <td><%=ComboInvariant("properties_nature", "width: 80px; background-color:" + color, "properties_nature", "wob", "PROPERTYNATURE", tccp.getNature(), "trackChanges(0, this.selectedIndex, 'submitButtonChanges')", null)%></td>
+                                        <td><%=ComboInvariant(appContext,"properties_nature", "width: 80px; background-color:" + color, "properties_nature", "wob", "PROPERTYNATURE", tccp.getNature(), "trackChanges(0, this.selectedIndex, 'submitButtonChanges')", null)%></td>
                                     </tr>
                                     <%}%>
                                 </table><br>
@@ -1316,9 +1320,9 @@
                                 <input type="hidden" name="testcase_hidden"
                                        value="<%=test+ " - "+ testcase%>">
                                 <input type="hidden" id="CountryList" name="CountryList" value="<%//countries%>">
-                                <%=ComboInvariant("new_properties_type_new_properties_value", "width: 70px;visibility:hidden", "new_properties_type_new_properties_value", "new_properties_type_new_properties_value", "PROPERTYTYPE", "", "", null)%>
-                                <%=ComboInvariant("properties_dtb_", "width: 40px;visibility:hidden", "properties_dtb_", "properties_dtb_", "PROPERTYDATABASE", "", "", null)%>
-                                <%=ComboInvariant("properties_nature_", "width: 80px;visibility:hidden", "properties_nature_", "properties_nature_", "PROPERTYNATURE", "", "", null)%>
+                                <%=ComboInvariant(appContext,"new_properties_type_new_properties_value", "width: 70px;visibility:hidden", "new_properties_type_new_properties_value", "new_properties_type_new_properties_value", "PROPERTYTYPE", "", "", null)%>
+                                <%=ComboInvariant(appContext,"properties_dtb_", "width: 40px;visibility:hidden", "properties_dtb_", "properties_dtb_", "PROPERTYDATABASE", "", "", null)%>
+                                <%=ComboInvariant(appContext,"properties_nature_", "width: 80px;visibility:hidden", "properties_nature_", "properties_nature_", "PROPERTYNATURE", "", "", null)%>
                                 <input type="hidden" name="testcase_hidden"
                                        value="<%=test+ " - "+testcase%>">
                                 <input type="hidden" name="testcase_country_hidden"

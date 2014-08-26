@@ -431,87 +431,65 @@ public class TestCaseDAO implements ITestCaseDAO {
     @Override
     public List<TCase> findTestCaseByCriteria(TCase testCase, String text, String system) {
         List<TCase> list = null;
-        StringBuilder query = new StringBuilder();
-        query.append("SELECT t2.* FROM testcase t2 LEFT OUTER JOIN application a ON a.application=t2.application ");
-        query.append(" WHERE (t2.test LIKE ");
-        query.append(ParameterParserUtil.wildcardOrIsNullIfEmpty("t2.test", testCase.getTest()));
-        query.append(") AND (t2.project LIKE ");
-        query.append(ParameterParserUtil.wildcardOrIsNullIfEmpty("t2.project", testCase.getProject()));
-        query.append(") AND (t2.ticket LIKE ");
-        query.append(ParameterParserUtil.wildcardOrIsNullIfEmpty("t2.ticket", testCase.getTicket()));
-        query.append(") AND (t2.bugid LIKE ");
-        query.append(ParameterParserUtil.wildcardOrIsNullIfEmpty("t2.bugid", testCase.getBugID()));
-        query.append(") AND (t2.origine LIKE ");
-        query.append(ParameterParserUtil.wildcardOrIsNullIfEmpty("t2.origine", testCase.getOrigin()));
-        query.append(") AND (a.system LIKE ");
-        query.append(ParameterParserUtil.wildcardOrIsNullIfEmpty("a.system", system));
-        query.append(") AND (t2.application LIKE ");
-        query.append(ParameterParserUtil.wildcardOrIsNullIfEmpty("t2.application", testCase.getApplication()));
-        query.append(") AND (t2.priority LIKE ");
-        if (testCase.getPriority() != -1) {
-            query.append("'");
-            query.append(testCase.getPriority());
-            query.append("'");
-        } else {
-            query.append("'%' or t2.priority is null");
-        }
-        query.append(") AND (t2.status LIKE ");
-        query.append(ParameterParserUtil.wildcardOrIsNullIfEmpty("t2.status", testCase.getStatus()));
-        query.append(") AND (t2.group LIKE ");
-        query.append(ParameterParserUtil.wildcardOrIsNullIfEmpty("t2.group", testCase.getGroup()));
-        query.append(") AND (t2.activePROD LIKE ");
-        query.append(ParameterParserUtil.wildcardOrIsNullIfEmpty("t2.activePROD", testCase.getRunPROD()));
-        query.append(") AND (t2.activeUAT LIKE ");
-        query.append(ParameterParserUtil.wildcardOrIsNullIfEmpty("t2.activeUAT", testCase.getRunUAT()));
-        query.append(") AND (t2.activeQA LIKE ");
-        query.append(ParameterParserUtil.wildcardOrIsNullIfEmpty("t2.activeQA", testCase.getRunQA()));
-        query.append(") AND (t2.description LIKE '");
-        if (text != null && !text.equalsIgnoreCase("")) {
-            query.append(text);
-        } else {
-            query.append("%");
-        }
-        query.append("' OR t2.howto LIKE '");
-        if (text != null && !text.equalsIgnoreCase("")) {
-            query.append(text);
-        } else {
-            query.append("%");
-        }
-        query.append("' OR t2.behaviororvalueexpected LIKE '");
-        if (text != null && !text.equalsIgnoreCase("")) {
-            query.append(text);
-        } else {
-            query.append("%");
-        }
-        query.append("' OR t2.comment LIKE '");
-        if (text != null && !text.equalsIgnoreCase("")) {
-            query.append(text);
-        } else {
-            query.append("%");
-        }
-        query.append("') AND (t2.TcActive LIKE ");
-        query.append(ParameterParserUtil.wildcardOrIsNullIfEmpty("t2.TcActive", testCase.getActive()));
-        query.append(") AND (t2.frombuild LIKE ");
-        query.append(ParameterParserUtil.wildcardOrIsNullIfEmpty("t2.frombuild", testCase.getFromSprint()));
-        query.append(") AND (t2.fromrev LIKE ");
-        query.append(ParameterParserUtil.wildcardOrIsNullIfEmpty("t2.fromrev", testCase.getFromRevision()));
-        query.append(") AND (t2.tobuild LIKE ");
-        query.append(ParameterParserUtil.wildcardOrIsNullIfEmpty("t2.tobuild", testCase.getToSprint()));
-        query.append(") AND (t2.torev LIKE ");
-        query.append(ParameterParserUtil.wildcardOrIsNullIfEmpty("t2.torev", testCase.getToRevision()));
-        query.append(") AND (t2.targetbuild LIKE ");
-        query.append(ParameterParserUtil.wildcardOrIsNullIfEmpty("t2.targetbuild", testCase.getTargetSprint()));
-        query.append(") AND (t2.targetrev LIKE ");
-        query.append(ParameterParserUtil.wildcardOrIsNullIfEmpty("t2.targetrev", testCase.getTargetRevision()));
-        query.append(") AND (t2.testcase LIKE ");
-        query.append(ParameterParserUtil.wildcardOrIsNullIfEmpty("t2.testcase", testCase.getTestCase()));
-        query.append(") AND (t2.function LIKE ");
-        query.append(ParameterParserUtil.wildcardOrIsNullIfEmpty("t2.function", testCase.getFunction()));
-        query.append(")");
+        String query = new StringBuilder()
+                .append("SELECT t2.* FROM testcase t2 LEFT OUTER JOIN application a ON a.application=t2.application ")
+                .append(" WHERE (t2.test LIKE ")
+                .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("t2.test", testCase.getTest()))
+                .append(") AND (t2.project LIKE ")
+                .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("t2.project", testCase.getProject()))
+                .append(") AND (t2.ticket LIKE ")
+                .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("t2.ticket", testCase.getTicket()))
+                .append(") AND (t2.bugid LIKE ")
+                .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("t2.bugid", testCase.getBugID()))
+                .append(") AND (t2.origine LIKE ")
+                .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("t2.origine", testCase.getOrigin()))
+                .append(") AND (a.system LIKE ")
+                .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("a.system", system))
+                .append(") AND (t2.application LIKE ")
+                .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("t2.application", testCase.getApplication()))
+                .append(") AND (t2.priority LIKE ")
+                .append(ParameterParserUtil.wildcardOrIsNullIfMinusOne("t2.priority", testCase.getPriority()))
+                .append(") AND (t2.status LIKE ")
+                .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("t2.status", testCase.getStatus()))
+                .append(") AND (t2.group LIKE ")
+                .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("t2.group", testCase.getGroup()))
+                .append(") AND (t2.activePROD LIKE ")
+                .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("t2.activePROD", testCase.getRunPROD()))
+                .append(") AND (t2.activeUAT LIKE ")
+                .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("t2.activeUAT", testCase.getRunUAT()))
+                .append(") AND (t2.activeQA LIKE ")
+                .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("t2.activeQA", testCase.getRunQA()))
+                .append(") AND (t2.description LIKE ")
+                .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("t2.description", text))
+                .append(" OR t2.howto LIKE ")
+                .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("t2.howto", text))
+                .append(" OR t2.behaviororvalueexpected LIKE ")
+                .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("t2.behaviororvalueexpected", text))
+                .append(" OR t2.comment LIKE ")
+                .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("t2.comment", text))
+                .append(") AND (t2.TcActive LIKE ")
+                .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("t2.TcActive", testCase.getActive()))
+                .append(") AND (t2.frombuild LIKE ")
+                .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("t2.frombuild", testCase.getFromSprint()))
+                .append(") AND (t2.fromrev LIKE ")
+                .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("t2.fromrev", testCase.getFromRevision()))
+                .append(") AND (t2.tobuild LIKE ")
+                .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("t2.tobuild", testCase.getToSprint()))
+                .append(") AND (t2.torev LIKE ")
+                .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("t2.torev", testCase.getToRevision()))
+                .append(") AND (t2.targetbuild LIKE ")
+                .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("t2.targetbuild", testCase.getTargetSprint()))
+                .append(") AND (t2.targetrev LIKE ")
+                .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("t2.targetrev", testCase.getTargetRevision()))
+                .append(") AND (t2.testcase LIKE ")
+                .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("t2.testcase", testCase.getTestCase()))
+                .append(") AND (t2.function LIKE ")
+                .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("t2.function", testCase.getFunction()))
+                .append(")").toString();
 
         Connection connection = this.databaseSpring.connect();
         try {
-            PreparedStatement preStat = connection.prepareStatement(query.toString());
+            PreparedStatement preStat = connection.prepareStatement(query);
             try {
                 ResultSet resultSet = preStat.executeQuery();
                 list = new ArrayList<TCase>();
@@ -724,60 +702,74 @@ public class TestCaseDAO implements ITestCaseDAO {
         StringBuilder query = new StringBuilder();
         query.append("SELECT t2.* FROM testcase t2 LEFT OUTER JOIN application a ON a.application=t2.application WHERE 1=1");
         if(!StringUtil.isNull(testCase.getTest())){
-            query.append(" AND t2.test IN ");
+            query.append(" AND t2.test IN (");
             query.append(testCase.getTest());
+            query.append(") ");
         }
         if(!StringUtil.isNull(testCase.getProject())){
-            query.append(" AND t2.project IN ");
+            query.append(" AND t2.project IN (");
             query.append(testCase.getProject());
+            query.append(") ");
         }
         if(!StringUtil.isNull(testCase.getTicket())){
-            query.append(" AND t2.ticket IN ");
+            query.append(" AND t2.ticket IN (");
             query.append(testCase.getTicket());
+            query.append(") ");
         }
         if(!StringUtil.isNull(testCase.getTicket())){
-            query.append(" AND t2.ticket IN ");
+            query.append(" AND t2.ticket IN (");
             query.append(testCase.getTicket());
+            query.append(") ");
         }
         if(!StringUtil.isNull(testCase.getBugID())){
-            query.append(" AND t2.bugid IN ");
+            query.append(" AND t2.bugid IN (");
             query.append(testCase.getBugID());
+            query.append(") ");
         }
         if(!StringUtil.isNull(testCase.getOrigin())){
-            query.append(" AND t2.origine IN ");
+            query.append(" AND t2.origine IN (");
             query.append(testCase.getOrigin());
+            query.append(") ");
         }
         if(!StringUtil.isNull(system)){
-            query.append(" AND a.system IN ");
+            query.append(" AND a.system IN (");
             query.append(system);
+            query.append(") ");
         }
         if(!StringUtil.isNull(testCase.getApplication())){
-            query.append(" AND t2.application IN ");
+            query.append(" AND t2.application IN (");
             query.append(testCase.getApplication());
+            query.append(") ");
         }
         if(testCase.getPriority() != -1){
-            query.append(" AND t2.priority IN ");
+            query.append(" AND t2.priority IN (");
             query.append(testCase.getPriority());
+            query.append(") ");
         }
         if(!StringUtil.isNull(testCase.getStatus())){
-            query.append(" AND t2.status IN ");
+            query.append(" AND t2.status IN (");
             query.append(testCase.getStatus());
+            query.append(") ");
         }
         if(!StringUtil.isNull(testCase.getGroup())){
-            query.append(" AND t2.group IN ");
+            query.append(" AND t2.group IN (");
             query.append(testCase.getGroup());
+            query.append(") ");
         }
         if(!StringUtil.isNull(testCase.getRunPROD())){
-            query.append(" AND t2.activePROD IN ");
+            query.append(" AND t2.activePROD IN (");
             query.append(testCase.getRunPROD());
+            query.append(") ");
         }
         if(!StringUtil.isNull(testCase.getRunUAT())){
-            query.append(" AND t2.activeUAT IN ");
+            query.append(" AND t2.activeUAT IN (");
             query.append(testCase.getRunUAT());
+            query.append(") ");
         }
         if(!StringUtil.isNull(testCase.getRunQA())){
-            query.append(" AND t2.activeQA IN ");
+            query.append(" AND t2.activeQA IN (");
             query.append(testCase.getRunQA());
+            query.append(") ");
         }
         if(!StringUtil.isNull(testCase.getShortDescription())){
             query.append(" AND t2.description LIKE '%");
@@ -800,40 +792,49 @@ public class TestCaseDAO implements ITestCaseDAO {
             query.append("%'");
         }
         if(!StringUtil.isNull(testCase.getActive())){
-            query.append(" AND t2.TcActive IN ");
+            query.append(" AND t2.TcActive IN (");
             query.append(testCase.getActive());
+            query.append(") ");
         }
         if(!StringUtil.isNull(testCase.getFromSprint())){
-            query.append(" AND t2.frombuild IN ");
+            query.append(" AND t2.frombuild IN (");
             query.append(testCase.getFromSprint());
+            query.append(") ");
         }
         if(!StringUtil.isNull(testCase.getFromRevision())){
-            query.append(" AND t2.fromrev IN ");
+            query.append(" AND t2.fromrev IN (");
             query.append(testCase.getFromRevision());
+            query.append(") ");
         }
         if(!StringUtil.isNull(testCase.getToSprint())){
-            query.append(" AND t2.tobuild IN ");
+            query.append(" AND t2.tobuild IN (");
             query.append(testCase.getToSprint());
+            query.append(") ");
         }
         if(!StringUtil.isNull(testCase.getToRevision())){
-            query.append(" AND t2.torev IN ");
+            query.append(" AND t2.torev IN (");
             query.append(testCase.getToRevision());
+            query.append(") ");
         }
         if(!StringUtil.isNull(testCase.getTargetSprint())){
-            query.append(" AND t2.targetbuild IN ");
+            query.append(" AND t2.targetbuild IN (");
             query.append(testCase.getTargetSprint());
+            query.append(") ");
         }
         if(!StringUtil.isNull(testCase.getTargetRevision())){
-            query.append(" AND t2.targetrev IN ");
+            query.append(" AND t2.targetrev IN (");
             query.append(testCase.getTargetRevision());
+            query.append(") ");
         }
         if(!StringUtil.isNull(testCase.getTestCase())){
-            query.append(" AND t2.testcase IN ");
+            query.append(" AND t2.testcase IN (");
             query.append(testCase.getTestCase());
+            query.append(") ");
         }
         if(!StringUtil.isNull(testCase.getFunction())){
-            query.append(" AND t2.function IN ");
+            query.append(" AND t2.function IN (");
             query.append(testCase.getFunction());
+            query.append(") ");
         }
 
         Connection connection = this.databaseSpring.connect();

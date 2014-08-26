@@ -82,34 +82,34 @@
         }
     }
     
-//    String ComboInvariant(String HTMLComboName, String HTMLComboStyle, String HTMLId, String HTMLClass, String combonumber, String value, String HTMLOnChange, String firstOption) {
-//        try {
-//            IInvariantService invFunctionService = appContext.getBean(IInvariantService.class);
-//            List<Invariant> invFunctionList = invFunctionService.findListOfInvariantById(combonumber);
-//            String ret = "<select id=\"" + HTMLId + "\" class=\"" + HTMLClass + "\" style=\"" + HTMLComboStyle + "\" name=\"" + HTMLComboName + "\"";
-//            if (HTMLOnChange.compareToIgnoreCase("") != 0) {
-//                ret = ret + " onchange=\"" + HTMLOnChange + "\"";
-//            }
-//            ret = ret + ">";
-//            if (firstOption != null) {
-//                ret = ret + "<option value=\"" + firstOption + "\">--" + firstOption + "--</option>";
-//            }
-//            for (Invariant invFunction : invFunctionList) {
-//                ret = ret + "<option value=\"" + invFunction.getValue() + "\"";
-//                if ((value != null) && (value.compareTo(invFunction.getValue()) == 0)) {
-//                    ret = ret + " SELECTED ";
-//                }
-//                ret = ret + ">" + invFunction.getValue();
-//                ret = ret + "</option>";
-//            }
-//            ret = ret + "</select>";
-//
-//            return ret;
-//
-//        } catch (CerberusException e) {
-//            return e.toString();
-//        }
-//    }
+    String ComboInvariant(ApplicationContext appContext, String HTMLComboName, String HTMLComboStyle, String HTMLId, String HTMLClass, String combonumber, String value, String HTMLOnChange, String firstOption) {
+        try {
+            IInvariantService invFunctionService = appContext.getBean(IInvariantService.class);
+            List<Invariant> invFunctionList = invFunctionService.findListOfInvariantById(combonumber);
+            String ret = "<select id=\"" + HTMLId + "\" class=\"" + HTMLClass + "\" style=\"" + HTMLComboStyle + "\" name=\"" + HTMLComboName + "\"";
+            if (HTMLOnChange.compareToIgnoreCase("") != 0) {
+                ret = ret + " onchange=\"" + HTMLOnChange + "\"";
+            }
+            ret = ret + ">";
+            if (firstOption != null) {
+                ret = ret + "<option value=\"" + firstOption + "\">--" + firstOption + "--</option>";
+            }
+            for (Invariant invFunction : invFunctionList) {
+                ret = ret + "<option value=\"" + invFunction.getValue() + "\"";
+                if ((value != null) && (value.compareTo(invFunction.getValue()) == 0)) {
+                    ret = ret + " SELECTED ";
+                }
+                ret = ret + ">" + invFunction.getValue();
+                ret = ret + "</option>";
+            }
+            ret = ret + "</select>";
+
+            return ret;
+
+        } catch (CerberusException e) {
+            return e.toString();
+        }
+    }
 
     String ComboInvariantAjax(Connection conn, String HTMLComboName, String HTMLComboStyle, String HTMLId, String HTMLrel, String combonumber, String value, String HTMLOnChange, boolean emptyfirstoption) {
         try {
@@ -224,38 +224,38 @@
         }
     }
 
-//    String ComboProject(String HTMLComboName, String HTMLComboStyle, String HTMLId, String HTMLClass, String value, String HTMLOnChange, boolean emptyfirstoption, String FirstValue, String FirstDescription) {
-//        try {
-//            IProjectService invProjectService = appContext.getBean(IProjectService.class);
-//            List<Project> invProjectList = invProjectService.findAllProject();
-//            String ret = "<select id=\"" + HTMLId + "\" class=\"" + HTMLClass + "\" style=\"" + HTMLComboStyle + "\" name=\"" + HTMLComboName + "\"";
-//            if (HTMLOnChange.compareToIgnoreCase("") != 0) {
-//                ret = ret + " onchange=\"" + HTMLOnChange + "\"";
-//            }
-//            ret = ret + ">";
-//            if (emptyfirstoption) {
-//                ret = ret + " <option value=\"" + FirstValue + "\">" + FirstDescription + "</option>";
-//            }
-//            for (Project p : invProjectList) {
-//                ret = ret + " <option value=\"" + p.getIdProject() + "\"";
-//                ret = ret + " style=\"width: 200px;";
-//                if (p.getActive().equalsIgnoreCase("Y")) {
-//                    ret = ret + "font-weight:bold;";
-//                }
-//                ret = ret + "\"";
-//                if ((value != null) && (value.compareTo(p.getIdProject()) == 0)) {
-//                    ret = ret + " SELECTED ";
-//                }
-//                ret = ret + ">" + p.getIdProject() + " " + p.getDescription();
-//                ret = ret + "</option>";
-//            }
-//            ret = ret + " </select>";
-//            return ret;
-//
-//        } catch (Exception e) {
-//            return e.toString();
-//        }
-//    }
+    String ComboProject(ApplicationContext appContext, String HTMLComboName, String HTMLComboStyle, String HTMLId, String HTMLClass, String value, String HTMLOnChange, boolean emptyfirstoption, String FirstValue, String FirstDescription) {
+        try {
+            IProjectService invProjectService = appContext.getBean(IProjectService.class);
+            List<Project> invProjectList = invProjectService.findAllProject();
+            String ret = "<select id=\"" + HTMLId + "\" class=\"" + HTMLClass + "\" style=\"" + HTMLComboStyle + "\" name=\"" + HTMLComboName + "\"";
+            if (HTMLOnChange.compareToIgnoreCase("") != 0) {
+                ret = ret + " onchange=\"" + HTMLOnChange + "\"";
+            }
+            ret = ret + ">";
+            if (emptyfirstoption) {
+                ret = ret + " <option value=\"" + FirstValue + "\">" + FirstDescription + "</option>";
+            }
+            for (Project p : invProjectList) {
+                ret = ret + " <option value=\"" + p.getIdProject() + "\"";
+                ret = ret + " style=\"width: 200px;";
+                if (p.getActive().equalsIgnoreCase("Y")) {
+                    ret = ret + "font-weight:bold;";
+                }
+                ret = ret + "\"";
+                if ((value != null) && (value.compareTo(p.getIdProject()) == 0)) {
+                    ret = ret + " SELECTED ";
+                }
+                ret = ret + ">" + p.getIdProject() + " " + p.getDescription();
+                ret = ret + "</option>";
+            }
+            ret = ret + " </select>";
+            return ret;
+
+        } catch (Exception e) {
+            return e.toString();
+        }
+    }
 
     String ComboDeployTypeAjax(Connection conn, String HTMLComboName, String HTMLComboStyle, String HTMLId, String HTMLrel, String value, String HTMLOnChange) {
         try {

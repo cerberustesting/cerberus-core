@@ -26,8 +26,6 @@ import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 import javax.annotation.PostConstruct;
@@ -45,6 +43,8 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.cerberus.entity.ExecutionSOAPResponse;
 import org.cerberus.entity.TestCaseExecution;
 import org.cerberus.log.MyLogger;
@@ -66,7 +66,6 @@ import org.custommonkey.xmlunit.XMLUnit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
@@ -78,7 +77,10 @@ import org.xml.sax.SAXException;
  */
 @Service
 public class XmlUnitService implements IXmlUnitService {
-
+	
+	/** The associated {@link Logger} to this class */
+	private static final Logger LOG = Logger.getLogger(XmlUnitService.class);
+	
 	/** Difference value for null XPath */
 	public static final String NULL_XPATH = "null";
 	
@@ -161,15 +163,15 @@ public class XmlUnitService implements IXmlUnitService {
             }
 
         } catch (XPathExpressionException ex) {
-            Logger.getLogger(XmlUnitService.class.getName()).log(Level.SEVERE, null, ex);
+        	LOG.log(Level.WARN, ex);
         } catch (ParserConfigurationException ex) {
-            Logger.getLogger(XmlUnitService.class.getName()).log(Level.SEVERE, null, ex);
+        	LOG.log(Level.WARN, ex);
         } catch (SAXException ex) {
-            Logger.getLogger(XmlUnitService.class.getName()).log(Level.SEVERE, null, ex);
+        	LOG.log(Level.WARN, ex);
         } catch (IOException ex) {
-            Logger.getLogger(XmlUnitService.class.getName()).log(Level.SEVERE, null, ex);
+        	LOG.log(Level.WARN, ex);
         } catch (NullPointerException ex) {
-            Logger.getLogger(XmlUnitService.class.getName()).log(Level.INFO, null, ex);
+        	LOG.log(Level.WARN, ex);
         }
 
         return false;
@@ -194,25 +196,32 @@ public class XmlUnitService implements IXmlUnitService {
             String res = "";
             for (int i = 0; i < nodes.getLength(); i++) {
                 res = nodes.item(i).getNodeValue();
-                MyLogger.log(XmlUnitService.class.getName(), org.apache.log4j.Level.INFO, nodes.item(i).getNodeValue());
-                MyLogger.log(XmlUnitService.class.getName(), org.apache.log4j.Level.INFO, "" + nodes.getLength());
+                
+                if (LOG.isDebugEnabled()) {
+                	LOG.debug(nodes.item(i).getNodeValue());
+                	LOG.debug("" + nodes.getLength());
+                }
             }
 
-            MyLogger.log(XmlUnitService.class.getName(), org.apache.log4j.Level.INFO, res + element + text);
+            if (LOG.isDebugEnabled()) {
+            	LOG.debug(res + element + text);
+            	LOG.debug("" + nodes.getLength());
+            }
+            
             if (res.equals(text)) {
                 return true;
             }
 
         } catch (XPathExpressionException ex) {
-            Logger.getLogger(XmlUnitService.class.getName()).log(Level.SEVERE, null, ex);
+        	LOG.warn("Unable to check text in element", ex);
         } catch (ParserConfigurationException ex) {
-            Logger.getLogger(XmlUnitService.class.getName()).log(Level.SEVERE, null, ex);
+        	LOG.warn("Unable to check text in element", ex);
         } catch (SAXException ex) {
-            Logger.getLogger(XmlUnitService.class.getName()).log(Level.SEVERE, null, ex);
+        	LOG.warn("Unable to check text in element", ex);
         } catch (IOException ex) {
-            Logger.getLogger(XmlUnitService.class.getName()).log(Level.SEVERE, null, ex);
+        	LOG.warn("Unable to check text in element", ex);
         } catch (NullPointerException ex) {
-            Logger.getLogger(XmlUnitService.class.getName()).log(Level.INFO, null, ex);
+        	LOG.warn("Unable to check text in element", ex);
         }
 
         return false;
@@ -275,22 +284,18 @@ public class XmlUnitService implements IXmlUnitService {
             return diff.similar();
 
         } catch (SAXException e) {
-            e.printStackTrace();
-            return false;
+        	LOG.warn("Unable to check similar tree", e);
         } catch (IOException e) {
-            e.printStackTrace();
-            return false;
+        	LOG.warn("Unable to check similar tree", e);
         } catch (ParserConfigurationException ex) {
-            Logger.getLogger(XmlUnitService.class.getName()).log(Level.SEVERE, null, ex);
-            return false;
+        	LOG.warn("Unable to check similar tree", ex);
         } catch (XPathExpressionException ex) {
-            Logger.getLogger(XmlUnitService.class.getName()).log(Level.SEVERE, null, ex);
-            return false;
+        	LOG.warn("Unable to check similar tree", ex);
         } catch (Exception ex) {
-            Logger.getLogger(XmlUnitService.class.getName()).log(Level.SEVERE, null, ex);
-            return false;
+        	LOG.warn("Unable to check similar tree", ex);
         }
 
+        return false;
     }
 
     @Override
@@ -321,19 +326,21 @@ public class XmlUnitService implements IXmlUnitService {
                 res = nodes.item(i).getNodeValue();
             }
 
-            MyLogger.log(XmlUnitService.class.getName(), org.apache.log4j.Level.DEBUG, res);
+            if (LOG.isDebugEnabled()) {
+            	LOG.debug(res);
+            }
             return res;
 
         } catch (XPathExpressionException ex) {
-            Logger.getLogger(XmlUnitService.class.getName()).log(Level.SEVERE, null, ex);
+        	LOG.warn("Unable to get from XML", ex);
         } catch (ParserConfigurationException ex) {
-            Logger.getLogger(XmlUnitService.class.getName()).log(Level.SEVERE, null, ex);
+        	LOG.warn("Unable to get from XML", ex);
         } catch (SAXException ex) {
-            Logger.getLogger(XmlUnitService.class.getName()).log(Level.SEVERE, null, ex);
+        	LOG.warn("Unable to get from XML", ex);
         } catch (IOException ex) {
-            Logger.getLogger(XmlUnitService.class.getName()).log(Level.SEVERE, null, ex);
+        	LOG.warn("Unable to get from XML", ex);
         } catch (NullPointerException ex) {
-            Logger.getLogger(XmlUnitService.class.getName()).log(Level.INFO, null, ex);
+        	LOG.warn("Unable to get from XML", ex);
         }
 
         return null;
@@ -353,14 +360,20 @@ public class XmlUnitService implements IXmlUnitService {
 			// Add each difference to our result structure
 			for (Object diff : diffs.getAllDifferences()) {
 				if (!(diff instanceof Difference)) {
-					MyLogger.log(XmlUnitService.class.getName(), org.apache.log4j.Level.WARN , "Unable to handle no XMLUnit Difference " + diff);
+					LOG.warn("Unable to handle no XMLUnit Difference " + diff);
 					continue;
 				}
 				Difference wellTypedDiff = (Difference) diff;
 				String xPathLocation = wellTypedDiff.getControlNodeDetail().getXpathLocation();
 				// Null XPath location means additional data from the right structure.
-				// We represent this addition by the NULL_XPATH.
+				// Then we retrieve XPath from the right structure.
 				if (xPathLocation == null) {
+					xPathLocation = wellTypedDiff.getTestNodeDetail().getXpathLocation();
+				}
+				// If location is still null, then both of left and right differences have been marked as null
+				// This case should never happen
+				if (xPathLocation == null) {
+					LOG.warn("Null left and right differences found");
 					xPathLocation = NULL_XPATH;
 				}
 				resultDiff.addDifference(new org.cerberus.serviceEngine.impl.diff.Difference(xPathLocation));
@@ -369,7 +382,7 @@ public class XmlUnitService implements IXmlUnitService {
 			// Finally returns the String representation of our result structure
 			return resultDiff.toString();
 		} catch (InputTranslatorException e) {
-			MyLogger.log(XmlUnitService.class.getName(), org.apache.log4j.Level.WARN , e.getMessage());
+			LOG.warn("Unable to get differences from XML", e);
 		}
 		
 		return null;
@@ -394,7 +407,7 @@ public class XmlUnitService implements IXmlUnitService {
 			// Returns the empty String if there is no difference left, or the String XML representation
 			return returned.toString();
 		} catch (DifferencesException e) {
-			MyLogger.log(XmlUnitService.class.getName(), org.apache.log4j.Level.WARN , e.getMessage());
+			LOG.warn("Unable to remove differences", e);
 		}
 		
 		return null;

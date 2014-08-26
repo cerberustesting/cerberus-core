@@ -162,7 +162,7 @@
                 String controlStatus = testCaseExecution.getControlStatus();
 
 
-                    testCaseDesc = tCase.getDescription();
+                    testCaseDesc = tCase.getShortDescription();
                     country = testCaseExecution.getCountry();
 
                     build = testCaseExecution.getBuild();

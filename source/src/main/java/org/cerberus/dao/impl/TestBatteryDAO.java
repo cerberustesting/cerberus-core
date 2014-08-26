@@ -397,4 +397,50 @@ public class TestBatteryDAO implements ITestBatteryDAO {
         return false;
     }
 
+    @Override
+    public List<TestBattery> findTestBatteriesByTestCase(String test, String testCase) throws CerberusException {
+        boolean throwEx = false;
+        final String query = "SELECT tb.* FROM testbattery tb inner join testbatterycontent tbc on tb.testbattery = tbc.testbattery where tbc.test = ? and tbc.testcase = ?";
+
+        List<TestBattery> testBatteriesList = new ArrayList<TestBattery>();
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            try {
+                preStat.setString(1, test);
+                preStat.setString(2, testCase);
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+                    while (resultSet.next()) {
+                        testBatteriesList.add(this.loadTestBatteryFromResultSet(resultSet));
+                    }
+                } catch (SQLException exception) {
+                    MyLogger.log(TestBatteryContentDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                    testBatteriesList = null;
+                } finally {
+                    resultSet.close();
+                }
+            } catch (SQLException exception) {
+                MyLogger.log(TestBatteryContentDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                testBatteriesList = null;
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(TestBatteryContentDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            testBatteriesList = null;
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(TestBatteryContentDAO.class.getName(), Level.WARN, e.toString());
+            }
+        }
+        if (throwEx) {
+            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
+        }
+        return testBatteriesList;
+    }
 }

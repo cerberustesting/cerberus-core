@@ -17,6 +17,8 @@
  */
 package org.cerberus.entity;
 
+import java.util.List;
+
 /**
  * @author bcivel
  */
@@ -35,7 +37,16 @@ public class TestCaseCountryProperties {
     private String nature;
     private MessageEvent result;
     private TestCaseCountry testCaseCountry;
+    private List<TestCaseCountry> tccList;
 
+    public List<TestCaseCountry> getTccList() {
+        return tccList;
+    }
+
+    public void setTccList(List<TestCaseCountry> tccList) {
+        this.tccList = tccList;
+    }
+    
     public String getValue2() {
         return value2;
     }

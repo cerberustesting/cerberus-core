@@ -100,8 +100,6 @@ public class CampaignExecutionReport extends HttpServlet {
 
             JSONArray jSONResult = new JSONArray();
 
-            HashMap<String, String> hmBugURLForApplication = new HashMap<String, String>();
-
             List<CampaignParameter> campaignParameters = campaignService
                     .findCampaignParametersByCampaignName(campaignName);
 
@@ -151,8 +149,6 @@ public class CampaignExecutionReport extends HttpServlet {
                     hmTestCaseExecutionByTestCase.put(key, testCaseExecutionsByTestCase);
                 }
             }
-
-            String bugURL = "";
 
             for (CampaignContent campaignContent : campaignService.findCampaignContentsByCampaignName(campaignName)) {
                 for (TestBatteryContent batteryContent : testBatteryService.findTestBatteryContentsByTestBatteryName(campaignContent.getTestbattery())) {
@@ -259,6 +255,7 @@ public class CampaignExecutionReport extends HttpServlet {
         result.put("Comment", JavaScriptUtils.javaScriptEscape(testCase.getComment()));
         result.put("Function", JavaScriptUtils.javaScriptEscape(testCase.getFunction()));
         result.put("Application", JavaScriptUtils.javaScriptEscape(testCase.getApplication()));
+        result.put("ShortDescription", testCase.getShortDescription());
 
         return result;
     }

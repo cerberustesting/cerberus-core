@@ -368,7 +368,6 @@ function addTestCaseProperties(tableau, row_number, size, size2) {
             .setAttribute('style',
                     'width: 130px; font-weight: bold;font-style: italic; color: #FF0000;');
     form2.setAttribute('placeholder', 'Feed Property Name');
-    form2.setAttribute('maxlength', max_tcp_property);
     var TD2 = document.createElement('td');
     TD2.setAttribute('style', 'background-color:white');
     TD2.appendChild(form2);
@@ -447,7 +446,6 @@ function addTestCaseProperties(tableau, row_number, size, size2) {
     form5.setAttribute('class', 'wob');
     form5.setAttribute('id', 'new_properties_value');
     form5.setAttribute('style', 'width: ' + size2 + 'px');
-    form5.setAttribute('maxlength', max_tcp_value);
     var TD5 = document.createElement('td');
     var TB51 = document.createElement('table');
     var TR51 = document.createElement('tr');
@@ -462,7 +460,6 @@ function addTestCaseProperties(tableau, row_number, size, size2) {
     form54.setAttribute('placeholder', 'Attribute');
     form54.setAttribute('class', 'wob');
     form54.setAttribute('id', 'new_properties_value2');
-    form54.setAttribute('maxlength', max_tcp_value);
     var TD52 = document.createElement('td');
     TD52.setAttribute('style', 'background-color:white; display:none');
     TD52.setAttribute('id', 'tdValue2_new');
@@ -497,7 +494,6 @@ function addTestCaseProperties(tableau, row_number, size, size2) {
     form6.setAttribute('value', 0);
     form6.setAttribute('class', 'wob');
     form6.setAttribute('style', 'width: 40px');
-    form6.setAttribute('maxlength', max_tcp_length);
     var TD6 = document.createElement('td');
     TD6.setAttribute('style', 'background-color:white');
     TD6.appendChild(form6);
@@ -509,7 +505,6 @@ function addTestCaseProperties(tableau, row_number, size, size2) {
     form7.setAttribute('value', 0);
     form7.setAttribute('style', 'width: 40px');
     form7.setAttribute('class', 'wob');
-    form7.setAttribute('maxlength', max_tcp_rowlimit);
     var TD7 = document.createElement('td');
     TD7.setAttribute('style', 'background-color:white');
     TD7.appendChild(form7);
@@ -857,7 +852,6 @@ function addTestCaseControl(table, step_id) {
         form8.setAttribute('class', 'wob functional_description_control');
     }
     form8.setAttribute('style', 'width: 100%');
-    form8.setAttribute('maxlength', max_tcc_description);
     var TD8 = document.createElement('td');
     TD8.setAttribute('style', 'background-color:white');
     if (displayOnlyFunctional) {
