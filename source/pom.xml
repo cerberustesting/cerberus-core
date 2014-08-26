@@ -16,6 +16,10 @@
         <netbeans.hint.deploy.server>gfv3ee6</netbeans.hint.deploy.server>
         <powermock.version>1.5.2</powermock.version>
     </properties>
+    
+    <scm>
+    	<developerConnection>scm:git:https://github.com/vertigo17/Cerberus.git</developerConnection>
+    </scm>
 
     <dependencies>
         <dependency>
@@ -257,6 +261,13 @@
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <version>2.5</version>
                 <configuration>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>2.5</version>
+                <configuration>
+                	<goals>install</goals>
                 </configuration>
             </plugin>
         </plugins>
