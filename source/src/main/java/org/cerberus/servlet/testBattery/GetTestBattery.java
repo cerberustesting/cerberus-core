@@ -27,6 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Level;
 import org.cerberus.entity.TestBattery;
+import org.cerberus.entity.TestBatteryContent;
 import org.cerberus.entity.TestBatteryContentWithDescription;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.log.MyLogger;
@@ -51,11 +52,22 @@ public class GetTestBattery extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        this.process(request, response);
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        this.process(request, response);
+    }
+
+    protected void process(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         testBatteryService = appContext.getBean(ITestBatteryService.class);
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
 
         String action = policy.sanitize(request.getParameter("action"));
+        String test = policy.sanitize(request.getParameter("Test"));
+        String testCase = policy.sanitize(request.getParameter("TestCase"));
         String testBattery = policy.sanitize(request.getParameter("testBattery"));
         String testBatteryName = policy.sanitize(request.getParameter("testBatteryName"));
 
@@ -69,6 +81,8 @@ public class GetTestBattery extends HttpServlet {
                         testBatteryName = testBatteryService.findTestBatteryByKey(Integer.parseInt(testBattery)).getTestbattery();
                     }
                     jsonResponse.put("TestBatteryContents", findAllTestBatteryContentToJSON(testBatteryName));
+                } else if (action != null && "findTestBatteryContentByTestCase".equals(action.trim())) {
+                    jsonResponse.put("TestBatteries", findAllTestBatteriesFromTestCaseToJSON(test, testCase));
                 }
             } catch (CerberusException ex) {
                 response.setContentType("text/html");
@@ -102,6 +116,15 @@ public class GetTestBattery extends HttpServlet {
         return jsonResponse;
     }
 
+    private JSONArray findAllTestBatteriesFromTestCaseToJSON(String test, String testCase) throws JSONException, CerberusException {
+        JSONArray jsonResponse = new JSONArray();
+        for (TestBattery testBattery : testBatteryService.findTestBatteriesByTestCase(test, testCase)) {
+            jsonResponse.put(convertTestBatteryToJSONObject(testBattery));
+        }
+
+        return jsonResponse;
+    }
+
     private JSONArray convertTestBatteryToJSONObject(TestBattery testBattery) throws JSONException {
         JSONArray result = new JSONArray();
         result.put(testBattery.getTestbatteryID());
@@ -118,6 +141,14 @@ public class GetTestBattery extends HttpServlet {
 
         result.put("<a target=\"TestCase\" href=\"TestCase.jsp?Test=" + testBatteryContentWithDescription.getTest() + "&TestCase=" + testBatteryContentWithDescription.getTestCase() + "\">" + testBatteryContentWithDescription.getTestCase() + "</a>");
         result.put(testBatteryContentWithDescription.getDescription());
+
+        return result;
+    }
+
+    private JSONArray convertTestBatteryContentToJSONObject(TestBatteryContent testBatteryContentWithDescription) throws JSONException {
+        JSONArray result = new JSONArray();
+        result.put(testBatteryContentWithDescription.getTestbatterycontentID());
+        result.put(testBatteryContentWithDescription.getTestbattery());
 
         return result;
     }

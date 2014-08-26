@@ -421,5 +421,4 @@ public class TestBatteryContentDAO implements ITestBatteryContentDAO {
         }
         return false;
     }
-
 }

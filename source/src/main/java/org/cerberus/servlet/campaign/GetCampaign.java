@@ -58,6 +58,7 @@ public class GetCampaign extends HttpServlet {
 
         String action = policy.sanitize(request.getParameter("action"));
         String campaign = policy.sanitize(request.getParameter("campaign"));
+        String testBattery = policy.sanitize(request.getParameter("TestBattery"));
 
         try {
             JSONObject jsonResponse = new JSONObject();
@@ -69,6 +70,9 @@ public class GetCampaign extends HttpServlet {
 
                 } else if (action != null && "findAllCampaignParameter".equals(action.trim())) {
                     jsonResponse.put("CampaignParameters", findAllCampaignParameterToJSON(campaignService.findCampaignByKey(Integer.parseInt(campaign)).getCampaign()));
+
+                } else if (action != null && "findCampaignFromTestBattery".equals(action.trim())) {
+                    jsonResponse.put("Campaigns", findCampaignFromTestBatteryToJSON(testBattery));
 
                 }
             } catch (CerberusException ex) {
@@ -88,7 +92,7 @@ public class GetCampaign extends HttpServlet {
     private JSONArray findAllCampaignToJSON() throws JSONException, CerberusException {
         JSONArray jsonResponse = new JSONArray();
         for (Campaign campaign : campaignService.findAll()) {
-            jsonResponse.put(convertCampaignToJSONObject(campaign));
+            jsonResponse.put(convertCampaignToJSONObject(campaign, true));
         }
 
         return jsonResponse;
@@ -112,10 +116,23 @@ public class GetCampaign extends HttpServlet {
         return jsonResponse;
     }
 
-    private JSONArray convertCampaignToJSONObject(Campaign campaign) throws JSONException {
+    private JSONArray findCampaignFromTestBatteryToJSON(String testBattery) throws JSONException, CerberusException {
+        JSONArray jsonResponse = new JSONArray();
+        for (CampaignContent campaignContent : campaignService.findCampaignContentByCriteria(null, null, testBattery)) {
+            jsonResponse.put(convertCampaignToJSONObject(campaignService.findCampaignByCampaignName(campaignContent.getCampaign()), false));
+        }
+
+        return jsonResponse;
+    }
+
+    private JSONArray convertCampaignToJSONObject(Campaign campaign, boolean withLink) throws JSONException {
         JSONArray result = new JSONArray();
         result.put(campaign.getCampaignID());
-        result.put(campaign.getCampaign() + "<a onclick='viewListOfTests(" + campaign.getCampaignID() + ");' title='View list of tests'><img src='images/details_open.png'/></a>");
+        if (withLink) {
+            result.put(campaign.getCampaign() + "<a onclick='viewListOfTests(" + campaign.getCampaignID() + ");' title='View list of tests'><img src='images/details_open.png'/></a>");
+        } else {
+            result.put(campaign.getCampaign());
+        }
         result.put(campaign.getDescription());
         return result;
     }
