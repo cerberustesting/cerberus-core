@@ -47,7 +47,8 @@ public interface IXmlUnitService {
 	 * </p>
 	 * 
 	 * <p>
-	 * Differences are computed by using left as base. So, results are left relative.
+	 * Differences are computed by using left as base. So, results are left relative. However, in case of non-existing path from the left part, then the right one is given, instead
+	 * of getting a null XPath.
 	 * </p>
 	 * 
 	 * <p>

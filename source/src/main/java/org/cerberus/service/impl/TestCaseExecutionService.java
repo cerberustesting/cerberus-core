@@ -101,4 +101,11 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
     public List<TestCaseExecution> findExecutionsByCampaignNameAndTag(String campaign, String tag) throws CerberusException {
         return testCaseExecutionDao.findExecutionsByCampaignNameAndTag(campaign, tag);
     }
+
+    @Override
+    public TestCaseExecution findLastTCExecutionInGroup(String test, String testCase, String environment, String country,
+                                                           String build, String revision, String browser, String browserVersion,
+                                                           String ip, String port, String tag) {
+        return this.testCaseExecutionDao.findLastTCExecutionInGroup(test, testCase, environment, country, build, revision, browser, browserVersion, ip, port, tag);
+    }
 }
