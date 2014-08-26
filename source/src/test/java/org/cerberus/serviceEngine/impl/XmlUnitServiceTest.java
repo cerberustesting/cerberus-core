@@ -93,7 +93,7 @@ public class XmlUnitServiceTest {
 	@Test
 	public void testGetDifferencesFromXmlWithStructureDifference() throws XmlUtilException {
 		differences.addDifference(new Difference("/root[1]/a[1]"));
-		differences.addDifference(new Difference(XmlUnitService.NULL_XPATH));
+		differences.addDifference(new Difference("/root[1]/b[1]"));
 
 		String expected = differences.toString();
 		String diff = xmlUnitService.getDifferencesFromXml("<root><a>1</a></root>", "<root><b>1</b></root>");
@@ -103,7 +103,7 @@ public class XmlUnitServiceTest {
 	@Test
 	public void testGetDifferencesFromXmlByUsingURL() throws XmlUtilException {
 		differences.addDifference(new Difference("/root[1]/a[1]"));
-		differences.addDifference(new Difference(XmlUnitService.NULL_XPATH));
+		differences.addDifference(new Difference("/root[1]/b[1]"));
 
 		String expected = differences.toString();
 
@@ -117,10 +117,10 @@ public class XmlUnitServiceTest {
 	public void testRemoveDifferenceWhenDifferenceMatch() throws XmlUtilException, SAXException, IOException {
 		differences.addDifference(new Difference("/root[1]/a[1]"));
 		differences.addDifference(new Difference("/root[1]/a[2]"));
-		differences.addDifference(new Difference(XmlUnitService.NULL_XPATH));
+		differences.addDifference(new Difference("/root[1]/b[1]"));
 
 		String actual = xmlUnitService.removeDifference("/root\\[1\\]/a\\[[1-2]\\]", differences.toString());
-		String expected = "<differences><difference>null</difference></differences>";
+		String expected = "<differences><difference>/root[1]/b[1]</difference></differences>";
 
 		DetailedDiff diff = new DetailedDiff(XMLUnit.compareXML(expected, actual));
 		Assert.assertTrue(diff.toString(), diff.similar());
@@ -129,10 +129,10 @@ public class XmlUnitServiceTest {
 	@Test
 	public void testRemoveDifferenceWhenNoDifferenceMatch() throws XmlUtilException, SAXException, IOException {
 		differences.addDifference(new Difference("/root[1]/a[1]"));
-		differences.addDifference(new Difference(XmlUnitService.NULL_XPATH));
+		differences.addDifference(new Difference("/root[1]/b[1]"));
 
 		String actual = xmlUnitService.removeDifference("toto", differences.toString());
-		String expected = "<differences><difference>/root[1]/a[1]</difference><difference>null</difference></differences>";
+		String expected = "<differences><difference>/root[1]/a[1]</difference><difference>/root[1]/b[1]</difference></differences>";
 
 		DetailedDiff diff = new DetailedDiff(XMLUnit.compareXML(expected, actual));
 		Assert.assertTrue(diff.toString(), diff.similar());
