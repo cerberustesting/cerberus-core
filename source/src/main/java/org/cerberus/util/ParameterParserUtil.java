@@ -60,7 +60,21 @@ public final class ParameterParserUtil {
         sb.append("'");
         return sb.toString();
     }
-    
+
+    public static String wildcardOrIsNullIfMinusOne(String column, int inInt) {
+        StringBuilder sb = new StringBuilder();
+
+        if (inInt != -1) {
+            sb.append("'");
+            sb.append(inInt);
+            sb.append("'");
+        } else {
+            sb.append("'%' or ").append(column).append(" is null");
+        }
+
+        return sb.toString();
+    }
+
     /**
      * @param inParam
      * @return an empty string if the inParam is empty or null. It returns
