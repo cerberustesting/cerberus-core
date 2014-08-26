@@ -17,6 +17,18 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
+<%@page import="org.cerberus.entity.SqlLibrary"%>
+<%@page import="org.cerberus.service.ISqlLibraryService"%>
+<%@page import="org.cerberus.entity.TestCaseCountryProperties"%>
+<%@page import="org.cerberus.service.ITestCaseCountryPropertiesService"%>
+<%@page import="org.cerberus.entity.TestCaseStepActionControl"%>
+<%@page import="org.cerberus.entity.TestCaseStepAction"%>
+<%@page import="org.cerberus.entity.TestCaseStep"%>
+<%@page import="org.cerberus.service.ITestCaseStepActionControlService"%>
+<%@page import="org.cerberus.service.ITestCaseStepActionService"%>
+<%@page import="org.cerberus.service.ITestCaseStepService"%>
+<%@page import="org.cerberus.service.ITestCaseExecutionService"%>
+<%@page import="org.cerberus.entity.TestCaseExecution"%>
 <%@page import="org.cerberus.service.ITestCaseCountryService"%>
 <%@page import="org.cerberus.entity.TCase"%>
 <%@page import="org.cerberus.service.ITestCaseService"%>
@@ -152,7 +164,6 @@
                 boolean booleanFunction = false;
 
                 try {
-
                     /*
                      * Filter requests
                      */
@@ -162,6 +173,13 @@
                     ITestService testService = appContext.getBean(ITestService.class);
                     ITestCaseService testCaseService = appContext.getBean(ITestCaseService.class);
                     ITestCaseCountryService testCaseCountryService = appContext.getBean(ITestCaseCountryService.class);
+                    ITestCaseStepService tcsService = appContext.getBean(ITestCaseStepService.class);
+                    ITestCaseStepActionService tcsaService = appContext.getBean(ITestCaseStepActionService.class);
+                    ITestCaseStepActionControlService tcsacService = appContext.getBean(ITestCaseStepActionControlService.class);
+                    ITestCaseCountryPropertiesService tccpService = appContext.getBean(ITestCaseCountryPropertiesService.class);
+                    ISqlLibraryService libService = appContext.getBean(ISqlLibraryService.class);
+
+                    ITestCaseExecutionService testCaseExecutionService = appContext.getBean(ITestCaseExecutionService.class);
                     IInvariantService invariantService = appContext.getBean(IInvariantService.class);
 
                     booleanFunction = StringUtil.parseBoolean(parameterService.findParameterByKey("cerberus_testcase_function_booleanListOfFunction", "").getValue());
@@ -324,7 +342,7 @@
 
                 group = tcase.getGroup();
                 status = tcase.getStatus();
-            //TODO        //String dateCrea = tcase.getDateCreation()!=null?tcase.getDateCreation():"-- unknown --";
+                //TODO        //String dateCrea = tcase.getDateCreation()!=null?tcase.getDateCreation():"-- unknown --";
 
                 Application myApplication = null;
                 if (tcase.getApplication() != null) {
@@ -433,12 +451,12 @@
                                             <tr>
                                                 <td class="wob"><input readonly="readonly" id="origine" style="width: 90px; background-color: #DCDCDC" name="editOrigine" value="<%=tcase.getOrigin()%>"></td>
                                                 <td class="wob"><input readonly="readonly" id="reforigine" style="width: 90px;  background-color: #DCDCDC" name="editRefOrigine" value="<%=tcase.getRefOrigin()%>"></td>
-                                                <td class="wob"><%=dateCrea%></td>
+                                                <td class="wob"><%//dateCrea%></td>
                                                 <td class="wob"><input readonly="readonly" id="creator" style="width: 90px; background-color: #DCDCDC" name="editCreator" value="<%=tcase.getCreator()%>"></td>
                                                 <td class="wob"><input id="implementer" style="width: 90px;" name="editImplementer" value="<%=tcase.getImplementer() == null ? "" : tcase.getImplementer()%>"></td>
                                                 <td class="wob"><input readonly="readonly" id="lastModifier" style="width: 90px; background-color: #DCDCDC" name="editLastModifier" value="<%=tcase.getLastModifier()%>"></td>
                                                 <td class="wob">
-                                                    <% out.print(ComboProject(conn, "editProject", "width: 90px", "project", "", tcase.getProject(), "", true, "", "No Project Defined."));%>
+                                                    <% out.print(ComboProject("editProject", "width: 90px", "project", "", tcase.getProject(), "", true, "", "No Project Defined."));%>
                                                 </td>
                                                 <td class="wob"><input id="ticket" style="width: 90px;" name="editTicket" value="<%=tcase.getTicket() == null ? "" : tcase.getTicket()%>"></td>
                                                 <td class="wob"><input id="function" style="width: 390px;" list="functions" name="function" value="<%=tcase.getFunction() == null ? "" : tcase.getFunction()%>"></td>
@@ -552,36 +570,27 @@
                     <%
 
                         // We are getting here the last execution that was done on the testcase with its associated status.
-                        String LastExeSQL;
                         String LastExeMessage;
+                        TestCaseExecution tce = testCaseExecutionService.findLastTestCaseExecutionNotPE(test, testcase);
                         LastExeMessage = "<i>Never Executed</i>";
-                        LastExeSQL = "SELECT ID, Environment, Country, Build, Revision, End, ControlStatus  FROM `testcaseexecution` "
-                                + " WHERE test='" + rs_testcase_general_info.getString("Test") + "' "
-                                + "and TestCase='" + rs_testcase_general_info.getString("TestCase") + "' "
-                                + "and ID= "
-                                + " (SELECT MAX(ID) from `testcaseexecution` "
-                                + "WHERE test='" + rs_testcase_general_info.getString("Test") + "' "
-                                + "and TestCase='" + rs_testcase_general_info.getString("TestCase") + "' "
-                                + "and ControlStatus!='PE')";
-                        ResultSet rs_testcase_last_exe = stmtLastExe.executeQuery(LastExeSQL);
-                        if (rs_testcase_last_exe.first()) {
-                            LastExeMessage = "Last <a width : 390px ; href=\"ExecutionDetail.jsp?id_tc=" + rs_testcase_last_exe.getString("ID") + "\">Execution</a> was ";
-                            if (rs_testcase_last_exe.getString("ControlStatus").compareToIgnoreCase("OK") == 0) {
-                                LastExeMessage = LastExeMessage + "<a style=\"color : green\">" + rs_testcase_last_exe.getString("ControlStatus") + "</a>";
+                        if (tce != null) {
+                            LastExeMessage = "Last <a width : 390px ; href=\"ExecutionDetail.jsp?id_tc=" + tce.getId() + "\">Execution</a> was ";
+                            if (tce.getControlStatus().compareToIgnoreCase("OK") == 0) {
+                                LastExeMessage = LastExeMessage + "<a style=\"color : green\">" + tce.getControlStatus() + "</a>";
                             } else {
-                                LastExeMessage = LastExeMessage + "<a style=\"color : red\">" + rs_testcase_last_exe.getString("ControlStatus") + "</a>";
+                                LastExeMessage = LastExeMessage + "<a style=\"color : red\">" + tce.getControlStatus() + "</a>";
                             }
                             LastExeMessage = LastExeMessage + " in "
-                                    + rs_testcase_last_exe.getString("Environment") + " in "
-                                    + rs_testcase_last_exe.getString("Country") + " on "
-                                    + rs_testcase_last_exe.getString("End")
+                                    + tce.getEnvironment() + " in "
+                                    + tce.getCountry() + " on "
+                                    + tce.getEnd()
                                     + "<a width : 390px ; href=\"RunTests.jsp?Test=" + test + "&TestCase=" + testcase + "&MySystem=" + appSystem
-                                    + "&Country=" + rs_testcase_last_exe.getString("Country") + "&Environment=" + rs_testcase_last_exe.getString("Environment") + "\"><i> (Run it again) </i></a>";
+                                    + "&Country=" + tce.getCountry() + "&Environment=" + tce.getEnvironment() + "\"><i> (Run it again) </i></a>";
                         }
-                        if ((rs_testcase_general_info.getString("tc.BugID") != null)
-                                && (rs_testcase_general_info.getString("tc.BugID").compareToIgnoreCase("") != 0)
-                                && (rs_testcase_general_info.getString("tc.BugID").compareToIgnoreCase("null") != 0)) {
-                            SitdmossBugtrackingURL = SitdmossBugtrackingURL.replaceAll("%BUGID%", rs_testcase_general_info.getString("tc.BugID"));
+                        if ((tcase.getBugID() != null)
+                                && (tcase.getBugID().compareToIgnoreCase("") != 0)
+                                && (tcase.getBugID().compareToIgnoreCase("null") != 0)) {
+                            SitdmossBugtrackingURL = SitdmossBugtrackingURL.replaceAll("%BUGID%", tcase.getBugID());
                         }
                     %>
                     <tr>
@@ -610,24 +619,24 @@
                                                     fromBuild = tcase.getFromSprint();
                                                 }
                                                 String fromRev = "";
-                                                if (rs_testcase_general_info.getString("tc.FromRev") != null) {
-                                                    fromRev = rs_testcase_general_info.getString("tc.FromRev");
+                                                if (tcase.getFromRevision() != null) {
+                                                    fromRev = tcase.getFromRevision();
                                                 }
                                                 String toBuild = "";
-                                                if (rs_testcase_general_info.getString("tc.ToBuild") != null) {
-                                                    toBuild = rs_testcase_general_info.getString("tc.ToBuild");
+                                                if (tcase.getToSprint() != null) {
+                                                    toBuild = tcase.getToSprint();
                                                 }
                                                 String toRev = "";
-                                                if (rs_testcase_general_info.getString("tc.ToRev") != null) {
-                                                    toRev = rs_testcase_general_info.getString("tc.ToRev");
+                                                if (tcase.getToRevision() != null) {
+                                                    toRev = tcase.getToRevision();
                                                 }
                                                 String targetBuild = "";
-                                                if (rs_testcase_general_info.getString("tc.TargetBuild") != null) {
-                                                    targetBuild = rs_testcase_general_info.getString("tc.TargetBuild");
+                                                if (tcase.getTargetSprint() != null) {
+                                                    targetBuild = tcase.getTargetSprint();
                                                 }
                                                 String targetRev = "";
-                                                if (rs_testcase_general_info.getString("tc.TargetRev") != null) {
-                                                    targetRev = rs_testcase_general_info.getString("tc.TargetRev");
+                                                if (tcase.getTargetRevision() != null) {
+                                                    targetRev = tcase.getTargetRevision();
                                                 }
                                             %>
                                             <option style="width: 100px" value="" <%=fromBuild.compareTo("") == 0 ? " SELECTED " : ""%>>----</option>
@@ -669,8 +678,8 @@
                                             %></select>
                                     </td>
                                     <td class="wob"><%=LastExeMessage%></td>
-                                    <td class="wob"><input id="BugID" style="width: 70px;" name="editBugID" value="<%=rs_testcase_general_info.getString("tc.BugID") == null ? "" : rs_testcase_general_info.getString("tc.BugID")%>"></td>
-                                    <td class="wob"><% if (rs_testcase_general_info.getString("tc.BugID") != null) {%><a href="<%= SitdmossBugtrackingURL%>"><%=rs_testcase_general_info.getString("tc.BugID")%></a><%}%></td>
+                                    <td class="wob"><input id="BugID" style="width: 70px;" name="editBugID" value="<%=tcase.getBugID() == null ? "" : tcase.getBugID()%>"></td>
+                                    <td class="wob"><% if (tcase.getBugID() != null) {%><a href="<%= SitdmossBugtrackingURL%>"><%=tcase.getBugID()%></a><%}%></td>
                                     <td class="wob">
                                         <select id="editTargetBuild" name="editTargetBuild" class="active" style="width: 70px" >
                                             <option style="width: 100px" value="" <%=targetBuild.compareTo("") == 0 ? " SELECTED " : ""%>>----</option>
@@ -699,7 +708,7 @@
                                     <td class="wob" style="width: 650px"><%out.print(docService.findLabelHTML("testcase", "comment", "Comment"));%></td>
                                 </tr><tr> 
                                     <td class="wob"><input id="comment" style="width: 1200px;" name="editComment" 
-                                                           value="<%=rs_testcase_general_info.getString("tc.Comment") == null ? "" : rs_testcase_general_info.getString("tc.Comment")%>"></td></tr>
+                                                           value="<%=tcase.getComment() == null ? "" : tcase.getComment()%>"></td></tr>
 
                             </table>
                         </td>
@@ -729,12 +738,12 @@
             </table>
             <table id="parametergeneral" class="arrond" <%if (tinf == false) {%> style="display : table" <%} else {%>style="display : none"<%}%> >
                 <tr><td id="wob" style="width: 150px"><h4 style="color : blue">General Parameters:</h4></td>
-                    <td id="wob" style="width: 150px">APP: [<%=rs_testcase_general_info.getString("Application")%>]  </td>
-                    <td id="wob" style="width: 160px">GROUP: [<%=rs_testcase_general_info.getString("tc.group")%>]  </td>
-                    <td id="wob" style="width: 200px">STATUS: [<%=rs_testcase_general_info.getString("tc.status")%>]  </td>
-                    <td id="wob" style="width: 60px">ACT: [<%=rs_testcase_general_info.getString("TcActive")%>]  </td>
+                    <td id="wob" style="width: 150px">APP: [<%=tcase.getApplication()%>]  </td>
+                    <td id="wob" style="width: 160px">GROUP: [<%=tcase.getGroup()%>]  </td>
+                    <td id="wob" style="width: 200px">STATUS: [<%=tcase.getStatus()%>]  </td>
+                    <td id="wob" style="width: 60px">ACT: [<%=tcase.getActive()%>]  </td>
                     <td id="wob" style="width: 170px">Last Exe: [<%=LastExeMessage%>]  </td>
-                    <td id="wob" style="width: 300px">Countries: [<%=countries%>]</td>
+                    <td id="wob" style="width: 300px">Countries: [<%//countries%>]</td>
                     <td id="wob" align="right"><input id="button1" style="height:18px; width:10px" type="button" value="+" onclick="javascript:setVisible();"></td>
                 </tr>
             </table>
@@ -743,111 +752,37 @@
                 <form id="select_country_properties" action="TestCase.jsp"
                       method="post">
                     <% }%>
+                    
+                    
+                    <%  
+                        int size = countryListTestcase.size()* 16 + 30;
+                        int size2 = 570 + 80 - size;
+                        int size3 = 0;
+                        int size4 = size2;
 
-                    <%
-                        /*
-                         * Get different country properties defined
-                         */
-                        Statement stmt5 = conn.createStatement();
-                        ResultSet rs_testcasecountry = stmt5.executeQuery("SELECT DISTINCT Country"
-                                + " FROM testcasecountry t "
-                                + " join invariant i on i.value=t.country and i.idname='COUNTRY' "
-                                + " WHERE Test = '"
-                                + rs_testcase_general_info.getString("t.Test")
-                                + "'"
-                                + " AND TestCase = '"
-                                + rs_testcase_general_info.getString("tc.testcase") + "'"
-                                + " order by i.sort ");
-
-                        if (rs_testcasecountry.next()) {
-                            /*
-                             * Get all countries defines for this
-                             * testcase and put them into combo box Use
-                             * for JS line adding
-                             */
-                            //Define the size of the row country and Value  
-                            rs_testcasecountry.last();
-                            int size = rs_testcasecountry.getRow() * 16 + 30;
-                            int size2 = 570 + 80 - size;
-                            int size3 = 0;
-                            int size4 = size2;
-
-                            // Define the list of country available for this test
-                            rs_testcasecountry.first();
-                            String tc_countries = "";
-                            do {
-                                tc_countries += rs_testcasecountry.getString("Country") + "-";
-                            } while (rs_testcasecountry.next());
+                        // Define the list of country available for this test
+                        String tc_countries = "";
+                        for (String c : countryListTestcase) {
+                            tc_countries += c + "-";
+                        }
                     %>
                     <br>
                     <input type="hidden" id="tc_countries_for_js_add"
                            value="<%=tc_countries%>">
-                    <%
-                        rs_testcasecountry.first();
-                    %>
                     <input type="hidden" name="testcase_for_country_hidden"
-                           value="<%=rs_testcase_general_info.getString("t.Test")
-                                   + " - "
-                                   + rs_testcase_general_info.getString("tc.testcase")%>">
+                           value="<%=tcase.getTest() + " - " + tcase.getTestCase()%>">
                 </form>
-                <%
-                    /*
-                     * Get country selected for properties display, init
-                     * with the first value
-                     */
-                    Statement stmt7 = conn.createStatement();
-                    Statement stmt18 = conn.createStatement();
-
-                    ResultSet rs_tccountry = stmt18.executeQuery("SELECT DISTINCT Country"
-                            + " FROM testcasecountry t "
-                            + " join invariant i on i.value=t.country and i.idname='COUNTRY' "
-                            + " WHERE Test = '"
-                            + rs_testcase_general_info.getString("t.Test")
-                            + "'"
-                            + " AND TestCase = '"
-                            + rs_testcase_general_info.getString("tc.testcase") + "'"
-                            + " order by i.sort");
-                    int rs_properties_maxlength_cpt = 1;
-                    /*
-                     * ResultSet rs_properties = stmt6
-                     * .executeQuery("SELECT Country, Property, Type,
-                     * Value, " + "Length, RowLimit, Nature " + " FROM
-                     * TestCaseCountryProperties" + " WHERE Test = '" +
-                     * rs_testcase_general_info .getString("t.Test") +
-                     * "'" + " AND TestCase = '" +
-                     * rs_testcase_general_info
-                     * .getString("tc.testcase") + "'" + " ORDER BY
-                     * Country Asc, Type Desc");
-                     */
-                    /*
-                     * + " AND Country = '" +
-                     * testcase_country_property_selected + "'");
-                     */
-
-
-                %>                          
                 <%  if (canEdit) {%>
                 <form method="post" name="UpdateTestCaseDetail" id="UpdateTestCaseDetail" onsubmit="return checkForm();" action="UpdateTestCaseDetail">
-                    <% }%>                                   <%--Countries checkbox for adding property (javascript) --%>
+                    <% }%>                                 
                     <%
-                        Statement stmt6 = conn.createStatement();
-                        Statement stmt80 = conn.createStatement();
                         String color = "white";
                         int i = 1;
                         int j = 1;
                         int rowNumber = 0;
-                        int testcase_proproperties_maxlength_property = 150;
-                        int testcase_proproperties_maxlength_value = 2500;
-                        int testcase_proproperties_maxlength_length = 10;
-                        int testcase_proproperties_maxlength_rowlimit = 10;
-                        int testcase_proproperties_maxlength_country = 2; // Default max length values for javascript adding if any property set by default
-
                     %>
                     <input type="hidden" name="testcase_hidden"
-                           value="<%=rs_testcase_general_info.getString("t.Test")
-                                   + " - "
-                                   + rs_testcase_general_info.getString("tc.testcase")%>">
-
+                           value="<%=tcase.getTest() + " - " + tcase.getTestCase()%>">
                     <table id="propertytable" class="arrond" style="display : table">
                         <tr>
                             <td id="wob"><h3>TestCase Automation Script</h3></td>
@@ -860,55 +795,10 @@
                                             <div id="table1">
 
                                                 <%
-
-                                                    /* 
-                                        
-                                                     */
-                                                    if (stmt51 == null) {
-                                                        stmt51 = conn.createStatement();
-                                                    }
-
-                                                    ResultSet rs_controls1 = stmt51.executeQuery("SELECT value from invariant where idname = 'COUNTRY'");
-
-                                                    String[] sarray = new String[100];
-                                                    int m = 0;
-                                                    if (rs_controls1.next()) {
-                                                        sarray[m] = rs_controls1.getString("value");
-                                                        m++;
-                                                    }
-
-                                                    /*
-                                                     * Step / Actions request
-                                                     */
-                                                    ResultSet rs_stepaction = null;
-                                                    ResultSet rs_step = stmt5.executeQuery("SELECT Test, Testcase, Step, Description, useStep,  useStepTest, useStepTestCase, useStepStep "
-                                                            + " FROM testcasestep "
-                                                            + " WHERE test = '"
-                                                            + rs_testcase_general_info.getString("t.Test")
-                                                            + "' "
-                                                            + " AND testcase = '"
-                                                            + rs_testcase_general_info.getString("tc.testcase") + "'");
-
-                                                    int testcase_step_maxlength_desc = 1000; // Max length for javascritp if any default value
-
-                                                    int testcase_stepaction_maxlength_sequence = 10; // Default max length values for javascript adding if any actions set by default
-                                                    int testcase_stepaction_maxlength_action = 45;
-                                                    int testcase_stepaction_maxlength_object = 200;
-                                                    int testcase_stepaction_maxlength_property = 150;
-                                                    int testcase_stepaction_maxlength_description = 1000;
-                                                    Integer i1 = 0;
-                                                    boolean isStepExist = false;
-                                                    if (rs_step.first()) {
-                                                        isStepExist = true;
-                                                        rs_step.beforeFirst();
-                                                    }
-
-                                                    while (rs_step.next()) {
-                                                        rs_stepaction = null;
-                                                        /*
-                                                         * Loop on steps
-                                                         */
-                                                        i1 = i1 + 1;
+                                                    int i1 = 0;
+                                                    List<TestCaseStep> tcsList = tcsService.getListOfSteps(test, testcase);
+                                                    for (TestCaseStep tcs : tcsList) {
+                                                        i1++;
                                                 %>
                                                 <table style="text-align: left; border-collapse: collapse">
                                                     <tr>
@@ -916,35 +806,35 @@
                                                             <a name="stepAnchor_<%=i1%>"></a>
                                                             <%  if (canEdit) {%>
                                                             <input type="checkbox" name="testcasestep_delete" style="font-weight: bold; width:20px"
-                                                                   value="<%=rs_step.getString("step")%>">
+                                                                   value="<%=tcs.getStep()%>">
                                                             <% }%>
                                                         </td>
                                                         <td id="wob">
                                                             <%--Step--%>
-                                                            &nbsp;&nbsp;Step <%=rs_step.getString("step")%>&nbsp;&nbsp; <input
+                                                            &nbsp;&nbsp;Step <%=tcs.getStep()%>&nbsp;&nbsp; <input
                                                                 type="hidden" name="testcasestep_hidden" style="font-weight: bold; width:20px"
-                                                                value="<%=rs_step.getString("step")%>"></td><td id="wob">
+                                                                value="<%=tcs.getStep()%>"></td><td id="wob">
                                                             <input
                                                                 size="100%" style="font-weight: bold; width: 500px" name="step_description"
-                                                                value="<%=rs_step.getString("description")%>">
-                                                        </td> <% if (rs_step.getString("useStep").equals("Y")) {
+                                                                value="<%=tcs.getDescription()%>">
+                                                        </td> <% if (tcs.getUseStep().equals("Y")) {
                                                         %>
                                                         <td class="wob"><span> Copied from : </span></td>
                                                         <td id="wob">
                                                             <input
                                                                 size="100%" style="font-weight: bold; width: 200px" name="useStepTest"
-                                                                value="<%=rs_step.getString("useStepTest")%>">
+                                                                value="<%=tcs.getUseStepTest()%>">
                                                         </td><td id="wob">
                                                             <input
                                                                 size="100%" style="font-weight: bold; width: 50px" name="useStepTestCase"
-                                                                value="<%=rs_step.getString("useStepTestCase")%>">
+                                                                value="<%=tcs.getUseStepTestCase()%>">
                                                         </td><td id="wob">
                                                             <input
                                                                 size="100%" style="font-weight: bold; width: 50px" name="useStepStep"
-                                                                value="<%=rs_step.getString("useStepStep")%>">
+                                                                value="<%=tcs.getUseStepStep()%>">
                                                         </td>
                                                         <td class="wob">
-                                                            <a href="TestCase.jsp?Test=<%=rs_step.getString("useStepTest")%>&TestCase=<%=rs_step.getString("useStepTestCase")%>">Edit Used Step</a>
+                                                            <a href="TestCase.jsp?Test=<%=tcs.getUseStepTest()%>&TestCase=<%=tcs.getUseStepTestCase()%>">Edit Used Step</a>
                                                         </td>
                                                         <%}%>
                                                     </tr>
@@ -954,42 +844,30 @@
                                                                         <h5>Actions</h5>
 
                                                                         <%
-                                                                            if (stmt == null) {
-                                                                                stmt6 = conn.createStatement();
-                                                                            }
-
                                                                             String testForQuery = "";
                                                                             String testcaseForQuery = "";
-                                                                            String stepForQuery = "";
+                                                                            int stepForQuery = 0;
                                                                             String isReadonly = "";
                                                                             boolean useStep = false;
                                                                             String complementName = "";
 
-                                                                            if (!rs_step.getString("useStep").equals("Y")) {
-                                                                                testForQuery = rs_step.getString("Test");
-                                                                                testcaseForQuery = rs_step.getString("TestCase");
-                                                                                stepForQuery = rs_step.getString("Step");
+                                                                            if (!tcs.getUseStep().equals("Y")) {
+                                                                                testForQuery = tcs.getTest();
+                                                                                testcaseForQuery = tcs.getTestCase();
+                                                                                stepForQuery = tcs.getStep();
                                                                             } else {
-                                                                                testForQuery = rs_step.getString("useStepTest");
-                                                                                testcaseForQuery = rs_step.getString("useStepTestCase");
-                                                                                stepForQuery = rs_step.getString("useStepStep");
+                                                                                testForQuery = tcs.getUseStepTest();
+                                                                                testcaseForQuery = tcs.getUseStepTestCase();
+                                                                                stepForQuery = tcs.getUseStepStep();
                                                                                 isReadonly = "readonly";
                                                                                 useStep = true;
                                                                                 complementName = "Block";
                                                                             }
 
-                                                                            rs_stepaction = stmt6.executeQuery("SELECT Test, TestCase, Step, Sequence, Action, Object, Property, Description "
-                                                                                    + " FROM testcasestepaction"
-                                                                                    + " WHERE Test = '"
-                                                                                    + testForQuery
-                                                                                    + "' "
-                                                                                    + " AND TestCase = '"
-                                                                                    + testcaseForQuery
-                                                                                    + "' "
-                                                                                    + " AND Step = "
-                                                                                    + stepForQuery + " ");
+                                                                            List<TestCaseStepAction> tcsaList = tcsaService.getListOfAction(testForQuery, testcaseForQuery, stepForQuery);
+
                                                                         %>
-                                                                        <table id="Action<%=rs_step.getString("step")%>" style="text-align: left; border-collapse: collapse" >
+                                                                        <table id="Action<%=tcs.getStep()%>" style="text-align: left; border-collapse: collapse" >
                                                                             <tr id="header">
                                                                                 <td style="width: 30px"><%out.print(docService.findLabelHTML("page_testcase", "delete", "Delete"));%></td>
                                                                                 <td style="width: 60px"><%out.print(docService.findLabelHTML("testcasestepaction", "sequence", "Sequence"));%></td>
@@ -1002,9 +880,7 @@
                                                                                 int a = 1;
                                                                                 String actionColor = "";
                                                                                 String actionFontColor = "black";
-                                                                                while (rs_stepaction.next()) { /*
-                                                                                     * Loop on actions
-                                                                                     */
+                                                                                for (TestCaseStepAction tcsa : tcsaList) {
 
                                                                                     a++;
                                                                                     int b;
@@ -1023,24 +899,24 @@
                                                                                 <td style="background-color: <%=actionColor%>">
                                                                                     <%  if (canEdit) {%>
                                                                                     <input  class="wob" type="checkbox" name="actions_delete<%=complementName%>" style="width: 30px; background-color: <%=actionColor%>"
-                                                                                            value="<%=rs_stepaction.getString("Step") + "-" + rs_stepaction.getString("Sequence")%>"
+                                                                                            value="<%=tcsa.getStep() + "-" + tcsa.getSequence()%>"
                                                                                             onchange="trackChanges(this.defaultChecked, this.checked, 'submitButtonAction')"
                                                                                             <%=isReadonly%>>
                                                                                     <% }%>
-                                                                                    <input type="hidden" name="stepnumber_hidden<%=complementName%>" value="<%=rs_stepaction.getString("Step")%>" >
+                                                                                    <input type="hidden" name="stepnumber_hidden<%=complementName%>" value="<%=tcsa.getStep()%>" >
                                                                                 </td>
                                                                                 <td style="background-color: <%=actionColor%>"><input class="wob" style="width: 60px; font-weight: bold; background-color: <%=actionColor%>; height:20px; color:<%=actionFontColor%>"
-                                                                                                                                      value="<%=rs_stepaction.getString("Sequence")%>"
+                                                                                                                                      value="<%=tcsa.getSequence()%>"
                                                                                                                                       name="actions_sequence<%=complementName%>" readonly="readonly">
                                                                                 </td>
-                                                                                <td style="background-color: <%=actionColor%>"><%=ComboInvariant(conn, "actions_action" + complementName, "width: 136px; background-color:" + actionColor + ";color:" + actionFontColor, "actions_action", "wob", "ACTION", rs_stepaction.getString("Action"), "trackChanges(0, this.selectedIndex, 'submitButtonAction')", null)%></td>
+                                                                                <td style="background-color: <%=actionColor%>"><%=ComboInvariant("actions_action" + complementName, "width: 136px; background-color:" + actionColor + ";color:" + actionFontColor, "actions_action", "wob", "ACTION", tcsa.getAction(), "trackChanges(0, this.selectedIndex, 'submitButtonAction')", null)%></td>
                                                                                 <td class="technical_part" style="background-color: <%=actionColor%>"><input class="wob" style="width: 350px; background-color: <%=actionColor%>; color:<%=actionFontColor%>"
-                                                                                                                                                             value="<%=rs_stepaction.getString("Object")%>"
+                                                                                                                                                             value="<%=tcsa.getObject()%>"
                                                                                                                                                              name="actions_object<%=complementName%>" <%=isReadonly%>
-                                                                                                                                                             onchange="trackChanges(this.value, '<%=rs_stepaction.getString("Object")%>', 'submitButtonAction')">
+                                                                                                                                                             onchange="trackChanges(this.value, '<%=tcsa.getObject()%>', 'submitButtonAction')">
                                                                                 </td>
                                                                                 <td class="technical_part" style="background-color: <%=actionColor%>"><input  class="wob property_value" style="width: 210px; background-color: <%=actionColor%>; color:<%=actionFontColor%>"
-                                                                                                                                                              value="<%=rs_stepaction.getString("Property")%>"
+                                                                                                                                                              value="<%=tcsa.getProperty()%>"
                                                                                                                                                               <%
                                                                                                                                                                   if (useStep) {
                                                                                                                                                               %>
@@ -1052,13 +928,13 @@
 
                                                                                                                                                               %>
                                                                                                                                                               name="actions_property<%=complementName%>" <%=isReadonly%>
-                                                                                                                                                              onchange="trackChanges(this.value, '<%=rs_stepaction.getString("Property")%>', 'submitButtonAction')">
+                                                                                                                                                              onchange="trackChanges(this.value, '<%=tcsa.getProperty()%>', 'submitButtonAction')">
                                                                                 </td>
                                                                                 <td class="functional_description" style="background-color: <%=actionColor%>"><input class="wob" class="functional_description" style="width: 100%; background-color: <%=actionColor%>; color:<%=actionFontColor%>"
-                                                                                                                                                                     value="<%=rs_stepaction.getString("Description")%>"
+                                                                                                                                                                     value="<%=tcsa.getDescription()%>"
                                                                                                                                                                      name="actions_description<%=complementName%>" <%=isReadonly%>
                                                                                                                                                                      maxlength="1000"
-                                                                                                                                                                     onchange="trackChanges(this.value, '<%=rs_stepaction.getString("Description")%>', 'submitButtonAction')">
+                                                                                                                                                                     onchange="trackChanges(this.value, '<%=tcsa.getDescription()%>', 'submitButtonAction')">
                                                                                 </td>
                                                                             </tr>
                                                                             <%
@@ -1072,34 +948,24 @@
                                                                         </table>
                                                                         <%  if (canEdit && !useStep) {%>
                                                                         <table><tr><td id="wob"><input type="button" value="Add Action"
-                                                                                                       onclick="addTestCaseAction('Action<%=rs_step.getString("step")%>', '<%=rs_step.getString("step")%>', <%=testcase_stepaction_maxlength_sequence%>, <%=testcase_stepaction_maxlength_action%>, <%=testcase_stepaction_maxlength_object%>, <%=testcase_stepaction_maxlength_property%>, <%=testcase_stepaction_maxlength_description%>);
+                                                                                                       onclick="addTestCaseAction('Action<%=tcs.getStep()%>', '<%=tcs.getStep()%>');
                                                                                                                enableField('submitButtonAction');">
-                                                                                <td id="wob"><input type="button" value="import HTML Scenario" onclick="importer('ImportHTML.jsp?Test=<%=test%>&Testcase=<%=testcase%>&Step=<%=rs_step.getString("step")%>')"></td>
+                                                                                <td id="wob"><input type="button" value="import HTML Scenario" onclick="importer('ImportHTML.jsp?Test=<%=test%>&Testcase=<%=testcase%>&Step=<%=tcs.getStep()%>')"></td>
                                                                             </td><td id="wob"><input value="Save Changes" onclick="submitTestCaseModification('stepAnchor_<%=i1%>');" id="submitButtonAction" name="submitChanges"
                                                                                                      type="button" >
-                                                                            <%=ComboInvariant(conn, "actions_action_", "width: 150px;visibility:hidden", "actions_action_", "actions_action_", "ACTION", "", "", null)%></td></tr></table></td></tr>
+                                                                            <%=ComboInvariant("actions_action_", "width: 150px;visibility:hidden", "actions_action_", "actions_action_", "ACTION", "", "", null)%></td></tr></table></td></tr>
                                                                             <% }%>
 
 
 
                                                         <%
-                                                            if (isStepExist) {
-                                                                ResultSet rs_controls = null;
-                                                                Statement stmt56 = conn.createStatement();
-                                                                rs_controls = stmt56.executeQuery("SELECT Test, Testcase, Step, Sequence, Control, Type, ControlValue, ControlProperty, ControlDescription, Fatal "
-                                                                        + " FROM testcasestepactioncontrol "
-                                                                        + " WHERE test = '"
-                                                                        + testForQuery
-                                                                        + "' "
-                                                                        + " AND testcase = '"
-                                                                        + testcaseForQuery + "' And Step = '"
-                                                                        + stepForQuery + "' ");
+                                                            List<TestCaseStepActionControl> tcsacList = tcsacService.findControlByTestTestCaseStep(testForQuery, testcaseForQuery, stepForQuery);
 
                                                         %>
                                                         <tr><td class="wob"><div id="table">
                                                                     <h5>         Controls</h5>
                                                                     <table><tr><td id="underlined">
-                                                                                <table id="control_table<%=rs_step.getString("step")%>" style="text-align: left; border-collapse: collapse">
+                                                                                <table id="control_table<%=tcs.getStep()%>" style="text-align: left; border-collapse: collapse">
                                                                                     <tbody>
                                                                                         <tr id="header">
                                                                                             <td style="width: 30px"><%out.print(docService.findLabelHTML("page_testcase", "delete", "Delete"));%></td>
@@ -1115,7 +981,7 @@
                                                                                         <%
                                                                                             int d = 1;
                                                                                             String controlColor = "white";
-                                                                                            while (rs_controls.next()) {
+                                                                                            for (TestCaseStepActionControl tcsac : tcsacList) {
                                                                                                 d++;
                                                                                                 int e;
                                                                                                 e = d % 2;
@@ -1133,38 +999,38 @@
                                                                                         %>
                                                                                         <tr>
                                                                                             <td style="text-align: center; background-color: <%=controlColor%>; color:<%=actionFontColor%>" 
-                                                                                                class="controls_<%=rs_controls.getString("Step") + '-'
-                                                                                                        + rs_controls.getString("Sequence")%>">
+                                                                                                class="controls_<%=tcsac.getStep() + '-'
+                                                                                                        + tcsac.getSequence()%>">
                                                                                                 <%  if (canEdit) {%>
                                                                                                 <input class="wob" type="checkbox" name="controls_delete<%=complementName%>" 
-                                                                                                       value="<%=rs_controls.getString("Step") + '-'
-                                                                                                               + rs_controls.getString("Sequence") + '-'
-                                                                                                               + rs_controls.getString("Control")%>"
+                                                                                                       value="<%=tcsac.getStep() + '-'
+                                                                                                               + tcsac.getSequence() + '-'
+                                                                                                               + tcsac.getControl()%>"
                                                                                                        onchange="trackChanges(this.defaultChecked, this.checked, 'submitButtonChanges')" />
                                                                                                 <% }%>
-                                                                                                <input type="hidden" value="<%=rs_controls.getString("Step")%>" name="controls_step<%=complementName%>" readonly="readonly">
+                                                                                                <input type="hidden" value="<%=tcsac.getStep()%>" name="controls_step<%=complementName%>" readonly="readonly">
                                                                                             </td>
                                                                                             <td style="background-color: <%=controlColor%>;height:20px"><input class="wob" style="width: 60px; font-weight: bold;background-color: <%=controlColor%>; color:<%=actionFontColor%>"
-                                                                                                                                                               value="<%=rs_controls.getString("Sequence")%>"
+                                                                                                                                                               value="<%=tcsac.getSequence()%>"
                                                                                                                                                                name="controls_sequence<%=complementName%>" readonly="readonly"></td>
                                                                                             <td style="background-color: <%=controlColor%>"><input class="wob" style="width: 60px; font-weight: bold;background-color: <%=controlColor%>; color:<%=actionFontColor%>"
-                                                                                                                                                   value="<%=rs_controls.getString("Control")%>"
+                                                                                                                                                   value="<%=tcsac.getControl()%>"
                                                                                                                                                    name="controls_control<%=complementName%>" readonly="readonly"></td>
-                                                                                            <td style="background-color: <%=controlColor%>"><%=ComboInvariant(conn, "controls_type" + complementName, "width: 150px; background-color:" + controlColor + ";color:" + actionFontColor, "controls_type", "wob", "CONTROL", rs_controls.getString("Type"), "trackChanges(this.value, '" + rs_controls.getString("Type") + "', 'submitButtonChanges')", null)%></td>
+                                                                                            <td style="background-color: <%=controlColor%>"><%=ComboInvariant("controls_type" + complementName, "width: 150px; background-color:" + controlColor + ";color:" + actionFontColor, "controls_type", "wob", "CONTROL", tcsac.getType(), "trackChanges(this.value, '" + tcsac.getType() + "', 'submitButtonChanges')", null)%></td>
                                                                                             <td class="technical_part" style="background-color: <%=controlColor%>"><input class="wob" style="width: 260px;background-color: <%=controlColor%>; color:<%=actionFontColor%>"
-                                                                                                                                                                          value="<%=rs_controls.getString("ControlProperty")%>"
+                                                                                                                                                                          value="<%=tcsac.getControlProperty()%>"
                                                                                                                                                                           name="controls_controlproperty<%=complementName%>"
-                                                                                                                                                                          onchange="trackChanges(this.value, '<%=rs_controls.getString("ControlProperty")%>', 'submitButtonChanges')"></td>
+                                                                                                                                                                          onchange="trackChanges(this.value, '<%=tcsac.getControlProperty()%>', 'submitButtonChanges')"></td>
                                                                                             <td class="technical_part" style="background-color: <%=controlColor%>"><input class="wob" style="width: 180px;background-color: <%=controlColor%>; color:<%=actionFontColor%>"
-                                                                                                                                                                          value="<%=rs_controls.getString("ControlValue")%>"
+                                                                                                                                                                          value="<%=tcsac.getControlValue()%>"
                                                                                                                                                                           name="controls_controlvalue<%=complementName%>"
-                                                                                                                                                                          onchange="trackChanges(this.value, '<%=rs_controls.getString("ControlDescription")%>', 'submitButtonChanges')"></td>
-                                                                                            <td class="technical_part" style="background-color: <%=controlColor%>"><%=ComboInvariant(conn, "controls_fatal" + complementName, "width: 40px; background-color:" + controlColor + ";color:" + actionFontColor, "controls_fatal", "wob", "CTRLFATAL", rs_controls.getString("Fatal"), "trackChanges(this.value, '" + rs_controls.getString("Fatal") + "', 'submitButtonChanges')", null)%></td>
+                                                                                                                                                                          onchange="trackChanges(this.value, '<%=tcsac.getDescription()%>', 'submitButtonChanges')"></td>
+                                                                                            <td class="technical_part" style="background-color: <%=controlColor%>"><%=ComboInvariant("controls_fatal" + complementName, "width: 40px; background-color:" + controlColor + ";color:" + actionFontColor, "controls_fatal", "wob", "CTRLFATAL", tcsac.getFatal(), "trackChanges(this.value, '" + tcsac.getFatal() + "', 'submitButtonChanges')", null)%></td>
                                                                                             <td class="functional_description_control" style="background-color: <%=controlColor%>"><input class="wob" class="functional_description_control" style="width: 100%;background-color: <%=controlColor%>; color:<%=actionFontColor%>"
-                                                                                                                                                                                          value="<%=rs_controls.getString("ControlDescription")%>"
+                                                                                                                                                                                          value="<%=tcsac.getDescription()%>"
                                                                                                                                                                                           name="controls_controldescription<%=complementName%>"
                                                                                                                                                                                           maxlength="1000"
-                                                                                                                                                                                          onchange="trackChanges(this.value, '<%=rs_controls.getString("ControlDescription")%>', 'submitButtonChanges')"></td>
+                                                                                                                                                                                          onchange="trackChanges(this.value, '<%=tcsac.getDescription()%>', 'submitButtonChanges')"></td>
                                                                                         </tr>
 
                                                                                     </tbody>
@@ -1176,17 +1042,17 @@
                                                                                     %>
                                                                                 </table>
                                                                                 <%  if (canEdit && !useStep) {%>
-                                                                                <%=ComboInvariant(conn, "controls_type_", "width: 200px;visibility:hidden", "controls_type_", "controls_type_", "CONTROL", "", "", null)%>
-                                                                                <%=ComboInvariant(conn, "controls_fatal_", "width: 40px;visibility:hidden", "controls_fatal_", "controls_fatal_", "CTRLFATAL", "", "", null)%>
+                                                                                <%=ComboInvariant("controls_type_", "width: 200px;visibility:hidden", "controls_type_", "controls_type_", "CONTROL", "", "", null)%>
+                                                                                <%=ComboInvariant("controls_fatal_", "width: 40px;visibility:hidden", "controls_fatal_", "controls_fatal_", "CTRLFATAL", "", "", null)%>
                                                                                 <table><tr><td id="wob"><input type="button"
                                                                                                                value="Add Control"
-                                                                                                               onclick="addTestCaseControl('control_table<%=rs_step.getString("step")%>',<%=rs_step.getString("step")%>, '10', '10', '10', '100', '250', '250', '250');
+                                                                                                               onclick="addTestCaseControl('control_table<%=tcs.getStep()%>',<%=tcs.getStep()%>);
                                                                                                                        enableField('submitButtonChanges');">
                                                                                         </td><td id="wob"><input value="Save Changes" onclick="submitTestCaseModification('#stepAnchor_<%=i1%>');" id="submitButtonAction" name="submitChanges"
                                                                                                                  type="button" ></td></tr></table>
                                                                                             <% }%>
                                                                             </td></tr></table>        
-                                                                </div></td></tr></table><tr><td class="wob" style="height:30px"></td></tr></td></tr><% }%>
+                                                                </div></td></tr></table><tr><td class="wob" style="height:30px"></td></tr></td></tr>
 
 
                                             <%
@@ -1194,25 +1060,14 @@
                                                 /*
                                                  * End Step loop
                                                  */
-                                                if (stmt66 != null) {
-                                                    stmt66.close();
-                                                }
-                                                if (rs_step != null) {
-                                                    rs_step.close();
-                                                }
-                                                if (rs_stepaction != null) {
-                                                    rs_stepaction.close();
-                                                }
-                                                if (stmt51 != null) {
-                                                    stmt51.close();
-                                                }
+
                                             %>
                                     </div>
                                 </td></tr></table>
                                 <%  if (canEdit) {%>
                         <div id="hide_div"></div>
                         <table style="width: 100%"><tr><td id="wob"><input type="button" value="Add Step" id="AddStepButton" style="display:inline"
-                                                                           onclick="addStep('hide_div', <%=testcase_step_maxlength_desc%>);
+                                                                           onclick="addStep('hide_div');
                                                                                    enableField('submitButtonAction');
                                                                                    hidebutton('AddStepButton')">
 
@@ -1230,14 +1085,13 @@
                                                 <select id="fromTest" name="FromTest" onChange="getTestCasesForImportStep()">
                                                     <%
                                                     %><option value="All">-- Choose Test --</option><%
-                                                        rsTest.first();
-                                                        while (rsTest.next()) {
-                                                            if (rsTest.getString("active").equalsIgnoreCase("Y")) {
+                                                        for (Test tst : testService.getListOfTest()) {
+                                                            if (tst.getActive().equalsIgnoreCase("Y")) {
                                                                 optstyle = "font-weight:bold;";
                                                             } else {
                                                                 optstyle = "font-weight:lighter;";
                                                             }
-                                                    %><option style="<%=optstyle%>" value="<%=rsTest.getString("Test")%>" ><%=rsTest.getString("Test")%></option><%
+                                                    %><option style="<%=optstyle%>" value="<%=tst.getTest()%>" ><%=tst.getTest()%></option><%
                                                         }
                                                     %>
                                                 </select>
@@ -1271,9 +1125,7 @@
                    value="<%=testcase%>">
 
             <input type="hidden" name="testcase_hidden"
-                   value="<%=rs_testcase_general_info.getString("t.Test")
-                           + " - "
-                           + rs_testcase_general_info.getString("tc.testcase")%>">
+                   value="<%=test + " - " + testcase%>">
             <table id="tableproperty" class="arrond" style="display : none" >
                 <tr>
                     <td><h4 style="color : blue">TestCase Automation Script:</h4></td>
@@ -1301,120 +1153,44 @@
                                         <td style="width: 80px"><%out.print(docService.findLabelHTML("testcasecountryproperties", "nature", "Nature"));%></td>
                                     </tr>
                                     <%
-                                        ResultSet rs_property = stmt6.executeQuery("SELECT Test, TestCase, Country from testcasecountry "
-                                                + "WHERE Test ='"
-                                                + rs_testcase_general_info.getString("t.Test")
-                                                + "' and TestCase ='"
-                                                + rs_testcase_general_info.getString("tc.testcase") + "'"
-                                                + " group by Country");
-                                        if (rs_property.first()) {
-                                            String coun = "SELECT a.Test, a.Testcase, a.Property, a.Type, a.Database,  a.Value1, a.Value2, a.Length, a.RowLimit, a.Nature";
-                                            do {
-                                                coun = coun + ", " + rs_property.getString("Country");
-                                            } while (rs_property.next());
-
-                                            rs_property.first();
-
-                                            coun = coun + " FROM testcasecountryproperties a ";
-
-                                            do {
-                                                coun = coun + " left outer join (SELECT z"
-                                                        + j + ".Property, z"
-                                                        + j + ".Type, z"
-                                                        + j + ".Value1, z"
-                                                        + j + ".Value2, z"
-                                                        + j + ".Country as "
-                                                        + rs_property.getString("Country")
-                                                        + " from testcasecountryproperties z"
-                                                        + j + " WHERE Test='"
-                                                        + rs_property.getString("Test")
-                                                        + "' and TestCase='"
-                                                        + rs_property.getString("TestCase") + "' and Country= '"
-                                                        + rs_property.getString("Country") + "')b"
-                                                        + j + " on a.Property=b"
-                                                        + j + ".Property and a.Type=b"
-                                                        + j + ".Type and binary a.Value1= binary b"
-                                                        + j + ".Value1 and a.Value2=b"
-                                                        + j + ".Value2 ";
-                                                j++;
-                                            } while (rs_property.next());
-
-                                            rs_property.first();
-
-                                            coun = coun + " WHERE Test='" + rs_property.getString("Test")
-                                                    + "' and TestCase='"
-                                                    + rs_property.getString("TestCase") + "' group by Property, Type, binary a.Value1, Value2 ";
-                                            //out.print(coun);
-                                            ResultSet rs_properties = stmt7.executeQuery(coun);
-
-                                            String properties_dtb_ID = "properties_dtb_type_ID";
-
-                                            if (rs_properties.first()) {
+                                        List<TestCaseCountryProperties> tccpList = tccpService.findListOfPropertyPerTestTestCase(test, testcase);
+                                            if (tccpList != null) {
                                     %><div id="cache_properties">
-                                        <%=ComboInvariant(conn, "properties_dtb_type_ID", "display: none;", "properties_dtb_type_ID", "wob", "PROPERTYDATABASE", rs_properties.getString("a.Database"), "", null)%>
+                                        <%=ComboInvariant("properties_dtb_type_ID", "display: none;", "properties_dtb_type_ID", "wob", "PROPERTYDATABASE", tccpList.get(1).getDatabase(), "", null)%>
                                     </div><%
 
-                                        do {
+                                        for (TestCaseCountryProperties tccp : tccpList) {
 
-                                            String type_init[] = {"text", "executeSql", "getFromHtmlVisible", "getFromHtml"}; // type for select list
                                             List<String> type_toselect = new ArrayList<String>();
-                                            type_toselect.add(rs_properties.getString(
-                                                    "a.Type").toUpperCase());
+                                            type_toselect.add(tccp.getType().toUpperCase());
 
-                                            for (String type_cur : type_init) {
-                                                if (!type_cur.equals(type_toselect.get(0))) {
-                                                    type_toselect.add(type_cur);
-                                                }
-                                            }
-
-                                            String nature_init[] = {"STATIC", "RANDOM",
-                                                "RANDOMNEW"}; // nature for select list
                                             List<String> nature_toselect = new ArrayList<String>();
-                                            nature_toselect.add(rs_properties.getString(
-                                                    "a.Nature").toUpperCase());
+                                            nature_toselect.add(tccp.getNature().toUpperCase());
 
-                                            for (String nature_cur : nature_init) {
-                                                if (!nature_cur.equals(nature_toselect.get(0))) {
-                                                    nature_toselect.add(nature_cur);
-                                                }
-                                            }
                                             rowNumber = rowNumber + 1;
-                                            proplist = proplist + "" + rs_properties.getString("Property") + "  /  ";
+                                            proplist = proplist + "" + tccp.getProperty() + "  /  ";
 
                                             String sqlDesc = "";
-                                            if (rs_properties.getString("a.Type").equals("executeSqlFromLib")) {
-
-                                                String sqlLib = (" SELECT Script from sqllibrary where name = '"
-                                                        + rs_properties.getString("a.Value1").replaceAll("'", "''") + "'");
-
-                                                ResultSet rs_sqllib = stmt80.executeQuery(sqlLib);
-                                                if (rs_sqllib.first()) {
-                                                    sqlDesc = rs_sqllib.getString("Script").replace("'", "\'");
-                                                }
+                                            if (tccp.getType().equals("executeSqlFromLib")) {
+                                                SqlLibrary sqllib = libService.findSqlLibraryByKey(tccp.getValue1().replaceAll("'", "''"));
+                                            sqlDesc = sqllib.getScript().replace("'", "\'");
                                             }
 
                                             size3 = 0;
                                             size4 = size2;
                                             String styleValue2 = "none";
-                                            if (rs_properties.getString("a.Type").equals("getAttributeFromHtml")
-                                                    || rs_properties.getString("a.Type").equals("getFromXml")
-                                                    || rs_properties.getString("a.Type").equals("getFromCookie")
-                                                    || rs_properties.getString("a.Type").equals("getDifferencesFromXml")) {
+                                            if (tccp.getType().equals("getAttributeFromHtml")
+                                                    || tccp.getType().equals("getFromXml")
+                                                    || tccp.getType().equals("getFromCookie")
+                                                    || tccp.getType().equals("getDifferencesFromXml")) {
                                                 size3 = 1 * size2 / 3;
                                                 size4 = (2 * size2 / 3) - 5;
                                                 styleValue2 = "inline";
                                             }
 
-                                            rs_tccountry.first();
-                                            String delete_value = rs_properties.getString("a.Property");
-                                            do {
-                                                if (rs_properties.getString(rs_tccountry.getString("Country")) != null) {
-                                                    delete_value = delete_value + " - " + rs_properties.getString(rs_tccountry.getString("Country"));
-                                                }
-                                            } while (rs_tccountry.next());
-
-                                            int nbline = rs_properties.getString("a.Value1").split("\n").length;
-                                            String valueID = rowNumber + "-" + rs_properties.getString("a.Property");
+                                            
+                                            int nbline = tccp.getValue1().split("\n").length;
+                                            String valueID = rowNumber + "-" + tccp.getProperty();
                                             String typeID = "type" + valueID;
 
                                             String showEntireValueB1 = "showEntireValueB1" + valueID;
@@ -1437,42 +1213,36 @@
                                         <td>
                                             <%  if (canEdit) {%>
                                             <input name="properties_delete" type="checkbox" style="width: 30px"
-                                                   value="<%=delete_value%>"
+                                                   value="<%//delete_value%>"
                                                    onchange="trackChanges(this.defaultChecked, this.checked, 'SavePropertyChanges')">
                                             <%}%>
-                                            <input type="hidden" name="property_hidden" value="<%=rowNumber%>">
-                                            <% rs_tccountry.first();
-                                                do {%>
-                                            <input type="hidden" name="old_property_hidden" value="<%=rowNumber%> - <%=rs_tccountry.getString("Country")%> - <%=rs_properties.getString("a.Property")%>">
-                                            <% 		} while (rs_tccountry.next());%></td>
-
-                                        <td><input class="wob properties_id_<%=rowNumber%> property_name" style="width: 100px; font-weight: bold; background-color : <%=color%>"
+                                            <input type="hidden" name="property_hidden" value="<%//rowNumber%>">
+                                            <input type="hidden" name="old_property_hidden" value="">
+                                            </td>
+                                        <td><input class="wob" style="width: 100px; font-weight: bold; background-color : <%=color%>"
                                                    name="properties_property"
-                                                   value="<%=rs_properties.getString("a.Property")%>"
-                                                   onchange="trackChanges(this.value, '<%=rs_properties.getString("a.Property")%>', 'SavePropertyChanges')"></td>
+                                                   value="<%=tccp.getProperty()%>"
+                                                   onchange="trackChanges(this.value, '<%=tccp.getProperty()%>', 'SavePropertyChanges')"></td>
                                         <td style="font-size : x-small ; width: <%=size%>px;"><table><tr>
-                                                    <% rs_tccountry.first();
-                                                        do {%>
-                                                    <td class="wob"><%=rs_tccountry.getString("Country")%></td> 
-                                                    <% 		} while (rs_tccountry.next());
+                                                    <%  for (String c : countryListTestcase) {%>
+                                                    <td class="wob"><%=c%></td> 
+                                                    <% 		} 
                                                     %></tr><tr><%
-                                                        rs_tccountry.first();
-                                                        do {
+                                                        for (String c : countryListTestcase) {
                                                     %>
-                                                    <td class="wob"><input value="<%=rowNumber%> - <%=rs_tccountry.getString("Country")%>" type="checkbox" <% if (StringUtils.isNotBlank(rs_properties.getString(rs_tccountry.getString("Country")))) {%>  CHECKED  <% }%>
+                                                    <td class="wob"><input value="<%=rowNumber%> - <%=c%>" type="checkbox" <% if (tccp.getCountry().equals(c)) {%>  CHECKED  <% }%>
                                                                            class="properties_id_<%=rowNumber%>"
-                                                                           name="properties_country" onchange="trackChanges(this.value, '<%=rs_properties.getString(rs_tccountry.getString("Country"))%>', 'SavePropertyChanges')"></td>
+                                                                           name="properties_country" onchange="trackChanges(this.value, '<%=c%>', 'SavePropertyChanges')"></td>
                                                         <% //onclick="return false"
-                                                            } while (rs_tccountry.next());
-                                                            rs_tccountry.first();
+                                                            } 
                                                         %>
                                                 </tr></table></td>
-                                        <td><%=ComboInvariant(conn, "properties_type", "width: 120px; background-color:" + color, typeID, "wob", "PROPERTYTYPE", rs_properties.getString("a.Type"), "activateDatabaseBox(this.value, '" + properties_dtbID + "' ,'" + properties_dtb_ID + "' );activateValue2(this.value, 'tdValue2_" + rowNumber + "', '" + valueID + "','" + valueID + "_2','" + size2 + "')", null)%></td>
+                                        <td><%=ComboInvariant("properties_type", "width: 120px; background-color:" + color, typeID, "wob", "PROPERTYTYPE", tccp.getType(), "activateDatabaseBox(this.value, '" + properties_dtbID + "' ,'" + properties_dtbID + "' );activateValue2(this.value, 'tdValue2_" + rowNumber + "', '" + valueID + "','" + valueID + "_2','" + size2 + "')", null)%></td>
                                         <td>
                                             <%
-                                                if (rs_properties.getString("a.Type").equals("executeSqlFromLib") || rs_properties.getString("a.Type").equals("executeSql") || rs_properties.getString("a.Type").equals("executeSoapFromLib")) {
+                                                if (tccp.getType().equals("executeSqlFromLib") || tccp.getType().equals("executeSql") || tccp.getType().equals("executeSoapFromLib")) {
                                             %>
-                                            <%=ComboInvariant(conn, "properties_dtb", "width: 40px; display: inline ; background-color:" + color, properties_dtbID, "wob", "PROPERTYDATABASE", rs_properties.getString("a.Database"), "", null)%>
+                                            <%=ComboInvariant("properties_dtb", "width: 40px; display: inline ; background-color:" + color, properties_dtbID, "wob", "PROPERTYDATABASE", tccp.getDatabase(), "", null)%>
                                             <%
                                             } else {
                                             %><select name="properties_dtb" style="width: 40px; display: inline ; background-color:<%=color%>" class="wob" id="<%=properties_dtbID%>">
@@ -1483,29 +1253,29 @@
                                         </td>
 
                                         <td><table><tr><td class="wob" rowspan="2"><textarea id="<%=valueID%>" rows="2" class="wob" style="width: <%=size4%>px; background-color : <%=color%>; " name="properties_value"
-                                                                                             value="<%=rs_properties.getString("a.Value1")%>"><%=rs_properties.getString("a.Value1")%></textarea>
-                                                        <% if (rs_properties.getString("a.Type").equals("executeSqlFromLib")) {%>
+                                                                                             value="<%=tccp.getValue1()%>"><%=tccp.getValue1()%></textarea>
+                                                        <% if (tccp.getType().equals("executeSqlFromLib")) {%>
                                                         <textarea id="<%=valueID%>" rows="5" class="wob" style="display:none ; width: <%=size4%>px; background-color : <%=color%>; color:grey" 
                                                                   readonly="readonly" value="<%=sqlDesc%>"><%=sqlDesc%></textarea>
                                                         <%}%>
                                                     </td>
                                                     <td class="wob" id="tdValue2_<%=rowNumber%>" rowspan="2" style="display:<%=styleValue2%>"><textarea id="<%=valueID%>_2" rows="2" class="wob" style="width: <%=size3%>px; background-color : <%=color%>;" name="properties_value2"
-                                                                                                                                                        value="<%=rs_properties.getString("a.Value2")%>"><%=rs_properties.getString("a.Value2")%></textarea>
+                                                                                                                                                        value="<%=tccp.getValue2()%>"><%=tccp.getValue2()%></textarea>
 
                                                     </td>
                                                     <%
-                                                        if (rs_properties.getString("a.Type").equals("executeSqlFromLib")
-                                                                || rs_properties.getString("a.Type").equals("executeSql")) {
+                                                        if (tccp.getType().equals("executeSqlFromLib")
+                                                                || tccp.getType().equals("executeSql")) {
                                                     %>
                                                     <td class="wob"><input style="display:inline; height:20px; width:20px; background-color: <%=color%>; color:blue; font-weight:bolder" title="Open SQL Library" class="smallbutton" type="button" value="L" name="opensql-library"  onclick="openSqlLibraryPopin('<%=valueID%>')"></td>
                                                         <% }%>
                                                         <%
-                                                            if (rs_properties.getString("a.Type").equals("executeSqlFromLib")
-                                                                    || rs_properties.getString("a.Type").equals("executeSql")
-                                                                    || rs_properties.getString("a.Type").equals("getFromTestData")
-                                                                    || rs_properties.getString("a.Type").equals("executeSoapFromLib")) {
+                                                            if (tccp.getType().equals("executeSqlFromLib")
+                                                                    || tccp.getType().equals("executeSql")
+                                                                    || tccp.getType().equals("getFromTestData")
+                                                                    || tccp.getType().equals("executeSoapFromLib")) {
                                                         %>
-                                                    <td class="wob"><input style="display:inline; height:20px; width:20px; background-color: <%=color%>; color:green; font-weight:bolder" title="View property" class="smallbutton" type="button" value="V" name="openview-library"  onclick="openViewPropertyPopin('<%=valueID%>', '<%=rs_property.getString("Test")%>', '<%=rs_property.getString("TestCase")%>')"></td>
+                                                    <td class="wob"><input style="display:inline; height:20px; width:20px; background-color: <%=color%>; color:green; font-weight:bolder" title="View property" class="smallbutton" type="button" value="V" name="openview-library"  onclick="openViewPropertyPopin('<%=valueID%>', '<%=test%>', '<%=testcase%>')"></td>
                                                         <%}%>
 
                                                 </tr><tr>
@@ -1516,37 +1286,26 @@
                                                     </td><%} else {%>
                                                     <td class="wob" style="background-color: <%=color%>; text-align: center; border-left-color:white">
 
-                                                        <% if (rs_properties.getString("a.Type").equals("executeSqlFromLib")) {%>
+                                                        <% if (tccp.getType().equals("executeSqlFromLib")) {%>
                                                         <input style="display:inline; height:20px; width:20px; background-color: <%=color%>; color: orange; font-weight:bolder" class="smallbutton" type="button" value="e" title="Show the SQL" id="<%=sqlDetailsB1%>" onclick="showSqlDetails('<%=sqlDetails%>', '<%=sqlDetailsB1%>', '<%=sqlDetailsB2%>');">
                                                         <input style="display:none; height:20px; width:20px; background-color: <%=color%>; color: orange; font-weight:bolder" class="smallbutton" type="button" value="-" title="Hide the SQL" id="<%=sqlDetailsB2%>" onclick="hideSqlDetails('<%=sqlDetails%>', '<%=sqlDetailsB1%>', '<%=sqlDetailsB2%>');">
                                                     </td><%}%><%}%>
                                                 </tr></table></td>
                                         <td><input class="wob" style="width: 40px; background-color : <%=color%>" name="properties_length"
-                                                   value="<%=rs_properties.getString("a.Length")%>"
-                                                   onchange="trackChanges(this.value, '<%=rs_properties.getString("a.Length")%>', 'SavePropertyChanges')"
-                                                   maxlength="<%=testcase_proproperties_maxlength_length%>">
+                                                   value="<%=tccp.getLength()%>"
+                                                   onchange="trackChanges(this.value, '<%=tccp.getLength()%>', 'SavePropertyChanges')">
                                         </td>
                                         <td><input class="wob" style="width: 40px; background-color : <%=color%>" name="properties_rowlimit"
-                                                   value="<%=rs_properties.getString("a.RowLimit")%>"
-                                                   onchange="trackChanges(this.value, '<%=rs_properties.getString("a.RowLimit")%>', 'SavePropertyChanges')"
-                                                   maxlength="<%=testcase_proproperties_maxlength_rowlimit%>">
+                                                   value="<%=tccp.getRowLimit()%>"
+                                                   onchange="trackChanges(this.value, '<%=tccp.getRowLimit()%>', 'SavePropertyChanges')">
                                         </td>
-                                        <td><%=ComboInvariant(conn, "properties_nature", "width: 80px; background-color:" + color, "properties_nature", "wob", "PROPERTYNATURE", rs_properties.getString("a.Nature"), "trackChanges(0, this.selectedIndex, 'submitButtonChanges')", null)%></td>
+                                        <td><%=ComboInvariant("properties_nature", "width: 80px; background-color:" + color, "properties_nature", "wob", "PROPERTYNATURE", tccp.getNature(), "trackChanges(0, this.selectedIndex, 'submitButtonChanges')", null)%></td>
                                     </tr>
-                                    <%
-                                                    rs_properties_maxlength_cpt = 1; // Reset counter for max length properties
-
-                                                } while (rs_properties.next());
-                                                rs_properties.close();
-//                                                        } else {
-//                                                            rowNumber = rowNumber + 1;
-                                            }
-                                        }
-                                    %>
+                                    <%}%>
                                 </table><br>
                                 <%  if (canEdit) {%>
                                 <input type="button" value="Add Property" id="AddProperty"
-                                       onclick="addTestCaseProperties('testcaseproperties_table', <%=testcase_proproperties_maxlength_country%>,<%=testcase_proproperties_maxlength_property%>, <%=testcase_proproperties_maxlength_value%>, <%=testcase_proproperties_maxlength_length%>, <%=testcase_proproperties_maxlength_rowlimit%>, <%=rowNumber%>, <%=size%>, <%=size2%>);
+                                       onclick="addTestCaseProperties('testcaseproperties_table', <%=rowNumber%>, <%=size%>, <%=size2%>);
                                                enableField('SavePropertyChanges');
                                                disableField('AddProperty');">
                                 <input type="submit" value="Save Changes" 
@@ -1555,35 +1314,29 @@
                                 <input type="hidden" id="TestCase" name="TestCase"
                                        value="<%=testcase%>">
                                 <input type="hidden" name="testcase_hidden"
-                                       value="<%=rs_testcase_general_info.getString("t.Test")
-                                               + " - "
-                                               + rs_testcase_general_info.getString("tc.testcase")%>">
-                                <input type="hidden" id="CountryList" name="CountryList" value="<%=countries%>">
-                                <%=ComboInvariant(conn, "new_properties_type_new_properties_value", "width: 70px;visibility:hidden", "new_properties_type_new_properties_value", "new_properties_type_new_properties_value", "PROPERTYTYPE", "", "", null)%>
-                                <%=ComboInvariant(conn, "properties_dtb_", "width: 40px;visibility:hidden", "properties_dtb_", "properties_dtb_", "PROPERTYDATABASE", "", "", null)%>
-                                <%=ComboInvariant(conn, "properties_nature_", "width: 80px;visibility:hidden", "properties_nature_", "properties_nature_", "PROPERTYNATURE", "", "", null)%>
+                                       value="<%=test+ " - "+ testcase%>">
+                                <input type="hidden" id="CountryList" name="CountryList" value="<%//countries%>">
+                                <%=ComboInvariant("new_properties_type_new_properties_value", "width: 70px;visibility:hidden", "new_properties_type_new_properties_value", "new_properties_type_new_properties_value", "PROPERTYTYPE", "", "", null)%>
+                                <%=ComboInvariant("properties_dtb_", "width: 40px;visibility:hidden", "properties_dtb_", "properties_dtb_", "PROPERTYDATABASE", "", "", null)%>
+                                <%=ComboInvariant("properties_nature_", "width: 80px;visibility:hidden", "properties_nature_", "properties_nature_", "PROPERTYNATURE", "", "", null)%>
                                 <input type="hidden" name="testcase_hidden"
-                                       value="<%=rs_testcase_general_info.getString("t.Test")
-                                               + " - "
-                                               + rs_testcase_general_info.getString("tc.testcase")%>">
+                                       value="<%=test+ " - "+testcase%>">
                                 <input type="hidden" name="testcase_country_hidden"
-                                       value="<%=countries%>">
+                                       value="<%//countries%>">
                                 <% }%></td></table>
                     <p id ="toto" style="font-size : x-small ; width: <%=size%>px;visibility:hidden">
-                        <% rs_tccountry.first();
-                            rowNumber = rowNumber + 1;
-                            do {%>
-                        <%=rs_tccountry.getString("Country")%> 
+                        <%     for (String c : countryListTestcase) {%>
+                        <%=c%> 
                         <%
-                            } while (rs_tccountry.next());%><br><%
-                            rs_tccountry.first();
-                            do {
+                            } %><br><%
+                                
+                                for (String c : countryListTestcase) {
                         %>
-                        <input value="<%=rowNumber%> - <%=rs_tccountry.getString("Country")%>" type="checkbox" id="properties_country" 
+                        <input value="<%=rowNumber%> - <%=c%>" type="checkbox" id="properties_country" 
                                name="properties_country" >
                         <% //onclick="return false"
-                            } while (rs_tccountry.next());
-                            rs_tccountry.first();
+                            }
+                            
                         %>
                     </p>
                 </td></tr>
@@ -1595,18 +1348,21 @@
             <tr><td colspan="3"><h4>Contextual Actions</h4></td></tr>
             <tr>
 
-                <% if (rs_testcase_general_info.getString("Group").equalsIgnoreCase("AUTOMATED")) {%>
-                <td><a href="RunTests.jsp?Test=<%=rs_testcase_general_info.getString("Test")%>&TestCase=<%=rs_testcase_general_info.getString("TestCase")%>&MySystem=<%=appSystem%>">Run this Test Case.</a></td>
-                <%        } else if (rs_testcase_general_info.getString("Group").equalsIgnoreCase("MANUAL")) {%>
-                <td><a href="RunManualTestCase.jsp?Test=<%=rs_testcase_general_info.getString("Test")%>&TestCase=<%=rs_testcase_general_info.getString("TestCase")%>&MySystem=<%=appSystem%>">Run this Test Case.</a></td>
+                <% if (tcase.getGroup().equalsIgnoreCase("AUTOMATED")) {%>
+                <td><a href="RunTests.jsp?Test=<%=test%>&TestCase=<%=testcase%>&MySystem=<%=appSystem%>">Run this Test Case.</a></td>
+                <%        }
+
+                    else if (tcase.getGroup().equalsIgnoreCase("MANUAL")) {%>
+                <td><a href="RunManualTestCase.jsp?Test=<%=test%>&TestCase=<%=testcase%>&MySystem=<%=appSystem%>">Run this Test Case.</a></td>
                 <%        }%>    
                 <td>
-                    <a href="ExecutionDetailList.jsp?test=<%=rs_testcase_general_info.getString("Test")%>&testcase=<%=rs_testcase_general_info.getString("TestCase")%>&MySystem=<%=appSystem%>">See Last Executions..</a>
+                    <a href="ExecutionDetailList.jsp?test=<%=test%>&testcase=<%=testcase%>&MySystem=<%=appSystem%>">See Last Executions..</a>
                 </td>
-                <%if (request.getUserPrincipal() != null && request.isUserInRole("TestAdmin")) {
+                <%if (request.getUserPrincipal () 
+                        != null && request.isUserInRole("TestAdmin")) {
                 %>
                 <td>
-                    <a href="LogViewer.jsp?Test=<%=rs_testcase_general_info.getString("Test")%>&TestCase=<%=rs_testcase_general_info.getString("TestCase")%>">See Log Viewer...</a>
+                    <a href="LogViewer.jsp?Test=<%=test%>&TestCase=<%=testcase%>">See Log Viewer...</a>
                 </td>
                 <% } %>
             </tr>
@@ -1617,33 +1373,9 @@
             <tr><td class="wob"></td></tr><tr>
                 <td class="wob"><h3> To add Properties,Actions and controls, select at least one country in the general parameters </h3></td>
             </tr><tr><td class="wob"></td></tr>
-        </table><%                                    }
-
-            rs_testcasecountry.close(); /*
-             * Close Country Parameters request
-             */
-        %>
-        <%
-            }
-            rs_testcase_general_info.close();
-
-            if (stmt != null) {
-                stmt.close();
-            }
-            if (stmt1 != null) {
-                stmt1.close();
-            }
-            if (stmt2 != null) {
-                stmt2.close();
-            }
-            if (stmt21 != null) {
-                stmt21.close();
-            }
-            if (stmt22 != null) {
-                stmt22.close();
-            }
-
-        %><script>
+        </table>
+            <%   }  %>
+        <script>
             $("input.property_value").each(function() {
                 //var jinput = $(this);
                 if (this.value && this.value !== "" && isNaN(this.value) && $("input.property_name[value='" + this.value + "']").length === 0) {
@@ -1672,25 +1404,18 @@
                         "property": propertyName}
                     , function(data) {
                         $("#UpdateTestCaseDetail").submit();
-                    }
-                    );
+                    });
                 }
             });
-        </script><%
+        </script>
+        <%
 
-            }
-            catch (Exception e
-
-            
-                ) {
+            }catch(Exception e) {
                 out.println("<br> error message : " + e.getMessage() + " "
                         + e.toString() + "<br>");
-            }
-
-            
-                finally {
+            } finally {
                 try {
-                    conn.close();
+                    
                 } catch (Exception ex) {
                 }
             }
