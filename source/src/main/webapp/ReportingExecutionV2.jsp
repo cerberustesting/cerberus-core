@@ -64,15 +64,9 @@
         $(document).ready(function () {
             $(".multiSelectOptions").each(function () {
                 var currentElement = $(this);
-                var bool = true;
-                //TODO remove when allow all filters multiple search on DB
-                var id = currentElement.attr('id');
-                if(id === "Environment" || id === "Build" || id === "Revision"){
-                    bool = false;
-                }
 
                 currentElement.multiselect({
-                    multiple: bool,
+                    multiple: true,
                     minWidth: 150,
                     header: currentElement.data('header'),
                     noneSelectedText: currentElement.data('none-selected-text'),

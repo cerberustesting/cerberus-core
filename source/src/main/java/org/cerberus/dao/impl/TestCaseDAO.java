@@ -702,60 +702,74 @@ public class TestCaseDAO implements ITestCaseDAO {
         StringBuilder query = new StringBuilder();
         query.append("SELECT t2.* FROM testcase t2 LEFT OUTER JOIN application a ON a.application=t2.application WHERE 1=1");
         if(!StringUtil.isNull(testCase.getTest())){
-            query.append(" AND t2.test IN ");
+            query.append(" AND t2.test IN (");
             query.append(testCase.getTest());
+            query.append(") ");
         }
         if(!StringUtil.isNull(testCase.getProject())){
-            query.append(" AND t2.project IN ");
+            query.append(" AND t2.project IN (");
             query.append(testCase.getProject());
+            query.append(") ");
         }
         if(!StringUtil.isNull(testCase.getTicket())){
-            query.append(" AND t2.ticket IN ");
+            query.append(" AND t2.ticket IN (");
             query.append(testCase.getTicket());
+            query.append(") ");
         }
         if(!StringUtil.isNull(testCase.getTicket())){
-            query.append(" AND t2.ticket IN ");
+            query.append(" AND t2.ticket IN (");
             query.append(testCase.getTicket());
+            query.append(") ");
         }
         if(!StringUtil.isNull(testCase.getBugID())){
-            query.append(" AND t2.bugid IN ");
+            query.append(" AND t2.bugid IN (");
             query.append(testCase.getBugID());
+            query.append(") ");
         }
         if(!StringUtil.isNull(testCase.getOrigin())){
-            query.append(" AND t2.origine IN ");
+            query.append(" AND t2.origine IN (");
             query.append(testCase.getOrigin());
+            query.append(") ");
         }
         if(!StringUtil.isNull(system)){
-            query.append(" AND a.system IN ");
+            query.append(" AND a.system IN (");
             query.append(system);
+            query.append(") ");
         }
         if(!StringUtil.isNull(testCase.getApplication())){
-            query.append(" AND t2.application IN ");
+            query.append(" AND t2.application IN (");
             query.append(testCase.getApplication());
+            query.append(") ");
         }
         if(testCase.getPriority() != -1){
-            query.append(" AND t2.priority IN ");
+            query.append(" AND t2.priority IN (");
             query.append(testCase.getPriority());
+            query.append(") ");
         }
         if(!StringUtil.isNull(testCase.getStatus())){
-            query.append(" AND t2.status IN ");
+            query.append(" AND t2.status IN (");
             query.append(testCase.getStatus());
+            query.append(") ");
         }
         if(!StringUtil.isNull(testCase.getGroup())){
-            query.append(" AND t2.group IN ");
+            query.append(" AND t2.group IN (");
             query.append(testCase.getGroup());
+            query.append(") ");
         }
         if(!StringUtil.isNull(testCase.getRunPROD())){
-            query.append(" AND t2.activePROD IN ");
+            query.append(" AND t2.activePROD IN (");
             query.append(testCase.getRunPROD());
+            query.append(") ");
         }
         if(!StringUtil.isNull(testCase.getRunUAT())){
-            query.append(" AND t2.activeUAT IN ");
+            query.append(" AND t2.activeUAT IN (");
             query.append(testCase.getRunUAT());
+            query.append(") ");
         }
         if(!StringUtil.isNull(testCase.getRunQA())){
-            query.append(" AND t2.activeQA IN ");
+            query.append(" AND t2.activeQA IN (");
             query.append(testCase.getRunQA());
+            query.append(") ");
         }
         if(!StringUtil.isNull(testCase.getShortDescription())){
             query.append(" AND t2.description LIKE '%");
@@ -778,40 +792,49 @@ public class TestCaseDAO implements ITestCaseDAO {
             query.append("%'");
         }
         if(!StringUtil.isNull(testCase.getActive())){
-            query.append(" AND t2.TcActive IN ");
+            query.append(" AND t2.TcActive IN (");
             query.append(testCase.getActive());
+            query.append(") ");
         }
         if(!StringUtil.isNull(testCase.getFromSprint())){
-            query.append(" AND t2.frombuild IN ");
+            query.append(" AND t2.frombuild IN (");
             query.append(testCase.getFromSprint());
+            query.append(") ");
         }
         if(!StringUtil.isNull(testCase.getFromRevision())){
-            query.append(" AND t2.fromrev IN ");
+            query.append(" AND t2.fromrev IN (");
             query.append(testCase.getFromRevision());
+            query.append(") ");
         }
         if(!StringUtil.isNull(testCase.getToSprint())){
-            query.append(" AND t2.tobuild IN ");
+            query.append(" AND t2.tobuild IN (");
             query.append(testCase.getToSprint());
+            query.append(") ");
         }
         if(!StringUtil.isNull(testCase.getToRevision())){
-            query.append(" AND t2.torev IN ");
+            query.append(" AND t2.torev IN (");
             query.append(testCase.getToRevision());
+            query.append(") ");
         }
         if(!StringUtil.isNull(testCase.getTargetSprint())){
-            query.append(" AND t2.targetbuild IN ");
+            query.append(" AND t2.targetbuild IN (");
             query.append(testCase.getTargetSprint());
+            query.append(") ");
         }
         if(!StringUtil.isNull(testCase.getTargetRevision())){
-            query.append(" AND t2.targetrev IN ");
+            query.append(" AND t2.targetrev IN (");
             query.append(testCase.getTargetRevision());
+            query.append(") ");
         }
         if(!StringUtil.isNull(testCase.getTestCase())){
-            query.append(" AND t2.testcase IN ");
+            query.append(" AND t2.testcase IN (");
             query.append(testCase.getTestCase());
+            query.append(") ");
         }
         if(!StringUtil.isNull(testCase.getFunction())){
-            query.append(" AND t2.function IN ");
+            query.append(" AND t2.function IN (");
             query.append(testCase.getFunction());
+            query.append(") ");
         }
 
         Connection connection = this.databaseSpring.connect();

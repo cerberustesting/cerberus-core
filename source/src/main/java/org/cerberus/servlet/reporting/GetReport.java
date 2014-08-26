@@ -50,12 +50,9 @@ public class GetReport extends HttpServlet {
 
         //Get all input parameters from user form
         TCase tCase = this.getTestCaseFromRequest(req);
-        //TODO only keeping the last parameter
-        String environment = this.getValue(req, "Environment");
-        //TODO only keeping the last parameter
-        String build = this.getValue(req, "Build");
-        //TODO only keeping the last parameter
-        String revision = this.getValue(req, "Revision");
+        String environment = this.getValues(req, "Environment");
+        String build = this.getValues(req, "Build");
+        String revision = this.getValues(req, "Revision");
         String ip = this.getValue(req, "Ip");
         String port = this.getValue(req, "Port");
         String tag = this.getValue(req, "Tag");
@@ -161,13 +158,13 @@ public class GetReport extends HttpServlet {
         String[] values = req.getParameterValues(valueName);
 
         if (values != null) {
-            whereClause.append(" ( '").append(values[0]);
+            whereClause.append(" '").append(values[0]);
             for (int i = 1; i < values.length; i++) {
                 if (!"All".equalsIgnoreCase(values[i]) && !"".equalsIgnoreCase(values[i].trim())) {
                     whereClause.append("', '").append(values[i]);
                 }
             }
-            whereClause.append("' ) ");
+            whereClause.append("' ");
             return whereClause.toString();
         }
         return null;
@@ -330,7 +327,7 @@ public class GetReport extends HttpServlet {
                 //loop for all browsers to create browser columns
                 for (String browser : browsers) {
                     //get information of execution
-                    TestCaseExecution tce = this.testCaseExecutionService.findLastTCExecutionByCriteria(tc.getTest(),
+                    TestCaseExecution tce = this.testCaseExecutionService.findLastTCExecutionInGroup(tc.getTest(),
                             tc.getTestCase(), environment, country, build, revision, browser, browserVersion, ip, port, tag);
 
                     if (tce != null) {
