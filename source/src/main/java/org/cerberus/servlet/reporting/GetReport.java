@@ -1,13 +1,12 @@
 package org.cerberus.servlet.reporting;
 
-import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.cerberus.entity.Invariant;
 import org.cerberus.entity.TCase;
 import org.cerberus.entity.TestCaseExecution;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.factory.IFactoryTCase;
 import org.cerberus.factory.impl.FactoryTCase;
-import org.cerberus.log.MyLogger;
 import org.cerberus.service.IInvariantService;
 import org.cerberus.service.ITestCaseExecutionService;
 import org.cerberus.service.ITestCaseService;
@@ -38,6 +37,11 @@ import java.util.*;
 @WebServlet(name = "GetReport", urlPatterns = {"/GetReport"})
 @Component
 public class GetReport extends HttpServlet {
+
+    /**
+     * The associated {@link Logger} to this class
+     */
+    private static final Logger LOG = Logger.getLogger(GetReport.class);
 
     private ITestCaseExecutionService testCaseExecutionService;
 
@@ -95,9 +99,9 @@ public class GetReport extends HttpServlet {
             resp.getWriter().print(json.toString());
 
         } catch (JSONException e) {
-            MyLogger.log(GetReport.class.getName(), Level.ERROR, "JSON exception : " + e.toString());
+            LOG.error("JSON exception", e);
         } catch (CerberusException e) {
-            MyLogger.log(GetReport.class.getName(), Level.ERROR, "Cerberus exception : " + e.toString());
+            LOG.error("Cerberus exception", e);
         }
     }
 
