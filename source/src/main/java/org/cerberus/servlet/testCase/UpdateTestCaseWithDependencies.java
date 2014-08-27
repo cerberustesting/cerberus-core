@@ -115,7 +115,6 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
          * it already exist > Send Error If it do not already exists > Create it
          */
         if (tc.getTestCase().equals(initialTestCase)) {
-            //TODO implement updateTestCase
             tcService.updateTestCase(tc);
         } else {
             if (tcService.findTestCaseByKey(tc.getTest(), tc.getTestCase()) == null) {
@@ -374,7 +373,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
             String useStep = request.getParameter("step_useStep_" + inc);
             String useStepTest = request.getParameter("step_useStepTest_" + inc);
             String useStepTestCase = request.getParameter("step_useStepTestCase_" + inc);
-            int useStepStep = Integer.valueOf(request.getParameter("step_useStepStep_" + inc));
+            int useStepStep = Integer.valueOf(request.getParameter("step_useStepStep_" + inc)==null?"0":request.getParameter("step_useStepStep_" + inc));
             if (delete != null) {
                 testCaseStep.add(testCaseStepFactory.create(test, testCase, step, desc, useStep, useStepTest, useStepTestCase, useStepStep));
             }

@@ -772,7 +772,7 @@
                                                                         <td style="background-color: <%=actionColor%>">
                                                                             <input class="wob" style="width: 60px; font-weight: bold; background-color: <%=actionColor%>; height:20px; color:<%=actionFontColor%>"
                                                                                    value="<%=tcsa.getSequence()%>"
-                                                                                   name="actions_sequence_<%=incrementAction%>" readonly="readonly">
+                                                                                   name="action_sequence_<%=incrementAction%>" readonly="readonly">
                                                                         </td>
                                                                         <td style="background-color: <%=actionColor%>"><%=ComboInvariant(appContext, "action_action_" + incrementAction, "width: 136px; background-color:" + actionColor + ";color:" + actionFontColor, "action_action_" + incrementAction, "wob", "ACTION", tcsa.getAction(), "trackChanges(0, this.selectedIndex, 'submitButtonAction')", null)%>
                                                                         </td>
@@ -1107,8 +1107,8 @@
                                                                 for (String c : countryListTestcase) {
                                                             %>
                                                             <td class="wob">
-                                                                <input value="<%=rowNumber%> - <%=c%>" type="checkbox" <% if (countryOfProperty.contains(c)) {%>  CHECKED  <% }%>
-                                                                       class="properties_id_<%=rowNumber%>" name="properties_country_<%=incrementProperty%>" onchange="trackChanges(this.value, '<%=c%>', 'SavePropertyChanges')">
+                                                                <input value="<%=c%>" type="checkbox" <% if (countryOfProperty.contains(c)) {%>  CHECKED  <% }%>
+                                                                       class="properties_id_<%=rowNumber%>" name="properties_country_<%=incrementProperty%>">
                                                             </td>
                                                             <%  }%>
                                                         </tr>

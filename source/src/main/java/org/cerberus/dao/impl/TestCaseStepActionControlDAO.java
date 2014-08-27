@@ -284,7 +284,7 @@ public class TestCaseStepActionControlDAO implements ITestCaseStepActionControlD
                 .append("`Type` = ?, ")
                 .append("`ControlValue` = ?, ")
                 .append("`ControlProperty` = ?, ")
-                .append("`ControlDescription` = ?>, ")
+                .append("`ControlDescription` = ?, ")
                 .append("`Fatal` = ? ")
                 .append("WHERE `Test` = ? AND `TestCase` = ? AND `Step` = ? AND `Sequence` = ? AND `Control` = ? ")
                 .toString();
@@ -301,8 +301,8 @@ public class TestCaseStepActionControlDAO implements ITestCaseStepActionControlD
                 preStat.setString(6, testCaseStepActionControl.getType());
                 preStat.setString(7, testCaseStepActionControl.getControlValue());
                 preStat.setString(8, testCaseStepActionControl.getControlProperty());
-                preStat.setString(9, testCaseStepActionControl.getFatal());
-                preStat.setString(10, testCaseStepActionControl.getDescription());
+                preStat.setString(10, testCaseStepActionControl.getFatal());
+                preStat.setString(9, testCaseStepActionControl.getDescription());
 
                 preStat.setString(11, testCaseStepActionControl.getTest());
                 preStat.setString(12, testCaseStepActionControl.getTestCase());
