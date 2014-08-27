@@ -43,11 +43,9 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.cerberus.entity.ExecutionSOAPResponse;
 import org.cerberus.entity.TestCaseExecution;
-import org.cerberus.log.MyLogger;
 import org.cerberus.serviceEngine.IXmlUnitService;
 import org.cerberus.serviceEngine.impl.diff.Differences;
 import org.cerberus.serviceEngine.impl.diff.DifferencesException;
@@ -163,15 +161,15 @@ public class XmlUnitService implements IXmlUnitService {
             }
 
         } catch (XPathExpressionException ex) {
-        	LOG.log(Level.WARN, ex);
+        	LOG.warn("Unable to test if element is present", ex);
         } catch (ParserConfigurationException ex) {
-        	LOG.log(Level.WARN, ex);
+        	LOG.warn("Unable to test if element is present", ex);
         } catch (SAXException ex) {
-        	LOG.log(Level.WARN, ex);
+        	LOG.warn("Unable to test if element is present", ex);
         } catch (IOException ex) {
-        	LOG.log(Level.WARN, ex);
+        	LOG.warn("Unable to test if element is present", ex);
         } catch (NullPointerException ex) {
-        	LOG.log(Level.WARN, ex);
+        	LOG.warn("Unable to test if element is present", ex);
         }
 
         return false;
