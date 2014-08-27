@@ -378,7 +378,7 @@ public class XmlUnitService implements IXmlUnitService {
 			}
 			
 			// Finally returns the String representation of our result structure
-			return resultDiff.toString();
+			return resultDiff.mkString();
 		} catch (InputTranslatorException e) {
 			LOG.warn("Unable to get differences from XML", e);
 		}
@@ -403,7 +403,7 @@ public class XmlUnitService implements IXmlUnitService {
 			}
 			
 			// Returns the empty String if there is no difference left, or the String XML representation
-			return returned.toString();
+			return returned.mkString();
 		} catch (DifferencesException e) {
 			LOG.warn("Unable to remove differences", e);
 		}
