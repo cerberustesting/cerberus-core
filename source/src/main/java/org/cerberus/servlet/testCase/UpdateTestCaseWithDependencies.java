@@ -77,10 +77,10 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, CerberusException {
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-        String initialTest = request.getParameter("test");
-        String initialTestCase = request.getParameter("testCase");
-        String test = request.getParameter("Test");
-        String testCase = request.getParameter("TestCase");
+        String initialTest = request.getParameter("informationInitialTest");
+        String initialTestCase = request.getParameter("informationInitialTestCase");
+        String test = request.getParameter("informationTest");
+        String testCase = request.getParameter("informationTestCase");
         TCase tc = getTestCaseFromParameter(request, appContext, test, testCase);
         List<TestCaseCountry> tcc = getTestCaseCountryFromParameter(request, appContext, test, testCase);
         List<TestCaseCountryProperties> tccp = getTestCaseCountryPropertiesFromParameter(request, appContext, test, testCase);
@@ -295,6 +295,8 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
     private TCase getTestCaseFromParameter(HttpServletRequest request, ApplicationContext appContext, String test, String testCase) {
 
         IFactoryTCase testCaseFactory = appContext.getBean(IFactoryTCase.class);
+        String origin = request.getParameter("editOrigin");
+        String refOrigin = request.getParameter("editRefOrigin");
         String implementer = request.getParameter("editImplementer");
         String lastModifier = request.getUserPrincipal().getName();
         String project = request.getParameter("editProject");
@@ -318,17 +320,17 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
         String targetSprint = request.getParameter("editTargetBuild");
         String targetRevision = request.getParameter("editTargetRev");
         String comment = request.getParameter("editComment");
-        String function = request.getParameter("function");
-        return testCaseFactory.create(test, testCase, bugID, description, status, implementer, lastModifier, project, ticket, function,
-                application, runQA, runUAT, runPROD, priority, group, status, shortDescription, description, howTo, active, fromSprint,
-                fromRevision, toSprint, toRevision, status, bugID, targetSprint, targetRevision, comment, null, null, null, null);
+        String function = request.getParameter("editFunction");
+        return testCaseFactory.create(test, testCase, origin, refOrigin, status, implementer, lastModifier, project, ticket, function, application, 
+                runQA, runUAT, runPROD, priority, group, status, shortDescription, description, howTo, active, fromSprint, fromRevision, toSprint,
+                toRevision, status, bugID, targetSprint, targetRevision, comment, null, null, null, null);
     }
 
     private List<TestCaseCountry> getTestCaseCountryFromParameter(HttpServletRequest request, ApplicationContext appContext, String test, String testCase) {
         IFactoryTestCaseCountry testCaseCountryFactory = appContext.getBean(IFactoryTestCaseCountry.class);
         List<TestCaseCountry> countries = new ArrayList<TestCaseCountry>();
-        if (request.getParameterValues("testcase_country_general") != null) {
-            for (String country : request.getParameterValues("testcase_country_general")) {
+        if (request.getParameterValues("editTestCaseCountry") != null) {
+            for (String country : request.getParameterValues("editTestCaseCountry")) {
                 countries.add(testCaseCountryFactory.create(test, testCase, country));
             }
         }
@@ -337,7 +339,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
 
     private List<TestCaseCountryProperties> getTestCaseCountryPropertiesFromParameter(HttpServletRequest request, ApplicationContext appContext, String test, String testCase) {
         List<TestCaseCountryProperties> testCaseCountryProp = new ArrayList();
-        String[] testcase_properties_increment = request.getParameterValues("properties_increment");
+        String[] testcase_properties_increment = request.getParameterValues("property_increment");
         IFactoryTestCaseCountryProperties testCaseCountryPropertiesFactory = appContext.getBean(IFactoryTestCaseCountryProperties.class);
         for (String inc : testcase_properties_increment) {
             String[] countries = request.getParameterValues("properties_country_" + inc);
@@ -362,11 +364,12 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
 
     private List<TestCaseStep> getTestCaseStepFromParameter(HttpServletRequest request, ApplicationContext appContext, String test, String testCase) {
         List<TestCaseStep> testCaseStep = new ArrayList();
-        String[] testcase_step_increment = request.getParameterValues("steps_increment");
+        String[] testcase_step_increment = request.getParameterValues("step_increment");
         IFactoryTestCaseStep testCaseStepFactory = appContext.getBean(IFactoryTestCaseStep.class);
         for (String inc : testcase_step_increment) {
-            String delete = request.getParameter("testcasestep_delete_" + inc);
+            String delete = request.getParameter("step_delete_" + inc);
             int step = Integer.valueOf(request.getParameter("step_number_" + inc));
+            int initialStep = Integer.valueOf(request.getParameter("initial_step_number_" + inc));
             String desc = request.getParameter("step_description_" + inc);
             String useStep = request.getParameter("step_useStep_" + inc);
             String useStepTest = request.getParameter("step_useStepTest_" + inc);
@@ -381,7 +384,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
 
     private List<TestCaseStepAction> getTestCaseStepActionFromParameter(HttpServletRequest request, ApplicationContext appContext, String test, String testCase) {
         List<TestCaseStepAction> testCaseStepAction = new ArrayList();
-        String[] stepAction_increment = request.getParameterValues("actions_increment");
+        String[] stepAction_increment = request.getParameterValues("action_increment");
         IFactoryTestCaseStepAction testCaseStepActionFactory = appContext.getBean(IFactoryTestCaseStepAction.class);
         for (String inc : stepAction_increment) {
             String delete = request.getParameter("action_delete_" + inc);
@@ -400,7 +403,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
 
     private List<TestCaseStepActionControl> getTestCaseStepActionControlFromParameter(HttpServletRequest request, ApplicationContext appContext, String test, String testCase) {
         List<TestCaseStepActionControl> testCaseStepActionControl = new ArrayList();
-        String[] stepActionControl_increment = request.getParameterValues("controls_increment");
+        String[] stepActionControl_increment = request.getParameterValues("control_increment");
         IFactoryTestCaseStepActionControl testCaseStepActionControlFactory = appContext.getBean(IFactoryTestCaseStepActionControl.class);
         for (String inc : stepActionControl_increment) {
             String delete = request.getParameter("control_delete_" + inc);
