@@ -76,7 +76,7 @@ public class XmlUnitServiceTest {
 
 	@Test
 	public void testGetDifferencesFromXmlWithNoDifference() throws XmlUtilException {
-		String expected = differences.toString();
+		String expected = differences.mkString();
 		String actual = xmlUnitService.getDifferencesFromXml("<root><a>1</a></root>", "<root><a>1</a></root>");
 		Assert.assertEquals(expected, actual);
 	}
@@ -85,7 +85,7 @@ public class XmlUnitServiceTest {
 	public void testGetDifferencesFromXmlWithValueDifference() throws XmlUtilException {
 		differences.addDifference(new Difference("/root[1]/a[1]/text()[1]"));
 
-		String expected = differences.toString();
+		String expected = differences.mkString();
 		String actual = xmlUnitService.getDifferencesFromXml("<root><a>1</a></root>", "<root><a>2</a></root>");
 		Assert.assertEquals(expected, actual);
 	}
@@ -95,7 +95,7 @@ public class XmlUnitServiceTest {
 		differences.addDifference(new Difference("/root[1]/a[1]"));
 		differences.addDifference(new Difference("/root[1]/b[1]"));
 
-		String expected = differences.toString();
+		String expected = differences.mkString();
 		String diff = xmlUnitService.getDifferencesFromXml("<root><a>1</a></root>", "<root><b>1</b></root>");
 		Assert.assertEquals(expected, diff);
 	}
@@ -105,7 +105,7 @@ public class XmlUnitServiceTest {
 		differences.addDifference(new Difference("/root[1]/a[1]"));
 		differences.addDifference(new Difference("/root[1]/b[1]"));
 
-		String expected = differences.toString();
+		String expected = differences.mkString();
 
 		URL left = getClass().getResource("/org/cerberus/serviceEngine/impl/left.xml");
 		URL right = getClass().getResource("/org/cerberus/serviceEngine/impl/right.xml");
@@ -119,7 +119,7 @@ public class XmlUnitServiceTest {
 		differences.addDifference(new Difference("/root[1]/a[2]"));
 		differences.addDifference(new Difference("/root[1]/b[1]"));
 
-		String actual = xmlUnitService.removeDifference("/root\\[1\\]/a\\[[1-2]\\]", differences.toString());
+		String actual = xmlUnitService.removeDifference("/root\\[1\\]/a\\[[1-2]\\]", differences.mkString());
 		String expected = "<differences><difference>/root[1]/b[1]</difference></differences>";
 
 		DetailedDiff diff = new DetailedDiff(XMLUnit.compareXML(expected, actual));
@@ -131,7 +131,7 @@ public class XmlUnitServiceTest {
 		differences.addDifference(new Difference("/root[1]/a[1]"));
 		differences.addDifference(new Difference("/root[1]/b[1]"));
 
-		String actual = xmlUnitService.removeDifference("toto", differences.toString());
+		String actual = xmlUnitService.removeDifference("toto", differences.mkString());
 		String expected = "<differences><difference>/root[1]/a[1]</difference><difference>/root[1]/b[1]</difference></differences>";
 
 		DetailedDiff diff = new DetailedDiff(XMLUnit.compareXML(expected, actual));
