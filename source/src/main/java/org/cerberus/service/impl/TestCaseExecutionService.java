@@ -108,4 +108,9 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
                                                            String ip, String port, String tag) {
         return this.testCaseExecutionDao.findLastTCExecutionInGroup(test, testCase, environment, country, build, revision, browser, browserVersion, ip, port, tag);
     }
+    
+    @Override
+    public TestCaseExecution findLastTestCaseExecutionNotPE(String test, String testCase) throws CerberusException {
+        return testCaseExecutionDao.findLastTestCaseExecutionNotPE(test, testCase);
+    }
 }

@@ -50,7 +50,7 @@ public interface ITestCaseService {
 
     boolean updateTestCaseInformationCountries(TestCase tc);
 
-    boolean createTestCase(TCase testCase);
+    boolean createTestCase(TCase testCase) throws CerberusException;
     
     /**
      * @since 0.9.1
@@ -100,5 +100,7 @@ public interface ITestCaseService {
      * @since 1.0.2
      */
     List<TCase> findTestCaseByGroupInCriteria(TCase tCase, String system);
+
+    public void updateTestCase(TCase tc) throws CerberusException;
     
 }

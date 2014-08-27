@@ -76,4 +76,21 @@ public class TestCaseCountryService implements ITestCaseCountryService {
         }
         return true;
     }
+
+//    @Override
+//    public void updateTestCaseCountry(TestCaseCountry tcc) throws CerberusException {
+//        tccDao.updateTestCaseCountry(tcc);
+//    }
+
+    @Override
+    public void deleteListTestCaseCountry(List<TestCaseCountry> tccToDelete) throws CerberusException {
+        for (TestCaseCountry tcc : tccToDelete){
+            deleteTestCaseCountry(tcc);
+        }
+    }
+
+    @Override
+    public void deleteTestCaseCountry(TestCaseCountry tcc) throws CerberusException {
+        tccDao.deleteTestCaseCountry(tcc);
+    }
 }

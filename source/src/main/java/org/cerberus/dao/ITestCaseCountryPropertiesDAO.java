@@ -46,4 +46,6 @@ public interface ITestCaseCountryPropertiesDAO {
     void insertTestCaseCountryProperties(TestCaseCountryProperties testCaseCountryProperties) throws CerberusException;
 
     void updateTestCaseCountryProperties(TestCaseCountryProperties testCaseCountryProperties) throws CerberusException;
+
+    public void deleteTestCaseCountryProperties(TestCaseCountryProperties tccp) throws CerberusException;
 }

@@ -338,9 +338,7 @@ function redirectionTestCase(target, test) { // Redirection testcase, un form
     }
 }
 
-function addTestCaseProperties(tableau, max_tcp_country,
-        max_tcp_property, max_tcp_value, max_tcp_length, max_tcp_rowlimit,
-        row_number, size, size2) {
+function addTestCaseProperties(tableau, row_number, size, size2) {
 
     TR = document.createElement('tr');
 
@@ -370,7 +368,6 @@ function addTestCaseProperties(tableau, max_tcp_country,
             .setAttribute('style',
                     'width: 130px; font-weight: bold;font-style: italic; color: #FF0000;');
     form2.setAttribute('placeholder', 'Feed Property Name');
-    form2.setAttribute('maxlength', max_tcp_property);
     var TD2 = document.createElement('td');
     TD2.setAttribute('style', 'background-color:white');
     TD2.appendChild(form2);
@@ -449,7 +446,6 @@ function addTestCaseProperties(tableau, max_tcp_country,
     form5.setAttribute('class', 'wob');
     form5.setAttribute('id', 'new_properties_value');
     form5.setAttribute('style', 'width: ' + size2 + 'px');
-    form5.setAttribute('maxlength', max_tcp_value);
     var TD5 = document.createElement('td');
     var TB51 = document.createElement('table');
     var TR51 = document.createElement('tr');
@@ -464,7 +460,6 @@ function addTestCaseProperties(tableau, max_tcp_country,
     form54.setAttribute('placeholder', 'Attribute');
     form54.setAttribute('class', 'wob');
     form54.setAttribute('id', 'new_properties_value2');
-    form54.setAttribute('maxlength', max_tcp_value);
     var TD52 = document.createElement('td');
     TD52.setAttribute('style', 'background-color:white; display:none');
     TD52.setAttribute('id', 'tdValue2_new');
@@ -499,7 +494,6 @@ function addTestCaseProperties(tableau, max_tcp_country,
     form6.setAttribute('value', 0);
     form6.setAttribute('class', 'wob');
     form6.setAttribute('style', 'width: 40px');
-    form6.setAttribute('maxlength', max_tcp_length);
     var TD6 = document.createElement('td');
     TD6.setAttribute('style', 'background-color:white');
     TD6.appendChild(form6);
@@ -511,7 +505,6 @@ function addTestCaseProperties(tableau, max_tcp_country,
     form7.setAttribute('value', 0);
     form7.setAttribute('style', 'width: 40px');
     form7.setAttribute('class', 'wob');
-    form7.setAttribute('maxlength', max_tcp_rowlimit);
     var TD7 = document.createElement('td');
     TD7.setAttribute('style', 'background-color:white');
     TD7.appendChild(form7);
@@ -535,8 +528,7 @@ function addTestCaseProperties(tableau, max_tcp_country,
 
 }
 
-function addTestCaseAction(table, id, max_tcsa_seq, max_tcsa_action, max_tcsa_obj,
-        max_tcsa_pro, max_tcsa_desc) {
+function addTestCaseAction(table, id) {
 
     TR = document.createElement('tr');
 
@@ -579,7 +571,6 @@ function addTestCaseAction(table, id, max_tcsa_seq, max_tcsa_action, max_tcsa_ob
     form2.setAttribute('class', 'wob');
     form2.setAttribute('onblur', 'keyOnBlur(this)');
     form2.setAttribute('value', value);
-    form2.setAttribute('maxlength', max_tcsa_seq);
     var TD2 = document.createElement('td');
     TD2.setAttribute('style', 'background-color:white; text-align: center');
     TD2.appendChild(form2);
@@ -605,7 +596,6 @@ function addTestCaseAction(table, id, max_tcsa_seq, max_tcsa_action, max_tcsa_ob
     form4.setAttribute('size', '100%');
     form4.setAttribute('class', 'wob');
     form4.setAttribute('style', 'width: 350px');
-    form4.setAttribute('maxlength', max_tcsa_obj);
     var TD4 = document.createElement('td');
     TD4.setAttribute('style', 'background-color:white; text-align: center');
     if (displayOnlyFunctional) {
@@ -622,7 +612,6 @@ function addTestCaseAction(table, id, max_tcsa_seq, max_tcsa_action, max_tcsa_ob
     form5.setAttribute('size', '100%');
     form5.setAttribute('class', 'wob');
     form5.setAttribute('style', 'width: 210px');
-    form5.setAttribute('maxlength', max_tcsa_pro);
     var TD5 = document.createElement('td');
     TD5.setAttribute('style', 'background-color:white; text-align: center');
     if (displayOnlyFunctional) {
@@ -643,7 +632,6 @@ function addTestCaseAction(table, id, max_tcsa_seq, max_tcsa_action, max_tcsa_ob
         form6.setAttribute('class', 'wob functional_description');
     }
     form6.setAttribute('style', 'width: 100%');
-    form6.setAttribute('maxlength', max_tcsa_desc);
     var TD6 = document.createElement('td');
     TD6.setAttribute('style', 'background-color:white;');
     if (displayOnlyFunctional) {
@@ -658,7 +646,7 @@ function addTestCaseAction(table, id, max_tcsa_seq, max_tcsa_action, max_tcsa_ob
 }
 
 var numberOfCall = 0;
-function addStep(div, max_tcs_desc) {
+function addStep(div) {
 
     var table = document.createElement('div');
     table.setAttribute('id', 'table');
@@ -697,7 +685,6 @@ function addStep(div, max_tcs_desc) {
     input2.setAttribute('class', 'wob');
     input2.setAttribute('style', 'width : 500px');
     input2.setAttribute('name', 'step_description_add');
-    input2.setAttribute('maxlength', max_tcs_desc);
     var TD2 = document.createElement('td'); /* Create column */
     TD2.setAttribute('style', 'background-color:#e1e7f3; text-align: center');
     TD2.setAttribute('class', 'wob');
@@ -730,9 +717,7 @@ function addStep(div, max_tcs_desc) {
     numberOfCall++;
 }
 
-function addTestCaseControl(table, step_id, max_tcc_step, max_tcc_sequence,
-        max_tcc_control, max_tcc_type, max_tcc_value, max_tcc_property,
-        max_tcc_description, tab_type) {
+function addTestCaseControl(table, step_id) {
     TR = document.createElement('tr');
 
     /* Delete box */
@@ -762,7 +747,6 @@ function addTestCaseControl(table, step_id, max_tcc_step, max_tcc_sequence,
     form3
             .setAttribute('style',
                     'width: 60px; font-weight: bold;font-style: italic; color: #FF0000;');
-    form3.setAttribute('maxlength', max_tcc_sequence);
     form3.setAttribute('onfocus', 'keyOnFocus(this)');
     form3.setAttribute('onblur', 'keyOnBlur(this)');
     form3.setAttribute('class', 'wob');
@@ -786,7 +770,6 @@ function addTestCaseControl(table, step_id, max_tcc_step, max_tcc_sequence,
     form4
             .setAttribute('style',
                     'width: 60px; font-weight: bold;font-style: italic; color: #FF0000;');
-    form4.setAttribute('maxlength', max_tcc_control);
     form4.setAttribute('onfocus', 'keyOnFocus(this)');
     form4.setAttribute('class', 'wob');
     form4.setAttribute('onblur', 'keyOnBlur(this)');
@@ -815,7 +798,6 @@ function addTestCaseControl(table, step_id, max_tcc_step, max_tcc_sequence,
     form7.setAttribute('name', 'controls_controlproperty');
     form7.setAttribute('style', 'width: 260px');
     form7.setAttribute('class', 'wob');
-    form7.setAttribute('maxlength', max_tcc_property);
     var TD7 = document.createElement('td');
     TD7.setAttribute('style', 'background-color:white');
     if (displayOnlyFunctional) {
@@ -831,7 +813,6 @@ function addTestCaseControl(table, step_id, max_tcc_step, max_tcc_sequence,
     form6.setAttribute('name', 'controls_controlvalue');
     form6.setAttribute('class', 'wob');
     form6.setAttribute('style', 'width: 180px');
-    form6.setAttribute('maxlength', max_tcc_value);
     var TD6 = document.createElement('td');
     TD6.setAttribute('style', 'background-color:white');
     if (displayOnlyFunctional) {
@@ -871,7 +852,6 @@ function addTestCaseControl(table, step_id, max_tcc_step, max_tcc_sequence,
         form8.setAttribute('class', 'wob functional_description_control');
     }
     form8.setAttribute('style', 'width: 100%');
-    form8.setAttribute('maxlength', max_tcc_description);
     var TD8 = document.createElement('td');
     TD8.setAttribute('style', 'background-color:white');
     if (displayOnlyFunctional) {

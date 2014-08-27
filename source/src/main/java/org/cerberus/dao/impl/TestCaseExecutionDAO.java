@@ -579,6 +579,53 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
     }
 
     @Override
+    public TestCaseExecution findLastTestCaseExecutionNotPE(String test, String testCase) throws CerberusException {
+        TestCaseExecution result = null;
+        StringBuilder query = new StringBuilder();
+        query.append("SELECT ID, Environment, Country, Build, Revision, End, ControlStatus  FROM `testcaseexecution` ");
+        query.append(" WHERE test= ? and TestCase= ? and ID = ");
+        query.append(" (SELECT MAX(ID) from `testcaseexecution` ");
+        query.append("WHERE test= ? and TestCase= ? and ControlStatus!='PE')");
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query.toString());
+            preStat.setString(1, test);
+            preStat.setString(2, testCase);
+            preStat.setString(3, test);
+            preStat.setString(4, testCase);
+            
+            try {
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+                    if (resultSet.first()) {
+                        result = this.loadFromResultSet(resultSet);
+                    }
+                } catch (SQLException exception) {
+                    MyLogger.log(TestCaseExecutionDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                } finally {
+                    resultSet.close();
+                }
+            } catch (SQLException exception) {
+                MyLogger.log(TestCaseExecutionDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(TestCaseExecutionDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(TestCaseExecutionDAO.class.getName(), Level.WARN, e.toString());
+            }
+        }
+        return result;
+    }
+    
+    @Override
     public TestCaseExecution findLastTCExecutionInGroup(String test, String testCase, String environment, String country,
                                                         String build, String revision, String browser, String browserVersion,
                                                         String ip, String port, String tag) {

@@ -41,4 +41,10 @@ public interface ITestCaseStepActionControlService {
     List<TestCaseStepActionControl> findControlByTestTestCaseStep(String test, String testcase, int step);
 
     public boolean updateTestCaseStepActionControl(TestCaseStepActionControl control);
+
+    public List<TestCaseStepActionControl> findControlByTestTestCase(String initialTest, String initialTestCase) throws CerberusException;
+
+    public void deleteListTestCaseStepActionControl(List<TestCaseStepActionControl> tcsacToDelete) throws CerberusException;
+    
+    public void deleteTestCaseStepActionControl(TestCaseStepActionControl tcsac) throws CerberusException;
 }

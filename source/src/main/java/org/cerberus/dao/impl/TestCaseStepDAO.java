@@ -247,4 +247,85 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
         }
         return result;
     }
+
+    @Override
+    public void deleteTestCaseStep(TestCaseStep tcs) throws CerberusException{
+        boolean throwExcep = false;
+        final String query = "DELETE FROM testcasestep WHERE test = ? and testcase = ? and step = ?";
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            try {
+                preStat.setString(1, tcs.getTest());
+                preStat.setString(2, tcs.getTestCase());
+                preStat.setInt(3, tcs.getStep());
+
+                throwExcep = preStat.executeUpdate() == 0;
+            } catch (SQLException exception) {
+                MyLogger.log(TestCaseStepDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(TestCaseStepDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(TestCaseStepDAO.class.getName(), Level.WARN, e.toString());
+            }
+        }
+        if (throwExcep) {
+            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.CANNOT_UPDATE_TABLE));
+        }
+    }
+
+    @Override
+    public void updateTestCaseStep(TestCaseStep tcs) throws CerberusException {
+        boolean throwExcep = false;
+        StringBuilder query = new StringBuilder();
+        query.append("UPDATE testcasestep SET ");
+        query.append(" `Description` = ?,`useStep`=?,`useStepTest`=?,`useStepTestCase`=?,`useStepStep`=?");
+        query.append(" WHERE Test = ? AND TestCase = ? AND step = ?");
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query.toString());
+            try {
+                preStat.setString(1, tcs.getDescription());
+                preStat.setString(2, tcs.getUseStep());
+                preStat.setString(3, tcs.getUseStepTest());
+                preStat.setString(4, tcs.getUseStepTestCase());
+                preStat.setInt(5, tcs.getUseStepStep());
+                preStat.setString(6, tcs.getTest());
+                preStat.setString(7, tcs.getTestCase());
+                preStat.setInt(8, tcs.getStep());
+                
+                preStat.executeUpdate();
+                throwExcep = false;
+                
+                
+            } catch (SQLException exception) {
+                MyLogger.log(TestCaseStepDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(TestCaseStepDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(TestCaseStepDAO.class.getName(), Level.WARN, e.toString());
+            }
+        }
+        if (throwExcep) {
+            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.CANNOT_UPDATE_TABLE));
+        }
+    }
 }

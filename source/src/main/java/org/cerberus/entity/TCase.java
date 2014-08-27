@@ -54,11 +54,20 @@ public class TCase {
     private String targetSprint;
     private String targetRevision;
     private String comment;
+    private String tcDateCrea;
     private List<TestCaseCountry> testCaseCountry;
     private List<TestCaseCountryProperties> testCaseCountryProperties;
     private List<TestCaseStep> testCaseStep;
     private List<TestCaseStepBatch> testCaseStepBatch;
 
+    public String getTcDateCrea() {
+        return tcDateCrea;
+    }
+
+    public void setTcDateCrea(String tcDateCrea) {
+        this.tcDateCrea = tcDateCrea;
+    }
+    
     public String getFunction() {
         return function;
     }

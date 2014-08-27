@@ -72,5 +72,22 @@ public class TestCaseStepService implements ITestCaseStepService {
     public TestCaseStep findTestCaseStep(String test, String testcase, Integer step) {
         return testCaseStepDAO.findTestCaseStep(test, testcase, step);
     }
+
+    @Override
+    public void updateTestCaseStep(TestCaseStep tcs) throws CerberusException {
+        testCaseStepDAO.updateTestCaseStep(tcs);
+    }
+
+    @Override
+    public void deleteListTestCaseStep(List<TestCaseStep> tcsToDelete) throws CerberusException {
+        for (TestCaseStep tcs : tcsToDelete){
+            deleteTestCaseStep(tcs);
+        }
+    }
+
+    @Override
+    public void deleteTestCaseStep(TestCaseStep tcs) throws CerberusException {
+        testCaseStepDAO.deleteTestCaseStep(tcs);
+    }
     
 }

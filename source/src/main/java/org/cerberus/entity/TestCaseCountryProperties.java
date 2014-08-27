@@ -17,6 +17,8 @@
  */
 package org.cerberus.entity;
 
+import java.util.List;
+
 /**
  * @author bcivel
  */
@@ -35,7 +37,16 @@ public class TestCaseCountryProperties {
     private String nature;
     private MessageEvent result;
     private TestCaseCountry testCaseCountry;
+    private List<TestCaseCountry> tccList;
 
+    public List<TestCaseCountry> getTccList() {
+        return tccList;
+    }
+
+    public void setTccList(List<TestCaseCountry> tccList) {
+        this.tccList = tccList;
+    }
+    
     public String getValue2() {
         return value2;
     }
@@ -139,4 +150,91 @@ public class TestCaseCountryProperties {
     public void setResult(MessageEvent result) {
         this.result = result;
     }
+
+    public boolean hasSameKey(TestCaseCountryProperties obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final TestCaseCountryProperties other = (TestCaseCountryProperties) obj;
+        if ((this.test == null) ? (other.test != null) : !this.test.equals(other.test)) {
+            return false;
+        }
+        if ((this.testCase == null) ? (other.testCase != null) : !this.testCase.equals(other.testCase)) {
+            return false;
+        }
+        if ((this.country == null) ? (other.country != null) : !this.country.equals(other.country)) {
+            return false;
+        }
+        if ((this.property == null) ? (other.property != null) : !this.property.equals(other.property)) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 83 * hash + (this.test != null ? this.test.hashCode() : 0);
+        hash = 83 * hash + (this.testCase != null ? this.testCase.hashCode() : 0);
+        hash = 83 * hash + (this.country != null ? this.country.hashCode() : 0);
+        hash = 83 * hash + (this.property != null ? this.property.hashCode() : 0);
+        hash = 83 * hash + (this.type != null ? this.type.hashCode() : 0);
+        hash = 83 * hash + (this.database != null ? this.database.hashCode() : 0);
+        hash = 83 * hash + (this.value1 != null ? this.value1.hashCode() : 0);
+        hash = 83 * hash + (this.value2 != null ? this.value2.hashCode() : 0);
+        hash = 83 * hash + this.length;
+        hash = 83 * hash + this.rowLimit;
+        hash = 83 * hash + (this.nature != null ? this.nature.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final TestCaseCountryProperties other = (TestCaseCountryProperties) obj;
+        if ((this.test == null) ? (other.test != null) : !this.test.equals(other.test)) {
+            return false;
+        }
+        if ((this.testCase == null) ? (other.testCase != null) : !this.testCase.equals(other.testCase)) {
+            return false;
+        }
+        if ((this.country == null) ? (other.country != null) : !this.country.equals(other.country)) {
+            return false;
+        }
+        if ((this.property == null) ? (other.property != null) : !this.property.equals(other.property)) {
+            return false;
+        }
+        if ((this.type == null) ? (other.type != null) : !this.type.equals(other.type)) {
+            return false;
+        }
+        if ((this.database == null) ? (other.database != null) : !this.database.equals(other.database)) {
+            return false;
+        }
+        if ((this.value1 == null) ? (other.value1 != null) : !this.value1.equals(other.value1)) {
+            return false;
+        }
+        if ((this.value2 == null) ? (other.value2 != null) : !this.value2.equals(other.value2)) {
+            return false;
+        }
+        if (this.length != other.length) {
+            return false;
+        }
+        if (this.rowLimit != other.rowLimit) {
+            return false;
+        }
+        if ((this.nature == null) ? (other.nature != null) : !this.nature.equals(other.nature)) {
+            return false;
+        }
+        return true;
+    }
+    
+    
 }

@@ -525,7 +525,11 @@ public class ExecutionRunService implements IExecutionRunService {
         /**
          * Record Screenshot, PageSource
          */
+        try {
         recorderService.recordExecutionInformation(testCaseStepActionExecution, null);
+        } catch (Exception ex){
+        
+        }
 
         /**
          * Register Action in database

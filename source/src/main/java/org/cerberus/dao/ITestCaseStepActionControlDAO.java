@@ -41,5 +41,9 @@ public interface ITestCaseStepActionControlDAO {
 
     public void updateTestCaseStepActionControl(TestCaseStepActionControl control) throws CerberusException;
 
+    public void deleteTestCaseStepActionControl(TestCaseStepActionControl tcsac) throws CerberusException;
+
+    public List<TestCaseStepActionControl> findControlByTestTestCase(String test, String testCase) throws CerberusException;
+
     
 }

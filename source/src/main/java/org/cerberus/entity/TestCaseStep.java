@@ -105,4 +105,76 @@ public class TestCaseStep {
     public void setTestCase(String testCase) {
         this.testCase = testCase;
     }
+
+    public boolean hasSameKey(TestCaseStep obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final TestCaseStep other = (TestCaseStep) obj;
+        if ((this.test == null) ? (other.test != null) : !this.test.equals(other.test)) {
+            return false;
+        }
+        if ((this.testCase == null) ? (other.testCase != null) : !this.testCase.equals(other.testCase)) {
+            return false;
+        }
+        if (this.step != other.step) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 29 * hash + (this.test != null ? this.test.hashCode() : 0);
+        hash = 29 * hash + (this.testCase != null ? this.testCase.hashCode() : 0);
+        hash = 29 * hash + this.step;
+        hash = 29 * hash + (this.description != null ? this.description.hashCode() : 0);
+        hash = 29 * hash + (this.useStep != null ? this.useStep.hashCode() : 0);
+        hash = 29 * hash + (this.useStepTest != null ? this.useStepTest.hashCode() : 0);
+        hash = 29 * hash + (this.useStepTestCase != null ? this.useStepTestCase.hashCode() : 0);
+        hash = 29 * hash + (this.useStepStep != null ? this.useStepStep.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final TestCaseStep other = (TestCaseStep) obj;
+        if ((this.test == null) ? (other.test != null) : !this.test.equals(other.test)) {
+            return false;
+        }
+        if ((this.testCase == null) ? (other.testCase != null) : !this.testCase.equals(other.testCase)) {
+            return false;
+        }
+        if (this.step != other.step) {
+            return false;
+        }
+        if ((this.description == null) ? (other.description != null) : !this.description.equals(other.description)) {
+            return false;
+        }
+        if ((this.useStep == null) ? (other.useStep != null) : !this.useStep.equals(other.useStep)) {
+            return false;
+        }
+        if ((this.useStepTest == null) ? (other.useStepTest != null) : !this.useStepTest.equals(other.useStepTest)) {
+            return false;
+        }
+        if ((this.useStepTestCase == null) ? (other.useStepTestCase != null) : !this.useStepTestCase.equals(other.useStepTestCase)) {
+            return false;
+        }
+        if (this.useStepStep != other.useStepStep && (this.useStepStep == null || !this.useStepStep.equals(other.useStepStep))) {
+            return false;
+        }
+        return true;
+    }
+    
+    
 }

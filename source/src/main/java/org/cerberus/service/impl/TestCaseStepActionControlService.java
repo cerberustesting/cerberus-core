@@ -83,4 +83,21 @@ public class TestCaseStepActionControlService implements ITestCaseStepActionCont
         }
         return true;
     }
+
+    @Override
+    public List<TestCaseStepActionControl> findControlByTestTestCase(String test, String testCase) throws CerberusException {
+        return testCaseStepActionControlDao.findControlByTestTestCase(test,testCase);
+    }
+
+    @Override
+    public void deleteListTestCaseStepActionControl(List<TestCaseStepActionControl> tcsacToDelete) throws CerberusException {
+        for (TestCaseStepActionControl tcsac : tcsacToDelete){
+        deleteTestCaseStepActionControl(tcsac);
+        }
+    }
+
+    @Override
+    public void deleteTestCaseStepActionControl(TestCaseStepActionControl tcsac) throws CerberusException{
+        testCaseStepActionControlDao.deleteTestCaseStepActionControl(tcsac);
+    }
 }

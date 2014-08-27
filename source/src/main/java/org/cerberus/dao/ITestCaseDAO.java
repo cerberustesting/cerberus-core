@@ -80,4 +80,6 @@ public interface ITestCaseDAO {
      * @since 1.0.2
      */
     List<TCase> findTestCaseByGroupInCriteria(TCase tCase, String system);
+
+    public void updateTestCase(TCase tc) throws CerberusException;
 }

@@ -41,4 +41,10 @@ public interface ITestCaseStepActionService {
     boolean changeTestCaseStepActionSequence(String test, String testCase, int step, int oldSequence, int newSequence);
 
     public boolean updateTestCaseStepAction(TestCaseStepAction tcsa);
+
+    public List<TestCaseStepAction> findTestCaseStepActionbyTestTestCase(String test, String testCase) throws CerberusException ;
+    
+    public void deleteTestCaseStepAction(TestCaseStepAction tcsa) throws CerberusException ;
+
+    public void deleteListTestCaseStepAction(List<TestCaseStepAction> tcsaToDelete) throws CerberusException ;
 }

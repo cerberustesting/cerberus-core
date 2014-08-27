@@ -70,4 +70,40 @@ public class TestCaseCountry {
     public void setTestCase(String testCase) {
         this.testCase = testCase;
     }
+
+    public boolean hasSameKey(TestCaseCountry tccRight) {
+        return equals(tccRight);
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 41 * hash + (this.test != null ? this.test.hashCode() : 0);
+        hash = 41 * hash + (this.testCase != null ? this.testCase.hashCode() : 0);
+        hash = 41 * hash + (this.country != null ? this.country.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final TestCaseCountry other = (TestCaseCountry) obj;
+        if ((this.test == null) ? (other.test != null) : !this.test.equals(other.test)) {
+            return false;
+        }
+        if ((this.testCase == null) ? (other.testCase != null) : !this.testCase.equals(other.testCase)) {
+            return false;
+        }
+        if ((this.country == null) ? (other.country != null) : !this.country.equals(other.country)) {
+            return false;
+        }
+        return true;
+    }
+    
+    
 }

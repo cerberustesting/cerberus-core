@@ -96,4 +96,16 @@ public class TestCaseCountryPropertiesService implements ITestCaseCountryPropert
         return testCaseCountryPropertiesDAO.findCountryByPropertyNameAndTestCase(test, testcase, property);
     }
 
+    @Override
+    public void deleteListTestCaseCountryProperties(List<TestCaseCountryProperties> tccpToDelete) throws CerberusException {
+        for (TestCaseCountryProperties tccp : tccpToDelete){
+            deleteTestCaseCountryProperties(tccp);
+        }
+    }
+
+    @Override
+    public void deleteTestCaseCountryProperties(TestCaseCountryProperties tccp) throws CerberusException {
+        testCaseCountryPropertiesDAO.deleteTestCaseCountryProperties(tccp);
+    }
+
 }
