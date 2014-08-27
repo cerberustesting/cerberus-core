@@ -886,6 +886,7 @@
                     <td id="wob" style="width: 60px">ACT: [<%=rs_testcase_general_info.getString("TcActive")%>]  </td>
                     <td id="wob" style="width: 170px">Last Exe: [<%=LastExeMessage%>]  </td>
                     <td id="wob" style="width: 300px">Countries: [<%=countries%>]</td>
+                    <td id="wob" style="width: 300px"><div style="display: none;" class="testBatteryDisplay"></div><input id="testBatteryDisplay" style="height:18px;" type="button" value="Display Test Battery"></td>
                     <td id="wob" align="right"><input id="button1" style="height:18px; width:10px" type="button" value="+" onclick="javascript:setVisible();"></td>
                 </tr>
             </table>
@@ -1795,37 +1796,88 @@
             }
 
         %><script>
-            $("input.property_value").each(function() {
-                //var jinput = $(this);
-                if (this.value && this.value !== "" && isNaN(this.value) && $("input.property_name[value='" + this.value + "']").length === 0) {
-                    this.style.width = '192px';
-                    $(this).before("<img class='property_ko' data-property-name='" + this.value + "' src='./images/ko.png' title='Property Missing' style='display:inline;' width='16px' height='16px' />");
-                }
-            });
+            function getCampaignForTestBatteryID(testBatteryID, listTestBattery) {
+                var ajaxData = {action: 'findCampaignFromTestBattery'};
+                ajaxData.TestBattery = testBatteryID;
+                $.get("GetCampaign",ajaxData, function(data) {
+                    if(data.Campaigns.length > 0) {
+                        var listCampaign = $("<ul></ul>");
+                        for(var index = 0; index < data.Campaigns.length; index++) {
+                            var campaign = data.Campaigns[index];
 
-            $("img.property_ko").on("click", function(event) {
-                var propertyName = $(event.target).data("property-name");
-                var property = $("input.property_value[value='" + propertyName + "']");
+                            listCampaign.append($("<li>Campaign: </li>")
+                                    .append($("<span><span>").text(campaign[1]))
+                                    .append($("<span><span>").text(campaign[2])));
+                        }
+                        listTestBattery.append(listCampaign);
+                    }
+                });
+            };
+            
+            $(document).ready(function(){
+                $("input#testBatteryDisplay").on("click", function() {
+                    var ajaxData = {};
+                    ajaxData.Test = $("input#editTest").val();
+                    ajaxData.TestCase = $("input#editTestCase").val();
+                    ajaxData.action = 'findTestBatteryContentByTestCase';
 
-                if (property.data("usestep-step") != null
-                        && property.data("usestep-step") != "") {
-                    var useTest = property.data("usestep-test");
-                    var useTestcase = property.data("usestep-testcase");
-                    $.get("./ImportPropertyOfATestCaseToAnOtherTestCase", {"fromtest": useTest, "fromtestcase": useTestcase,
-                        "totest": "<%=test%>", "totestcase": "<%=testcase%>",
-                        "property": propertyName}
-                    , function(data) {
-                        $("#UpdateTestCaseDetail").submit();
+                    $.get("GetTestBattery",ajaxData, function(data) {
+                       var div = $("div.testBatteryDisplay");
+                        div.empty();
+                        var list = $("<ul></ul>");
+                        
+                        for(index = 0; index < data.TestBatteries.length; index++) {
+                            var testBattery = data.TestBatteries[index];
+                            var line = $("<li>Test Battery: </li>")
+                                        .append($("<span></span>").text(testBattery[1]))
+                                        .append($("<span></span>").text(testBattery[2]))
+                                        
+                                    ;
+                            getCampaignForTestBatteryID(testBattery[1],line);
+
+                            list.append(line);
+                        }
+                        div.append(list);
+                    });
+
+                    $("div.testBatteryDisplay").dialog({
+                        title: "Display Test Batteries containing this Test Case"
+                    });
+
+                });
+
+                $("input.property_value").each(function() {
+                    //var jinput = $(this);
+                    if (this.value && this.value !== "" && isNaN(this.value) && $("input.property_name[value='" + this.value + "']").length === 0) {
+                        this.style.width = '192px';
+                        $(this).before("<img class='property_ko' data-property-name='" + this.value + "' src='./images/ko.png' title='Property Missing' style='display:inline;' width='16px' height='16px' />");
                     }
-                    );
-                } else {
-                    $.get("./CreateNotDefinedProperty", {"totest": "<%=test%>", "totestcase": "<%=testcase%>",
-                        "property": propertyName}
-                    , function(data) {
-                        $("#UpdateTestCaseDetail").submit();
+                });
+
+                $("img.property_ko").on("click", function(event) {
+                    var propertyName = $(event.target).data("property-name");
+                    var property = $("input.property_value[value='" + propertyName + "']");
+
+                    if (property.data("usestep-step") != null
+                            && property.data("usestep-step") != "") {
+                        var useTest = property.data("usestep-test");
+                        var useTestcase = property.data("usestep-testcase");
+                        $.get("./ImportPropertyOfATestCaseToAnOtherTestCase", {"fromtest": useTest, "fromtestcase": useTestcase,
+                            "totest": "<%=test%>", "totestcase": "<%=testcase%>",
+                            "property": propertyName}
+                        , function(data) {
+                            $("#UpdateTestCaseDetail").submit();
+                        }
+                        );
+                    } else {
+                        $.get("./CreateNotDefinedProperty", {"totest": "<%=test%>", "totestcase": "<%=testcase%>",
+                            "property": propertyName}
+                        , function(data) {
+                            $("#UpdateTestCaseDetail").submit();
+                        }
+                        );
                     }
-                    );
-                }
+                });
             });
         </script><%
 

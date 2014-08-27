@@ -113,4 +113,9 @@ public class TestBatteryService implements ITestBatteryService {
         return testBatteryContentDAO.deleteTestBatteryContent(testBatteryContent);
     }
 
+    @Override
+    public List<TestBattery> findTestBatteriesByTestCase(String test, String testCase) throws CerberusException {
+        return testBatteryDAO.findTestBatteriesByTestCase(test, testCase);
+    }
+
 }

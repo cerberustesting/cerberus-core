@@ -59,4 +59,7 @@ public interface ITestBatteryService {
     List<TestBattery> findTestBatteryByCriteria(Integer testBatteryID, String testBattery, String Description) throws CerberusException;
 
     List<TestBatteryContent> findTestBatteryContentsByCriteria(Integer testBatteryContentID, String testBattery, String test, String testCase) throws CerberusException;
+
+    List<TestBattery> findTestBatteriesByTestCase(String test, String testCase) throws CerberusException;
+
 }

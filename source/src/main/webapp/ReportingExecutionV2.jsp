@@ -22,6 +22,7 @@
 <%@ page import="org.cerberus.service.*" %>
 <%@ page import="org.cerberus.service.impl.InvariantService" %>
 <%@ page import="org.cerberus.entity.*" %>
+<%@ page import="org.cerberus.exception.CerberusException" %>
 
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%
@@ -53,6 +54,10 @@
     <script type="text/javascript" src="js/jquery.dataTables.min.js"></script>
     <script type="text/javascript" src="js/FixedHeader.js"></script>
     <script type="text/javascript" src="js/jquery.multiselect.js"></script>
+
+<%
+    try{
+%>
 
     <script type="text/javascript">
         var oTable;
@@ -804,4 +809,12 @@
 </div>
 
 </body>
+<%
+    } catch (CerberusException ex){
+        MyLogger.log("ReportingExecution.jsp", Level.ERROR, "Cerberus exception : " + ex.toString());
+        out.println("</script>");
+        out.print("<script type='text/javascript'>alert(\"Unfortunately an error as occurred, try reload the page.\\n");
+        out.print("Detail error: " + ex.getMessageError().getDescription() + "\");</script>");
+    }
+%>
 </html>
