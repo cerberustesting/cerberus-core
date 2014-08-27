@@ -42,9 +42,6 @@
 <%@page import="org.cerberus.version.Version"%>
 <%@page import="org.cerberus.database.DatabaseSpring" %>
 <%!
-
-
-    
     String ComboInvariant(Connection conn, String HTMLComboName, String HTMLComboStyle, String HTMLId, String HTMLClass, String combonumber, String value, String HTMLOnChange, String firstOption) {
         try {
             Statement stmtQuery = conn.createStatement();
@@ -81,7 +78,7 @@
             return e.toString();
         }
     }
-    
+
     String ComboInvariant(ApplicationContext appContext, String HTMLComboName, String HTMLComboStyle, String HTMLId, String HTMLClass, String combonumber, String value, String HTMLOnChange, String firstOption) {
         try {
             IInvariantService invFunctionService = appContext.getBean(IInvariantService.class);
@@ -376,14 +373,35 @@
         }
         return whereClause.toString();
     }
+
+    String getRequestParameterWildcardIfEmpty(HttpServletRequest request, String parameter) {
+        String result;
+        if (request.getParameter(parameter) != null
+                && request.getParameter(parameter).compareTo("All") != 0) {
+            result = request.getParameter(parameter);
+        } else {
+            result = new String("%%");
+        }
+        return result;
+    }
+
+    boolean getBooleanParameterFalseIfEmpty(HttpServletRequest request, String parameter) {
+        boolean result;
+        if (request.getParameter(parameter) != null
+                && request.getParameter(parameter).compareTo("Y") == 0) {
+            result = true;
+        } else {
+            result = false;
+        }
+        return result;
+    }
 %>
 <% if (session.getAttribute("flashMessage") != null) {
         out.println("alert(" + session.getAttribute("flashMessage") + ")");
         session.removeAttribute("flashMessage");
     }
 
-
-ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-DatabaseSpring db = appContext.getBean(DatabaseSpring.class);
+    ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+    DatabaseSpring db = appContext.getBean(DatabaseSpring.class);
 
 %>

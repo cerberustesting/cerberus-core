@@ -42,6 +42,12 @@ textarea{
 .selectRobotSelected{
     color : black;
 }
+.font_weight_bold_Y{
+    font-weight : bold;
+}
+.font_weight_bold_N{
+    font-weight : lighter;
+}
 /* Fields without border (TODO Refactor)*/
 td#wob { 
     border-width:0px;
