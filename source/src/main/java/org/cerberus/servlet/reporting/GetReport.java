@@ -99,9 +99,9 @@ public class GetReport extends HttpServlet {
             resp.getWriter().print(json.toString());
 
         } catch (JSONException e) {
-            LOG.error("JSON exception", e);
+            LOG.error("Unable to build JSON response due to exception", e);
         } catch (CerberusException e) {
-            LOG.error("Cerberus exception", e);
+            LOG.error("Unable to find Invariant", e);
         }
     }
 
