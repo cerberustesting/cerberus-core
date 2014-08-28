@@ -301,26 +301,24 @@ public class PropertyService implements IPropertyService {
     }
 
     private TestCaseExecutionData getAttributeFromHtml(TestCaseExecutionData testCaseExecutionData, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseCountryProperty) {
+        MessageEvent res;
         try {
             String valueFromHTML = this.seleniumService.getAttributeFromHtml(tCExecution.getSelenium(), testCaseCountryProperty.getValue1(), testCaseCountryProperty.getValue2());
-            MessageEvent res;
             if (valueFromHTML != null) {
                 testCaseExecutionData.setValue(valueFromHTML);
                 res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETATTRIBUTEFROMHTML);
             } else {
-                testCaseExecutionData.setValue(valueFromHTML);
                 res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_HTML_ATTRIBUTEDONOTEXIST);
             }
             res.setDescription(res.getDescription().replaceAll("%ELEMENT%", testCaseCountryProperty.getValue1()));
             res.setDescription(res.getDescription().replaceAll("%ATTRIBUTE%", testCaseCountryProperty.getValue2()));
             res.setDescription(res.getDescription().replaceAll("%VALUE%", valueFromHTML));
-            testCaseExecutionData.setPropertyResultMessage(res);
         } catch (NoSuchElementException exception) {
             MyLogger.log(PropertyService.class.getName(), Level.DEBUG, exception.toString());
-            MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_HTMLVISIBLE_ELEMENTDONOTEXIST);
+            res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_HTMLVISIBLE_ELEMENTDONOTEXIST);
             res.setDescription(res.getDescription().replaceAll("%ELEMENT%", testCaseCountryProperty.getValue1()));
-            testCaseExecutionData.setPropertyResultMessage(res);
         }
+        testCaseExecutionData.setPropertyResultMessage(res);
         return testCaseExecutionData;
     }
 
