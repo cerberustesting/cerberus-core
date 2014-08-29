@@ -98,7 +98,6 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         // Start to build the SQL Script here.
         SQLInstruction = new ArrayList<String>();
 
-
         // ***********************************************
         // ***********************************************
         // SQL Script Instructions.
@@ -120,8 +119,6 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         //   create a new one to secure that it gets executed in all env.
         // ***********************************************
         // ***********************************************
-
-
         SQLS = new StringBuilder();
         SQLS.append("CREATE TABLE `myversion` (");
         SQLS.append(" `Key` varchar(45) NOT NULL DEFAULT '', `Value` int(11) DEFAULT NULL,");
@@ -545,7 +542,6 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('MAXEXEC','1000',5,36,'1000',NULL,NULL,NULL);");
         SQLInstruction.add(SQLS.toString());
 
-
         SQLS = new StringBuilder();
         SQLS.append("CREATE TABLE `tag` (");
         SQLS.append("  `id` int(11) NOT NULL AUTO_INCREMENT,");
@@ -845,7 +841,6 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(") ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;");
         SQLInstruction.add(SQLS.toString());
 
-
         SQLS = new StringBuilder();
         SQLS.append("CREATE TABLE `buildrevisionbatch` (");
         SQLS.append("  `ID` int(11) NOT NULL AUTO_INCREMENT,");
@@ -946,7 +941,6 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(") ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;");
         SQLInstruction.add(SQLS.toString());
 
-
         SQLS = new StringBuilder();
         SQLS.append("CREATE TABLE `testcaseexecutiondata` (");
         SQLS.append("  `ID` bigint(20) unsigned NOT NULL AUTO_INCREMENT,");
@@ -986,7 +980,6 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("  CONSTRAINT `FK_testcaseexecutionwwwdet_1` FOREIGN KEY (`ExecID`) REFERENCES `testcaseexecution` (`ID`) ON DELETE CASCADE ON UPDATE CASCADE");
         SQLS.append(") ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;");
         SQLInstruction.add(SQLS.toString());
-
 
         SQLS = new StringBuilder();
         SQLS.append("CREATE TABLE `testcaseexecutionwwwsum` (");
@@ -1103,11 +1096,9 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(") ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;");
         SQLInstruction.add(SQLS.toString());
 
-
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `project` (`idproject`, `VCCode`, `Description`, `active`) VALUES (' ', ' ', 'None', 'N');");
         SQLInstruction.add(SQLS.toString());
-
 
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `testcase` VALUES ('Examples','0001A','Google',' ','','Search for Cerberus Website','','Y',NULL,1,'WORKING','Y','INTERACTIVE','RX','','','','2012-06-19 09:56:40','','','','','','','','cerberus','cerberus','cerberus',NULL,'Y','Y','Y')");
@@ -1116,7 +1107,6 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `testcasecountry` VALUES ('Examples','0001A','RX')");
         SQLInstruction.add(SQLS.toString());
-
 
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `testcasestep` VALUES ('Examples','0001A',1,'Search')");
@@ -1214,7 +1204,6 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(") ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8");
         SQLInstruction.add(SQLS.toString());
 
-
 //-- Adding subsystem column
 //--------------------------
         SQLS = new StringBuilder();
@@ -1233,13 +1222,11 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("SELECT 1 FROM dual;");
         SQLInstruction.add(SQLS.toString());
 
-
 //-- dropping tag table 
 //--------------------------
         SQLS = new StringBuilder();
         SQLS.append("DROP TABLE `tag`;");
         SQLInstruction.add(SQLS.toString());
-
 
 //-- Cerberus Engine Version inside execution table.
 //--------------------------
@@ -1249,7 +1236,6 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS = new StringBuilder();
         SQLS.append("SELECT 1 FROM dual;");
         SQLInstruction.add(SQLS.toString());
-
 
 //-- Screenshot filename stored inside execution table. That allow to determine if screenshot is taken or not.
 //--------------------------
@@ -1266,7 +1252,6 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("SELECT 1 FROM dual;");
         SQLInstruction.add(SQLS.toString());
 
-
 //-- Test and TestCase information inside the execution tables. That will allow to have the full tracability on the pretestcase executed.
 //--------------------------
         SQLS = new StringBuilder();
@@ -1281,7 +1266,6 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS = new StringBuilder();
         SQLS.append("ALTER TABLE `testcasestepactioncontrolexecution` ADD COLUMN `Test` VARCHAR(45) NULL DEFAULT NULL  AFTER `ID` , ADD COLUMN `TestCase` VARCHAR(45) NULL DEFAULT NULL  AFTER `Test` ;");
         SQLInstruction.add(SQLS.toString());
-
 
 //-- Cleaning Index names and Foreign Key contrains
 //-- ------------------------
@@ -1514,7 +1498,6 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("SELECT 1 FROM dual;");
         SQLInstruction.add(SQLS.toString());
 
-
 //-- New Cerberus Message store at the level of the execution - Header, Action and Control Level.
 //-- ------------------------
         SQLS = new StringBuilder();
@@ -1527,20 +1510,17 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("ALTER TABLE `testcasestepactionexecution` ADD COLUMN `ReturnCode` VARCHAR(2) NULL DEFAULT NULL  AFTER `Sequence` , ADD COLUMN `ReturnMessage` VARCHAR(500) NULL DEFAULT NULL  AFTER `ReturnCode` ;");
         SQLInstruction.add(SQLS.toString());
 
-
 //-- New Integrity Link inside between User Group and User table.
 //-- ------------------------
         SQLS = new StringBuilder();
         SQLS.append("ALTER TABLE `usergroup` ADD CONSTRAINT `FK_usergroup_01`  FOREIGN KEY (`Login` )  REFERENCES `user` (`Login` )  ON DELETE CASCADE ON UPDATE CASCADE;");
         SQLInstruction.add(SQLS.toString());
 
-
 //-- New Parameter for Performance Monitoring Servlet.
 //-- ------------------------
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `parameter` (`param`, `value`, `description`) VALUES ('cerberus_performancemonitor_nbminutes', '5', 'Integer that correspond to the number of minutes where the number of executions are collected on the servlet that manage the monitoring of the executions.');");
         SQLInstruction.add(SQLS.toString());
-
 
         //-- New Parameter for link to selenium extensions firebug and netexport.
         //-- -------------------------
@@ -1551,13 +1531,11 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("INSERT INTO `parameter` (`param`, `value`, `description`) VALUES ('cerberus_selenium_firefoxextension_netexport', 'D:\\\\CerberusDocuments\\\\netExport.xpi', 'Link to the firefox extension NETEXPORT file needed to export network traffic')");
         SQLInstruction.add(SQLS.toString());
 
-
         //-- New Invariant Browser to feed combobox.
         //-- -------------------------
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `id`, `description`) VALUES ('BROWSER', 'FIREFOX', 1, 37, 'Firefox Browser')");
         SQLInstruction.add(SQLS.toString());
-
 
 //-- Removing Performance Monitoring Servlet Parameter as it has been moved to the call of the URL. The number of minutes cannot be the same accross all requests.
 //-- ------------------------
@@ -1591,7 +1569,6 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS = new StringBuilder();
         SQLS.append("UPDATE `invariant` SET `idname`='NCONFSTATUS' WHERE `id`='33' and`sort`='2';");
         SQLInstruction.add(SQLS.toString());
-
 
 //-- New invariant for execution detail list page.
 //-- ------------------------
@@ -1655,7 +1632,6 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `id`, `description`) VALUES ('ACTION', 'mouseOverAndWait', 58, 12, 'mouseOverAndWait')");
         SQLInstruction.add(SQLS.toString());
-
 
 //-- New Documentation for verbose and status on the execution table.
 //-- ------------------------
@@ -1807,7 +1783,6 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `parameter` (`param`, `value`, `description`) VALUES ('cerberus_url', 'http://localhost:8080/GuiCerberusV2-2.0.0-SNAPSHOT', 'URL to Cerberus used in order to call back cerberus from NetExport plugin. This parameter is mandatory for saving the firebug detail information back to cerberus. ex : http://host:port/contextroot');");
         SQLInstruction.add(SQLS.toString());
-
 
 //-- Making controls standard. 
 //-- ------------------------
@@ -2063,7 +2038,6 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(" CHANGE COLUMN `Environment` `Environment` VARCHAR(45) NULL DEFAULT NULL  AFTER `Country` ;");
         SQLInstruction.add(SQLS.toString());
 
-
 //-- Change invariant LANGUAGE to GP2 of invariant COUNTRY
 //-- ------------------------
         SQLS = new StringBuilder();
@@ -2275,8 +2249,6 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
 //-- Cerberus 0.9.0 Stops here.
 //-- ------------------------
 //-- ------------------------
-
-
 //-- Database structure to handle link between environment and history of Build rev per system for each execution.
 //-- ------------------------ 331
         SQLS = new StringBuilder();
@@ -2444,7 +2416,6 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(", DROP PRIMARY KEY , ADD PRIMARY KEY (`system`, `param`) ; ");
         SQLInstruction.add(SQLS.toString());
 
-
 //-- Adding Index for performance optimisation and renaming other index for MySQL compliance (Index must have different names from Foreign Keys).
 //-- ------------------------
         SQLS = new StringBuilder();
@@ -2457,7 +2428,6 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(" DROP INDEX `FK_testcaseexecutionsysver_01` , ADD INDEX `FK_testcaseexecutionsysver_01_IX` (`ID` ASC) ");
         SQLS.append(" , ADD INDEX `IX_testcaseexecutionsysver_02` (`system` ASC, `Build` ASC, `Revision` ASC) ;");
         SQLInstruction.add(SQLS.toString());
-
 
         SQLS = new StringBuilder();
         SQLS.append("ALTER TABLE `application` ");
@@ -2522,7 +2492,6 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `id`, `description`) VALUES ('ACTION', 'mouseUp', 56, 12, 'Selenium Action mouseDown');");
         SQLInstruction.add(SQLS.toString());
-
 
 // New usergroups added to the invariant table
         SQLS = new StringBuilder();
@@ -2624,7 +2593,6 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("ALTER TABLE `user` ADD COLUMN `Email` VARCHAR(100) NULL AFTER `DefaultSystem`");
         SQLInstruction.add(SQLS.toString());
 
-
 // Removing internal column inside application table.
         SQLS = new StringBuilder();
         SQLS.append("ALTER TABLE `application` DROP COLUMN `internal` ;");
@@ -2699,7 +2667,6 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("SELECT 1 FROM dual;");
         SQLInstruction.add(SQLS.toString());
 
-
 // URL to download drivers.
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) VALUES ('', 'selenium_chromedriver_download_url', 'http://chromedriver.storage.googleapis.com/index.html', 'Download URL for Selenium Chrome webdrivers.') ");
@@ -2733,7 +2700,6 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("UPDATE `documentation` SET `DocDesc`='This correspond to the URL that points to the page where a new bug can be created on the Bug system of the <code class=\\'doc-crbvvoca\\'>application</code>.<br><br><table cellspacing=0 cellpadding=3><th class=\\'ex\\' colspan=\\'2\\'>The following variables can be used inside the URL</th><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%TEST%</code></td><td class=\\'ex\\'>Test</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%TESTCASE%</code></td><td class=\\'ex\\'>Test case reference</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%TESTCASEDESC%</code></td><td class=\\'ex\\'>Description of the test case</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%EXEID%</code></td><td class=\\'ex\\'>Execution ID</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%ENV%</code></td><td class=\\'ex\\'>Environment</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%COUNTRY%</code></td><td class=\\'ex\\'>Country</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%BUILD%</code></td><td class=\\'ex\\'>Build</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%REV%</code></td><td class=\\'ex\\'>Revision</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%BROWSER%</code></td><td class=\\'ex\\'>Browser used during the <code class=\\'doc-crbvvoca\\'>test case</code> execution</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%BROWSERFULLVERSION%</code></td><td class=\\'ex\\'>Full Version of the Browser used during the <code class=\\'doc-crbvvoca\\'>test case</code> execution</td></tr></table>' WHERE `DocTable`='application' and`DocField`='bugtrackernewurl' and`DocValue`='';");
         SQLInstruction.add(SQLS.toString());
 
-
 // Resized URL links in application table.
         SQLS = new StringBuilder();
         SQLS.append("ALTER TABLE `application` CHANGE COLUMN `BugTrackerUrl` `BugTrackerUrl` VARCHAR(5000) NULL DEFAULT ''  , CHANGE COLUMN `BugTrackerNewUrl` `BugTrackerNewUrl` VARCHAR(5000) NULL DEFAULT '' ;");
@@ -2754,7 +2720,6 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS = new StringBuilder();
         SQLS.append("UPDATE `invariant` SET `gp1`='Y' WHERE `id`='1' ;");
         SQLInstruction.add(SQLS.toString());
-
 
 // Add manageDialog to action and verifyTextInDialog to control and verifyStringContains to control.
         SQLS = new StringBuilder();
@@ -2790,7 +2755,6 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS = new StringBuilder();
         SQLS.append("DELETE FROM `invariant` WHERE `id`='37' and`sort`='2';");
         SQLInstruction.add(SQLS.toString());
-
 
 // Adding invariant for Public and private invariant.
 //-- ------------------------ 434
@@ -3112,7 +3076,6 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('usergroup','GroupName','','Group Name','Authorities are managed by group. In order to be granted to a set of feature, you must belong to the corresponding group.<br>Every user can of course belong to as many group as necessary in order to get access to as many feature as required.<br>In order to get the full access to the system you must belong to every group.<br>Some groups are linked together on the test perimeter and integration perimeter.<br><br><b>Test perimeter :</b><br><br><code class=\\'doc-fixed\\'>TestRO</code>: Has read only access to the information related to test cases and also has access to execution reporting options.<br><br><code class=\\'doc-fixed\\'>Test</code>: Can modify non WORKING test cases but cannot delete test cases.<br><br><code class=\\'doc-fixed\\'>TestAdmin</code>: Can modify or delete any test case (including Pre Testing test cases). Can also create or delete a test.<br><br>The minimum group you need to belong is <code class=\\'doc-fixed\\'>TestRO</code> that will give you access in read only to all test data (including its execution reporting page).<br>If you want to be able to modify the testcases (except the WORKING ones), you need <code class=\\'doc-fixed\\'>Test</code> group on top of <code class=\\'doc-fixed\\'>TestRO</code> group.<br>If you want the full access to all testcase (including beeing able to delete any testcase), you will need <code class=\\'doc-fixed\\'>TestAdmin</code> on top of <code class=\\'doc-fixed\\'>TestRO</code> and <code class=\\'doc-fixed\\'>Test</code> group.<br><br><b>Test Execution perimeter :</b><br><br><code class=\\'doc-fixed\\'>RunTest</code>: Can run both Manual and Automated test cases from GUI.<br><br><b>Integration perimeter :</b><br><br><code class=\\'doc-fixed\\'>IntegratorRO</code>: Has access to the integration status.<br><br><code class=\\'doc-fixed\\'>Integrator</code>: Can add an application. Can change parameters of the environments.<br><br><code class=\\'doc-fixed\\'>IntegratorNewChain</code>: Can register the end of the chain execution. Has read only access to the other informations on the same page.<br><br><code class=\\'doc-fixed\\'>IntegratorDeploy</code>: Can disable or enable environments and register new build / revision.<br><br>The minimum group you need to belong is <code class=\\'doc-fixed\\'>IntegratorRO</code> that will give you access in read only to all environment data.<br>If you want to be able to modify the environment data, you need <code class=\\'doc-fixed\\'>Integrator</code> group on top of <code class=\\'doc-fixed\\'>IntegratorRO</code> group.<br><code class=\\'doc-fixed\\'>IntegratorNewChain</code> and <code class=\\'doc-fixed\\'>IntegratorDeploy</code> are used on top of <code class=\\'doc-fixed\\'>Integrator</code> Group to be able to create a new chain on an environment or perform a deploy operation.<br><br><b>Administration perimeter :</b><br><br><code class=\\'doc-fixed\\'>Administrator</code>: Can create, modify or delete users. Has access to log Event and Database Maintenance. Can change Parameter values.');");
         SQLInstruction.add(SQLS.toString());
 
-
 // Chenged project constrain on testcase table so that in case a project is removed, the testcases are not removed.
 //-- ------------------------ 441
         SQLS = new StringBuilder();
@@ -3158,7 +3121,6 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS = new StringBuilder();
         SQLS.append("ALTER TABLE `testcaseexecution` DROP INDEX `IX_testcaseexecution_04` ,ADD INDEX `IX_testcaseexecution_04` (`Test` ASC, `TestCase` ASC, `Country` ASC, `Browser` ASC, `Start` ASC, `ControlStatus` ASC);");
         SQLInstruction.add(SQLS.toString());
-
 
 //Add Campaing management tables.
 //-- ------------------------ 449
@@ -3251,7 +3213,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(" UNIQUE KEY IX_robot_01 (`robot`)");
         SQLS.append(") ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;");
         SQLInstruction.add(SQLS.toString());
-        
+
 //Update User set null value of defaultIP to empty.
 //-- ------------------------ 456
         SQLS = new StringBuilder();
@@ -3270,8 +3232,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("ADD COLUMN `robotVersion` VARCHAR(45) NOT NULL DEFAULT '' AFTER `robotBrowser`, ");
         SQLS.append("ADD COLUMN `robot` VARCHAR(100) NOT NULL DEFAULT '' AFTER `robotVersion`;");
         SQLInstruction.add(SQLS.toString());
-        
-        
+
 //Insert Platform invariant.
 //-- ------------------------ 458
         //TODO Add private invariant
@@ -3303,7 +3264,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS = new StringBuilder();
         SQLS.append("DELETE FROM `invariant` where `idname`='BROWSER' and `value` in ('IE9','IE10','IE11');");
         SQLInstruction.add(SQLS.toString());
-            
+
 //Add Version and Platform column in testcaseExecution table.
 //-- ------------------------ 460
         SQLS = new StringBuilder();
@@ -3312,28 +3273,28 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("ADD COLUMN `Platform` VARCHAR(20) NOT NULL DEFAULT '' AFTER `Version`,");
         SQLS.append("CHANGE COLUMN `IP` `IP` VARCHAR(150) NULL DEFAULT NULL ;");
         SQLInstruction.add(SQLS.toString());
-        
+
 //Insert Default Robot.
 //-- ------------------------ 461
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `robot` (`robot` ,`host` ,`port` ,`platform` ,`browser` ,`version` , `active` ,`description`)");
         SQLS.append("VALUES ('MyRobot', '127.0.0.1', '5555', 'LINUX', 'firefox', '28', 'Y', 'My Robot');");
         SQLInstruction.add(SQLS.toString());
-        
+
 //Insert parameter cerberus_picture_testcase_path.
 //-- ------------------------ 462
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) VALUES ");
         SQLS.append("('', 'cerberus_picture_testcase_path', '', 'Path to store the Cerberus Value and HowTo pictures of TestCase page');");
         SQLInstruction.add(SQLS.toString());
-        
+
 //Change IP on countryEnvironmentParameters accordingly to other tables (user, testcaseexecution and robot).
 //-- ------------------------ 463        
         SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `countryenvironmentparameters` "); 
-        SQLS.append("CHANGE COLUMN `IP` `IP` VARCHAR(150) NOT NULL DEFAULT '';"); 
+        SQLS.append("ALTER TABLE `countryenvironmentparameters` ");
+        SQLS.append("CHANGE COLUMN `IP` `IP` VARCHAR(150) NOT NULL DEFAULT '';");
         SQLInstruction.add(SQLS.toString());
-        
+
 //Add Invariant for campaign parameters.
 //-- ------------------------ 464 
         SQLS = new StringBuilder();
@@ -3350,16 +3311,14 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`, `gp1`, `gp2`, `gp3`) VALUES ");
         SQLS.append("('CONTROL', 'verifyElementInElement', 32, 'verifyElementInElement', '', NULL, NULL, NULL);");
         SQLInstruction.add(SQLS.toString());
-        
-        
+
 //Add Documentation for new control verify element in element.
 //-- ------------------------ 466 
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `DocLabel`, `DocDesc`) VALUES ");
         SQLS.append("('testcasestepactioncontrol', 'Type', 'verifyElementInElement', 'True if the ControlProp contains an element ControlValue.', '<b>verifyElementInElement</b><br><br>Verify if an element is contained in another on the webpage.<br><br><i>Control Property :</i> Element container<br><br><i>Control Value :</i> Element contained in the element Container<br><br>');");
         SQLInstruction.add(SQLS.toString());
- 
-        
+
 //Remove null on each field of countryenvparam.
 //-- ------------------------ 467 >  477
         SQLS = new StringBuilder();
@@ -3399,48 +3358,48 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
 //Alter table countryenvparam to put default value empty instead of NULL
 //-- ------------------------ 478
         SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `countryenvparam`"); 
-        SQLS.append("CHANGE COLUMN `Build` `Build` VARCHAR(10) NOT NULL DEFAULT '' ,"); 
-        SQLS.append("CHANGE COLUMN `Revision` `Revision` VARCHAR(20) NOT NULL DEFAULT '' ,"); 
-        SQLS.append("CHANGE COLUMN `Chain` `Chain` VARCHAR(20) NOT NULL DEFAULT '' ,"); 
-        SQLS.append("CHANGE COLUMN `DistribList` `DistribList` TEXT NOT NULL ,"); 
-        SQLS.append("CHANGE COLUMN `EMailBodyRevision` `EMailBodyRevision` TEXT NOT NULL  ,"); 
-        SQLS.append("CHANGE COLUMN `Type` `Type` VARCHAR(20) NOT NULL DEFAULT '' ,"); 
-        SQLS.append("CHANGE COLUMN `EMailBodyChain` `EMailBodyChain` TEXT NOT NULL ,"); 
-        SQLS.append("CHANGE COLUMN `EMailBodyDisableEnvironment` `EMailBodyDisableEnvironment` TEXT NOT NULL ,"); 
-        SQLS.append("CHANGE COLUMN `maintenanceact` `maintenanceact` VARCHAR(1) NOT NULL DEFAULT 'N' ,"); 
-        SQLS.append("CHANGE COLUMN `maintenancestr` `maintenancestr` TIME NOT NULL DEFAULT 0 ,"); 
-        SQLS.append("CHANGE COLUMN `maintenanceend` `maintenanceend` TIME NOT NULL DEFAULT 0 ;"); 
+        SQLS.append("ALTER TABLE `countryenvparam`");
+        SQLS.append("CHANGE COLUMN `Build` `Build` VARCHAR(10) NOT NULL DEFAULT '' ,");
+        SQLS.append("CHANGE COLUMN `Revision` `Revision` VARCHAR(20) NOT NULL DEFAULT '' ,");
+        SQLS.append("CHANGE COLUMN `Chain` `Chain` VARCHAR(20) NOT NULL DEFAULT '' ,");
+        SQLS.append("CHANGE COLUMN `DistribList` `DistribList` TEXT NOT NULL ,");
+        SQLS.append("CHANGE COLUMN `EMailBodyRevision` `EMailBodyRevision` TEXT NOT NULL  ,");
+        SQLS.append("CHANGE COLUMN `Type` `Type` VARCHAR(20) NOT NULL DEFAULT '' ,");
+        SQLS.append("CHANGE COLUMN `EMailBodyChain` `EMailBodyChain` TEXT NOT NULL ,");
+        SQLS.append("CHANGE COLUMN `EMailBodyDisableEnvironment` `EMailBodyDisableEnvironment` TEXT NOT NULL ,");
+        SQLS.append("CHANGE COLUMN `maintenanceact` `maintenanceact` VARCHAR(1) NOT NULL DEFAULT 'N' ,");
+        SQLS.append("CHANGE COLUMN `maintenancestr` `maintenancestr` TIME NOT NULL DEFAULT 0 ,");
+        SQLS.append("CHANGE COLUMN `maintenanceend` `maintenanceend` TIME NOT NULL DEFAULT 0 ;");
         SQLInstruction.add(SQLS.toString());
 
 //Alter table countryenvparam to put default value empty instead of NULL
 //-- ------------------------ 479       
         SQLS = new StringBuilder();
         SQLS.append("ALTER TABLE `campaignparameter` DROP INDEX `IX_campaignparameter_01` , ");
-        SQLS.append("ADD UNIQUE INDEX `IX_campaignparameter_01` (`campaign` ASC, `Parameter` ASC, `Value` ASC);"); 
+        SQLS.append("ADD UNIQUE INDEX `IX_campaignparameter_01` (`campaign` ASC, `Parameter` ASC, `Value` ASC);");
         SQLInstruction.add(SQLS.toString());
-        
+
 //Add invariant action openURL
 //-- ------------------------ 480       
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `invariant` ");
         SQLS.append(" VALUES ('ACTION', 'openUrl', '65', 'openUrl', '', NULL,NULL,NULL);");
         SQLInstruction.add(SQLS.toString());
-    
+
 //Add documentation related to action openURL
 //-- ------------------------ 481       
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `DocLabel`, `DocDesc`) VALUES ");
         SQLS.append("('testcasestepaction','Action','openUrl','Open a URL','<code class=\\'doc-fixed\\'>openUrl</code> will allow you to open a specific URL.<br><br>Usage :<br><doc class=\"usage\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Field</th><th class=\\'ex\\'>Usage</th><tr><td class=\\'ex\\'>Object</td><td class=\\'ex\\'>Absolute URL to open. </td></tr><tr><td class=\\'ex\\'>Property</td><td class=\\'ex\\'>Property name (only used to activate or not double click depending on if the property exist for the country).</td></tr></table></doc><br><br>Examples :<br><doc class=\"examples\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Object</th><th class=\\'ex\\'>Property</th><th class=\\'ex\\'>Result</th><tr><td class=\\'ex\\'>http://www.cerberus-testing.org/contextroot/login/login.aspx</td><td class=\\'ex\\'></td><td class=\\'ex\\'>www.cerberus-testing.org/contextroot/login/login.aspx URL will be open.</td></tr></table></doc>')");
         SQLInstruction.add(SQLS.toString());
-        
+
 //Add function column in testcase table
 //-- ------------------------ 482      
         SQLS = new StringBuilder();
         SQLS.append("ALTER TABLE `testcase` ");
         SQLS.append("ADD COLUMN `function` VARCHAR(500) NULL DEFAULT '' AFTER `activePROD`;");
         SQLInstruction.add(SQLS.toString());
-        
+
 //Add documentation for function column in testcase table
 //-- ------------------------ 483      
         SQLS = new StringBuilder();
@@ -3454,14 +3413,14 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) VALUES ");
         SQLS.append("('', 'cerberus_testcase_function_urlForListOfFunction', '/URL/TO/FUNCTION/SERVICE', 'URL to feed the function field with proposal for autocompletion. URL should respond JSON format');");
         SQLInstruction.add(SQLS.toString());
-        
+
 //Add documentation for function column in testcase table
 //-- ------------------------ 485      
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) VALUES ");
         SQLS.append("('', 'cerberus_testcase_function_booleanListOfFunction', 'N', 'boolean to activate autocompletion on function fields.');");
         SQLInstruction.add(SQLS.toString());
-        
+
 //Add documentation for timeout and synchroneous field
 //-- ------------------------ 486      
         SQLS = new StringBuilder();
@@ -3469,7 +3428,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("('page_runtests', 'Synchroneous', '', 'Synchroneous', 'This is parameter to define if user mut be redirected to the reporting during the execution.<br><br>By default, synchroneous will be set to Y, meaning the redirection will be at the end of the execution.'),");
         SQLS.append("('page_runtests', 'Timeout', '', 'Timeout', 'This is the timeout used for the execution.<br><br>If empty, the default value will be the one set in the parameter table.');");
         SQLInstruction.add(SQLS.toString());
-        
+
 //Add invariant synchroneous
 //-- ------------------------ 487      
         SQLS = new StringBuilder();
@@ -3477,27 +3436,26 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(" ('SYNCHRONEOUS', 'N', '2', 'Redirect to the execution before the end of the execution', '', NULL, NULL, NULL),");
         SQLS.append(" ('SYNCHRONEOUS', 'Y', '1', 'Redirect to the execution after the end of the execution', '', NULL, NULL, NULL);");
         SQLInstruction.add(SQLS.toString());
-        
+
 //Add invariant private synchroneous
 //-- ------------------------ 488       
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ('INVARIANTPRIVATE', 'SYNCHRONEOUS', '430', '', '');");
         SQLInstruction.add(SQLS.toString());
-        
-//Add invariant private synchroneous
+
+//Add invariant action callSoapWithBase
 //-- ------------------------ 489       
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ('ACTION', 'callSoapWithBase', '190', 'callSoapWithBase', '');");
         SQLInstruction.add(SQLS.toString());
-        
-        
-//Add invariant private synchroneous
+
+//Add invariant CONTROL verifyXmlTreeStructure
 //-- ------------------------ 490       
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ('CONTROL', 'verifyXmlTreeStructure', '90', 'verifyXmlTreeStructure', '');");
         SQLInstruction.add(SQLS.toString());
-        
-//Add action mouseDownMouseUp
+
+//Add invariant action mouseDownMouseUp
 //-- ------------------------ 491       
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ('ACTION', 'mouseDownMouseUp', '200', 'mouseDownMouseUp', '');");
@@ -3508,7 +3466,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS = new StringBuilder();
         SQLS.append("UPDATE `documentation` SET `DocDesc`='Value of the property. Depend on the <code class=\\'doc-fixed\\'>type</code> of property chosen.<br><br>Get more information on <code class=\\'doc-fixed\\'>type</code> field.<br><br><table cellspacing=0 cellpadding=3><th class=\\'ex\\' colspan=\\'2\\'>The following system variables can be used</th><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_SYSTEM%</code></td><td class=\\'ex\\'>System value</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_APPLI%</code></td><td class=\\'ex\\'>Application reference</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_ENV%</code></td><td class=\\'ex\\'>Environment value</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_ENVGP%</code></td><td class=\\'ex\\'>Environment group code</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_COUNTRY%</code></td><td class=\\'ex\\'>Country code</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_COUNTRYGP1%</code></td><td class=\\'ex\\'>Country group1 value</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_SSIP%</code></td><td class=\\'ex\\'>Selenium server IP</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_SSPORT%</code></td><td class=\\'ex\\'>Selenium server port</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_TAG%</code></td><td class=\\'ex\\'>Execution tag</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_TODAY-yyyy%</code></td><td class=\\'ex\\'>Year of today</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_TODAY-MM%</code></td><td class=\\'ex\\'>Month of today</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_TODAY-dd%</code></td><td class=\\'ex\\'>Day of today</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_TODAY-doy%</code></td><td class=\\'ex\\'>Day of today from the beginning of the year</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_TODAY-HH%</code></td><td class=\\'ex\\'>Hour of today</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_TODAY-mm%</code></td><td class=\\'ex\\'>Minute of today</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_TODAY-ss%</code></td><td class=\\'ex\\'>Second of today</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_YESTERDAY-yyyy%</code></td><td class=\\'ex\\'>Year of yesterday</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_YESTERDAY-MM%</code></td><td class=\\'ex\\'>Month of yesterday</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_YESTERDAY-dd%</code></td><td class=\\'ex\\'>Day of yesterday</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_TODAY-doy%</code></td><td class=\\'ex\\'>Day of yesterday from the beginning of the year</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_YESTERDAY-HH%</code></td><td class=\\'ex\\'>Hour of yesterday</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_YESTERDAY-mm%</code></td><td class=\\'ex\\'>Minute of yesterday</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_YESTERDAY-ss%</code></td><td class=\\'ex\\'>Second of yesterday</td></tr></table>' WHERE `DocTable`='testcasecountryproperties' and `DocField`='Value' and `DocValue`='';");
         SQLInstruction.add(SQLS.toString());
-        
+
 //Add use step columns in testcasestep
 //-- ------------------------ 493       
         SQLS = new StringBuilder();
@@ -3518,7 +3476,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("ADD COLUMN `useStepTestCase` VARCHAR(45) NOT NULL DEFAULT '' AFTER `useStepTest`, ");
         SQLS.append("ADD COLUMN `useStepStep` INT(10) NOT NULL  AFTER `useStepTestCase`; ");
         SQLInstruction.add(SQLS.toString());
-        
+
 //Add control isElementClickable and isElementNotClickable
 //-- ------------------------ 494       
         SQLS = new StringBuilder();
@@ -3526,7 +3484,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(" ('CONTROL','verifyElementClickable',35,'isElementClickable',''),");
         SQLS.append(" ('CONTROL','verifyElementNotClickable',36,'isElementNotClickable','')");
         SQLInstruction.add(SQLS.toString());
-             
+
 //Add documentation isElementClickable , isElementNotClickable, callSoapWithBase
 //-- ------------------------ 495       
         SQLS = new StringBuilder();
@@ -3535,32 +3493,32 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(" ('testcasestepactioncontrol', 'Type', 'verifyElementNotClickable', 'True if element is not clickable.', '<b>verifyElementNotClickable</b><br><br>Verify if an element is not clickable.<br><br><i>Control Property :</i> Element container<br><br>'),");
         SQLS.append(" ('testcasestepaction', 'Action', 'callSoapWithBase', 'callSoapWithBase', '<code class=\\'doc-fixed\\'>callSoapWithBase</code> will allow you to make a SOAP call (Stored on the <a href=\"./SoapLibrary.jsp\">SoapLibrary</a>) using the servicePath stored at the countryenvrionmentparameters level. That allow to call the soap on the environment of the execution.<br><br> The result will be stored in the memory. On this result, you can make some control (verify the presence or the content of the elements for exemple) or get some information using property getFromXML<br><br>Usage :<br><doc class=\"usage\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Field</th><th class=\\'ex\\'>Usage</th><tr><td class=\\'ex\\'>Object</td><td class=\\'ex\\'>Name of the SOAP from the SOAPLibrary.</td></tr><tr><td class=\\'ex\\'>Property</td><td class=\\'ex\\'></td></tr></table></doc><br><br>Examples :<br><doc class=\"examples\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Object</th><th class=\\'ex\\'>Property</th><th class=\\'ex\\'>Result</th><tr><td class=\\'ex\\'>WEATHER</td><td class=\\'ex\\'></td><td class=\\'ex\\'>WEATHER soapCall will be made.</td></tr></table></doc>')");
         SQLInstruction.add(SQLS.toString());
-             
+
 //Remove mouseUpMouseDown
 //-- ------------------------ 496       
         SQLS = new StringBuilder();
         SQLS.append("DELETE FROM `invariant` WHERE `idname`='ACTION' and `value`='mouseDownMouseUp';");
         SQLInstruction.add(SQLS.toString());
-        
+
 //Update documentation for new properties %SYS_EXECUTIONID%
 //-- ------------------------ 497
         SQLS = new StringBuilder();
         SQLS.append("UPDATE `documentation` SET `DocDesc`='Value of the property. Depend on the <code class=\\'doc-fixed\\'>type</code> of property chosen.<br><br>Get more information on <code class=\\'doc-fixed\\'>type</code> field.<br><br><table cellspacing=0 cellpadding=3><th class=\\'ex\\' colspan=\\'2\\'>The following system variables can be used</th><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_SYSTEM%</code></td><td class=\\'ex\\'>System value</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_APPLI%</code></td><td class=\\'ex\\'>Application reference</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_ENV%</code></td><td class=\\'ex\\'>Environment value</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_ENVGP%</code></td><td class=\\'ex\\'>Environment group code</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_COUNTRY%</code></td><td class=\\'ex\\'>Country code</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_COUNTRYGP1%</code></td><td class=\\'ex\\'>Country group1 value</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_SSIP%</code></td><td class=\\'ex\\'>Selenium server IP</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_SSPORT%</code></td><td class=\\'ex\\'>Selenium server port</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_TAG%</code></td><td class=\\'ex\\'>Execution tag</td></tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_EXECUTIONID%</code></td><td class=\\'ex\\'>Execution ID</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_TODAY-yyyy%</code></td><td class=\\'ex\\'>Year of today</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_TODAY-MM%</code></td><td class=\\'ex\\'>Month of today</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_TODAY-dd%</code></td><td class=\\'ex\\'>Day of today</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_TODAY-doy%</code></td><td class=\\'ex\\'>Day of today from the beginning of the year</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_TODAY-HH%</code></td><td class=\\'ex\\'>Hour of today</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_TODAY-mm%</code></td><td class=\\'ex\\'>Minute of today</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_TODAY-ss%</code></td><td class=\\'ex\\'>Second of today</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_YESTERDAY-yyyy%</code></td><td class=\\'ex\\'>Year of yesterday</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_YESTERDAY-MM%</code></td><td class=\\'ex\\'>Month of yesterday</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_YESTERDAY-dd%</code></td><td class=\\'ex\\'>Day of yesterday</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_TODAY-doy%</code></td><td class=\\'ex\\'>Day of yesterday from the beginning of the year</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_YESTERDAY-HH%</code></td><td class=\\'ex\\'>Hour of yesterday</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_YESTERDAY-mm%</code></td><td class=\\'ex\\'>Minute of yesterday</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_YESTERDAY-ss%</code></td><td class=\\'ex\\'>Second of yesterday</td></tr></table>' WHERE `DocTable`='testcasecountryproperties' and `DocField`='Value' and `DocValue`='';");
         SQLInstruction.add(SQLS.toString());
-        
+
 //Add action getPageSource
 //-- ------------------------ 498       
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ('ACTION', 'getPageSource', '210', 'getPageSource', '');");
         SQLInstruction.add(SQLS.toString());
-        
+
 //Add documentation getPageSource
 //-- ------------------------ 499      
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `DocLabel`, `DocDesc`) VALUES ");
         SQLS.append("('testcasestepaction', 'Action', 'getPageSource', 'getPageSource', '<code class=\\'doc-fixed\\'>getPageSource</code> will allow you to record the source of the page opened.<br><br> The result will be stored in a file which will be available in the execution detail<br><br>Usage :<br><doc class=\"usage\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Field</th><th class=\\'ex\\'>Usage</th><tr><td class=\\'ex\\'>Object</td><td class=\\'ex\\'></td></tr><tr><td class=\\'ex\\'>Property</td><td class=\\'ex\\'></td></tr></table></doc><br><br>Examples :<br><doc class=\"examples\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Object</th><th class=\\'ex\\'>Property</th><th class=\\'ex\\'>Result</th><tr><td class=\\'ex\\'></td><td class=\\'ex\\'> </td><td class=\\'ex\\'>Source will be recorded</td></tr></table></doc>')");
         SQLInstruction.add(SQLS.toString());
-        
+
 //Add invariant callSoap and getFromXml
 //-- ------------------------ 500      
         SQLS = new StringBuilder();
@@ -3568,28 +3526,28 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(" ('ACTION', 'callSoap', '189', 'callSoap', ''),");
         SQLS.append(" ('PROPERTYTYPE', 'getFromXml', '50', 'getFromXml', '');");
         SQLInstruction.add(SQLS.toString());
-        
+
 //Add documentation getFromXml
 //-- ------------------------ 501      
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `DocLabel`, `DocDesc`) VALUES ");
         SQLS.append("('testcasecountryproperties', 'Type', 'getFromXML', 'Get a value from an XML file.', '<code class=\\'doc-fixed\\'>getFromXml</code> will allow you to get value from an XML file specifying the URL of the file and the xpath to eecute to get the data.<br><br>Usage :<br><doc class=\"usage\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Field</th><th class=\\'ex\\'>Usage</th><tr><td class=\\'ex\\'>DTB</td><td class=\\'ex\\'>Not used.</td></tr><tr><td class=\\'ex\\'>Value1</td><td class=\\'ex\\'>URL to the Xml file to parse.</td></tr><tr><td class=\\'ex\\'>Value2</td><td class=\\'ex\\'>xpath information to get data.</td></tr><tr><td class=\\'ex\\'>Length</td><td class=\\'ex\\'>Not used</td></tr><tr><td class=\\'ex\\'>RowLimit</td><td class=\\'ex\\'>Not used.</td></tr><tr><td class=\\'ex\\'>Nature</td><td class=\\'ex\\'>Not used.</td></tr></table></doc><br><br>Examples :<br>Parsing a file www.cerberus-testing.org/test.xml which contains an xml structure with ResponseCode element equals to OK and ResponseValue equals to 12345, it should be configured that way:<br><ResponseCode<doc class=\"examples\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Value1</th><th class=\\'ex\\'>Value2</th><th class=\\'ex\\'>Result</th><tr><td class=\\'ex\\'>www.cerberus-testing.org/test.xml</td><td class=\\'ex\\'>//ResponseCode</td><td class=\\'ex\\'>OK</td></tr><tr><td class=\\'ex\\'>www.cerberus-testing.org/test.xml</td><td class=\\'ex\\'>//ResponseValue</td><td class=\\'ex\\'>12345</td></tr></table></doc>')");
         SQLInstruction.add(SQLS.toString());
-              
+
 //Add documentation getFromCookie
 //-- ------------------------ 502      
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `DocLabel`, `DocDesc`) VALUES ");
         SQLS.append("('testcasecountryproperties', 'Type', 'getFromCookie', 'Get a value from Cookie.', '<code class=\\'doc-fixed\\'>getFromCookie</code> will allow you to get information on cookie.<br><br>Usage :<br><doc class=\"usage\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Field</th><th class=\\'ex\\'>Usage</th><tr><td class=\\'ex\\'>DTB</td><td class=\\'ex\\'>Not used.</td></tr><tr><td class=\\'ex\\'>Value1</td><td class=\\'ex\\'>Cookie Name.<br>In case the cookie is not found, empty string will be returned.</td></tr><tr><td class=\\'ex\\'>Value2</td><td class=\\'ex\\'>Information on cookie.<br>It could be name, value, expiry, domain, path, isHttpOnly, isSecure.</td></tr><tr><td class=\\'ex\\'>Length</td><td class=\\'ex\\'>Not used</td></tr><tr><td class=\\'ex\\'>RowLimit</td><td class=\\'ex\\'>Not used.</td></tr><tr><td class=\\'ex\\'>Nature</td><td class=\\'ex\\'>Not used.</td></tr></table></doc><br><br>Examples :<br><doc class=\"examples\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Value1</th><th class=\\'ex\\'>Value2</th><th class=\\'ex\\'>Result</th><tr><td class=\\'ex\\'>COOKIE_NAME</td><td class=\\'ex\\'>value</td><td class=\\'ex\\'>COOKIE_VALUE</td></tr><tr><td class=\\'ex\\'>COOKIE_NAME2</td><td class=\\'ex\\'>Expiry</td><td class=\\'ex\\'>01-01-2015</td></tr><tr><td class=\\'ex\\'>COOKIE_NAME3</td><td class=\\'ex\\'>host</td><td class=\\'ex\\'>www.cerberus-testing.org</td></tr></table></doc>')");
         SQLInstruction.add(SQLS.toString());
-        
+
 //Add invariant getFromCookie
 //-- ------------------------ 503      
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ");
         SQLS.append(" ('PROPERTYTYPE', 'getFromCookie', '60', 'getFromCookie', '');");
         SQLInstruction.add(SQLS.toString());
-        
+
 //Add documentation seleniumLog and pageSource
 //-- ------------------------ 504      
         SQLS = new StringBuilder();
@@ -3597,7 +3555,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(" ('page_runtests','PageSource','','PageSource','This define whether Page Source will be recorded during the execution of the test.<br><br><b>0</b> : No Page Source are recorded. This is to be used when a massive amout of tests are performed.<br><b>1</b> : Page Source are taken only when action or control provide unexpected result.<br><b>2</b> : Page Source are always taken on every selenium action. This is to be used only on very specific cases where all actions needs to take page source (For debug mode for example.')");
         SQLS.append(",('page_runtests','SeleniumLog','','SeleniumLog','This define whether Selenium Log will be recorded during the execution of the test.<br><br><b>0</b> : No  Selenium Log are recorded. This is to be used when a massive amout of tests are performed.<br><b>1</b> : Selenium Log are taken only when action or control provide unexpected result.<br><b>2</b> : Selenium Log are always taken on execution. This is to be used only on very specific cases where all actions needs to take Selenium Log (For debug mode for example.')");
         SQLInstruction.add(SQLS.toString());
-        
+
 //Add invariant seleniumLog and pageSource
 //-- ------------------------ 505      
         SQLS = new StringBuilder();
@@ -3611,58 +3569,58 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(" ('SELENIUMLOG', '1', '20', 'Record Selenium Log on error only', ''),");
         SQLS.append(" ('SELENIUMLOG', '2', '30', 'Record Selenium Log on testcase', '');");
         SQLInstruction.add(SQLS.toString());
-        
+
 //Add PageSource filename on testcasestepactionexecution table
 //-- ------------------------ 506      
         SQLS = new StringBuilder();
         SQLS.append("ALTER TABLE `testcasestepactionexecution` ");
         SQLS.append("ADD COLUMN `PageSourceFileName` VARCHAR(150) NULL DEFAULT NULL AFTER `ScreenshotFilename`;");
         SQLInstruction.add(SQLS.toString());
-        
+
 //Add PageSource filename on testcasestepactioncontrolexecution table
 //-- ------------------------ 507      
         SQLS = new StringBuilder();
         SQLS.append("ALTER TABLE `testcasestepactioncontrolexecution` ");
         SQLS.append("ADD COLUMN `PageSourceFilename` VARCHAR(150) NULL DEFAULT NULL AFTER `ScreenshotFilename`;");
         SQLInstruction.add(SQLS.toString());
-        
+
 //Add Selenium Log in documentation
 //-- ------------------------ 508      
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `DocLabel`, `DocDesc`) ");
         SQLS.append("VALUES ('page_executiondetail', 'SeleniumLog', '', 'Selenium Log', 'Link to the selenium log file');");
         SQLInstruction.add(SQLS.toString());
-        
+
 //Default value 0 for use step 
 //-- ------------------------ 509      
         SQLS = new StringBuilder();
         SQLS.append("ALTER TABLE `testcasestep` ");
         SQLS.append("CHANGE COLUMN `useStepStep` `useStepStep` INT(10) NOT NULL DEFAULT '0' ;");
         SQLInstruction.add(SQLS.toString());
-        
+
 //Create table usersystem 
 //-- ------------------------ 510   
         SQLS = new StringBuilder();
         SQLS.append("CREATE TABLE `usersystem` (");
         SQLS.append("`Login` VARCHAR(10) NOT NULL,");
         SQLS.append("`System` VARCHAR(45) NOT NULL,");
-        SQLS.append("PRIMARY KEY (`Login`, `System`));");
+        SQLS.append("PRIMARY KEY (`Login`, `System`))  ENGINE=InnoDB DEFAULT CHARSET=utf8;");
         SQLInstruction.add(SQLS.toString());
-        
+
 //Create table usersystem 
 //-- ------------------------ 511   
         SQLS = new StringBuilder();
         SQLS.append("insert into usersystem ");
         SQLS.append("select u.login, i.value from user u, invariant i where i.idname='SYSTEM';");
         SQLInstruction.add(SQLS.toString());
-        
+
 //Default value in sort on application table 
 //-- ------------------------ 512   
         SQLS = new StringBuilder();
         SQLS.append("ALTER TABLE `application` ");
         SQLS.append("CHANGE COLUMN `sort` `sort` INT(11) NOT NULL DEFAULT 10 ;");
         SQLInstruction.add(SQLS.toString());
-        
+
 //Add application type WS
 //-- ------------------------ 513
         SQLS = new StringBuilder();
@@ -3683,7 +3641,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("INSERT INTO `documentation` VALUES ");
         SQLS.append("('testcaseexecution','executor','','Executor user','This is the name of the executor user that executed the <code class=\\'doc-crbvvoca\\'>test case</code>.<br>This data has been created for tracability purpose as the result of Cerberus Test could varry between human and selenium test.');");
         SQLInstruction.add(SQLS.toString());
-     
+
 // Add invariant getDifferencesFromXml.
 //-- ------------------------ 516
         SQLS = new StringBuilder();
@@ -3716,18 +3674,24 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
 
 // Increase soaplibray's Name column size from 45 to 255.
 //-- ------------------------ 520
-		SQLS = new StringBuilder();
-		SQLS.append("ALTER TABLE `soaplibrary` ");
-		SQLS.append("CHANGE COLUMN `Name` `Name` VARCHAR(255) NOT NULL DEFAULT '' ;");
-		SQLInstruction.add(SQLS.toString());
-		
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `soaplibrary` ");
+        SQLS.append("CHANGE COLUMN `Name` `Name` VARCHAR(255) NOT NULL DEFAULT '' ;");
+        SQLInstruction.add(SQLS.toString());
+
 // Increase soaplibray's Envelope column type from TEXT to MEDIUMTEXT.
 //-- ------------------------ 521
-		SQLS = new StringBuilder();
-		SQLS.append("ALTER TABLE `soaplibrary` ");
-		SQLS.append("CHANGE COLUMN `Envelope` `Envelope` MEDIUMTEXT NULL DEFAULT NULL ;");
-		SQLInstruction.add(SQLS.toString());
-        
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `soaplibrary` ");
+        SQLS.append("CHANGE COLUMN `Envelope` `Envelope` MEDIUMTEXT NULL DEFAULT NULL ;");
+        SQLInstruction.add(SQLS.toString());
+
+// Add foreign key to usersystem table.
+//-- ------------------------ 522
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `usersystem` ");
+        SQLS.append(" ADD CONSTRAINT `FK_usersystem_01` FOREIGN KEY (`Login` ) REFERENCES `user` (`Login`) ON DELETE CASCADE ON UPDATE CASCADE ");
+        SQLInstruction.add(SQLS.toString());
         return SQLInstruction;
     }
 }
