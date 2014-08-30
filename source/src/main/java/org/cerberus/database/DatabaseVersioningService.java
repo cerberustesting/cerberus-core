@@ -3698,10 +3698,10 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
 //-- ------------------------ 523-524
         SQLS = new StringBuilder();
         SQLS.append("CREATE TABLE `testdatalib` (");
-        SQLS.append("  `system` varchar(45) NOT NULL DEFAULT '',");
-        SQLS.append("  `Country` varchar(2) NOT NULL DEFAULT '',");
-        SQLS.append("  `Environment` varchar(45) NOT NULL DEFAULT '',");
         SQLS.append("  `Name` varchar(200) NOT NULL,");
+        SQLS.append("  `system` varchar(45) NOT NULL DEFAULT '',");
+        SQLS.append("  `Environment` varchar(45) NOT NULL DEFAULT '',");
+        SQLS.append("  `Country` varchar(2) NOT NULL DEFAULT '',");
         SQLS.append("  `Group` varchar(200) NOT NULL DEFAULT '',");
         SQLS.append("  `Type` varchar(45) NOT NULL DEFAULT '',");
         SQLS.append("  `Database` varchar(45) NOT NULL DEFAULT '',");
@@ -3710,23 +3710,23 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("  `Method` varchar(45) NOT NULL DEFAULT '',");
         SQLS.append("  `Envelope` text,");
         SQLS.append("  `Description` varchar(1000) NOT NULL DEFAULT '',");
-        SQLS.append("  PRIMARY KEY (`Name`,`system`,`Country`,`Environment`)");
+        SQLS.append("  PRIMARY KEY (`Name`,`system`,`Environment`,`Country`)");
         SQLS.append(") ENGINE=InnoDB DEFAULT CHARSET=utf8;");
         SQLInstruction.add(SQLS.toString());
 
         SQLS = new StringBuilder();
         SQLS.append("CREATE TABLE `testdatalibdata` (");
-        SQLS.append("  `system` varchar(45) NOT NULL DEFAULT '',");
-        SQLS.append("  `Country` varchar(2) NOT NULL DEFAULT '',");
-        SQLS.append("  `Environment` varchar(45) NOT NULL DEFAULT '',");
         SQLS.append("  `Name` varchar(200) NOT NULL,");
+        SQLS.append("  `system` varchar(45) NOT NULL DEFAULT '',");
+        SQLS.append("  `Environment` varchar(45) NOT NULL DEFAULT '',");
+        SQLS.append("  `Country` varchar(2) NOT NULL DEFAULT '',");
         SQLS.append("  `SubData` varchar(200) NOT NULL DEFAULT '',");
         SQLS.append("  `Value` text,");
         SQLS.append("  `Column` varchar(255) NOT NULL DEFAULT '',");
         SQLS.append("  `ParsingAnswer` text ,");
         SQLS.append("  `Description` varchar(1000)  NOT NULL DEFAULT '',");
-        SQLS.append("  PRIMARY KEY (`Name`,`system`,`Country`,`Environment`,`SubData`),");
-        SQLS.append("  CONSTRAINT `FK_testdatalibdata_01` FOREIGN KEY (`Name`) REFERENCES `testdatalib` (`Name`) ON DELETE CASCADE ON UPDATE CASCADE");
+        SQLS.append("  PRIMARY KEY (`Name`,`system`,`Environment`,`Country`,`SubData`),");
+        SQLS.append("  CONSTRAINT `FK_testdatalibdata_01` FOREIGN KEY (`Name`,`system`,`Environment`,`Country`) REFERENCES `testdatalib` (`Name`,`system`,`Environment`,`Country`) ON DELETE CASCADE ON UPDATE CASCADE");
         SQLS.append(") ENGINE=InnoDB DEFAULT CHARSET=utf8;");
         SQLInstruction.add(SQLS.toString());
 
