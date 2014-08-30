@@ -3692,6 +3692,93 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("ALTER TABLE `usersystem` ");
         SQLS.append(" ADD CONSTRAINT `FK_usersystem_01` FOREIGN KEY (`Login` ) REFERENCES `user` (`Login`) ON DELETE CASCADE ON UPDATE CASCADE ");
         SQLInstruction.add(SQLS.toString());
+        
+        
+// Creating nw tbles for test data.
+//-- ------------------------ 523-524
+        SQLS = new StringBuilder();
+        SQLS.append("CREATE TABLE `testdatalib` (");
+        SQLS.append("  `system` varchar(45) NOT NULL DEFAULT '',");
+        SQLS.append("  `Country` varchar(2) NOT NULL DEFAULT '',");
+        SQLS.append("  `Environment` varchar(45) NOT NULL DEFAULT '',");
+        SQLS.append("  `Name` varchar(200) NOT NULL,");
+        SQLS.append("  `Group` varchar(200) NOT NULL DEFAULT '',");
+        SQLS.append("  `Type` varchar(45) NOT NULL DEFAULT '',");
+        SQLS.append("  `Database` varchar(45) NOT NULL DEFAULT '',");
+        SQLS.append("  `Script` varchar(2500) NOT NULL DEFAULT '',");
+        SQLS.append("  `ServicePath` varchar(250) NOT NULL DEFAULT '',");
+        SQLS.append("  `Method` varchar(45) NOT NULL DEFAULT '',");
+        SQLS.append("  `Envelope` text,");
+        SQLS.append("  `Description` varchar(1000) NOT NULL DEFAULT '',");
+        SQLS.append("  PRIMARY KEY (`Name`,`system`,`Country`,`Environment`)");
+        SQLS.append(") ENGINE=InnoDB DEFAULT CHARSET=utf8;");
+        SQLInstruction.add(SQLS.toString());
+
+        SQLS = new StringBuilder();
+        SQLS.append("CREATE TABLE `testdatalibdata` (");
+        SQLS.append("  `system` varchar(45) NOT NULL DEFAULT '',");
+        SQLS.append("  `Country` varchar(2) NOT NULL DEFAULT '',");
+        SQLS.append("  `Environment` varchar(45) NOT NULL DEFAULT '',");
+        SQLS.append("  `Name` varchar(200) NOT NULL,");
+        SQLS.append("  `SubData` varchar(200) NOT NULL DEFAULT '',");
+        SQLS.append("  `Value` text,");
+        SQLS.append("  `Column` varchar(255) NOT NULL DEFAULT '',");
+        SQLS.append("  `ParsingAnswer` text ,");
+        SQLS.append("  `Description` varchar(1000)  NOT NULL DEFAULT '',");
+        SQLS.append("  PRIMARY KEY (`Name`,`system`,`Country`,`Environment`,`SubData`),");
+        SQLS.append("  CONSTRAINT `FK_testdatalibdata_01` FOREIGN KEY (`Name`) REFERENCES `testdatalib` (`Name`) ON DELETE CASCADE ON UPDATE CASCADE");
+        SQLS.append(") ENGINE=InnoDB DEFAULT CHARSET=utf8;");
+        SQLInstruction.add(SQLS.toString());
+
+// Temporary init data.
+//-- ------------------------ 525-530
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO testdatalib (`system`,`Country`,`Environment`,`Name`, `Type`, `Description`, `Envelope`) ");
+        SQLS.append(" SELECT '', `Country`, `Environment`, `key`, 'STATIC', description, '' from testdata td");
+        SQLS.append(" ON DUPLICATE KEY UPDATE Description=td.Description;");
+        SQLInstruction.add(SQLS.toString());
+
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO testdatalibdata (`system`,`Country`,`Environment`,`Name`, `SubData`, `Value`, `Description`, `ParsingAnswer`) ");
+        SQLS.append(" SELECT '', `Country`, `Environment`, `key`, '', `value`, description, '' from testdata td");
+        SQLS.append(" ON DUPLICATE KEY UPDATE `Value`=td.value, Description=td.Description;");
+        SQLInstruction.add(SQLS.toString());
+
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO testdatalib (`system`,`Country`,`Environment`,`Name`, `Group`, `Type`, `Database`, `Script`, `Description`, `Envelope`) ");
+        SQLS.append(" SELECT '', '', '', `Name`, IFNULL(`Type`,''), 'SQL', IFNULL(`Database`,''), IFNULL(`Script`,''), IFNULL(description,'') , '' from sqllibrary sl");
+        SQLS.append(" ON DUPLICATE KEY UPDATE `Group`=IFNULL(sl.Type,''), `Database`=IFNULL(sl.`Database`,''), `Script`=IFNULL(sl.`Script`,''), Description=IFNULL(sl.Description,'');");
+        SQLInstruction.add(SQLS.toString());
+
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO testdatalibdata (`system`,`Country`,`Environment`,`Name`, `SubData`, `Column`, `Description`, `ParsingAnswer`, `Value`) ");
+        SQLS.append(" SELECT '', '', '', `Name`, '', '', IFNULL(description,''), '', '' from sqllibrary sl");
+        SQLS.append(" ON DUPLICATE KEY UPDATE Description=IFNULL(sl.Description,'');");
+        SQLInstruction.add(SQLS.toString());
+
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO testdatalib (`system`,`Country`,`Environment`,`Name`, `Group`, `Type`, `ServicePath`, `Method`, `Envelope`, `Description`) ");
+        SQLS.append(" SELECT '', '', '', `Name`, IFNULL(`Type`,''), 'SOAP', IFNULL(`ServicePath`,''), IFNULL(`Method`,''), IFNULL(Envelope,''), IFNULL(description,'') from soaplibrary sl");
+        SQLS.append(" ON DUPLICATE KEY UPDATE `Group`=IFNULL(sl.Type,''), `ServicePath`=IFNULL(sl.`ServicePath`,''), `Method`=IFNULL(sl.`Method`,''), `Envelope`=IFNULL(sl.`Envelope`,''), Description=IFNULL(sl.Description,'');");
+        SQLInstruction.add(SQLS.toString());
+
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO testdatalibdata (`system`,`Country`,`Environment`,`Name`, `SubData`, `ParsingAnswer`, `Description`, `Value`) ");
+        SQLS.append(" SELECT '', '', '', `Name`, '', IFNULL(ParsingAnswer,''), IFNULL(description, ''), '' from soaplibrary sl");
+        SQLS.append(" ON DUPLICATE KEY UPDATE `ParsingAnswer`=IFNULL(sl.ParsingAnswer,''), Description=IFNULL(sl.Description,'');");
+        SQLInstruction.add(SQLS.toString());
+
+// Creatng invariant TESTDATATYPE.
+//-- ------------------------ 531
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ");
+        SQLS.append(" ('INVARIANTPRIVATE', 'TESTDATATYPE', '460', '', ''),");
+        SQLS.append(" ('TESTDATATYPE', 'STATIC', '10', 'Static test data.', ''),");
+        SQLS.append(" ('TESTDATATYPE', 'SQL', '20', 'Dynamic test data from SQL execution.', ''),");
+        SQLS.append(" ('TESTDATATYPE', 'SOAP', '30', 'Dynamic test data from SOAP Webservice call.', '');");
+        SQLInstruction.add(SQLS.toString());
+
+        
         return SQLInstruction;
     }
 }
