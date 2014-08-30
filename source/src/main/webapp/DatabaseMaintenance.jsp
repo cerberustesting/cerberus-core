@@ -16,7 +16,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
-  --%>
+--%>
 <%@page import="org.apache.log4j.Level"%>
 <%@page import="org.springframework.web.context.support.WebApplicationContextUtils" %>
 <%@page import="org.cerberus.factory.IFactoryMyversion"%>
@@ -137,7 +137,7 @@
                         }
                         out.print("</table>");
                         DtbVersion = myVersionService.findMyVersionByKey("database");
-                        if(DtbVersion == null){
+                        if (DtbVersion == null) {
                             factoryMyversion = new FactoryMyversion();
                             DtbVersion = factoryMyversion.create("database", 0);
                         }
@@ -150,12 +150,35 @@
             %><form action="DatabaseMaintenance.jsp?GO=Y" method="post" name="ExecApply" id="ExecApply">
                 <input style="font-size: large" type="submit" value="Apply Next SQL" onClick="this.form.submit(); this.disabled=true; this.value='Processing...'; "></form>
                 <%
-                            i = 0;
-                            out.print("<table>");
-                            out.print("<tr><td>version</td><td>SQL</td></tr>");
-                            for (String MySQL : SQLInstruction) {
-                                i = i + 1;
-                                if (i > DtbVersion.getValue()) {
+                                i = 0;
+                                out.print("<table>");
+                                out.print("<tr><td>version</td><td>SQL</td></tr>");
+                                for (String MySQL : SQLInstruction) {
+                                    i = i + 1;
+                                    if (i > DtbVersion.getValue()) {
+                                        out.print("<tr><td>");
+                                        out.print(i);
+                                        out.print("</td><td class=\"wob\" style=\"width: 900px\"><textarea name=\"SQL\" rows=\"3\" style=\"font-size:x-small;width: 100%\" readonly>");
+                                        out.print(MySQL.replaceAll("</textarea>", "</text4rea>"));
+                                        out.print("</textarea></td>");
+                                        out.println("</tr>");
+                                    }
+                                }
+                                out.print("</table>");
+                            }
+                        }
+
+                        if (DtbVersion.getValue() == (NewVersion)) { // Database is already (or just have been) updated
+
+                            out.print("Database is now uptodate. Enjoy the tool.<br>");
+                            out.print("Show all SQL <a href=\"DatabaseMaintenance.jsp?ShowAll\">here</a>.");
+
+                            if (request.getParameter("ShowAll") != null) {
+                                Integer i = 0;
+                                out.print("<table>");
+                                out.print("<tr><td>version</td><td>SQL</td></tr>");
+                                for (String MySQL : SQLInstruction) {
+                                    i = i + 1;
                                     out.print("<tr><td>");
                                     out.print(i);
                                     out.print("</td><td class=\"wob\" style=\"width: 900px\"><textarea name=\"SQL\" rows=\"3\" style=\"font-size:x-small;width: 100%\" readonly>");
@@ -163,14 +186,8 @@
                                     out.print("</textarea></td>");
                                     out.println("</tr>");
                                 }
+                                out.print("</table>");
                             }
-                            out.print("</table>");
-                            }
-                        }
-
-                        if (DtbVersion.getValue() == (NewVersion)) { // Database is already (or just have been) updated
-
-                            out.print("Database is now uptodate. Enjoy the tool.<br>");
 
                         }
 
@@ -179,7 +196,6 @@
                             out.print("Database version is earlier than application. Please update the version of Cerberus quickly as retro compatibility is not supported.<br>");
 
                         }
-
 
                     } catch (Exception exception1) {
                         MyLogger.log("DatabaseMaintenance.jsp", Level.ERROR, exception1.toString());
