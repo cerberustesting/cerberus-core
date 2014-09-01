@@ -72,6 +72,7 @@ public class TestDAO implements ITestDAO {
         return findTestByCriteria(new Test());
     }
 
+    @Override
     public List<Test> findTestByCriteria(Test test) {
         List<Test> result = null;
         StringBuilder query = new StringBuilder("SELECT Test, Description, Active, Automated, TDateCrea FROM test ");
