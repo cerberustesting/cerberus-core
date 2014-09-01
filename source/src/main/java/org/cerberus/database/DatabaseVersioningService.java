@@ -3687,15 +3687,28 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLInstruction.add(SQLS.toString());
 
 // Add foreign key to usersystem table.
-//-- ------------------------ 522
+//-- ------------------------ 522-524
         SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `usersystem` ");
-        SQLS.append(" ADD CONSTRAINT `FK_usersystem_01` FOREIGN KEY (`Login` ) REFERENCES `user` (`Login`) ON DELETE CASCADE ON UPDATE CASCADE ");
+        SQLS.append("DROP TABLE `usersystem` ;");
+        SQLInstruction.add(SQLS.toString());
+        
+        SQLS = new StringBuilder();
+        SQLS.append("CREATE TABLE `usersystem` (");
+        SQLS.append("  `Login` VARCHAR(10) NOT NULL,");
+        SQLS.append("  `System` VARCHAR(45) NOT NULL,");
+        SQLS.append(" PRIMARY KEY (`Login`, `System`), ");
+        SQLS.append(" CONSTRAINT `FK_usersystem_01` FOREIGN KEY (`Login` ) REFERENCES `user` (`Login`) ON DELETE CASCADE ON UPDATE CASCADE ");
+        SQLS.append(") ENGINE=InnoDB DEFAULT CHARSET=utf8 ;");
+        SQLInstruction.add(SQLS.toString());
+        
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO usersystem ");
+        SQLS.append(" SELECT u.login, i.value FROM user u, invariant i WHERE i.idname='SYSTEM';");
         SQLInstruction.add(SQLS.toString());
         
         
-// Creating nw tbles for test data.
-//-- ------------------------ 523-524
+// Creating new tables for test data.
+//-- ------------------------ 525-526
         SQLS = new StringBuilder();
         SQLS.append("CREATE TABLE `testdatalib` (");
         SQLS.append("  `Name` varchar(200) NOT NULL,");
@@ -3731,7 +3744,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLInstruction.add(SQLS.toString());
 
 // Temporary init data.
-//-- ------------------------ 525-530
+//-- ------------------------ 527-532
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO testdatalib (`system`,`Country`,`Environment`,`Name`, `Type`, `Description`, `Envelope`) ");
         SQLS.append(" SELECT '', `Country`, `Environment`, `key`, 'STATIC', description, '' from testdata td");
@@ -3769,7 +3782,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLInstruction.add(SQLS.toString());
 
 // Creatng invariant TESTDATATYPE.
-//-- ------------------------ 531
+//-- ------------------------ 533
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ");
         SQLS.append(" ('INVARIANTPRIVATE', 'TESTDATATYPE', '460', '', ''),");
