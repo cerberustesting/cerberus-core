@@ -24,6 +24,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.cerberus.entity.MessageGeneral;
+import org.cerberus.entity.MessageGeneralEnum;
 import org.cerberus.entity.TCase;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.service.ITestCaseService;
@@ -62,14 +64,16 @@ public class UpdateTestCaseField extends HttpServlet {
         response.setContentType("text/html");
         try {
             TCase tc = tcService.findTestCaseByKey(test, testcase);
-            
-            tcService.updateTestCaseField(tc, name, value);
+            if (tc != null) {
+                tcService.updateTestCaseField(tc, name, value);
+            } else {
+                throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
+            }
             response.getWriter().print(value);
         } catch (CerberusException ex) {
             response.getWriter().print(ex.getMessageError().getDescription());
         }
     }
-
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**

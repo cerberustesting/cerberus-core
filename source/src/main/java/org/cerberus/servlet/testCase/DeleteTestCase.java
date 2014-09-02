@@ -20,15 +20,16 @@
 package org.cerberus.servlet.testCase;
 
 import java.io.IOException;
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.cerberus.entity.MessageGeneral;
+import org.cerberus.entity.MessageGeneralEnum;
+import org.cerberus.entity.TCase;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.service.ITestCaseService;
 import org.cerberus.service.impl.UserService;
@@ -63,7 +64,12 @@ public class DeleteTestCase extends HttpServlet {
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         ITestCaseService tcService = appContext.getBean(ITestCaseService.class);
         try {
-            tcService.deleteTestCase(tcService.findTestCaseByKey(test, testcase));
+            TCase testCase = tcService.findTestCaseByKey(test, testcase);
+            if (testCase != null) {
+                tcService.deleteTestCase(testCase);
+            } else {
+                throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
+            }
         } catch (CerberusException ex) {
             Logger.getLogger(UserService.class.getName()).log(Level.ERROR, null, ex);
         }

@@ -123,7 +123,11 @@ public class ExecutionStartService implements IExecutionStartService {
         // Integrate this.loadTestCaseService.loadTestCase(tCExecution); inside with Dependency.
         try {
             TCase tCase = testCaseService.findTestCaseByKey(tCExecution.getTest(), tCExecution.getTestCase());
-            tCExecution.settCase(tCase);
+            if (tCase != null){
+                tCExecution.settCase(tCase);
+            } else {
+            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
+            }
             /**
              * Copy the status of the testcase to the status column of the
              * Execution. This is done to know how stable was the testcase at

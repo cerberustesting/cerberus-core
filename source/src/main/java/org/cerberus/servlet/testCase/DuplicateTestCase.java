@@ -107,6 +107,9 @@ public class DuplicateTestCase extends HttpServlet {
                 if (testCaseService.findTestCaseByKey(newTest, newTestCase) != null) {
                     throw new CerberusException(new MessageGeneral(MessageGeneralEnum.GUI_TESTCASE_DUPLICATION_ALREADY_EXISTS));
                 }
+                if (testCaseService.findTestCaseByKey(test, testCase) == null){
+                throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
+                }
                 TCase newTc = testCaseService.findTestCaseByKey(test, testCase);
                 newTc.setCreator(request.getUserPrincipal().getName());
                 newTc.setTest(newTest);

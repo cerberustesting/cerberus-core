@@ -30,6 +30,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Level;
 import org.cerberus.entity.CountryEnvironmentDatabase;
 import org.cerberus.entity.ExecutionUUID;
+import org.cerberus.entity.MessageGeneral;
+import org.cerberus.entity.MessageGeneralEnum;
 import org.cerberus.entity.SoapLibrary;
 import org.cerberus.entity.SqlLibrary;
 import org.cerberus.entity.TCase;
@@ -67,7 +69,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  * @version 1.0, 24/03/2014
  * @since 0.9.0
  */
-@WebServlet(name="CalculatePropertyForTestCase", value = "/CalculatePropertyForTestCase")
+@WebServlet(name = "CalculatePropertyForTestCase", value = "/CalculatePropertyForTestCase")
 public class CalculatePropertyForTestCase extends HttpServlet {
 
     @Override
@@ -95,7 +97,11 @@ public class CalculatePropertyForTestCase extends HttpServlet {
                     IApplicationService applicationService = appContext.getBean(ApplicationService.class);
 
                     TCase testCase = testCaseService.findTestCaseByKey(testName, testCaseName);
-                    application = applicationService.findApplicationByKey(testCase.getApplication()).getApplication();
+                    if (testCase != null) {
+                        application = applicationService.findApplicationByKey(testCase.getApplication()).getApplication();
+                    } else {
+                        throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
+                    }
                 } catch (CerberusException ex) {
                     Logger.getLogger(CalculatePropertyForTestCase.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
                 }
@@ -113,7 +119,7 @@ public class CalculatePropertyForTestCase extends HttpServlet {
                     ExecutionUUID executionUUIDObject = appContext.getBean(ExecutionUUID.class);
                     UUID executionUUID = UUID.randomUUID();
                     executionUUIDObject.setExecutionUUID(executionUUID.toString(), 0);
-                    soapService.callSOAPAndStoreResponseInMemory(executionUUID.toString(),soapLib.getEnvelope(), soapLib.getServicePath(), soapLib.getMethod());
+                    soapService.callSOAPAndStoreResponseInMemory(executionUUID.toString(), soapLib.getEnvelope(), soapLib.getServicePath(), soapLib.getMethod());
                     result = xmlUnitService.getFromXml(executionUUID.toString(), null, soapLib.getParsingAnswer());
                     description = soapLib.getDescription();
                     executionUUIDObject.removeExecutionUUID(executionUUID.toString());
@@ -126,7 +132,12 @@ public class CalculatePropertyForTestCase extends HttpServlet {
                     IApplicationService applicationService = appContext.getBean(ApplicationService.class);
 
                     TCase testCase = testCaseService.findTestCaseByKey(testName, testCaseName);
-                    system = applicationService.findApplicationByKey(testCase.getApplication()).getSystem();
+                    if (testCase != null) {
+                        system = applicationService.findApplicationByKey(testCase.getApplication()).getSystem();
+                    } else {
+                        throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
+                    }
+
                 } catch (CerberusException ex) {
                     Logger.getLogger(CalculatePropertyForTestCase.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
                 }
@@ -143,7 +154,7 @@ public class CalculatePropertyForTestCase extends HttpServlet {
                         ISqlLibraryService sqlLibraryService = appContext.getBean(SqlLibraryService.class);
                         SqlLibrary sl = sqlLibraryService.findSqlLibraryByKey(policy.sanitize(property));
                         property = sl.getScript();
-                    
+
                         if (!(StringUtil.isNullOrEmpty(connectionName)) && !(StringUtil.isNullOrEmpty(policy.sanitize(property)))) {
                             ISQLService sqlService = appContext.getBean(ISQLService.class);
                             result = sqlService.queryDatabase(connectionName, policy.sanitize(property), 1).get(0);
@@ -152,7 +163,6 @@ public class CalculatePropertyForTestCase extends HttpServlet {
                     }
                 }
             }
-
 
         } catch (CerberusException ex) {
             Logger.getLogger(CalculatePropertyForTestCase.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);

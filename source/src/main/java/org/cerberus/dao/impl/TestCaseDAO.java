@@ -137,7 +137,7 @@ public class TestCaseDAO implements ITestCaseDAO {
                     if (resultSet.first()) {
                         result = this.loadTestCaseFromResultSet(resultSet);
                     } else {
-                        throwExcep = true;
+                        result = null;
                     }
                 } catch (SQLException exception) {
                     MyLogger.log(TestCaseDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());

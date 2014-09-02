@@ -81,8 +81,13 @@ public class SaveManualExecution extends HttpServlet {
         IFactoryTestCaseExecutionSysVer factoryTestCaseExecutionSysVer = appContext.getBean(IFactoryTestCaseExecutionSysVer.class);
 
         try {
+            Application application = null;
             TCase tCase = testService.findTestCaseByKey(test, testCase);
-            Application application = applicationService.findApplicationByKey(tCase.getApplication());
+            if (tCase != null) {
+                application = applicationService.findApplicationByKey(tCase.getApplication());
+            } else {
+                throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
+            }
             CountryEnvParam countryEnvParam;
             try {
                 countryEnvParam = countryEnvParamService.findCountryEnvParamByKey(application.getSystem(), country, env);

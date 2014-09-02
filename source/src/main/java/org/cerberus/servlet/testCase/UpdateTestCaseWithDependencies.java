@@ -118,16 +118,11 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
         if (tc.getTestCase().equals(initialTestCase)) {
             tcService.updateTestCase(tc);
         } else {
-            try { 
-                if (tcService.findTestCaseByKey(tc.getTest(), tc.getTestCase()) != null){
+            if (tcService.findTestCaseByKey(tc.getTest(), tc.getTestCase()) != null){
                     response.sendError(403, MessageGeneralEnum.GUI_TESTCASE_DUPLICATION_ALREADY_EXISTS.getDescription());
             } else {
                     tcService.createTestCase(tc);  
                 }
-            } catch (CerberusException ex) {
-            tcService.createTestCase(tc); 
-            }
-                
             }
         
 
