@@ -22,17 +22,12 @@ package org.cerberus.serviceEngine.impl;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.logging.Logger;
 
-import org.apache.log4j.Level;
-import org.cerberus.entity.CountryEnvParam;
-import org.cerberus.entity.MessageGeneral;
-import org.cerberus.entity.MessageGeneralEnum;
-import org.cerberus.entity.TestCaseExecution;
-import org.cerberus.entity.TCase;
+import org.apache.log4j.Logger;
+import org.cerberus.entity.*;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.log.MyLogger;
 import org.cerberus.service.IApplicationService;
+import org.cerberus.service.IBuildRevisionInvariantService;
 import org.cerberus.service.ITestCaseCountryService;
 import org.cerberus.serviceEngine.IExecutionCheckService;
 import org.cerberus.util.ParameterParserUtil;
@@ -49,12 +44,17 @@ import org.springframework.stereotype.Service;
 @Service
 public class ExecutionCheckService implements IExecutionCheckService {
 
-    // private TestCaseExecution execution;
-    // private Environment environment;
+    /**
+     * The associated {@link org.apache.log4j.Logger} to this class
+     */
+    private static final Logger LOG = Logger.getLogger(ExecutionCheckService.class);
+
     @Autowired
     private IApplicationService applicationService;
     @Autowired
     private ITestCaseCountryService testCaseCountryService;
+    @Autowired
+    private IBuildRevisionInvariantService buildRevisionInvariantService;
     private MessageGeneral message;
 
     @Override
@@ -91,7 +91,9 @@ public class ExecutionCheckService implements IExecutionCheckService {
     }
 
     private boolean checkEnvironmentActive(CountryEnvParam cep) {
-        MyLogger.log(ExecutionCheckService.class.getName(), Level.DEBUG, "Checking if environment is active");
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Checking if environment is active");
+        }
         if (cep.isActive()) {
             return true;
         }
@@ -100,7 +102,9 @@ public class ExecutionCheckService implements IExecutionCheckService {
     }
 
     private boolean checkTestCaseActive(TCase testCase) {
-        MyLogger.log(ExecutionCheckService.class.getName(), Level.DEBUG, "Checking if testcase is active");
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Checking if testcase is active");
+        }
         if (testCase.getActive().equals("Y")) {
             return true;
         }
@@ -109,7 +113,9 @@ public class ExecutionCheckService implements IExecutionCheckService {
     }
 
     private boolean checkTestCaseNotManual(TCase testCase) {
-        MyLogger.log(ExecutionCheckService.class.getName(), Level.DEBUG, "Checking if testcase is not MANUAL");
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Checking if testcase is not MANUAL");
+        }
         if (!(testCase.getGroup().equals("MANUAL"))) {
             return true;
         }
@@ -118,7 +124,9 @@ public class ExecutionCheckService implements IExecutionCheckService {
     }
 
     private boolean checkTypeEnvironment(TestCaseExecution tCExecution) {
-        MyLogger.log(ExecutionCheckService.class.getName(), Level.DEBUG, "Checking if application environment type is compatible with environment type");
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Checking if application environment type is compatible with environment type");
+        }
         try {
             if (applicationService.findApplicationByKey(tCExecution.gettCase().getApplication()).getType().equalsIgnoreCase("COMPARISON")) {
                 if (tCExecution.gettCase().getGroup().equalsIgnoreCase("COMPARATIVE")) {
@@ -127,13 +135,15 @@ public class ExecutionCheckService implements IExecutionCheckService {
                 }
             }
         } catch (CerberusException ex) {
-            Logger.getLogger(ExecutionCheckService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            LOG.fatal("Unable to find Application", ex);
         }
         return true;
     }
 
     private boolean checkRangeBuildRevision(TestCaseExecution tCExecution) {
-        MyLogger.log(ExecutionCheckService.class.getName(), Level.DEBUG, "Checking if test can be executed in this build and revision");
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Checking if test can be executed in this build and revision");
+        }
         TCase tc = tCExecution.gettCase();
         CountryEnvParam env = tCExecution.getCountryEnvParam();
         String tcFromSprint = ParameterParserUtil.parseStringParam(tc.getFromSprint(), "");
@@ -145,10 +155,10 @@ public class ExecutionCheckService implements IExecutionCheckService {
 
         if (!tcFromSprint.isEmpty() && sprint != null) {
             try {
-                int dif = this.compareBuild(sprint, tcFromSprint);
+                int dif = this.compareBuild(sprint, tcFromSprint, env.getSystem());
                 if (dif == 0) {
                     if (!tcFromRevision.isEmpty() && revision != null) {
-                        if (this.compareRevision(revision, tcFromRevision) < 0) {
+                        if (this.compareRevision(revision, tcFromRevision, env.getSystem()) < 0) {
                             message = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_RANGE_DIFFERENT);
                             return false;
                         }
@@ -165,10 +175,10 @@ public class ExecutionCheckService implements IExecutionCheckService {
 
         if (!tcToSprint.isEmpty() && sprint != null) {
             try {
-                int dif = this.compareBuild(tcToSprint, sprint);
+                int dif = this.compareBuild(tcToSprint, sprint, env.getSystem());
                 if (dif == 0) {
                     if (!tcToRevision.isEmpty() && revision != null) {
-                        if (this.compareRevision(tcToRevision, revision) < 0) {
+                        if (this.compareRevision(tcToRevision, revision, env.getSystem()) < 0) {
                             message = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_RANGE_DIFFERENT);
                             return false;
                         }
@@ -187,7 +197,9 @@ public class ExecutionCheckService implements IExecutionCheckService {
     }
 
     private boolean checkTargetBuildRevision(TestCaseExecution tCExecution) {
-        MyLogger.log(ExecutionCheckService.class.getName(), Level.DEBUG, "Checking target build");
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Checking target build");
+        }
         TCase tc = tCExecution.gettCase();
         CountryEnvParam env = tCExecution.getCountryEnvParam();
         String tcSprint = ParameterParserUtil.parseStringParam(tc.getTargetSprint(), "");
@@ -197,10 +209,10 @@ public class ExecutionCheckService implements IExecutionCheckService {
 
         if (!tcSprint.isEmpty() && sprint != null) {
             try {
-                int dif = this.compareBuild(sprint, tcSprint);
+                int dif = this.compareBuild(sprint, tcSprint, env.getSystem());
                 if (dif == 0) {
                     if (!tcRevision.isEmpty() && revision != null) {
-                        if (this.compareRevision(revision, tcRevision) < 0) {
+                        if (this.compareRevision(revision, tcRevision, env.getSystem()) < 0) {
                             message = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_TARGET_DIFFERENT);
                             return false;
                         }
@@ -218,7 +230,9 @@ public class ExecutionCheckService implements IExecutionCheckService {
     }
 
     private boolean checkActiveEnvironmentGroup(TestCaseExecution tCExecution) {
-        MyLogger.log(ExecutionCheckService.class.getName(), Level.DEBUG, "Checking environment " + tCExecution.getCountryEnvParam().getEnvironment());
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Checking environment " + tCExecution.getCountryEnvParam().getEnvironment());
+        }
         TCase tc = tCExecution.gettCase();
         if (tCExecution.getEnvironmentDataObj().getGp1().equalsIgnoreCase("QA")) {
             return this.checkRunQA(tc, tCExecution.getEnvironmentData());
@@ -263,7 +277,9 @@ public class ExecutionCheckService implements IExecutionCheckService {
     }
 
     private boolean checkCountry(TestCaseExecution tCExecution) {
-        MyLogger.log(ExecutionCheckService.class.getName(), Level.DEBUG, "Checking if country is setup for this testcase. " + tCExecution.getTest() + "-" + tCExecution.getTestCase() + "-" + tCExecution.getCountry());
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Checking if country is setup for this testcase. " + tCExecution.getTest() + "-" + tCExecution.getTestCase() + "-" + tCExecution.getCountry());
+        }
         try {
             testCaseCountryService.findTestCaseCountryByKey(tCExecution.getTest(), tCExecution.getTestCase(), tCExecution.getCountry());
         } catch (CerberusException e) {
@@ -273,52 +289,26 @@ public class ExecutionCheckService implements IExecutionCheckService {
         return true;
     }
 
-    private int compareBuild(String build1, String build2) {
-        if (build1.length() > 5 && build2.length() > 5) {
-            int year1 = Integer.parseInt(build1.substring(0, 4));
-            int num1 = Integer.parseInt(build1.substring(5));
-            int year2 = Integer.parseInt(build2.substring(0, 4));
-            int num2 = Integer.parseInt(build2.substring(5));
+    private int compareBuild(String build1, String build2, String system) {
+        try {
+            BuildRevisionInvariant b1 = this.buildRevisionInvariantService.findBuildRevisionInvariantByKey(system, 1, build1);
+            BuildRevisionInvariant b2 = this.buildRevisionInvariantService.findBuildRevisionInvariantByKey(system, 1, build2);
 
-            if (year1 > year2) {
-                return 1;
-            } else if (year1 < year2) {
-                return -1;
-            } else {
-                if (num1 > num2) {
-                    return 1;
-                } else if (num1 < num2) {
-                    return -1;
-                } else {
-                    return 0;
-                }
-            }
+            return b1.getSeq().compareTo(b2.getSeq());
+        } catch (CerberusException e) {
+            throw new NumberFormatException();
         }
-        throw new NumberFormatException();
     }
 
-    private int compareRevision(String rev1, String rev2) {
-        if (rev1.length() > 2 && rev2.length() > 2) {
-            char tcLetter = rev1.charAt(0);
-            int tcRev = Integer.parseInt(rev1.substring(1));
-            char letter = rev2.charAt(0);
-            int rev = Integer.parseInt(rev2.substring(1));
+    private int compareRevision(String rev1, String rev2, String system) {
+        try {
+            BuildRevisionInvariant r1 = this.buildRevisionInvariantService.findBuildRevisionInvariantByKey(system, 2, rev1);
+            BuildRevisionInvariant r2 = this.buildRevisionInvariantService.findBuildRevisionInvariantByKey(system, 2, rev2);
 
-            if (tcLetter > letter) {
-                return 1;
-            } else if (tcLetter < letter) {
-                return -1;
-            } else {
-                if (tcRev > rev) {
-                    return 1;
-                } else if (tcRev < rev) {
-                    return -1;
-                } else {
-                    return 0;
-                }
-            }
+            return r1.getSeq().compareTo(r2.getSeq());
+        } catch (CerberusException e) {
+            throw new NumberFormatException();
         }
-        throw new NumberFormatException();
     }
 
     private boolean checkMaintenanceTime(TestCaseExecution tCExecution) {
@@ -336,7 +326,7 @@ public class ExecutionCheckService implements IExecutionCheckService {
                 }
 
             } catch (ParseException exception) {
-                MyLogger.log(ExecutionCheckService.class.getName(), Level.ERROR, exception.toString());
+                LOG.error(exception.toString());
             }
             message = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_ENVIRONMENT_UNDER_MAINTENANCE);
             return false;

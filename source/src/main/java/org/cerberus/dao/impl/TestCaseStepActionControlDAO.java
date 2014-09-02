@@ -275,6 +275,7 @@ public class TestCaseStepActionControlDAO implements ITestCaseStepActionControlD
     @Override
     public void updateTestCaseStepActionControl(TestCaseStepActionControl testCaseStepActionControl) throws CerberusException {
         boolean throwExcep = false;
+        
         final String query = new StringBuilder("UPDATE `testcasestepactioncontrol` SET ")
                 .append("`Test` = ?, ")
                 .append("`TestCase` = ?, ")

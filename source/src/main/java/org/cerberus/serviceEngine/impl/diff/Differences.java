@@ -141,7 +141,7 @@ public class Differences {
 	public List<Difference> getDifferences() {
 		return new ArrayList<Difference>(differences);
 	}
-
+	
 	/**
 	 * Returns a {@link String} representation of this {@link Differences} by following the {@link Differences} format.
 	 * 
@@ -153,8 +153,7 @@ public class Differences {
 	 * In case of error, then returned <code>null</code>
 	 * </p>
 	 */
-	@Override
-	public String toString() {
+	public String mkString() {
 		try {
 			Document doc = toDocument();
 			XPath path = XPathFactory.newInstance().newXPath();
@@ -198,6 +197,12 @@ public class Differences {
 
 		// Returns the result document
 		return resultDoc;
+	}
+	
+	@Override
+	public String toString() {
+		String mkString = mkString();
+		return mkString == null ? EMPTY_DIFFERENCES_STRING : mkString;
 	}
 
 }

@@ -370,7 +370,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         final String query = new StringBuffer("SELECT * FROM testcaseexecution  tce, application app ")
                 .append("WHERE tce.application = app.application AND start > ? ")
                 .append("AND test LIKE ? AND testcase LIKE ? AND environment LIKE ? ")
-                .append("AND country LIKE ? AND application LIKE ? AND controlstatus LIKE ? ")
+                .append("AND country LIKE ? AND tce.application LIKE ? AND controlstatus LIKE ? ")
                 .append("AND status LIKE ?").toString();
 
         Connection connection = this.databaseSpring.connect();

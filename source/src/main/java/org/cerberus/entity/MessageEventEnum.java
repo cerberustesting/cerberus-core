@@ -67,6 +67,7 @@ public enum MessageEventEnum {
     PROPERTY_FAILED_SQL_SQLLIB_NOTEXIT(158, "KO", "The SQL Lib %SQLLIB% does not exist. Please define it inside the database or pick another one.", true, false ,false , MessageGeneralEnum.EXECUTION_FA),
     PROPERTY_FAILED_SQL_GENERIC(159, "KO", "An unknown error occur when connecting to %JDBC%.", true, false ,false , MessageGeneralEnum.EXECUTION_FA),
     PROPERTY_FAILED_HTML_ELEMENTDONOTEXIST(180, "KO", "Failed to calculate property because could not find element '%ELEMENT%'!", true, true ,true , MessageGeneralEnum.EXECUTION_FA),
+    PROPERTY_FAILED_HTML_ATTRIBUTEDONOTEXIST(180, "KO", "Failed to calculate property because could not find attribute '%ATTRIBUTE%' for element '%ELEMENT%'!", true, true ,true , MessageGeneralEnum.EXECUTION_FA),
     PROPERTY_FAILED_HTMLVISIBLE_ELEMENTDONOTEXIST(181, "KO", "Failed to calculate visible html property because could not find element '%ELEMENT%'!", true, true ,true , MessageGeneralEnum.EXECUTION_FA),
     PROPERTY_FAILED_UNKNOWNPROPERTY(182, "KO", "Property function '%PROPERTY%' does not exist or is not supported by the engine.", true, false ,false , MessageGeneralEnum.EXECUTION_FA),
     PROPERTY_FAILED_TEXTRANDOMLENGHT0(183, "KO", "RANDOM or RANDOMNEW text Property function cannot have a lenght at 0. Pick STATIC nature (if you want an empty string) or increase the lenght.", true, false ,false , MessageGeneralEnum.EXECUTION_FA),

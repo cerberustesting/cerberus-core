@@ -526,9 +526,9 @@ public class ExecutionRunService implements IExecutionRunService {
          * Record Screenshot, PageSource
          */
         try {
-        recorderService.recordExecutionInformation(testCaseStepActionExecution, null);
+            recorderService.recordExecutionInformation(testCaseStepActionExecution, null);
         } catch (Exception ex){
-        
+            MyLogger.log(ExecutionRunService.class.getName(), Level.ERROR, "Unable to record Screenshot/PageSource : " + ex.toString());
         }
 
         /**

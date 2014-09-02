@@ -43,11 +43,9 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.cerberus.entity.ExecutionSOAPResponse;
 import org.cerberus.entity.TestCaseExecution;
-import org.cerberus.log.MyLogger;
 import org.cerberus.serviceEngine.IXmlUnitService;
 import org.cerberus.serviceEngine.impl.diff.Differences;
 import org.cerberus.serviceEngine.impl.diff.DifferencesException;
@@ -163,15 +161,15 @@ public class XmlUnitService implements IXmlUnitService {
             }
 
         } catch (XPathExpressionException ex) {
-        	LOG.log(Level.WARN, ex);
+        	LOG.warn("Unable to test if element is present", ex);
         } catch (ParserConfigurationException ex) {
-        	LOG.log(Level.WARN, ex);
+        	LOG.warn("Unable to test if element is present", ex);
         } catch (SAXException ex) {
-        	LOG.log(Level.WARN, ex);
+        	LOG.warn("Unable to test if element is present", ex);
         } catch (IOException ex) {
-        	LOG.log(Level.WARN, ex);
+        	LOG.warn("Unable to test if element is present", ex);
         } catch (NullPointerException ex) {
-        	LOG.log(Level.WARN, ex);
+        	LOG.warn("Unable to test if element is present", ex);
         }
 
         return false;
@@ -380,7 +378,7 @@ public class XmlUnitService implements IXmlUnitService {
 			}
 			
 			// Finally returns the String representation of our result structure
-			return resultDiff.toString();
+			return resultDiff.mkString();
 		} catch (InputTranslatorException e) {
 			LOG.warn("Unable to get differences from XML", e);
 		}
@@ -405,7 +403,7 @@ public class XmlUnitService implements IXmlUnitService {
 			}
 			
 			// Returns the empty String if there is no difference left, or the String XML representation
-			return returned.toString();
+			return returned.mkString();
 		} catch (DifferencesException e) {
 			LOG.warn("Unable to remove differences", e);
 		}

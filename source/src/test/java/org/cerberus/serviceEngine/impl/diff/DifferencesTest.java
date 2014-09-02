@@ -89,10 +89,10 @@ public class DifferencesTest {
 	}
 
 	@Test
-	public void testToStringWhenExistingDifference() throws XmlUtilException, SAXException, IOException {
+	public void testMkStringWhenExistingDifference() throws XmlUtilException, SAXException, IOException {
 		differences.addDifference(new Difference("diff1"));
 		differences.addDifference(new Difference("diff2"));
-		String actual = differences.toString();
+		String actual = differences.mkString();
 
 		Document doc = XmlUtil.newDocument();
 		Element root = doc.createElement(Differences.DIFFERENCES_NODE);
@@ -112,8 +112,8 @@ public class DifferencesTest {
 	}
 
 	@Test
-	public void testToStringWhenNotExistingDifference() throws XmlUtilException, SAXException, IOException {
-		String actual = differences.toString();
+	public void testMkStringWhenNotExistingDifference() throws XmlUtilException, SAXException, IOException {
+		String actual = differences.mkString();
 		String expected = Differences.EMPTY_DIFFERENCES_STRING;
 		Assert.assertEquals("Differences can be correctly transforms as Document when there is no differences", expected, actual);
 	}
