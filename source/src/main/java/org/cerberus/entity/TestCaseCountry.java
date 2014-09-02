@@ -104,6 +104,12 @@ public class TestCaseCountry {
         }
         return true;
     }
+
+    @Override
+    public String toString() {
+        return "TestCaseCountry{" + "test=" + test + ", testCase=" + testCase + ", country=" + country + '}';
+    }
+    
     
     
 }

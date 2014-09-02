@@ -297,7 +297,7 @@
 
             %>
             <br>
-            <form method="post" name="UpdateTestCase" action="UpdateTestCaseWithDependencies">
+            <form method="post" name="UpdateTestCase"  id="UpdateTestCase" action="UpdateTestCaseWithDependencies">
                 <table id="generalparameter" class="arrond"
                        <%if (tinf == false) {%> style="display : none" <%} else {%>style="display : table"<%}%> >
                     <tr>
@@ -450,7 +450,7 @@
                                                 <td class="wob" style="width: 1200px"><%out.print(docService.findLabelHTML("testcase", "description", "Description"));%></td>
                                             </tr><tr>
                                                 <td class="wob"><input id="editDescription" style="width: 1200px;" name="editDescription"
-                                                                       value="<%=tcase.getDescription()%>"></td>
+                                                                       value="<%=tcase.getShortDescription()%>"></td>
                                             </tr>
                                         </table>
                                     </td>
@@ -764,7 +764,7 @@
                                                                     %>
                                                                     <tr>
                                                                         <td style="background-color: <%=actionColor%>">
-                                                                            <input  class="wob" type="checkbox" name="actions_delete_<%=incrementAction%>" style="width: 30px; background-color: <%=actionColor%>"
+                                                                            <input  class="wob" type="checkbox" name="action_delete_<%=incrementAction%>" name="action_delete" style="width: 30px; background-color: <%=actionColor%>"
                                                                                     value="<%=tcsa.getStep() + "-" + tcsa.getSequence()%>" <%=isReadonly%>>
                                                                             <input type="hidden" name="action_increment" value="<%=incrementAction%>" >
                                                                             <input type="hidden" name="action_step_<%=incrementAction%>" value="<%=tcsa.getStep()%>" >
@@ -811,9 +811,12 @@
                                                                 <table>
                                                                     <tr>
                                                                         <td id="wob">
+                                                                            <input id="incrementActionNumber" value="<%=incrementAction%>" type="hidden">
                                                                             <input type="button" value="Add Action"
                                                                                    onclick="addTestCaseAction('Action<%=tcs.getStep()%>', '<%=tcs.getStep()%>');
                                                                                            enableField('submitButtonAction');">
+                                                                            <%=ComboInvariant(appContext, "action_action_temp" , "width: 136px; display:none", "action_action_temp", "wob", "ACTION", null, "", null)%>
+                                                                        
                                                                         <td id="wob">
                                                                             <input type="button" value="import HTML Scenario" onclick="importer('ImportHTML.jsp?Test=<%=test%>&Testcase=<%=testcase%>&Step=<%=tcs.getStep()%>')">
                                                                         </td>
@@ -878,7 +881,7 @@
                                                                                             </td>
                                                                                             <td style="background-color: <%=controlColor%>;height:20px">
                                                                                                 <input class="wob" style="width: 60px; font-weight: bold;background-color: <%=controlColor%>; color:<%=actionFontColor%>"
-                                                                                                       value="<%=tcsac.getSequence()%>" name="control_sequence_<%=incrementControl%>" readonly="readonly">
+                                                                                                       value="<%=tcsac.getSequence()%>" name="control_sequence_<%=incrementControl%>" name="control_<%=tcsac.getSequence()%>" readonly="readonly">
                                                                                             </td>
                                                                                             <td style="background-color: <%=controlColor%>">
                                                                                                 <input class="wob" style="width: 60px; font-weight: bold;background-color: <%=controlColor%>; color:<%=actionFontColor%>"
@@ -1028,7 +1031,7 @@
                                                 <td style="width: 80px"><%out.print(docService.findLabelHTML("testcasecountryproperties", "nature", "Nature"));%></td>
                                             </tr>
                                             <div id="cache_properties">
-                                                <%=ComboInvariant(appContext, "properties_dtb_type_ID", "display: none;", "properties_dtb_type_ID", "wob", "PROPERTYDATABASE", tccpList.get(0).getDatabase(), "", null)%>
+                                                <%//ComboInvariant(appContext, "properties_dtb_type_ID", "display: none;", "properties_dtb_type_ID", "wob", "PROPERTYDATABASE", tccpList.get(0).getDatabase(), "", null)%>
                                             </div><%
 
                                             int incrementProperty = 0;
@@ -1036,19 +1039,11 @@
                                                     incrementProperty++;
                                                     List<String> countryOfProperty = tccpService.findCountryByProperty(tccp);
 
-                                                    List<String> type_toselect = new ArrayList<String>();
-                                                    type_toselect.add(tccp.getType().toUpperCase());
-
-                                                    List<String> nature_toselect = new ArrayList<String>();
-                                                    nature_toselect.add(tccp.getNature().toUpperCase());
-
                                                     rowNumber = rowNumber + 1;
                                                     proplist = proplist + "" + tccp.getProperty() + "  /  ";
 
-                                                    String sqlDesc = "";
                                                     if (tccp.getType().equals("executeSqlFromLib")) {
                                                         SqlLibrary sqllib = libService.findSqlLibraryByKey(tccp.getValue1().replaceAll("'", "''"));
-                                                        sqlDesc = sqllib.getScript().replace("'", "\'");
                                                     }
 
                                                     size3 = 0;
@@ -1065,15 +1060,13 @@
 
                                                     int nbline = tccp.getValue1().split("\n").length;
                                                     String valueID = rowNumber + "-" + tccp.getProperty();
-                                                    String typeID = "type" + valueID;
-
+                                                    
                                                     String showEntireValueB1 = "showEntireValueB1" + valueID;
                                                     String showEntireValueB2 = "showEntireValueB2" + valueID;
                                                     String sqlDetails = "sqlDetails" + valueID;
                                                     String sqlDetailsB1 = "sqlDetailsB1" + valueID;
                                                     String sqlDetailsB2 = "sqlDetailsB2" + valueID;
                                                     String properties_dtbID = "properties_dtb" + valueID;
-                                                    String showSqlDetail = "";
                                                     i++;
 
                                                     j = i % 2;
@@ -1114,7 +1107,7 @@
                                                         </tr>
                                                     </table>
                                                 </td>
-                                                <td><%=ComboInvariant(appContext, "properties_type_"+incrementProperty, "width: 120px; background-color:" + color, typeID, "wob", "properties_type_"+incrementProperty, tccp.getType(), "activateDatabaseBox(this.value, '" + properties_dtbID + "' ,'" + properties_dtbID + "' );activateValue2(this.value, 'tdValue2_" + rowNumber + "', '" + valueID + "','" + valueID + "_2','" + size2 + "')", null)%>
+                                                <td><%=ComboInvariant(appContext, "properties_type_"+incrementProperty, "width: 120px; background-color:" + color, "properties_type_"+incrementProperty, "wob","PROPERTYTYPE" , tccp.getType(), "activateDatabaseBox(this.value, '" + properties_dtbID + "' ,'" + properties_dtbID + "' );activateValue2(this.value, 'tdValue2_" + rowNumber + "', '" + valueID + "','" + valueID + "_2','" + size2 + "')", null)%>
                                                 </td>
                                                 <td>
                                                     <%
@@ -1123,8 +1116,8 @@
                                                     <%=ComboInvariant(appContext, "properties_dtb_"+incrementProperty, "width: 40px; display: inline ; background-color:" + color, "properties_dtb_"+incrementProperty, "wob", "PROPERTYDATABASE", tccp.getDatabase(), "", null)%>
                                                     <%
                                                     } else {%>
-                                                    <select name="properties_dtb" style="width: 40px; display: inline ; background-color:<%=color%>" class="wob" id="properties_dtb_<%=incrementProperty%>">
-                                                        <option value="---">---</option>
+                                                    <select name="properties_dtb_<%=incrementProperty%>" style="width: 40px; display: inline ; background-color:<%=color%>" class="wob" id="properties_dtb_<%=incrementProperty%>">
+                                                        <option value="">---</option>
                                                     </select>
                                                     <% }%>
                                                 </td>
@@ -1132,12 +1125,12 @@
                                                     <table>
                                                         <tr>
                                                             <td class="wob" rowspan="2">
-                                                                <textarea id="properties_value1_<%=incrementProperty%>" rows="2" class="wob" style="width: <%=size4%>px; background-color : <%=color%>; " name="properties_value1_<%=incrementProperty%>"
-                                                                          value="<%=tccp.getValue1()%>"><%=tccp.getValue1()%></textarea>
+                                                                <textarea id="properties_value1_<%=incrementProperty%>" rows="2" class="wob" style="width: <%=size4%>px; background-color : <%=color%>; " 
+                                                                          name="properties_value1_<%=incrementProperty%>" value="<%=tccp.getValue1()%>"><%=tccp.getValue1()%></textarea>
                                                             </td>
                                                             <td class="wob" rowspan="2" style="display:<%=styleValue2%>">
-                                                                <textarea id="properties_value1_<%=incrementProperty%>" rows="2" class="wob" style="width: <%=size3%>px; background-color : <%=color%>;"
-                                                                          name="properties_value1_<%=incrementProperty%>" value="<%=tccp.getValue2()%>"><%=tccp.getValue2()%></textarea>
+                                                                <textarea id="properties_value2_<%=incrementProperty%>" rows="2" class="wob" style="width: <%=size3%>px; background-color : <%=color%>;"
+                                                                          name="properties_value2_<%=incrementProperty%>" value="<%=tccp.getValue2()%>"><%=tccp.getValue2()%></textarea>
                                                             </td>
                                                             <%
                                                                 if (tccp.getType().equals("executeSqlFromLib")

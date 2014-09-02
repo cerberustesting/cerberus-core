@@ -392,7 +392,7 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
         boolean throwExcep = false;
         StringBuilder query = new StringBuilder();
         query.append("UPDATE testcasecountryproperties SET ");
-        query.append(" Type = ? ,Database = ? ,Value1 = ?,Value2 = ?,Length = ?,  RowLimit = ?,  Nature = ? ");
+        query.append(" `Type` = ? ,`Database` = ? ,Value1 = ?,Value2 = ?,`Length` = ?,  RowLimit = ?,  `Nature` = ? ");
         query.append(" WHERE Test = ? AND TestCase = ? AND Country = ? AND Property = ? ");
 
         Connection connection = this.databaseSpring.connect();

@@ -158,17 +158,17 @@ public class TestCaseCountryProperties {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final TestCaseCountryProperties other = (TestCaseCountryProperties) obj;
-        if ((this.test == null) ? (other.test != null) : !this.test.equals(other.test)) {
+        
+        if ((this.test == null) ? (obj.test != null) : !this.test.equals(obj.test)) {
             return false;
         }
-        if ((this.testCase == null) ? (other.testCase != null) : !this.testCase.equals(other.testCase)) {
+        if ((this.testCase == null) ? (obj.testCase != null) : !this.testCase.equals(obj.testCase)) {
             return false;
         }
-        if ((this.country == null) ? (other.country != null) : !this.country.equals(other.country)) {
+        if ((this.country == null) ? (obj.country != null) : !this.country.equals(obj.country)) {
             return false;
         }
-        if ((this.property == null) ? (other.property != null) : !this.property.equals(other.property)) {
+        if ((this.property == null) ? (obj.property != null) : !this.property.equals(obj.property)) {
             return false;
         }
         return true;

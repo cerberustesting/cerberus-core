@@ -467,7 +467,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         String executor = resultSet.getString("executor");
         return factoryTCExecution.create(id, test, testcase, build, revision, environment,
                 country, browser, version, platform, browserFullVersion, start, end, controlStatus, controlMessage, application, ip, url,
-                port, tag, finished, verbose, 0, 0,0, true, "", "", status, crbVersion, null, null, null,
+                port, tag, finished, verbose, 0, 0, 0, true, "", "", status, crbVersion, null, null, null,
                 false, null, null, null, null, null, null, null, null, executor);
     }
 
@@ -583,9 +583,9 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         TestCaseExecution result = null;
         StringBuilder query = new StringBuilder();
         query.append("SELECT ID, Environment, Country, Build, Revision, End, ControlStatus  FROM `testcaseexecution` ");
-        query.append(" WHERE test= ? and TestCase= ? and ID = ");
+        query.append(" WHERE Test = ? and TestCase= ? and ID = ");
         query.append(" (SELECT MAX(ID) from `testcaseexecution` ");
-        query.append("WHERE test= ? and TestCase= ? and ControlStatus!='PE')");
+        query.append("WHERE Test= ? and TestCase= ? and ControlStatus!='PE')");
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -594,12 +594,28 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
             preStat.setString(2, testCase);
             preStat.setString(3, test);
             preStat.setString(4, testCase);
-            
+
             try {
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     if (resultSet.first()) {
-                        result = this.loadFromResultSet(resultSet);
+                        long id = resultSet.getLong("ID");
+                        String build = resultSet.getString("build");
+                        String revision = resultSet.getString("revision");
+                        String environment = resultSet.getString("environment");
+                        String country = resultSet.getString("country");
+                        long end;
+                        if (resultSet.getLong("end") != 0L) {
+                            end = resultSet.getTimestamp("end").getTime();
+                        } else {
+                            end = 0L;
+                        }
+                        String controlStatus = resultSet.getString("controlStatus");
+
+                        result = factoryTCExecution.create(id, test, testCase, build, revision, environment,
+                                country, null, null, null, null, 0, end, controlStatus, null, null, null, null,
+                                null, null, null, 0, 0, 0, 0, true, "", "", null, null, null, null, null,
+                                false, null, null, null, null, null, null, null, null, null);
                     }
                 } catch (SQLException exception) {
                     MyLogger.log(TestCaseExecutionDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
@@ -624,15 +640,15 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         }
         return result;
     }
-    
+
     @Override
     public TestCaseExecution findLastTCExecutionInGroup(String test, String testCase, String environment, String country,
-                                                        String build, String revision, String browser, String browserVersion,
-                                                        String ip, String port, String tag) {
+            String build, String revision, String browser, String browserVersion,
+            String ip, String port, String tag) {
         TestCaseExecution result = null;
-        final String query = "SELECT * FROM testcaseexecution tce, application app WHERE tce.application = app.application " +
-                "AND test = ? AND testcase = ? AND environment IN (?) AND country = ? AND build IN (?) AND revision IN (?) " +
-                "AND browser = ? AND browserfullversion LIKE ? AND ip LIKE ? AND port LIKE ? AND tag LIKE ? ORDER BY id DESC";
+        final String query = "SELECT * FROM testcaseexecution tce, application app WHERE tce.application = app.application "
+                + "AND test = ? AND testcase = ? AND environment IN (?) AND country = ? AND build IN (?) AND revision IN (?) "
+                + "AND browser = ? AND browserfullversion LIKE ? AND ip LIKE ? AND port LIKE ? AND tag LIKE ? ORDER BY id DESC";
 
         Connection connection = this.databaseSpring.connect();
         try {
