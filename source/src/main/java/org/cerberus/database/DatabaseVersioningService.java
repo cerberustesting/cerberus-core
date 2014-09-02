@@ -3744,7 +3744,11 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLInstruction.add(SQLS.toString());
 
 // Temporary init data.
-//-- ------------------------ 527-532
+//-- ------------------------ 527-533
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE testdata SET `Description`='' WHERE `Description` IS NULL");
+        SQLInstruction.add(SQLS.toString());
+        
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO testdatalib (`system`,`Country`,`Environment`,`Name`, `Type`, `Description`, `Envelope`) ");
         SQLS.append(" SELECT '', `Country`, `Environment`, `key`, 'STATIC', description, '' from testdata td");
@@ -3782,7 +3786,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLInstruction.add(SQLS.toString());
 
 // Creatng invariant TESTDATATYPE.
-//-- ------------------------ 533
+//-- ------------------------ 534
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ");
         SQLS.append(" ('INVARIANTPRIVATE', 'TESTDATATYPE', '460', '', ''),");
