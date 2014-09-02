@@ -60,6 +60,7 @@
         <meta content="text/html; charset=UTF-8" http-equiv="content-type">
         <title>TestCase</title>
 
+        <script type='text/javascript' src='js/Form_1.js'></script>
         <script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>
         <script type="text/javascript" src="js/jquery-migrate-1.2.1.min.js"></script>
         <script type="text/javascript" src="js/jquery-ui-1.10.2.js"></script>
@@ -235,12 +236,12 @@
                     <div style="float:left">
                         <select id="filtertestcase" name="TestCase" style="width: 850px" OnChange="document.selectTestCase.submit()">
                             <% if (test.compareTo("%%") == 0) { %>
-                            <option style="width: 200px" value="All">-- Choose Test First --
+                            <option style="width: 850px" value="All">-- Choose Test First --
                             </option>
                             <%  } else {
                                 List<TCase> tcList = testCaseService.findTestCaseByTest(test);
                                 for (TCase tc : tcList) {%>
-                            <option style="width: 500px;" class="font_weight_bold_<%=tc.getActive()%>" value="<%=tc.getTestCase()%>" <%=testcase.compareTo(tc.getTestCase()) == 0 ? " SELECTED " : ""%>><%=tc.getTestCase()%>  [<%=tc.getApplication()%>]  : <%=tc.getShortDescription()%>
+                            <option style="width: 850px;" class="font_weight_bold_<%=tc.getActive()%>" value="<%=tc.getTestCase()%>" <%=testcase.compareTo(tc.getTestCase()) == 0 ? " SELECTED " : ""%>><%=tc.getTestCase()%>  [<%=tc.getApplication()%>]  : <%=tc.getShortDescription()%>
                             </option>
                             <%  }
                                 } %>

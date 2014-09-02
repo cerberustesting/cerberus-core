@@ -349,7 +349,7 @@
                                                     <select id="filtertestcase" name="TestCase" style="width: 850px" OnChange="document.selectTestCase.submit()">
                                                         <%
                                                             if (test.compareTo("%%") == 0) {
-                                                        %><option style="width: 200px" value="All">-- Choose Test First --</option>
+                                                        %><option style="width: 850px" value="All">-- Choose Test First --</option>
                                                         <%                                                        } else {
                                                             String sql = "SELECT TestCase, Application,  Description, tcactive FROM testcase where TestCase IS NOT NULL and test like '" + test + "'Order by TestCase asc";
                                                             ResultSet rsTestCase = stQueryTestCase.executeQuery(sql);
@@ -359,7 +359,7 @@
                                                                 } else {
                                                                     optstyle = "font-weight:lighter;";
                                                                 }
-                                                        %><option style="width: 500px;<%=optstyle%>" value="<%=rsTestCase.getString("TestCase")%>" <%=testcase.compareTo(rsTestCase.getString("TestCase")) == 0 ? " SELECTED " : ""%>><%=rsTestCase.getString("TestCase")%>  [<%=rsTestCase.getString("Application")%>]  : <%=rsTestCase.getString("Description")%></option>
+                                                        %><option style="width: 850px;<%=optstyle%>" value="<%=rsTestCase.getString("TestCase")%>" <%=testcase.compareTo(rsTestCase.getString("TestCase")) == 0 ? " SELECTED " : ""%>><%=rsTestCase.getString("TestCase")%>  [<%=rsTestCase.getString("Application")%>]  : <%=rsTestCase.getString("Description")%></option>
                                                         <%
                                                                 }
                                                             }
