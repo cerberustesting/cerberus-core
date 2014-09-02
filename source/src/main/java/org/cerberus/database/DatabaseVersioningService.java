@@ -3747,14 +3747,14 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
 //-- ------------------------ 527-532
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO testdatalib (`system`,`Country`,`Environment`,`Name`, `Type`, `Description`, `Envelope`) ");
-        SQLS.append(" SELECT '', `Country`, `Environment`, `key`, 'STATIC', description, '' from testdata td");
-        SQLS.append(" ON DUPLICATE KEY UPDATE Description=td.Description;");
+        SQLS.append(" SELECT '', `Country`, `Environment`, `key`, 'STATIC', IFNULL(td.`Description`,''), '' from testdata td");
+        SQLS.append(" ON DUPLICATE KEY UPDATE Description = IFNULL(td.`Description`,'');");
         SQLInstruction.add(SQLS.toString());
 
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO testdatalibdata (`system`,`Country`,`Environment`,`Name`, `SubData`, `Value`, `Description`, `ParsingAnswer`) ");
-        SQLS.append(" SELECT '', `Country`, `Environment`, `key`, '', `value`, description, '' from testdata td");
-        SQLS.append(" ON DUPLICATE KEY UPDATE `Value`=td.value, Description=td.Description;");
+        SQLS.append(" SELECT '', `Country`, `Environment`, `key`, '', IFNULL(td.`value`,''), IFNULL(td.`Description`,''), '' from testdata td");
+        SQLS.append(" ON DUPLICATE KEY UPDATE `Value` = IFNULL(td.`value`,''), Description = IFNULL(td.`Description`,'');");
         SQLInstruction.add(SQLS.toString());
 
         SQLS = new StringBuilder();
