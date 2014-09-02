@@ -88,7 +88,7 @@
 </tr>
 <tr>
     <td  class="wob">
-        <select id="fromStep" name="FromStep">
+        <select id="fromStep" name="FromStep" onchange="feedDefaultDescription()">
             <%
                 if (testcase.compareTo("%%") == 0) {
             %><option value="All">-- Choose Test Case First --</option><%                    } else {%>
@@ -100,7 +100,7 @@
 
                 ResultSet rsTestCaseStep = stQueryTestCaseStep.executeQuery(sql);
                 while (rsTestCaseStep.next()) {
-            %><option value="<%=rsTestCaseStep.getString("Step")%>" <%=step.compareTo(rsTestCaseStep.getString("Step")) == 0 ? " SELECTED " : ""%>>[<%=rsTestCaseStep.getString("Step")%>] <%=rsTestCaseStep.getString("Description")%></option><%
+            %><option data-desc="<%=rsTestCaseStep.getString("Description")%>" value="<%=rsTestCaseStep.getString("Step")%>" <%=step.compareTo(rsTestCaseStep.getString("Step")) == 0 ? " SELECTED " : ""%>>[<%=rsTestCaseStep.getString("Step")%>] <%=rsTestCaseStep.getString("Description")%></option><%
                     }
                 }
             %>

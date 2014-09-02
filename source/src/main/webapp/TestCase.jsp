@@ -1914,6 +1914,14 @@
     };
     };
 </script>
+<script>
+    function feedDefaultDescription(val){
+        var selectField = document.getElementById('fromStep')
+        var idx = selectField.selectedIndex; 
+        var which = selectField.options[idx].getAttribute('data-desc');
+        document.getElementById('import_description').value = which;
+    }
+</script>
 <%}%>
 <div id="popin"></div>
 <br><% out.print(display_footer(DatePageStart));%>
