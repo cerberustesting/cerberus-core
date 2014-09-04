@@ -3791,6 +3791,119 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(" ('TESTDATATYPE', 'SOAP', '30', 'Dynamic test data from SOAP Webservice call.', '');");
         SQLInstruction.add(SQLS.toString());
 
+// Resize the Test column.
+// -- ------------------------ 534-568
+
+        // Drop foreign key constraints (534-544)
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testbatterycontent` DROP FOREIGN KEY `FK_testbatterycontent_02`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcase` DROP FOREIGN KEY `FK_testcase_01`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasecountry` DROP FOREIGN KEY `FK_testcasecountry_01`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasecountryproperties` DROP FOREIGN KEY `FK_testcasecountryproperties_01`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcaseexecution` DROP FOREIGN KEY `FK_testcaseexecution_01`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestep` DROP FOREIGN KEY `FK_testcasestep_01`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepaction` DROP FOREIGN KEY `FK_testcasestepaction_01`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepactioncontrol` DROP FOREIGN KEY `FK_testcasestepactioncontrol_01`;;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepactioncontrolexecution` DROP FOREIGN KEY `FK_testcasestepactioncontrolexecution_01`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepactionexecution` DROP FOREIGN KEY `FK_testcasestepactionexecution_01`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepbatch` DROP FOREIGN KEY `FK_testcasestepbatch_01`;");
+        SQLInstruction.add(SQLS.toString());
+
+        // Resize the Test column (545-557)
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `test` CHANGE COLUMN `Test` `Test` VARCHAR(255) NOT NULL;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepexecution` CHANGE COLUMN `Test` `Test` VARCHAR(255) NOT NULL;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testbatterycontent` CHANGE COLUMN `Test` `Test` VARCHAR(255) NOT NULL;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcase` CHANGE COLUMN `Test` `Test` VARCHAR(255) NOT NULL;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasecountry` CHANGE COLUMN `Test` `Test` VARCHAR(255) NOT NULL;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasecountryproperties` CHANGE COLUMN `Test` `Test` VARCHAR(255) NOT NULL;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcaseexecution` CHANGE COLUMN `Test` `Test` VARCHAR(255) NOT NULL;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestep` CHANGE COLUMN `Test` `Test` VARCHAR(255) NOT NULL;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepaction` CHANGE COLUMN `Test` `Test` VARCHAR(255) NOT NULL;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepactioncontrol` CHANGE COLUMN `Test` `Test` VARCHAR(255) NOT NULL;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepactioncontrolexecution` CHANGE COLUMN `Test` `Test` VARCHAR(255) NOT NULL;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepactionexecution` CHANGE COLUMN `Test` `Test` VARCHAR(255) NOT NULL;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepbatch` CHANGE COLUMN `Test` `Test` VARCHAR(255) NOT NULL;");
+        SQLInstruction.add(SQLS.toString());
+
+        // Add previously dropped foreign key constraints (558-568)
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testbatterycontent` ADD CONSTRAINT `FK_testbatterycontent_02` FOREIGN KEY (`Test`, `TestCase`) REFERENCES `testcase` (`Test`, `TestCase`) ON DELETE CASCADE ON UPDATE CASCADE;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcase` ADD CONSTRAINT `FK_testcase_01` FOREIGN KEY (`Test`) REFERENCES `test` (`Test`) ON DELETE CASCADE ON UPDATE CASCADE;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasecountry` ADD CONSTRAINT `FK_testcasecountry_01` FOREIGN KEY (`Test`, `TestCase`) REFERENCES `testcase` (`Test`, `TestCase`) ON DELETE CASCADE ON UPDATE CASCADE;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasecountryproperties` ADD CONSTRAINT `FK_testcasecountryproperties_01` FOREIGN KEY (`Test`, `TestCase`, `Country`) REFERENCES `testcasecountry` (`Test`, `TestCase`, `Country`) ON DELETE CASCADE ON UPDATE CASCADE;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcaseexecution` ADD CONSTRAINT `FK_testcaseexecution_01` FOREIGN KEY (`Test`, `TestCase`) REFERENCES `testcase` (`Test`, `TestCase`) ON DELETE CASCADE ON UPDATE CASCADE;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestep` ADD CONSTRAINT `FK_testcasestep_01` FOREIGN KEY (`Test`, `TestCase`) REFERENCES `testcase` (`Test`, `TestCase`) ON DELETE CASCADE ON UPDATE CASCADE;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepaction` ADD CONSTRAINT `FK_testcasestepaction_01` FOREIGN KEY (`Test`, `TestCase`, `Step`) REFERENCES `testcasestep` (`Test`, `TestCase`, `Step`) ON DELETE CASCADE ON UPDATE CASCADE;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepactioncontrol` ADD CONSTRAINT `FK_testcasestepactioncontrol_01` FOREIGN KEY (`Test`, `TestCase`, `Step`, `Sequence`) REFERENCES `testcasestepaction` (`Test`, `TestCase`, `Step`, `Sequence`) ON DELETE CASCADE ON UPDATE CASCADE;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepactioncontrolexecution` ADD CONSTRAINT `FK_testcasestepactioncontrolexecution_01` FOREIGN KEY (`ID`, `Test`, `TestCase`, `Step`) REFERENCES `testcasestepexecution` (`ID`, `Test`, `TestCase`, `Step`) ON DELETE CASCADE ON UPDATE CASCADE;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepactionexecution` ADD CONSTRAINT `FK_testcasestepactionexecution_01` FOREIGN KEY (`ID`, `Test`, `TestCase`, `Step`) REFERENCES `testcasestepexecution` (`ID`, `Test`, `TestCase`, `Step`) ON DELETE CASCADE ON UPDATE CASCADE;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepbatch` ADD CONSTRAINT `FK_testcasestepbatch_01` FOREIGN KEY (`Test`, `TestCase`) REFERENCES `testcase` (`Test`, `TestCase`) ON DELETE CASCADE ON UPDATE CASCADE;");
+        SQLInstruction.add(SQLS.toString());
         
         return SQLInstruction;
     }
