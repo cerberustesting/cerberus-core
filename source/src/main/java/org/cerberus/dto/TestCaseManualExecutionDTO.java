@@ -44,9 +44,9 @@ public class TestCaseManualExecutionDTO implements ITestCaseManualExecutionDTO {
                 "  JOIN testcasecountry tcc " +
                 "    ON (tc.test = tcc.test AND tc.testcase=tcc.testcase) " +
                 "  JOIN testbatterycontent tbc " +
-                "  ON (tbc.test = tc.test AND tbc.testcase = tc.testcase) " +
+                "    ON (tbc.test = tc.test AND tbc.testcase = tc.testcase) " +
                 "  JOIN campaigncontent cc " +
-                "  ON (cc.testbattery = tbc.testbattery) " +
+                "    ON (cc.testbattery = tbc.testbattery) " +
                 "  JOIN application a " +
                 "    ON (a.application=tc.application) " +
                 "  JOIN countryenvironmentparameters cep " +
@@ -61,7 +61,7 @@ public class TestCaseManualExecutionDTO implements ITestCaseManualExecutionDTO {
                 "AND tc.status LIKE ? AND tc.activePROD LIKE ? AND tc.activeUAT LIKE ? AND tc.activeQA LIKE ? AND " +
                 "( tc.description LIKE ? OR tc.howto LIKE ? OR tc.behaviororvalueexpected LIKE ? OR tc.comment LIKE ?) " +
                 "AND tc.frombuild LIKE ? AND tc.fromrev LIKE ? AND tc.tobuild LIKE ? " +
- "AND tc.torev LIKE ? AND tc.targetbuild LIKE ? AND tc.targetrev LIKE ? AND tc.testcase LIKE ? AND tc.group LIKE ? AND cc.campaign = ? ";
+                "AND tc.torev LIKE ? AND tc.targetbuild LIKE ? AND tc.targetrev LIKE ? AND tc.testcase LIKE ? AND tc.group LIKE ? AND cc.campaign like ? ";
 
         Connection connection = this.databaseSpring.connect();
         try {
