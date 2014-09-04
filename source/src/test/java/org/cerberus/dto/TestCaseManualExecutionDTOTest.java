@@ -75,7 +75,7 @@ public class TestCaseManualExecutionDTOTest {
         when(statement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(false);
 
-        List<TestCaseManualExecution> list = testCaseManualExecutionDTO.findTestCaseManualExecution(tCase, "", "", "", "");
+        List<TestCaseManualExecution> list = testCaseManualExecutionDTO.findTestCaseManualExecution(tCase, "", "", "", "", "");
         Assert.assertNotNull(list);
         Assert.assertEquals(0, list.size());
     }
@@ -116,7 +116,7 @@ public class TestCaseManualExecutionDTOTest {
         when(resultSet.getString("controlstatus")).thenReturn(status);
         when(resultSet.getTimestamp("end")).thenReturn(date);
 
-        List<TestCaseManualExecution> list = testCaseManualExecutionDTO.findTestCaseManualExecution(tCase, "", "", "", "");
+        List<TestCaseManualExecution> list = testCaseManualExecutionDTO.findTestCaseManualExecution(tCase, "", "", "", "", "");
         Assert.assertNotNull(list);
         Assert.assertEquals(1, list.size());
 
@@ -167,7 +167,7 @@ public class TestCaseManualExecutionDTOTest {
         when(resultSet.getString("controlstatus")).thenReturn(status);
         when(resultSet.getTimestamp("end")).thenReturn(date);
 
-        List<TestCaseManualExecution> list = testCaseManualExecutionDTO.findTestCaseManualExecution(tCase, "", "", "", "");
+        List<TestCaseManualExecution> list = testCaseManualExecutionDTO.findTestCaseManualExecution(tCase, "", "", "", "", "");
         Assert.assertNotNull(list);
         Assert.assertEquals(2, list.size());
 
@@ -208,7 +208,7 @@ public class TestCaseManualExecutionDTOTest {
         when(resultSet.getString("controlstatus")).thenReturn(null);
         when(resultSet.getTimestamp("end")).thenReturn(null);
 
-        List<TestCaseManualExecution> list = testCaseManualExecutionDTO.findTestCaseManualExecution(tCase, "", "", "", "");
+        List<TestCaseManualExecution> list = testCaseManualExecutionDTO.findTestCaseManualExecution(tCase, "", "", "", "", "");
         Assert.assertNotNull(list);
         Assert.assertEquals(1, list.size());
     }

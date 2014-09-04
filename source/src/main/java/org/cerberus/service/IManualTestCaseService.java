@@ -34,5 +34,5 @@ import org.cerberus.entity.TCase;
  */
 public interface IManualTestCaseService {
 
-    List<TestCaseManualExecution> findTestCaseManualExecution(TCase testCase, String text, String system, String country, String env);
+    List<TestCaseManualExecution> findTestCaseManualExecution(TCase testCase, String text, String system, String country, String env, String campaign);
 }

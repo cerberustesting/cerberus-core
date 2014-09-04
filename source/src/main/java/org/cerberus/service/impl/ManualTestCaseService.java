@@ -21,9 +21,8 @@
 package org.cerberus.service.impl;
 
 import java.util.List;
-
+import org.cerberus.dto.ITestCaseManualExecutionDTO;
 import org.cerberus.dto.TestCaseManualExecution;
-import org.cerberus.dto.TestCaseManualExecutionDTO;
 import org.cerberus.entity.TCase;
 import org.cerberus.service.IManualTestCaseService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,10 +39,10 @@ import org.springframework.stereotype.Service;
 public class ManualTestCaseService implements IManualTestCaseService{
 
     @Autowired
-    private TestCaseManualExecutionDTO testCaseManualExecutionDTO;
+    private ITestCaseManualExecutionDTO testCaseManualExecutionDTO;
 
     @Override
-    public List<TestCaseManualExecution> findTestCaseManualExecution(TCase testCase, String text, String system, String country, String env) {
-        return testCaseManualExecutionDTO.findTestCaseManualExecution(testCase, text, system, country, env);
+    public List<TestCaseManualExecution> findTestCaseManualExecution(TCase testCase, String text, String system, String country, String env, String campaign) {
+        return testCaseManualExecutionDTO.findTestCaseManualExecution(testCase, text, system, country, env, campaign);
     }
 }
