@@ -152,6 +152,12 @@
                             <option value="All">-- ALL --</option>
                         </select>
                     </div>
+                    <div class="field">
+                        <label for="campaign" style="width: 150px">Campaign</label><br/>
+                        <select id="campaign" name="campaign" style="width: 150px">
+                            <option value="All">-- ALL --</option>
+                        </select>
+                    </div>
                 </div>
                 <div>
                     <div class="field">
@@ -285,6 +291,7 @@
                 url += "&ScGroup=" + $('#group').val();
                 url += "&ScCountry=" + $('#executionCountry').val();
                 url += "&ScEnv=" + $('#executionEnv').val();
+                url += "&ScCampaign=" + $('#campaign').val();
                 return url;
             }
 

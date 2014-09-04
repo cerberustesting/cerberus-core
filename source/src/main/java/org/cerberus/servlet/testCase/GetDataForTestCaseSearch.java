@@ -21,19 +21,19 @@
 package org.cerberus.servlet.testCase;
 
 import java.io.IOException;
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.apache.log4j.Level;
 import org.cerberus.entity.BuildRevisionInvariant;
+import org.cerberus.entity.Campaign;
 import org.cerberus.entity.Invariant;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.log.MyLogger;
 import org.cerberus.service.IBuildRevisionInvariantService;
+import org.cerberus.service.ICampaignService;
 import org.cerberus.service.IInvariantService;
 import org.cerberus.service.ITestCaseService;
 import org.json.JSONArray;
@@ -58,6 +58,7 @@ public class GetDataForTestCaseSearch extends HttpServlet {
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         ITestCaseService testService = appContext.getBean(ITestCaseService.class);
         IInvariantService invariantService = appContext.getBean(IInvariantService.class);
+        ICampaignService campaignService = appContext.getBean(ICampaignService.class);
         IBuildRevisionInvariantService buildRevisionInvariantService = appContext.getBean(IBuildRevisionInvariantService.class);
 
         String system = req.getParameter("system");
@@ -125,6 +126,15 @@ public class GetDataForTestCaseSearch extends HttpServlet {
             data = new JSONObject();
             data.put("data", country);
             data.put("name", "executionCountry");
+            jsonResponse.put(data);
+            
+            JSONArray campaign = new JSONArray();
+            for (Campaign c : campaignService.findAll()) {
+                campaign.put(c.getCampaign());
+            }
+            data = new JSONObject();
+            data.put("data", campaign);
+            data.put("name", "campaign");
             jsonResponse.put(data);
 
             resp.setContentType("application/json");
