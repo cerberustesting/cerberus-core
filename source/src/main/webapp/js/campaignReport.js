@@ -26,70 +26,28 @@ var config = {
 
 };
 
-var data = {
-    labels: ["OK", "KO", "FA", "NA", "PE"],
-    datasets: [
-        {
-            label: "",
-            data: [0, 0, 0, 0, 0],
-            fillColors: ["#00EE00", "#F7464A", "#FDB45C", "#EEEE00", "#0000DD"],
-            strokeColors: ["#00EE00", "#F7464A", "#FDB45C", "#EEEE00", "#0000DD"],
-            highlightFills: ["#33DD33", "#FF5A5E", "#FFC870", "#EEEE55", "#5555DD"],
-            highlightStrokes: ["#33DD33", "#FF5A5E", "#FFC870", "#EEEE55", "#5555DD"]
-        }
-    ]
-};
+var data;
+data = createDatasetBar("OK",0,"#00EE00","#33DD33",false);
+data = createDatasetBar("KO",0,"#F7464A","#FF5A5E",data);
+data = createDatasetBar("FA",0,"#FDB45C","#FFC870",data);
+data = createDatasetBar("NA",0,"#EEEE00","#EEEE55",data);
+data = createDatasetBar("PE",0,"#0000DD","#5555DD",data);
+
+
 
 var dataDonut = [
-    {
-        value: 0,
-        color: "#00EE00",
-        highlight: "#33DD33",
-        label: "OK"
-    },
-    {
-        value: 0,
-        color: "#F7464A",
-        highlight: "#FF5A5E",
-        label: "KO"
-    },
-    {
-        value: 0,
-        color: "#FDB45C",
-        highlight: "#FFC870",
-        label: "FA"
-    },
-    {
-        value: 0,
-        color: "#EEEE00",
-        highlight: "#EEEE55",
-        label: "NA"
-    },
-    {
-        value: 0,
-        color: "#555555",
-        highlight: "#333333",
-        label: "PE"
-    }
+    createDatasetPie("OK",0,"#00EE00","#33DD33"),
+    createDatasetPie("KO",0,"#F7464A","#FF5A5E"),
+    createDatasetPie("FA",0,"#FDB45C","#FFC870"),
+    createDatasetPie("NA",0,"#EEEE00","#EEEE55"),
+    createDatasetPie("PE",0,"#555555","#333333")
 ];
 
 var dataPercent = {};
 
 var dataPercentLabels = {};
 
-var dataFunction = {
-    labels: [],
-    datasets: [
-        {
-            label: "My Second dataset",
-            fillColor: "rgba(151,187,205,0.5)",
-            strokeColor: "rgba(151,187,205,0.8)",
-            highlightFill: "rgba(151,187,205,0.75)",
-            highlightStroke: "rgba(151,187,205,1)",
-            data: []
-        }
-    ]
-};
+var dataFunction = createDatasetBar("My Second dataset",0,"rgba(151,187,205,0.5)","rgba(151,187,205,1)",false);
 
 var testCaseStatusLine = $("<tr class='testcase'>" +
         "<td class='ID'></td>" +
@@ -168,66 +126,62 @@ function addTestCaseToPercentRadar(testcase) {
     dataPercent[testCaseFunction][testcase.ControlStatus] = eval(dataPercent[testCaseFunction][testcase.ControlStatus] + 1);
 };
 
+function createDatasetBar(label, value, color, highlight, dataset) {
+    
+    if(!dataset) {
+        dataset = {
+            labels: [],
+            datasets: [
+                {
+                    label: "",
+                    data: [],
+                    fillColors: [],
+                    strokeColors: [],
+                    highlightFills: [],
+                    highlightStrokes: []
+                }
+            ]
+        };
+    }
+    
+    var index = dataset.labels.length;
+    dataset.labels[index] = label;
+    
+    dataset.datasets[0].data[index] = value;
+    dataset.datasets[0].fillColors[index] = color;
+    dataset.datasets[0].strokeColors[index] = color;
+    dataset.datasets[0].highlightFills[index] = highlight;
+    dataset.datasets[0].highlightStrokes[index] = highlight;
+    
+    
+    return dataset;
+};
 
+function createDatasetPie(label, value, color, highlight) {
+    var dataset =     {
+        value: value,
+        color: color,
+        highlight: highlight,
+        label: label
+    };
+    return dataset;
+};
+
+function createDatasetMultiBar(label, data, fillColor, pointColor, pointHighlight) {
+    var dataset = {
+                label: label,
+                fillColor: fillColor,
+                strokeColor: fillColor,
+                pointColor: pointColor,
+                pointStrokeColor: pointColor,
+                pointHighlightFill: pointHighlight,
+                pointHighlightStroke: pointHighlight,
+                data: data
+            };
+    return dataset;
+};
 
 function computePercentDataRadar(ctx) {
-    
-    var data = {
-        labels: [],
-        datasets: [
-            {
-                label: "OK",
-                fillColor: "#00EE00",
-                strokeColor: "#00EE00",
-                pointColor: "#33DD33",
-                pointStrokeColor: "#fff",
-                pointHighlightFill: "#33DD33",
-                pointHighlightStroke: "#00EE00",
-                data: []
-            },
-            {
-                label: "KO",
-                fillColor: "#F7464A",
-                strokeColor: "#F7464A",
-                pointColor: "#FF5A5E",
-                pointStrokeColor: "#fff",
-                pointHighlightFill: "#FF5A5E",
-                pointHighlightStroke: "#F7464A",
-                data: []
-            },
-            {
-                label: "FA",
-                fillColor: "#FDB45C",
-                strokeColor: "#FDB45C",
-                pointColor: "#FFC870",
-                pointStrokeColor: "#fff",
-                pointHighlightFill: "#FFC870",
-                pointHighlightStroke: "#FDB45C",
-                data: []
-            },
-            {
-                label: "NA",
-                fillColor: "#EEEE00",
-                strokeColor: "#EEEE00",
-                pointColor: "#EEEE55",
-                pointStrokeColor: "#fff",
-                pointHighlightFill: "#EEEE55",
-                pointHighlightStroke: "#EEEE00",
-                data: []
-            },
-            {
-                label: "PE",
-                fillColor: "#555555",
-                strokeColor: "#555555",
-                pointColor: "#333333",
-                pointStrokeColor: "#fff",
-                pointHighlightFill: "#333333",
-                pointHighlightStroke: "#555555",
-                data: []
-            },
-        ]
-    };
-
     var config = {
         // String - Template string for single tooltips
         tooltipTemplate: "<%if (label){%><%=label%>: <%}%><%= value %>",
@@ -236,18 +190,38 @@ function computePercentDataRadar(ctx) {
         multiTooltipTemplate: "<%if (datasetLabel){%><%=datasetLabel%>: <%}%><%= value %>"
     }
 
-    $.each(dataPercent, function(key, val){
-        data.datasets[0].data[data.labels.length] = (val.OK ? val.OK : 0);
-        data.datasets[1].data[data.labels.length] = (val.KO ? val.KO : 0);
-        data.datasets[2].data[data.labels.length] = (val.FA ? val.FA : 0);
-        data.datasets[3].data[data.labels.length] = (val.NA ? val.NA : 0);
-        data.datasets[4].data[data.labels.length] = (val.PE ? val.PE : 0);
+    var dataBar = {
+        OK: [],
+        KO: [],
+        FA: [],
+        NA: [],
+        PE: [],
+        labels: []
+    };
 
-        data.labels[data.labels.length] = key;
+    $.each(dataPercent, function(key, val){
+        dataBar.OK[dataBar.labels.length] = (val.OK ? val.OK : 0);
+        dataBar.KO[dataBar.labels.length] = (val.KO ? val.KO : 0);
+        dataBar.FA[dataBar.labels.length] = (val.FA ? val.FA : 0);
+        dataBar.NA[dataBar.labels.length] = (val.NA ? val.NA : 0);
+        dataBar.PE[dataBar.labels.length] = (val.PE ? val.PE : 0);
+
+        dataBar.labels[dataBar.labels.length] = key;
 
     });
+    
+    var data = {
+        labels: dataBar.labels,
+        datasets: [ 
+            createDatasetMultiBar("OK",dataBar.OK,"#00EE00","#33DD33","#33FF55"),
+            createDatasetMultiBar("KO",dataBar.KO,"#F7464A","#FF5A5E","#FF7A7E"),
+            createDatasetMultiBar("FA",dataBar.FA,"#FDB45C","#FFC870","#FFE890"),
+            createDatasetMultiBar("NA",dataBar.NA,"#EEEE00","#EEEE55","#EEFE65"),
+            createDatasetMultiBar("PE",dataBar.PE,"#555555","#333333","#33F3F3")
+        ]
+    };
 
-    console.log(data);
+    //console.log(data);
 
     new Chart(ctx).StackedBar(data,config);
    // return data;
