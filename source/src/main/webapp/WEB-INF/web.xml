@@ -549,6 +549,10 @@
         <servlet-name>UpdateTestCaseWithDependencies</servlet-name>
         <servlet-class>org.cerberus.servlet.testCase.UpdateTestCaseWithDependencies</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>DeleteTestCaseFromTestPage</servlet-name>
+        <servlet-class>org.cerberus.servlet.testCase.DeleteTestCaseFromTestPage</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>RunTestCase</servlet-name>
         <url-pattern>/RunTestCase</url-pattern>
@@ -1061,6 +1065,10 @@
         <servlet-name>UpdateTestCaseWithDependencies</servlet-name>
         <url-pattern>/UpdateTestCaseWithDependencies</url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DeleteTestCaseFromTestPage</servlet-name>
+        <url-pattern>/DeleteTestCaseFromTestPage</url-pattern>
+    </servlet-mapping>
     <session-config>
         <session-timeout>
             60
@@ -1208,6 +1216,7 @@
             <url-pattern>/CreateTest</url-pattern>
             <url-pattern>/DeleteTest</url-pattern>
             <url-pattern>/DeleteTestCase</url-pattern>
+            <url-pattern>/DeleteTestCaseFromTestPage</url-pattern>
             <url-pattern>/CreateSqlLibrary</url-pattern>
             <url-pattern>/DeleteSqlLibrary</url-pattern>
             <url-pattern>/UpdateSqlLibrary</url-pattern>
