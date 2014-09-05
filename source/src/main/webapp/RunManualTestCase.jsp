@@ -82,7 +82,7 @@
                 text-align: center;
             }
         </style>
-</head>
+    </head>
     <body>
         <%@ include file="include/function.jsp" %>
         <%@ include file="include/header.jsp" %>
@@ -235,9 +235,9 @@
                 <div class="field">
                     <label for="executionBrowser" style="width: 250px">Browser Information</label><br/>
                     <select id="executionBrowser" style="font-size: 100%">
-                        <% for(Invariant i : invariants) { %>
+                        <% for (Invariant i : invariants) {%>
                         <option value="<%=i.getValue()%>"><%=i.getValue()%></option>;
-                        <% } %>
+                        <% }%>
                     </select>
                     <input id="executionBrowserVersion" type="text" placeholder="Browser Full Version"/>
                 </div>
@@ -252,8 +252,8 @@
                         <tr>
                             <th>Test</th>
                             <th>Test Case</th>
-                            <th>Value Expected</th>
-                            <th>How To</th>
+                            <th>Description</th>
+                            <th>Step/Action/Control Description</th>
                             <th>Detail</th>
                             <th>Control Message</th>
                             <th>Result</th>
@@ -264,6 +264,16 @@
                 </table>
             </div>
         </div>
+        <script>function displayOrHideElement(element) {
+                var disp = document.getElementById(element).style.display;
+                if (disp === "none") {
+                    document.getElementById(element).style.display = "inline";
+                } else {
+                    document.getElementById(element).style.display = "none";
+                }
+
+
+            }</script>
         <script type="text/javascript">
             var oTable;
             var loader = new ajaxLoader("#searchTestCase");
@@ -318,14 +328,14 @@
                     var d = {test: test, testCase: testCase, env: env, country: country, controlStatus: res,
                         controlMessage: message, tag: tag, browser: browser, browserVersion: browserVersion};
 
-                    $.post("SaveManualExecution", d,function (run) {
+                    $.post("SaveManualExecution", d, function(run) {
                         $("#resultMessage").html("Manual Execution of Test Case <i>" + test + " - " + testCase + "</i> created");
                         tr.hide();
                         $("#runId").val(run);
                         $("#picTest").val(test);
                         $("#picTestCase").val(testCase);
-                        $( "#divPictureSave" ).dialog( "open" );
-                    }).fail(function (error) {
+                        $("#divPictureSave").dialog("open");
+                    }).fail(function(error) {
                         alert(error.responseText);
                     });
                 }
@@ -348,47 +358,89 @@
                         "sServerMethod": "POST",
                         "aoColumns": [
                             {"mDataProp": "test", "sName": "test", "bSortable": false, sWidth: "130px"},
-                            {"mDataProp": function(tCase, type, val){
-                                return testCase = "<a href='TestCase.jsp?Test="+tCase.test+"&TestCase="+tCase.testCase+"&Load=Load' target='_blank'>"+tCase.testCase+"</a>";
-                            }, "sName": "ScTestCase", "bSortable": false, sWidth: "30px"},
-                            {"mDataProp": "valueExpected", "sName": "description", "bSortable": false, sWidth: "180px"},
-                            {"mDataProp": "howTo", "sName": "howTo", "bSortable": false, sWidth: "430px"},
-                            {"mDataProp": function(tCase, type, val){
-                                var detail = "Application: ";
-                                if (tCase.appType == "GUI") {
-                                    detail += "<a href='http://"+tCase.url+"' target='_blank'><b>"+tCase.application+"</b></a>";
-                                } else{
-                                    detail += "<b>"+tCase.application+"</b>";
-                                }
-                                detail += "<br/>System: <b>"+tCase.system+"</b>";
-                                detail += "<br/><b>"+tCase.build+" / "+tCase.revision+"</b>";
-                                if (tCase.lastStatus != "" && tCase.lastStatus != null) {
-                                    if (tCase.lastStatus == "OK"){
-                                        detail += "<br/><span style='background-color: #00ff00; color: #000000'>";
-                                    } else {
-                                        detail += "<br/><span style='background-color: #ff0000; color: #ffffff'>";
+                            {"mDataProp": function(tCase, type, val) {
+                                    return testCase = "<a href='TestCase.jsp?Test=" + tCase.test + "&TestCase=" + tCase.testCase + "&Load=Load' target='_blank'>" + tCase.testCase + "</a>";
+                                }, "sName": "ScTestCase", "bSortable": false, sWidth: "30px"},
+                            {"mDataProp": function(tCase, type, val) {
+                                    var str = "<p>"
+                                    str += tCase.tCase.shortDescription;
+                                    str += "</p>"
+                                    return str;
+                                }, "sName": "description", "bSortable": false, sWidth: "180px"},
+                            {"mDataProp": function(tCase, type, val) {
+                                    var str = "<div>"
+                                    for (a = 0; a < tCase.tCase.testCaseStep.length; a++) {
+                                        str += "<b onclick=\"displayOrHideElement('" + tCase.test + "_" + tCase.testCase + "_step_" + tCase.tCase.testCaseStep[a].step + "')\">";
+                                        if (tCase.tCase.testCaseStep[a].testCaseStepAction.length !== 0) {
+                                            str += "<img id=\"plus_" + tCase.test + "_" + tCase.testCase + "_step_" + tCase.tCase.testCaseStep[a].step + "\" ";
+                                            str += " style=\"width:12px;height:12px;display:inline\" src=\"images/details_open.png\" ";
+                                            str += " onclick=\"displayOrHideElement('plus_" + tCase.test + "_" + tCase.testCase + "_step_" + tCase.tCase.testCaseStep[a].step + "')";
+                                            str += ",displayOrHideElement('minus_" + tCase.test + "_" + tCase.testCase + "_step_" + tCase.tCase.testCaseStep[a].step + "')\">";
+                                            str += "<img id=\"minus_" + tCase.test + "_" + tCase.testCase + "_step_" + tCase.tCase.testCaseStep[a].step + "\" style=\"width:12px;height:12px;display:none\" src=\"images/details_close.png\" onclick=\"";
+                                            str += "displayOrHideElement('minus_" + tCase.test + "_" + tCase.testCase + "_step_" + tCase.tCase.testCaseStep[a].step + "'),displayOrHideElement('plus_" + tCase.test + "_" + tCase.testCase + "_step_" + tCase.tCase.testCaseStep[a].step + "')\">";
+                                        }
+                                        str += tCase.tCase.testCaseStep[a].description;
+                                        str += "</b>"
+                                        str += "<br><div id=\"" + tCase.test + "_" + tCase.testCase + "_step_" + tCase.tCase.testCaseStep[a].step + "\" style=\"display:none\">"
+                                        for (b = 0; b < tCase.tCase.testCaseStep[a].testCaseStepAction.length; b++) {
+                                            if (tCase.tCase.testCaseStep[a].testCaseStepAction[b].description !== "") {
+                                                str += "<div style=\"color:blue\">.....[";
+                                                str += tCase.tCase.testCaseStep[a].testCaseStepAction[b].sequence;
+                                                str += "] : ";
+                                                str += tCase.tCase.testCaseStep[a].testCaseStepAction[b].description;
+                                                str += "</div>"
+                                                for (c = 0; c < tCase.tCase.testCaseStep[a].testCaseStepAction[b].testCaseStepActionControl.length; c++) {
+                                                    if (tCase.tCase.testCaseStep[a].testCaseStepAction[b].testCaseStepActionControl[c].description !== "") {
+                                                        str += "<div style=\"color:green\">..........[";
+                                                        str += tCase.tCase.testCaseStep[a].testCaseStepAction[b].testCaseStepActionControl[c].sequence;
+                                                        str += "] : ";
+                                                        str += tCase.tCase.testCaseStep[a].testCaseStepAction[b].testCaseStepActionControl[c].description;
+                                                        str += "</div>"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        str += "</div>";
                                     }
-                                    detail += "<b>"+tCase.lastStatus+"</b></span> on <a href='ExecutionDetail.jsp?id_tc="+tCase.lastStatusID+"' target='_blank'>"+
-                                            tCase.lastStatusDate+"</a> for "+tCase.lastStatusBuild+" / "+tCase.lastStatusRevision;
-                                } else {
-                                    detail += "<br/>Never manually executed";
-                                }
-                                return detail;
-                            }, "sName": "detail", "bSortable": false, sWidth: "140px", sClass: "center"},
+                                    str += "</div>";
+                                    return str;
+                                }, "sName": "howTo", "bSortable": false, sWidth: "430px"},
+                            {"mDataProp": function(tCase, type, val) {
+                                    var detail = "Application: ";
+                                    if (tCase.appType == "GUI") {
+                                        detail += "<a href='http://" + tCase.url + "' target='_blank'><b>" + tCase.application + "</b></a>";
+                                    } else {
+                                        detail += "<b>" + tCase.application + "</b>";
+                                    }
+                                    detail += "<br/>System: <b>" + tCase.system + "</b>";
+                                    detail += "<br/><b>" + tCase.build + " / " + tCase.revision + "</b>";
+                                    if (tCase.lastStatus != "" && tCase.lastStatus != null) {
+                                        if (tCase.lastStatus == "OK") {
+                                            detail += "<br/><span style='background-color: #00ff00; color: #000000'>";
+                                        } else {
+                                            detail += "<br/><span style='background-color: #ff0000; color: #ffffff'>";
+                                        }
+                                        detail += "<b>" + tCase.lastStatus + "</b></span> on <a href='ExecutionDetail.jsp?id_tc=" + tCase.lastStatusID + "' target='_blank'>" +
+                                                tCase.lastStatusDate + "</a> for " + tCase.lastStatusBuild + " / " + tCase.lastStatusRevision;
+                                    } else {
+                                        detail += "<br/>Never manually executed";
+                                    }
+                                    return detail;
+                                }, "sName": "detail", "bSortable": false, sWidth: "140px", sClass: "center"},
                             {"mDataProp": null, "sDefaultContent": '', "bSortable": false, sWidth: "140px"},
                             {"mDataProp": null, "sDefaultContent": '', "bSortable": false, sWidth: "30px"}
                         ],
                         aoColumnDefs: [
                             {
                                 "aTargets": [6],
-                                "mRender": function ( data, type, full ){
+                                "mRender": function(data, type, full) {
                                     return "<p style='text-align: center'><input type='button' style='background-image: url(images/ok.png); width: 20px; height: 20px; border: 0 none; top: 0px' onclick='saveManualTest(\"OK\",this)'/></p><br/><br/>" +
-                                        "<p style='text-align: center'><input type='button' style='background-image: url(images/ko.png); width: 20px; height: 20px; border: 0 none; bottom: 0px' onclick='saveManualTest(\"KO\",this)'/></p>"
+                                            "<p style='text-align: center'><input type='button' style='background-image: url(images/ko.png); width: 20px; height: 20px; border: 0 none; bottom: 0px' onclick='saveManualTest(\"KO\",this)'/></p>"
                                 }
                             },
                             {
                                 "aTargets": [5],
-                                "mRender": function ( data, type, full ){
+                                "mRender": function(data, type, full) {
                                     return "<textarea placeholder='Give reason in case of KO'></textarea>";
                                 }
                             }
@@ -399,20 +451,20 @@
                 }
             }
 
-            $().ready(function () {
-                $.post("GetDataForTestCaseSearch?system="+$("#MySystem").val(), function (testData) {
-                    $.each(testData, function (key, value) {
-                        $.each(value.data, function (k, v) {
+            $().ready(function() {
+                $.post("GetDataForTestCaseSearch?system=" + $("#MySystem").val(), function(testData) {
+                    $.each(testData, function(key, value) {
+                        $.each(value.data, function(k, v) {
                             if (v !== null && v !== "null" && v != "" && v != " ") {
                                 $('#' + value.name).append(new Option(v, v));
                             }
                         })
                     });
                     loader.remove();
-                    $("#test").val("<%= request.getParameter("Test") == null ? "All" : request.getParameter("Test") %>");
-                    $("#testCase").val("<%= request.getParameter("TestCase") == null ? "" : request.getParameter("TestCase") %>");
-                    $("#executionCountry").val("<%= request.getParameter("Country") == null ? "" : request.getParameter("Country") %>");
-                    $("#executionEnv").val("<%= request.getParameter("Env") == null ? "" : request.getParameter("Env") %>");
+                    $("#test").val("<%= request.getParameter("Test") == null ? "All" : request.getParameter("Test")%>");
+                    $("#testCase").val("<%= request.getParameter("TestCase") == null ? "" : request.getParameter("TestCase")%>");
+                    $("#executionCountry").val("<%= request.getParameter("Country") == null ? "" : request.getParameter("Country")%>");
+                    $("#executionEnv").val("<%= request.getParameter("Env") == null ? "" : request.getParameter("Env")%>");
                 });
 
                 var docData = [
@@ -437,42 +489,42 @@
                     {label: "targetRev", dTable: "testcase", dField: "TargetRev", dLabel: ""}
                 ];
 
-                $.each(docData, function (key, value) {
-                    $.get("DocumentationField", {docTable: value.dTable, docField: value.dField, docLabel: value.dLabel}, function (doc) {
+                $.each(docData, function(key, value) {
+                    $.get("DocumentationField", {docTable: value.dTable, docField: value.dField, docLabel: value.dLabel}, function(doc) {
                         $("label[for='" + value.label + "']").html(doc);
                     });
                 });
 
-                $("#searchTestCase").keypress(function (e) {
+                $("#searchTestCase").keypress(function(e) {
                     if (e.which == 13) {
                         loadTestCases();
                     }
                 });
 
-                $( "#divPictureSave" ).dialog({
+                $("#divPictureSave").dialog({
                     autoOpen: false,
                     modal: true,
                     buttons: {
-                        "Import": function(){
-                                var formObj = $("#formPictureSave");
-                                var formURL = formObj.attr("action");
-                                var formData = new FormData(formObj[0]);
-                                $.ajax({
-                                    url: formURL,
-                                    type: 'POST',
-                                    data:  formData,
-                                    mimeType:"multipart/form-data",
-                                    async: false,
-                                    cache: false,
-                                    contentType: false,
-                                    processData: false,
-                                    success: function(data, textStatus, jqXHR){
-                                        $("#divPictureSave").dialog("close");
-                                    },
-                                    error: function(jqXHR, textStatus, errorThrown){
-                                        alert(errorThrown);
-                                    }
-                                });
+                        "Import": function() {
+                            var formObj = $("#formPictureSave");
+                            var formURL = formObj.attr("action");
+                            var formData = new FormData(formObj[0]);
+                            $.ajax({
+                                url: formURL,
+                                type: 'POST',
+                                data: formData,
+                                mimeType: "multipart/form-data",
+                                async: false,
+                                cache: false,
+                                contentType: false,
+                                processData: false,
+                                success: function(data, textStatus, jqXHR) {
+                                    $("#divPictureSave").dialog("close");
+                                },
+                                error: function(jqXHR, textStatus, errorThrown) {
+                                    alert(errorThrown);
+                                }
+                            });
                         },
                         "Close": function() {
                             $(this).dialog("close");

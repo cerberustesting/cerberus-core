@@ -17,14 +17,18 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.cerberus.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.cerberus.dto.ITestCaseManualExecutionDTO;
 import org.cerberus.dto.TestCaseManualExecution;
 import org.cerberus.entity.TCase;
+import org.cerberus.exception.CerberusException;
 import org.cerberus.service.IManualTestCaseService;
+import org.cerberus.service.ITestCaseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -36,13 +40,26 @@ import org.springframework.stereotype.Service;
  * @since 0.9.1
  */
 @Service
-public class ManualTestCaseService implements IManualTestCaseService{
+public class ManualTestCaseService implements IManualTestCaseService {
 
     @Autowired
     private ITestCaseManualExecutionDTO testCaseManualExecutionDTO;
+    @Autowired
+    private ITestCaseService testCaseService;
 
     @Override
     public List<TestCaseManualExecution> findTestCaseManualExecution(TCase testCase, String text, String system, String country, String env, String campaign) {
-        return testCaseManualExecutionDTO.findTestCaseManualExecution(testCase, text, system, country, env, campaign);
+        List<TestCaseManualExecution> result = new ArrayList();
+        List<TestCaseManualExecution> tcmeList = testCaseManualExecutionDTO.findTestCaseManualExecution(testCase, text, system, country, env, campaign);
+        try {
+            for (TestCaseManualExecution tcme : tcmeList) {
+                TCase tcComplete = testCaseService.findTestCaseByKeyWithDependency(tcme.getTest(), tcme.getTestCase());
+                tcme.settCase(tcComplete);
+                result.add(tcme);
+            }
+        } catch (CerberusException ex) {
+            Logger.getLogger(ManualTestCaseService.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return result;
     }
 }

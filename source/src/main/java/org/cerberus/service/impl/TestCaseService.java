@@ -24,15 +24,21 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
 import org.cerberus.dao.ITestCaseDAO;
 import org.cerberus.entity.TCase;
 import org.cerberus.entity.TestCase;
 import org.cerberus.entity.TestCaseCountry;
+import org.cerberus.entity.TestCaseCountryProperties;
+import org.cerberus.entity.TestCaseStep;
+import org.cerberus.entity.TestCaseStepAction;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.factory.IFactoryTCase;
+import org.cerberus.service.ITestCaseCountryPropertiesService;
 import org.cerberus.service.ITestCaseCountryService;
 import org.cerberus.service.ITestCaseService;
+import org.cerberus.service.ITestCaseStepActionControlService;
+import org.cerberus.service.ITestCaseStepActionService;
+import org.cerberus.service.ITestCaseStepService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -48,6 +54,14 @@ public class TestCaseService implements ITestCaseService {
     @Autowired
     private ITestCaseCountryService testCaseCountryService;
     @Autowired
+    private ITestCaseCountryPropertiesService testCaseCountryPropertiesService;
+    @Autowired
+    private ITestCaseStepService testCaseStepService;
+    @Autowired
+    private ITestCaseStepActionService testCaseStepActionService;
+    @Autowired
+    private ITestCaseStepActionControlService testCaseStepActionControlService;
+    @Autowired
     private IFactoryTCase factoryTCase;
 
     @Override
@@ -58,9 +72,29 @@ public class TestCaseService implements ITestCaseService {
     @Override
     public TCase findTestCaseByKeyWithDependency(String test, String testCase) throws CerberusException {
         TCase newTcase;
-        newTcase = testCaseDao.findTestCaseByKey(test, testCase);
+        newTcase = findTestCaseByKey(test, testCase);
         List<TestCaseCountry> testCaseCountry = testCaseCountryService.findTestCaseCountryByTestTestCase(test, testCase);
-        newTcase.setTestCaseCountry(testCaseCountry);
+        List<TestCaseCountry> testCaseCountryToAdd = new ArrayList();
+        for (TestCaseCountry tcc : testCaseCountry) {
+            List<TestCaseCountryProperties> properties = testCaseCountryPropertiesService.findListOfPropertyPerTestTestCaseCountry(test, testCase, tcc.getCountry());
+            tcc.setTestCaseCountryProperty(properties);
+            testCaseCountryToAdd.add(tcc);
+        }
+        newTcase.setTestCaseCountry(testCaseCountryToAdd);
+
+        List<TestCaseStep> tcs = testCaseStepService.getListOfSteps(test, testCase);
+        List<TestCaseStep> tcsToAdd = new ArrayList();
+        for (TestCaseStep step : tcs) {
+            List<TestCaseStepAction> tcsa = testCaseStepActionService.getListOfAction(test, testCase, step.getStep());
+            List<TestCaseStepAction> tcsaToAdd = new ArrayList();
+            for (TestCaseStepAction action : tcsa) {
+                action.setTestCaseStepActionControl(testCaseStepActionControlService.findControlByTestTestCaseStepSequence(test, testCase, action.getStep(), action.getSequence()));
+                tcsaToAdd.add(action);
+            }
+            step.setTestCaseStepAction(tcsaToAdd);
+            tcsToAdd.add(step);
+        }
+        newTcase.setTestCaseStep(tcsToAdd);
         return newTcase;
     }
 
@@ -142,15 +176,15 @@ public class TestCaseService implements ITestCaseService {
         }
         return result;
     }
-    
+
     @Override
     public boolean deleteTestCase(TCase testCase) {
-    return testCaseDao.deleteTestCase(testCase);
+        return testCaseDao.deleteTestCase(testCase);
     }
 
     @Override
     public void updateTestCaseField(TCase tc, String columnName, String value) {
-    testCaseDao.updateTestCaseField(tc, columnName, value);
+        testCaseDao.updateTestCaseField(tc, columnName, value);
     }
 
     /**
