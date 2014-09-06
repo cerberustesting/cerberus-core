@@ -3781,7 +3781,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(" ON DUPLICATE KEY UPDATE `ParsingAnswer`=IFNULL(sl.ParsingAnswer,''), Description=IFNULL(sl.Description,'');");
         SQLInstruction.add(SQLS.toString());
 
-// Creatng invariant TESTDATATYPE.
+// Creating invariant TESTDATATYPE.
 //-- ------------------------ 533
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ");
@@ -3791,7 +3791,47 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(" ('TESTDATATYPE', 'SOAP', '30', 'Dynamic test data from SOAP Webservice call.', '');");
         SQLInstruction.add(SQLS.toString());
 
-        
+// Creating technical id between testdatalib and testdatalibdata tables.
+//-- ------------------------ 534-539
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testdatalib` ");
+        SQLS.append("ADD COLUMN `TestDataLibID` INT UNSIGNED NOT NULL AUTO_INCREMENT FIRST,");
+        SQLS.append("DROP PRIMARY KEY,");
+        SQLS.append("ADD PRIMARY KEY (`TestDataLibID`),");
+        SQLS.append("ADD UNIQUE INDEX `IX_testdatalib_01` (`Name` ASC, `system` ASC, `Environment` ASC, `Country` ASC);");
+        SQLInstruction.add(SQLS.toString());
+
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testdatalibdata` ");
+        SQLS.append("ADD COLUMN `TestDataLibID` INT UNSIGNED NOT NULL DEFAULT 0 FIRST;");
+        SQLInstruction.add(SQLS.toString());
+
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `testdatalibdata` ld, `testdatalib` l SET ld.TestDataLibID=l.TestDataLibID");
+        SQLS.append(" WHERE ld.`Name`=l.`Name` and ld.`system`=l.`system` and ld.`Environment`=l.`Environment` and ld.`Country`=l.`Country`;");
+        SQLInstruction.add(SQLS.toString());
+
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testdatalibdata` ");
+        SQLS.append("DROP FOREIGN KEY `FK_testdatalibdata_01`;");
+        SQLInstruction.add(SQLS.toString());
+
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testdatalibdata` ");
+        SQLS.append("DROP COLUMN `Country`, DROP COLUMN `Environment`, DROP COLUMN `system`, DROP COLUMN `Name`, ");
+        SQLS.append("DROP PRIMARY KEY, ADD PRIMARY KEY (`TestDataLibID`, `SubData`);");
+        SQLInstruction.add(SQLS.toString());
+
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testdatalibdata` ");
+        SQLS.append("ADD CONSTRAINT `FK_testdatalibdata_01`");
+        SQLS.append("  FOREIGN KEY (`TestDataLibID`)");
+        SQLS.append("  REFERENCES `testdatalib` (`TestDataLibID`) ON DELETE CASCADE ON UPDATE CASCADE;");
+        SQLInstruction.add(SQLS.toString());
+
+
+
+
         return SQLInstruction;
     }
 }
