@@ -23,6 +23,7 @@ package org.cerberus.entity;
  */
 public class TestDataLib {
 
+    private Integer testDataLibID;
     private String name;
     private String system;
     private String environment;
@@ -35,6 +36,14 @@ public class TestDataLib {
     private String method;
     private String envelope;
     private String description;
+
+    public Integer getTestDataLibID() {
+        return testDataLibID;
+    }
+
+    public void setTestDataLibID(Integer testDataLibID) {
+        this.testDataLibID = testDataLibID;
+    }
 
     public String getName() {
         return name;

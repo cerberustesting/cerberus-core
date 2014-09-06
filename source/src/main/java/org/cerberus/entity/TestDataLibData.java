@@ -23,46 +23,19 @@ package org.cerberus.entity;
  */
 public class TestDataLibData {
 
-    private String name;
-    private String system;
-    private String environment;
-    private String country;
+    private Integer testDataLibID;
     private String subData;
     private String value;
     private String column;
     private String parsingAnswer;
     private String description;
 
-    public String getName() {
-        return name;
+    public Integer getTestDataLibID() {
+        return testDataLibID;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getSystem() {
-        return system;
-    }
-
-    public void setSystem(String system) {
-        this.system = system;
-    }
-
-    public String getEnvironment() {
-        return environment;
-    }
-
-    public void setEnvironment(String environment) {
-        this.environment = environment;
-    }
-
-    public String getCountry() {
-        return country;
-    }
-
-    public void setCountry(String country) {
-        this.country = country;
+    public void setTestDataLibID(Integer testDataLibID) {
+        this.testDataLibID = testDataLibID;
     }
 
     public String getSubData() {

@@ -328,6 +328,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
     }
 
     private TestDataLib loadTestDataLibFromResultSet(ResultSet resultSet) throws SQLException {
+        Integer testDataLibID = resultSet.getInt("testDataLibID");
         String name = resultSet.getString("name");
         String system = ParameterParserUtil.returnEmptyStringIfNull(resultSet.getString("system"));
         String environment = ParameterParserUtil.returnEmptyStringIfNull(resultSet.getString("environment"));
@@ -341,7 +342,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
         String envelope = resultSet.getString("envelope");
         String description = resultSet.getString("description");
 
-        return factoryTestDataLib.create(name, system, environment, country, group, type, database, script, servicePath, method, envelope, description);
+        return factoryTestDataLib.create(testDataLibID, name, system, environment, country, group, type, database, script, servicePath, method, envelope, description);
     }
 
     @Override

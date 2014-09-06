@@ -29,6 +29,7 @@ public interface IFactoryTestDataLib {
 
     /**
      *
+     * @param testDataLibID
      * @param name
      * @param system
      * @param country
@@ -43,7 +44,7 @@ public interface IFactoryTestDataLib {
      * @param description
      * @return a TestData
      */
-    TestDataLib create(String name, String system, String environment,
+    TestDataLib create(Integer testDataLibID, String name, String system, String environment,
             String country, String group, String type,
             String database, String script, String servicePath,
             String method, String envelope, String description);

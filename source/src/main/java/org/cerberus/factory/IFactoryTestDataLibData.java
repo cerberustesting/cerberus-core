@@ -29,10 +29,7 @@ public interface IFactoryTestDataLibData {
 
     /**
      *
-     * @param name
-     * @param system
-     * @param country
-     * @param environment
+     * @param testDataLibID
      * @param subData
      * @param value
      * @param column
@@ -40,7 +37,6 @@ public interface IFactoryTestDataLibData {
      * @param description
      * @return a TestData
      */
-    TestDataLibData create(String name, String system, String environment,
-            String country, String subData, String value,
+    TestDataLibData create(Integer testDataLibID, String subData, String value,
             String column, String parsingAnswer, String description);
 }
