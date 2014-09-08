@@ -115,7 +115,7 @@ public class SaveManualExecution extends HttpServlet {
                     controlStatus, controlMessage, application, "", "", "", tag, "Y", 0, 0, 0, 0, true, "", "", tCase.getStatus(), version,
                     null, null, null, false, "", "", "", "", "", "", null, null, myUser);
 
-            testCaseExecutionService.insertTCExecution(execution);
+            execution.setId(testCaseExecutionService.insertTCExecution(execution));
 
             TestCaseExecutionSysVer testCaseExecutionSysVer = factoryTestCaseExecutionSysVer.create(execution.getId(), application.getSystem(), build, revision);
             testCaseExecutionSysVerService.insertTestCaseExecutionSysVer(testCaseExecutionSysVer);

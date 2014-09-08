@@ -171,12 +171,13 @@
 
                 </div>
             </div><br><br>
-            <form method="post" name="DeleteTestCase" action="DeleteTestCase">               
+            <form method="post" name="DeleteTestCaseFromTestPage" action="DeleteTestCaseFromTestPage">               
                 <div style="clear:both;">
                     <div class="filters" style="float:left;width:100%; height:30px">
                         <p style="float:left; width:200px" class="dttTitle">TestCase List</p>
                         <% if (canEdit) {%>
                         <input style="float:left" class="button" name="submit_changes" disabled=disabled id="submit_changes" value="Delete TestCase" type="submit"> 
+                        <input id="test_of_page" name="test_of_page" value="<%=testSelected%>" hidden='hidden'>
                         <%}%></div>
                     <div style="clear:both;">
                         <table id="testcasetable" style="clear:both; text-align: left; border-collapse: collapse" border="0px" cellpadding="0px" cellspacing="0px">
@@ -217,7 +218,7 @@
                                     <table><tr>
                                             <td>
                                                 <%if (canEdit) {%>
-                                                <input id="test_testcase_delete" name="test_testcase_delete" type="checkbox" value="<%=tcase.getTest()%> - <%=tcase.getTestCase()%>" onchange="javascript:enableElement('submit_changes')">
+                                                <input id="test_testcase_delete" name="test_testcase_delete" type="checkbox" value="<%=tcase.getTestCase()%>" onchange="javascript:enableElement('submit_changes')">
                                                 <%}%>
                                             </td>
                                         </tr><tr><td style="text-align: center">
