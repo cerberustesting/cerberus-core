@@ -31,6 +31,7 @@ import org.cerberus.entity.TestCaseCountry;
 import org.cerberus.entity.TestCaseCountryProperties;
 import org.cerberus.entity.TestCaseStep;
 import org.cerberus.entity.TestCaseStepAction;
+import org.cerberus.entity.TestCaseStepActionControl;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.factory.IFactoryTCase;
 import org.cerberus.service.ITestCaseCountryPropertiesService;
@@ -82,13 +83,33 @@ public class TestCaseService implements ITestCaseService {
         }
         newTcase.setTestCaseCountry(testCaseCountryToAdd);
 
+        String initialTest = test;
+        String initialTc = testCase;
         List<TestCaseStep> tcs = testCaseStepService.getListOfSteps(test, testCase);
         List<TestCaseStep> tcsToAdd = new ArrayList();
         for (TestCaseStep step : tcs) {
-            List<TestCaseStepAction> tcsa = testCaseStepActionService.getListOfAction(test, testCase, step.getStep());
+            int stepNumber = step.getStep();
+            int initialStep = step.getStep();
+            if (step.getUseStep().equals("Y")) {
+                test = step.getUseStepTest();
+                testCase = step.getUseStepTestCase();
+                stepNumber = step.getUseStepStep();
+            }
+            List<TestCaseStepAction> tcsa = testCaseStepActionService.getListOfAction(test, testCase, stepNumber);
             List<TestCaseStepAction> tcsaToAdd = new ArrayList();
             for (TestCaseStepAction action : tcsa) {
-                action.setTestCaseStepActionControl(testCaseStepActionControlService.findControlByTestTestCaseStepSequence(test, testCase, action.getStep(), action.getSequence()));
+                List<TestCaseStepActionControl> tcsac = testCaseStepActionControlService.findControlByTestTestCaseStepSequence(test, testCase, stepNumber, action.getSequence());
+                List<TestCaseStepActionControl> tcsacToAdd = new ArrayList();
+                for (TestCaseStepActionControl control : tcsac) {
+                    control.setTest(initialTest);
+                    control.setTestCase(initialTc);
+                    control.setStep(initialStep);
+                    tcsacToAdd.add(control);
+                }
+                action.setTestCaseStepActionControl(tcsacToAdd);
+                action.setTest(initialTest);
+                action.setTestCase(initialTc);
+                action.setStep(initialStep);
                 tcsaToAdd.add(action);
             }
             step.setTestCaseStepAction(tcsaToAdd);
