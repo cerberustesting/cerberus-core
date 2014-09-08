@@ -1076,7 +1076,11 @@
     </session-config>
     <error-page>
         <error-code>403</error-code>
-        <location>/ErrorPages/Error403.jsp</location>
+        <location>/ErrorPages/Error.jsp</location>
+    </error-page>
+    <error-page>
+        <error-code>500</error-code>
+        <location>/ErrorPages/Error.jsp</location>
     </error-page>
     <!-- Start JAAS Configuration -->
     <security-role>

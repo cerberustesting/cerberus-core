@@ -1,5 +1,5 @@
 <%-- 
-    Document   : Error403
+    Document   : Error
     Created on : 19 août 2014, 07:19:16
     Author     : bcivel
 --%>
@@ -10,7 +10,7 @@
     <head>
         <link rel="stylesheet" type="text/css" href="css/crb_style.css">
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Error403</title>
+        <title>Error</title>
     </head>
     <body>
         <%@ include file="../include/header.jsp" %>
