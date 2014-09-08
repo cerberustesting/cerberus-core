@@ -22,7 +22,6 @@ package org.cerberus.servlet.campaign;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
@@ -32,17 +31,13 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.cerberus.dto.TestCaseWithExecution;
 import org.cerberus.entity.CampaignContent;
 
-import org.cerberus.entity.CampaignParameter;
-import org.cerberus.entity.TCase;
 import org.cerberus.entity.TestBatteryContent;
-import org.cerberus.entity.TestCaseExecution;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.service.ICampaignService;
 import org.cerberus.service.ITestBatteryService;
-import org.cerberus.service.ITestCaseExecutionService;
-import org.cerberus.service.ITestCaseService;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -80,12 +75,6 @@ public class CampaignExecutionReport extends HttpServlet {
             ICampaignService campaignService = appContext
                     .getBean(ICampaignService.class);
 
-            ITestCaseExecutionService testCaseExecutionService = appContext
-                    .getBean(ITestCaseExecutionService.class);
-
-            ITestCaseService testCaseService = appContext
-                    .getBean(ITestCaseService.class);
-
             ITestBatteryService testBatteryService = appContext
                     .getBean(ITestBatteryService.class);
 
@@ -100,64 +89,29 @@ public class CampaignExecutionReport extends HttpServlet {
 
             JSONArray jSONResult = new JSONArray();
 
-            List<CampaignParameter> campaignParameters = campaignService
-                    .findCampaignParametersByCampaignName(campaignName);
-
-            List<String> environments = new ArrayList<String>();
-            List<String> countries = new ArrayList<String>();
-            List<String> browsers = new ArrayList<String>();
-
-            if (env != null && env.length > 0) {
-                environments.addAll(Arrays.asList(env));
-            }
-            if (country != null && country.length > 0) {
-                countries.addAll(Arrays.asList(country));
-            }
-            if (browser != null && browser.length > 0) {
-                browsers.addAll(Arrays.asList(browser));
-            }
-
-            for (CampaignParameter parameter : campaignParameters) {
-                if ("BROWSER".equals(parameter.getParameter())) {
-                    browsers.add(parameter.getValue());
-                }
-                if ("ENVIRONMENT".equals(parameter.getParameter())) {
-                    environments.add(parameter.getValue());
-                }
-                if ("COUNTRY".equals(parameter.getParameter())) {
-                    countries.add(parameter.getValue());
-                }
-            }
-
-            List<TestCaseExecution> findAllCampaignTagExecutions = testCaseExecutionService.findExecutionsByCampaignNameAndTag(campaignName, tag);
-
-            HashMap<String, List<TestCaseExecution>> hmTestCaseExecutionByTestCase = new HashMap<String, List<TestCaseExecution>>();
-
+            List<TestCaseWithExecution> testCaseWithExecutions = campaignService.getCampaignTestCaseExecutionForEnvCountriesBrowserTag(campaignName, tag, env, country, browser);
+            HashMap<String, List<TestCaseWithExecution>> hmTestCaseExecutionByTestCase = new HashMap<String, List<TestCaseWithExecution>>();
+            List<TestCaseWithExecution> listExec;
             String key;
-            List<TestCaseExecution> testCaseExecutionsByTestCase;
-            for (TestCaseExecution testCaseExecution : findAllCampaignTagExecutions) {
-                if (environments.contains(testCaseExecution.getEnvironment())
-                        && countries.contains(testCaseExecution.getCountry())
-                        && browsers.contains(testCaseExecution.getBrowser())) {
-                    key = testCaseExecution.getTest() + testCaseExecution.getTestCase();
-                    if (hmTestCaseExecutionByTestCase.containsKey(key)) {
-                        testCaseExecutionsByTestCase = hmTestCaseExecutionByTestCase.get(key);
-                    } else {
-                        testCaseExecutionsByTestCase = new ArrayList<TestCaseExecution>();
-                    }
-                    testCaseExecutionsByTestCase.add(testCaseExecution);
-                    hmTestCaseExecutionByTestCase.put(key, testCaseExecutionsByTestCase);
+            for (TestCaseWithExecution testCaseWithExecution : testCaseWithExecutions) {
+                key = testCaseWithExecution.getTest()+testCaseWithExecution.getTestCase();
+                if(hmTestCaseExecutionByTestCase.containsKey(key)) {
+                   listExec =  hmTestCaseExecutionByTestCase.get(key);
+                } else {
+                    listExec =  new ArrayList<TestCaseWithExecution>();
                 }
+                listExec.add(testCaseWithExecution);
+                hmTestCaseExecutionByTestCase.put(key, listExec);
+                
             }
-
+            
             for (CampaignContent campaignContent : campaignService.findCampaignContentsByCampaignName(campaignName)) {
                 for (TestBatteryContent batteryContent : testBatteryService.findTestBatteryContentsByTestBatteryName(campaignContent.getTestbattery())) {
                     key = batteryContent.getTest() + batteryContent.getTestCase();
                     if (hmTestCaseExecutionByTestCase.containsKey(key)) {
-                        for (TestCaseExecution testCaseExecution : hmTestCaseExecutionByTestCase.get(key)) {
+                        for (TestCaseWithExecution testCaseWithExecution : hmTestCaseExecutionByTestCase.get(key)) {
                             try {
-                                TCase tCase = testCaseService.findTestCaseByKey(testCaseExecution.getTest(), testCaseExecution.getTestCase());
-                                jSONResult.put(testCaseExecutionToJSONObject(testCaseExecution, tCase));
+                                jSONResult.put(testCaseExecutionToJSONObject(testCaseWithExecution));
                             } catch (JSONException ex) {
                                 Logger.getLogger(CampaignExecutionReport.class.getName()).log(Level.SEVERE, null, ex);
                             }
@@ -222,40 +176,40 @@ public class CampaignExecutionReport extends HttpServlet {
      * @throws JSONException the JSON exception
      */
     private JSONObject testCaseExecutionToJSONObject(
-            TestCaseExecution testCaseExecutions, TCase testCase) throws JSONException {
+            TestCaseWithExecution testCaseWithExecution) throws JSONException {
         JSONObject result = new JSONObject();
 
-        result.put("ID", String.valueOf(testCaseExecutions.getId()));
-        result.put("Test", JavaScriptUtils.javaScriptEscape(testCaseExecutions.getTest()));
-        result.put("TestCase", JavaScriptUtils.javaScriptEscape(testCaseExecutions.getTestCase()));
-        result.put("Environment", JavaScriptUtils.javaScriptEscape(testCaseExecutions.getEnvironment()));
-        result.put("Start", String.valueOf(testCaseExecutions.getStart()));
-        result.put("End", String.valueOf(testCaseExecutions.getEnd()));
-        result.put("Country", JavaScriptUtils.javaScriptEscape(testCaseExecutions.getCountry()));
-        result.put("Browser", JavaScriptUtils.javaScriptEscape(testCaseExecutions.getBrowser()));
-        result.put("ControlStatus", JavaScriptUtils.javaScriptEscape(testCaseExecutions.getControlStatus()));
-        result.put("ControlMessage", JavaScriptUtils.javaScriptEscape(testCaseExecutions.getControlMessage()));
-        result.put("Status", JavaScriptUtils.javaScriptEscape(testCaseExecutions.getStatus()));
+        result.put("ID", String.valueOf(testCaseWithExecution.getStatusExecutionID()));
+        result.put("Test", JavaScriptUtils.javaScriptEscape(testCaseWithExecution.getTest()));
+        result.put("TestCase", JavaScriptUtils.javaScriptEscape(testCaseWithExecution.getTestCase()));
+        result.put("Environment", JavaScriptUtils.javaScriptEscape(testCaseWithExecution.getEnvironment()));
+        result.put("Start", String.valueOf(testCaseWithExecution.getStart()));
+        result.put("End", String.valueOf(testCaseWithExecution.getEnd()));
+        result.put("Country", JavaScriptUtils.javaScriptEscape(testCaseWithExecution.getCountry()));
+        result.put("Browser", JavaScriptUtils.javaScriptEscape(testCaseWithExecution.getBrowser()));
+        result.put("ControlStatus", JavaScriptUtils.javaScriptEscape(testCaseWithExecution.getControlStatus()));
+        result.put("ControlMessage", JavaScriptUtils.javaScriptEscape(testCaseWithExecution.getControlMessage()));
+        result.put("Status", JavaScriptUtils.javaScriptEscape(testCaseWithExecution.getStatus()));
 
         String bugId;
-        if (testCaseExecutions.getApplication().getBugTrackerUrl() != null
-                && !"".equals(testCaseExecutions.getApplication().getBugTrackerUrl())) {
-            bugId = testCaseExecutions.getApplication().getBugTrackerUrl().replaceAll("%BUGID%", testCase.getBugID());
+        if (testCaseWithExecution.getApplicationObject().getBugTrackerUrl() != null
+                && !"".equals(testCaseWithExecution.getApplicationObject().getBugTrackerUrl())) {
+            bugId = testCaseWithExecution.getApplicationObject().getBugTrackerUrl().replaceAll("%BUGID%", testCaseWithExecution.getBugID());
             bugId = new StringBuffer("<a href='")
                     .append(bugId)
                     .append("' target='reportBugID'>")
-                    .append(testCase.getBugID())
+                    .append(testCaseWithExecution.getBugID())
                     .append("</a>")
                     .toString();
         } else {
-            bugId = testCase.getBugID();
+            bugId = testCaseWithExecution.getBugID();
         }
         result.put("BugID", bugId);
 
-        result.put("Comment", JavaScriptUtils.javaScriptEscape(testCase.getComment()));
-        result.put("Function", JavaScriptUtils.javaScriptEscape(testCase.getFunction()));
-        result.put("Application", JavaScriptUtils.javaScriptEscape(testCase.getApplication()));
-        result.put("ShortDescription", testCase.getShortDescription());
+        result.put("Comment", JavaScriptUtils.javaScriptEscape(testCaseWithExecution.getComment()));
+        result.put("Function", JavaScriptUtils.javaScriptEscape(testCaseWithExecution.getFunction()));
+        result.put("Application", JavaScriptUtils.javaScriptEscape(testCaseWithExecution.getApplication()));
+        result.put("ShortDescription", testCaseWithExecution.getShortDescription());
 
         return result;
     }

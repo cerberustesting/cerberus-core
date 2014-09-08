@@ -108,6 +108,66 @@ function addTestCaseToStatusTabs(testcase) {
     statusTable.append(statusTestCaseStatusLine);
 };
 
+function createGraphFromAjaxToElement(ajaxDataGraphURL,element, config) {
+    if(!ajaxDataGraphURL || !element) {
+        return false;
+    }
+
+    if(!config) {
+        config = {
+            // String - Template string for single tooltips
+            tooltipTemplate: "<%if (label){%><%=label%>: <%}%><%= value %>",
+
+            // String - Template string for single tooltips
+            multiTooltipTemplate: "<%if (datasetLabel){%><%=datasetLabel%>: <%}%><%= value %>"
+        };
+    }
+
+    jQuery.ajax(ajaxDataGraphURL).done(function(data) {
+        if(!data || !data.type || !data.axis || !data.axis.length <= 0) {
+            return false;
+        }
+
+        var dataset = false;
+        for(var axis=0; axis<data.axis.length; axis++) {
+            if(axis == 0 && (data.type == "Pie" || data.type == "Bar" || data.type == "MultiBar") ) {
+                dataset = [];
+            }
+
+            if(data.type == "Pie" || data.type == "Bar") {
+                dataset[dataset.length] = createDatasetPie(data.axis[0].label, data.axis[0].value, 
+                    data.axis[0].color, data.axis[0].highlight);
+
+            } else if(data.type == "BarColors") {
+                dataset = createDatasetBar(data.axis[0].label, data.axis[0].value, data.axis[0].color, 
+                    data.axis[0].highlight, dataset);
+
+            } else if(data.type == "MultiBar") {
+                createDatasetMultiBar(data.axis[0].label, data.axis[0].data, data.axis[0].fillColor, 
+                    data.axis[0].pointColor, data.axis[0].pointHighlight);
+            }
+        }
+        
+        if(!dataset) {
+            var ctx = $(element).get(0).getContext("2d");
+
+            if(data.type == "Pie") {
+                new Chart(ctx).Pie(dataset,config);
+
+            } else if(data.type == "Bar") {
+                new Chart(ctx).Bar(dataset, config);
+
+            } else if(data.type == "BarColors") {
+                new Chart(ctx).BarColors(dataset, config);
+
+            } else if(data.type == "MultiBar") {
+                new Chart(ctx).StackedBar(dataset,config);
+
+            }
+        }
+    });
+}
+
 function addTestCaseToPercentRadar(testcase) {
     
     var testCaseFunction = testcase.Function || "(function not defined)";

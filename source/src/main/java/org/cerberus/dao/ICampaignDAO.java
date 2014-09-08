@@ -20,6 +20,7 @@
 package org.cerberus.dao;
 
 import java.util.List;
+import org.cerberus.dto.TestCaseWithExecution;
 import org.cerberus.entity.Campaign;
 import org.cerberus.exception.CerberusException;
 
@@ -43,4 +44,6 @@ public interface ICampaignDAO {
 
     List<Campaign> findCampaignByCriteria(Integer campaignID, String campaign, String description) throws CerberusException;
 
+    List<TestCaseWithExecution> getCampaignTestCaseExecutionForEnvCountriesBrowserTag(
+        String campaignName, String tag, String[] env, String[] country, String[] browser ) throws CerberusException;
 }

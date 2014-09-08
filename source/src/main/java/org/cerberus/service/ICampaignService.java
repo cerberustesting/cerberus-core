@@ -19,10 +19,13 @@
  */
 package org.cerberus.service;
 
+import java.util.HashMap;
 import java.util.List;
+import org.cerberus.dto.TestCaseWithExecution;
 import org.cerberus.entity.Campaign;
 import org.cerberus.entity.CampaignContent;
 import org.cerberus.entity.CampaignParameter;
+import org.cerberus.entity.TestCaseExecution;
 import org.cerberus.exception.CerberusException;
 
 /**
@@ -68,4 +71,17 @@ public interface ICampaignService {
     List<CampaignContent> findCampaignContentByCriteria(String campaign, Integer campaignContentID, String testBattery) throws CerberusException;
 
     List<CampaignParameter> findCampaignParameterByCriteria(Integer campaignparameterID, String campaign, String parameter, String value) throws CerberusException;
+
+    /**
+     *
+     * @param campaignName
+     * @param tag
+     * @param env
+     * @param country
+     * @param browser
+     * @return
+     * @throws CerberusException
+     */
+    List<TestCaseWithExecution> getCampaignTestCaseExecutionForEnvCountriesBrowserTag(
+            String campaignName, String tag, String[] env, String[] country, String[] browser ) throws CerberusException;
 }

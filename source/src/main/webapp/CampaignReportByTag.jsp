@@ -88,6 +88,7 @@
 
                     var controlStatus, testCaseFunction;
                     var testCaseTotal = 0;
+                    
                     for (var index = 0; index < report.length; index++) {
                         testCaseTotal++;
 <%
@@ -112,7 +113,7 @@
                             }
                         }
                     }
-
+                    
                     $("div.executionStatus").empty().append("<table  class='arrondTable fullSize'><thead><tr><th>Execution status</th><th>TestCase Number</th></tr></thead><tbody></tbody></table>");
                     for (var index = 0; index < data.labels.length; index++) {
                         $("div.executionStatus table tbody").append(
