@@ -31,14 +31,10 @@ import org.springframework.stereotype.Service;
 public class FactoryTestDataLibData implements IFactoryTestDataLibData {
 
     @Override
-    public TestDataLibData create(String name, String system, String environment, 
-            String country, String subData, String value, String column,
+    public TestDataLibData create(Integer testDataLibID, String subData, String value, String column,
             String parsingAnswer, String description) {
         TestDataLibData newData = new TestDataLibData();
-        newData.setName(name);
-        newData.setSystem(system);
-        newData.setCountry(country);
-        newData.setEnvironment(environment);
+        newData.setTestDataLibID(testDataLibID);
         newData.setSubData(subData);
         newData.setValue(value);
         newData.setColumn(column);
