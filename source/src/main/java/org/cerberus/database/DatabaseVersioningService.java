@@ -3829,8 +3829,16 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("  REFERENCES `testdatalib` (`TestDataLibID`) ON DELETE CASCADE ON UPDATE CASCADE;");
         SQLInstruction.add(SQLS.toString());
 
-
-
+// Creating technical id between testdatalib and testdatalibdata tables.
+//-- ------------------------ 540
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `invariant` ");
+        SQLS.append("CHANGE COLUMN `value` `value` VARCHAR(255) NOT NULL , ");
+        SQLS.append("CHANGE COLUMN `description` `description` VARCHAR(255) NOT NULL , ");
+        SQLS.append("CHANGE COLUMN `gp1` `gp1` VARCHAR(255) NULL DEFAULT NULL , ");
+        SQLS.append("CHANGE COLUMN `gp2` `gp2` VARCHAR(255) NULL DEFAULT NULL , ");
+        SQLS.append("CHANGE COLUMN `gp3` `gp3` VARCHAR(255) NULL DEFAULT NULL");
+        SQLInstruction.add(SQLS.toString());
 
         return SQLInstruction;
     }
