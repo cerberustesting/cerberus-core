@@ -42,6 +42,7 @@ import org.cerberus.entity.TestCaseStepActionControl;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.factory.IFactoryLogEvent;
 import org.cerberus.factory.impl.FactoryLogEvent;
+import org.cerberus.service.IInvariantService;
 import org.cerberus.service.ILogEventService;
 import org.cerberus.service.ITestCaseCountryPropertiesService;
 import org.cerberus.service.ITestCaseCountryService;
@@ -71,6 +72,7 @@ public class DuplicateTestCase extends HttpServlet {
         response.setContentType("text/html;charset=UTF-8");
 
         appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+        IInvariantService invariantService = appContext.getBean(IInvariantService.class);
         ITestCaseService testCaseService = appContext.getBean(ITestCaseService.class);
         ITestService testService = appContext.getBean(ITestService.class);
         ITestCaseCountryService testCaseCountryService = appContext.getBean(ITestCaseCountryService.class);
@@ -111,9 +113,10 @@ public class DuplicateTestCase extends HttpServlet {
                 throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
                 }
                 TCase newTc = testCaseService.findTestCaseByKey(test, testCase);
-                newTc.setCreator(request.getUserPrincipal().getName());
                 newTc.setTest(newTest);
                 newTc.setTestCase(newTestCase);
+                newTc.setCreator(request.getUserPrincipal().getName());
+                newTc.setStatus(invariantService.findListOfInvariantById("TCSTATUS").get(0).getValue());
                 testCaseService.createTestCase(newTc);
 
                 /**

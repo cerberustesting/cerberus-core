@@ -346,7 +346,7 @@ public class TestCaseDAO implements ITestCaseDAO {
                 preStat.setString(21, ParameterParserUtil.parseStringParam(testCase.getBugID(), ""));
                 preStat.setString(22, ParameterParserUtil.parseStringParam(testCase.getTargetSprint(), ""));
                 preStat.setString(23, ParameterParserUtil.parseStringParam(testCase.getTargetRevision(), ""));
-                preStat.setString(24, "");
+                preStat.setString(24, ParameterParserUtil.parseStringParam(testCase.getCreator(), ""));
                 preStat.setString(25, ParameterParserUtil.parseStringParam(testCase.getImplementer(), ""));
                 preStat.setString(26, ParameterParserUtil.parseStringParam(testCase.getLastModifier(), ""));
                 preStat.setString(27, "");
