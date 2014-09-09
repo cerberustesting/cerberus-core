@@ -62,7 +62,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
     private IApplicationDAO applicationDAO;
 
     private static final Logger LOG = Logger.getLogger(TestCaseExecutionDAO.class);
-    
+
     @Override
     public long insertTCExecution(TestCaseExecution tCExecution) throws CerberusException {
         boolean throwEx = false;
@@ -256,7 +256,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
 
     @Override
     public TestCaseExecution findLastTCExecutionByCriteria(String test, String testcase, String environment, String country,
-            String build, String revision) throws CerberusException {
+                                                           String build, String revision) throws CerberusException {
         TestCaseExecution result = null;
         final String query = new StringBuffer("SELECT * FROM testcaseexecution tce, application app ")
                 .append("WHERE tce.application = app.application ")
@@ -308,8 +308,8 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
 
     @Override
     public TestCaseExecution findLastTCExecutionByCriteria(String test, String testCase, String environment, String country,
-            String build, String revision, String browser, String browserVersion,
-            String ip, String port, String tag) {
+                                                           String build, String revision, String browser, String browserVersion,
+                                                           String ip, String port, String tag) {
         TestCaseExecution result = null;
         final String query = new StringBuffer("SELECT * FROM testcaseexecution tce, application app ")
                 .append("WHERE tce.application = app.application AND test = ? AND testcase = ? ")
@@ -459,8 +459,8 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         Application application = null;
         try {
             application = applicationDAO.loadApplicationFromResultSet(resultSet);
-        } catch(Exception e) {
-                LOG.warn("No Application found for theses testcaseexecution "+e.toString());
+        } catch (Exception e) {
+            LOG.warn("No Application found for theses testcaseexecution " + e.toString());
         }
         String ip = resultSet.getString("ip"); // Host the Selenium IP
         String url = resultSet.getString("url");
@@ -480,7 +480,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
     @Override
     public TestCaseExecution findTCExecutionByKey(long id) throws CerberusException {
         TestCaseExecution result = null;
-        final String query = "SELECT * FROM testcaseexecution tce, application app WHERE tce.application = app.application and ID = ?";
+        final String query = "SELECT * FROM testcaseexecution tce, application app WHERE tce.application = app.application AND ID = ?";
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -649,27 +649,71 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
 
     @Override
     public TestCaseExecution findLastTCExecutionInGroup(String test, String testCase, String environment, String country,
-            String build, String revision, String browser, String browserVersion,
-            String ip, String port, String tag) {
+                                                        String build, String revision, String browser, String browserVersion,
+                                                        String ip, String port, String tag) {
+
         TestCaseExecution result = null;
-        final String query = "SELECT * FROM testcaseexecution tce, application app WHERE tce.application = app.application "
-                + "AND test = ? AND testcase = ? AND environment IN (?) AND country = ? AND build IN (?) AND revision IN (?) "
-                + "AND browser = ? AND browserfullversion LIKE ? AND ip LIKE ? AND port LIKE ? AND tag LIKE ? ORDER BY id DESC";
+        StringBuilder query = new StringBuilder();
+        query.append("SELECT * FROM testcaseexecution tce, application app WHERE tce.application = app.application ");
+        query.append("AND test = ? AND testcase = ? AND country = ? AND browser = ? ");
+        if (!StringUtil.isNull(environment)) {
+            query.append("AND environment IN (?) ");
+        }
+        if (!StringUtil.isNull(build)) {
+            query.append("AND build IN (?) ");
+        }
+        if (!StringUtil.isNull(revision)) {
+            query.append("AND revision IN (?) ");
+        }
+        if (!StringUtil.isNull(browserVersion)) {
+            query.append("AND browserfullversion IN (?) ");
+        }
+        if (!StringUtil.isNull(ip)) {
+            query.append("AND ip IN (?) ");
+        }
+        if (!StringUtil.isNull(port)) {
+            query.append("AND port IN (?) ");
+        }
+        if (!StringUtil.isNull(tag)) {
+            query.append("AND tag IN (?) ");
+        }
+        query.append("ORDER BY id DESC");
 
         Connection connection = this.databaseSpring.connect();
         try {
-            PreparedStatement preStat = connection.prepareStatement(query);
+            PreparedStatement preStat = connection.prepareStatement(query.toString());
             preStat.setString(1, test);
             preStat.setString(2, testCase);
-            preStat.setString(3, ParameterParserUtil.wildcardIfEmpty(environment));
-            preStat.setString(4, country);
-            preStat.setString(5, ParameterParserUtil.wildcardIfEmpty(build));
-            preStat.setString(6, ParameterParserUtil.wildcardIfEmpty(revision));
-            preStat.setString(7, browser);
-            preStat.setString(8, ParameterParserUtil.wildcardIfEmpty(browserVersion));
-            preStat.setString(9, ParameterParserUtil.wildcardIfEmpty(ip));
-            preStat.setString(10, ParameterParserUtil.wildcardIfEmpty(port));
-            preStat.setString(11, ParameterParserUtil.wildcardIfEmpty(tag));
+            preStat.setString(3, country);
+            preStat.setString(4, browser);
+            int i = 5;
+            if (!StringUtil.isNull(environment)) {
+                preStat.setString(i, environment);
+                i++;
+            }
+            if (!StringUtil.isNull(build)) {
+                preStat.setString(i, build);
+                i++;
+            }
+            if (!StringUtil.isNull(revision)) {
+                preStat.setString(i, revision);
+                i++;
+            }
+            if (!StringUtil.isNull(browserVersion)) {
+                preStat.setString(i, browserVersion);
+                i++;
+            }
+            if (!StringUtil.isNull(ip)) {
+                preStat.setString(i, ip);
+                i++;
+            }
+            if (!StringUtil.isNull(port)) {
+                preStat.setString(i, port);
+                i++;
+            }
+            if (!StringUtil.isNull(tag)) {
+                preStat.setString(i, tag);
+            }
 
             try {
                 ResultSet resultSet = preStat.executeQuery();
