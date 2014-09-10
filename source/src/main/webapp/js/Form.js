@@ -2135,3 +2135,29 @@ function addTestCasePropertiesNew(tableau, row_number, size, size2) {
 
 }
 
+function submitTestCaseModificationNew(anchor) {
+    var form = $("#UpdateTestCase");
+    var allControlsToDelete = 0;
+
+    var actionsToDelete = $("input[name='action_delete']:checked");
+    if (actionsToDelete.length > 0) {
+        for (var i = 0; i < actionsToDelete.length; i++) {
+            allControlsToDelete = eval(allControlsToDelete + $("td.control_" + $(actionsToDelete[i]).val()).length);
+        }
+    }
+
+
+    var execute = true;
+    if (allControlsToDelete > 0) {
+        execute = confirm("Your action will delete " + actionsToDelete.length + " action(s) and " +
+                allControlsToDelete + " control(s).\nDo you want to continue ?");
+    }
+
+    if (execute) {
+        form.attr("action", form.attr("action") + "#" + anchor);
+        form.submit();
+    }
+
+    return false;
+}
+

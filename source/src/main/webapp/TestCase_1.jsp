@@ -684,7 +684,8 @@
                                                 </td>
                                                 <td id="wob">
                                                     <input style="font-weight: bold; width: 500px" name="step_description_<%=incrementStep%>" value="<%=tcs.getDescription()%>">
-                                                </td> <% if (tcs.getUseStep().equals("Y")) {%>
+                                                </td> 
+                                                <% if (tcs.getUseStep().equals("Y")) {%>
                                                 <td class="wob">
                                                     <span> Copied from : </span>
                                                 </td>
@@ -810,10 +811,11 @@
                                                                          * End actions loop
                                                                          */%>
                                                                 </table>
-                                                                <%  if (canEdit) {
-                                                                         if(!useStep){%>
+                                                                <%  if (canEdit) {%>
+                                                                         
                                                                 <table>
                                                                     <tr>
+                                                                        <%if(!useStep){%>
                                                                         <td id="wob">
                                                                             <input id="incrementActionNumber" value="<%=incrementAction%>" type="hidden">
                                                                             <input type="button" value="Add Action"
@@ -826,7 +828,7 @@
                                                                         </td>
                                                                         <%}%>
                                                                         <td id="wob">
-                                                                            <input value="Save Changes" onclick="submitTestCaseModification('stepAnchor_<%=incrementAction%>');" id="submitButtonAction" name="submitChanges"
+                                                                            <input value="Save Changes" onclick="submitTestCaseModificationNew('stepAnchor_<%=incrementAction%>');" id="submitButtonAction" name="submitChanges"
                                                                                    type="button" >
                                                                             <%=ComboInvariant(appContext, "actions_action_", "width: 150px;visibility:hidden", "actions_action_", "actions_action_", "ACTION", "", "", null)%>
                                                                         </td>
@@ -934,7 +936,7 @@
                                                                                         </td>
                                                                                         <%}%>
                                                                                         <td id="wob">
-                                                                                            <input value="Save Changes" onclick="submitTestCaseModification('#stepAnchor_<%=incrementAction%>');" id="submitButtonAction" name="submitChanges"
+                                                                                            <input value="Save Changes" onclick="submitTestCaseModificationNew('#stepAnchor_<%=incrementAction%>');" id="submitButtonAction" name="submitChanges"
                                                                                                    type="button" >
                                                                                         </td>
                                                                                         <% }%>
