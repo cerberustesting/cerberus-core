@@ -8,6 +8,7 @@ import org.cerberus.exception.CerberusException;
 import org.cerberus.factory.IFactoryTCase;
 import org.cerberus.factory.impl.FactoryTCase;
 import org.cerberus.service.IInvariantService;
+import org.cerberus.service.ITestCaseCountryService;
 import org.cerberus.service.ITestCaseExecutionService;
 import org.cerberus.service.ITestCaseService;
 import org.cerberus.util.StringUtil;
@@ -44,12 +45,14 @@ public class GetReport extends HttpServlet {
     private static final Logger LOG = Logger.getLogger(GetReport.class);
 
     private ITestCaseExecutionService testCaseExecutionService;
+    private ITestCaseCountryService testCaseCountryService;
 
     @Override
     public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         ApplicationContext applicationContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         ITestCaseService testCaseService = applicationContext.getBean(ITestCaseService.class);
         this.testCaseExecutionService = applicationContext.getBean(ITestCaseExecutionService.class);
+        this.testCaseCountryService = applicationContext.getBean(ITestCaseCountryService.class);
         IInvariantService invariantService = applicationContext.getBean(IInvariantService.class);
 
         //Get all input parameters from user form
@@ -350,7 +353,18 @@ public class GetReport extends HttpServlet {
                         status.put(tce.getControlStatus(), status.get(tce.getControlStatus()) + 1);
                         //add 1 to Test/Country/Browser/Total counter
                         statusTotal.put(tce.getControlStatus(), statusTotal.get(tce.getControlStatus()) + 1);
-                    } else {
+                    } else try {
+                        if (testCaseCountryService.findTestCaseCountryByKey(tc.getTest(), tc.getTestCase(), country) != null) {
+                            JSONObject obj = new JSONObject();
+                            obj.put("result", "NotExecuted");
+                            obj.put("country", country);
+                            array.put(obj);
+                            array.put("");
+                        } else {
+                            array.put("");
+                            array.put("");
+                        }
+                    } catch (CerberusException ex) {
                         array.put("");
                         array.put("");
                     }
