@@ -8,7 +8,7 @@
         // Notice now we're extending the particular Line chart type, rather than the base class.
         Chart.types.Bar.extend({
             // Passing in a name registers this chart in the Chart namespace in the same way
-            name: "BarColors",
+            name: "BarColor",
             initialize: function (data) {
                 Chart.types.Bar.prototype.initialize.apply(this, arguments);
                 this.eachBars(function (bar, index, datasetIndex) {

@@ -82,7 +82,6 @@
                 $.get("./CampaignExecutionReport", "<%=query.toString() %>", function (report) {
                     // Get context with jQuery - using jQuery's .get() method.
                     var ctx = [];
-                    ctx[0] = $("canvas.executionStatus").get(0).getContext("2d");
                     ctx[1] = $("#myDonut").get(0).getContext("2d");
                     ctx[2] = $("#functionBar").get(0).getContext("2d");
 
@@ -128,7 +127,6 @@
                             .append($("<th></th>").text(testCaseTotal))
                             );
 
-                    executionStatus = new Chart(ctx[0]).BarColors(data, config);
                     pieExecutionStatus = new Chart(ctx[1]).Pie(dataDonut);
 
                     $("#myDonut").on('click', function (evt) {
@@ -248,18 +246,12 @@
         <div id="main">
             <table class="fullSize noBorder">
                 <tr>
-                    <td>
+                    <td style="width: 20%">
                         <div class="executionStatus"></div>
-                    </td>
-                    <td>
-                        <canvas class="executionStatus"></canvas>
-                    </td>
-                    <td>
+                        <br>
                         <canvas id="myDonut"></canvas>
                     </td>
-                </tr>
-                <tr>
-                    <td colspan="3">
+                    <td style="width: 78%">
                         <canvas id="functionBar"></canvas>
                     </td>
                 </tr>

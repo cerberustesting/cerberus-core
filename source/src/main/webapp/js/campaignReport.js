@@ -130,15 +130,16 @@ function createGraphFromAjaxToElement(ajaxDataGraphURL,element, config) {
 
         var dataset = false;
         for(var axis=0; axis<data.axis.length; axis++) {
-            if(axis == 0 && (data.type == "Pie" || data.type == "Bar" || data.type == "MultiBar") ) {
+            if(axis == 0 && (data.type == "Donut" || data.type == "Pie" 
+                    || data.type == "Bar" || data.type == "MultiBar") ) {
                 dataset = [];
             }
 
-            if(data.type == "Pie" || data.type == "Bar") {
+            if(data.type == "Pie" || data.type == "Donut" || data.type == "Bar") {
                 dataset[dataset.length] = createDatasetPie(data.axis[0].label, data.axis[0].value, 
                     data.axis[0].color, data.axis[0].highlight);
 
-            } else if(data.type == "BarColors") {
+            } else if(data.type == "BarColor") {
                 dataset = createDatasetBar(data.axis[0].label, data.axis[0].value, data.axis[0].color, 
                     data.axis[0].highlight, dataset);
 
@@ -154,11 +155,14 @@ function createGraphFromAjaxToElement(ajaxDataGraphURL,element, config) {
             if(data.type == "Pie") {
                 new Chart(ctx).Pie(dataset,config);
 
+            } else if(data.type == "Donut") {
+                new Chart(ctx).Donut(dataset, config);
+
             } else if(data.type == "Bar") {
                 new Chart(ctx).Bar(dataset, config);
 
-            } else if(data.type == "BarColors") {
-                new Chart(ctx).BarColors(dataset, config);
+            } else if(data.type == "BarColor") {
+                new Chart(ctx).BarColor(dataset, config);
 
             } else if(data.type == "MultiBar") {
                 new Chart(ctx).StackedBar(dataset,config);

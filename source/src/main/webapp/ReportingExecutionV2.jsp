@@ -102,7 +102,7 @@
                 $('#TCComment').before("<th class='jsAdded' colspan='" + (browser.length * 2) + "'>" + elem + "</th>");
                 $.each(browser, function (i, e) {
                     $('#tableCountry').append("<th class='jsAdded' colspan='2'>" + e + "</th>");
-                    $('#TCResult').append("<th class='TCResult jsAdded'></th><th class='jsAdded'></th>");
+                    $('#TCResult').append("<th class='TCResult jsAdded'></th><th class='TCTime jsAdded'></th>");
                 });
 
                 $('#statisticCountry').append("<th class='jsAdded' colspan='" + (status.length + 1) +"'>" + elem + "</th>");
@@ -141,11 +141,15 @@
                                 return "";
                             }
                         }
+                    },
+                    {"aTargets": ['TCTime'],
+                        "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
+                            if (oData[iCol-1] === "") {
+                                $(nTd).addClass('NOINF');
+                            }
+                        }
                     }
                 ],
-                "fnFooterCallback": function( nFoot, aData, iStart, iEnd, aiDisplay ) {
-
-                },
                 "fnInitComplete": function (oSettings, json) {
                     new FixedHeader(oTable, {
                         zTop: 98
