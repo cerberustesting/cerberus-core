@@ -83,11 +83,6 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
         String test = request.getParameter("informationTest");
         String testCase = request.getParameter("informationTestCase");
         TCase tc = getTestCaseFromParameter(request, appContext, test, testCase);
-        List<TestCaseCountry> tcc = getTestCaseCountryFromParameter(request, appContext, test, testCase);
-        List<TestCaseCountryProperties> tccp = getTestCaseCountryPropertiesFromParameter(request, appContext, test, testCase);
-        List<TestCaseStep> tcs = getTestCaseStepFromParameter(request, appContext, test, testCase);
-        List<TestCaseStepAction> tcsa = getTestCaseStepActionFromParameter(request, appContext, test, testCase);
-        List<TestCaseStepActionControl> tcsac = getTestCaseStepActionControlFromParameter(request, appContext, test, testCase);
 
         ITestService tService = appContext.getBean(ITestService.class);
         ITestCaseService tcService = appContext.getBean(ITestCaseService.class);
@@ -118,46 +113,52 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
         if (tc.getTestCase().equals(initialTestCase)) {
             tcService.updateTestCase(tc);
         } else {
-            if (tcService.findTestCaseByKey(tc.getTest(), tc.getTestCase()) != null){
-                    response.sendError(403, MessageGeneralEnum.GUI_TESTCASE_DUPLICATION_ALREADY_EXISTS.getDescription());
+            if (tcService.findTestCaseByKey(tc.getTest(), tc.getTestCase()) != null) {
+                response.sendError(403, MessageGeneralEnum.GUI_TESTCASE_DUPLICATION_ALREADY_EXISTS.getDescription());
             } else {
-                    tcService.createTestCase(tc);  
-                }
+                tcService.createTestCase(tc);
             }
-        
+        }
 
         /**
          * For the list of testcase country verify it exists. If it does not
          * exists > create it If it exist, verify if it's the
          */
+        List<TestCaseCountry> tccFromPage = getTestCaseCountryFromParameter(request, appContext, test, testCase);
         List<TestCaseCountry> tccFromDtb = tccService.findTestCaseCountryByTestTestCase(initialTest, initialTestCase);
-        
-        List<TestCaseCountry> tccToUpdateOrInsert = tcc;
-        List<TestCaseCountry> tcc2 = new ArrayList(tcc);
-        tccToUpdateOrInsert.removeAll(tccFromDtb);
-        List<TestCaseCountry> tccToUpdateOrInsertToIterate = tccToUpdateOrInsert;
-        
-        List<TestCaseCountry> tccToDelete = new ArrayList(tccFromDtb);
-        List<TestCaseCountry> tccFromDtb2 = new ArrayList(tccFromDtb);
-        List<TestCaseCountry> tccToDeleteToIterate = new ArrayList(tccToDelete);
-        tccToDeleteToIterate.removeAll(tcc);
-        
-        
 
-        for (TestCaseCountry tccLeft : tccToUpdateOrInsertToIterate) {
-            for (TestCaseCountry tccRight : tccFromDtb2) {
-                if (tccLeft.hasSameKey(tccRight)) {
-                    //tccService.updateTestCaseCountry(tccLeft);
-                    tccToUpdateOrInsert.remove(tccLeft);
+        /**
+         * Iterate on (TestCaseCountry From Page - TestCaseCountry From
+         * Database) If TestCaseCountry in Database has same key : Update and
+         * remove from the list. If TestCaseCountry in database does ot exist :
+         * Insert it.
+         */
+        List<TestCaseCountry> tccToUpdateOrInsert = new ArrayList(tccFromPage);
+        tccToUpdateOrInsert.removeAll(tccFromDtb);
+        List<TestCaseCountry> tccToUpdateOrInsertToIterate = new ArrayList(tccToUpdateOrInsert);
+
+        for (TestCaseCountry tccDifference : tccToUpdateOrInsertToIterate) {
+            for (TestCaseCountry tccInDatabase : tccFromDtb) {
+                if (tccDifference.hasSameKey(tccInDatabase)) {
+                    tccToUpdateOrInsert.remove(tccDifference);
                 }
             }
         }
         tccService.insertListTestCaseCountry(tccToUpdateOrInsert);
 
-        for (TestCaseCountry tccLeft : tccToDeleteToIterate) {
-            for (TestCaseCountry tccRight : tcc2) {
-                if (tccLeft.hasSameKey(tccRight)) {
-                    tccToDelete.remove(tccLeft);
+        /**
+         * Iterate on (TestCaseCountry From Database - TestCaseCountry From
+         * Page). If TestCaseCountry in Page has same key : remove from the
+         * list. Then delete the list of TestCaseCountry
+         */
+        List<TestCaseCountry> tccToDelete = new ArrayList(tccFromDtb);
+        tccToDelete.removeAll(tccFromPage);
+        List<TestCaseCountry> tccToDeleteToIterate = new ArrayList(tccToDelete);
+
+        for (TestCaseCountry tccDifference : tccToDeleteToIterate) {
+            for (TestCaseCountry tccInPage : tccFromPage) {
+                if (tccDifference.hasSameKey(tccInPage)) {
+                    tccToDelete.remove(tccDifference);
                 }
             }
         }
@@ -167,117 +168,177 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
          * For the list of testcase country verify it exists. If it does not
          * exists > create it If it exist, verify if it's the
          */
-        List<TestCaseCountryProperties> tccpFromDatabase = tccpService.findListOfPropertyPerTestTestCase(initialTest, initialTestCase);
-        
-        List<TestCaseCountryProperties> tccpToUpdateOrInsert = new ArrayList(tccp);
-        tccpToUpdateOrInsert.removeAll(tccpFromDatabase);
+        List<TestCaseCountryProperties> tccpFromPage = getTestCaseCountryPropertiesFromParameter(request, appContext, test, testCase);
+        List<TestCaseCountryProperties> tccpFromDtb = tccpService.findListOfPropertyPerTestTestCase(initialTest, initialTestCase);
+
+        /**
+         * Iterate on (TestCaseCountryProperties From Page -
+         * TestCaseCountryProperties From Database) If TestCaseCountryProperties
+         * in Database has same key : Update and remove from the list. If
+         * TestCaseCountryProperties in database does ot exist : Insert it.
+         */
+        List<TestCaseCountryProperties> tccpToUpdateOrInsert = new ArrayList(tccpFromPage);
+        tccpToUpdateOrInsert.removeAll(tccpFromDtb);
         List<TestCaseCountryProperties> tccpToUpdateOrInsertToIterate = new ArrayList(tccpToUpdateOrInsert);
-        
-        List<TestCaseCountryProperties> tccpToDelete = new ArrayList(tccpFromDatabase);
-        tccpToDelete.removeAll(tccp);
-        List<TestCaseCountryProperties> tccpToDeleteToIterate = new ArrayList(tccpToDelete);
-        
-        for (TestCaseCountryProperties tccpLeft : tccpToUpdateOrInsertToIterate) {
-            for (TestCaseCountryProperties tccpRight : tccpFromDatabase) {
-                if (tccpLeft.hasSameKey(tccpRight)) {
-                    tccpService.updateTestCaseCountryProperties(tccpLeft);
-                    tccpToUpdateOrInsert.remove(tccpLeft);
+
+        for (TestCaseCountryProperties tccpDifference : tccpToUpdateOrInsertToIterate) {
+            for (TestCaseCountryProperties tccpInDatabase : tccpFromDtb) {
+                if (tccpDifference.hasSameKey(tccpInDatabase)) {
+                    tccpService.updateTestCaseCountryProperties(tccpDifference);
+                    tccpToUpdateOrInsert.remove(tccpDifference);
                 }
             }
         }
         tccpService.insertListTestCaseCountryProperties(tccpToUpdateOrInsert);
 
-        for (TestCaseCountryProperties tccpLeft : tccpToDeleteToIterate) {
-            for (TestCaseCountryProperties tccpRight : tccp) {
-                if (tccpLeft.hasSameKey(tccpRight)) {
-                    tccpToDelete.remove(tccpLeft);
+        /**
+         * Iterate on (TestCaseCountryProperties From Database -
+         * TestCaseCountryProperties From Page). If TestCaseCountryProperties in
+         * Page has same key : remove from the list. Then delete the list of
+         * TestCaseCountryProperties
+         */
+        List<TestCaseCountryProperties> tccpToDelete = new ArrayList(tccpFromDtb);
+        tccpToDelete.removeAll(tccpFromPage);
+        List<TestCaseCountryProperties> tccpToDeleteToIterate = new ArrayList(tccpToDelete);
+
+        for (TestCaseCountryProperties tccpDifference : tccpToDeleteToIterate) {
+            for (TestCaseCountryProperties tccpInPage : tccpFromPage) {
+                if (tccpDifference.hasSameKey(tccpInPage)) {
+                    tccpToDelete.remove(tccpDifference);
                 }
             }
         }
         tccpService.deleteListTestCaseCountryProperties(tccpToDelete);
 
         /**
-         * For the list of testcase country verify it exists. If it does not
-         * exists > create it If it exist, verify if it's the
+         * For the list of testcasestep verify it exists. If it does not exists
+         * > create it If it exist, verify if it's the
          */
-        List<TestCaseStep> tcsFromDatabase = tcsService.getListOfSteps(initialTest, initialTestCase);
-        List<TestCaseStep> tcsToUpdateOrInsert = tcs;
-        tcsToUpdateOrInsert.removeAll(tcsFromDatabase);
-        List<TestCaseStep> tcsToDelete = tcsFromDatabase;
-        tcsToDelete.retainAll(tcs);
+        List<TestCaseStep> tcsFromPage = getTestCaseStepFromParameter(request, appContext, test, testCase);
+        List<TestCaseStep> tcsFromDtb = tcsService.getListOfSteps(initialTest, initialTestCase);
 
-        for (TestCaseStep tcsLeft : tcsToUpdateOrInsert) {
-            for (TestCaseStep tcsRight : tcsFromDatabase) {
-                if (tcsLeft.hasSameKey(tcsRight)) {
-                    tcsService.updateTestCaseStep(tcsLeft);
-                    tcsToUpdateOrInsert.remove(tcsLeft);
+        /**
+         * Iterate on (TestCaseStep From Page - TestCaseStep From Database) If
+         * TestCaseStep in Database has same key : Update and remove from the
+         * list. If TestCaseStep in database does ot exist : Insert it.
+         */
+        List<TestCaseStep> tcsToUpdateOrInsert = new ArrayList(tcsFromPage);
+        tcsToUpdateOrInsert.removeAll(tcsFromDtb);
+        List<TestCaseStep> tcsToUpdateOrInsertToIterate = new ArrayList(tcsToUpdateOrInsert);
+
+        for (TestCaseStep tcsDifference : tcsToUpdateOrInsertToIterate) {
+            for (TestCaseStep tcsInDatabase : tcsFromDtb) {
+                if (tcsDifference.hasSameKey(tcsInDatabase)) {
+                    tcsService.updateTestCaseStep(tcsDifference);
+                    tcsToUpdateOrInsert.remove(tcsDifference);
                 }
             }
         }
         tcsService.insertListTestCaseStep(tcsToUpdateOrInsert);
 
-        for (TestCaseStep tcsLeft : tcsToDelete) {
-            for (TestCaseStep tcsRight : tcs) {
-                if (tcsLeft.hasSameKey(tcsRight)) {
-                    tcsToDelete.remove(tcsLeft);
+        /**
+         * Iterate on (TestCaseStep From Database - TestCaseStep From Page). If
+         * TestCaseStep in Page has same key : remove from the list. Then delete
+         * the list of TestCaseStep
+         */
+        List<TestCaseStep> tcsToDelete = new ArrayList(tcsFromDtb);
+        tcsToDelete.removeAll(tcsFromPage);
+        List<TestCaseStep> tcsToDeleteToIterate = new ArrayList(tcsToDelete);
+
+        for (TestCaseStep tcsDifference : tcsToDeleteToIterate) {
+            for (TestCaseStep tcsInPage : tcsFromPage) {
+                if (tcsDifference.hasSameKey(tcsInPage)) {
+                    tcsToDelete.remove(tcsDifference);
                 }
             }
         }
         tcsService.deleteListTestCaseStep(tcsToDelete);
 
         /**
-         * For the list of testcase country verify it exists. If it does not
-         * exists > create it If it exist, verify if it's the
+         * For the list of testcasestep verify it exists. If it does not exists
+         * > create it If it exist, verify if it's the
          */
-        List<TestCaseStepAction> tcsaFromDatabase = tcsaService.findTestCaseStepActionbyTestTestCase(initialTest, initialTestCase);
-        List<TestCaseStepAction> tcsaToUpdateOrInsert = tcsa;
-        tcsaToUpdateOrInsert.removeAll(tcsaFromDatabase);
-        List<TestCaseStepAction> tcsaToDelete = tcsaFromDatabase;
-        tcsaToDelete.retainAll(tcsa);
+        List<TestCaseStepAction> tcsaFromPage = getTestCaseStepActionFromParameter(request, appContext, test, testCase);
+        List<TestCaseStepAction> tcsaFromDtb = tcsaService.findTestCaseStepActionbyTestTestCase(initialTest, initialTestCase);
 
-        for (TestCaseStepAction tcsaLeft : tcsaToUpdateOrInsert) {
-            for (TestCaseStepAction tcsaRight : tcsaFromDatabase) {
-                if (tcsaLeft.hasSameKey(tcsaRight)) {
-                    tcsaService.updateTestCaseStepAction(tcsaLeft);
-                    tcsaToUpdateOrInsert.remove(tcsaLeft);
+        /**
+         * Iterate on (TestCaseStepAction From Page - TestCaseStepAction From
+         * Database) If TestCaseStepAction in Database has same key : Update and
+         * remove from the list. If TestCaseStepAction in database does ot exist
+         * : Insert it.
+         */
+        List<TestCaseStepAction> tcsaToUpdateOrInsert = new ArrayList(tcsaFromPage);
+        tcsaToUpdateOrInsert.removeAll(tcsaFromDtb);
+        List<TestCaseStepAction> tcsaToUpdateOrInsertToIterate = new ArrayList(tcsaToUpdateOrInsert);
+
+        for (TestCaseStepAction tcsaDifference : tcsaToUpdateOrInsertToIterate) {
+            for (TestCaseStepAction tcsaInDatabase : tcsaFromDtb) {
+                if (tcsaDifference.hasSameKey(tcsaInDatabase)) {
+                    tcsaService.updateTestCaseStepAction(tcsaDifference);
+                    tcsaToUpdateOrInsert.remove(tcsaDifference);
                 }
             }
         }
         tcsaService.insertListTestCaseStepAction(tcsaToUpdateOrInsert);
 
-        for (TestCaseStepAction tcsaLeft : tcsaToDelete) {
-            for (TestCaseStepAction tcsaRight : tcsa) {
-                if (tcsaLeft.hasSameKey(tcsaRight)) {
-                    tcsaToDelete.remove(tcsaLeft);
+        /**
+         * Iterate on (TestCaseStepAction From Database - TestCaseStepAction
+         * From Page). If TestCaseStepAction in Page has same key : remove from
+         * the list. Then delete the list of TestCaseStepAction
+         */
+        List<TestCaseStepAction> tcsaToDelete = new ArrayList(tcsaFromDtb);
+        tcsaToDelete.removeAll(tcsaFromPage);
+        List<TestCaseStepAction> tcsaToDeleteToIterate = new ArrayList(tcsaToDelete);
+
+        for (TestCaseStepAction tcsaDifference : tcsaToDeleteToIterate) {
+            for (TestCaseStepAction tcsaInPage : tcsaFromPage) {
+                if (tcsaDifference.hasSameKey(tcsaInPage)) {
+                    tcsaToDelete.remove(tcsaDifference);
                 }
             }
         }
         tcsaService.deleteListTestCaseStepAction(tcsaToDelete);
 
         /**
-         * For the list of testcase country verify it exists. If it does not
-         * exists > create it If it exist, verify if it's the
+         * For the list of testcasestepactioncontrol verify it exists. If it
+         * does not exists > create it If it exist, verify if it's the
          */
-        List<TestCaseStepActionControl> tcsacFromDatabase = tcsacService.findControlByTestTestCase(initialTest, initialTestCase);
-        List<TestCaseStepActionControl> tcsacToUpdateOrInsert = tcsac;
-        tcsacToUpdateOrInsert.removeAll(tcsacFromDatabase);
-        List<TestCaseStepActionControl> tcsacToDelete = tcsacFromDatabase;
-        tcsacToDelete.retainAll(tcsac);
+        List<TestCaseStepActionControl> tcsacFromPage = getTestCaseStepActionControlFromParameter(request, appContext, test, testCase);
+        List<TestCaseStepActionControl> tcsacFromDtb = tcsacService.findControlByTestTestCase(initialTest, initialTestCase);
 
-        for (TestCaseStepActionControl tcsacLeft : tcsacToUpdateOrInsert) {
-            for (TestCaseStepActionControl tcsacRight : tcsacFromDatabase) {
-                if (tcsacLeft.hasSameKey(tcsacRight)) {
-                    tcsacService.updateTestCaseStepActionControl(tcsacLeft);
-                    tcsacToUpdateOrInsert.remove(tcsacLeft);
+        /**
+         * Iterate on (TestCaseStepActionControl From Page -
+         * TestCaseStepActionControl From Database) If TestCaseStepActionControl
+         * in Database has same key : Update and remove from the list. If
+         * TestCaseStepActionControl in database does ot exist : Insert it.
+         */
+        List<TestCaseStepActionControl> tcsacToUpdateOrInsert = new ArrayList(tcsacFromPage);
+        tcsacToUpdateOrInsert.removeAll(tcsacFromDtb);
+        List<TestCaseStepActionControl> tcsacToUpdateOrInsertToIterate = new ArrayList(tcsacToUpdateOrInsert);
+
+        for (TestCaseStepActionControl tcsacDifference : tcsacToUpdateOrInsertToIterate) {
+            for (TestCaseStepActionControl tcsacInDatabase : tcsacFromDtb) {
+                if (tcsacDifference.hasSameKey(tcsacInDatabase)) {
+                    tcsacService.updateTestCaseStepActionControl(tcsacDifference);
+                    tcsacToUpdateOrInsert.remove(tcsacDifference);
                 }
             }
         }
         tcsacService.insertListTestCaseStepActionControl(tcsacToUpdateOrInsert);
 
-        for (TestCaseStepActionControl tcsacLeft : tcsacToDelete) {
-            for (TestCaseStepActionControl tcsacRight : tcsac) {
-                if (tcsacLeft.hasSameKey(tcsacRight)) {
-                    tcsacToDelete.remove(tcsacLeft);
+        /**
+         * Iterate on (TestCaseStep From Database - TestCaseStep From Page). If
+         * TestCaseStep in Page has same key : remove from the list. Then delete
+         * the list of TestCaseStep
+         */
+        List<TestCaseStepActionControl> tcsacToDelete = new ArrayList(tcsacFromDtb);
+        tcsacToDelete.removeAll(tcsacFromPage);
+        List<TestCaseStepActionControl> tcsacToDeleteToIterate = new ArrayList(tcsacToDelete);
+
+        for (TestCaseStepActionControl tcsacDifference : tcsacToDeleteToIterate) {
+            for (TestCaseStepActionControl tcsacInPage : tcsacFromPage) {
+                if (tcsacDifference.hasSameKey(tcsacInPage)) {
+                    tcsacToDelete.remove(tcsacDifference);
                 }
             }
         }
@@ -359,52 +420,58 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
         return result;
     }
 
+    private String[] getParameterValuesIfExists(HttpServletRequest request, String parameter) {
+        String[] result = null;
+        if (request.getParameterValues(parameter) != null) {
+            result = request.getParameterValues(parameter);
+        }
+        return result;
+    }
+
     private List<TestCaseCountryProperties> getTestCaseCountryPropertiesFromParameter(HttpServletRequest request, ApplicationContext appContext, String test, String testCase) {
         List<TestCaseCountryProperties> testCaseCountryProp = new ArrayList();
-        String[] testcase_properties_increment = request.getParameterValues("property_increment");
+        String[] testcase_properties_increment = getParameterValuesIfExists(request, "property_increment");
         IFactoryTestCaseCountryProperties testCaseCountryPropertiesFactory = appContext.getBean(IFactoryTestCaseCountryProperties.class);
-        for (String inc : testcase_properties_increment) {
-            String[] countries = null;
-            if (request.getParameterValues("properties_country_" + inc) != null) {
-            countries = request.getParameterValues("properties_country_" + inc);
-            }
-            String delete = getParameterIfExists(request, "properties_delete_" + inc);
-            String property = getParameterIfExists(request, "properties_property_" + inc);
-            String type = getParameterIfExists(request, "properties_type_" + inc);
-            String value = getParameterIfExists(request, "properties_value1_" + inc);
-            String value2 = getParameterIfExists(request, "properties_value2_" + inc);
-            int length = Integer.valueOf(getParameterIfExists(request, "properties_length_" + inc));
-            int rowLimit = Integer.valueOf(getParameterIfExists(request, "properties_rowlimit_" + inc));
-            String nature = getParameterIfExists(request, "properties_nature_" + inc);
-            String database = getParameterIfExists(request, "properties_dtb_" + inc);
-            for (String country : countries) {
-                if (delete == null) {
-                    testCaseCountryProp.add(testCaseCountryPropertiesFactory.create(test, testCase, country, property, type, database, value, value2, length, rowLimit, nature));
+        if (testcase_properties_increment != null) {
+            for (String inc : testcase_properties_increment) {
+                String[] countries = getParameterValuesIfExists(request, "properties_country_" + inc);
+                String delete = getParameterIfExists(request, "properties_delete_" + inc);
+                String property = getParameterIfExists(request, "properties_property_" + inc);
+                String type = getParameterIfExists(request, "properties_type_" + inc);
+                String value = getParameterIfExists(request, "properties_value1_" + inc);
+                String value2 = getParameterIfExists(request, "properties_value2_" + inc);
+                int length = Integer.valueOf(getParameterIfExists(request, "properties_length_" + inc));
+                int rowLimit = Integer.valueOf(getParameterIfExists(request, "properties_rowlimit_" + inc));
+                String nature = getParameterIfExists(request, "properties_nature_" + inc);
+                String database = getParameterIfExists(request, "properties_dtb_" + inc);
+                for (String country : countries) {
+                    if (delete == null) {
+                        testCaseCountryProp.add(testCaseCountryPropertiesFactory.create(test, testCase, country, property, type, database, value, value2, length, rowLimit, nature));
+                    }
                 }
-            }
 
+            }
         }
         return testCaseCountryProp;
     }
 
     private List<TestCaseStep> getTestCaseStepFromParameter(HttpServletRequest request, ApplicationContext appContext, String test, String testCase) {
         List<TestCaseStep> testCaseStep = new ArrayList();
-        String[] testcase_step_increment = null;
-        if (request.getParameterValues("step_increment") != null) {
-        testcase_step_increment = request.getParameterValues("step_increment");
-        }
+        String[] testcase_step_increment = getParameterValuesIfExists(request, "step_increment");
         IFactoryTestCaseStep testCaseStepFactory = appContext.getBean(IFactoryTestCaseStep.class);
-        for (String inc : testcase_step_increment) {
-            String delete = getParameterIfExists(request, "step_delete_" + inc);
-            int step = Integer.valueOf(getParameterIfExists(request, "step_number_" + inc) == null ? "0" : getParameterIfExists(request, "step_number_" + inc));
-            int initialStep = Integer.valueOf(getParameterIfExists(request, "initial_step_number_" + inc) == null ? "0" : getParameterIfExists(request, "initial_step_number_" + inc));
-            String desc = getParameterIfExists(request, "step_description_" + inc);
-            String useStep = getParameterIfExists(request, "step_useStep_" + inc);
-            String useStepTest = getParameterIfExists(request, "step_useStepTest_" + inc);
-            String useStepTestCase = getParameterIfExists(request, "step_useStepTestCase_" + inc);
-            int useStepStep = Integer.valueOf(getParameterIfExists(request, "step_useStepStep_" + inc) == null ? "0" : getParameterIfExists(request, "step_useStepStep_" + inc));
-            if (delete != null) {
-                testCaseStep.add(testCaseStepFactory.create(test, testCase, step, desc, useStep, useStepTest, useStepTestCase, useStepStep));
+        if (testcase_step_increment != null) {
+            for (String inc : testcase_step_increment) {
+                String delete = getParameterIfExists(request, "step_delete_" + inc);
+                int step = Integer.valueOf(getParameterIfExists(request, "step_number_" + inc) == null ? "0" : getParameterIfExists(request, "step_number_" + inc));
+                int initialStep = Integer.valueOf(getParameterIfExists(request, "initial_step_number_" + inc) == null ? "0" : getParameterIfExists(request, "initial_step_number_" + inc));
+                String desc = getParameterIfExists(request, "step_description_" + inc);
+                String useStep = getParameterIfExists(request, "step_useStep_" + inc);
+                String useStepTest = getParameterIfExists(request, "step_useStepTest_" + inc);
+                String useStepTestCase = getParameterIfExists(request, "step_useStepTestCase_" + inc);
+                int useStepStep = Integer.valueOf(getParameterIfExists(request, "step_useStepStep_" + inc) == null ? "0" : getParameterIfExists(request, "step_useStepStep_" + inc));
+                if (delete == null) {
+                    testCaseStep.add(testCaseStepFactory.create(test, testCase, step, desc, useStep, useStepTest, useStepTestCase, useStepStep));
+                }
             }
         }
         return testCaseStep;
@@ -412,18 +479,21 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
 
     private List<TestCaseStepAction> getTestCaseStepActionFromParameter(HttpServletRequest request, ApplicationContext appContext, String test, String testCase) {
         List<TestCaseStepAction> testCaseStepAction = new ArrayList();
-        String[] stepAction_increment = request.getParameterValues("action_increment");
+        String[] stepAction_increment = getParameterValuesIfExists(request, "action_increment");
         IFactoryTestCaseStepAction testCaseStepActionFactory = appContext.getBean(IFactoryTestCaseStepAction.class);
-        for (String inc : stepAction_increment) {
-            String delete = request.getParameter("action_delete_" + inc);
-            int step = Integer.valueOf(request.getParameter("action_step_" + inc));
-            int sequence = Integer.valueOf(request.getParameter("action_sequence_" + inc));
-            String action = request.getParameter("action_action_" + inc);
-            String object = request.getParameter("action_object_" + inc);
-            String property = request.getParameter("action_property_" + inc);
-            String description = request.getParameter("action_description_" + inc);
-            if (delete != null) {
-                testCaseStepAction.add(testCaseStepActionFactory.create(test, testCase, step, sequence, action, object, property, description));
+        if (stepAction_increment != null) {
+            for (String inc : stepAction_increment) {
+                String delete = getParameterIfExists(request, "action_delete_" + inc);
+                int step = Integer.valueOf(getParameterIfExists(request, "action_step_" + inc));
+                int sequence = Integer.valueOf(getParameterIfExists(request, "action_sequence_" + inc));
+                String action = getParameterIfExists(request, "action_action_" + inc);
+                String object = getParameterIfExists(request, "action_object_" + inc);
+                String property = getParameterIfExists(request, "action_property_" + inc);
+                String description = getParameterIfExists(request, "action_description_" + inc);
+                if (delete == null) {
+                    TestCaseStepAction tcsa = testCaseStepActionFactory.create(test, testCase, step, sequence, action, object, property, description);
+                    testCaseStepAction.add(tcsa);
+                }
             }
         }
         return testCaseStepAction;
@@ -431,20 +501,22 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
 
     private List<TestCaseStepActionControl> getTestCaseStepActionControlFromParameter(HttpServletRequest request, ApplicationContext appContext, String test, String testCase) {
         List<TestCaseStepActionControl> testCaseStepActionControl = new ArrayList();
-        String[] stepActionControl_increment = request.getParameterValues("control_increment");
+        String[] stepActionControl_increment = getParameterValuesIfExists(request, "control_increment");
         IFactoryTestCaseStepActionControl testCaseStepActionControlFactory = appContext.getBean(IFactoryTestCaseStepActionControl.class);
-        for (String inc : stepActionControl_increment) {
-            String delete = request.getParameter("control_delete_" + inc);
-            int step = Integer.valueOf(request.getParameter("control_step_" + inc));
-            int sequence = Integer.valueOf(request.getParameter("control_sequence_" + inc));
-            int control = Integer.valueOf(request.getParameter("control_control_" + inc));
-            String type = request.getParameter("control_type_" + inc);
-            String controlValue = request.getParameter("control_value_" + inc);
-            String controlProperty = request.getParameter("control_property_" + inc);
-            String fatal = request.getParameter("control_fatal_" + inc);
-            String description = request.getParameter("control_description_" + inc);
-            if (delete != null) {
-                testCaseStepActionControl.add(testCaseStepActionControlFactory.create(test, testCase, step, sequence, control, type, controlValue, controlProperty, fatal, description));
+        if (stepActionControl_increment != null) {
+            for (String inc : stepActionControl_increment) {
+                String delete = getParameterIfExists(request, "control_delete_" + inc);
+                int step = Integer.valueOf(getParameterIfExists(request, "control_step_" + inc));
+                int sequence = Integer.valueOf(getParameterIfExists(request, "control_sequence_" + inc));
+                int control = Integer.valueOf(getParameterIfExists(request, "control_control_" + inc));
+                String type = getParameterIfExists(request, "control_type_" + inc);
+                String controlValue = getParameterIfExists(request, "control_value_" + inc);
+                String controlProperty = getParameterIfExists(request, "control_property_" + inc);
+                String fatal = getParameterIfExists(request, "control_fatal_" + inc);
+                String description = getParameterIfExists(request, "control_description_" + inc);
+                if (delete == null) {
+                    testCaseStepActionControl.add(testCaseStepActionControlFactory.create(test, testCase, step, sequence, control, type, controlValue, controlProperty, fatal, description));
+                }
             }
         }
         return testCaseStepActionControl;

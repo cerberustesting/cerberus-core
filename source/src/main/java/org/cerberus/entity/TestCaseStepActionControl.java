@@ -253,6 +253,11 @@ public class TestCaseStepActionControl {
         }
         return true;
     }
+
+    @Override
+    public String toString() {
+        return "TestCaseStepActionControl{" + "test=" + test + ", testCase=" + testCase + ", step=" + step + ", sequence=" + sequence + ", control=" + control + ", type=" + type + ", controlValue=" + controlValue + ", controlProperty=" + controlProperty + ", fatal=" + fatal + ", description=" + description + '}';
+    }
     
     
 }

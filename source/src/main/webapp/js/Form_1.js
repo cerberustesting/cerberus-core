@@ -657,6 +657,10 @@ function addTestCaseAction(table, step) {
 var numberOfCall = 0;
 function addStep(div) {
 
+    var incStep = document.getElementById('incrementStepNumber').value;
+    var inc = incStep;
+    incStep++;
+    
     var table = document.createElement('div');
     table.setAttribute('id', 'table');
 
@@ -674,7 +678,7 @@ function addStep(div) {
     input1.setAttribute('onfocus', 'keyOnFocus(this)');
     input1.setAttribute('onblur', 'keyOnBlur(this)');
 
-    var value = getMaxValueForParentElementIdAndElementName(null, 'testcasestep_hidden');
+    var value = getMaxValueForParentElementIdAndElementName(null, 'step_number_'+inc);
     if (value && parseInt(value) > 0) {
         value = parseInt(value) + 10;
     } else {

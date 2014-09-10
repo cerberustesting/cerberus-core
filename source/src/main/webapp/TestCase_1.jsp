@@ -674,6 +674,8 @@
                                                     <input type="checkbox" name="step_delete_<%=incrementStep%>" style="font-weight: bold; width:20px"
                                                            value="<%=tcs.getStep()%>">
                                                     <input type="hidden" name="step_increment" value="<%=incrementStep%>">
+                                                    <input id="incrementStepNumber" value="<%=incrementStep%>" type="hidden">
+                                                                            
                                                 </td>
                                                 <td id="wob">
                                                     &nbsp;&nbsp;Step&nbsp;&nbsp;
@@ -765,7 +767,7 @@
                                                                     %>
                                                                     <tr>
                                                                         <td style="background-color: <%=actionColor%>">
-                                                                            <input  class="wob" type="checkbox" name="action_delete_<%=incrementAction%>" name="action_delete" style="width: 30px; background-color: <%=actionColor%>"
+                                                                            <input  class="wob" type="checkbox" name="action_delete_<%=incrementAction%>" style="width: 30px; background-color: <%=actionColor%>"
                                                                                     value="<%=tcsa.getStep() + "-" + tcsa.getSequence()%>" <%=isReadonly%>>
                                                                             <input type="hidden" name="action_increment" value="<%=incrementAction%>" >
                                                                             <input type="hidden" name="action_step_<%=incrementAction%>" value="<%=tcsa.getStep()%>" >
@@ -773,7 +775,7 @@
                                                                         <td style="background-color: <%=actionColor%>">
                                                                             <input class="wob" style="width: 60px; font-weight: bold; background-color: <%=actionColor%>; height:20px; color:<%=actionFontColor%>"
                                                                                    value="<%=tcsa.getSequence()%>"
-                                                                                   name="action_sequence_<%=incrementAction%>" readonly="readonly">
+                                                                                   name="action_sequence_<%=incrementAction%>" id="action_sequence_<%=incrementAction%>">
                                                                         </td>
                                                                         <td style="background-color: <%=actionColor%>"><%=ComboInvariant(appContext, "action_action_" + incrementAction, "width: 136px; background-color:" + actionColor + ";color:" + actionFontColor, "action_action_" + incrementAction, "wob", "ACTION", tcsa.getAction(), "trackChanges(0, this.selectedIndex, 'submitButtonAction')", null)%>
                                                                         </td>
@@ -808,19 +810,21 @@
                                                                          * End actions loop
                                                                          */%>
                                                                 </table>
-                                                                <%  if (canEdit && !useStep) {%>
+                                                                <%  if (canEdit) {
+                                                                         if(!useStep){%>
                                                                 <table>
                                                                     <tr>
                                                                         <td id="wob">
                                                                             <input id="incrementActionNumber" value="<%=incrementAction%>" type="hidden">
                                                                             <input type="button" value="Add Action"
-                                                                                   onclick="addTestCaseAction('Action<%=tcs.getStep()%>', '<%=tcs.getStep()%>');
+                                                                                   onclick="addTestCaseActionNew('Action<%=tcs.getStep()%>', '<%=tcs.getStep()%>');
                                                                                            enableField('submitButtonAction');">
                                                                             <%=ComboInvariant(appContext, "action_action_temp" , "width: 136px; display:none", "action_action_temp", "wob", "ACTION", null, "", null)%>
                                                                         
                                                                         <td id="wob">
                                                                             <input type="button" value="import HTML Scenario" onclick="importer('ImportHTML.jsp?Test=<%=test%>&Testcase=<%=testcase%>&Step=<%=tcs.getStep()%>')">
                                                                         </td>
+                                                                        <%}%>
                                                                         <td id="wob">
                                                                             <input value="Save Changes" onclick="submitTestCaseModification('stepAnchor_<%=incrementAction%>');" id="submitButtonAction" name="submitChanges"
                                                                                    type="button" >
@@ -828,9 +832,10 @@
                                                                         </td>
                                                                     </tr>
                                                                 </table>
+                                                                        <%}%>
                                                             </td>
                                                         </tr>
-                                                        <% }
+                                                        <% 
                                                             List<TestCaseStepActionControl> tcsacList = tcsacService.findControlByTestTestCaseStep(testForQuery, testcaseForQuery, stepForQuery);
                                                         %>
                                                         <tr>
@@ -915,24 +920,27 @@
                                                                                              */
                                                                                         } %>
                                                                                 </table>
-                                                                                <%  if (canEdit && !useStep) {%>
                                                                                 <%=ComboInvariant(appContext, "controls_type_", "width: 200px;visibility:hidden", "controls_type_", "controls_type_", "CONTROL", "", "", null)%>
                                                                                 <%=ComboInvariant(appContext, "controls_fatal_", "width: 40px;visibility:hidden", "controls_fatal_", "controls_fatal_", "CTRLFATAL", "", "", null)%>
                                                                                 <table>
                                                                                     <tr>
+                                                                                        <%  if (canEdit) {
+                                                                         if(!useStep) {%>
                                                                                         <td id="wob">
                                                                                             <input type="button"
                                                                                                    value="Add Control"
-                                                                                                   onclick="addTestCaseControl('control_table<%=tcs.getStep()%>', '<%=tcs.getStep()%>');
+                                                                                                   onclick="addTestCaseControlNew('control_table<%=tcs.getStep()%>', '<%=tcs.getStep()%>');
                                                                                                            enableField('submitButtonChanges');">
                                                                                         </td>
+                                                                                        <%}%>
                                                                                         <td id="wob">
                                                                                             <input value="Save Changes" onclick="submitTestCaseModification('#stepAnchor_<%=incrementAction%>');" id="submitButtonAction" name="submitChanges"
                                                                                                    type="button" >
                                                                                         </td>
+                                                                                        <% }%>
                                                                                     </tr>
                                                                                 </table>
-                                                                                <% }%>
+                                                                                
                                                                             </td>
                                                                         </tr>
                                                                     </table>        
@@ -954,7 +962,7 @@
                                             <tr>
                                                 <td id="wob">
                                                     <input type="button" value="Add Step" id="AddStepButton" style="display:inline"
-                                                           onclick="addStep('hide_div');
+                                                           onclick="addStepNew('hide_div');
                                                                    enableField('submitButtonAction');
                                                                    hidebutton('AddStepButton')">
                                                     <input type="button" value="Import Step" id="ImportStepButton" style="display:inline"
@@ -1184,7 +1192,7 @@
                                         <br>
                                         <%  if (canEdit) {%>
                                         <input type="button" value="Add Property" id="AddProperty"
-                                               onclick="addTestCaseProperties('testcaseproperties_table', <%=rowNumber%>, <%=size%>, <%=size2%>);
+                                               onclick="addTestCasePropertiesNew('testcaseproperties_table', <%=rowNumber%>, <%=size%>, <%=size2%>);
                                                        enableField('SavePropertyChanges');
                                                        disableField('AddProperty');">
                                         <input type="submit" value="Save Changes" id="SavePropertyChanges">              

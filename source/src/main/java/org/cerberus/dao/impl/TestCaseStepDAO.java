@@ -296,10 +296,10 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
             try {
                 preStat.setString(1, tcs.getDescription());
-                preStat.setString(2, tcs.getUseStep());
-                preStat.setString(3, tcs.getUseStepTest());
-                preStat.setString(4, tcs.getUseStepTestCase());
-                preStat.setInt(5, tcs.getUseStepStep());
+                preStat.setString(2, tcs.getUseStep()==null?"N":tcs.getUseStep());
+                preStat.setString(3, tcs.getUseStepTest()==null?"":tcs.getUseStepTest());
+                preStat.setString(4, tcs.getUseStepTestCase()==null?"":tcs.getUseStepTestCase());
+                preStat.setInt(5, tcs.getUseStepStep()==null?0:tcs.getUseStepStep());
                 preStat.setString(6, tcs.getTest());
                 preStat.setString(7, tcs.getTestCase());
                 preStat.setInt(8, tcs.getStep());
