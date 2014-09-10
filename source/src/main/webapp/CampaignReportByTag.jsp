@@ -18,16 +18,16 @@
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
 <%
-    String campaignName = request.getParameter("campaignName");
-    String tag = request.getParameter("tag");
+    String campaignName = request.getParameter("CampaignName");
+    String tag = request.getParameter("Tag");
     String[] environments = request.getParameterValues("Environment");
     String[] countries = request.getParameterValues("Country");
     String[] browsers = request.getParameterValues("Browser");
     
     boolean onlyFunction = ("true".equalsIgnoreCase(request.getParameter("OnlyFunction")));
 
-    StringBuffer query = new StringBuffer("campaignName=").append(campaignName);
-    query.append("&tag=").append(tag);
+    StringBuffer query = new StringBuffer("CampaignName=").append(campaignName);
+    query.append("&Tag=").append(tag);
     
     if(environments != null && environments.length > 0) {
         for(String environment : environments) {
@@ -230,6 +230,10 @@
                 color: #EEEE00;
             }
 
+            a.StatusNE {
+                color: #000;
+            }
+
             a.StatusPE {
                 color: #555555;
             }
@@ -256,6 +260,26 @@
                     </td>
                 </tr>
             </table>
+            <h1><a name="StatusNE" class="StatusNE">Not Executed</a></h1>
+            <table id="StatusNE" class="arrondTable fullSize needToBeSort">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Function</th>
+                        <th>Test</th>
+                        <th>TestCase</th>
+                        <th>Description</th>
+                        <th>Control</th>
+                        <th>Status</th>
+                        <th>Application</th>
+                        <th>BugID</th>
+                        <th class="wrapAll">Comment</th>
+                        <th>Start</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>            
             <h1><a name="StatusKO" class="StatusKO">Status KO</a></h1>
             <table id="StatusKO" class="arrondTable fullSize needToBeSort">
                 <thead>

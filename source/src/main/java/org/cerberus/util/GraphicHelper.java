@@ -39,7 +39,7 @@ public class GraphicHelper {
      * @param highlight axis highlight
      * @return the JSON Object represent the graphic axis
      */
-    public JSONObject generateAxisForPieBarOrBarColor(String label, int value, String color, String highlight) {
+    public static final JSONObject generateAxisForPieBarOrBarColor(String label, int value, String color, String highlight) {
         try {
             JSONObject jSONObject = new JSONObject();
             jSONObject.put("label", label);
@@ -62,7 +62,7 @@ public class GraphicHelper {
      * @param pointHighlight point highlight color of the axis
      * @return the JSON Object represent the graphic axis
      */
-    public JSONObject generateAxisForMultiBar(String label, int[] data, String fillColor,
+    public static final JSONObject generateAxisForMultiBar(String label, int[] data, String fillColor,
             String pointColor, String pointHighlight) {
         try {
             JSONObject jSONObject = new JSONObject();
@@ -88,11 +88,14 @@ public class GraphicHelper {
      *              or GraphicHelper.generateAxisForPieBarOrBarColor
      * @return the JSON Object represent the graphic chart
      */
-    public JSONObject generateChart(ChartType chartType, JSONObject[] axis) {
+    public static final JSONObject generateChart(ChartType chartType, JSONObject[] axis, String[] labels) {
         try {
             JSONObject jSONObject = new JSONObject();
             jSONObject.put("type", chartType);
             jSONObject.put("axis", new JSONArray(axis));
+            if(labels != null && labels.length > 0) {
+                jSONObject.put("labels", new JSONArray(labels));
+            }
 
             return jSONObject;
         } catch (JSONException ex) {

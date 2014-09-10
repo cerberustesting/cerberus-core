@@ -101,6 +101,14 @@ public interface ITestCaseService {
      */
     List<TCase> findTestCaseByGroupInCriteria(TCase tCase, String system);
 
+    /**
+     *
+     * @param campaign the campaign name
+     * @return the list of TCase used in the campaign
+     * @since 1.0.2
+     */
+    List<TCase> findTestCaseByCampaignName(String campaign);
+    
     public void updateTestCase(TCase tc) throws CerberusException;
     
 }

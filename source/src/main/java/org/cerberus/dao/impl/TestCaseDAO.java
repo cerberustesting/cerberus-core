@@ -425,6 +425,57 @@ public class TestCaseDAO implements ITestCaseDAO {
         return list;
     }
 
+    @Override
+    public List<TCase> findTestCaseByCampaignName(String campaign) {
+        List<TCase> list = null;
+        final String query = new StringBuilder("select tc.* ")
+                .append("from testcase tc ")
+                .append("inner join testbatterycontent tbc ")
+                .append("on tbc.Test = tc.Test ")
+                .append("and tbc.TestCase = tc.TestCase ")
+                .append("inner join campaigncontent cc ")
+                .append("on cc.testbattery = tbc.testbattery ")
+                .append("where cc.campaign = ? ")
+            .toString();
+
+        MyLogger.log(TestCaseDAO.class.getName(), Level.ERROR, query);
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            try {
+                preStat.setString(1, campaign);
+
+                ResultSet resultSet = preStat.executeQuery();
+                list = new ArrayList<TCase>();
+                try {
+                    while (resultSet.next()) {
+                        list.add(this.loadTestCaseFromResultSet(resultSet));
+                    }
+                } catch (SQLException exception) {
+                    MyLogger.log(TestCaseDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                } finally {
+                    resultSet.close();
+                }
+            } catch (SQLException exception) {
+                MyLogger.log(TestCaseDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(TestCaseDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(TestCaseDAO.class.getName(), Level.WARN, e.toString());
+            }
+        }
+
+        return list;
+    }
+
     /**
      * @since 0.9.1
      */

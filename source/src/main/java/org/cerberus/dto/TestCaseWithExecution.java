@@ -19,6 +19,8 @@
  */
 package org.cerberus.dto;
 
+import java.util.HashMap;
+import java.util.List;
 import org.cerberus.entity.Application;
 import org.cerberus.entity.TCase;
 
@@ -37,6 +39,53 @@ public class TestCaseWithExecution extends TCase {
     private String controlStatus;
     private String controlMessage;
     private Application applicationObject;
+
+    public TestCaseWithExecution() {
+        super();
+    }
+
+    public TestCaseWithExecution(TCase testCase) {
+        
+        super();
+        
+        this.setTest(testCase.getTest());
+        this.setTestCase(testCase.getTestCase());
+        this.setOrigin(testCase.getOrigin());
+        this.setRefOrigin(testCase.getRefOrigin());
+        this.setCreator(testCase.getCreator());
+        this.setImplementer(testCase.getImplementer());
+        this.setLastModifier(testCase.getLastModifier());
+        this.setProject(testCase.getProject());
+        this.setTicket(testCase.getTicket());
+        this.setFunction(testCase.getFunction());
+        this.setApplication(testCase.getApplication());
+        this.setRunQA(testCase.getRunQA());
+        this.setRunUAT(testCase.getRunUAT());
+        this.setRunPROD(testCase.getRunPROD());
+        this.setPriority(testCase.getPriority());
+        this.setGroup(testCase.getGroup());
+        this.setStatus(testCase.getStatus());
+        this.setShortDescription(testCase.getShortDescription());
+        this.setDescription(testCase.getDescription());
+        this.setHowTo(testCase.getHowTo());
+        this.setActive(testCase.getActive());
+        this.setFromSprint(testCase.getFromSprint());
+        this.setFromRevision(testCase.getFromRevision());
+        this.setToSprint(testCase.getToSprint());
+        this.setToRevision(testCase.getToRevision());
+        this.setLastExecutionStatus(testCase.getLastExecutionStatus());
+        this.setBugID(testCase.getBugID());
+        this.setTargetSprint(testCase.getTargetSprint());
+        this.setTargetRevision(testCase.getTargetRevision());
+        this.setComment(testCase.getComment());
+        this.setTcDateCrea(testCase.getTcDateCrea());
+
+        this.statusExecutionID = 0L;
+        this.start = 0L;
+        this.end = 0L;
+        this.controlStatus = "NE";
+        this.controlMessage = "Not Executed";
+    }
 
     public long getStatusExecutionID() {
         return statusExecutionID;
@@ -110,4 +159,29 @@ public class TestCaseWithExecution extends TCase {
         this.applicationObject = applicationObject;
     }
 
+    public static final HashMap<String, TestCaseWithExecution> generateEmptyResultOfExecutions(List<TCase> listOfTestCases, String[] environments, String[] countries, String[] browsers) {
+        HashMap<String, TestCaseWithExecution> result = new HashMap<String, TestCaseWithExecution>();
+        String key;
+        TestCaseWithExecution testCaseWithExecution;
+        for (String browser : browsers) {
+            for (String country : countries) {
+                for (String environment : environments) {
+                    for (TCase testCase : listOfTestCases) {
+                        key = browser + "_" + country + "_" + environment + "_" 
+                                + testCase.getTest() + "_" + testCase.getTestCase();
+                        if(!result.containsKey(key)) {
+                            testCaseWithExecution = new TestCaseWithExecution(testCase);
+                            testCaseWithExecution.setBrowser(browser);
+                            testCaseWithExecution.setCountry(country);
+                            testCaseWithExecution.setEnvironment(environment);
+
+                            result.put(key, testCaseWithExecution);
+                        }
+                    }
+                }
+            }
+        }
+        
+        return result;
+    }
 }

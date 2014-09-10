@@ -221,4 +221,9 @@ public class TestCaseService implements ITestCaseService {
         testCaseDao.updateTestCase(tc);
     }
 
+    @Override
+    public List<TCase> findTestCaseByCampaignName(String campaign) {
+        return testCaseDao.findTestCaseByCampaignName(campaign);
+    }
+
 }

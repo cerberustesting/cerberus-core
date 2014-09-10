@@ -26,18 +26,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.cerberus.dto.TestCaseWithExecution;
 import org.cerberus.entity.CampaignContent;
-
 import org.cerberus.entity.TestBatteryContent;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.service.ICampaignService;
 import org.cerberus.service.ITestBatteryService;
+import org.cerberus.service.ITestCaseService;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -75,50 +74,44 @@ public class CampaignExecutionReport extends HttpServlet {
             ICampaignService campaignService = appContext
                     .getBean(ICampaignService.class);
 
-            ITestBatteryService testBatteryService = appContext
-                    .getBean(ITestBatteryService.class);
+            ITestCaseService testCaseService = appContext
+                    .getBean(ITestCaseService.class);
 
             PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
 
             String campaignName = policy.sanitize(request
-                    .getParameter("campaignName"));
-            String tag = policy.sanitize(request.getParameter("tag"));
+                    .getParameter("CampaignName"));
+            String tag = policy.sanitize(request.getParameter("Tag"));
             String[] env = request.getParameterValues("Environment");
             String[] country = request.getParameterValues("Country");
             String[] browser = request.getParameterValues("Browser");
 
             JSONArray jSONResult = new JSONArray();
 
+
             List<TestCaseWithExecution> testCaseWithExecutions = campaignService.getCampaignTestCaseExecutionForEnvCountriesBrowserTag(campaignName, tag, env, country, browser);
-            HashMap<String, List<TestCaseWithExecution>> hmTestCaseExecutionByTestCase = new HashMap<String, List<TestCaseWithExecution>>();
-            List<TestCaseWithExecution> listExec;
-            String key;
-            for (TestCaseWithExecution testCaseWithExecution : testCaseWithExecutions) {
-                key = testCaseWithExecution.getTest()+testCaseWithExecution.getTestCase();
-                if(hmTestCaseExecutionByTestCase.containsKey(key)) {
-                   listExec =  hmTestCaseExecutionByTestCase.get(key);
-                } else {
-                    listExec =  new ArrayList<TestCaseWithExecution>();
-                }
-                listExec.add(testCaseWithExecution);
-                hmTestCaseExecutionByTestCase.put(key, listExec);
-                
-            }
             
-            for (CampaignContent campaignContent : campaignService.findCampaignContentsByCampaignName(campaignName)) {
-                for (TestBatteryContent batteryContent : testBatteryService.findTestBatteryContentsByTestBatteryName(campaignContent.getTestbattery())) {
-                    key = batteryContent.getTest() + batteryContent.getTestCase();
-                    if (hmTestCaseExecutionByTestCase.containsKey(key)) {
-                        for (TestCaseWithExecution testCaseWithExecution : hmTestCaseExecutionByTestCase.get(key)) {
-                            try {
-                                jSONResult.put(testCaseExecutionToJSONObject(testCaseWithExecution));
-                            } catch (JSONException ex) {
-                                Logger.getLogger(CampaignExecutionReport.class.getName()).log(Level.SEVERE, null, ex);
-                            }
-                        }
-                    }
+            HashMap<String, TestCaseWithExecution> testCaseWithExecutionsList = TestCaseWithExecution.generateEmptyResultOfExecutions(testCaseService.findTestCaseByCampaignName(campaignName), env, country, browser);
+
+            for (TestCaseWithExecution testCaseWithExecution : testCaseWithExecutions) {
+                String key = testCaseWithExecution.getBrowser() + "_" 
+                        + testCaseWithExecution.getCountry() + "_" 
+                        + testCaseWithExecution.getEnvironment() + "_" 
+                        + testCaseWithExecution.getTest() + "_" 
+                        + testCaseWithExecution.getTestCase();
+                testCaseWithExecutionsList.put(key, testCaseWithExecution);
+            }
+
+            testCaseWithExecutions = new ArrayList<TestCaseWithExecution>(testCaseWithExecutionsList.values());
+            
+            for (TestCaseWithExecution testCaseWithExecution : testCaseWithExecutions) {
+                try {
+                    jSONResult.put(testCaseExecutionToJSONObject(testCaseWithExecution));
+                } catch (JSONException ex) {
+                    Logger.getLogger(CampaignExecutionReport.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
+
             response.setContentType("application/json");
             response.getWriter().print(jSONResult);
         } catch (CerberusException ex) {
@@ -192,7 +185,7 @@ public class CampaignExecutionReport extends HttpServlet {
         result.put("Status", JavaScriptUtils.javaScriptEscape(testCaseWithExecution.getStatus()));
 
         String bugId;
-        if (testCaseWithExecution.getApplicationObject().getBugTrackerUrl() != null
+        if (testCaseWithExecution.getApplicationObject() != null && testCaseWithExecution.getApplicationObject().getBugTrackerUrl() != null
                 && !"".equals(testCaseWithExecution.getApplicationObject().getBugTrackerUrl())) {
             bugId = testCaseWithExecution.getApplicationObject().getBugTrackerUrl().replaceAll("%BUGID%", testCaseWithExecution.getBugID());
             bugId = new StringBuffer("<a href='")
