@@ -26,31 +26,6 @@ var config = {
 
 };
 
-var data;
-data = createDatasetBar("OK",0,"#00EE00","#33DD33",false);
-data = createDatasetBar("KO",0,"#F7464A","#FF5A5E",data);
-data = createDatasetBar("FA",0,"#FDB45C","#FFC870",data);
-data = createDatasetBar("NA",0,"#EEEE00","#EEEE55",data);
-data = createDatasetBar("NE",0,"#000","#000",data);
-data = createDatasetBar("PE",0,"#0000DD","#5555DD",data);
-
-
-
-var dataDonut = [
-    createDatasetPie("OK",0,"#00EE00","#33DD33"),
-    createDatasetPie("KO",0,"#F7464A","#FF5A5E"),
-    createDatasetPie("FA",0,"#FDB45C","#FFC870"),
-    createDatasetPie("NA",0,"#EEEE00","#EEEE55"),
-    createDatasetPie("NE",0,"#000","#000"),
-    createDatasetPie("PE",0,"#555555","#333333")
-];
-
-var dataPercent = {};
-
-var dataPercentLabels = {};
-
-var dataFunction = createDatasetBar("My Second dataset",0,"rgba(151,187,205,0.5)","rgba(151,187,205,1)",false);
-
 var testCaseStatusLine = $("<tr class='testcase'>" +
         "<td class='ID'></td>" +
         "<td class='Function'></td>" +
@@ -112,8 +87,8 @@ function addTestCaseToStatusTabs(testcase) {
     statusTable.append(statusTestCaseStatusLine);
 };
 
-function createGraphFromAjaxToElement(ajaxDataGraphURL,element, config) {
-    if(!ajaxDataGraphURL || !element) {
+function createGraphFromDataToElement(data,element, config) {
+    if(!element || !data || !data.type || !data.axis || !data.axis.length > 0) {
         return false;
     }
 
@@ -127,79 +102,68 @@ function createGraphFromAjaxToElement(ajaxDataGraphURL,element, config) {
         };
     }
 
+    var dataset = false, isOk = false;
+    for(var axis=0; axis<data.axis.length; axis++) {
+        if(axis == 0) {
+            if (data.type == "Donut" || data.type == "Pie" || data.type == "Bar") {
+                dataset = [];
+            } else if(data.type == "MultiBar" || data.type == "Radar") {
+                dataset = {
+                    labels: data.labels,
+                    datasets: []
+                };
+            }
+        }
+
+        if(data.type == "MultiBar" || data.type == "Radar") {
+            dataset.datasets[dataset.datasets.length] = createDatasetMultiBar(data.axis[axis].label, data.axis[axis].data, data.axis[axis].fillColor, 
+                data.axis[axis].pointColor, data.axis[axis].pointHighlight);
+
+        } else if(data.type == "BarColor") {
+            dataset = createDatasetBar(data.axis[axis].label, data.axis[axis].value, data.axis[axis].color, 
+                data.axis[axis].highlight, dataset);
+
+        } else {
+            dataset[dataset.length] = createDatasetPie(data.axis[axis].label, data.axis[axis].value, 
+                data.axis[axis].color, data.axis[axis].highlight);
+        }
+        isOk = true;
+    }
+
+    if(isOk) {
+        var ctx = $(element).get(0).getContext("2d");
+
+        if(data.type == "Pie") {
+            return new Chart(ctx).Pie(dataset,config);
+
+        } else if(data.type == "Donut") {
+            return new Chart(ctx).Donut(dataset, config);
+
+        } else if(data.type == "Bar") {
+            return new Chart(ctx).Bar(dataset, config);
+
+        } else if(data.type == "BarColor") {
+            return new Chart(ctx).BarColor(dataset, config);
+
+        } else if(data.type == "Radar") {
+            return new Chart(ctx).Radar(dataset, config);
+
+        } else if(data.type == "MultiBar") {
+            return new Chart(ctx).StackedBar(dataset,config);
+
+        }
+    }
+};
+
+function createGraphFromAjaxToElement(ajaxDataGraphURL,element, config) {
+    if(!ajaxDataGraphURL || !element) {
+        return false;
+    }
+
     jQuery.ajax(ajaxDataGraphURL).done(function(data) {
-        if(!data || !data.type || !data.axis || !data.axis.length <= 0) {
-            return false;
-        }
-
-        var dataset = false;
-        for(var axis=0; axis<data.axis.length; axis++) {
-            if(axis == 0) {
-                if (data.type == "Donut" || data.type == "Pie" || data.type == "Bar") {
-                    dataset = [];
-                } else if(data.type == "MultiBar") {
-                    dataset = {
-                        labels: data.labels,
-                        datasets: []
-                    };
-                }
-            }
-
-            if(data.type == "MultiBar") {
-                dataset.datasets[dataset.datasets.length] = createDatasetMultiBar(data.axis[axis].label, data.axis[axis].data, data.axis[axis].fillColor, 
-                    data.axis[axis].pointColor, data.axis[axis].pointHighlight);
-
-            } else if(data.type == "BarColor") {
-                dataset = createDatasetBar(data.axis[axis].label, data.axis[axis].value, data.axis[axis].color, 
-                    data.axis[axis].highlight, dataset);
-
-            } else {
-                dataset[dataset.length] = createDatasetPie(data.axis[axis].label, data.axis[axis].value, 
-                    data.axis[axis].color, data.axis[axis].highlight);
-            }
-        }
-        
-        if(!dataset) {
-            var ctx = $(element).get(0).getContext("2d");
-
-            if(data.type == "Pie") {
-                new Chart(ctx).Pie(dataset,config);
-
-            } else if(data.type == "Donut") {
-                new Chart(ctx).Donut(dataset, config);
-
-            } else if(data.type == "Bar") {
-                new Chart(ctx).Bar(dataset, config);
-
-            } else if(data.type == "BarColor") {
-                new Chart(ctx).BarColor(dataset, config);
-
-            } else if(data.type == "MultiBar") {
-                new Chart(ctx).StackedBar(dataset,config);
-
-            }
-        }
+        createGraphFromDataToElement(data,element, config);
     });
 }
-
-function addTestCaseToPercentRadar(testcase) {
-    
-    var testCaseFunction = testcase.Function || "(function not defined)";
-    
-    if(!dataPercent[testCaseFunction]) {
-        dataPercent[testCaseFunction] = {
-            OK: 0,
-            KO: 0,
-            FA: 0,
-            NA: 0,
-            NE: 0,
-            total: 0
-        };
-    }
-    
-    dataPercent[testCaseFunction]['total'] = eval(dataPercent[testCaseFunction]['total'] + 1);
-    dataPercent[testCaseFunction][testcase.ControlStatus] = eval(dataPercent[testCaseFunction][testcase.ControlStatus] + 1);
-};
 
 function createDatasetBar(label, value, color, highlight, dataset) {
     
@@ -255,52 +219,3 @@ function createDatasetMultiBar(label, data, fillColor, pointColor, pointHighligh
             };
     return dataset;
 };
-
-function computePercentDataRadar(ctx) {
-    var config = {
-        // String - Template string for single tooltips
-        tooltipTemplate: "<%if (label){%><%=label%>: <%}%><%= value %>",
-
-        // String - Template string for single tooltips
-        multiTooltipTemplate: "<%if (datasetLabel){%><%=datasetLabel%>: <%}%><%= value %>"
-    }
-
-    var dataBar = {
-        OK: [],
-        KO: [],
-        FA: [],
-        NA: [],
-        NE: [],
-        PE: [],
-        labels: []
-    };
-
-    $.each(dataPercent, function(key, val){
-        dataBar.OK[dataBar.labels.length] = (val.OK ? val.OK : 0);
-        dataBar.KO[dataBar.labels.length] = (val.KO ? val.KO : 0);
-        dataBar.FA[dataBar.labels.length] = (val.FA ? val.FA : 0);
-        dataBar.NA[dataBar.labels.length] = (val.NA ? val.NA : 0);
-        dataBar.NE[dataBar.labels.length] = (val.NE ? val.NE : 0);
-        dataBar.PE[dataBar.labels.length] = (val.PE ? val.PE : 0);
-
-        dataBar.labels[dataBar.labels.length] = key;
-
-    });
-    
-    var data = {
-        labels: dataBar.labels,
-        datasets: [ 
-            createDatasetMultiBar("OK",dataBar.OK,"#00EE00","#33DD33","#33FF55"),
-            createDatasetMultiBar("KO",dataBar.KO,"#F7464A","#FF5A5E","#FF7A7E"),
-            createDatasetMultiBar("FA",dataBar.FA,"#FDB45C","#FFC870","#FFE890"),
-            createDatasetMultiBar("NA",dataBar.NA,"#EEEE00","#EEEE55","#EEFE65"),
-            createDatasetMultiBar("NE",dataBar.NE,"#000","#000","#000"),
-            createDatasetMultiBar("PE",dataBar.PE,"#555555","#333333","#33F3F3")
-        ]
-    };
-
-    //console.log(data);
-
-    new Chart(ctx).StackedBar(data,config);
-   // return data;
-}

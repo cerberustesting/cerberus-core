@@ -78,81 +78,68 @@
             var executionStatus, pieExecutionStatus;
 
             $(document).ready(function () {
-
-                $.get("./CampaignExecutionReport", "<%=query.toString() %>", function (report) {
-                    // Get context with jQuery - using jQuery's .get() method.
-                    var ctx = [];
-                    ctx[1] = $("#myDonut").get(0).getContext("2d");
-                    ctx[2] = $("#functionBar").get(0).getContext("2d");
-
-                    var controlStatus, testCaseFunction;
-                    var testCaseTotal = 0;
+                
+                var config = {
+                    // Boolean - Determines whether to draw tooltips on the canvas or not
+                    showTooltips: true,
+                    // Boolean used to remove animation during graphic creation
+                    animation: false
+                };
+                
+                createGraphFromAjaxToElement("./CampaignExecutionReportByFunction?<%=query.toString() %>","#functionTest", config);
+                createGraphFromAjaxToElement("./CampaignExecutionStatusBarGraphByFunction?<%=query.toString() %>","#functionBar", config);
+                
+                jQuery.ajax("./CampaignExecutionGraphByStatus?<%=query.toString() %>").done(function(data) {
+                    // function used to generate the Pie graph about status number
+                    var pie = createGraphFromDataToElement(data,"#myDonut", config);
                     
-                    for (var index = 0; index < report.length; index++) {
-                        testCaseTotal++;
-<%
-                            if(!onlyFunction) {
-%>
-                                report[index].Function = (report[index].Function ? report[index].Function : report[index].Test);
-<%
-                            }
-%>
-                        controlStatus = report[index].ControlStatus;
-                        addTestCaseToStatusTabs(report[index]);
-                        addTestCaseToPercentRadar(report[index]);
-                        testCaseFunction = report[index].Function || report[index].Test;
-                        for (var label = 0; label < data.labels.length; label++) {
-                            if (controlStatus == data.labels[label]) {
-                                data.datasets[0].data[label] = parseInt(data.datasets[0].data[label]) + 1;
-                            }
-                        }
-                        for (var donut = 0; donut < dataDonut.length; donut++) {
-                            if (controlStatus == dataDonut[donut].label) {
-                                dataDonut[donut].value = parseInt(dataDonut[donut].value) + 1;
-                            }
-                        }
-                    }
+                    $("#myDonut").on('click', function (evt) {
+                        var activePoints = pie.getSegmentsAtEvent(evt);
+
+                        var anchor = $('a[name="Status' + activePoints[0].label + '"]');
+                        $('html').animate({
+                            scrollTop: anchor.offset().top
+                        }, 'slow');
+
+                        return false;
+                    });
+
                     
+                    // code used to create the execution status table.
                     $("div.executionStatus").empty().append("<table  class='arrondTable fullSize'><thead><tr><th>Execution status</th><th>TestCase Number</th></tr></thead><tbody></tbody></table>");
+                    var total = 0;
+                    // create each line of the table
                     for (var index = 0; index < data.labels.length; index++) {
                         $("div.executionStatus table tbody").append(
                                 $("<tr></tr>").append(
-                                $("<td></td>").text(data.labels[index]))
-                                .append($("<td></td>").text(data.datasets[0].data[index]))
-                                );
+                                $("<td></td>").text(data.axis[index].label))
+                                .append($("<td></td>").text(data.axis[index].value))
+                            );
+                        // increase the total execution
+                        total = total + data.axis[index].value;
                     }
+                    // add a line for the total
                     $("div.executionStatus table tbody").append(
                             $("<tr></tr>").append(
-                            $("<th>Total</th>"))
-                            .append($("<th></th>").text(testCaseTotal))
-                            );
+                                $("<th>Total</th>"))
+                            .append($("<th></th>").text(total))
+                    );
+                });
 
-                    pieExecutionStatus = new Chart(ctx[1]).Pie(dataDonut);
+                $.get("./CampaignExecutionReport", "<%=query.toString() %>", function (report) {
+                    // Get context with jQuery - using jQuery's .get() method.
 
-                    $("#myDonut").on('click', function (evt) {
-                        var activePoints = pieExecutionStatus.getSegmentsAtEvent(evt);
+                    for (var index = 0; index < report.length; index++) {
+<%
+                        if(!onlyFunction) {
+%>
+                            report[index].Function = (report[index].Function ? report[index].Function : report[index].Test);
+<%
+                        }
+%>
+                        addTestCaseToStatusTabs(report[index]);
+                    }
 
-                        var anchor = $('a[name="Status' + activePoints[0].label + '"]');
-                        $('html').animate({
-                            scrollTop: anchor.offset().top
-                        }, 'slow');
-
-                        return false;
-                    });
-
-                    $("canvas.executionStatus").on('click', function (evt) {
-                        var activePoints = executionStatus.getBarsAtEvent(evt);
-
-                        var anchor = $('a[name="Status' + activePoints[0].label + '"]');
-                        $('html').animate({
-                            scrollTop: anchor.offset().top
-                        }, 'slow');
-
-                        return false;
-                    });
-
-                    computePercentDataRadar(ctx[2]);
-                    
                     $("table.needToBeSort").each(function(){
                         sorttable.makeSortable(this);
                     });
@@ -257,6 +244,11 @@
                     </td>
                     <td style="width: 78%">
                         <canvas id="functionBar"></canvas>
+                    </td>
+                </tr>
+                <tr style="width: 98%">
+                    <td colspan="2">
+                        <canvas id="functionTest"></canvas>
                     </td>
                 </tr>
             </table>
