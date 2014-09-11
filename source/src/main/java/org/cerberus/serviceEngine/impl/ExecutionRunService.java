@@ -690,7 +690,7 @@ public class ExecutionRunService implements IExecutionRunService {
         for (String internalProperty : StringUtil.getAllProperties(testCaseCountryProperty.getValue1())) {
             // If the internal property is defined in the test case then we trigger a calculation
             boolean isADefinedProperty = false;
-            List<TestCaseCountryProperties> definedProperties = testCaseCountryPropertiesService.findListOfPropertyPerTestTestCaseCountry(tCExecution.getTest(), tCExecution.getTestCase(), tCExecution.getCountry());
+            List<TestCaseCountryProperties> definedProperties = testCaseCountryPropertiesService.findDistinctPropertiesOfTestCase(tCExecution.getTest(), tCExecution.getTestCase());
             for (TestCaseCountryProperties definedProperty : definedProperties) {
                 if (internalProperty.equals(definedProperty.getProperty())) {
                     isADefinedProperty = true;
