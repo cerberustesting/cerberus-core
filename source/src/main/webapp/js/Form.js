@@ -1459,7 +1459,7 @@ function useStep() {
     urlImportStep += '&ImportProperty=' + encodeURI(importProperty);
     urlImportStep += '&Description=' + encodeURI(importDescription);
 
-    location.href = urlImportStep;
+    location.href = urlImportStep + "#useStep";
 }
 
 function submitTestCaseModification(anchor) {

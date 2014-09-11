@@ -1386,6 +1386,7 @@
                                 </td></tr></table>
                                 <%  if (canEdit) {%>
                         <div id="hide_div"></div>
+                        <a name="useStep"></a>
                         <table style="width: 100%"><tr><td id="wob"><input type="button" value="Add Step" id="AddStepButton" style="display:inline"
                                                                            onclick="addStep('hide_div', <%=testcase_step_maxlength_desc%>);
                                                                                    enableField('submitButtonAction');
