@@ -125,7 +125,7 @@ public class CampaignExecutionStatusBarGraphByFunction extends HttpServlet {
                     datas.get("NE").toArray(new String[1]),"#000","#000","#000"));
 
             axis.add(GraphicHelper.generateAxisForMultiBar("PE", 
-                    datas.get("PE").toArray(new String[1]),"#555555","#333333","#33F3F3"));
+                    datas.get("PE").toArray(new String[1]),"#5555EE","#2222FF","#5555EE"));
 
             axis.add(GraphicHelper.generateAxisForMultiBar("FA", 
                     datas.get("FA").toArray(new String[1]),"#FDB45C","#FFC870","#FFE890"));

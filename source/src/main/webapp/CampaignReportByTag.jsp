@@ -79,19 +79,12 @@
 
             $(document).ready(function () {
                 
-                var config = {
-                    // Boolean - Determines whether to draw tooltips on the canvas or not
-                    showTooltips: true,
-                    // Boolean used to remove animation during graphic creation
-                    animation: false
-                };
-                
-                createGraphFromAjaxToElement("./CampaignExecutionReportByFunction?<%=query.toString() %>","#functionTest", config);
-                createGraphFromAjaxToElement("./CampaignExecutionStatusBarGraphByFunction?<%=query.toString() %>","#functionBar", config);
+                createGraphFromAjaxToElement("./CampaignExecutionReportByFunction?<%=query.toString() %>","#functionTest", null);
+                createGraphFromAjaxToElement("./CampaignExecutionStatusBarGraphByFunction?<%=query.toString() %>","#functionBar", null);
                 
                 jQuery.ajax("./CampaignExecutionGraphByStatus?<%=query.toString() %>").done(function(data) {
                     // function used to generate the Pie graph about status number
-                    var pie = createGraphFromDataToElement(data,"#myDonut", config);
+                    var pie = createGraphFromDataToElement(data,"#myDonut", null);
                     
                     $("#myDonut").on('click', function (evt) {
                         var activePoints = pie.getSegmentsAtEvent(evt);
@@ -222,7 +215,7 @@
             }
 
             a.StatusPE {
-                color: #555555;
+                color: #2222FF;
             }
 
             table.needToBeSort th:not(.sorttable_sorted):not(.sorttable_sorted_reverse):not(.sorttable_nosort):after { 

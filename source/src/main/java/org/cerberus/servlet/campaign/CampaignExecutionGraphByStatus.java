@@ -113,7 +113,7 @@ public class CampaignExecutionGraphByStatus extends HttpServlet {
                 if("OK".equals(status)) { color = "#00EE00"; highlight = "#33DD33"; }
                 if("KO".equals(status)) { color = "#F7464A"; highlight = "#FF5A5E"; }
                 if("NA".equals(status)) { color = "#EEEE00"; highlight = "#EEEE55"; }
-                if("PE".equals(status)) { color = "#0000DD"; highlight = "#5555DD"; }
+                if("PE".equals(status)) { color = "#2222FF"; highlight = "#5555EE"; }
                 if("FA".equals(status)) { color = "#FDB45C"; highlight = "#FFC870"; }
                 
                 axis.add(GraphicHelper.generateAxisForPieBarOrBarColor(status, value, color, highlight));

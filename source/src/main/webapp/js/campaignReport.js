@@ -18,12 +18,15 @@
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-var config = {
+var defaultConfig = {
+    // Boolean - Determines whether to draw tooltips on the canvas or not
+    showTooltips: true,
+    // Boolean used to remove animation during graphic creation
+    animation: false,
     //String - Colour of the grid lines
     scaleGridLineColor: "rgba(0,0,0,0.2)",
     //String - A legend template
     legendTemplate: "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<segments.length; i++){%><li><span style=\"display:inline-block;width:30px;height:30px;margin:5px;background-color:<%=segments[i].fillColor%>\"><%if(segments[i].label){%><%=segments[i].label%><%}%></span></li><%}%></ul>"
-
 };
 
 var testCaseStatusLine = $("<tr class='testcase'>" +
@@ -94,6 +97,15 @@ function createGraphFromDataToElement(data,element, config) {
 
     if(!config) {
         config = {
+            // Boolean - Determines whether to draw tooltips on the canvas or not
+            showTooltips: true,
+
+            // Boolean used to remove animation during graphic creation
+            animation: false,
+
+            //String - Colour of the grid lines
+            scaleGridLineColor: "rgba(0,0,0,0.2)",
+
             // String - Template string for single tooltips
             tooltipTemplate: "<%if (label){%><%=label%>: <%}%><%= value %>",
 
