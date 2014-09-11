@@ -19,9 +19,12 @@
  */
 package org.cerberus.util;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;
 
@@ -41,6 +44,9 @@ public final class StringUtil {
 
     private static final Pattern urlMatch = Pattern.compile("(.*[<>' \"^]+)([a-zA-Z]+://[^<>[:space:]]+[[:alnum:]/]*)([$<> ' \"].*)");
 
+    /** The property variable {@link Pattern} */
+    public static final Pattern PROPERTY_VARIABLE_PATTERN = Pattern.compile("%[^%]+%");
+    
     /**
      * To avoid instanciation of utility class
      */
@@ -122,6 +128,28 @@ public final class StringUtil {
             return str.replaceAll(formula, replacement);
         }
         return str;
+    }
+    
+    /**
+     * Gets all properties contained into the given {@link String}
+     * 
+     * <p>
+     * A property is defined by including its name between two '%' character.
+     * </p>
+     * 
+     * @see #PROPERTY_VARIABLE_PATTERN
+     * @param str the {@link String} to get all properties
+     * @return a list of properties contained into the given {@link String}
+     */
+    public static List<String> getAllProperties(String str) {
+        Matcher propertyMatcher = PROPERTY_VARIABLE_PATTERN.matcher(str);
+        List<String> properties = new ArrayList<String>();
+        while (propertyMatcher.find()) {
+            String rawProperty = propertyMatcher.group();
+            // Removes the first and last '%' character to only get the property name
+            properties.add(rawProperty.substring(1, rawProperty.length() - 1));
+        }
+        return properties;
     }
 
     /**
