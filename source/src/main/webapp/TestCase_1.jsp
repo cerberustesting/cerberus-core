@@ -82,9 +82,14 @@
                 $('.functional_description').toggleClass('only_functional_description_size');
                 $('.functional_description_control').toggleClass('only_functional_description_control_size');
                 $('.technical_part').toggleClass('only_functional');
+                SetCookie("displayOnlyFunctional",(displayOnlyFunctional ? "TRUE" : "FALSE"));
             }
 
             $().ready(function() {
+                if("TRUE" == GetCookie("displayOnlyFunctional")) {
+                    showOnlyFunctional();
+                };
+
                 elRTE.prototype.options.toolbars.cerberus = ['style', 'alignment', 'colors', 'images', 'format', 'indent', 'lists', 'links'];
                 var opts = {
                     lang: 'en',
