@@ -152,6 +152,18 @@
                                 $(nTd).addClass('NOINF');
                             }
                         }
+                    },
+                    {"aTargets": ['bugIDColumn'],
+                        "mRender": function (data, type, full) {
+                            var text = "";
+                            if (data.bugID != ""){
+                                text += "<a target='_blank' href='"+data.bugURL+"'>"+data.bugID+"</a> ";
+                            }
+                            if (data.targetSprint != ""){
+                                text += "for "+data.targetSprint+"/"+data.targetRevision;
+                            }
+                            return text;
+                        }
                     }
                 ],
                 "fnInitComplete": function (oSettings, json) {
@@ -759,7 +771,7 @@
             <th rowspan="3">Priority</th>
             <th rowspan="3">Status</th>
             <th rowspan="3" id="TCComment">Comment</th>
-            <th rowspan="3">Bug ID</th>
+            <th rowspan="3" class="bugIDColumn">Bug ID</th>
             <th rowspan="3">Group</th>
         </tr>
         <tr id="tableCountry"></tr>
