@@ -1334,6 +1334,12 @@ function displayImportStep(attribute) {
 
     document.getElementById('import_step').value = value;
 
+    var testSelected = GetCookie("ImportUseTest");
+    if(testSelected) {
+        $("#fromTest option[value='"+testSelected+"']").attr("selected","selected");
+        getTestCasesForImportStep();
+    }
+
     $('#ImportStepButton').hide();
     $('#ImportStepTable').fadeIn(1000);
     $('#importbutton').removeAttr('onclick').attr('onclick', attribute);
@@ -1348,10 +1354,16 @@ function getTestCasesForImportStep() {
 
     var URL = './ImportTestCase.jsp?Test=' + encodeURI(testSelected);
 
+    SetCookie("ImportUseTest",testSelected);
+    var getImportUseTestCase = GetCookie("ImportUseTestCase");
+
     var selectTestCase = document.getElementById('fromTestCase');
     if (selectTestCase !== null && selectTestCase.selectedIndex >= 0) {
         var testCaseSelected = selectTestCase.options[selectTestCase.selectedIndex].value;
         URL += '&TestCase=' + encodeURI(testCaseSelected);
+        SetCookie("ImportUseTestCase",testCaseSelected);
+    } else if(getImportUseTestCase && getImportUseTestCase != "") {
+        URL += '&TestCase=' + encodeURI(getImportUseTestCase);
     }
 
     $('#trImportTestCase').load(URL, function() {
