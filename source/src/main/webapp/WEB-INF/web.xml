@@ -542,6 +542,18 @@
         <servlet-class>org.cerberus.servlet.campaign.CampaignExecutionReport</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>CampaignExecutionReportByFunction</servlet-name>
+        <servlet-class>org.cerberus.servlet.campaign.CampaignExecutionRadarGraphByFunction</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>CampaignExecutionStatusBarGraphByFunction</servlet-name>
+        <servlet-class>org.cerberus.servlet.campaign.CampaignExecutionStatusBarGraphByFunction</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>CampaignExecutionGraphByStatus</servlet-name>
+        <servlet-class>org.cerberus.servlet.campaign.CampaignExecutionGraphByStatus</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>GetReport</servlet-name>
         <servlet-class>org.cerberus.servlet.reporting.GetReport</servlet-class>
     </servlet>
@@ -1058,6 +1070,18 @@
         <url-pattern>/CampaignExecutionReport</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
+        <servlet-name>CampaignExecutionReportByFunction</servlet-name>
+        <url-pattern>/CampaignExecutionReportByFunction</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>CampaignExecutionStatusBarGraphByFunction</servlet-name>
+        <url-pattern>/CampaignExecutionStatusBarGraphByFunction</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>CampaignExecutionGraphByStatus</servlet-name>
+        <url-pattern>/CampaignExecutionGraphByStatus</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
         <servlet-name>GetReport</servlet-name>
         <url-pattern>/GetReport</url-pattern>
     </servlet-mapping>
@@ -1420,6 +1444,10 @@
             <url-pattern>/importFile</url-pattern>
             <url-pattern>/NewRelease</url-pattern>
             <url-pattern>/TestcaseListGrid</url-pattern>
+            <url-pattern>/CampaignExecutionRadarGraphByFunction</url-pattern>
+            <url-pattern>/CampaignExecutionStatusBarGraphByFunction</url-pattern>
+            <url-pattern>/CampaignExecutionReport</url-pattern>
+            <url-pattern>/CampaignExecutionGraphByStatus</url-pattern>            
         </web-resource-collection>
     </security-constraint>
     <security-constraint>
@@ -1479,4 +1507,4 @@
     <listener>
         <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
     </listener>
-</web-app>
+    </web-app>

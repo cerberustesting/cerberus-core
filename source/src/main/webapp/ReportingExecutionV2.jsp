@@ -136,7 +136,11 @@
                         },
                         "mRender": function (data, type, full) {
                             if (data != ""){
-                                return "<a target='_blank' class='" + data.result + "F' href='ExecutionDetail.jsp?id_tc=" + data.execID + "'>" + data.result + "</a>";
+                                if (data.result === "NotExecuted"){
+                                    return "<a target='_blank' class='" + data.result + "F' href='RunTests.jsp?Test="+full[0]+"&TestCase="+full[1]+"&Country="+data.country+"'>"+data.country+"</a>";
+                                } else {
+                                    return "<a target='_blank' class='" + data.result + "F' href='ExecutionDetail.jsp?id_tc=" + data.execID + "'>" + data.result + "</a>";
+                                }
                             } else{
                                 return "";
                             }
@@ -147,6 +151,18 @@
                             if (oData[iCol-1] === "") {
                                 $(nTd).addClass('NOINF');
                             }
+                        }
+                    },
+                    {"aTargets": ['bugIDColumn'],
+                        "mRender": function (data, type, full) {
+                            var text = "";
+                            if (data.bugID != ""){
+                                text += "<a target='_blank' href='"+data.bugURL+"'>"+data.bugID+"</a> ";
+                            }
+                            if (data.targetSprint != ""){
+                                text += "for "+data.targetSprint+"/"+data.targetRevision;
+                            }
+                            return text;
                         }
                     }
                 ],
@@ -755,7 +771,7 @@
             <th rowspan="3">Priority</th>
             <th rowspan="3">Status</th>
             <th rowspan="3" id="TCComment">Comment</th>
-            <th rowspan="3">Bug ID</th>
+            <th rowspan="3" class="bugIDColumn">Bug ID</th>
             <th rowspan="3">Group</th>
         </tr>
         <tr id="tableCountry"></tr>

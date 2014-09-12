@@ -657,25 +657,31 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         query.append("SELECT * FROM testcaseexecution tce, application app WHERE tce.application = app.application ");
         query.append("AND test = ? AND testcase = ? AND country = ? AND browser = ? ");
         if (!StringUtil.isNull(environment)) {
-            query.append("AND environment IN (?) ");
+            query.append("AND environment IN (");
+            query.append(environment);
+            query.append(") ");
         }
         if (!StringUtil.isNull(build)) {
-            query.append("AND build IN (?) ");
+            query.append("AND build IN (");
+            query.append(build);
+            query.append(") ");
         }
         if (!StringUtil.isNull(revision)) {
-            query.append("AND revision IN (?) ");
+            query.append("AND revision IN (");
+            query.append(revision);
+            query.append(") ");
         }
         if (!StringUtil.isNull(browserVersion)) {
-            query.append("AND browserfullversion IN (?) ");
+            query.append("AND browserfullversion LIKE ? ");
         }
         if (!StringUtil.isNull(ip)) {
-            query.append("AND ip IN (?) ");
+            query.append("AND ip LIKE ? ");
         }
         if (!StringUtil.isNull(port)) {
-            query.append("AND port IN (?) ");
+            query.append("AND port LIKE ? ");
         }
         if (!StringUtil.isNull(tag)) {
-            query.append("AND tag IN (?) ");
+            query.append("AND tag LIKE ? ");
         }
         query.append("ORDER BY id DESC");
 
@@ -687,18 +693,6 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
             preStat.setString(3, country);
             preStat.setString(4, browser);
             int i = 5;
-            if (!StringUtil.isNull(environment)) {
-                preStat.setString(i, environment);
-                i++;
-            }
-            if (!StringUtil.isNull(build)) {
-                preStat.setString(i, build);
-                i++;
-            }
-            if (!StringUtil.isNull(revision)) {
-                preStat.setString(i, revision);
-                i++;
-            }
             if (!StringUtil.isNull(browserVersion)) {
                 preStat.setString(i, browserVersion);
                 i++;

@@ -62,7 +62,7 @@ public class GraphicHelper {
      * @param pointHighlight point highlight color of the axis
      * @return the JSON Object represent the graphic axis
      */
-    public static final JSONObject generateAxisForMultiBar(String label, int[] data, String fillColor,
+    public static final JSONObject generateAxisForMultiBar(String label, String[] data, String fillColor,
             String pointColor, String pointHighlight) {
         try {
             JSONObject jSONObject = new JSONObject();
@@ -71,7 +71,11 @@ public class GraphicHelper {
             jSONObject.put("pointColor", pointColor);
             jSONObject.put("pointHighlight", pointHighlight);
 
-            JSONArray datas = new JSONArray(data);
+            
+            JSONArray datas = new JSONArray();
+            for (String dataStr : data) {
+                datas.put(Float.parseFloat(dataStr));
+            }
             jSONObject.put("data", datas);
 
             return jSONObject;
@@ -112,6 +116,7 @@ public class GraphicHelper {
         Donut,
         Bar,
         MultiBar,
+        Radar,
         BarColor
     }
 }

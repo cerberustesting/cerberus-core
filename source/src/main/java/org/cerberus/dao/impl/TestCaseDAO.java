@@ -438,7 +438,6 @@ public class TestCaseDAO implements ITestCaseDAO {
                 .append("where cc.campaign = ? ")
             .toString();
 
-        MyLogger.log(TestCaseDAO.class.getName(), Level.ERROR, query);
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query);

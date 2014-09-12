@@ -1341,11 +1341,17 @@ function displayImportStep(attribute) {
 
     document.getElementById('import_step').value = value;
 
+    var testSelected = GetCookie("ImportUseTest");
+    if(testSelected) {
+        $("#fromTest option[value='"+testSelected+"']").attr("selected","selected");
+        getTestCasesForImportStep();
+    }
+
     $('#ImportStepButton').hide();
     $('#ImportStepTable').fadeIn(1000);
     $('#importbutton').removeAttr('onclick').attr('onclick', attribute);
     if (attribute === "useStep()"){
-    document.getElementById('import_description').style.display="inline";
+        document.getElementById('import_description').style.display="inline";
     }
 }
 
@@ -1355,10 +1361,16 @@ function getTestCasesForImportStep() {
 
     var URL = './ImportTestCase.jsp?Test=' + encodeURI(testSelected);
 
+    SetCookie("ImportUseTest",testSelected);
+    var getImportUseTestCase = GetCookie("ImportUseTestCase");
+
     var selectTestCase = document.getElementById('fromTestCase');
     if (selectTestCase !== null && selectTestCase.selectedIndex >= 0) {
         var testCaseSelected = selectTestCase.options[selectTestCase.selectedIndex].value;
         URL += '&TestCase=' + encodeURI(testCaseSelected);
+        SetCookie("ImportUseTestCase",testCaseSelected);
+    } else if(getImportUseTestCase && getImportUseTestCase != "") {
+        URL += '&TestCase=' + encodeURI(getImportUseTestCase);
     }
 
     $('#trImportTestCase').load(URL, function() {
@@ -1447,7 +1459,7 @@ function useStep() {
     urlImportStep += '&ImportProperty=' + encodeURI(importProperty);
     urlImportStep += '&Description=' + encodeURI(importDescription);
 
-    location.href = urlImportStep;
+    location.href = urlImportStep + "#useStep";
 }
 
 function submitTestCaseModification(anchor) {
@@ -2194,7 +2206,37 @@ function submitTestCaseModificationNew(anchor) {
     return false;
 }
 
-function insertAfter(newNode, referenceNode) {
-    referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
-}
+function SetCookie (name, value) {
+	var argv=SetCookie.arguments;
+	var argc=SetCookie.arguments.length;
+	var expires=(argc > 2) ? argv[2] : null;
+	var path=(argc > 3) ? argv[3] : null;
+	var domain=(argc > 4) ? argv[4] : null;
+	var secure=(argc > 5) ? argv[5] : false;
+	document.cookie=name+"="+escape(value)+
+		((expires==null) ? "" : ("; expires="+expires.toGMTString()))+
+		((path==null) ? "" : ("; path="+path))+
+		((domain==null) ? "" : ("; domain="+domain))+
+		((secure==true) ? "; secure" : "");
+};
 
+function getCookieVal(offset) {
+	var endstr=document.cookie.indexOf (";", offset);
+	if (endstr==-1)
+      		endstr=document.cookie.length;
+	return unescape(document.cookie.substring(offset, endstr));
+};
+
+function GetCookie (name) {
+	var arg=name+"=";
+	var alen=arg.length;
+	var clen=document.cookie.length;
+	var i=0;
+	while (i<clen) {
+		var j=i+alen;
+		if (document.cookie.substring(i, j)==arg)
+                        return getCookieVal (j);
+                i=document.cookie.indexOf(" ",i)+1;
+                        if (i==0) break;}
+	return null;
+};

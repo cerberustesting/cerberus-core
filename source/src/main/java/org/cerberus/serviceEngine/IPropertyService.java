@@ -38,7 +38,7 @@ import org.cerberus.exception.CerberusException;
  */
 public interface IPropertyService {
 
-    TestCaseExecutionData calculateProperty(TestCaseExecutionData testCaseExecutionData, TestCaseStepActionExecution testCaseStepActionExecution, TestCaseCountryProperties testCaseCountryProperty);
+    TestCaseExecutionData calculateProperty(TestCaseExecutionData testCaseExecutionData, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseCountryProperty);
     
     String decodeValue(String myString, List<TestCaseExecutionData> properties, TestCaseExecution tCExecution);
     

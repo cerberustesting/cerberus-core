@@ -1,15 +1,14 @@
 package org.cerberus.servlet.reporting;
 
 import org.apache.log4j.Logger;
+import org.cerberus.entity.Application;
 import org.cerberus.entity.Invariant;
 import org.cerberus.entity.TCase;
 import org.cerberus.entity.TestCaseExecution;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.factory.IFactoryTCase;
 import org.cerberus.factory.impl.FactoryTCase;
-import org.cerberus.service.IInvariantService;
-import org.cerberus.service.ITestCaseExecutionService;
-import org.cerberus.service.ITestCaseService;
+import org.cerberus.service.*;
 import org.cerberus.util.StringUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -44,12 +43,16 @@ public class GetReport extends HttpServlet {
     private static final Logger LOG = Logger.getLogger(GetReport.class);
 
     private ITestCaseExecutionService testCaseExecutionService;
+    private ITestCaseCountryService testCaseCountryService;
+    private IApplicationService applicationService;
 
     @Override
     public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         ApplicationContext applicationContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         ITestCaseService testCaseService = applicationContext.getBean(ITestCaseService.class);
         this.testCaseExecutionService = applicationContext.getBean(ITestCaseExecutionService.class);
+        this.testCaseCountryService = applicationContext.getBean(ITestCaseCountryService.class);
+        this.applicationService = applicationContext.getBean(IApplicationService.class);
         IInvariantService invariantService = applicationContext.getBean(IInvariantService.class);
 
         //Get all input parameters from user form
@@ -350,7 +353,19 @@ public class GetReport extends HttpServlet {
                         status.put(tce.getControlStatus(), status.get(tce.getControlStatus()) + 1);
                         //add 1 to Test/Country/Browser/Total counter
                         statusTotal.put(tce.getControlStatus(), statusTotal.get(tce.getControlStatus()) + 1);
-                    } else {
+                    } else try {
+                        //test if TestCase can run for the country
+                        if (testCaseCountryService.findTestCaseCountryByKey(tc.getTest(), tc.getTestCase(), country) != null) {
+                            JSONObject obj = new JSONObject();
+                            obj.put("result", "NotExecuted");
+                            obj.put("country", country);
+                            array.put(obj);
+                            array.put("");
+                        } else {
+                            array.put("");
+                            array.put("");
+                        }
+                    } catch (CerberusException ex) {
                         array.put("");
                         array.put("");
                     }
@@ -362,7 +377,21 @@ public class GetReport extends HttpServlet {
             }
 
             array.put(tc.getComment());
-            array.put(tc.getBugID() + "for " + tc.getTargetSprint() + "/" + tc.getTargetRevision());
+            JSONObject obj = new JSONObject();
+            obj.put("bugID", tc.getBugID());
+            if (!StringUtil.isNull(tc.getBugID())) {
+                try {
+                    //get the url from application service
+                    Application app = this.applicationService.findApplicationByKey(tc.getApplication());
+                    obj.put("bugURL", app.getBugTrackerUrl().replace("%BUGID%", tc.getBugID()));
+                } catch (CerberusException e) {
+                    LOG.error("Unable to find Application", e);
+                    obj.put("bugURL", "");
+                }
+            }
+            obj.put("targetSprint", tc.getTargetSprint());
+            obj.put("targetRevision", tc.getTargetRevision());
+            array.put(obj);
             array.put(tc.getGroup());
             //add line to detail table
             data.put(array);

@@ -90,9 +90,14 @@
                 $('.functional_description').toggleClass('only_functional_description_size');
                 $('.functional_description_control').toggleClass('only_functional_description_control_size');
                 $('.technical_part').toggleClass('only_functional');
+                SetCookie("displayOnlyFunctional",(displayOnlyFunctional ? "TRUE" : "FALSE"));
             }
 
-            $().ready(function() {
+            $(document).ready(function() {
+                if("TRUE" == GetCookie("displayOnlyFunctional")) {
+                    showOnlyFunctional();
+                };
+
                 elRTE.prototype.options.toolbars.cerberus = ['style', 'alignment', 'colors', 'images', 'format', 'indent', 'lists', 'links'];
                 var opts = {
                     lang: 'en',
@@ -1381,6 +1386,7 @@
                                 </td></tr></table>
                                 <%  if (canEdit) {%>
                         <div id="hide_div"></div>
+                        <a name="useStep"></a>
                         <table style="width: 100%"><tr><td id="wob"><input type="button" value="Add Step" id="AddStepButton" style="display:inline"
                                                                            onclick="addStep('hide_div', <%=testcase_step_maxlength_desc%>);
                                                                                    enableField('submitButtonAction');

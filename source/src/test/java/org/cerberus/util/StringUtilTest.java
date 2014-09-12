@@ -1,5 +1,9 @@
 package org.cerberus.util;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import junit.framework.Assert;
 
 import org.junit.Test;
@@ -60,6 +64,14 @@ public class StringUtilTest {
         secondResult = StringUtil.getRandomString(length, charset);
         
         Assert.assertNotSame(firstResult, secondResult);  
+    }
+    
+    @Test
+    public void testGetAllProperties() {
+        List<String> properties = StringUtil.getAllProperties("A%B%%C%D");
+        Assert.assertEquals(2, properties.size());
+        Assert.assertEquals("B", properties.get(0));
+        Assert.assertEquals("C", properties.get(1));
     }
     
 }
