@@ -1,0 +1,9 @@
+*.class
+
+# Package Files #
+*.jar
+*.ear
+.directory
+*~
+*.bak
+/source/target/
