@@ -58,38 +58,46 @@ public class AddTestBatteryContent extends HttpServlet {
         String jsonResponse = "-1";
         String testbattery = policy.sanitize(request.getParameter("TestBattery"));
         String testBatteryName;
-        try {
-            testBatteryName = testBatteryService.findTestBatteryByKey(Integer.parseInt(testbattery)).getTestbattery();
-        } catch (CerberusException ex) {
-            MyLogger.log(AddTestBatteryContent.class.getName(), Level.DEBUG, ex.getMessage());
-            testBatteryName = null;
-        }
+        
+        
+        String[] testcasesselected = request.getParameterValues("testcaseselected");
+        
+        if(testcasesselected == null) {
+            response.setStatus(404);
+            jsonResponse = "Please select at least one testcase !";
+        } else {
+            try {
+                testBatteryName = testBatteryService.findTestBatteryByKey(Integer.parseInt(testbattery)).getTestbattery();
+            } catch (CerberusException ex) {
+                MyLogger.log(AddTestBatteryContent.class.getName(), Level.DEBUG, ex.getMessage());
+                testBatteryName = null;
+            }
 
-        if (testBatteryName != null) {
-            String test;
-            String testcase;
-            String[] testcasesselected = request.getParameterValues("testcaseselected");
+            if (testBatteryName != null) {
+                String test;
+                String testcase;
 
 
-            // response.setContentType("text/html");
-            for (String testcaseselect : testcasesselected) {
-                test = policy.sanitize(URLDecoder.decode(testcaseselect.split("Test=")[1].split("&TestCase=")[0], "UTF-8"));
-                testcase = policy.sanitize(URLDecoder.decode(testcaseselect.split("&TestCase=")[1], "UTF-8"));
-                try {
+                // response.setContentType("text/html");
+                for (String testcaseselect : testcasesselected) {
+                    test = policy.sanitize(URLDecoder.decode(testcaseselect.split("Test=")[1].split("&TestCase=")[0], "UTF-8"));
+                    testcase = policy.sanitize(URLDecoder.decode(testcaseselect.split("&TestCase=")[1], "UTF-8"));
+                    try {
 
-                    testBatteryService.createTestBatteryContent(factoryTestBatteryContent.create(null, test, testcase, testBatteryName));
-                    List<TestBatteryContent> batteryContent = testBatteryService.findTestBatteryContentsByCriteria(null, testBatteryName, test, testcase);
+                        testBatteryService.createTestBatteryContent(factoryTestBatteryContent.create(null, test, testcase, testBatteryName));
+                        List<TestBatteryContent> batteryContent = testBatteryService.findTestBatteryContentsByCriteria(null, testBatteryName, test, testcase);
 
-                    if (batteryContent != null && batteryContent.size() == 1) {
-                        String newTestBatteryContentId = String.valueOf(
-                                testBatteryService.findTestBatteryContentsByCriteria(null, testBatteryName, test, testcase)
-                                .get(0).getTestbatterycontentID()
-                        );
-                        jsonResponse = newTestBatteryContentId;
+                        if (batteryContent != null && batteryContent.size() == 1) {
+                            String newTestBatteryContentId = String.valueOf(
+                                    testBatteryService.findTestBatteryContentsByCriteria(null, testBatteryName, test, testcase)
+                                    .get(0).getTestbatterycontentID()
+                            );
+                            jsonResponse = newTestBatteryContentId;
+                        }
+                    } catch (CerberusException ex) {
+                        MyLogger.log(AddTestBatteryContent.class.getName(), Level.DEBUG, ex.getMessage());
+                        jsonResponse = "-1";
                     }
-                } catch (CerberusException ex) {
-                    MyLogger.log(AddTestBatteryContent.class.getName(), Level.DEBUG, ex.getMessage());
-                    jsonResponse = "-1";
                 }
             }
         }
