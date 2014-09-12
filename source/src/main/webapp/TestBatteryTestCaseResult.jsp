@@ -195,8 +195,10 @@
     </table>
     <button type="submit" id="submit" name="submit">Add Test Cases</button>
     <script>
+        var isSelectedAll = false;
         function selectAll(){
-            $('input.selecttestcase').prop('checked',!$('input.selecttestcase').prop('checked'));
+            isSelectedAll = !isSelectedAll;
+            $('input.selecttestcase').prop('checked',isSelectedAll);
         }
         
         // prepare all forms for ajax submission
