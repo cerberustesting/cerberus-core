@@ -12,6 +12,10 @@ body {
     font-size: 70%;
     font-family: helvetica;
 }
+/*div{
+    border-style:solid;
+    border-width:thin;
+}*/
 input{
     font-size:80%;
 }
@@ -168,7 +172,7 @@ table#arrond {
     border-width: 2px;
     border-color: #8999c4;
     -moz-border-radius: 5px;
-    width : 1260px;
+    width : 100%;
 }
 .contour {
     background-color:#e1e7f3;
