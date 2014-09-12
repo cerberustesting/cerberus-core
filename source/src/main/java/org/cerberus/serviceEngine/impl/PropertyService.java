@@ -71,23 +71,25 @@ public class PropertyService implements IPropertyService {
     private ISQLService sQLService;
     @Autowired
     private IXmlUnitService xmlUnitService;
-    
+
     @Override
-    public TestCaseExecutionData calculateProperty(TestCaseExecutionData testCaseExecutionData, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseCountryProperty) {
+    public TestCaseExecutionData calculateProperty(TestCaseExecutionData testCaseExecutionData, TestCaseStepActionExecution testCaseStepActionExecution, TestCaseCountryProperties testCaseCountryProperty) {
         testCaseExecutionData.setStart(new Date().getTime());
         MessageEvent res;
+
+        TestCaseExecution tCExecution = testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution();
 
         /**
          * Decode Property replacing properties encaplsulated with %
          */
         if (testCaseCountryProperty.getValue1().contains("%")) {
-            String decodedValue = this.decodeValue(testCaseCountryProperty.getValue1(), tCExecution.getTestCaseExecutionDataList(), tCExecution);
+            String decodedValue = this.decodeValue(testCaseCountryProperty.getValue1(), testCaseStepActionExecution.getTestCaseExecutionDataList(), tCExecution);
             testCaseExecutionData.setValue(decodedValue);
             testCaseExecutionData.setValue1(decodedValue);
             testCaseCountryProperty.setValue1(decodedValue);
         }
         if (testCaseCountryProperty.getValue2() != null && testCaseCountryProperty.getValue2().contains("%")) {
-            String decodedValue = this.decodeValue(testCaseCountryProperty.getValue2(), tCExecution.getTestCaseExecutionDataList(), tCExecution);
+            String decodedValue = this.decodeValue(testCaseCountryProperty.getValue2(), testCaseStepActionExecution.getTestCaseExecutionDataList(), tCExecution);
             testCaseExecutionData.setValue2(decodedValue);
             testCaseCountryProperty.setValue2(decodedValue);
         }
