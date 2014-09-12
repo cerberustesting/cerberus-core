@@ -258,7 +258,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
          * For the list of testcasestep verify it exists. If it does not exists
          * > create it If it exist, verify if it's the
          */
-        List<TestCaseStepAction> tcsaFromPage = getTestCaseStepActionFromParameter(request, appContext, test, testCase);
+        List<TestCaseStepAction> tcsaFromPage = getTestCaseStepActionFromParameter(request, appContext, test, testCase, "");
         List<TestCaseStepAction> tcsaFromDtb = tcsaService.findTestCaseStepActionbyTestTestCase(initialTest, initialTestCase);
 
         /**
@@ -274,6 +274,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
         for (TestCaseStepAction tcsaDifference : tcsaToUpdateOrInsertToIterate) {
             for (TestCaseStepAction tcsaInDatabase : tcsaFromDtb) {
                 if (tcsaDifference.hasSameKey(tcsaInDatabase)) {
+                    System.out.print("Upd"+tcsaDifference.toString());
                     tcsaService.updateTestCaseStepAction(tcsaDifference);
                     tcsaToUpdateOrInsert.remove(tcsaDifference);
                 }
@@ -291,8 +292,10 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
         List<TestCaseStepAction> tcsaToDeleteToIterate = new ArrayList(tcsaToDelete);
 
         for (TestCaseStepAction tcsaDifference : tcsaToDeleteToIterate) {
+            System.out.print("ToDlt"+tcsaDifference.toString());
             for (TestCaseStepAction tcsaInPage : tcsaFromPage) {
                 if (tcsaDifference.hasSameKey(tcsaInPage)) {
+                    System.out.print("Dlt"+tcsaDifference.toString());
                     tcsaToDelete.remove(tcsaDifference);
                 }
             }
@@ -470,29 +473,32 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
                 String useStepTestCase = getParameterIfExists(request, "step_useStepTestCase_" + inc);
                 int useStepStep = Integer.valueOf(getParameterIfExists(request, "step_useStepStep_" + inc) == null ? "0" : getParameterIfExists(request, "step_useStepStep_" + inc));
                 if (delete == null) {
-                    testCaseStep.add(testCaseStepFactory.create(test, testCase, step, desc, useStep, useStepTest, useStepTestCase, useStepStep));
+                    TestCaseStep tcStep = testCaseStepFactory.create(test, testCase, step, desc, useStep, useStepTest, useStepTestCase, useStepStep);
+                    tcStep.setTestCaseStepAction(getTestCaseStepActionFromParameter(request, appContext, test, testCase, inc));
+                    testCaseStep.add(tcStep);
                 }
             }
         }
         return testCaseStep;
     }
 
-    private List<TestCaseStepAction> getTestCaseStepActionFromParameter(HttpServletRequest request, ApplicationContext appContext, String test, String testCase) {
+    private List<TestCaseStepAction> getTestCaseStepActionFromParameter(HttpServletRequest request, ApplicationContext appContext, String test, String testCase, String stepInc) {
         List<TestCaseStepAction> testCaseStepAction = new ArrayList();
         String[] stepAction_increment = getParameterValuesIfExists(request, "action_increment");
         IFactoryTestCaseStepAction testCaseStepActionFactory = appContext.getBean(IFactoryTestCaseStepAction.class);
         if (stepAction_increment != null) {
             for (String inc : stepAction_increment) {
-                String delete = getParameterIfExists(request, "action_delete_" + inc);
-                int step = Integer.valueOf(getParameterIfExists(request, "action_step_" + inc));
-                int sequence = Integer.valueOf(getParameterIfExists(request, "action_sequence_" + inc));
-                String action = getParameterIfExists(request, "action_action_" + inc);
-                String object = getParameterIfExists(request, "action_object_" + inc);
-                String property = getParameterIfExists(request, "action_property_" + inc);
-                String description = getParameterIfExists(request, "action_description_" + inc);
+                String delete = getParameterIfExists(request, "action_delete_" + stepInc + inc);
+                int step = Integer.valueOf(getParameterIfExists(request, "action_step_" + stepInc + inc) == null ? "0" : getParameterIfExists(request, "action_step_" + stepInc + inc));
+                int sequence = Integer.valueOf(getParameterIfExists(request, "action_sequence_" + stepInc + inc) == null ? "0" : getParameterIfExists(request, "action_sequence_" + stepInc + inc));
+                String action = getParameterIfExists(request, "action_action_" + stepInc + inc);
+                String object = getParameterIfExists(request, "action_object_" + stepInc + inc);
+                String property = getParameterIfExists(request, "action_property_" + stepInc + inc);
+                String description = getParameterIfExists(request, "action_description_" + stepInc + inc);
                 if (delete == null) {
                     TestCaseStepAction tcsa = testCaseStepActionFactory.create(test, testCase, step, sequence, action, object, property, description);
                     testCaseStepAction.add(tcsa);
+                    System.out.print("FromPage"+tcsa.toString());
                 }
             }
         }
@@ -506,9 +512,9 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
         if (stepActionControl_increment != null) {
             for (String inc : stepActionControl_increment) {
                 String delete = getParameterIfExists(request, "control_delete_" + inc);
-                int step = Integer.valueOf(getParameterIfExists(request, "control_step_" + inc));
-                int sequence = Integer.valueOf(getParameterIfExists(request, "control_sequence_" + inc));
-                int control = Integer.valueOf(getParameterIfExists(request, "control_control_" + inc));
+                int step = Integer.valueOf(getParameterIfExists(request, "control_step_" + inc) == null ? "0" : getParameterIfExists(request, "control_step_" + inc));
+                int sequence = Integer.valueOf(getParameterIfExists(request, "control_sequence_" + inc) == null ? "0" : getParameterIfExists(request, "control_sequence_" + inc));
+                int control = Integer.valueOf(getParameterIfExists(request, "control_control_" + inc) == null ? "0" : getParameterIfExists(request, "control_control_" + inc));
                 String type = getParameterIfExists(request, "control_type_" + inc);
                 String controlValue = getParameterIfExists(request, "control_value_" + inc);
                 String controlProperty = getParameterIfExists(request, "control_property_" + inc);
