@@ -80,7 +80,6 @@
             function showOnlyFunctional() {
                 displayOnlyFunctional = !displayOnlyFunctional;
                 $('.functional_description').toggleClass('only_functional_description_size');
-                $('.functional_description_control').toggleClass('only_functional_description_control_size');
                 $('.technical_part').toggleClass('only_functional');
             }
 
@@ -139,18 +138,52 @@
         </script>
         <style>
             .only_functional {
-                display: none;
+                font-weight:bold;
+                font-size:15px ;
             }
 
             .only_functional_description_size {
-                width: 864px;
+                font-weight:normal;
+                font-size:8px ;
             }
-
-            .only_functional_description_control_size {
-                width: 787px;
-            }
+            
 
         </style>
+        <style>
+            .RowActionDiv{
+                display:inline-block;
+                background-color: white;
+            }
+            .RowActionDiv :hover{
+                display:inline-block;
+                background-color: #EEEEEE;
+            }
+            .RowActionDiv :focus{
+                display:inline-block;
+                background-color: #EEEEEE;
+            }
+            .StepHeaderDiv {
+               width:100%;
+               height:40px;
+               clear:both;
+               display:inline-block;
+               border-top-style: solid;
+               border-left-style: solid;
+               border-right-style: solid;
+               border-width:thin;
+               background-image: -moz-linear-gradient(top, #ebebeb, #CCCCCC); 
+                background-image: -webkit-linear-gradient(top, #ebebeb, #CCCCCC); 
+                font-weight:bold;
+                font-family: Trebuchet MS;
+                color:#555555;
+                text-align: center; 
+               
+            }
+            .StepHeaderContent {
+               margin-top:15px; 
+            }
+        </style>
+
     </head>
     <body>
         <%@ include file="include/function.jsp" %>
@@ -645,605 +678,572 @@
                     int j = 1;
                     int rowNumber = 0;
                 %>
-                <table id="propertytable" class="arrond" style="display : table">
-                    <tr>
-                        <td id="wob">
-                            <h3>TestCase Automation Script</h3>
-                        </td>
-                        <td id="wob">
+                <div id="AutomationScriptDiv" class="arrond" style="display : table">
+                    <div id="AutomationScriptFirstLine" style="clear:both">
+                        <div id="AutomationScriptFunctionalButtonDiv" style="float:left">
                             <input id="button3" style="height:18px; width:10px" type="button" value="F" onclick="javascript:showOnlyFunctional();">
-                        </td>
-                    </tr>
-                    <tr>
-                        <td id="wob">
+                        </div>
+                        <div id="AutomationScriptTitle" style="float:left">
+                            <h3>TestCase Automation Script</h3>
+                        </div>
+                    </div>
+                    <div id="StepsMainDiv" style="width:100%;clear:both">
+                        <div id="StepsTitle" style="clear:both">
                             <h4>Steps</h4>
-                            <table>
-                                <tr>
-                                    <td id="wob" style="width:10px"></td>
-                                    <td id="leftlined">
-                                        <%
-                                            int incrementStep = 0;
-                                            List<TestCaseStep> tcsList = tcsService.getListOfSteps(test, testcase);
-                                            for (TestCaseStep tcs : tcsList) {
-                                                incrementStep++;
-                                        %>
-                                        <table style="text-align: left; border-collapse: collapse">
-                                            <tr>
-                                                <td id="wob" style="width: 30px; text-align: center; height:20px">
-                                                    <a name="stepAnchor_<%=incrementStep%>"></a>
-                                                    <input type="checkbox" name="step_delete_<%=incrementStep%>" style="font-weight: bold; width:20px"
-                                                           value="<%=tcs.getStep()%>">
-                                                    <input type="hidden" name="step_increment" value="<%=incrementStep%>">
-                                                    <input id="incrementStepNumber" value="<%=incrementStep%>" type="hidden">
-                                                                            
-                                                </td>
-                                                <td id="wob">
-                                                    &nbsp;&nbsp;Step&nbsp;&nbsp;
-                                                    <input value="<%=tcs.getStep()%>" name="step_number_<%=incrementStep%>" style="font-weight: bold; width:20px">
-                                                    <input type="hidden" name="initial_step_number_<%=incrementStep%>" value="<%=tcs.getStep()%>">
-                                                </td>
-                                                <td id="wob">
-                                                    <input style="font-weight: bold; width: 500px" name="step_description_<%=incrementStep%>" value="<%=tcs.getDescription()%>">
-                                                </td> 
-                                                <% if (tcs.getUseStep().equals("Y")) {%>
-                                                <td class="wob">
-                                                    <span> Copied from : </span>
-                                                </td>
-                                                <td id="wob">
-                                                    <input  size="100%" style="font-weight: bold; width: 200px" name="step_useStepTest_<%=incrementStep%>"
-                                                            value="<%=tcs.getUseStepTest()%>">
-                                                </td>
-                                                <td id="wob">
-                                                    <input size="100%" style="font-weight: bold; width: 50px" name="step_useStepTestCase_<%=incrementStep%>"
-                                                           value="<%=tcs.getUseStepTestCase()%>">
-                                                </td>
-                                                <td id="wob">
-                                                    <input size="100%" style="font-weight: bold; width: 50px" name="step_useStepStep_<%=incrementStep%>"
-                                                           value="<%=tcs.getUseStepStep()%>">
-                                                </td>
-                                                <td class="wob">
-                                                    <a href="TestCase.jsp?Test=<%=tcs.getUseStepTest()%>&TestCase=<%=tcs.getUseStepTestCase()%>">Edit Used Step</a>
-                                                </td>
-                                                <%}%>
-                                            </tr>
-                                        </table>
-                                        <table>
-                                            <tr>
-                                                <td id="wob" style="width:10px"></td>
-                                                <td id="leftlined"></td>
-                                                <td id="wob">
-                                                    <table>
-                                                        <tr>
-                                                            <td class="wob">
-                                                                <h5>Actions</h5>
-                                                                <%
-                                                                    String testForQuery = "";
-                                                                    String testcaseForQuery = "";
-                                                                    int stepForQuery = 0;
-                                                                    String isReadonly = "";
-                                                                    boolean useStep = false;
-                                                                    String complementName = "";
-
-                                                                    if (!tcs.getUseStep().equals("Y")) {
-                                                                        testForQuery = tcs.getTest();
-                                                                        testcaseForQuery = tcs.getTestCase();
-                                                                        stepForQuery = tcs.getStep();
-                                                                    } else {
-                                                                        testForQuery = tcs.getUseStepTest();
-                                                                        testcaseForQuery = tcs.getUseStepTestCase();
-                                                                        stepForQuery = tcs.getUseStepStep();
-                                                                        isReadonly = "readonly";
-                                                                        useStep = true;
-                                                                        complementName = "Block";
-                                                                    }
-                                                                    List<TestCaseStepAction> tcsaList = tcsaService.getListOfAction(testForQuery, testcaseForQuery, stepForQuery);
-                                                                %>
-                                                                <table id="Action<%=tcs.getStep()%>" style="text-align: left; border-collapse: collapse" >
-                                                                    <tr id="header">
-                                                                        <td style="width: 30px"><%out.print(docService.findLabelHTML("page_testcase", "delete", "Delete"));%></td>
-                                                                        <td style="width: 60px"><%out.print(docService.findLabelHTML("testcasestepaction", "sequence", "Sequence"));%></td>
-                                                                        <td style="width: 136px"><%out.print(docService.findLabelHTML("testcasestepaction", "action", "Action"));%></td>
-                                                                        <td class="technical_part" style="width: 350px"><%out.print(docService.findLabelHTML("testcasestepaction", "object", "Object"));%></td>
-                                                                        <td class="technical_part" style="width: 210px"><%out.print(docService.findLabelHTML("testcasestepaction", "property", "Property"));%></td>
-                                                                        <td class="functional_description" style="width: 296px"><%out.print(docService.findLabelHTML("testcasestepaction", "description", "Description"));%></td>
-                                                                    </tr>
-                                                                    <%
-                                                                        String actionColor = "";
-                                                                        String actionFontColor = "black";
-                                                                        int incrementAction = 0;
-                                                                        for (TestCaseStepAction tcsa : tcsaList) {
-
-                                                                            incrementAction++;
-                                                                            int b;
-                                                                            b = incrementAction % 2;
-                                                                            if (b != 1) {
-                                                                                actionColor = "#f3f6fa";
-                                                                            } else {
-                                                                                actionColor = "White";
-                                                                            }
-                                                                            if (useStep) {
-                                                                                actionColor = "#DCDCDC";
-                                                                                actionFontColor = "grey";
-                                                                            }
-                                                                    %>
-                                                                    <tr>
-                                                                        <td style="background-color: <%=actionColor%>">
-                                                                            <input  class="wob" type="checkbox" name="action_delete_<%=incrementAction%>" style="width: 30px; background-color: <%=actionColor%>"
-                                                                                    value="<%=tcsa.getStep() + "-" + tcsa.getSequence()%>" <%=isReadonly%>>
-                                                                            <input type="hidden" name="action_increment" value="<%=incrementAction%>" >
-                                                                            <input type="hidden" name="action_step_<%=incrementAction%>" value="<%=tcsa.getStep()%>" >
-                                                                        </td>
-                                                                        <td style="background-color: <%=actionColor%>">
-                                                                            <input class="wob" style="width: 60px; font-weight: bold; background-color: <%=actionColor%>; height:20px; color:<%=actionFontColor%>"
-                                                                                   value="<%=tcsa.getSequence()%>"
-                                                                                   name="action_sequence_<%=incrementAction%>" id="action_sequence_<%=incrementAction%>">
-                                                                        </td>
-                                                                        <td style="background-color: <%=actionColor%>"><%=ComboInvariant(appContext, "action_action_" + incrementAction, "width: 136px; background-color:" + actionColor + ";color:" + actionFontColor, "action_action_" + incrementAction, "wob", "ACTION", tcsa.getAction(), "trackChanges(0, this.selectedIndex, 'submitButtonAction')", null)%>
-                                                                        </td>
-                                                                        <td class="technical_part" style="background-color: <%=actionColor%>">
-                                                                            <input class="wob" style="width: 350px; background-color: <%=actionColor%>; color:<%=actionFontColor%>"
-                                                                                   value="<%=tcsa.getObject()%>"
-                                                                                   name="action_object_<%=incrementAction%>" <%=isReadonly%>>
-                                                                        </td>
-                                                                        <td class="technical_part" style="background-color: <%=actionColor%>">
-                                                                            <input  class="wob property_value" style="width: 210px; background-color: <%=actionColor%>; color:<%=actionFontColor%>"
-                                                                                    value="<%=tcsa.getProperty()%>"
-                                                                                    <%
-                                                                                        if (useStep) {
-                                                                                    %>
-                                                                                    data-usestep-test="<%=testForQuery%>"
-                                                                                    data-usestep-testcase="<%=testcaseForQuery%>"
-                                                                                    data-usestep-step="<%=stepForQuery%>"
-                                                                                    <%
-                                                                                        }
-
-                                                                                    %>
-                                                                                    name="action_property_<%=incrementAction%>" <%=isReadonly%>>
-                                                                        </td>
-                                                                        <td class="functional_description" style="background-color: <%=actionColor%>">
-                                                                            <input class="wob" class="functional_description" style="width: 100%; background-color: <%=actionColor%>; color:<%=actionFontColor%>"
-                                                                                   value="<%=tcsa.getDescription()%>"
-                                                                                   name="action_description_<%=incrementAction%>" <%=isReadonly%>
-                                                                                   maxlength="1000">
-                                                                        </td>
-                                                                    </tr>
-                                                                    <%} /*
-                                                                         * End actions loop
-                                                                         */%>
-                                                                </table>
-                                                                <%  if (canEdit) {%>
-                                                                         
-                                                                <table>
-                                                                    <tr>
-                                                                        <%if(!useStep){%>
-                                                                        <td id="wob">
-                                                                            <input id="incrementActionNumber" value="<%=incrementAction%>" type="hidden">
-                                                                            <input type="button" value="Add Action"
-                                                                                   onclick="addTestCaseActionNew('Action<%=tcs.getStep()%>', '<%=tcs.getStep()%>');
-                                                                                           enableField('submitButtonAction');">
-                                                                            <%=ComboInvariant(appContext, "action_action_temp" , "width: 136px; display:none", "action_action_temp", "wob", "ACTION", null, "", null)%>
-                                                                        
-                                                                        <td id="wob">
-                                                                            <input type="button" value="import HTML Scenario" onclick="importer('ImportHTML.jsp?Test=<%=test%>&Testcase=<%=testcase%>&Step=<%=tcs.getStep()%>')">
-                                                                        </td>
-                                                                        <%}%>
-                                                                        <td id="wob">
-                                                                            <input value="Save Changes" onclick="submitTestCaseModificationNew('stepAnchor_<%=incrementAction%>');" id="submitButtonAction" name="submitChanges"
-                                                                                   type="button" >
-                                                                            <%=ComboInvariant(appContext, "actions_action_", "width: 150px;visibility:hidden", "actions_action_", "actions_action_", "ACTION", "", "", null)%>
-                                                                        </td>
-                                                                    </tr>
-                                                                </table>
-                                                                        <%}%>
-                                                            </td>
-                                                        </tr>
-                                                        <% 
-                                                            List<TestCaseStepActionControl> tcsacList = tcsacService.findControlByTestTestCaseStep(testForQuery, testcaseForQuery, stepForQuery);
-                                                        %>
-                                                        <tr>
-                                                            <td class="wob">
-                                                                <div id="table">
-                                                                    <h5>         Controls</h5>
-                                                                    <table>
-                                                                        <tr>
-                                                                            <td id="underlined">
-                                                                                <table id="control_table<%=tcs.getStep()%>" style="text-align: left; border-collapse: collapse">
-                                                                                    <tbody>
-                                                                                        <tr id="header">
-                                                                                            <td style="width: 30px"><%out.print(docService.findLabelHTML("page_testcase", "delete", "Delete"));%></td>
-                                                                                            <td style="width: 60px"><%out.print(docService.findLabelHTML("testcasestepactioncontrol", "sequence", "Sequence"));%></td>
-                                                                                            <td style="width: 60px"><%out.print(docService.findLabelHTML("testcasestepactioncontrol", "control", "Control"));%></td>
-                                                                                            <td style="width: 150px"><%out.print(docService.findLabelHTML("testcasestepactioncontrol", "type", "Type"));%></td>
-                                                                                            <td class="technical_part" style="width: 260px"><%out.print(docService.findLabelHTML("testcasestepactioncontrol", "ControleProperty", "Control Property"));%></td>
-                                                                                            <td class="technical_part" style="width: 180px"><%out.print(docService.findLabelHTML("testcasestepactioncontrol", "ControleValue", "Control Value"));%></td>
-                                                                                            <td class="technical_part" style="width: 40px"><%out.print(docService.findLabelHTML("testcasestepactioncontrol", "Fatal", "Fatal"));%></td>
-                                                                                            <td class="functional_description" style="width: 296px"><%out.print(docService.findLabelHTML("testcasestepactioncontrol", "ControleDescription", "Control Description"));%></td>
-                                                                                        </tr>
-                                                                                        <%
-                                                                                            int incrementControl = 0;
-                                                                                            String controlColor = "white";
-                                                                                            for (TestCaseStepActionControl tcsac : tcsacList) {
-                                                                                                incrementControl++;
-                                                                                                int e;
-                                                                                                e = incrementControl % 2;
-                                                                                                if (e != 1) {
-                                                                                                    controlColor = "#f3f6fa";
-                                                                                                } else {
-                                                                                                    controlColor = "White";
-                                                                                                }
-
-                                                                                                if (useStep) {
-                                                                                                    controlColor = "#DCDCDC";
-                                                                                                }
-                                                                                        %>
-                                                                                        <tr>
-                                                                                            <td style="text-align: center; background-color: <%=controlColor%>; color:<%=actionFontColor%>" 
-                                                                                                class="controls_<%=tcsac.getStep() + '-'
-                                                                                                        + tcsac.getSequence()%>">
-                                                                                                <%  if (canEdit) {%>
-                                                                                                <input class="wob" type="checkbox" name="controls_delete_<%=incrementControl%>" 
-                                                                                                       value="<%=tcsac.getStep() + '-' + tcsac.getSequence() + '-' + tcsac.getControl()%>">
-                                                                                                <% }%>
-                                                                                                <input type="hidden" value="<%=incrementControl%>" name="control_increment">
-                                                                                                <input type="hidden" value="<%=tcsac.getStep()%>" name="control_step_<%=incrementControl%>">
-                                                                                            </td>
-                                                                                            <td style="background-color: <%=controlColor%>;height:20px">
-                                                                                                <input class="wob" style="width: 60px; font-weight: bold;background-color: <%=controlColor%>; color:<%=actionFontColor%>"
-                                                                                                       value="<%=tcsac.getSequence()%>" name="control_sequence_<%=incrementControl%>" name="control_<%=tcsac.getSequence()%>" readonly="readonly">
-                                                                                            </td>
-                                                                                            <td style="background-color: <%=controlColor%>">
-                                                                                                <input class="wob" style="width: 60px; font-weight: bold;background-color: <%=controlColor%>; color:<%=actionFontColor%>"
-                                                                                                       value="<%=tcsac.getControl()%>" name="control_control_<%=incrementControl%>" readonly="readonly">
-                                                                                            </td>
-                                                                                            <td style="background-color: <%=controlColor%>"><%=ComboInvariant(appContext, "control_type_" + incrementControl, "width: 150px; background-color:" + controlColor + ";color:" + actionFontColor, "control_type_" + incrementControl, "wob", "CONTROL", tcsac.getType(), "trackChanges(this.value, '" + tcsac.getType() + "', 'submitButtonChanges')", null)%>
-                                                                                            </td>
-                                                                                            <td class="technical_part" style="background-color: <%=controlColor%>">
-                                                                                                <input class="wob" style="width: 260px;background-color: <%=controlColor%>; color:<%=actionFontColor%>"
-                                                                                                       value="<%=tcsac.getControlProperty()%>" name="control_property_<%=incrementControl%>">
-                                                                                            </td>
-                                                                                            <td class="technical_part" style="background-color: <%=controlColor%>">
-                                                                                                <input class="wob" style="width: 180px;background-color: <%=controlColor%>; color:<%=actionFontColor%>"
-                                                                                                       value="<%=tcsac.getControlValue()%>" name="control_value_<%=incrementControl%>">
-                                                                                            </td>
-                                                                                            <td class="technical_part" style="background-color: <%=controlColor%>"><%=ComboInvariant(appContext, "controls_fatal_" + incrementControl, "width: 40px; background-color:" + controlColor + ";color:" + actionFontColor, "controls_fatal_" + incrementControl, "wob", "CTRLFATAL", tcsac.getFatal(), "trackChanges(this.value, '" + tcsac.getFatal() + "', 'submitButtonChanges')", null)%>
-                                                                                            </td>
-                                                                                            <td class="functional_description_control" style="background-color: <%=controlColor%>">
-                                                                                                <input class="wob" class="functional_description_control" style="width: 100%;background-color: <%=controlColor%>; color:<%=actionFontColor%>"
-                                                                                                       value="<%=tcsac.getDescription()%>" name="control_description_<%=incrementControl%>" maxlength="1000">
-                                                                                            </td>
-                                                                                        </tr>
-                                                                                    </tbody>
-                                                                                    <% /**
-                                                                                             * //
-                                                                                             * End
-                                                                                             * of
-                                                                                             * control
-                                                                                             * loop
-                                                                                             */
-                                                                                        } %>
-                                                                                </table>
-                                                                                <%=ComboInvariant(appContext, "controls_type_", "width: 200px;visibility:hidden", "controls_type_", "controls_type_", "CONTROL", "", "", null)%>
-                                                                                <%=ComboInvariant(appContext, "controls_fatal_", "width: 40px;visibility:hidden", "controls_fatal_", "controls_fatal_", "CTRLFATAL", "", "", null)%>
-                                                                                <table>
-                                                                                    <tr>
-                                                                                        <%  if (canEdit) {
-                                                                         if(!useStep) {%>
-                                                                                        <td id="wob">
-                                                                                            <input type="button"
-                                                                                                   value="Add Control"
-                                                                                                   onclick="addTestCaseControlNew('control_table<%=tcs.getStep()%>', '<%=tcs.getStep()%>');
-                                                                                                           enableField('submitButtonChanges');">
-                                                                                        </td>
-                                                                                        <%}%>
-                                                                                        <td id="wob">
-                                                                                            <input value="Save Changes" onclick="submitTestCaseModificationNew('#stepAnchor_<%=incrementAction%>');" id="submitButtonAction" name="submitChanges"
-                                                                                                   type="button" >
-                                                                                        </td>
-                                                                                        <% }%>
-                                                                                    </tr>
-                                                                                </table>
-                                                                                
-                                                                            </td>
-                                                                        </tr>
-                                                                    </table>        
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                    </table>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td class="wob" style="height:30px">
-                                                </td>
-                                            </tr>
-                                            <% } %>
-                                        </table>
-                                        <%  if (canEdit) {%>
-                                        <div id="hide_div"></div>
-                                        <table style="width: 100%">
-                                            <tr>
-                                                <td id="wob">
-                                                    <input type="button" value="Add Step" id="AddStepButton" style="display:inline"
-                                                           onclick="addStepNew('hide_div');
-                                                                   enableField('submitButtonAction');
-                                                                   hidebutton('AddStepButton')">
-                                                    <input type="button" value="Import Step" id="ImportStepButton" style="display:inline"
-                                                           onclick="displayImportStep('importStep()')">
-                                                    <input type="button" value="Use Step" id="UseStepButton" style="display:inline"
-                                                           onclick="displayImportStep('useStep()')">
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td class="wob">
-                                                    <table border="0px" id="ImportStepTable" style="display: none; width: 100%">
-                                                        <tr>
-                                                            <td  class="wob" style="font-weight: bold;">From :
-                                                                <select id="fromTest" name="FromTest" onChange="getTestCasesForImportStep()">
-                                                                    <option value="All">-- Choose Test --</option>
-                                                                    <%  for (Test tst : testService.getListOfTest()) {%>
-                                                                    <option class="font_weight_bold_<%=tst.getActive()%>" value="<%=tst.getTest()%>" ><%=tst.getTest()%></option>
-                                                                    <% } %>
-                                                                </select>
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td class="wob">
-                                                                <table id="trImportTestCase" style="display: none; width: 100%"></table>
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td  class="wob" style="font-weight: bold;">To Step : <input type="text" class="wob" style="width: 60px; font-weight: bold;font-style: italic; color: #FF0000;" value="" name="import_step" id="import_step" ></td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td  class="wob" style="font-weight: bold;">Description : <input type="text" class="wob" style="width: 600px; font-weight: bold;font-style: italic; color: #FF0000;display:none" value="" name="import_description" id="import_description" ></td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td  class="wob" ><input id="importbutton" class="button" type="button" name="Import" value="Validate" onclick="importStep();"></td>
-                                                        </tr>
-                                                    </table>
-                                                </td>
-                                            </tr> 
-                                        </table>
-                                        <% }%>
-                                    </td>
-                                </tr>
-                            </table>          
-                            <br>
-                            <br>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td id="wob"><h4>Properties</h4>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td id="wob">
-                            <%
-                                if (tccpList != null) {
-                            %>
-                            <table>
-                                <tr>
-                                    <td id="wob" style="width:10px">
-                                    </td>
-                                    <td id="leftlined"  style="width:10px">
-                                    </td>
-                                    <td id="underlined">
-                                        <table id="testcaseproperties_table" style="text-align: left; border-collapse: collapse"
-                                               border="0">
-                                            <tr id="header">
-                                                <td style="width: 30px"><%out.print(docService.findLabelHTML("page_testcase", "delete", "Delete"));%></td>
-                                                <td style="width: 100px"><%out.print(docService.findLabelHTML("testcasecountryproperties", "property", "Property"));%></td>
-                                                <td style="width: <%=size%>px"><%out.print(docService.findLabelHTML("invariant", "country", "Country"));%></td>
-                                                <td style="width: 120px"><%out.print(docService.findLabelHTML("testcasecountryproperties", "type", "Type"));%></td>
-                                                <td style="width: 40px"><%out.print(docService.findLabelHTML("testcasecountryproperties", "database", "Database"));%></td>
-                                                <td style="width: <%=size2%>px"><%out.print(docService.findLabelHTML("testcasecountryproperties", "value", "Value"));%>
-                                                <td style="width: 40px"><%out.print(docService.findLabelHTML("testcasecountryproperties", "length", "Length"));%></td>
-                                                <td style="width: 40px"><%out.print(docService.findLabelHTML("testcasecountryproperties", "rowlimit", "RowLimit"));%></td>
-                                                <td style="width: 80px"><%out.print(docService.findLabelHTML("testcasecountryproperties", "nature", "Nature"));%></td>
-                                            </tr>
-                                            <div id="cache_properties">
-                                                <%//ComboInvariant(appContext, "properties_dtb_type_ID", "display: none;", "properties_dtb_type_ID", "wob", "PROPERTYDATABASE", tccpList.get(0).getDatabase(), "", null)%>
-                                            </div><%
-
-                                            int incrementProperty = 0;
-                                                for (TestCaseCountryProperties tccp : tccpList) {
-                                                    incrementProperty++;
-                                                    List<String> countryOfProperty = tccpService.findCountryByProperty(tccp);
-
-                                                    rowNumber = rowNumber + 1;
-                                                    proplist = proplist + "" + tccp.getProperty() + "  /  ";
-
-                                                    if (tccp.getType().equals("executeSqlFromLib")) {
-                                                        SqlLibrary sqllib = libService.findSqlLibraryByKey(tccp.getValue1().replaceAll("'", "''"));
-                                                    }
-
-                                                    size3 = 0;
-                                                    size4 = size2;
-                                                    String styleValue2 = "none";
-                                                    if (tccp.getType().equals("getAttributeFromHtml")
-                                                            || tccp.getType().equals("getFromXml")
-                                                            || tccp.getType().equals("getFromCookie")
-                                                            || tccp.getType().equals("getDifferencesFromXml")) {
-                                                        size3 = 1 * size2 / 3;
-                                                        size4 = (2 * size2 / 3) - 5;
-                                                        styleValue2 = "inline";
-                                                    }
-
-                                                    int nbline = tccp.getValue1().split("\n").length;
-                                                    String valueID = rowNumber + "-" + tccp.getProperty();
-                                                    
-                                                    String showEntireValueB1 = "showEntireValueB1" + valueID;
-                                                    String showEntireValueB2 = "showEntireValueB2" + valueID;
-                                                    String sqlDetails = "sqlDetails" + valueID;
-                                                    String sqlDetailsB1 = "sqlDetailsB1" + valueID;
-                                                    String sqlDetailsB2 = "sqlDetailsB2" + valueID;
-                                                    String properties_dtbID = "properties_dtb" + valueID;
-                                                    i++;
-
-                                                    j = i % 2;
-                                                    if (j == 1) {
-                                                        color = "#f3f6fa";
-                                                    } else {
-                                                        color = "White";
-                                                    }
-                                            %>
-                                            <tr style="background-color : <%=color%>">
-                                                <td>
-                                                    <%  if (canEdit) {%>
-                                                    <input name="properties_delete_<%=incrementProperty%>" type="checkbox" style="width: 30px" value="">
-                                                    <%}%>
-                                                    <input type="hidden" name="property_increment" value="<%=incrementProperty%>">
-                                                </td>
-                                                <td>
-                                                    <input class="wob properties_id_<%=rowNumber%> property_name" style="width: 100px; font-weight: bold; background-color : <%=color%>"
-                                                           name="properties_property_<%=incrementProperty%>" value="<%=tccp.getProperty()%>">
-                                                </td>
-                                                <td style="font-size : x-small ; width: <%=size%>px;">
-                                                    <table>
-                                                        <tr>
-                                                            <%  for (String c : countryListTestcase) {%>
-                                                            <td class="wob"><%=c%>
-                                                            </td> 
-                                                            <% 	} %>
-                                                        </tr>
-                                                        <tr>
-                                                            <%
-                                                                for (String c : countryListTestcase) {
-                                                            %>
-                                                            <td class="wob">
-                                                                <input value="<%=c%>" type="checkbox" <% if (countryOfProperty.contains(c)) {%>  CHECKED  <% }%>
-                                                                       class="properties_id_<%=rowNumber%>" name="properties_country_<%=incrementProperty%>">
-                                                            </td>
-                                                            <%  }%>
-                                                        </tr>
-                                                    </table>
-                                                </td>
-                                                <td><%=ComboInvariant(appContext, "properties_type_"+incrementProperty, "width: 120px; background-color:" + color, "properties_type_"+incrementProperty, "wob","PROPERTYTYPE" , tccp.getType(), "activateDatabaseBox(this.value, '" + properties_dtbID + "' ,'" + properties_dtbID + "' );activateValue2(this.value, 'tdValue2_" + rowNumber + "', '" + valueID + "','" + valueID + "_2','" + size2 + "')", null)%>
-                                                </td>
-                                                <td>
-                                                    <%
-                                                        if (tccp.getType().equals("executeSqlFromLib") || tccp.getType().equals("executeSql") || tccp.getType().equals("executeSoapFromLib")) {
-                                                    %>
-                                                    <%=ComboInvariant(appContext, "properties_dtb_"+incrementProperty, "width: 40px; display: inline ; background-color:" + color, "properties_dtb_"+incrementProperty, "wob", "PROPERTYDATABASE", tccp.getDatabase(), "", null)%>
-                                                    <%
-                                                    } else {%>
-                                                    <select name="properties_dtb_<%=incrementProperty%>" style="width: 40px; display: inline ; background-color:<%=color%>" class="wob" id="properties_dtb_<%=incrementProperty%>">
-                                                        <option value="">---</option>
-                                                    </select>
-                                                    <% }%>
-                                                </td>
-                                                <td>
-                                                    <table>
-                                                        <tr>
-                                                            <td class="wob" rowspan="2">
-                                                                <textarea id="properties_value1_<%=incrementProperty%>" rows="2" class="wob" style="width: <%=size4%>px; background-color : <%=color%>; " 
-                                                                          name="properties_value1_<%=incrementProperty%>" value="<%=tccp.getValue1()%>"><%=tccp.getValue1()%></textarea>
-                                                            </td>
-                                                            <td class="wob" rowspan="2" style="display:<%=styleValue2%>">
-                                                                <textarea id="properties_value2_<%=incrementProperty%>" rows="2" class="wob" style="width: <%=size3%>px; background-color : <%=color%>;"
-                                                                          name="properties_value2_<%=incrementProperty%>" value="<%=tccp.getValue2()%>"><%=tccp.getValue2()%></textarea>
-                                                            </td>
-                                                            <%
-                                                                if (tccp.getType().equals("executeSqlFromLib")
-                                                                        || tccp.getType().equals("executeSql")) {
-                                                            %>
-                                                            <td class="wob">
-                                                                <input style="display:inline; height:20px; width:20px; background-color: <%=color%>; color:blue; font-weight:bolder" title="Open SQL Library" class="smallbutton" type="button" value="L" name="opensql-library"  onclick="openSqlLibraryPopin('<%=valueID%>')">
-                                                            </td>
-                                                            <% }%>
-                                                            <%
-                                                                if (tccp.getType().equals("executeSqlFromLib")
-                                                                        || tccp.getType().equals("executeSql")
-                                                                        || tccp.getType().equals("getFromTestData")
-                                                                        || tccp.getType().equals("executeSoapFromLib")) {
-                                                            %>
-                                                            <td class="wob">
-                                                                <input style="display:inline; height:20px; width:20px; background-color: <%=color%>; color:green; font-weight:bolder" title="View property" class="smallbutton" type="button" value="V" name="openview-library"  onclick="openViewPropertyPopin('<%=valueID%>', '<%=test%>', '<%=testcase%>')">
-                                                            </td>
-                                                            <%}%>
-                                                        </tr>
-                                                        <tr>
-                                                            <% if (nbline > 3) {%>
-                                                            <td class="wob" style="background-color: <%=color%>; text-align: center; border-left-color:white">
-                                                                <input style="display:inline; height:20px; width:20px; background-color: <%=color%>; color: green; font-weight:bolder" class="smallbutton" title="Show the Full Sql" type="button" value="+" id="<%=showEntireValueB1%>" onclick="showEntireValue('<%=valueID%>', '<%=nbline%>', '<%=showEntireValueB1%>', '<%=showEntireValueB2%>');">
-                                                                <input style="display:none; height:20px; width:20px; background-color: <%=color%>; color: red; font-weight:bolder" class="smallbutton" title="Hide Details" type="button" value="-" id="<%=showEntireValueB2%>" onclick="showLessValue('<%=valueID%>', '<%=showEntireValueB1%>', '<%=showEntireValueB2%>');">
-                                                            </td>
-                                                            <%} else {%>
-                                                            <td class="wob" style="background-color: <%=color%>; text-align: center; border-left-color:white">
-                                                                <% if (tccp.getType().equals("executeSqlFromLib")) {%>
-                                                                <input style="display:inline; height:20px; width:20px; background-color: <%=color%>; color: orange; font-weight:bolder" class="smallbutton" type="button" value="e" title="Show the SQL" id="<%=sqlDetailsB1%>" onclick="showSqlDetails('<%=sqlDetails%>', '<%=sqlDetailsB1%>', '<%=sqlDetailsB2%>');">
-                                                                <input style="display:none; height:20px; width:20px; background-color: <%=color%>; color: orange; font-weight:bolder" class="smallbutton" type="button" value="-" title="Hide the SQL" id="<%=sqlDetailsB2%>" onclick="hideSqlDetails('<%=sqlDetails%>', '<%=sqlDetailsB1%>', '<%=sqlDetailsB2%>');">
-                                                                <% } %>
-                                                            </td>
-                                                            <% }%>
-                                                        </tr>
-                                                    </table>
-                                                </td>
-                                                <td>
-                                                    <input class="wob" style="width: 40px; background-color : <%=color%>" name="properties_length_<%=incrementProperty%>"
-                                                           value="<%=tccp.getLength()%>" onchange="trackChanges(this.value, '<%=tccp.getLength()%>', 'SavePropertyChanges')">
-                                                </td>
-                                                <td>
-                                                    <input class="wob" style="width: 40px; background-color : <%=color%>" name="properties_rowlimit_<%=incrementProperty%>"
-                                                           value="<%=tccp.getRowLimit()%>" onchange="trackChanges(this.value, '<%=tccp.getRowLimit()%>', 'SavePropertyChanges')">
-                                                </td>
-                                                <td><%=ComboInvariant(appContext, "properties_nature_"+incrementProperty, "width: 80px; background-color:" + color, "properties_nature_"+incrementProperty, "wob", "PROPERTYNATURE", tccp.getNature(), "trackChanges(0, this.selectedIndex, 'submitButtonChanges')", null)%></td>
-                                            </tr>
-                                            <%}%>
-                                        </table>
-                                        <br>
-                                        <%  if (canEdit) {%>
-                                        <input type="button" value="Add Property" id="AddProperty"
-                                               onclick="addTestCasePropertiesNew('testcaseproperties_table', <%=rowNumber%>, <%=size%>, <%=size2%>);
-                                                       enableField('SavePropertyChanges');
-                                                       disableField('AddProperty');">
-                                        <input type="submit" value="Save Changes" id="SavePropertyChanges">              
-                                        <input type="hidden" id="Test" name="Test" value="<%=test%>">
-                                        <input type="hidden" id="TestCase" name="TestCase" value="<%=testcase%>">
-                                        <input type="hidden" name="testcase_hidden" value="<%=test + " - " + testcase%>">
-                                        <input type="hidden" id="CountryList" name="CountryList" value="<%=countries%>">
-                                        <%=ComboInvariant(appContext, "new_properties_type_new_properties_value", "width: 70px;visibility:hidden", "new_properties_type_new_properties_value", "new_properties_type_new_properties_value", "PROPERTYTYPE", "", "", null)%>
-                                        <%=ComboInvariant(appContext, "properties_dtb_", "width: 40px;visibility:hidden", "properties_dtb_", "properties_dtb_", "PROPERTYDATABASE", "", "", null)%>
-                                        <%=ComboInvariant(appContext, "properties_nature_", "width: 80px;visibility:hidden", "properties_nature_", "properties_nature_", "PROPERTYNATURE", "", "", null)%>
-                                        <input type="hidden" name="testcase_hidden" value="<%=test + " - " + testcase%>">
-                                        <input type="hidden" name="testcase_country_hidden" value="<%=countries%>">
-                                        <% }%>
-                                    </td>
-                                </tr>
-                            </table>
-                            <p id ="toto" style="font-size : x-small ; width: <%=size%>px; visibility:hidden">
-                                <% for (String c : countryListTestcase) {%>
-                                <%=c%> 
-                                <% } %>
-                                <br>
-                                <% for (String c : countryListTestcase) {
+                        </div>
+                        <div id="StepsDivUnderTitle" style="width:100%;clear:both">
+                            <div id="StepsRightDiv" style="width:97%;float:left; margin:2%;">
+                                <%
+                                    int incrementStep = 0;
+                                    List<TestCaseStep> tcsList = tcsService.getListOfSteps(test, testcase);
+                                    for (TestCaseStep tcs : tcsList) {
+                                        incrementStep++;
                                 %>
-                                <input value="<%=rowNumber%> - <%=c%>" type="checkbox" id="properties_country" 
-                                       name="properties_country" >
+                                <div id="StepFirstLineDiv" class="StepHeaderDiv">
+                                    <div id="StepComboDeleteDiv" style="float:left; width: 30px; text-align: center; height:100%">
+                                        <a name="stepAnchor_<%=incrementStep%>"></a>
+                                        <input type="checkbox" name="step_delete_<%=incrementStep%>" style="margin-top:15px;font-weight: bold; width:20px"
+                                               value="<%=tcs.getStep()%>">
+                                        <input type="hidden" name="step_increment" value="<%=incrementStep%>">
+                                        <input id="incrementStepNumber" value="<%=incrementStep%>" type="hidden">
+
+                                    </div>
+                                    <div id="StepNumberDiv" style="float:left">
+                                        &nbsp;&nbsp;Step&nbsp;&nbsp;
+                                        <input value="<%=tcs.getStep()%>" name="step_number_<%=incrementStep%>" style="margin-top:15px;font-weight: bold; width:20px;background-color:transparent; border-width:0px">
+                                        <input type="hidden" name="initial_step_number_<%=incrementStep%>" id="initial_step_number_<%=incrementStep%>" value="<%=tcs.getStep()%>">
+                                    </div>
+                                    <div id="StepNumberDiv" style="float:left">
+                                    <input type="button" value="+S" id="AddStepButton" style="display:inline"
+                                               onclick="addStepNew('hide_div');
+                                                       enableField('submitButtonAction');
+                                                       hidebutton('AddStepButton')">
+                                        </div>
+                                    <div id="StepDescDiv" style="float:left">
+                                        <input style="margin-top:15px;font-weight: bold; width: 500px;background-color:transparent; border-color:#EEEEEE; border-width: 0px" name="step_description_<%=incrementStep%>" value="<%=tcs.getDescription()%>">
+                                    </div>
+                                    <div id="StepUseStepDiv" style="float:left">UseStep
+                                        <input type="checkbox" name="step_useStep" style="margin-top:15px;font-weight: bold; width:20px"
+                                               <% if (tcs.getUseStep().equals("Y")) {%>
+                                               CHECKED
+                                               <%}%>
+                                               value="Use Step">
+                                    </div>
+                                    <% if (tcs.getUseStep().equals("Y")) {%>
+                                    <div id="StepCopiedFromDiv" style="float:left">
+                                        <span style="margin-top:15px;"> Copied from : </span>
+                                    </div>
+                                    <div id="StepUseStepTestDiv" style="float:left">
+                                        <input  size="100%" style="margin-top:15px;font-weight: bold; width: 200px" name="step_useStepTest_<%=incrementStep%>"
+                                                value="<%=tcs.getUseStepTest()%>">
+                                    </div>
+                                    <div id="StepUseStepTestCaseDiv" style="float:left">
+                                        <input size="100%" style="margin-top:15px;font-weight: bold; width: 50px" name="step_useStepTestCase_<%=incrementStep%>"
+                                               value="<%=tcs.getUseStepTestCase()%>">
+                                    </div>
+                                    <div id="StepUseStepStepDiv" style="float:left">
+                                        <input size="100%" style="margin-top:15px;font-weight: bold; width: 50px" name="step_useStepStep_<%=incrementStep%>"
+                                               value="<%=tcs.getUseStepStep()%>">
+                                    </div>
+                                    <div id="StepUseStepLinkDiv" style="float:left">
+                                        <a href="TestCase.jsp?Test=<%=tcs.getUseStepTest()%>&TestCase=<%=tcs.getUseStepTestCase()%>">Edit Used Step</a>
+                                    </div>
+                                    <%}%>
+                                    <div style="float:left" id="wob">
+                                                <input value="Save Changes" onclick="submitTestCaseModificationNew('stepAnchor_<%=incrementStep%>');" id="submitButtonAction" name="submitChanges"
+                                                       type="button" >
+                                                <%=ComboInvariant(appContext, "actions_action_", "width: 150px;visibility:hidden", "actions_action_", "actions_action_", "ACTION", "", "", null)%>
+                                            </div>
+                                </div>
+                                <div id="StepsBorderDiv" style="border-bottom-style: solid; border-left-style: solid;border-right-style: solid;border-width:thin ;clear:both;">
+                                    <div id="StepDetailsDiv" style="clear:both">
+                                        <%
+                                            String testForQuery = "";
+                                            String testcaseForQuery = "";
+                                            int stepForQuery = 0;
+                                            String isReadonly = "";
+                                            boolean useStep = false;
+                                            String complementName = "";
+
+                                            if (!tcs.getUseStep().equals("Y")) {
+                                                testForQuery = tcs.getTest();
+                                                testcaseForQuery = tcs.getTestCase();
+                                                stepForQuery = tcs.getStep();
+                                            } else {
+                                                testForQuery = tcs.getUseStepTest();
+                                                testcaseForQuery = tcs.getUseStepTestCase();
+                                                stepForQuery = tcs.getUseStepStep();
+                                                isReadonly = "readonly";
+                                                useStep = true;
+                                                complementName = "Block";
+                                            }
+                                            List<TestCaseStepAction> tcsaList = tcsaService.getListOfAction(testForQuery, testcaseForQuery, stepForQuery);
+                                        %>
+                                        <div id="ActionControlDivUnderTitle" style="height:100%;width:100%;clear:both">
+                                            <div id="Action<%=tcs.getStep()%>" style="height:100%; width:100%;text-align: left; clear:both" >
+
+                                                <%
+                                                    String actionColor = "";
+                                                    String actionFontColor = "#333333";
+                                                    int incrementAction = 0;
+                                                    for (TestCaseStepAction tcsa : tcsaList) {
+
+                                                        incrementAction++;
+                                                        int b;
+                                                        b = incrementAction % 2;
+                                                        if (b != 1) {
+                                                            //actionColor = "#f3f6fa";
+                                                            actionColor = "White";
+                                                        } else {
+                                                            actionColor = "White";
+                                                        }
+                                                        if (useStep) {
+                                                            actionColor = "#DCDCDC";
+                                                            actionFontColor = "grey";
+                                                        }
+                                                %>
+                                                <div id="StepListOfActionDiv<%=tcsa.getStep()%><%=tcsa.getSequence()%>" class="RowActionDiv" style="display:inline-block;height:100%;width:100%;">
+                                                    <div style="display:inline-block;float:left;height:50px;background-color: transparent">
+                                                        <input  class="wob" type="checkbox" name="action_delete_<%=incrementStep%><%=incrementAction%>" style="width: 30px; background-color: transparent"
+                                                                value="<%=tcsa.getStep() + "-" + tcsa.getSequence()%>" <%=isReadonly%>>
+                                                        <input type="hidden" name="action_increment" value="<%=incrementStep%><%=incrementAction%>" >
+                                                        <input type="hidden" name="action_step_<%=incrementStep%><%=incrementAction%>" value="<%=tcsa.getStep()%>" >
+                                                    </div>
+                                                    <div style="height:50px;display:inline-block;float:left">
+                                                        <input class="wob" style="width: 60px; font-weight: bold; background-color: transparent; height:100%; color:<%=actionFontColor%>"
+                                                               value="<%=tcsa.getSequence()%>"
+                                                               name="action_sequence_<%=incrementStep%><%=incrementAction%>" id="action_sequence_<%=incrementStep%><%=incrementAction%>">
+                                                    </div>
+                                                    <div style="height:100%;width:3%;float:left;color:blue;font-weight:bold;font-size:10px ;font-family: Trebuchet MS; background-color: transparent" aria-label="Action">
+                                                        <p>A</p>
+                                                    </div>
+                                                    <div style="height:100%;width:3%;float:left;color:blue;font-weight:bold;font-size:10px ;font-family: Trebuchet MS; background-color: transparent" aria-label="Action">
+                                                        <div style="height:100%;width:100%;clear:both;color:blue;font-weight:bold;font-size:10px ;font-family: Trebuchet MS; background-color: transparent" aria-label="Action">
+                                                        <input type="button" value="+A"
+                                                       onclick="addTestCaseActionNew('Action<%=tcs.getStep()%>', '<%=incrementStep%>');
+                                                               enableField('submitButtonAction');">
+                                                <%=ComboInvariant(appContext, "action_action_temp", "width: 136px; display:none", "action_action_temp", "wob", "ACTION", null, "", null)%>
+                                                    </div>
+                                                        <div style="height:100%;width:100%;clear:both;color:blue;font-weight:bold;font-size:10px ;font-family: Trebuchet MS; background-color: transparent" aria-label="Action">
+                                                        <input type="button" value="+C"
+                                                                                                onclick="addTestCaseControl('control_table<%=tcsa.getStep()%>',<%=tcsa.getStep()%>, '10', '10', '10', '100', '250', '250', '250');
+                                                                                                enableField('submitButtonChanges');">
+                                                    </div>
+                                                    </div>
+                                                    <div style="height:100%;width:80%;float:left; display:inline-block">
+                                                        <div class="functional_description" style="height:30px;display:inline-block;clear:both;width:100%; background-color: transparent">
+
+                                                            <div style="float:left; width:80%">
+                                                                <input class="wob" class="functional_description" style="width: 100%; background-color: transparent; font-weight:bold;font-size:15px ;font-family: Trebuchet MS; color:#333333 "
+                                                                       value="<%=tcsa.getDescription()%>" placeholder="Description"
+                                                                       name="action_description_<%=incrementStep%><%=incrementAction%>" <%=isReadonly%>
+                                                                       maxlength="1000">
+                                                            </div>
+                                                        </div>
+                                                        <div style="display:inline-block;clear:both; height:20px;width:100%;background-color:transparent">
+                                                            <div class="technical_part" style="width: 10%; float:left; background-color: transparent"><%=ComboInvariant(appContext, "action_action_" + incrementStep + incrementAction, "width: 100%; background-color:transparent;color:" + actionFontColor, "action_action_" + incrementStep + incrementAction, "wob", "ACTION", tcsa.getAction(), "trackChanges(0, this.selectedIndex, 'submitButtonAction')", null)%>
+                                                            </div>
+                                                            <div class="technical_part" style="width: 30%; float:left; background-color: transparent">
+                                                                <input class="wob" style="background-color: transparent; color:<%=actionFontColor%>"
+                                                                       value="<%=tcsa.getObject()%>"
+                                                                       name="action_object_<%=incrementStep%><%=incrementAction%>" <%=isReadonly%>>
+                                                            </div>
+                                                            <div class="technical_part" style="width: 20%; float:left; background-color:transparent">
+                                                                <input  class="wob property_value" style="background-color: transparent; color:<%=actionFontColor%>"
+                                                                        value="<%=tcsa.getProperty()%>"
+                                                                        <%
+                                                                            if (useStep) {
+                                                                        %>
+                                                                        data-usestep-test="<%=testForQuery%>"
+                                                                        data-usestep-testcase="<%=testcaseForQuery%>"
+                                                                        data-usestep-step="<%=stepForQuery%>"
+                                                                        <%
+                                                                            }
+
+                                                                        %>
+                                                                        name="action_property_<%=incrementStep%><%=incrementAction%>" <%=isReadonly%>>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <%
+                                                    List<TestCaseStepActionControl> tcsacList = tcsacService.findControlByTestTestCaseStepSequence(testForQuery, testcaseForQuery, stepForQuery, tcsa.getSequence());
+
+                                                    int incrementControl = 0;
+                                                    String controlColor = "white";
+                                                    for (TestCaseStepActionControl tcsac : tcsacList) {
+                                                        incrementControl++;
+                                                        int e;
+                                                        e = incrementControl % 2;
+                                                        if (e != 1) {
+                                                            //controlColor = "#f3f6fa";
+                                                        } else {
+                                                            controlColor = "White";
+                                                        }
+
+                                                        if (useStep) {
+                                                            controlColor = "#DCDCDC";
+                                                        }
+                                                %>
+                                                <div id="StepListOfControlDiv" style="width:100%;clear:both;display:inline-block;background-color:<%=controlColor%>">
+                                                    <div style="width: 30px;float:left; text-align: center; background-color: <%=controlColor%>; color:<%=actionFontColor%>" 
+                                                         class="controls_<%=tcsac.getStep() + '-'
+                                                                 + tcsac.getSequence()%>">
+                                                        <%  if (canEdit) {%>
+                                                        <input class="wob" type="checkbox" name="controls_delete_<%=incrementStep%><%=incrementControl%>" 
+                                                               value="<%=tcsac.getStep() + '-' + tcsac.getSequence() + '-' + tcsac.getControl()%>">
+                                                        <% }%>
+                                                        <input type="hidden" value="<%=incrementStep%><%=incrementControl%>" name="control_increment">
+                                                        <input type="hidden" value="<%=tcsac.getStep()%>" name="control_step_<%=incrementStep%><%=incrementControl%>">
+                                                    </div>
+                                                    <div style="float:left; background-color: <%=controlColor%>;height:50px">
+                                                        <input class="wob" style="width: 30px; font-weight: bold;background-color: <%=controlColor%>; color:<%=actionFontColor%>"
+                                                               value="<%=tcsac.getSequence()%>" name="control_sequence_<%=incrementStep%><%=incrementControl%>" name="control_<%=incrementStep%><%=tcsac.getSequence()%>" readonly="readonly">
+                                                    </div>
+                                                    <div style="float:left; background-color: <%=controlColor%>">
+                                                        <input class="wob" style="width: 30px; font-weight: bold;background-color: <%=controlColor%>; color:<%=actionFontColor%>"
+                                                               value="<%=tcsac.getControl()%>" name="control_control_<%=incrementStep%><%=incrementControl%>" readonly="readonly">
+                                                    </div>
+                                                    <div style="height:100%;width:5%;float:left;color:green;font-weight:bold;font-size:10px ;font-family: Trebuchet MS; background-color: <%=actionColor%>" aria-label="Action">
+                                                        C</div>
+                                                    <div style="width:85%;float:left">
+                                                        <div class="functional_description_control" style="clear:both;width:100%; background-color: <%=controlColor%>">
+                                                            <input class="wob" class="functional_description_control" style="width: 100%; background-color: <%=actionColor%>; font-weight:bold;font-size:15px ;font-family: Trebuchet MS; color:#333333"
+                                                                   value="<%=tcsac.getDescription()%>" name="control_description_<%=incrementStep%><%=incrementControl%>" maxlength="1000">
+                                                        </div>
+                                                        <div style="clear:both; width:100%">
+                                                            <div style="float:left; background-color: <%=controlColor%>"><%=ComboInvariant(appContext, "control_type_" + incrementStep + incrementControl, "width: 150px; background-color:" + controlColor + ";color:" + actionFontColor, "control_type_" + incrementStep + incrementControl, "wob", "CONTROL", tcsac.getType(), "trackChanges(this.value, '" + tcsac.getType() + "', 'submitButtonChanges')", null)%>
+                                                            </div>
+                                                            <div class="technical_part" style="float:left; background-color: <%=controlColor%>">
+                                                                <input class="wob" style="width: 260px;background-color: <%=controlColor%>; color:<%=actionFontColor%>"
+                                                                       value="<%=tcsac.getControlProperty()%>" name="control_property_<%=incrementStep%><%=incrementControl%>">
+                                                            </div>
+                                                            <div class="technical_part" style="float:left; background-color: <%=controlColor%>">
+                                                                <input class="wob" style="width: 180px;background-color: <%=controlColor%>; color:<%=actionFontColor%>"
+                                                                       value="<%=tcsac.getControlValue()%>" name="control_value_<%=incrementStep%><%=incrementControl%>">
+                                                            </div>
+                                                            <div class="technical_part" style="float:left; background-color: <%=controlColor%>"><%=ComboInvariant(appContext, "controls_fatal_" + incrementStep + incrementControl, "width: 40px; background-color:" + controlColor + ";color:" + actionFontColor, "controls_fatal_" + incrementStep + incrementControl, "wob", "CTRLFATAL", tcsac.getFatal(), "trackChanges(this.value, '" + tcsac.getFatal() + "', 'submitButtonChanges')", null)%>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>    
+
+                                                <%   }
+                                                    } /*
+                                                     * End actions loop
+                                                     */%>
+                                            </div>
+                                        </div>
+                                        <%  if (canEdit) {%>
+
+                                        <div style="clear:both; display:none" id="ActionButtonDiv">
+
+                                            <%if (!useStep) {%>
+                                            <div style="float:left" id="wob">
+                                                <input id="incrementActionNumber<%=incrementStep%>" value="<%=incrementAction%>" type="hidden">
+                                                
+                                            </div>
+                                            <div style="float:left; display:none" id="wob">
+                                                <input type="button" value="import HTML Scenario" onclick="importer('ImportHTML.jsp?Test=<%=test%>&Testcase=<%=testcase%>&Step=<%=tcs.getStep()%>')">
+                                            </div>
+                                            <%}%>
+                                            
+                                        </div>
+                                        <%}%>
+                                    </div>
+                                </div>
+                                <div style="display:inline-block; width:100%"></div>
+                                <%=ComboInvariant(appContext, "controls_type_", "width: 200px;visibility:hidden", "controls_type_", "controls_type_", "CONTROL", "", "", null)%>
+                                <%=ComboInvariant(appContext, "controls_fatal_", "width: 40px;visibility:hidden", "controls_fatal_", "controls_fatal_", "CTRLFATAL", "", "", null)%>
                                 <% } %>
-                            </p>
-                            <%
-                            } else {
-                            %>
-                            <table id="nocountrydefined" class="arrond">
-                                <tr>
-                                    <td class="wob"></td>
-                                </tr>
-                                <tr>
-                                    <td class="wob">
-                                        <h3> To add Properties,Actions and controls, select at least one country in the general parameters </h3>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="wob"></td>
-                                </tr>
-                            </table>
-                            <%   } %>
-                        </td>
-                    </tr>
-                </table>
+                                <%  if (canEdit) {%>
+                                <div id="hide_div"></div>
+                                <div id="ButtonAddStepDiv" style="display:none;width: 100%">
+                                    <div id="wob">
+                                        
+                                        <input type="button" value="Import Step" id="ImportStepButton" style="display:inline"
+                                               onclick="displayImportStep('importStep()')">
+                                        <input type="button" value="Use Step" id="UseStepButton" style="display:inline"
+                                               onclick="displayImportStep('useStep()')">
+                                    </div>
+                                    <div class="wob">
+                                        <table border="0px" id="ImportStepTable" style="display: none; width: 100%">
+                                            <tr>
+                                                <td  class="wob" style="font-weight: bold;">From :
+                                                    <select id="fromTest" name="FromTest" onChange="getTestCasesForImportStep()">
+                                                        <option value="All">-- Choose Test --</option>
+                                                        <%  for (Test tst : testService.getListOfTest()) {%>
+                                                        <option class="font_weight_bold_<%=tst.getActive()%>" value="<%=tst.getTest()%>" ><%=tst.getTest()%></option>
+                                                        <% } %>
+                                                    </select>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="wob">
+                                                    <table id="trImportTestCase" style="display: none; width: 100%"></table>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td  class="wob" style="font-weight: bold;">To Step : <input type="text" class="wob" style="width: 60px; font-weight: bold;font-style: italic; color: #FF0000;" value="" name="import_step" id="import_step" ></td>
+                                            </tr>
+                                            <tr>
+                                                <td  class="wob" style="font-weight: bold;">Description : <input type="text" class="wob" style="width: 600px; font-weight: bold;font-style: italic; color: #FF0000;display:none" value="" name="import_description" id="import_description" ></td>
+                                            </tr>
+                                            <tr>
+                                                <td  class="wob" ><input id="importbutton" class="button" type="button" name="Import" value="Validate" onclick="importStep();"></td>
+                                            </tr>
+                                        </table>
+                                    </div>
+
+                                </div>
+                                <% }%>
+                                <br>
+                                <br>
+                                <div id="wob"><h4>Properties</h4>
+                                </div>
+                                <div id="propertiesPartDiv">
+                                    <%
+                                        if (tccpList != null) {
+                                    %>
+                                    <table>
+                                        <tr>
+                                            <td id="wob" style="width:10px">
+                                            </td>
+                                            <td id="leftlined"  style="width:10px">
+                                            </td>
+                                            <td id="underlined">
+                                                <table id="testcaseproperties_table" style="text-align: left; border-collapse: collapse"
+                                                       border="0">
+                                                    <tr id="header">
+                                                        <td style="width: 30px"><%out.print(docService.findLabelHTML("page_testcase", "delete", "Delete"));%></td>
+                                                        <td style="width: 100px"><%out.print(docService.findLabelHTML("testcasecountryproperties", "property", "Property"));%></td>
+                                                        <td style="width: <%=size%>px"><%out.print(docService.findLabelHTML("invariant", "country", "Country"));%></td>
+                                                        <td style="width: 120px"><%out.print(docService.findLabelHTML("testcasecountryproperties", "type", "Type"));%></td>
+                                                        <td style="width: 40px"><%out.print(docService.findLabelHTML("testcasecountryproperties", "database", "Database"));%></td>
+                                                        <td style="width: <%=size2%>px"><%out.print(docService.findLabelHTML("testcasecountryproperties", "value", "Value"));%>
+                                                        <td style="width: 40px"><%out.print(docService.findLabelHTML("testcasecountryproperties", "length", "Length"));%></td>
+                                                        <td style="width: 40px"><%out.print(docService.findLabelHTML("testcasecountryproperties", "rowlimit", "RowLimit"));%></td>
+                                                        <td style="width: 80px"><%out.print(docService.findLabelHTML("testcasecountryproperties", "nature", "Nature"));%></td>
+                                                    </tr>
+                                                    <div id="cache_properties">
+                                                        <%//ComboInvariant(appContext, "properties_dtb_type_ID", "display: none;", "properties_dtb_type_ID", "wob", "PROPERTYDATABASE", tccpList.get(0).getDatabase(), "", null)%>
+                                                    </div><%
+
+                                                        int incrementProperty = 0;
+                                                        for (TestCaseCountryProperties tccp : tccpList) {
+                                                            incrementProperty++;
+                                                            List<String> countryOfProperty = tccpService.findCountryByProperty(tccp);
+
+                                                            rowNumber = rowNumber + 1;
+                                                            proplist = proplist + "" + tccp.getProperty() + "  /  ";
+
+                                                            if (tccp.getType().equals("executeSqlFromLib")) {
+                                                                SqlLibrary sqllib = libService.findSqlLibraryByKey(tccp.getValue1().replaceAll("'", "''"));
+                                                            }
+
+                                                            size3 = 0;
+                                                            size4 = size2;
+                                                            String styleValue2 = "none";
+                                                            if (tccp.getType().equals("getAttributeFromHtml")
+                                                                    || tccp.getType().equals("getFromXml")
+                                                                    || tccp.getType().equals("getFromCookie")
+                                                                    || tccp.getType().equals("getDifferencesFromXml")) {
+                                                                size3 = 1 * size2 / 3;
+                                                                size4 = (2 * size2 / 3) - 5;
+                                                                styleValue2 = "inline";
+                                                            }
+
+                                                            int nbline = tccp.getValue1().split("\n").length;
+                                                            String valueID = rowNumber + "-" + tccp.getProperty();
+
+                                                            String showEntireValueB1 = "showEntireValueB1" + valueID;
+                                                            String showEntireValueB2 = "showEntireValueB2" + valueID;
+                                                            String sqlDetails = "sqlDetails" + valueID;
+                                                            String sqlDetailsB1 = "sqlDetailsB1" + valueID;
+                                                            String sqlDetailsB2 = "sqlDetailsB2" + valueID;
+                                                            String properties_dtbID = "properties_dtb" + valueID;
+                                                            i++;
+
+                                                            j = i % 2;
+                                                            if (j == 1) {
+                                                                color = "#f3f6fa";
+                                                            } else {
+                                                                color = "White";
+                                                            }
+                                                    %>
+                                                    <tr style="background-color : <%=color%>">
+                                                        <td>
+                                                            <%  if (canEdit) {%>
+                                                            <input name="properties_delete_<%=incrementProperty%>" type="checkbox" style="width: 30px" value="">
+                                                            <%}%>
+                                                            <input type="hidden" name="property_increment" value="<%=incrementProperty%>">
+                                                        </td>
+                                                        <td>
+                                                            <input class="wob properties_id_<%=rowNumber%> property_name" style="width: 100px; font-weight: bold; background-color : <%=color%>"
+                                                                   name="properties_property_<%=incrementProperty%>" value="<%=tccp.getProperty()%>">
+                                                        </td>
+                                                        <td style="font-size : x-small ; width: <%=size%>px;">
+                                                            <table>
+                                                                <tr>
+                                                                    <%  for (String c : countryListTestcase) {%>
+                                                                    <td class="wob"><%=c%>
+                                                                    </td> 
+                                                                    <% 	} %>
+                                                                </tr>
+                                                                <tr>
+                                                                    <%
+                                                                        for (String c : countryListTestcase) {
+                                                                    %>
+                                                                    <td class="wob">
+                                                                        <input value="<%=c%>" type="checkbox" <% if (countryOfProperty.contains(c)) {%>  CHECKED  <% }%>
+                                                                               class="properties_id_<%=rowNumber%>" name="properties_country_<%=incrementProperty%>">
+                                                                    </td>
+                                                                    <%  }%>
+                                                                </tr>
+                                                            </table>
+                                                        </td>
+                                                        <td><%=ComboInvariant(appContext, "properties_type_" + incrementProperty, "width: 120px; background-color:" + color, "properties_type_" + incrementProperty, "wob", "PROPERTYTYPE", tccp.getType(), "activateDatabaseBox(this.value, '" + properties_dtbID + "' ,'" + properties_dtbID + "' );activateValue2(this.value, 'tdValue2_" + rowNumber + "', '" + valueID + "','" + valueID + "_2','" + size2 + "')", null)%>
+                                                        </td>
+                                                        <td>
+                                                            <%
+                                                                if (tccp.getType().equals("executeSqlFromLib") || tccp.getType().equals("executeSql") || tccp.getType().equals("executeSoapFromLib")) {
+                                                            %>
+                                                            <%=ComboInvariant(appContext, "properties_dtb_" + incrementProperty, "width: 40px; display: inline ; background-color:" + color, "properties_dtb_" + incrementProperty, "wob", "PROPERTYDATABASE", tccp.getDatabase(), "", null)%>
+                                                            <%
+                                                            } else {%>
+                                                            <select name="properties_dtb_<%=incrementProperty%>" style="width: 40px; display: inline ; background-color:<%=color%>" class="wob" id="properties_dtb_<%=incrementProperty%>">
+                                                                <option value="">---</option>
+                                                            </select>
+                                                            <% }%>
+                                                        </td>
+                                                        <td>
+                                                            <table>
+                                                                <tr>
+                                                                    <td class="wob" rowspan="2">
+                                                                        <textarea id="properties_value1_<%=incrementProperty%>" rows="2" class="wob" style="width: <%=size4%>px; background-color : <%=color%>; " 
+                                                                                  name="properties_value1_<%=incrementProperty%>" value="<%=tccp.getValue1()%>"><%=tccp.getValue1()%></textarea>
+                                                                    </td>
+                                                                    <td class="wob" rowspan="2" style="display:<%=styleValue2%>">
+                                                                        <textarea id="properties_value2_<%=incrementProperty%>" rows="2" class="wob" style="width: <%=size3%>px; background-color : <%=color%>;"
+                                                                                  name="properties_value2_<%=incrementProperty%>" value="<%=tccp.getValue2()%>"><%=tccp.getValue2()%></textarea>
+                                                                    </td>
+                                                                    <%
+                                                                        if (tccp.getType().equals("executeSqlFromLib")
+                                                                                || tccp.getType().equals("executeSql")) {
+                                                                    %>
+                                                                    <td class="wob">
+                                                                        <input style="display:inline; height:20px; width:20px; background-color: <%=color%>; color:blue; font-weight:bolder" title="Open SQL Library" class="smallbutton" type="button" value="L" name="opensql-library"  onclick="openSqlLibraryPopin('<%=valueID%>')">
+                                                                    </td>
+                                                                    <% }%>
+                                                                    <%
+                                                                        if (tccp.getType().equals("executeSqlFromLib")
+                                                                                || tccp.getType().equals("executeSql")
+                                                                                || tccp.getType().equals("getFromTestData")
+                                                                                || tccp.getType().equals("executeSoapFromLib")) {
+                                                                    %>
+                                                                    <td class="wob">
+                                                                        <input style="display:inline; height:20px; width:20px; background-color: <%=color%>; color:green; font-weight:bolder" title="View property" class="smallbutton" type="button" value="V" name="openview-library"  onclick="openViewPropertyPopin('<%=valueID%>', '<%=test%>', '<%=testcase%>')">
+                                                                    </td>
+                                                                    <%}%>
+                                                                </tr>
+                                                                <tr>
+                                                                    <% if (nbline > 3) {%>
+                                                                    <td class="wob" style="background-color: <%=color%>; text-align: center; border-left-color:white">
+                                                                        <input style="display:inline; height:20px; width:20px; background-color: <%=color%>; color: green; font-weight:bolder" class="smallbutton" title="Show the Full Sql" type="button" value="+" id="<%=showEntireValueB1%>" onclick="showEntireValue('<%=valueID%>', '<%=nbline%>', '<%=showEntireValueB1%>', '<%=showEntireValueB2%>');">
+                                                                        <input style="display:none; height:20px; width:20px; background-color: <%=color%>; color: red; font-weight:bolder" class="smallbutton" title="Hide Details" type="button" value="-" id="<%=showEntireValueB2%>" onclick="showLessValue('<%=valueID%>', '<%=showEntireValueB1%>', '<%=showEntireValueB2%>');">
+                                                                    </td>
+                                                                    <%} else {%>
+                                                                    <td class="wob" style="background-color: <%=color%>; text-align: center; border-left-color:white">
+                                                                        <% if (tccp.getType().equals("executeSqlFromLib")) {%>
+                                                                        <input style="display:inline; height:20px; width:20px; background-color: <%=color%>; color: orange; font-weight:bolder" class="smallbutton" type="button" value="e" title="Show the SQL" id="<%=sqlDetailsB1%>" onclick="showSqlDetails('<%=sqlDetails%>', '<%=sqlDetailsB1%>', '<%=sqlDetailsB2%>');">
+                                                                        <input style="display:none; height:20px; width:20px; background-color: <%=color%>; color: orange; font-weight:bolder" class="smallbutton" type="button" value="-" title="Hide the SQL" id="<%=sqlDetailsB2%>" onclick="hideSqlDetails('<%=sqlDetails%>', '<%=sqlDetailsB1%>', '<%=sqlDetailsB2%>');">
+                                                                        <% } %>
+                                                                    </td>
+                                                                    <% }%>
+                                                                </tr>
+                                                            </table>
+                                                        </td>
+                                                        <td>
+                                                            <input class="wob" style="width: 40px; background-color : <%=color%>" name="properties_length_<%=incrementProperty%>"
+                                                                   value="<%=tccp.getLength()%>" onchange="trackChanges(this.value, '<%=tccp.getLength()%>', 'SavePropertyChanges')">
+                                                        </td>
+                                                        <td>
+                                                            <input class="wob" style="width: 40px; background-color : <%=color%>" name="properties_rowlimit_<%=incrementProperty%>"
+                                                                   value="<%=tccp.getRowLimit()%>" onchange="trackChanges(this.value, '<%=tccp.getRowLimit()%>', 'SavePropertyChanges')">
+                                                        </td>
+                                                        <td><%=ComboInvariant(appContext, "properties_nature_" + incrementProperty, "width: 80px; background-color:" + color, "properties_nature_" + incrementProperty, "wob", "PROPERTYNATURE", tccp.getNature(), "trackChanges(0, this.selectedIndex, 'submitButtonChanges')", null)%></td>
+                                                    </tr>
+                                                    <%}%>
+                                                </table>
+                                                <br>
+                                                <%  if (canEdit) {%>
+                                                <input type="button" value="Add Property" id="AddProperty"
+                                                       onclick="addTestCasePropertiesNew('testcaseproperties_table', <%=rowNumber%>, <%=size%>, <%=size2%>);
+                                                               enableField('SavePropertyChanges');
+                                                               disableField('AddProperty');">
+                                                <input type="submit" value="Save Changes" id="SavePropertyChanges">              
+                                                <input type="hidden" id="Test" name="Test" value="<%=test%>">
+                                                <input type="hidden" id="TestCase" name="TestCase" value="<%=testcase%>">
+                                                <input type="hidden" name="testcase_hidden" value="<%=test + " - " + testcase%>">
+                                                <input type="hidden" id="CountryList" name="CountryList" value="<%=countries%>">
+                                                <%=ComboInvariant(appContext, "new_properties_type_new_properties_value", "width: 70px;visibility:hidden", "new_properties_type_new_properties_value", "new_properties_type_new_properties_value", "PROPERTYTYPE", "", "", null)%>
+                                                <%=ComboInvariant(appContext, "properties_dtb_", "width: 40px;visibility:hidden", "properties_dtb_", "properties_dtb_", "PROPERTYDATABASE", "", "", null)%>
+                                                <%=ComboInvariant(appContext, "properties_nature_", "width: 80px;visibility:hidden", "properties_nature_", "properties_nature_", "PROPERTYNATURE", "", "", null)%>
+                                                <input type="hidden" name="testcase_hidden" value="<%=test + " - " + testcase%>">
+                                                <input type="hidden" name="testcase_country_hidden" value="<%=countries%>">
+                                                <% }%>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                    <p id ="toto" style="font-size : x-small ; width: <%=size%>px; visibility:hidden">
+                                        <% for (String c : countryListTestcase) {%>
+                                        <%=c%> 
+                                        <% } %>
+                                        <br>
+                                        <% for (String c : countryListTestcase) {
+                                        %>
+                                        <input value="<%=rowNumber%> - <%=c%>" type="checkbox" id="properties_country" 
+                                               name="properties_country" >
+                                        <% } %>
+                                    </p>
+                                    <%
+                                    } else {
+                                    %>
+                                    <table id="nocountrydefined" class="arrond">
+                                        <tr>
+                                            <td class="wob"></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="wob">
+                                                <h3> To add Properties,Actions and controls, select at least one country in the general parameters </h3>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="wob"></td>
+                                        </tr>
+                                    </table>
+                                    <%   } %>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </form>
             <br>
+            <div style="clear:both">
+                <div style="float:left; width: 30px"><%out.print(docService.findLabelHTML("page_testcase", "delete", "Delete"));%></div>
+                <div style="float:left; width: 60px"><%out.print(docService.findLabelHTML("testcasestepaction", "sequence", "Sequence"));%></div>
+            </div>
+            <div style="clear:both">
+                <div style="float:left; width: 30px"><%out.print(docService.findLabelHTML("page_testcase", "delete", "Delete"));%></div>
+                <div style="float:left; width: 60px"><%out.print(docService.findLabelHTML("testcasestepactioncontrol", "sequence", "Sequence"));%></div>
+                <div style="float:left; width: 60px"><%out.print(docService.findLabelHTML("testcasestepactioncontrol", "control", "Control"));%></div>
+                <div style="float:left; width: 150px"><%out.print(docService.findLabelHTML("testcasestepactioncontrol", "type", "Type"));%></div>
+                <div class="technical_part" style="float:left; width: 260px"><%out.print(docService.findLabelHTML("testcasestepactioncontrol", "ControleProperty", "Control Property"));%></div>
+                <div class="technical_part" style="float:left; width: 180px"><%out.print(docService.findLabelHTML("testcasestepactioncontrol", "ControleValue", "Control Value"));%></div>
+                <div class="technical_part" style="float:left; width: 40px"><%out.print(docService.findLabelHTML("testcasestepactioncontrol", "Fatal", "Fatal"));%></div>
+                <div class="functional_description" style="float:left; width: 296px"><%out.print(docService.findLabelHTML("testcasestepactioncontrol", "ControleDescription", "Control Description"));%></div>
+            </div>
             <table id="arrond" style="text-align: left" border="1" >
                 <tr>
                     <td colspan="3">

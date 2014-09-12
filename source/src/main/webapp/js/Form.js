@@ -1596,39 +1596,41 @@ function checkForm() {
 
 function addTestCaseActionNew(table, step) {
 
-    var incAct = document.getElementById('incrementActionNumber').value;
+    var incAct = document.getElementById('incrementActionNumber'+step).value;
     var inc = incAct;
     incAct++;
-    TR = document.createElement('tr');
+    var DIV = document.createElement('div');
+    
+    var StepNum = document.getElementById('initial_step_number_'+step).value;
 
     /* Delete box */
     var form1 = document.createElement('input'); /* Create form */
     form1.setAttribute('type', 'checkbox');
-    form1.setAttribute('style', 'height : 20px');
+    form1.setAttribute('style', 'width: 30px; background-color: transparent');
+    form1.setAttribute('value', '');
     form1.setAttribute('class', 'wob');
-    form1.setAttribute('name', 'action_delete_'+incAct);
-    var TD1 = document.createElement('td'); /* Create column */
-    TD1.setAttribute('style', 'text-align:center');
-    TD1.setAttribute('style', 'background-color:white; text-align: center');
-    TD1.appendChild(form1); /* Add form to column */
+    form1.setAttribute('name', 'action_delete_'+step+incAct);
+    var DIV1 = document.createElement('div'); /* Create column */
+    DIV1.setAttribute('style', 'display:inline-block;float:left;height:50px;background-color: transparent');
+    DIV1.appendChild(form1); /* Add form to column */
 
     var form = document.createElement('input');
     form.setAttribute('type', 'hidden');
     form.setAttribute('name', 'action_increment');
-    form.setAttribute('value', incAct);
-    TD1.appendChild(form);
+    form.setAttribute('value', step+incAct);
+    DIV1.appendChild(form);
     
     var form11 = document.createElement('input');
     form11.setAttribute('type', 'hidden');
-    form11.setAttribute('name', 'action_step_'+incAct);
-    form11.setAttribute('value', step);
-    TD1.appendChild(form11);
+    form11.setAttribute('name', 'action_step_'+step+incAct);
+    form11.setAttribute('value', StepNum);
+    DIV1.appendChild(form11);
     
-    TR.appendChild(TD1);
+    DIV.appendChild(DIV1);
 
     /* Sequence */
 
-    var value = getMaxValueForParentElementIdAndElementName(table, 'action_sequence_'+inc);
+    var value = getMaxValueForParentElementIdAndElementName(table, 'action_sequence_'+step+inc);
 
     if (value && parseInt(value) > 0) {
         value = parseInt(value) + 10;
@@ -1637,87 +1639,118 @@ function addTestCaseActionNew(table, step) {
     }
 
     var form2 = document.createElement('input');
-    form2.setAttribute('name', 'action_sequence_'+incAct);
+    form2.setAttribute('name', 'action_sequence_'+step+incAct);
+    form2.setAttribute('id', 'action_sequence_'+step+incAct);
     form2.setAttribute('size', '6%');
     form2.setAttribute('style',
-                    'width: 60px ;font-weight: bold;font-style: italic; color: #FF0000;');
-    form2.setAttribute('onfocus', 'keyOnFocus(this)');
+                    'width: 60px; font-weight: bold; background-color: transparent; height:100%; color: #FF0000;');
     form2.setAttribute('class', 'wob');
-    form2.setAttribute('onblur', 'keyOnBlur(this)');
     form2.setAttribute('value', value);
-    var TD2 = document.createElement('td');
-    TD2.setAttribute('style', 'background-color:white; text-align: center');
-    TD2.appendChild(form2);
-    TR.appendChild(TD2);
+    var DIV2 = document.createElement('div');
+    DIV2.setAttribute('style', 'height:50px;display:inline-block;float:left');
+    DIV2.appendChild(form2);
+    DIV.appendChild(DIV2);
 
-    /* Action */
-    var form3 = document.createElement('select');
+    /* Picture */
+    var form31 = document.createElement('p');
+    form31.innerHTML = 'A';
+    var DIV3 = document.createElement('div');
+    DIV3.setAttribute('style', 'height:100%;width:3%;float:left;color:blue;font-weight:bold;font-size:10px ;font-family: Trebuchet MS; background-color: transparent');
+    DIV3.appendChild(form31);
+    DIV.appendChild(DIV3);
+    
+    /* Button */
+    var form41 = document.createElement('input');
+    form41.setAttribute('type', 'button');
+    form41.setAttribute('value', '+A');
+    form41.setAttribute('onclick', 'addTestCaseActionNew(\'Action'+step+', '+step+')');
+    var DIV41 = document.createElement('div');
+    DIV41.setAttribute('style', 'height:100%;width:100%;clear:both;color:blue;font-weight:bold;font-size:10px ;font-family: Trebuchet MS; background-color: transparent');
+    DIV41.appendChild(form41);
+    
+    var form42 = document.createElement('input');
+    form42.setAttribute('type', 'button');
+    form42.setAttribute('value', '+C');
+    form42.setAttribute('onclick', 'addTestCaseControl(\'control_table'+step+', '+step+')');
+    var DIV42 = document.createElement('div');
+    DIV42.setAttribute('style', 'height:100%;width:100%;clear:both;color:blue;font-weight:bold;font-size:10px ;font-family: Trebuchet MS; background-color: transparent');
+    DIV42.appendChild(form42);
+    var DIV4 = document.createElement('div');
+    DIV4.setAttribute('style', 'height:100%;width:3%;float:left;color:blue;font-weight:bold;font-size:10px ;font-family: Trebuchet MS; background-color: transparent');
+    DIV4.appendChild(DIV41);
+    DIV4.appendChild(DIV42);
+    DIV.appendChild(DIV4);
+
+    var form511 = document.createElement('input');
+    form511.setAttribute('name', 'action_description_'+step+incAct);
+    form511.setAttribute('id', 'action_description_'+step+incAct);
+    form511.setAttribute('placeholder', 'Description');
+    form511.setAttribute('style',
+                    'width: 100%; background-color: transparent; font-weight:bold;font-size:15px ;font-family: Trebuchet MS; color:#333333 ');
+    form511.setAttribute('class', 'wob functional_description');
+    var DIV511 = document.createElement('div');
+    DIV511.setAttribute('style', 'float:left; width:80%');
+    DIV511.appendChild(form511);
+    var DIV51 = document.createElement('div');
+    DIV51.setAttribute('style', 'height:30px;display:inline-block;clear:both;width:100%; background-color: transparent');
+    DIV51.setAttribute('class', 'functional_description');
+    DIV51.appendChild(DIV511);
+    
+    var form521 = document.createElement('select');
     if (document.getElementById("action_action_temp")) {
-        form3.setAttribute('name', 'action_action_'+incAct);
-        form3.setAttribute('style', 'width: 100%');
-        form3.setAttribute('class', 'wob');
-        form3.innerHTML = (form3.innerHTML + document
+        form521.setAttribute('name', 'action_action_'+step+incAct);
+        form521.setAttribute('style', 'width: 100%');
+        form521.setAttribute('class', 'wob');
+        form521.innerHTML = (form521.innerHTML + document
                 .getElementById('action_action_temp').innerHTML);
     }
-    var TD3 = document.createElement('td');
-    TD3.setAttribute('style', 'background-color:white; text-align: center');
-    TD3.appendChild(form3);
-    TR.appendChild(TD3);
+    var DIV521 = document.createElement('div');
+    DIV521.setAttribute('style', 'width: 10%; float:left; background-color: transparent');
+    DIV521.setAttribute('class', 'technical_part');
+    DIV521.appendChild(form521);
+    
+    
+    var form522 = document.createElement('input');
+    form522.setAttribute('name', 'action_object_'+step+incAct);
+    form522.setAttribute('id', 'action_object_'+step+incAct);
+    form522.setAttribute('style',
+                    'background-color: transparent;');
+    form522.setAttribute('class', 'wob');
+    form522.setAttribute('class', 'functional_description');
+    var DIV522 = document.createElement('div');
+    DIV522.setAttribute('style', 'width: 30%; float:left; background-color: transparent');
+    DIV522.setAttribute('class', 'technical_part');
+    DIV522.appendChild(form522);
+    
+    var form523 = document.createElement('input');
+    form523.setAttribute('name', 'action_property_'+step+incAct);
+    form523.setAttribute('id', 'action_property_'+step+incAct);
+    form523.setAttribute('style',
+                    'background-color: transparent;');
+    form523.setAttribute('class', 'wob property_value');
+    form523.setAttribute('class', 'technical_part');
+    var DIV523 = document.createElement('div');
+    DIV523.setAttribute('style', 'width: 20%; float:left; background-color: transparent');
+    DIV523.setAttribute('class', 'technical_part');
+    DIV523.appendChild(form523);
+    
+    var DIV52 = document.createElement('div');
+    DIV52.setAttribute('style', 'display:inline-block;clear:both; height:20px;width:100%;background-color:transparent');
+    DIV52.appendChild(DIV521);
+    DIV52.appendChild(DIV522);
+    DIV52.appendChild(DIV523);
+                                                           
+    var DIV5 = document.createElement('div');
+    DIV5.setAttribute('style', 'height:100%;width:80%;float:left; display:inline-block');
+    DIV5.appendChild(DIV51);
+    DIV5.appendChild(DIV52);
+    DIV.setAttribute('class', 'RowActionDiv');
+    DIV.setAttribute('style', 'display:inline-block;height:100%;width:100%;');
+    DIV.appendChild(DIV5);
+    
 
-    /* Object */
-    var form4 = document.createElement('input');
-    form4.setAttribute('name', 'action_object_'+incAct);
-    form4.setAttribute('size', '100%');
-    form4.setAttribute('class', 'wob');
-    form4.setAttribute('style', 'width: 350px');
-    var TD4 = document.createElement('td');
-    TD4.setAttribute('style', 'background-color:white; text-align: center');
-    if (displayOnlyFunctional) {
-        TD4.setAttribute('class', 'technical_part only_functional');
-    } else {
-        TD4.setAttribute('class', 'technical_part');
-    }
-    TD4.appendChild(form4);
-    TR.appendChild(TD4);
-
-    /* Property */
-    var form5 = document.createElement('input');
-    form5.setAttribute('name', 'action_property_'+incAct);
-    form5.setAttribute('size', '100%');
-    form5.setAttribute('class', 'wob');
-    form5.setAttribute('style', 'width: 210px');
-    var TD5 = document.createElement('td');
-    TD5.setAttribute('style', 'background-color:white; text-align: center');
-    if (displayOnlyFunctional) {
-        TD5.setAttribute('class', 'technical_part only_functional');
-    } else {
-        TD5.setAttribute('class', 'technical_part');
-    }
-    TD5.appendChild(form5);
-    TR.appendChild(TD5);
-
-    /* Description */
-    var form6 = document.createElement('input');
-    form6.setAttribute('name', 'action_description_'+incAct);
-    form6.setAttribute('size', '100%');
-    if (displayOnlyFunctional) {
-        form6.setAttribute('class', 'wob functional_description only_functional_description_size');
-    } else {
-        form6.setAttribute('class', 'wob functional_description');
-    }
-    form6.setAttribute('style', 'width: 100%');
-    var TD6 = document.createElement('td');
-    TD6.setAttribute('style', 'background-color:white;');
-    if (displayOnlyFunctional) {
-        TD6.setAttribute('class', 'functional_description only_functional_description_size');
-    } else {
-        TD6.setAttribute('class', 'functional_description');
-    }
-    TD6.appendChild(form6);
-    TR.appendChild(TD6);
-
-    document.getElementById(table).appendChild(TR);
-    document.getElementById('incrementActionNumber').value=incAct;
+    document.getElementById(table).appendChild(DIV);
+    document.getElementById('incrementActionNumber'+step).value=incAct;
 }
 
 var numberOfCall = 0;
@@ -2159,5 +2192,9 @@ function submitTestCaseModificationNew(anchor) {
     }
 
     return false;
+}
+
+function insertAfter(newNode, referenceNode) {
+    referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
 }
 
