@@ -3691,7 +3691,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS = new StringBuilder();
         SQLS.append("DROP TABLE `usersystem` ;");
         SQLInstruction.add(SQLS.toString());
-        
+
         SQLS = new StringBuilder();
         SQLS.append("CREATE TABLE `usersystem` (");
         SQLS.append("  `Login` VARCHAR(10) NOT NULL,");
@@ -3700,13 +3700,12 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(" CONSTRAINT `FK_usersystem_01` FOREIGN KEY (`Login` ) REFERENCES `user` (`Login`) ON DELETE CASCADE ON UPDATE CASCADE ");
         SQLS.append(") ENGINE=InnoDB DEFAULT CHARSET=utf8 ;");
         SQLInstruction.add(SQLS.toString());
-        
+
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO usersystem ");
         SQLS.append(" SELECT u.login, i.value FROM user u, invariant i WHERE i.idname='SYSTEM';");
         SQLInstruction.add(SQLS.toString());
-        
-        
+
 // Creating new tables for test data.
 //-- ------------------------ 525-526
         SQLS = new StringBuilder();
@@ -3834,7 +3833,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS = new StringBuilder();
         SQLS.append("DELETE FROM invariant where idname='EXECNBMIN' or (idname='INVARIANTPUBLIC' and value='EXECNBMIN');");
         SQLInstruction.add(SQLS.toString());
-                
+
 //Update documentation for new properties %SYS_ELAPSED-EXESTART% and %SYS_ELAPSED-STEPSTART%
 //-- ------------------------ 541
         SQLS = new StringBuilder();
@@ -3847,7 +3846,16 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("ALTER TABLE `testcase` DROP COLUMN `Sla`;");
         SQLInstruction.add(SQLS.toString());
 
-
+// Resizing invariant table column.
+//-- ------------------------ 543
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `invariant` ");
+        SQLS.append("CHANGE COLUMN `value` `value` VARCHAR(255) NOT NULL , ");
+        SQLS.append("CHANGE COLUMN `description` `description` VARCHAR(255) NOT NULL , ");
+        SQLS.append("CHANGE COLUMN `gp1` `gp1` VARCHAR(255) NULL DEFAULT NULL , ");
+        SQLS.append("CHANGE COLUMN `gp2` `gp2` VARCHAR(255) NULL DEFAULT NULL , ");
+        SQLS.append("CHANGE COLUMN `gp3` `gp3` VARCHAR(255) NULL DEFAULT NULL");
+        SQLInstruction.add(SQLS.toString());
 
         return SQLInstruction;
     }
