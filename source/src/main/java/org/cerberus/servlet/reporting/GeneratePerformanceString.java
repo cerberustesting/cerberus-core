@@ -40,7 +40,7 @@ public class GeneratePerformanceString {
         StringBuilder datas = new StringBuilder();
         PreparedStatement stmt = conn.prepareStatement("select id, `Start` as startdate, "
                 + " UNIX_TIMESTAMP(End)-UNIX_TIMESTAMP(Start) as duration , substr(`start`,1, 16) as sub, "
-                + " description, SLA "
+                + " description "
                 + " from testcaseexecution a join testcase b "
                 + " on a.test=b.test and a.testcase=b.testcase "
                 + " where a.test = ? and a.testcase = ? and a.controlstatus = ?"
@@ -77,7 +77,7 @@ public class GeneratePerformanceString {
         
         PreparedStatement stmt2 = conn.prepareStatement("select id, `Start` as startdate, "
                 + " UNIX_TIMESTAMP(End)-UNIX_TIMESTAMP(Start) as duration , substr(`start`,1, 16) as sub, "
-                + " description, SLA "
+                + " description "
                 + " from testcaseexecution a join testcase b "
                 + " on a.test=b.test and a.testcase=b.testcase "
                 + " where a.test = ? and a.testcase = ? and a.controlstatus = ?"
