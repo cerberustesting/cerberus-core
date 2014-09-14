@@ -77,7 +77,7 @@ public enum MessageEventEnum {
     PROPERTY_FAILED_GETFROMCOOKIE_COOKIENOTFOUND(187, "NA", "Failed to get Parameter '%PARAM%' because could not find cookie '%COOKIE%'!", true, true ,true , MessageGeneralEnum.EXECUTION_FA),
     PROPERTY_FAILED_GETFROMCOOKIE_PARAMETERNOTFOUND(187, "NA", "Cannot find Parameter '%PARAM%' form Cookie '%COOKIE%'. Parameter do not exist or is not supported!", true, true ,true , MessageGeneralEnum.EXECUTION_FA),
     PROPERTY_FAILED_GETDIFFERENCESFROMXML(188, "NA", "Failed to compute differences from '%VALUE1%' and '%VALUE2%'", true, true ,false , MessageGeneralEnum.EXECUTION_FA),
-    PROPERTY_FAILED_CYCLICDEFINITION(189, "KO", "Property %PROP% is cyclically defined", true, false ,false , MessageGeneralEnum.EXECUTION_FA),
+    PROPERTY_FAILED_CYCLICDEFINITION(189, "FA", "Property %PROP% is cyclically defined", true, false ,false , MessageGeneralEnum.EXECUTION_FA),
     PROPERTY_PENDING(199, "PE", "Calculating property...", false, false ,false , MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     ACTION_SUCCESS(200, "OK", "", false, false ,false , MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     ACTION_SUCCESS_CLICK(200, "OK", "Element '%ELEMENT%' clicked.", false, false ,false , MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
