@@ -20,7 +20,6 @@
 package org.cerberus.serviceEngine.impl;
 
 import java.util.Date;
-import java.util.List;
 
 import org.apache.log4j.Level;
 import org.cerberus.entity.MessageEvent;
@@ -30,6 +29,7 @@ import org.cerberus.entity.SoapLibrary;
 import org.cerberus.entity.TestCaseExecution;
 import org.cerberus.entity.TestCaseExecutionData;
 import org.cerberus.entity.TestCaseStepActionExecution;
+import org.cerberus.exception.CerberusEventException;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.log.MyLogger;
 import org.cerberus.service.ISoapLibraryService;
@@ -65,12 +65,20 @@ public class ActionService implements IActionService {
 
     @Override
     public TestCaseStepActionExecution doAction(TestCaseStepActionExecution testCaseStepActionExecution) {
-        /**
-         * Decode the 2 fields property and values before doing the control.
+    	MessageEvent res;
+    	
+    	/**
+         * Decode the object field before doing the action.
          */
         if (testCaseStepActionExecution.getObject().contains("%")) {
-            String decodedValue = propertyService.decodeValue(testCaseStepActionExecution.getObject(), testCaseStepActionExecution.getTestCaseExecutionDataList(), testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution());
-            testCaseStepActionExecution.setObject(decodedValue);
+        	try {
+        		testCaseStepActionExecution.setObject(propertyService.decodeValue(testCaseStepActionExecution.getObject(), testCaseStepActionExecution));
+        	}
+        	catch (CerberusEventException cex) {
+        		testCaseStepActionExecution.setActionResultMessage(cex.getMessageError());
+        		testCaseStepActionExecution.setExecutionResultMessage(new MessageGeneral(cex.getMessageError().getMessage()));
+        		return testCaseStepActionExecution;
+        	}
         }
 
         /**
@@ -83,8 +91,6 @@ public class ActionService implements IActionService {
         String property = testCaseStepActionExecution.getProperty();
         String propertyName = testCaseStepActionExecution.getPropertyName();
         MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Doing Action : " + testCaseStepActionExecution.getAction() + " with object : " + object + " and property : " + property);
-
-        MessageEvent res = null;
 
         TestCaseExecution tCExecution = testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution();
         //TODO On JDK 7 implement switch with string
@@ -151,10 +157,10 @@ public class ActionService implements IActionService {
             res = this.doActionManageDialog(tCExecution, object, property);
 
         } else if (testCaseStepActionExecution.getAction().equals("callSoapWithBase")) {
-            res = this.doActionMakeSoapCall(tCExecution,testCaseStepActionExecution.getTestCaseExecutionDataList(), object, true);
+            res = this.doActionMakeSoapCall(testCaseStepActionExecution, object, true);
 
         } else if (testCaseStepActionExecution.getAction().equals("callSoap")) {
-            res = this.doActionMakeSoapCall(tCExecution,testCaseStepActionExecution.getTestCaseExecutionDataList(), object, false);
+            res = this.doActionMakeSoapCall(testCaseStepActionExecution, object, false);
 
         } else if (testCaseStepActionExecution.getAction().equals("mouseDownMouseUp")) {
             res = this.doActionMouseDownMouseUp(tCExecution, object, property);
@@ -391,8 +397,9 @@ public class ActionService implements IActionService {
 
     }
 
-    private MessageEvent doActionMakeSoapCall(TestCaseExecution tCExecution,List<TestCaseExecutionData> testCaseExecutionDataList, String object, boolean withBase) {
+    private MessageEvent doActionMakeSoapCall(TestCaseStepActionExecution testCaseStepActionExecution, String object, boolean withBase) {
         MessageEvent message;
+        TestCaseExecution tCExecution = testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution();
         //if (tCExecution.getApplication().getType().equalsIgnoreCase("WS")) {
         try {
             SoapLibrary soapLibrary = soapLibraryService.findSoapLibraryByKey(object);
@@ -407,7 +414,14 @@ public class ActionService implements IActionService {
              */
             String decodedEnveloppe = soapLibrary.getEnvelope();
             if (soapLibrary.getEnvelope().contains("%")) {
-                decodedEnveloppe = propertyService.decodeValue(soapLibrary.getEnvelope(), testCaseExecutionDataList, tCExecution);
+            	try {
+            		decodedEnveloppe = propertyService.decodeValue(soapLibrary.getEnvelope(), testCaseStepActionExecution);
+            	} catch (CerberusEventException cee) {
+            		message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSOAP);
+                    message.setDescription(message.getDescription().replaceAll("%SOAPNAME%", object));
+                    message.setDescription(message.getDescription().replaceAll("%DESCRIPTION%", cee.getMessageError().getDescription()));
+                    return message;
+            	}
             }
             return soapService.callSOAPAndStoreResponseInMemory(tCExecution.getExecutionUUID(), decodedEnveloppe, servicePath, soapLibrary.getMethod());
         } catch (CerberusException ex) {

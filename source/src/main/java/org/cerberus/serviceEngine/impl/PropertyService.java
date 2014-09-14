@@ -19,9 +19,11 @@
  */
 package org.cerberus.serviceEngine.impl;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
+
 import org.apache.log4j.Level;
 import org.cerberus.entity.MessageEvent;
 import org.cerberus.entity.MessageEventEnum;
@@ -31,11 +33,15 @@ import org.cerberus.entity.TestCaseCountryProperties;
 import org.cerberus.entity.TestCaseExecution;
 import org.cerberus.entity.TestCaseExecutionData;
 import org.cerberus.entity.TestCaseStepActionExecution;
+import org.cerberus.exception.CerberusEventException;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.factory.IFactoryTestCaseExecutionData;
 import org.cerberus.log.MyLogger;
 import org.cerberus.service.ISoapLibraryService;
 import org.cerberus.service.ISqlLibraryService;
+import org.cerberus.service.ITestCaseExecutionDataService;
 import org.cerberus.service.ITestDataService;
+import org.cerberus.service.impl.TestCaseCountryPropertiesService;
 import org.cerberus.serviceEngine.IPropertyService;
 import org.cerberus.serviceEngine.ISQLService;
 import org.cerberus.serviceEngine.ISeleniumService;
@@ -44,6 +50,7 @@ import org.cerberus.serviceEngine.IXmlUnitService;
 import org.cerberus.util.DateUtil;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
+import org.cerberus.util.TestCaseExecutionDataUtil;
 import org.openqa.selenium.NoSuchElementException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -56,6 +63,8 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class PropertyService implements IPropertyService {
+	
+	private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(PropertyService.class);
 
     @Autowired
     private ISeleniumService seleniumService;
@@ -71,9 +80,14 @@ public class PropertyService implements IPropertyService {
     private ISQLService sQLService;
     @Autowired
     private IXmlUnitService xmlUnitService;
-
-    @Override
-    public TestCaseExecutionData calculateProperty(TestCaseExecutionData testCaseExecutionData, TestCaseStepActionExecution testCaseStepActionExecution, TestCaseCountryProperties testCaseCountryProperty) {
+    @Autowired
+    private TestCaseCountryPropertiesService testCaseCountryPropertiesService;
+    @Autowired
+    private IFactoryTestCaseExecutionData factoryTestCaseExecutionData;
+    @Autowired
+    private ITestCaseExecutionDataService testCaseExecutionDataService;
+    
+    private TestCaseExecutionData calculateProperty(TestCaseExecutionData testCaseExecutionData, TestCaseStepActionExecution testCaseStepActionExecution, TestCaseCountryProperties testCaseCountryProperty) {
         testCaseExecutionData.setStart(new Date().getTime());
         MessageEvent res;
 
@@ -82,16 +96,27 @@ public class PropertyService implements IPropertyService {
         /**
          * Decode Property replacing properties encaplsulated with %
          */
-        if (testCaseCountryProperty.getValue1().contains("%")) {
-            String decodedValue = this.decodeValue(testCaseCountryProperty.getValue1(), testCaseStepActionExecution.getTestCaseExecutionDataList(), tCExecution);
-            testCaseExecutionData.setValue(decodedValue);
-            testCaseExecutionData.setValue1(decodedValue);
-            testCaseCountryProperty.setValue1(decodedValue);
+        try {
+	        if (testCaseCountryProperty.getValue1().contains("%")) {
+	            String decodedValue = this.decodeValue(testCaseCountryProperty.getValue1(), testCaseStepActionExecution);
+	            testCaseExecutionData.setValue(decodedValue);
+	            testCaseExecutionData.setValue1(decodedValue);
+	            testCaseCountryProperty.setValue1(decodedValue);
+	        }
+        } catch (CerberusEventException ex) {
+        	testCaseExecutionData.setPropertyResultMessage(ex.getMessageError());
+            return testCaseExecutionData;
         }
-        if (testCaseCountryProperty.getValue2() != null && testCaseCountryProperty.getValue2().contains("%")) {
-            String decodedValue = this.decodeValue(testCaseCountryProperty.getValue2(), testCaseStepActionExecution.getTestCaseExecutionDataList(), tCExecution);
-            testCaseExecutionData.setValue2(decodedValue);
-            testCaseCountryProperty.setValue2(decodedValue);
+        
+        try {
+	        if (testCaseCountryProperty.getValue2() != null && testCaseCountryProperty.getValue2().contains("%")) {
+	            String decodedValue = this.decodeValue(testCaseCountryProperty.getValue2(), testCaseStepActionExecution);
+	            testCaseExecutionData.setValue2(decodedValue);
+	            testCaseCountryProperty.setValue2(decodedValue);
+	        }
+        } catch (CerberusEventException ex) {
+        	testCaseExecutionData.setPropertyResultMessage(ex.getMessageError());
+            return testCaseExecutionData;
         }
 
         /**
@@ -129,10 +154,122 @@ public class PropertyService implements IPropertyService {
         testCaseExecutionData.setEnd(new Date().getTime());
         return testCaseExecutionData;
     }
-
+    
     @Override
-    public String decodeValue(String myString, List<TestCaseExecutionData> properties, TestCaseExecution tCExecution) {
+    public TestCaseExecutionData calculateProperty(String property, TestCaseStepActionExecution testCaseStepActionExecution) {
+    	return calculateProperty(property, new ArrayList<String>(), testCaseStepActionExecution);
+    }
+    
+    private TestCaseExecutionData calculateProperty(String property, List<String> crossedProperties, TestCaseStepActionExecution testCaseStepActionExecution) {
+        // Data initialization
+        String test = testCaseStepActionExecution.getTest();
+        String testCase = testCaseStepActionExecution.getTestCase();
+        String country = testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getCountry();
+        TestCaseExecution tCExecution = testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution();
+        long now = new Date().getTime();
+        TestCaseExecutionData testCaseExecutionData = factoryTestCaseExecutionData.create(tCExecution.getId(), property, null, null, null, null, null, null, now, now, now, now, new MessageEvent(MessageEventEnum.PROPERTY_PENDING));
+        
+        // Check if property is not already known (recursive case)
+        if (crossedProperties.contains(property)) {
+            MessageEvent msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_CYCLICDEFINITION);
+            msg.setDescription(msg.getDescription().replaceAll("%PROP%", property));
+            testCaseExecutionData.setPropertyResultMessage(msg);
+            try {
+                testCaseExecutionDataService.insertTestCaseExecutionData(testCaseExecutionData);
+                tCExecution.getTestCaseExecutionDataList().add(testCaseExecutionData);
+            } catch (CerberusException cex) {
+                LOG.error(null, cex);
+            }
+            return testCaseExecutionData;
+        }
+        crossedProperties.add(property);
 
+        
+        // Check if property has already been calculated
+        for (TestCaseExecutionData alreadyBeenCalculatedTestCaseExecutionData : tCExecution.getTestCaseExecutionDataList()) {
+            if (alreadyBeenCalculatedTestCaseExecutionData.getProperty().equalsIgnoreCase(property)) {
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("Property " + property + " has already been calculated");
+                }
+                return alreadyBeenCalculatedTestCaseExecutionData;
+            }
+        }
+       
+        // Get property from database
+        TestCaseExecutionDataUtil.resetTimers(testCaseExecutionData, new Date().getTime());
+        TestCaseCountryProperties testCaseCountryProperty = null;
+        try {
+            testCaseCountryProperty = testCaseCountryPropertiesService.findTestCaseCountryPropertiesByKey(test, testCase, country, property);
+        } catch (CerberusException cex) {
+            MessageEvent msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_NO_PROPERTY_DEFINITION);
+            msg.setDescription(msg.getDescription().replaceAll("%COUNTRY%", country));
+            msg.setDescription(msg.getDescription().replaceAll("%PROP%", property));
+            testCaseExecutionData.setPropertyResultMessage(msg);
+            try {
+                testCaseExecutionDataService.insertTestCaseExecutionData(testCaseExecutionData);
+                tCExecution.getTestCaseExecutionDataList().add(testCaseExecutionData);
+            } catch (CerberusException cex2) {
+                LOG.error(null, cex2);
+            }
+            return testCaseExecutionData;
+        }
+        
+		// Check if property value1 contains internal properties
+		for (String internalProperty : StringUtil.getAllProperties(testCaseCountryProperty.getValue1())) {
+			// If the internal property is defined in the test case then we trigger a calculation
+			boolean isADefinedProperty = false;
+			List<TestCaseCountryProperties> definedProperties = testCaseCountryPropertiesService.findDistinctPropertiesOfTestCase(test, testCase);
+			for (TestCaseCountryProperties definedProperty : definedProperties) {
+				if (internalProperty.equals(definedProperty.getProperty())) {
+					isADefinedProperty = true;
+					break;
+				}
+			}
+
+			// If it is not a defined property then we don't have to calculate
+			// it
+			if (!isADefinedProperty) {
+				continue;
+			}
+
+			// Calculate each of the internal properties recursively
+			if (LOG.isDebugEnabled()) {
+				LOG.debug("Calculating internal property " + internalProperty);
+			}
+			TestCaseExecutionData internalTestCaseExecutionData = calculateProperty(internalProperty, crossedProperties, testCaseStepActionExecution);
+			// If an error occurred then it is not necessary to continue calculation
+			if (internalTestCaseExecutionData.getPropertyResultMessage().getCode() % 100 != 0) {
+				return internalTestCaseExecutionData;
+			}
+		}
+        
+        // Feed our TestCaseExecutionData with data from database
+        testCaseExecutionData.setType(testCaseCountryProperty.getType());
+        testCaseExecutionData.setValue1(testCaseCountryProperty.getValue1());
+        testCaseExecutionData.setValue2(testCaseCountryProperty.getValue2());
+        testCaseExecutionData.setTestCaseCountryProperties(testCaseCountryProperty);
+        
+        // Calculate our property
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Calculating property " + property);
+        }
+        testCaseExecutionData = calculateProperty(testCaseExecutionData, testCaseStepActionExecution, testCaseCountryProperty);
+        
+        // Finally store result and return it
+        try {
+            testCaseExecutionDataService.insertTestCaseExecutionData(testCaseExecutionData);
+            tCExecution.getTestCaseExecutionDataList().add(testCaseExecutionData);
+        } catch (CerberusException cex) {
+            LOG.error(null, cex);
+        }
+        return testCaseExecutionData;
+    }
+    
+    @Override
+    public String decodeValue(String myString, TestCaseStepActionExecution testCaseStepActionExecution) throws CerberusEventException {
+    	TestCaseExecution tCExecution = testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution();
+    	List<TestCaseExecutionData> properties = tCExecution.getTestCaseExecutionDataList();
+    	
         /**
          * Trying to replace by system environment variables .
          */
@@ -173,7 +310,25 @@ public class PropertyService implements IPropertyService {
                 myString = StringUtil.replaceAllProperties(myString, "%" + prop.getProperty() + "%", ParameterParserUtil.securePassword(prop.getValue(), prop.getProperty()));
             }
         }
+        
+        List<String> internalProperties = StringUtil.getAllProperties(myString);
+        if (internalProperties.isEmpty()) {
+            return myString;
+        }
 
+        List<TestCaseCountryProperties> tcProperties = testCaseCountryPropertiesService.findDistinctPropertiesOfTestCase(tCExecution.getTest(), tCExecution.getTestCase());
+        for (String internalProperty : internalProperties) {
+            for (TestCaseCountryProperties tctProperty : tcProperties) {
+                if (internalProperty.equals(tctProperty.getProperty())) {
+                	TestCaseExecutionData internalData = calculateProperty(internalProperty, new ArrayList<String>(), testCaseStepActionExecution);
+                	if (internalData.getPropertyResultMessage().getCode() % 100 != 0) {
+                    	throw new CerberusEventException(internalData.getPropertyResultMessage());
+                    }
+                	myString = StringUtil.replaceAllProperties(myString, "%" + internalProperty + "%", internalData.getValue());
+                }
+            }
+        }
+        
         return myString;
     }
 

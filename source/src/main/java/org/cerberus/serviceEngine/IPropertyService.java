@@ -20,12 +20,9 @@
 package org.cerberus.serviceEngine;
 
 
-import java.util.List;
-
-import org.cerberus.entity.TestCaseCountryProperties;
-import org.cerberus.entity.TestCaseExecution;
 import org.cerberus.entity.TestCaseExecutionData;
 import org.cerberus.entity.TestCaseStepActionExecution;
+import org.cerberus.exception.CerberusEventException;
 
 /**
  * {Insert class description here}
@@ -35,9 +32,9 @@ import org.cerberus.entity.TestCaseStepActionExecution;
  * @since 2.0.0
  */
 public interface IPropertyService {
-
-    TestCaseExecutionData calculateProperty(TestCaseExecutionData testCaseExecutionData, TestCaseStepActionExecution testCaseStepActionExecution, TestCaseCountryProperties testCaseCountryProperty);
-    
-    String decodeValue(String myString, List<TestCaseExecutionData> properties, TestCaseExecution tCExecution);
+	
+	TestCaseExecutionData calculateProperty(String property, TestCaseStepActionExecution testCaseStepActionExecution);
+	
+    String decodeValue(String myString, TestCaseStepActionExecution testCaseStepActionExecution) throws CerberusEventException;
     
 }
