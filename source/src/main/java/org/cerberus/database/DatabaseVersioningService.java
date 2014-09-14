@@ -3830,7 +3830,11 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLInstruction.add(SQLS.toString());
 
 
-
+// Cleaning EXECNBMIN invariant as not used anymore following filter on before date.
+//-- ------------------------ 534-539
+        SQLS = new StringBuilder();
+        SQLS.append("DELETE FROM invariant where idname='EXECNBMIN' or (idname='INVARIANTPUBLIC' and value='EXECNBMIN');");
+        SQLInstruction.add(SQLS.toString());
 
         return SQLInstruction;
     }
