@@ -315,9 +315,9 @@ public class TestCaseDAO implements ITestCaseDAO {
                 .append("`Group`, `Origine`, `RefOrigine`, `HowTo`, `Comment`, ")
                 .append("`FromBuild`, `FromRev`, `ToBuild`, `ToRev`, ")
                 .append("`BugID`, `TargetBuild`, `TargetRev`, `Creator`, ")
-                .append("`Implementer`, `LastModifier`, `Sla`, `function`, `activeQA`, `activeUAT`, `activePROD`) ")
+                .append("`Implementer`, `LastModifier`, `function`, `activeQA`, `activeUAT`, `activePROD`) ")
                 .append("VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ")
-                .append("?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? ); ");
+                .append("?, ?, ?, ?, ?, ?, ?, ?, ?, ? ); ");
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -349,11 +349,10 @@ public class TestCaseDAO implements ITestCaseDAO {
                 preStat.setString(24, ParameterParserUtil.parseStringParam(testCase.getCreator(), ""));
                 preStat.setString(25, ParameterParserUtil.parseStringParam(testCase.getImplementer(), ""));
                 preStat.setString(26, ParameterParserUtil.parseStringParam(testCase.getLastModifier(), ""));
-                preStat.setString(27, "");
-                preStat.setString(28, ParameterParserUtil.parseStringParam(testCase.getFunction(), ""));
+                preStat.setString(27, ParameterParserUtil.parseStringParam(testCase.getFunction(), ""));
+                preStat.setString(28, testCase.getRunQA() != null && !testCase.getRunQA().equals("Y") ? "N" : "Y");
                 preStat.setString(29, testCase.getRunQA() != null && !testCase.getRunQA().equals("Y") ? "N" : "Y");
-                preStat.setString(30, testCase.getRunQA() != null && !testCase.getRunQA().equals("Y") ? "N" : "Y");
-                preStat.setString(31, testCase.getRunQA() != null && !testCase.getRunQA().equals("N") ? "Y" : "N");
+                preStat.setString(30, testCase.getRunQA() != null && !testCase.getRunQA().equals("N") ? "Y" : "N");
 
                 res = preStat.executeUpdate() > 0;
             } catch (SQLException exception) {

@@ -64,11 +64,11 @@ public class ControlService implements IControlService {
          * Decode the 2 fields property and values before doing the control.
          */
         if (testCaseStepActionControlExecution.getControlProperty().contains("%")) {
-            String decodedValue = propertyService.decodeValue(testCaseStepActionControlExecution.getControlProperty(), testCaseStepActionControlExecution.getTestCaseStepActionExecution().getTestCaseExecutionDataList(), testCaseStepActionControlExecution.getTestCaseStepActionExecution().getTestCaseStepExecution().gettCExecution());
+            String decodedValue = propertyService.decodeValue(testCaseStepActionControlExecution.getControlProperty(), testCaseStepActionControlExecution.getTestCaseStepActionExecution().getTestCaseExecutionDataList(), testCaseStepActionControlExecution.getTestCaseStepActionExecution().getTestCaseStepExecution().gettCExecution(), testCaseStepActionControlExecution.getTestCaseStepActionExecution());
             testCaseStepActionControlExecution.setControlProperty(decodedValue);
         }
         if (testCaseStepActionControlExecution.getControlValue().contains("%")) {
-            String decodedValue = propertyService.decodeValue(testCaseStepActionControlExecution.getControlValue(), testCaseStepActionControlExecution.getTestCaseStepActionExecution().getTestCaseExecutionDataList(), testCaseStepActionControlExecution.getTestCaseStepActionExecution().getTestCaseStepExecution().gettCExecution());
+            String decodedValue = propertyService.decodeValue(testCaseStepActionControlExecution.getControlValue(), testCaseStepActionControlExecution.getTestCaseStepActionExecution().getTestCaseExecutionDataList(), testCaseStepActionControlExecution.getTestCaseStepActionExecution().getTestCaseStepExecution().gettCExecution(), testCaseStepActionControlExecution.getTestCaseStepActionExecution());
             testCaseStepActionControlExecution.setControlValue(decodedValue);
         }
 

@@ -69,7 +69,7 @@ public class ActionService implements IActionService {
          * Decode the 2 fields property and values before doing the control.
          */
         if (testCaseStepActionExecution.getObject().contains("%")) {
-            String decodedValue = propertyService.decodeValue(testCaseStepActionExecution.getObject(), testCaseStepActionExecution.getTestCaseExecutionDataList(), testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution());
+            String decodedValue = propertyService.decodeValue(testCaseStepActionExecution.getObject(), testCaseStepActionExecution.getTestCaseExecutionDataList(), testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution(), testCaseStepActionExecution);
             testCaseStepActionExecution.setObject(decodedValue);
         }
 
@@ -151,10 +151,10 @@ public class ActionService implements IActionService {
             res = this.doActionManageDialog(tCExecution, object, property);
 
         } else if (testCaseStepActionExecution.getAction().equals("callSoapWithBase")) {
-            res = this.doActionMakeSoapCall(tCExecution,testCaseStepActionExecution.getTestCaseExecutionDataList(), object, true);
+            res = this.doActionMakeSoapCall(tCExecution,testCaseStepActionExecution.getTestCaseExecutionDataList(), object, true, testCaseStepActionExecution);
 
         } else if (testCaseStepActionExecution.getAction().equals("callSoap")) {
-            res = this.doActionMakeSoapCall(tCExecution,testCaseStepActionExecution.getTestCaseExecutionDataList(), object, false);
+            res = this.doActionMakeSoapCall(tCExecution,testCaseStepActionExecution.getTestCaseExecutionDataList(), object, false, testCaseStepActionExecution);
 
         } else if (testCaseStepActionExecution.getAction().equals("mouseDownMouseUp")) {
             res = this.doActionMouseDownMouseUp(tCExecution, object, property);
@@ -391,7 +391,7 @@ public class ActionService implements IActionService {
 
     }
 
-    private MessageEvent doActionMakeSoapCall(TestCaseExecution tCExecution,List<TestCaseExecutionData> testCaseExecutionDataList, String object, boolean withBase) {
+    private MessageEvent doActionMakeSoapCall(TestCaseExecution tCExecution, List<TestCaseExecutionData> testCaseExecutionDataList, String object, boolean withBase, TestCaseStepActionExecution testCaseStepActionExecution) {
         MessageEvent message;
         //if (tCExecution.getApplication().getType().equalsIgnoreCase("WS")) {
         try {
@@ -407,7 +407,7 @@ public class ActionService implements IActionService {
              */
             String decodedEnveloppe = soapLibrary.getEnvelope();
             if (soapLibrary.getEnvelope().contains("%")) {
-                decodedEnveloppe = propertyService.decodeValue(soapLibrary.getEnvelope(), testCaseExecutionDataList, tCExecution);
+                decodedEnveloppe = propertyService.decodeValue(soapLibrary.getEnvelope(), testCaseExecutionDataList, tCExecution, testCaseStepActionExecution);
             }
             return soapService.callSOAPAndStoreResponseInMemory(tCExecution.getExecutionUUID(), decodedEnveloppe, servicePath, soapLibrary.getMethod());
         } catch (CerberusException ex) {

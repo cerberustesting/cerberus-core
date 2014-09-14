@@ -83,13 +83,13 @@ public class PropertyService implements IPropertyService {
          * Decode Property replacing properties encaplsulated with %
          */
         if (testCaseCountryProperty.getValue1().contains("%")) {
-            String decodedValue = this.decodeValue(testCaseCountryProperty.getValue1(), testCaseStepActionExecution.getTestCaseExecutionDataList(), tCExecution);
+            String decodedValue = this.decodeValue(testCaseCountryProperty.getValue1(), testCaseStepActionExecution.getTestCaseExecutionDataList(), tCExecution, testCaseStepActionExecution);
             testCaseExecutionData.setValue(decodedValue);
             testCaseExecutionData.setValue1(decodedValue);
             testCaseCountryProperty.setValue1(decodedValue);
         }
         if (testCaseCountryProperty.getValue2() != null && testCaseCountryProperty.getValue2().contains("%")) {
-            String decodedValue = this.decodeValue(testCaseCountryProperty.getValue2(), testCaseStepActionExecution.getTestCaseExecutionDataList(), tCExecution);
+            String decodedValue = this.decodeValue(testCaseCountryProperty.getValue2(), testCaseStepActionExecution.getTestCaseExecutionDataList(), tCExecution, testCaseStepActionExecution);
             testCaseExecutionData.setValue2(decodedValue);
             testCaseCountryProperty.setValue2(decodedValue);
         }
@@ -120,7 +120,7 @@ public class PropertyService implements IPropertyService {
         } else if ("executeSoapFromLib".equals(testCaseCountryProperty.getType())) {
             testCaseExecutionData = this.executeSoapFromLib(testCaseExecutionData, tCExecution, testCaseCountryProperty);
         } else if ("getDifferencesFromXml".equals(testCaseCountryProperty.getType())) {
-        	testCaseExecutionData = this.getDifferencesFromXml(testCaseExecutionData, tCExecution, testCaseCountryProperty);
+            testCaseExecutionData = this.getDifferencesFromXml(testCaseExecutionData, tCExecution, testCaseCountryProperty);
         } else {
             res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_UNKNOWNPROPERTY);
             res.setDescription(res.getDescription().replaceAll("%PROPERTY%", testCaseCountryProperty.getType()));
@@ -131,10 +131,10 @@ public class PropertyService implements IPropertyService {
     }
 
     @Override
-    public String decodeValue(String myString, List<TestCaseExecutionData> properties, TestCaseExecution tCExecution) {
+    public String decodeValue(String myString, List<TestCaseExecutionData> properties, TestCaseExecution tCExecution,TestCaseStepActionExecution testCaseStepActionExecution) {
 
         /**
-         * Trying to replace by system environment variables .
+         * Trying to replace by system - environment variables .
          */
         myString = StringUtil.replaceAllProperties(myString, "%SYS_SYSTEM%", tCExecution.getApplication().getSystem());
         myString = StringUtil.replaceAllProperties(myString, "%SYS_APPLI%", tCExecution.getApplication().getApplication());
@@ -148,7 +148,7 @@ public class PropertyService implements IPropertyService {
         myString = StringUtil.replaceAllProperties(myString, "%SYS_EXECUTIONID%", String.valueOf(tCExecution.getId()));
 
         /**
-         * Trying to replace date variables .
+         * Trying to replace by system - date variables .
          */
         myString = StringUtil.replaceAllProperties(myString, "%SYS_TODAY-yyyy%", DateUtil.getTodayFormat("yyyy"));
         myString = StringUtil.replaceAllProperties(myString, "%SYS_TODAY-MM%", DateUtil.getTodayFormat("MM"));
@@ -164,6 +164,20 @@ public class PropertyService implements IPropertyService {
         myString = StringUtil.replaceAllProperties(myString, "%SYS_YESTERDAY-HH%", DateUtil.getYesterdayFormat("HH"));
         myString = StringUtil.replaceAllProperties(myString, "%SYS_YESTERDAY-mm%", DateUtil.getYesterdayFormat("mm"));
         myString = StringUtil.replaceAllProperties(myString, "%SYS_YESTERDAY-ss%", DateUtil.getYesterdayFormat("ss"));
+
+        /**
+         * Trying to replace by system - date variables .
+         */
+        long rightNow = new Date().getTime();
+
+        // %SYS_ELAPSED-EXESTART% - Number of miliseconds since the beginning of the execution.
+        myString = StringUtil.replaceAllProperties(myString, "%SYS_ELAPSED-EXESTART%", String.valueOf(rightNow - testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getStart()));
+        // %SYS_ELAPSED-STEPSTART% - Number of miliseconds since the beginning of the current step.
+        myString = StringUtil.replaceAllProperties(myString, "%SYS_ELAPSED-STEPSTART%", String.valueOf(rightNow - testCaseStepActionExecution.getTestCaseStepExecution().getStart()));
+        // %SYS_APP-EXESTART% - Number of miliseconds spend inside the application that is beeing tested since the beginning of the execution.
+//        myString = StringUtil.replaceAllProperties(myString, "%SYS_APP-EXESTART%", String.valueOf(tCExecution.getStart()-executionStart));
+        // %SYS_APP-STEPSTART% - Number of miliseconds spend inside the application that is beeing tested since the beginning of the current step.
+//        myString = StringUtil.replaceAllProperties(myString, "%SYS_APP-STEPSTART%", String.valueOf(tCExecution.getStart()-executionStart));
 
         /**
          * Trying to replace by property value already defined if not null.
@@ -251,29 +265,29 @@ public class PropertyService implements IPropertyService {
     }
 
     private TestCaseExecutionData getFromJS(TestCaseExecutionData testCaseExecutionData, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseCountryProperty) {
-        
-            String script = testCaseCountryProperty.getValue1();
-            String valueFromJS;
-            String message = "";
-            try {
-                valueFromJS = this.seleniumService.getValueFromJS(tCExecution.getSelenium(), script);
-            } catch (Exception e) {
-                message = e.getMessage().split("\n")[0];
-                MyLogger.log(PropertyService.class.getName(), Level.DEBUG, "Exception Running JS Script :" +message);
-                valueFromJS = null;
-            }
-            if (valueFromJS != null) {
-                testCaseExecutionData.setValue(valueFromJS);
-                MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_HTML);
-                res.setDescription(res.getDescription().replaceAll("%ELEMENT%", testCaseCountryProperty.getValue1()));
-                res.setDescription(res.getDescription().replaceAll("%VALUE%", script));
-                testCaseExecutionData.setPropertyResultMessage(res);
-            } else {
-                MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_JS_EXCEPTION);
-                res.setDescription(res.getDescription().replaceAll("%EXCEPTION%", message));
-                testCaseExecutionData.setPropertyResultMessage(res);
-            }
-        
+
+        String script = testCaseCountryProperty.getValue1();
+        String valueFromJS;
+        String message = "";
+        try {
+            valueFromJS = this.seleniumService.getValueFromJS(tCExecution.getSelenium(), script);
+        } catch (Exception e) {
+            message = e.getMessage().split("\n")[0];
+            MyLogger.log(PropertyService.class.getName(), Level.DEBUG, "Exception Running JS Script :" + message);
+            valueFromJS = null;
+        }
+        if (valueFromJS != null) {
+            testCaseExecutionData.setValue(valueFromJS);
+            MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_HTML);
+            res.setDescription(res.getDescription().replaceAll("%ELEMENT%", testCaseCountryProperty.getValue1()));
+            res.setDescription(res.getDescription().replaceAll("%VALUE%", script));
+            testCaseExecutionData.setPropertyResultMessage(res);
+        } else {
+            MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_JS_EXCEPTION);
+            res.setDescription(res.getDescription().replaceAll("%EXCEPTION%", message));
+            testCaseExecutionData.setPropertyResultMessage(res);
+        }
+
         return testCaseExecutionData;
     }
 
@@ -292,7 +306,7 @@ public class PropertyService implements IPropertyService {
                 testCaseExecutionData.setPropertyResultMessage(res);
             }
         } catch (CerberusException exception) {
-            MyLogger.log(PropertyService.class.getName(), Level.DEBUG, "Exception Getting value from TestData for data :'"+propertyValue+"'\n"+exception.getMessageError().getDescription());
+            MyLogger.log(PropertyService.class.getName(), Level.DEBUG, "Exception Getting value from TestData for data :'" + propertyValue + "'\n" + exception.getMessageError().getDescription());
             MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_TESTDATA_PROPERTYDONOTEXIST);
             res.setDescription(res.getDescription().replaceAll("%PROPERTY%", testCaseCountryProperty.getValue1()));
             testCaseExecutionData.setPropertyResultMessage(res);
@@ -327,7 +341,7 @@ public class PropertyService implements IPropertyService {
             SoapLibrary soapLib = this.soapLibraryService.findSoapLibraryByKey(testCaseCountryProperty.getValue1());
             if (soapLib != null) {
 
-                soapService.callSOAPAndStoreResponseInMemory(tCExecution.getExecutionUUID(),soapLib.getEnvelope(), soapLib.getServicePath(), soapLib.getMethod());
+                soapService.callSOAPAndStoreResponseInMemory(tCExecution.getExecutionUUID(), soapLib.getEnvelope(), soapLib.getServicePath(), soapLib.getMethod());
                 String result = xmlUnitService.getFromXml(tCExecution.getExecutionUUID(), null, soapLib.getParsingAnswer());
                 if (result != null) {
                     testCaseExecutionData.setValue(result);
@@ -363,7 +377,7 @@ public class PropertyService implements IPropertyService {
     }
 
     private TestCaseExecutionData getFromXml(TestCaseExecutionData testCaseExecutionData, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseCountryProperty) {
-        try{
+        try {
             String valueFromXml = xmlUnitService.getFromXml(tCExecution.getExecutionUUID(), testCaseCountryProperty.getValue1(), testCaseCountryProperty.getValue2());
             if (valueFromXml != null) {
                 testCaseExecutionData.setValue(valueFromXml);
@@ -372,7 +386,7 @@ public class PropertyService implements IPropertyService {
                 res.setDescription(res.getDescription().replaceAll("%VALUE2%", testCaseCountryProperty.getValue2()));
                 testCaseExecutionData.setPropertyResultMessage(res);
             }
-        } catch (Exception ex){
+        } catch (Exception ex) {
             MyLogger.log(PropertyService.class.getName(), Level.DEBUG, ex.toString());
             MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMXML);
             res.setDescription(res.getDescription().replaceAll("%VALUE1%", testCaseCountryProperty.getValue1()));
@@ -386,18 +400,18 @@ public class PropertyService implements IPropertyService {
         try {
             String valueFromCookie = this.seleniumService.getFromCookie(tCExecution.getSelenium(), testCaseCountryProperty.getValue1(), testCaseCountryProperty.getValue2());
             if (valueFromCookie != null) {
-                if (!valueFromCookie.equals("cookieNotFound")){
-                testCaseExecutionData.setValue(valueFromCookie);
-                MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMCOOKIE);
-                res.setDescription(res.getDescription().replaceAll("%COOKIE%", testCaseCountryProperty.getValue1()));
-                res.setDescription(res.getDescription().replaceAll("%PARAM%", testCaseCountryProperty.getValue2()));
-                res.setDescription(res.getDescription().replaceAll("%VALUE%", valueFromCookie));
-                testCaseExecutionData.setPropertyResultMessage(res);
+                if (!valueFromCookie.equals("cookieNotFound")) {
+                    testCaseExecutionData.setValue(valueFromCookie);
+                    MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMCOOKIE);
+                    res.setDescription(res.getDescription().replaceAll("%COOKIE%", testCaseCountryProperty.getValue1()));
+                    res.setDescription(res.getDescription().replaceAll("%PARAM%", testCaseCountryProperty.getValue2()));
+                    res.setDescription(res.getDescription().replaceAll("%VALUE%", valueFromCookie));
+                    testCaseExecutionData.setPropertyResultMessage(res);
                 } else {
-                MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMCOOKIE_COOKIENOTFOUND);
-                res.setDescription(res.getDescription().replaceAll("%COOKIE%", testCaseCountryProperty.getValue1()));
-                res.setDescription(res.getDescription().replaceAll("%PARAM%", testCaseCountryProperty.getValue2()));
-                testCaseExecutionData.setPropertyResultMessage(res);
+                    MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMCOOKIE_COOKIENOTFOUND);
+                    res.setDescription(res.getDescription().replaceAll("%COOKIE%", testCaseCountryProperty.getValue1()));
+                    res.setDescription(res.getDescription().replaceAll("%PARAM%", testCaseCountryProperty.getValue2()));
+                    testCaseExecutionData.setPropertyResultMessage(res);
                 }
             } else {
                 MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMCOOKIE_PARAMETERNOTFOUND);
@@ -414,34 +428,36 @@ public class PropertyService implements IPropertyService {
         }
         return testCaseExecutionData;
     }
-    
-	/**
-	 * Execution method for the <code>getDifferencesFromXml</code> property service
-	 * 
-	 * @param testCaseExecutionData
-	 * @param tCExecution
-	 * @param testCaseCountryProperty
-	 * @return the {@link TestCaseExecutionData} added by the <code>getDifferencesFromXML</code> result
-	 */
+
+    /**
+     * Execution method for the <code>getDifferencesFromXml</code> property
+     * service
+     *
+     * @param testCaseExecutionData
+     * @param tCExecution
+     * @param testCaseCountryProperty
+     * @return the {@link TestCaseExecutionData} added by the
+     * <code>getDifferencesFromXML</code> result
+     */
     private TestCaseExecutionData getDifferencesFromXml(TestCaseExecutionData testCaseExecutionData, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseCountryProperty) {
-    	try{
-    		MyLogger.log(PropertyService.class.getName(), Level.INFO, "Computing differences between " + testCaseCountryProperty.getValue1() + " and " + testCaseCountryProperty.getValue2());
+        try {
+            MyLogger.log(PropertyService.class.getName(), Level.INFO, "Computing differences between " + testCaseCountryProperty.getValue1() + " and " + testCaseCountryProperty.getValue2());
             String differences = xmlUnitService.getDifferencesFromXml(testCaseCountryProperty.getValue1(), testCaseCountryProperty.getValue2());
             if (differences != null) {
-            	MyLogger.log(PropertyService.class.getName(), Level.INFO, "Computing done.");
+                MyLogger.log(PropertyService.class.getName(), Level.INFO, "Computing done.");
                 testCaseExecutionData.setValue(differences);
                 MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETDIFFERENCESFROMXML);
                 res.setDescription(res.getDescription().replaceAll("%VALUE1%", testCaseCountryProperty.getValue1()));
                 res.setDescription(res.getDescription().replaceAll("%VALUE2%", testCaseCountryProperty.getValue2()));
                 testCaseExecutionData.setPropertyResultMessage(res);
             } else {
-            	MyLogger.log(PropertyService.class.getName(), Level.INFO, "Computing failed.");
+                MyLogger.log(PropertyService.class.getName(), Level.INFO, "Computing failed.");
                 MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETDIFFERENCESFROMXML);
                 res.setDescription(res.getDescription().replaceAll("%VALUE1%", testCaseCountryProperty.getValue1()));
                 res.setDescription(res.getDescription().replaceAll("%VALUE2%", testCaseCountryProperty.getValue2()));
                 testCaseExecutionData.setPropertyResultMessage(res);
             }
-        } catch (Exception ex){
+        } catch (Exception ex) {
             MyLogger.log(PropertyService.class.getName(), Level.INFO, ex.toString());
             MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETDIFFERENCESFROMXML);
             res.setDescription(res.getDescription().replaceAll("%VALUE1%", testCaseCountryProperty.getValue1()));

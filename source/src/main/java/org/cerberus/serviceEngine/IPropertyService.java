@@ -38,6 +38,6 @@ public interface IPropertyService {
 
     TestCaseExecutionData calculateProperty(TestCaseExecutionData testCaseExecutionData, TestCaseStepActionExecution testCaseStepActionExecution, TestCaseCountryProperties testCaseCountryProperty);
     
-    String decodeValue(String myString, List<TestCaseExecutionData> properties, TestCaseExecution tCExecution);
+    String decodeValue(String myString, List<TestCaseExecutionData> properties, TestCaseExecution tCExecution, TestCaseStepActionExecution testCaseStepActionExecution);
     
 }
