@@ -104,6 +104,7 @@ public class PropertyService implements IPropertyService {
 	            testCaseCountryProperty.setValue1(decodedValue);
 	        }
         } catch (CerberusEventException ex) {
+        	testCaseExecutionData.setEnd(new Date().getTime());
         	testCaseExecutionData.setPropertyResultMessage(ex.getMessageError());
             return testCaseExecutionData;
         }
@@ -115,6 +116,7 @@ public class PropertyService implements IPropertyService {
 	            testCaseCountryProperty.setValue2(decodedValue);
 	        }
         } catch (CerberusEventException ex) {
+        	testCaseExecutionData.setEnd(new Date().getTime());
         	testCaseExecutionData.setPropertyResultMessage(ex.getMessageError());
             return testCaseExecutionData;
         }
