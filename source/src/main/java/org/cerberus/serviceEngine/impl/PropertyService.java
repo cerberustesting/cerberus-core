@@ -163,7 +163,7 @@ public class PropertyService implements IPropertyService {
     }
     
     private TestCaseExecutionData calculateProperty(String property, List<String> crossedProperties, TestCaseStepActionExecution testCaseStepActionExecution) {
-        // Data initialization
+        // Data initialisation
         String test = testCaseStepActionExecution.getTest();
         String testCase = testCaseStepActionExecution.getTestCase();
         String country = testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getCountry();
@@ -188,16 +188,17 @@ public class PropertyService implements IPropertyService {
 
         
         // Check if property has already been calculated
-        for (TestCaseExecutionData alreadyBeenCalculatedTestCaseExecutionData : tCExecution.getTestCaseExecutionDataList()) {
-            if (alreadyBeenCalculatedTestCaseExecutionData.getProperty().equalsIgnoreCase(property)) {
+        for (TestCaseExecutionData knownData : tCExecution.getTestCaseExecutionDataList()) {
+            if (knownData.getProperty().equalsIgnoreCase(property)) {
                 if (LOG.isDebugEnabled()) {
                     LOG.debug("Property " + property + " has already been calculated");
                 }
-                return alreadyBeenCalculatedTestCaseExecutionData;
+                return knownData;
             }
         }
        
-        // Get property from database
+        // Start the calculation
+        // First, get property from database
         TestCaseExecutionDataUtil.resetTimers(testCaseExecutionData, new Date().getTime());
         TestCaseCountryProperties testCaseCountryProperty = null;
         try {
@@ -228,8 +229,7 @@ public class PropertyService implements IPropertyService {
 				}
 			}
 
-			// If it is not a defined property then we don't have to calculate
-			// it
+			// If it is not a defined property then we don't have to calculate it
 			if (!isADefinedProperty) {
 				continue;
 			}
@@ -251,7 +251,7 @@ public class PropertyService implements IPropertyService {
         testCaseExecutionData.setValue2(testCaseCountryProperty.getValue2());
         testCaseExecutionData.setTestCaseCountryProperties(testCaseCountryProperty);
         
-        // Calculate our property
+        // Really calculate our property
         if (LOG.isDebugEnabled()) {
             LOG.debug("Calculating property " + property);
         }
@@ -313,16 +313,19 @@ public class PropertyService implements IPropertyService {
             }
         }
         
+        // Look at the internal properties. If there is no internal properties then return
         List<String> internalProperties = StringUtil.getAllProperties(myString);
         if (internalProperties.isEmpty()) {
             return myString;
         }
 
-        List<TestCaseCountryProperties> tcProperties = testCaseCountryPropertiesService.findDistinctPropertiesOfTestCase(tCExecution.getTest(), tCExecution.getTestCase());
+        // Else then try to calculate all those are defined into the current Test Case
+        List<TestCaseCountryProperties> tcProperties = testCaseCountryPropertiesService.findDistinctPropertiesOfTestCase(testCaseStepActionExecution.getTest(), testCaseStepActionExecution.getTestCase());
         for (String internalProperty : internalProperties) {
             for (TestCaseCountryProperties tctProperty : tcProperties) {
                 if (internalProperty.equals(tctProperty.getProperty())) {
                 	TestCaseExecutionData internalData = calculateProperty(internalProperty, new ArrayList<String>(), testCaseStepActionExecution);
+                	// If an error occurred, then throws an exception
                 	if (internalData.getPropertyResultMessage().getCode() % 100 != 0) {
                     	throw new CerberusEventException(internalData.getPropertyResultMessage());
                     }
