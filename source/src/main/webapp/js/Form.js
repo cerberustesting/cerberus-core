@@ -1608,7 +1608,7 @@ function checkForm() {
 
 function addTestCaseActionNew(table, step) {
 
-    var incAct = document.getElementById('incrementActionNumber'+step).value;
+    var incAct = document.getElementsByName('action_increment_'+step).length;
     var inc = incAct;
     incAct++;
     var DIV = document.createElement('div');
@@ -1629,20 +1629,20 @@ function addTestCaseActionNew(table, step) {
     form1.setAttribute('style', 'margin-top:20px;width: 30px; background-color: transparent');
     form1.setAttribute('value', '');
     form1.setAttribute('class', 'wob');
-    form1.setAttribute('name', 'action_delete_'+step+incAct);
+    form1.setAttribute('name', 'action_delete_'+step+'_'+incAct);
     var DIV1 = document.createElement('div'); /* Create column */
     DIV1.setAttribute('style', 'display:inline-block;float:left;height:50px;background-color: transparent');
     DIV1.appendChild(form1); /* Add form to column */
 
     var form = document.createElement('input');
     form.setAttribute('type', 'hidden');
-    form.setAttribute('name', 'action_increment');
-    form.setAttribute('value', step+incAct);
+    form.setAttribute('name', 'action_increment_'+step);
+    form.setAttribute('value', incAct);
     DIV1.appendChild(form);
     
     var form11 = document.createElement('input');
     form11.setAttribute('type', 'hidden');
-    form11.setAttribute('name', 'action_step_'+step+incAct);
+    form11.setAttribute('name', 'action_step_'+step+'_'+incAct);
     form11.setAttribute('value', StepNum);
     DIV1.appendChild(form11);
     
@@ -1653,7 +1653,7 @@ function addTestCaseActionNew(table, step) {
     form41.setAttribute('value', 'Add Action');
     form41.setAttribute('src', 'images/addAction.png');
     form41.setAttribute('style', 'width:15px; height:15px');
-    form41.setAttribute('onclick', 'addTestCaseActionNew(\'Action'+step+', '+step+')');
+    form41.setAttribute('onclick', 'addTestCaseActionNew(\'StepListOfActionDiv'+step+incAct+'\', \''+step+'\')');
     var DIV41 = document.createElement('div');
     DIV41.setAttribute('style', 'height:100%;width:100%;clear:both;color:blue;font-weight:bold;font-size:10px ;font-family: Trebuchet MS; background-color: transparent');
     DIV41.appendChild(form41);
@@ -1662,7 +1662,7 @@ function addTestCaseActionNew(table, step) {
     form42.setAttribute('value', 'Add Control');
     form42.setAttribute('src', 'images/addControl.png');
     form42.setAttribute('style', 'width:15px; height:15px');
-    form42.setAttribute('onclick', 'addTestCaseControlNew(\'control_table'+step+', '+step+')');
+    form42.setAttribute('onclick', 'addTestCaseControlNew(\'StepListOfActionDiv'+step+incAct+'\', \''+step+'\', \''+incAct+'\')');
     var DIV42 = document.createElement('div');
     DIV42.setAttribute('style', 'height:100%;width:100%;clear:both;color:blue;font-weight:bold;font-size:10px ;font-family: Trebuchet MS; background-color: transparent');
     DIV42.appendChild(form42);
@@ -1674,7 +1674,7 @@ function addTestCaseActionNew(table, step) {
     
     /* Sequence */
 
-    var value = getMaxValueForParentElementIdAndElementName(table, 'action_sequence_'+step+inc);
+    var value = getMaxValueForParentElementIdAndElementName(table, 'action_sequence_'+step+'_'+inc);
 
     if (value && parseInt(value) > 0) {
         value = parseInt(value) + 10;
@@ -1683,8 +1683,8 @@ function addTestCaseActionNew(table, step) {
     }
 
     var form2 = document.createElement('input');
-    form2.setAttribute('name', 'action_sequence_'+step+incAct);
-    form2.setAttribute('id', 'action_sequence_'+step+incAct);
+    form2.setAttribute('name', 'action_sequence_'+step+'_'+incAct);
+    form2.setAttribute('id', 'action_sequence_'+step+'_'+incAct);
     form2.setAttribute('style',
                     'width: 40px; font-weight: bold; background-color: transparent; height:100%; color: #FF0000;');
     form2.setAttribute('class', 'wob');
@@ -1702,8 +1702,8 @@ function addTestCaseActionNew(table, step) {
     form512.setAttribute('style','float:left;width:80px;');
     form512.appendChild(form5121);
     var form511 = document.createElement('input');
-    form511.setAttribute('name', 'action_description_'+step+incAct);
-    form511.setAttribute('id', 'action_description_'+step+incAct);
+    form511.setAttribute('name', 'action_description_'+step+'_'+incAct);
+    form511.setAttribute('id', 'action_description_'+step+'_'+incAct);
     form511.setAttribute('placeholder', 'Description');
     form511.setAttribute('style',
                     'float:left;width: 80%; background-color: transparent; font-weight:bold;font-size:15px ;font-family: Trebuchet MS; color:#333333border-style:groove;border-width:thin;border-color:white;border: 1px solid white; ');
@@ -1725,7 +1725,7 @@ function addTestCaseActionNew(table, step) {
     form5212.appendChild(form5211);
     var form521 = document.createElement('select');
     if (document.getElementById("action_action_temp")) {
-        form521.setAttribute('name', 'action_action_'+step+incAct);
+        form521.setAttribute('name', 'action_action_'+step+'_'+incAct);
         form521.setAttribute('style', 'width: 70%');
         form521.setAttribute('class', 'wob');
         form521.innerHTML = (form521.innerHTML + document
@@ -1744,8 +1744,8 @@ function addTestCaseActionNew(table, step) {
     form5222.setAttribute('style','float:left;width:19%;');
     form5222.appendChild(form5221);
     var form522 = document.createElement('input');
-    form522.setAttribute('name', 'action_object_'+step+incAct);
-    form522.setAttribute('id', 'action_object_'+step+incAct);
+    form522.setAttribute('name', 'action_object_'+step+'_'+incAct);
+    form522.setAttribute('id', 'action_object_'+step+'_'+incAct);
     form522.setAttribute('style',
                     'width:80%; background-color: transparent;border-style:groove;border-width:thin;border-color:white;border: 1px solid white;');
     form522.setAttribute('class', 'wob');
@@ -1763,8 +1763,8 @@ function addTestCaseActionNew(table, step) {
     form5232.setAttribute('style','float:left;width:19%;');
     form5232.appendChild(form5231);
     var form523 = document.createElement('input');
-    form523.setAttribute('name', 'action_property_'+step+incAct);
-    form523.setAttribute('id', 'action_property_'+step+incAct);
+    form523.setAttribute('name', 'action_property_'+step+'_'+incAct);
+    form523.setAttribute('id', 'action_property_'+step+'_'+incAct);
     form523.setAttribute('style',
                     'width:80%; background-color: transparent;;border-style:groove;border-width:thin;border-color:white;border: 1px solid white;');
     form523.setAttribute('class', 'wob property_value');
@@ -1795,6 +1795,7 @@ function addTestCaseActionNew(table, step) {
     DIV10.appendChild(form10);
     DIV.appendChild(DIV10);
     DIV.setAttribute('style', 'display:inline-block; height:100%; width:100%;background-color:#C4EBFF');
+    DIV.setAttribute('id', 'StepListOfActionDiv'+step+incAct);
 
     //document.getElementById(table).appendChild(DIV);
     var referenceNode = document.getElementById(table);
@@ -1806,7 +1807,7 @@ var numberOfCall = 0;
 
 function addStepNew(div) {
 
-    var incStep = document.getElementById('incrementStepNumber').value;
+    var incStep = document.getElementsByName('step_increment').length;
     var inc = incStep;
     incStep++;
     
@@ -1821,12 +1822,9 @@ function addStepNew(div) {
     var input1 = document.createElement('input');
     input1.setAttribute('style',
             'font-weight: bold;font-style: italic; width:20px');
-    input1.setAttribute('name', 'step_number_add');
+    input1.setAttribute('name', 'step_number_'+incStep);
     input1.setAttribute('class', 'wob');
     input1.setAttribute('title', 'Step ID');
-    input1.setAttribute('maxlength', 10);
-    input1.setAttribute('onfocus', 'keyOnFocus(this)');
-    input1.setAttribute('onblur', 'keyOnBlur(this)');
 
     var value = getMaxValueForParentElementIdAndElementName(null, 'step_number_'+inc);
     if (value && parseInt(value) > 0) {
@@ -1836,10 +1834,18 @@ function addStepNew(div) {
     }
 
     input1.setAttribute('value', value);
+    
+    var input2 = document.createElement('input');
+    input2.setAttribute('style','display:none');
+    input2.setAttribute('name', 'step_increment');
+    input2.setAttribute('value', incStep);
+    
+    
     var TD1 = document.createElement('td'); /* Create column */
     TD1.setAttribute('style', 'background-color:#e1e7f3; text-align: center; valign:center');
     TD1.setAttribute('class', 'wob');
     TD1.appendChild(input1); /* Add form to column */
+    TD1.appendChild(input2);
     TR.appendChild(TD1);
 
     TR.appendChild(document.createTextNode("  Step Description  :"));
@@ -1847,7 +1853,7 @@ function addStepNew(div) {
     input2.setAttribute('size', '100%');
     input2.setAttribute('class', 'wob');
     input2.setAttribute('style', 'width : 500px');
-    input2.setAttribute('name', 'step_description_add');
+    input2.setAttribute('name', 'step_description_'+incStep);
     var TD2 = document.createElement('td'); /* Create column */
     TD2.setAttribute('style', 'background-color:#e1e7f3; text-align: center');
     TD2.setAttribute('class', 'wob');
@@ -1878,17 +1884,20 @@ function addStepNew(div) {
     
     var referenceNode = document.getElementById(div);
     referenceNode.parentNode.insertBefore(table, referenceNode.nextSibling);
-
-    numberOfCall++;
+    document.getElementById('incrementStepNumber').value=incStep;
+    
 }
 
-function addTestCaseControlNew(table, step) {
+function addTestCaseControlNew(table, incrementStep, incrementAction ) {
     
     var DIV = document.createElement('div');
 
-var incAct = document.getElementById('incrementActionNumber'+step).value;
-    var inc = incAct;
-    incAct++;
+var incCtrl = 0;
+if (document.getElementById('control_increment_'+incrementStep+'_'+incrementAction) !== null){
+    incCtrl = document.getElementById('control_increment_'+incrementStep+'_'+incrementAction).length;
+}
+    var inc = incCtrl;
+    incCtrl++;
     
     var form0 = document.createElement('p');                                                
     form0.setAttribute('style', 'height:50px;transform: rotate(-90deg);color:white');
@@ -1898,26 +1907,26 @@ var incAct = document.getElementById('incrementActionNumber'+step).value;
     DIV0.appendChild(form0);
     DIV.appendChild(DIV0);
     
-    var StepNum = document.getElementById('initial_step_number_'+step).value;
+    var StepNum = document.getElementById('initial_step_number_'+incrementStep).value;
     /* Delete box */
     var form1 = document.createElement('input'); /* Create form */
     form1.setAttribute('type', 'checkbox');
     form1.setAttribute('style', 'width:30px');
     form1.setAttribute('class', 'wob');
-    form1.setAttribute('name', 'control_delete');
+    form1.setAttribute('name', 'control_delete_'+incrementStep+'_'+incrementAction+'_'+incCtrl);
     var DIV1 = document.createElement('div'); /* Create column */
     DIV1.setAttribute('style', 'display:inline-block;float:left;height:50px;background-color: transparent');
     DIV1.appendChild(form1); 
     
     var form = document.createElement('input');
     form.setAttribute('type', 'hidden');
-    form.setAttribute('name', 'control_increment');
-    form.setAttribute('value', step+incAct);
+    form.setAttribute('name', 'control_increment_'+incrementStep+'_'+incrementAction);
+    form.setAttribute('value', incCtrl);
     DIV1.appendChild(form);
     
     var form11 = document.createElement('input');
     form11.setAttribute('type', 'hidden');
-    form11.setAttribute('name', 'control_step_'+step+incAct);
+    form11.setAttribute('name', 'control_step_'+incrementStep+'_'+incrementAction+'_'+incCtrl);
     form11.setAttribute('value', StepNum);
     DIV1.appendChild(form11);
 
@@ -1928,7 +1937,7 @@ var incAct = document.getElementById('incrementActionNumber'+step).value;
     form41.setAttribute('value', 'Add Action');
     form41.setAttribute('src', 'images/addAction.png');
     form41.setAttribute('style', 'width:15px; height:15px');
-    form41.setAttribute('onclick', 'addTestCaseActionNew(\'Action'+step+', '+step+')');
+    form41.setAttribute('onclick', 'addTestCaseActionNew(\'StepListOfControlDiv' + incrementStep + incrementAction + incCtrl + '\', \''+incrementStep+'\')');
     var DIV41 = document.createElement('div');
     DIV41.setAttribute('style', 'height:100%;width:100%;clear:both;color:blue;font-weight:bold;font-size:10px ;font-family: Trebuchet MS; background-color: transparent');
     DIV41.appendChild(form41);
@@ -1937,7 +1946,7 @@ var incAct = document.getElementById('incrementActionNumber'+step).value;
     form42.setAttribute('value', 'Add Control');
     form42.setAttribute('src', 'images/addControl.png');
     form42.setAttribute('style', 'width:15px; height:15px');
-    form42.setAttribute('onclick', 'addTestCaseControlNew(\'control_table'+step+', '+step+')');
+    form42.setAttribute('onclick', 'addTestCaseControlNew(\'StepListOfControlDiv'+incrementStep+ incrementAction + incCtrl + '\', \''+incrementStep+'\', \''+incrementAction+'\')');
     var DIV42 = document.createElement('div');
     DIV42.setAttribute('style', 'height:100%;width:100%;clear:both;color:blue;font-weight:bold;font-size:10px ;font-family: Trebuchet MS; background-color: transparent');
     DIV42.appendChild(form42);
@@ -1950,7 +1959,7 @@ var incAct = document.getElementById('incrementActionNumber'+step).value;
   
     /* Sequence */
 
-    var value = getMaxValueForParentElementIdAndElementName(table, 'control_sequence_'+step+inc);
+    var value = getMaxValueForParentElementIdAndElementName(table, 'control_sequence_'+incrementStep+'_'+incrementAction+'_'+inc);
 
     if (value && parseInt(value) > 0) {
         value = parseInt(value) + 10;
@@ -1959,16 +1968,25 @@ var incAct = document.getElementById('incrementActionNumber'+step).value;
     }
 
     var form2 = document.createElement('input');
-    form2.setAttribute('name', 'control_sequence_'+step+incAct);
-    form2.setAttribute('id', 'control_sequence_'+step+incAct);
+    form2.setAttribute('name', 'control_sequence_'+incrementStep+'_'+incrementAction+'_'+incCtrl);
+    form2.setAttribute('id', 'control_sequence_'+incrementStep+'_'+incrementAction+'_'+incCtrl);
     form2.setAttribute('size', '6%');
     form2.setAttribute('style',
-                    'width: 40px; font-weight: bold; background-color: transparent; height:100%; color: #FF0000;');
+                    'width: 20px; font-weight: bold; background-color: transparent; height:100%; color: #FF0000;');
     form2.setAttribute('class', 'wob');
     form2.setAttribute('value', value);
+    var form21 = document.createElement('input');
+    form21.setAttribute('name', 'control_control_'+incrementStep+'_'+incrementAction+'_'+incCtrl);
+    form21.setAttribute('id', 'control_control_'+incrementStep+'_'+incrementAction+'_'+incCtrl);
+    form21.setAttribute('size', '6%');
+    form21.setAttribute('style',
+                    'width:20px; font-weight: bold; background-color: transparent; height:100%; color: #FF0000;');
+    form21.setAttribute('class', 'wob');
+    form21.setAttribute('value', value);
     var DIV2 = document.createElement('div');
     DIV2.setAttribute('style', 'height:50px;display:inline-block;float:left');
     DIV2.appendChild(form2);
+    DIV2.appendChild(form21);
     DIV.appendChild(DIV2);
     
     var form5121 = document.createElement('p');
@@ -1978,8 +1996,8 @@ var incAct = document.getElementById('incrementActionNumber'+step).value;
     form512.setAttribute('style','float:left;width:80px;');
     form512.appendChild(form5121);
     var form511 = document.createElement('input');
-    form511.setAttribute('name', 'control_description_'+step+incAct);
-    form511.setAttribute('id', 'control_description_'+step+incAct);
+    form511.setAttribute('name', 'control_description_'+incrementStep+'_'+incrementAction+'_'+incCtrl);
+    form511.setAttribute('id', 'control_description_'+incrementStep+'_'+incrementAction+'_'+incCtrl);
     form511.setAttribute('placeholder', 'Description');
     form511.setAttribute('style',
                     'width: 70%; background-color: transparent; font-weight:bold;font-size:15px ;font-family: Trebuchet MS; color:#333333 ');
@@ -2001,7 +2019,7 @@ var incAct = document.getElementById('incrementActionNumber'+step).value;
     form5212.appendChild(form5211);
     var form521 = document.createElement('select');
     if (document.getElementById("controls_type_")) {
-        form521.setAttribute('name', 'control_control_'+step+incAct);
+        form521.setAttribute('name', 'control_type_'+incrementStep+'_'+incrementAction+'_'+incCtrl);
         form521.setAttribute('style', 'width: 70%');
         form521.setAttribute('class', 'wob');
         form521.innerHTML = (form521.innerHTML + document
@@ -2020,8 +2038,8 @@ var incAct = document.getElementById('incrementActionNumber'+step).value;
     form5222.setAttribute('style','float:left;width:19%;');
     form5222.appendChild(form5221);
     var form522 = document.createElement('input');
-    form522.setAttribute('name', 'control_object_'+step+incAct);
-    form522.setAttribute('id', 'control_object_'+step+incAct);
+    form522.setAttribute('name', 'control_value_'+incrementStep+'_'+incrementAction+'_'+incCtrl);
+    form522.setAttribute('id', 'control_value_'+incrementStep+'_'+incrementAction+'_'+incCtrl);
     form522.setAttribute('style',
                     'width:80%; background-color: transparent;');
     form522.setAttribute('class', 'wob');
@@ -2039,8 +2057,8 @@ var incAct = document.getElementById('incrementActionNumber'+step).value;
     form5232.setAttribute('style','float:left;width:19%;');
     form5232.appendChild(form5231);
     var form523 = document.createElement('input');
-    form523.setAttribute('name', 'control_property_'+step+incAct);
-    form523.setAttribute('id', 'control_property_'+step+incAct);
+    form523.setAttribute('name', 'control_property_'+incrementStep+'_'+incrementAction+'_'+incCtrl);
+    form523.setAttribute('id', 'control_property_'+incrementStep+'_'+incrementAction+'_'+incCtrl);
     form523.setAttribute('style',
                     'width:70%; background-color: transparent;');
     form523.setAttribute('class', 'wob property_value');
@@ -2060,7 +2078,7 @@ var incAct = document.getElementById('incrementActionNumber'+step).value;
     form72.appendChild(form71);
     var form7 = document.createElement('select');
     if (document.getElementById("controls_fatal_")) {
-        form7.setAttribute('name', 'control_fatal');
+        form7.setAttribute('name', 'control_fatal_'+incrementStep+'_'+incrementAction+'_'+incCtrl);
         form7.setAttribute('class', 'wob');
         form7.setAttribute('style', 'width: 30%');
         form7.innerHTML = (form7.innerHTML + document
@@ -2101,9 +2119,11 @@ var incAct = document.getElementById('incrementActionNumber'+step).value;
     form10.innerHTML = 'Control';
     var DIV10 = document.createElement('div');
     DIV10.setAttribute('style', 'background-color:green; width:3px;height:50px;display:inline-block;float:right');
+    
     DIV10.appendChild(form10);
     DIV.appendChild(DIV10);
     DIV.setAttribute('style', 'background-color:#D4FFBF;display:inline-block;width:100%;');
+    DIV.setAttribute('id', 'StepListOfControlDiv'+incrementStep+incrementAction+incCtrl);
     
     
     

@@ -81,13 +81,14 @@
                 displayOnlyFunctional = !displayOnlyFunctional;
                 $('.functional_description').toggleClass('only_functional_description_size');
                 $('.technical_part').toggleClass('only_functional');
-                SetCookie("displayOnlyFunctional",(displayOnlyFunctional ? "TRUE" : "FALSE"));
+                SetCookie("displayOnlyFunctional", (displayOnlyFunctional ? "TRUE" : "FALSE"));
             }
 
             $().ready(function() {
-                if("TRUE" == GetCookie("displayOnlyFunctional")) {
+                if ("TRUE" == GetCookie("displayOnlyFunctional")) {
                     showOnlyFunctional();
-                };
+                }
+                ;
 
                 elRTE.prototype.options.toolbars.cerberus = ['style', 'alignment', 'colors', 'images', 'format', 'indent', 'lists', 'links'];
                 var opts = {
@@ -153,7 +154,7 @@
                 font-size:20px ;
                 font-family: Trebuchet MS;
             }
-            
+
 
         </style>
         <style>
@@ -170,30 +171,30 @@
                 background-color: #EEEEEE;
             }
             .StepHeaderDiv {
-               width:100%;
-               height:40px;
-               clear:both;
-               display:inline-block;
-               border-top-style: solid;
-               border-left-style: solid;
-               border-right-style: solid;
-               border-width:thin;
-               background-image: -moz-linear-gradient(top, #ebebeb, #CCCCCC); 
+                width:100%;
+                height:40px;
+                clear:both;
+                display:inline-block;
+                border-top-style: solid;
+                border-left-style: solid;
+                border-right-style: solid;
+                border-width:thin;
+                background-image: -moz-linear-gradient(top, #ebebeb, #CCCCCC); 
                 background-image: -webkit-linear-gradient(top, #ebebeb, #CCCCCC); 
                 font-weight:bold;
                 font-family: Trebuchet MS;
                 color:#555555;
                 text-align: center; 
-               
+
             }
             .StepHeaderContent {
-               margin-top:15px; 
+                margin-top:15px; 
             }
-            
+
             a:link{
                 color:white;
             }
-            
+
         </style>
 
     </head>
@@ -702,46 +703,44 @@
                     <div id="StepsMainDiv" style="width:100%;clear:both">
                         <div id="StepsDivUnderTitle" style="width:100%;clear:both">
                             <div id="StepsRightDiv" style="width:97%;float:left; margin:2%;">
-                                
+
                                 <%
                                     int incrementStep = 0;
                                     List<TestCaseStep> tcsList = tcsService.getListOfSteps(test, testcase);
                                     for (TestCaseStep tcs : tcsList) {
                                         incrementStep++;
                                         String testForQuery = "";
-                                            String testcaseForQuery = "";
-                                            int stepForQuery = 0;
-                                            String isReadonly = "";
-                                            boolean useStep = false;
-                                            String complementName = "";
+                                        String testcaseForQuery = "";
+                                        int stepForQuery = 0;
+                                        String isReadonly = "";
+                                        boolean useStep = false;
+                                        String complementName = "";
 
-                                            if (!tcs.getUseStep().equals("Y")) {
-                                                testForQuery = tcs.getTest();
-                                                testcaseForQuery = tcs.getTestCase();
-                                                stepForQuery = tcs.getStep();
-                                            } else {
-                                                testForQuery = tcs.getUseStepTest();
-                                                testcaseForQuery = tcs.getUseStepTestCase();
-                                                stepForQuery = tcs.getUseStepStep();
-                                                isReadonly = "readonly";
-                                                useStep = true;
-                                                complementName = "Block";
-                                            }
-                                            List<TestCaseStepAction> tcsaList = tcsaService.getListOfAction(testForQuery, testcaseForQuery, stepForQuery);
-                                       
+                                        if (!tcs.getUseStep().equals("Y")) {
+                                            testForQuery = tcs.getTest();
+                                            testcaseForQuery = tcs.getTestCase();
+                                            stepForQuery = tcs.getStep();
+                                        } else {
+                                            testForQuery = tcs.getUseStepTest();
+                                            testcaseForQuery = tcs.getUseStepTestCase();
+                                            stepForQuery = tcs.getUseStepStep();
+                                            isReadonly = "readonly";
+                                            useStep = true;
+                                            complementName = "Block";
+                                        }
+                                        List<TestCaseStepAction> tcsaList = tcsaService.getListOfAction(testForQuery, testcaseForQuery, stepForQuery);
+
                                 %>
                                 <div id="StepNumberDiv<%=incrementStep%>" style="float:left;">
                                     <input type="button" value="Add Step" title="Add Step" 
-                                               onclick="addStepNew('StepsEndDiv<%=incrementStep%>');
-                                                       enableField('submitButtonAction');
-                                                       hidebutton('AddStepButton')">
-                                        </div>
+                                           onclick="addStepNew('StepsEndDiv<%=incrementStep%>')">
+                                </div>
                                 <div style="float:left" id="wob">
-                                                <input value="Save Changes" onclick="submitTestCaseModificationNew('stepAnchor_<%=incrementStep%>');" id="submitButtonAction" name="submitChanges"
-                                                       type="button" >
-                                                <%=ComboInvariant(appContext, "actions_action_", "width: 150px;visibility:hidden", "actions_action_", "actions_action_", "ACTION", "", "", null)%>
-                                            </div>
-                                            <div id="StepFirstLineDiv<%=incrementStep%>" class="StepHeaderDiv">
+                                    <input value="Save Changes" onclick="submitTestCaseModificationNew('stepAnchor_<%=incrementStep%>');" id="submitButtonAction" name="submitChanges"
+                                           type="button" >
+                                    <%=ComboInvariant(appContext, "actions_action_", "width: 150px;visibility:hidden", "actions_action_", "actions_action_", "ACTION", "", "", null)%>
+                                </div>
+                                <div id="StepFirstLineDiv<%=incrementStep%>" class="StepHeaderDiv">
                                     <div id="StepComboDeleteDiv" style="float:left; width: 30px; text-align: center; height:100%">
                                         <a name="stepAnchor_<%=incrementStep%>"></a>
                                         <input type="checkbox" name="step_delete_<%=incrementStep%>" style="margin-top:15px;font-weight: bold; width:20px"
@@ -750,20 +749,20 @@
                                         <input id="incrementStepNumber" value="<%=incrementStep%>" type="hidden">
 
                                     </div>
-                                        <%if (!useStep){%>
-                                        <div style="margin-top:10px;height:100%;width:3%;float:left;color:blue;font-weight:bold;font-size:10px ;font-family: Trebuchet MS; background-color: transparent" aria-label="Action">
-                                                        
-                                                        <div style="height:100%;width:100%;clear:both;color:blue;font-weight:bold;font-size:10px ;font-family: Trebuchet MS; background-color: transparent" aria-label="Action">
-                                                        <img src="images/addAction.png" style="width:15px;height:15px" title="Add Action"
-                                                       onclick="addTestCaseActionNew('BeforeFirstAction<%=tcs.getStep()%>', '<%=incrementStep%>');
-                                                               enableField('submitButtonAction');">
-                                                        
-                                                <%=ComboInvariant(appContext, "action_action_temp", "width: 136px; display:none", "action_action_temp", "wob", "ACTION", null, "", null)%>
-                                                    
-                                                        </div>
-                                                        
-                                                    </div>
-                                                <%}%>
+                                    <%if (!useStep) {%>
+                                    <div style="margin-top:10px;height:100%;width:3%;float:left;color:blue;font-weight:bold;font-size:10px ;font-family: Trebuchet MS; background-color: transparent" aria-label="Action">
+
+                                        <div style="height:100%;width:100%;clear:both;color:blue;font-weight:bold;font-size:10px ;font-family: Trebuchet MS; background-color: transparent" aria-label="Action">
+                                            <img src="images/addAction.png" style="width:15px;height:15px" title="Add Action"
+                                                 onclick="addTestCaseActionNew('BeforeFirstAction<%=tcs.getStep()%>', '<%=incrementStep%>');
+                                                         enableField('submitButtonAction');">
+
+                                            <%=ComboInvariant(appContext, "action_action_temp", "width: 136px; display:none", "action_action_temp", "wob", "ACTION", null, "", null)%>
+
+                                        </div>
+
+                                    </div>
+                                    <%}%>
                                     <div id="StepNumberDiv" style="float:left; width:80px">
                                         &nbsp;&nbsp;Step&nbsp;&nbsp;
                                         <input value="<%=tcs.getStep()%>" name="step_number_<%=incrementStep%>" style="margin-top:15px;font-weight: bold; width:20px;background-color:transparent; border-width:0px">
@@ -799,12 +798,13 @@
                                         <a href="TestCase.jsp?Test=<%=tcs.getUseStepTest()%>&TestCase=<%=tcs.getUseStepTestCase()%>">Edit Used Step</a>
                                     </div>
                                     <%}%>
-                                    
+
                                 </div>
                                 <div id="StepsBorderDiv<%=incrementStep%>" style="border-bottom-style: solid; border-left-style: solid;border-right-style: solid;border-width:thin ;clear:both;">
                                     <div id="StepDetailsDiv" style="clear:both">
                                         <div id="ActionControlDivUnderTitle" style="height:100%;width:100%;clear:both">
                                             <div id="Action<%=tcs.getStep()%>" style="height:100%; width:100%;text-align: left; clear:both" >
+                                                <%=ComboInvariant(appContext, "action_action_temp", "width: 136px; display:none", "action_action_temp", "wob", "ACTION", null, "", null)%>
                                                 <div id="BeforeFirstAction<%=tcs.getStep()%>"></div>
                                                 <%
                                                     String actionColor = "";
@@ -829,32 +829,27 @@
                                                 <div id="StepListOfActionDiv<%=tcsa.getStep()%><%=tcsa.getSequence()%>" class="RowActionDiv" style="display:inline-block;height:100%;width:100%;">
                                                     <div style="background-color:blue; width:8px;height:50px;display:inline-block;float:left"><p style="height:50px;transform: rotate(-90deg);color:white">Action</p></div>
                                                     <div style="display:inline-block;float:left;height:50px;background-color: transparent">
-                                                        <input  class="wob" type="checkbox" name="action_delete_<%=incrementStep%><%=incrementAction%>" style="margin-top:20px;width: 30px; background-color: transparent"
+                                                        <input  class="wob" type="checkbox" name="action_delete_<%=incrementStep%>_<%=incrementAction%>" style="margin-top:20px;width: 30px; background-color: transparent"
                                                                 value="<%=tcsa.getStep() + "-" + tcsa.getSequence()%>" <%=isReadonly%>>
-                                                        <input type="hidden" name="action_increment" value="<%=incrementStep%><%=incrementAction%>" >
-                                                        <input type="hidden" name="action_step_<%=incrementStep%><%=incrementAction%>" value="<%=tcsa.getStep()%>" >
+                                                        <input type="hidden" name="action_increment_<%=incrementStep%>" value="<%=incrementAction%>" >
+                                                        <input type="hidden" name="action_step_<%=incrementStep%>_<%=incrementAction%>" value="<%=tcsa.getStep()%>" >
                                                     </div>
-                                                    <div style="margin-top:10px;height:100%;width:3%;float:left;color:blue;font-weight:bold;font-size:10px ;font-family: Trebuchet MS; background-color: transparent" aria-label="Action">
-                                                        <%if (!useStep){%>
-                                                        <div style="height:100%;width:100%;clear:both;color:blue;font-weight:bold;font-size:10px ;font-family: Trebuchet MS; background-color: transparent" aria-label="Action">
-                                                        <img src="images/addAction.png" style="width:15px;height:15px" title="Add Action"
-                                                       onclick="addTestCaseActionNew('StepListOfActionDiv<%=tcsa.getStep()%><%=tcsa.getSequence()%>', '<%=incrementStep%>');
-                                                               enableField('submitButtonAction');">
-                                                        <%}%>
-                                                <%=ComboInvariant(appContext, "action_action_temp", "width: 136px; display:none", "action_action_temp", "wob", "ACTION", null, "", null)%>
-                                                    <%if (!useStep){%>
+                                                    <div style="margin-top:10px;height:100%;width:3%;float:left;color:blue;font-weight:bold;font-size:10px ;font-family: Trebuchet MS; background-color: transparent">
+                                                        <%if (!useStep) {%>
+                                                        <div style="height:100%;width:100%;clear:both;color:blue;font-weight:bold;font-size:10px ;font-family: Trebuchet MS; background-color: transparent">
+                                                            <img src="images/addAction.png" style="width:15px;height:15px" title="Add Action"
+                                                                 onclick="addTestCaseActionNew('StepListOfActionDiv<%=tcsa.getStep()%><%=tcsa.getSequence()%>', '<%=incrementStep%>')">
                                                         </div>
-                                                        <div style="height:100%;width:100%;clear:both;color:blue;font-weight:bold;font-size:10px ;font-family: Trebuchet MS; background-color: transparent" aria-label="Action">
-                                                        <img src="images/addControl.png" style="width:15px;height:15px" title="Add Control"
-                                                                                                onclick="addTestCaseControlNew('StepListOfActionDiv<%=tcsa.getStep()%><%=tcsa.getSequence()%>',<%=tcsa.getStep()%>);
-                                                                                                enableField('submitButtonChanges');">
-                                                    </div>
-                                                                                                <%}%>
+                                                        <div style="height:100%;width:100%;clear:both;color:blue;font-weight:bold;font-size:10px ;font-family: Trebuchet MS; background-color: transparent">
+                                                            <img src="images/addControl.png" style="width:15px;height:15px" title="Add Control"
+                                                                 onclick="addTestCaseControlNew('StepListOfActionDiv<%=tcsa.getStep()%><%=tcsa.getSequence()%>','<%=incrementStep%>', '<%=incrementAction%>')">
+                                                        </div>
+                                                        <%}%>
                                                     </div>
                                                     <div style="height:50px;display:inline-block;float:left">
                                                         <input class="wob" style="width: 40px; font-weight: bold; background-color: transparent; height:100%; color:<%=actionFontColor%>"
                                                                value="<%=tcsa.getSequence()%>"
-                                                               name="action_sequence_<%=incrementStep%><%=incrementAction%>" id="action_sequence_<%=incrementStep%><%=incrementAction%>">
+                                                               name="action_sequence_<%=incrementStep%>_<%=incrementAction%>" id="action_sequence_<%=incrementStep%>_<%=incrementAction%>">
                                                     </div>
                                                     <div style="height:100%;width:90%;float:left; display:inline-block">
                                                         <div class="functional_description" style="height:30px;display:inline-block;clear:both;width:100%; background-color: transparent">
@@ -864,7 +859,7 @@
                                                                 </div>
                                                                 <input class="wob" class="functional_description" style="border-style:groove;border-width:thin;border-color:white;border: 1px solid white; color:#333333; width: 80%; background-color: transparent; font-weight:bold;font-size:14px ;font-family: Trebuchet MS; "
                                                                        value="<%=tcsa.getDescription()%>" placeholder="Description"
-                                                                       name="action_description_<%=incrementStep%><%=incrementAction%>" <%=isReadonly%>
+                                                                       name="action_description_<%=incrementStep%>_<%=incrementAction%>" <%=isReadonly%>
                                                                        maxlength="1000">
                                                             </div>
                                                         </div>
@@ -872,36 +867,30 @@
                                                             <div class="technical_part" style="width: 30%; float:left; background-color: transparent">
                                                                 <div style="float:left;width:80px; "><p style="float:right;font-weight:bold;color:white;" link="white" ><%out.print(docService.findLabelHTML("testcasestepaction", "action", "Action"));%></p>
                                                                 </div>
-                                                                <%=ComboInvariant(appContext, "action_action_" + incrementStep + incrementAction, "width: 70%;border: 1px solid white; background-color:transparent;color:" + actionFontColor, "action_action_" + incrementStep + incrementAction, "wob", "ACTION", tcsa.getAction(), "trackChanges(0, this.selectedIndex, 'submitButtonAction')", null)%>
+                                                                <%=ComboInvariant(appContext, "action_action_" + incrementStep + "_" + incrementAction, "width: 70%;border: 1px solid white; background-color:transparent;color:" + actionFontColor, "action_action_" + incrementStep +"_"+ incrementAction, "wob", "ACTION", tcsa.getAction(), "trackChanges(0, this.selectedIndex, 'submitButtonAction')", null)%>
                                                             </div>
                                                             <div class="technical_part" style="width: 40%; float:left; background-color: transparent">
                                                                 <div style="float:left;width:19%; "><p style="float:right;font-weight:bold;color:white;" link="white" ><%out.print(docService.findLabelHTML("testcasestepaction", "object", "Object"));%></p>
                                                                 </div>
                                                                 <input style="float:left;border-style:groove;border-width:thin;border-color:white;border: 1px solid white; height:100%;width:80%; background-color: transparent; color:<%=actionFontColor%>"
                                                                        value="<%=tcsa.getObject()%>"
-                                                                       name="action_object_<%=incrementStep%><%=incrementAction%>" <%=isReadonly%>>
+                                                                       name="action_object_<%=incrementStep%>_<%=incrementAction%>" <%=isReadonly%>>
                                                             </div>
                                                             <div class="technical_part" style="width: 30%; float:left; background-color:transparent">
                                                                 <div style="float:left;width:19%; "><p style="float:right;font-weight:bold;color:white;" link="white" ><%out.print(docService.findLabelHTML("testcasestepaction", "property", "Property"));%></p>
                                                                 </div>
                                                                 <input  class="wob property_value" style="width:80%;border-style:groove;border-width:thin;border-color:white;border: 1px solid white; background-color: transparent; color:<%=actionFontColor%>"
                                                                         value="<%=tcsa.getProperty()%>"
-                                                                        <%
-                                                                            if (useStep) {
-                                                                        %>
+                                                                        <%if (useStep) {%>
                                                                         data-usestep-test="<%=testForQuery%>"
                                                                         data-usestep-testcase="<%=testcaseForQuery%>"
                                                                         data-usestep-step="<%=stepForQuery%>"
-                                                                        <%
-                                                                            }
-
-                                                                        %>
-                                                                        name="action_property_<%=incrementStep%><%=incrementAction%>" <%=isReadonly%>>
+                                                                        <%}%>
+                                                                        name="action_property_<%=incrementStep%>_<%=incrementAction%>" <%=isReadonly%>>
                                                             </div>
                                                         </div>
                                                     </div>
-                                                            <div style="background-color:blue; width:3px;height:50px;display:inline-block;float:right"><p style="height:50px;transform: rotate(-90deg);color:white">Action</p></div>
-                                                    
+                                                    <div style="background-color:blue; width:3px;height:50px;display:inline-block;float:right"><p style="height:50px;transform: rotate(-90deg);color:white">Action</p></div>
                                                 </div>
                                                 <%
                                                     List<TestCaseStepActionControl> tcsacList = tcsacService.findControlByTestTestCaseStepSequence(testForQuery, testcaseForQuery, stepForQuery, tcsa.getSequence());
@@ -923,72 +912,71 @@
                                                             controlColor = "#DCDCDC";
                                                         }
                                                 %>
-                                                <div id="StepListOfControlDiv" class="RowActionDiv" style="width:100%;height:100%;clear:both;display:inline-block;">
+                                                <div id="StepListOfControlDiv<%=tcsa.getStep()%><%=tcsa.getSequence()%><%=tcsac.getControl()%>" class="RowActionDiv" style="width:100%;height:100%;clear:both;display:inline-block;">
                                                     <div style="background-color:green; width:8px;height:50px;display:inline-block;float:left"><p style="height:100%; transform: rotate(-90deg);color:white">Control</p></div>
                                                     <div style="margin-top:20px;width: 30px;float:left; text-align: center; background-color: <%=controlColor%>; color:<%=actionFontColor%>" 
                                                          class="controls_<%=tcsac.getStep() + '-'
                                                                  + tcsac.getSequence()%>">
                                                         <%  if (canEdit) {%>
-                                                        <input class="wob" type="checkbox" name="controls_delete_<%=incrementStep%><%=incrementControl%>" 
+                                                        <input class="wob" type="checkbox" name="control_delete_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>" 
                                                                value="<%=tcsac.getStep() + '-' + tcsac.getSequence() + '-' + tcsac.getControl()%>">
                                                         <% }%>
-                                                        <input type="hidden" value="<%=incrementStep%><%=incrementControl%>" name="control_increment">
-                                                        <input type="hidden" value="<%=tcsac.getStep()%>" name="control_step_<%=incrementStep%><%=incrementControl%>">
+                                                        <input type="hidden" value="<%=incrementControl%>" name="control_increment_<%=incrementStep%>_<%=incrementAction%>">
+                                                        <input type="hidden" value="<%=tcsac.getStep()%>" name="control_step_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>">
                                                     </div>
-                                                    <div style="margin-top:10px;height:100%;width:3%;float:left;color:blue;font-weight:bold;font-size:10px ;font-family: Trebuchet MS; background-color: transparent" aria-label="Action">
-                                                        <div style="height:100%;width:100%;clear:both;color:blue;font-weight:bold;font-size:10px ;font-family: Trebuchet MS; background-color: transparent" aria-label="Action">
-                                                        <img src="images/addAction.png" style="width:15px;height:15px" title="Add Action"
-                                                       onclick="addTestCaseActionNew('Action<%=tcs.getStep()%>', '<%=incrementStep%>');
-                                                               enableField('submitButtonAction');">
-                                                <%=ComboInvariant(appContext, "action_action_temp", "width: 136px; display:none", "action_action_temp", "wob", "ACTION", null, "", null)%>
-                                                    </div>
-                                                        <div style="height:100%;width:100%;clear:both;color:blue;font-weight:bold;font-size:10px ;font-family: Trebuchet MS; background-color: transparent" aria-label="Action">
-                                                        <img src="images/addControl.png" style="width:15px;height:15px" title="Add Control"
-                                                                                                onclick="addTestCaseControlNew('Action<%=tcs.getStep()%>',<%=tcsa.getStep()%>);
-                                                                                                enableField('submitButtonChanges');">
-                                                    </div>
+                                                    <div style="margin-top:10px;height:100%;width:3%;float:left;color:blue;font-weight:bold;font-size:10px ;font-family: Trebuchet MS; background-color: transparent">
+                                                        <div style="height:100%;width:100%;clear:both;color:blue;font-weight:bold;font-size:10px ;font-family: Trebuchet MS; background-color: transparent">
+                                                            <img src="images/addAction.png" style="width:15px;height:15px" title="Add Action"
+                                                                 onclick="addTestCaseActionNew('StepListOfControlDiv<%=tcsa.getStep()%><%=tcsa.getSequence()%><%=tcsac.getControl()%>', '<%=incrementStep%>');
+                                                                         enableField('submitButtonAction');">
+                                                            </div>
+                                                        <div style="height:100%;width:100%;clear:both;color:blue;font-weight:bold;font-size:10px ;font-family: Trebuchet MS; background-color: transparent">
+                                                            <img src="images/addControl.png" style="width:15px;height:15px" title="Add Control"
+                                                                 onclick="addTestCaseControlNew('StepListOfControlDiv<%=tcsa.getStep()%><%=tcsa.getSequence()%><%=tcsac.getControl()%>','<%=incrementStep%>', '<%=incrementAction%>');
+                                                                         enableField('submitButtonChanges');">
+                                                        </div>
                                                     </div>
                                                     <div style="float:left; background-color: <%=controlColor%>;height:50px">
                                                         <input class="wob" style="width: 20px; font-weight: bold;background-color: <%=controlColor%>; color:<%=actionFontColor%>"
-                                                               value="<%=tcsac.getSequence()%>" name="control_sequence_<%=incrementStep%><%=incrementControl%>" name="control_<%=incrementStep%><%=tcsac.getSequence()%>" readonly="readonly">
+                                                               value="<%=tcsac.getSequence()%>" name="control_sequence_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>" readonly="readonly">
                                                     </div>
                                                     <div style="float:left; background-color: <%=controlColor%>">
                                                         <input class="wob" style="width: 20px; font-weight: bold;background-color: <%=controlColor%>; color:<%=actionFontColor%>"
-                                                               value="<%=tcsac.getControl()%>" name="control_control_<%=incrementStep%><%=incrementControl%>" readonly="readonly">
+                                                               value="<%=tcsac.getControl()%>" name="control_control_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>" readonly="readonly">
                                                     </div>
                                                     <div style="width:90%;float:left;display:inline-block">
                                                         <div class="functional_description_control" style="clear:both;width:100%; background-color: <%=controlColor%>">
                                                             <div style="float:left;width:80px; "><p style="float:right;font-weight:bold;color:white;" link="white" ><%out.print(docService.findLabelHTML("testcasestepaction", "description", "Description"));%></p>
-                                                                </div>
+                                                            </div>
                                                             <input class="wob" class="functional_description_control" style="width: 80%; background-color: <%=controlColor%>; font-weight:bold;font-size:15px ;font-family: Trebuchet MS; color:#333333"
-                                                                   value="<%=tcsac.getDescription()%>" name="control_description_<%=incrementStep%><%=incrementControl%>" maxlength="1000">
+                                                                   value="<%=tcsac.getDescription()%>" name="control_description_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>" maxlength="1000">
                                                         </div>
                                                         <div style="clear:both; width:100%">
                                                             <div style="width:30%; float:left; background-color: <%=controlColor%>">
                                                                 <div style="float:left;width:80px; "><p style="float:right;font-weight:bold;color:white;" link="white" ><%out.print(docService.findLabelHTML("testcasestepactioncontrol", "control", "Control"));%></p>
                                                                 </div>
-                                                                <%=ComboInvariant(appContext, "control_type_" + incrementStep + incrementControl, "width: 70%; background-color:" + controlColor + ";color:" + actionFontColor, "control_type_" + incrementStep + incrementControl, "wob", "CONTROL", tcsac.getType(), "trackChanges(this.value, '" + tcsac.getType() + "', 'submitButtonChanges')", null)%>
+                                                                <%=ComboInvariant(appContext, "control_type_" + incrementStep + "_" + incrementAction + "_" + incrementControl, "width: 70%; background-color:" + controlColor + ";color:" + actionFontColor, "control_type_" + incrementStep +"_"+incrementAction+"_"+ incrementControl, "wob", "CONTROL", tcsac.getType(), "trackChanges(this.value, '" + tcsac.getType() + "', 'submitButtonChanges')", null)%>
                                                             </div>
                                                             <div class="technical_part" style="width:40%;float:left; background-color: <%=controlColor%>">
                                                                 <div style="float:left;width:19%; "><p style="float:right;font-weight:bold;color:white;" link="white" ><%out.print(docService.findLabelHTML("testcasestepactioncontrol", "controleproperty", "controleproperty"));%></p>
                                                                 </div>
                                                                 <input class="wob" style="width: 80%;background-color: <%=controlColor%>; color:<%=actionFontColor%>"
-                                                                       value="<%=tcsac.getControlProperty()%>" name="control_property_<%=incrementStep%><%=incrementControl%>">
+                                                                       value="<%=tcsac.getControlProperty()%>" name="control_property_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>">
                                                             </div>
                                                             <div class="technical_part" style="width:20%;float:left; background-color: <%=controlColor%>">
                                                                 <div style="float:left;width:19%; "><p style="float:right;font-weight:bold;color:white;" link="white" ><%out.print(docService.findLabelHTML("testcasestepactioncontrol", "controlevalue", "controlevalue"));%></p>
                                                                 </div><input class="wob" style="width: 70%;background-color: <%=controlColor%>; color:<%=actionFontColor%>"
-                                                                       value="<%=tcsac.getControlValue()%>" name="control_value_<%=incrementStep%><%=incrementControl%>">
+                                                                             value="<%=tcsac.getControlValue()%>" name="control_value_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>">
                                                             </div>
                                                             <div class="technical_part" style="width:8%;float:left; background-color: <%=controlColor%>">
                                                                 <div style="float:left;width:69%; "><p style="float:right;font-weight:bold;color:white;" link="white" ><%out.print(docService.findLabelHTML("testcasestepactioncontrol", "fatal", "fatal"));%></p>
                                                                 </div>
-                                                                <%=ComboInvariant(appContext, "controls_fatal_" + incrementStep + incrementControl, "width: 30%; background-color:" + controlColor + ";color:" + actionFontColor, "controls_fatal_" + incrementStep + incrementControl, "wob", "CTRLFATAL", tcsac.getFatal(), "trackChanges(this.value, '" + tcsac.getFatal() + "', 'submitButtonChanges')", null)%>
+                                                                <%=ComboInvariant(appContext, "control_fatal_" + incrementStep +"_"+ incrementAction +"_"+ incrementControl, "width: 30%; background-color:" + controlColor + ";color:" + actionFontColor, "control_fatal_" + incrementStep + "_" + incrementAction + "_" + incrementControl, "wob", "CTRLFATAL", tcsac.getFatal(), "trackChanges(this.value, '" + tcsac.getFatal() + "', 'submitButtonChanges')", null)%>
                                                             </div>
                                                         </div>
                                                     </div>
-                                                            <div style="background-color:green; width:3px;height:50px;display:inline-block;float:right"><p style="height:100%; transform: rotate(-90deg);color:white">Control</p></div>
-                                                    
+                                                    <div style="background-color:green; width:3px;height:50px;display:inline-block;float:right"><p style="height:100%; transform: rotate(-90deg);color:white">Control</p></div>
+
                                                 </div>    
 
                                                 <%   }
@@ -1004,13 +992,13 @@
                                             <%if (!useStep) {%>
                                             <div style="float:left" id="wob">
                                                 <input id="incrementActionNumber<%=incrementStep%>" value="<%=incrementAction%>" type="hidden">
-                                                
+
                                             </div>
                                             <div style="float:left; display:none" id="wob">
                                                 <input type="button" value="import HTML Scenario" onclick="importer('ImportHTML.jsp?Test=<%=test%>&Testcase=<%=testcase%>&Step=<%=tcs.getStep()%>')">
                                             </div>
                                             <%}%>
-                                            
+
                                         </div>
                                         <%}%>
                                     </div>
@@ -1023,7 +1011,7 @@
                                 <div id="hide_div"></div>
                                 <div id="ButtonAddStepDiv" style="display:none;width: 100%">
                                     <div id="wob">
-                                        
+
                                         <input type="button" value="Import Step" id="ImportStepButton" style="display:inline"
                                                onclick="displayImportStep('importStep()')">
                                         <input type="button" value="Use Step" id="UseStepButton" style="display:inline"
@@ -1342,14 +1330,14 @@
                             "totest": "<%=test%>", "totestcase": "<%=testcase%>",
                             "property": propertyName}
                         , function(data) {
-                            $("#UpdateTestCaseDetail").submit();
+                            $("#UpdateTestCase").submit();
                         }
                         );
                     } else {
                         $.get("./CreateNotDefinedProperty", {"totest": "<%=test%>", "totestcase": "<%=testcase%>",
                             "property": propertyName}
                         , function(data) {
-                            $("#UpdateTestCaseDetail").submit();
+                            $("#selectTestCase").submit();
                         });
                     }
                 });
