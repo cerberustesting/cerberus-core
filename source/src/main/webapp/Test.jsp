@@ -294,8 +294,8 @@
                                     <table><tr>
                                             <td id="testcase_description" class="wob" style="width:100%; font-weight: bold" name="testcase_description">
                                                 <%=tcase.getShortDescription()%></td></tr><tr>
-                                            <td class="wob" style="width:100%"><textarea  id="testcase_valueexpec" class="wob" rows="1" style="width:100%; background-color: transparent" name="testcase_valueexpec"
-                                                                       readonly="readonly"><%=tcase.getDescription()%></textarea></td></tr><tr>
+                                            <td class="wob" style="width:100%"><div  id="testcase_valueexpec" class="wob" rows="1" style="width:100%; background-color: transparent; overflow:auto;" name="testcase_valueexpec"
+                                                                       readonly="readonly"><%=tcase.getDescription()%></div></td></tr><tr>
                                         </tr></table>
                                 </td><td valign="top">
                                     <table><tr>
