@@ -83,6 +83,13 @@
                 $('.technical_part').toggleClass('only_functional');
                 SetCookie("displayOnlyFunctional", (displayOnlyFunctional ? "TRUE" : "FALSE"));
             }
+            
+            var collapseOrExpandStep = false;
+            collapseOrExpandStep = !collapseOrExpandStep;
+            function collapseOrExpandAllStep(){
+            $('.collapseOrExpandStep').toggleClass('collapseOrExpandAllStep');
+                SetCookie("collapseOrExpandStep", (collapseOrExpandStep ? "TRUE" : "FALSE"));    
+            }
 
             $().ready(function() {
                 if ("TRUE" == GetCookie("displayOnlyFunctional")) {
@@ -153,6 +160,10 @@
                 font-weight:bold;
                 font-size:20px ;
                 font-family: Trebuchet MS;
+            }
+            
+            .collapseOrExpandAllStep {
+                display:none;
             }
 
 
@@ -695,6 +706,7 @@
                     <div id="AutomationScriptFirstLine" style="clear:both">
                         <div id="AutomationScriptFunctionalButtonDiv" style="float:left">
                             <input id="button3" style="height:18px; width:10px" type="button" value="F" onclick="javascript:showOnlyFunctional();">
+                        <input id="button4" style="height:18px; width:10px" type="button" value="H" onclick="javascript:collapseOrExpandAllStep();">
                         </div>
                         <div id="AutomationScriptTitle" style="float:left">
                             <h3>TestCase Detailed Description</h3>
@@ -714,8 +726,14 @@
                                         int stepForQuery = 0;
                                         String isReadonly = "";
                                         boolean useStep = false;
+                                        boolean stepusedByAnotherTest = false;
                                         String complementName = "";
 
+                                        List<TestCaseStep> tcsUsingThisStep = tcsService.getTestCaseStepUsingStepInParamter(test, testcase, tcs.getStep());
+                                        if (tcsUsingThisStep != null){
+                                        stepusedByAnotherTest = true;
+                                        }
+                                        
                                         if (!tcs.getUseStep().equals("Y")) {
                                             testForQuery = tcs.getTest();
                                             testcaseForQuery = tcs.getTestCase();
@@ -799,12 +817,17 @@
                                         <a href="TestCase_1.jsp?Test=<%=tcs.getUseStepTest()%>&TestCase=<%=tcs.getUseStepTestCase()%>#stepAnchor_step<%=tcs.getStep()%>">Edit Used Step</a>
                                     </div>
                                     <%}%>
+                                    <%if (stepusedByAnotherTest){%>
+                                    <div id="StepWarnAlreadyInUse" style="float:right;width:60px;height:100%;display:inline-block; background-color:red;float:left">
+                                        <p style="margin-top:15px;">StepInUse</p>
+                                    </div>
+                                    <%}%>
 
                                 </div>
                                 <div id="StepsBorderDiv<%=incrementStep%>" style="border-bottom-style: solid; border-left-style: solid;border-right-style: solid;border-width:thin ;clear:both;">
                                     <div id="StepDetailsDiv" style="clear:both">
                                         <div id="ActionControlDivUnderTitle" style="height:100%;width:100%;clear:both">
-                                            <div id="Action<%=tcs.getStep()%>" style="height:100%; width:100%;text-align: left; clear:both" >
+                                            <div id="Action<%=tcs.getStep()%>" class="collapseOrExpandStep"  style="height:100%; width:100%;text-align: left; clear:both" >
                                                 <%=ComboInvariant(appContext, "action_action_temp", "width: 136px; display:none", "action_action_temp", "wob", "ACTION", null, "", null)%>
                                                 <div id="BeforeFirstAction<%=tcs.getStep()%>"></div>
                                                 <%

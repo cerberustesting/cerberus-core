@@ -42,4 +42,6 @@ public interface ITestCaseStepDAO {
     public void deleteTestCaseStep(TestCaseStep tcs) throws CerberusException;
 
     public void updateTestCaseStep(TestCaseStep tcs) throws CerberusException;
+    
+    List<TestCaseStep> getTestCaseStepUsingStepInParamter(String test, String testCase, int step) throws CerberusException;
 }

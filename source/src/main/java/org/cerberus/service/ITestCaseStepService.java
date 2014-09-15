@@ -68,5 +68,7 @@ public interface ITestCaseStepService {
     public void deleteTestCaseStep(TestCaseStep tcs) throws CerberusException ;
     
     public void deleteListTestCaseStep(List<TestCaseStep> tcsToDelete) throws CerberusException ;
+    
+    List <TestCaseStep> getTestCaseStepUsingStepInParamter(String test, String testCase, int step) throws CerberusException;
 
 }
