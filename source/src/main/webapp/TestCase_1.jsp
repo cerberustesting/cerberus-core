@@ -743,6 +743,7 @@
                                 <div id="StepFirstLineDiv<%=incrementStep%>" class="StepHeaderDiv">
                                     <div id="StepComboDeleteDiv" style="float:left; width: 30px; text-align: center; height:100%">
                                         <a name="stepAnchor_<%=incrementStep%>"></a>
+                                        <a name="stepAnchor_step<%=tcs.getStep()%>"></a>
                                         <input type="checkbox" name="step_delete_<%=incrementStep%>" style="margin-top:15px;font-weight: bold; width:20px"
                                                value="<%=tcs.getStep()%>">
                                         <input type="hidden" name="step_increment" value="<%=incrementStep%>">
@@ -795,7 +796,7 @@
                                                value="<%=tcs.getUseStepStep()%>">
                                     </div>
                                     <div id="StepUseStepLinkDiv" style="float:left">
-                                        <a href="TestCase.jsp?Test=<%=tcs.getUseStepTest()%>&TestCase=<%=tcs.getUseStepTestCase()%>">Edit Used Step</a>
+                                        <a href="TestCase_1.jsp?Test=<%=tcs.getUseStepTest()%>&TestCase=<%=tcs.getUseStepTestCase()%>#stepAnchor_step<%=tcs.getStep()%>">Edit Used Step</a>
                                     </div>
                                     <%}%>
 
