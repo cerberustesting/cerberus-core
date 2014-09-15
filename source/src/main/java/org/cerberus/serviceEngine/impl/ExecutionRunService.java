@@ -34,7 +34,6 @@ import org.cerberus.entity.MessageEventEnum;
 import org.cerberus.entity.MessageGeneral;
 import org.cerberus.entity.MessageGeneralEnum;
 import org.cerberus.entity.TCase;
-import org.cerberus.entity.TestCaseCountryProperties;
 import org.cerberus.entity.TestCaseExecution;
 import org.cerberus.entity.TestCaseExecutionData;
 import org.cerberus.entity.TestCaseExecutionSysVer;
@@ -70,7 +69,6 @@ import org.cerberus.serviceEngine.IPropertyService;
 import org.cerberus.serviceEngine.IRecorderService;
 import org.cerberus.serviceEngine.ISeleniumService;
 import org.cerberus.util.StringUtil;
-import org.cerberus.util.TestCaseExecutionDataUtil;
 import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.remote.UnreachableBrowserException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -83,9 +81,6 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class ExecutionRunService implements IExecutionRunService {
-
-    /** The associated {@link org.apache.log4j.Logger} to this class */
-    private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(ExecutionRunService.class);
     
     @Autowired
     private ISeleniumService seleniumService;
@@ -442,7 +437,7 @@ public class ExecutionRunService implements IExecutionRunService {
                 /**
                  * Calculating the data (Property).
                  */
-                TestCaseExecutionData testCaseExecutionData = calculateProperty(testCaseStepActionExecution);
+                TestCaseExecutionData testCaseExecutionData = propertyService.calculateProperty(propertyToCalculate, testCaseStepActionExecution);
                 /**
                  * Adding the calculated data to the current step Execution and
                  * ActionExecution.
@@ -633,112 +628,6 @@ public class ExecutionRunService implements IExecutionRunService {
         return tCExecution;
     }
     
-    private TestCaseExecutionData calculateProperty(TestCaseStepActionExecution testCaseStepActionExecution) {
-        return calculateProperty(testCaseStepActionExecution.getProperty(), new ArrayList<String>(), testCaseStepActionExecution);
-    }
-    
-    private TestCaseExecutionData calculateProperty(String property, List<String> knownProperties, TestCaseStepActionExecution testCaseStepActionExecution) {
-        // Data initialization
-        String test = testCaseStepActionExecution.getTest();
-        String testCase = testCaseStepActionExecution.getTestCase();
-        String country = testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getCountry();
-        long now = new Date().getTime();
-        TestCaseExecutionData testCaseExecutionData = factoryTestCaseExecutionData.create(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getId(), property, null, null, null, null, null, null, now, now, now, now, new MessageEvent(MessageEventEnum.PROPERTY_PENDING));
-        
-        // Check if property is not already known (recursive case)
-        if (knownProperties.contains(property)) {
-            MessageEvent msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_CYCLICDEFINITION);
-            msg.setDescription(msg.getDescription().replaceAll("%PROP%", property));
-            testCaseExecutionData.setPropertyResultMessage(msg);
-            try {
-                testCaseExecutionDataService.insertTestCaseExecutionData(testCaseExecutionData);
-                testCaseStepActionExecution.getTestCaseExecutionDataList().add(testCaseExecutionData);
-            } catch (CerberusException cex) {
-                LOG.error(null, cex);
-            }
-            return testCaseExecutionData;
-        }
-        knownProperties.add(property);
-        
-        // Check if property has already been calculated
-        for (TestCaseExecutionData alreadyBeenCalculatedTestCaseExecutionData : testCaseStepActionExecution.getTestCaseExecutionDataList()) {
-            if (alreadyBeenCalculatedTestCaseExecutionData.getProperty().equalsIgnoreCase(property)) {
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("Property " + property + " has already been calculated");
-                }
-                return alreadyBeenCalculatedTestCaseExecutionData;
-            }
-        }
-       
-        // Get property from database
-        TestCaseExecutionDataUtil.resetTimers(testCaseExecutionData, new Date().getTime());
-        TestCaseCountryProperties testCaseCountryProperty = null;
-        try {
-            testCaseCountryProperty = testCaseCountryPropertiesService.findTestCaseCountryPropertiesByKey(test, testCase, country, property);
-        } catch (CerberusException cex) {
-            MessageEvent msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_NO_PROPERTY_DEFINITION);
-            msg.setDescription(msg.getDescription().replaceAll("%COUNTRY%", country));
-            msg.setDescription(msg.getDescription().replaceAll("%PROP%", property));
-            testCaseExecutionData.setPropertyResultMessage(msg);
-            try {
-                testCaseExecutionDataService.insertTestCaseExecutionData(testCaseExecutionData);
-                testCaseStepActionExecution.getTestCaseExecutionDataList().add(testCaseExecutionData);
-            } catch (CerberusException cex2) {
-                LOG.error(null, cex2);
-            }
-            return testCaseExecutionData;
-        }
-        
-        // Check if property value1 contains internal properties
-        for (String internalProperty : StringUtil.getAllProperties(testCaseCountryProperty.getValue1())) {
-            // If the internal property is defined in the test case then we trigger a calculation
-            boolean isADefinedProperty = false;
-            List<TestCaseCountryProperties> definedProperties = testCaseCountryPropertiesService.findDistinctPropertiesOfTestCase(test, testCase);
-            for (TestCaseCountryProperties definedProperty : definedProperties) {
-                if (internalProperty.equals(definedProperty.getProperty())) {
-                    isADefinedProperty = true;
-                    break;
-                }
-            }
-            
-            // If it is not a defined property then we don't have to calculate it
-            if (!isADefinedProperty) {
-                continue;
-            }
-            
-            // Calculate each of the internal properties recursively
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Calculating internal property " + internalProperty);
-            }
-            TestCaseExecutionData internalTestCaseExecutionData = calculateProperty(internalProperty, knownProperties, testCaseStepActionExecution);
-            // If an error occurred then it is not necessary to continue calculation
-            if (internalTestCaseExecutionData.getPropertyResultMessage().getCode() % 100 != 0) {
-                return internalTestCaseExecutionData;
-            }
-        }
-        
-        // Feed our TestCaseExecutionData with data from database
-        testCaseExecutionData.setType(testCaseCountryProperty.getType());
-        testCaseExecutionData.setValue1(testCaseCountryProperty.getValue1());
-        testCaseExecutionData.setValue2(testCaseCountryProperty.getValue2());
-        testCaseExecutionData.setTestCaseCountryProperties(testCaseCountryProperty);
-        
-        // Calculate our property
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Calculating property " + property);
-        }
-        testCaseExecutionData = this.propertyService.calculateProperty(testCaseExecutionData, testCaseStepActionExecution, testCaseCountryProperty);
-        
-        // Finally store result and return it
-        try {
-            testCaseExecutionDataService.insertTestCaseExecutionData(testCaseExecutionData);
-            testCaseStepActionExecution.getTestCaseExecutionDataList().add(testCaseExecutionData);
-        } catch (CerberusException cex) {
-            LOG.error(null, cex);
-        }
-        return testCaseExecutionData;
-    }
-
     @Override
     @Async
     public TestCaseExecution executeAsynchroneouslyTestCase(TestCaseExecution tCExecution) throws CerberusException {

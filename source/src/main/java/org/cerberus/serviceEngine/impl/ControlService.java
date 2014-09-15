@@ -23,7 +23,9 @@ import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
+
 import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.cerberus.entity.MessageEvent;
 import org.cerberus.entity.MessageEventEnum;
 import org.cerberus.entity.MessageGeneral;
@@ -50,6 +52,8 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class ControlService implements IControlService {
+	
+	private static final Logger LOG = Logger.getLogger(ControlService.class);
 
     @Autowired
     private ISeleniumService seleniumService;
@@ -60,25 +64,32 @@ public class ControlService implements IControlService {
 
     @Override
     public TestCaseStepActionControlExecution doControl(TestCaseStepActionControlExecution testCaseStepActionControlExecution) {
+    	MessageEvent res;
+    	
         /**
          * Decode the 2 fields property and values before doing the control.
          */
-        if (testCaseStepActionControlExecution.getControlProperty().contains("%")) {
-            String decodedValue = propertyService.decodeValue(testCaseStepActionControlExecution.getControlProperty(), testCaseStepActionControlExecution.getTestCaseStepActionExecution().getTestCaseExecutionDataList(), testCaseStepActionControlExecution.getTestCaseStepActionExecution().getTestCaseStepExecution().gettCExecution());
-            testCaseStepActionControlExecution.setControlProperty(decodedValue);
-        }
-        if (testCaseStepActionControlExecution.getControlValue().contains("%")) {
-            String decodedValue = propertyService.decodeValue(testCaseStepActionControlExecution.getControlValue(), testCaseStepActionControlExecution.getTestCaseStepActionExecution().getTestCaseExecutionDataList(), testCaseStepActionControlExecution.getTestCaseStepActionExecution().getTestCaseStepExecution().gettCExecution());
-            testCaseStepActionControlExecution.setControlValue(decodedValue);
-        }
-
+    	try {
+    		if (testCaseStepActionControlExecution.getControlProperty().contains("%")) {
+    			testCaseStepActionControlExecution.setControlProperty(propertyService.decodeValue(testCaseStepActionControlExecution.getControlProperty(), testCaseStepActionControlExecution.getTestCaseStepActionExecution()));
+    		}
+    		
+    		if (testCaseStepActionControlExecution.getControlValue().contains("%")) {
+    			testCaseStepActionControlExecution.setControlValue(propertyService.decodeValue(testCaseStepActionControlExecution.getControlValue(), testCaseStepActionControlExecution.getTestCaseStepActionExecution()));
+    		}
+    			
+    	} catch (CerberusEventException cex) {
+    		testCaseStepActionControlExecution.setControlResultMessage(cex.getMessageError());
+    		testCaseStepActionControlExecution.setExecutionResultMessage(new MessageGeneral(cex.getMessageError().getMessage()));
+    		return testCaseStepActionControlExecution;
+    	}
+    	
         /**
          * Timestamp starts after the decode. TODO protect when property is
          * null.
          */
         testCaseStepActionControlExecution.setStart(new Date().getTime());
-
-        MessageEvent res;
+        
         TestCaseExecution tCExecution = testCaseStepActionControlExecution.getTestCaseStepActionExecution().getTestCaseStepExecution().gettCExecution();
 
         try {
@@ -570,7 +581,9 @@ public class ControlService implements IControlService {
         String pageSource;
         try {
             pageSource = this.seleniumService.getPageSource(tCExecution.getSelenium());
-            MyLogger.log(SeleniumService.class.getName(), Level.DEBUG, pageSource);
+            if (LOG.isDebugEnabled()) {
+            	LOG.debug(pageSource);
+            }
             try {
                 Pattern pattern = Pattern.compile(regex);
                 Matcher matcher = pattern.matcher(pageSource);
@@ -600,7 +613,9 @@ public class ControlService implements IControlService {
         String pageSource;
         try {
             pageSource = this.seleniumService.getPageSource(tCExecution.getSelenium());
-            MyLogger.log(SeleniumService.class.getName(), Level.DEBUG, pageSource);
+            if (LOG.isDebugEnabled()) {
+            	LOG.debug(pageSource);
+            }
             try {
                 Pattern pattern = Pattern.compile(regex);
                 Matcher matcher = pattern.matcher(pageSource);
@@ -674,7 +689,7 @@ public class ControlService implements IControlService {
      */
     private MessageEvent parseWebDriverException(WebDriverException exception) {
         MessageEvent mes;
-        MyLogger.log(SeleniumService.class.getName(), Level.FATAL, exception.toString());
+        LOG.fatal(exception.toString());
         mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_SELENIUM_CONNECTIVITY);
         mes.setDescription(mes.getDescription().replaceAll("%ERROR%", exception.getMessage().split("\n")[0]));
         return mes;
@@ -697,7 +712,7 @@ public class ControlService implements IControlService {
                 return mes;
             }
         } catch (Exception exception) {
-        MyLogger.log(SeleniumService.class.getName(), Level.FATAL, exception.toString());
+        LOG.fatal(exception.toString());
         mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED);
         return mes;
         }

@@ -16,7 +16,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
-  --%>
+--%>
 <%@page import="org.cerberus.servlet.reporting.GeneratePerformanceString"%>
 <%@page import="java.util.Calendar"%>
 <%@page import="java.sql.Statement"%>
@@ -181,11 +181,15 @@
                         PerfExcluded = request.getParameter("PerfExcluded");
                     }
 
+                    String BeforeDate = "";
+                    if (request.getParameter("BeforeDate") != null) {
+                        BeforeDate = request.getParameter("BeforeDate");
+                    }
 
                     int execmax = 100;
-                    execmax = Integer.valueOf(myParameterService.findParameterByKey("cerberus_testexecutiondetailpage_nbmaxexe","").getValue());
+                    execmax = Integer.valueOf(myParameterService.findParameterByKey("cerberus_testexecutiondetailpage_nbmaxexe", "").getValue());
                     int execmax_max = 100;
-                    execmax_max = Integer.valueOf(myParameterService.findParameterByKey("cerberus_testexecutiondetailpage_nbmaxexe_max","").getValue());
+                    execmax_max = Integer.valueOf(myParameterService.findParameterByKey("cerberus_testexecutiondetailpage_nbmaxexe_max", "").getValue());
                     if (request.getParameter("execmax") != null) {
                         if (Integer.valueOf(request.getParameter("execmax")) < execmax_max) {
                             execmax = Integer.valueOf(request.getParameter("execmax"));
@@ -193,21 +197,6 @@
                             execmax = execmax_max;
                         }
                     }
-
-                    int minutemax = 0;
-                    if (request.getParameter("minutemax") != null) {
-                        minutemax = Integer.valueOf(request.getParameter("minutemax"));
-                    }
-                    // Calculating today - n minutes for the check.
-                    Date aujourdhui = new Date(); // Getting now.
-                    SimpleDateFormat formater = null; // Define the MySQL Format.
-                    formater = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
-                    Calendar cal = Calendar.getInstance();
-                    cal.setTime(aujourdhui);
-                    cal.add(Calendar.MINUTE, -minutemax);
-                    String DateLimit = formater.format(cal.getTime());
-
 
                     int i = 0;
                     String optstyle = "";
@@ -315,11 +304,10 @@
                                         Test Case Status on Execution&nbsp;&nbsp;&nbsp;
                                         <%=ComboInvariant(conn, "tcstatus", "width: 100px", "tcstatus", "tcstatus", "TCSTATUS", tcstatus, "document.ExecFilters.submit()", "")%>&nbsp;&nbsp;&nbsp;
                                         <br>
-                                        IP&nbsp;&nbsp;&nbsp;<input style="font-weight: bold; width: 200px" name="IP" id="IP" value="<%=IP%>">
-                                        port&nbsp;&nbsp;&nbsp;<input style="font-weight: bold; width: 200px" name="port" id="port" value="<%=port%>">
-                                        Tag&nbsp;&nbsp;&nbsp;<input style="font-weight: bold; width: 200px" name="tag" id="tag" value="<%=tag%>">
-                                        See exec from the last minutes&nbsp;&nbsp;&nbsp;
-                                        <%=ComboInvariant(conn, "minutemax", "width: 50px", "minutemax", "minutemax", "EXECNBMIN", String.valueOf(minutemax), "document.ExecFilters.submit()", null)%>&nbsp;&nbsp;&nbsp;
+                                        IP&nbsp;&nbsp;&nbsp;<input style="font-weight: bold; width: 100px" name="IP" id="IP" value="<%=IP%>">
+                                        port&nbsp;&nbsp;&nbsp;<input style="font-weight: bold; width: 50px" name="port" id="port" value="<%=port%>">
+                                        Tag&nbsp;&nbsp;&nbsp;<input style="font-weight: bold; width: 300px" name="tag" id="tag" value="<%=tag%>">
+                                        Before&nbsp;&nbsp;&nbsp;<input style="font-weight: bold; width: 130px" name="BeforeDate" id="BeforeDate" value="<%=BeforeDate%>" placeholder="2000-01-01 14:00:00">
                                         Max Nb of Exec returned&nbsp;&nbsp;&nbsp;
                                         <%=ComboInvariant(conn, "execmax", "width: 50px", "execmax", "execmax", "MAXEXEC", String.valueOf(execmax), "document.ExecFilters.submit()", null)%>&nbsp;&nbsp;&nbsp;
                                     </td>
@@ -398,8 +386,8 @@
                 if (tcstatus.equalsIgnoreCase("") == false) {
                     ExeclistWhereSQL += " and tce.status='" + tcstatus + "'";
                 }
-                if (minutemax > 0) {
-                    ExeclistWhereSQL += " and tce.start>'" + DateLimit + "' ";
+                if (BeforeDate.equalsIgnoreCase("") == false) {
+                    ExeclistWhereSQL += " and tce.start<='" + BeforeDate + "'";
                 }
                 ExeclistSQL += ExeclistWhereSQL + " ORDER BY tce.id desc LIMIT " + execmax + " "
                         + ") tce "
@@ -449,35 +437,42 @@
 
             <table  id="arrond">
                 <tr>
-                    <td><b>Agregated Statistics<br><br><%= j%> Executions in <%= (cal_exeend.getTimeInMillis() - cal_exestart.getTimeInMillis()) / 60000%> minutes</b><br><%
+                    <td><b>Agregated Statistics</b></td>
+                    <td>Detail per TestCase</td>
+                    <td>Detail per Application</td>
+                    <td>Detail per Country</td>
+                    <td>Detail per Environment</td>
+                    <td>Detail per ROBOT IP</td>
+                    <td>Detail per ControlStatus</td>
+                </tr> 
+                <tr>
+                    <td><%= j%> Executions in <%= (cal_exeend.getTimeInMillis() - cal_exestart.getTimeInMillis()) / 60000%> minutes</b><br><%
                         long myDuration = (cal_exeend.getTimeInMillis() - cal_exestart.getTimeInMillis()) / 60000;
                         if (!(myDuration == 0)) {
                             out.print(j / (myDuration) + " Exec/m");
                         }
-                            %></td>
-                    <td>Detail per ROBOT IP</td>
+                        %></td>
                     <td><%
-// Table to report the number of exe per Robot IP.
-                        ExeclistSQL = "SELECT IP, count(*) c FROM ( "
-                                + "SELECT tce.id, tce.application, tce.IP, tce.controlstatus  FROM testcaseexecution tce "
+// Table to report the number of exe per testcase.
+                        ExeclistSQL = "SELECT test,testcase, count(*) c FROM ( "
+                                + "SELECT tce.id, tce.test, tce.testcase FROM testcaseexecution tce "
                                 + "WHERE 1=1 "
                                 + ExeclistWhereSQL
                                 + "ORDER BY tce.id desc LIMIT " + execmax + " ) as toto "
-                                + " GROUP by IP; ";
-                        ResultSet rs_IPinf = stmt0.executeQuery(ExeclistSQL);
-                        rs_IPinf.first();
+                                + " GROUP by test,testcase; ";
+                        ResultSet rs_TCinf = stmt0.executeQuery(ExeclistSQL);
+                        rs_TCinf.first();
                         %>
                         <table><%
                             do {
                             %>
                             <tr>
-                                <td valign="top"><%= rs_IPinf.getString("IP")%></td>
-                                <td valign="top"><%= rs_IPinf.getString("c")%></td>
+                                <td valign="top"><a href="TestCase.jsp?Test=<%= rs_TCinf.getString("test")%>&TestCase=<%= rs_TCinf.getString("testcase")%>"><%= rs_TCinf.getString("test")%> <%= rs_TCinf.getString("testcase")%></a></td>
+                                <td valign="top"><%= rs_TCinf.getString("c")%></td>
                             </tr><%
-                                } while (rs_IPinf.next());%>
+                                } while (rs_TCinf.next());%>
                         </table>
                     </td>
-                    <td>Detail per Application</td>
                     <td><%
 // Table to report the number of exe per Application.
                         ExeclistSQL = "SELECT Application, count(*) c FROM ( "
@@ -499,7 +494,6 @@
                                 } while (rs_APinf.next());%>
                         </table>
                     </td>
-                    <td>Detail per Country</td>
                     <td><%
 // Table to report the number of exe per Country.
                         ExeclistSQL = "SELECT Country, count(*) c FROM ( "
@@ -521,7 +515,48 @@
                                 } while (rs_COinf.next());%>
                         </table>
                     </td>
-                    <td>Detail per ControlStatus</td>
+                    <td><%
+// Table to report the number of exe per Environment.
+                        ExeclistSQL = "SELECT environment, count(*) c FROM ( "
+                                + "SELECT tce.id, tce.environment  FROM testcaseexecution tce "
+                                + "WHERE 1=1 "
+                                + ExeclistWhereSQL
+                                + "ORDER BY tce.environment desc LIMIT " + execmax + " ) as toto "
+                                + " GROUP by environment; ";
+                        ResultSet rs_ENVinf = stmt0.executeQuery(ExeclistSQL);
+                        rs_ENVinf.first();
+                        %>
+                        <table><%
+                            do {
+                            %>
+                            <tr>
+                                <td valign="top"><%= rs_ENVinf.getString("environment")%></td>
+                                <td valign="top"><%= rs_ENVinf.getString("c")%></td>
+                            </tr><%
+                                } while (rs_ENVinf.next());%>
+                        </table>
+                    </td>
+                    <td><%
+// Table to report the number of exe per Robot IP.
+                        ExeclistSQL = "SELECT IP, count(*) c FROM ( "
+                                + "SELECT tce.id, tce.application, tce.IP, tce.controlstatus  FROM testcaseexecution tce "
+                                + "WHERE 1=1 "
+                                + ExeclistWhereSQL
+                                + "ORDER BY tce.id desc LIMIT " + execmax + " ) as toto "
+                                + " GROUP by IP; ";
+                        ResultSet rs_IPinf = stmt0.executeQuery(ExeclistSQL);
+                        rs_IPinf.first();
+                        %>
+                        <table><%
+                            do {
+                            %>
+                            <tr>
+                                <td valign="top"><%= rs_IPinf.getString("IP")%></td>
+                                <td valign="top"><%= rs_IPinf.getString("c")%></td>
+                            </tr><%
+                                } while (rs_IPinf.next());%>
+                        </table>
+                    </td>
                     <td><%
 // Table to report the number of exe per ControlStatus.
                         ExeclistSQL = "SELECT ControlStatus, count(*) c FROM ( "
@@ -537,8 +572,8 @@
                             do {
                             %>
                             <tr>
-                                <td valign="top"><%= rs_CSinf.getString("ControlStatus")%></td>
-                                <td valign="top"><%= rs_CSinf.getString("c")%></td>
+                                <td valign="top"><b><span class="<%= rs_CSinf.getString("ControlStatus")%>F"><%= rs_CSinf.getString("ControlStatus")%></span></b></td>
+                                <td valign="top"><b><span class="<%= rs_CSinf.getString("ControlStatus")%>F"><%= rs_CSinf.getString("c")%></span></b></td>
                             </tr><%
                                 } while (rs_CSinf.next());%>
                         </table>
@@ -581,17 +616,17 @@
 
         <script class="code" type="text/javascript">
 
-            $(document).ready(function(){
+            $(document).ready(function() {
                 var input = window.document.getElementById("data").value.split("/d/");
                 var maxValue = input[0];
                 var dataList = input[1];
                 var list1 = dataList.split("/k/");
                 var datafin = new Array();
- 
-                for ( var k = 0 ; k < 2 ; k++ ){
+
+                for (var k = 0; k < 2; k++) {
                     var datas = list1[k].split("/p/");
                     var data2 = new Array();
-                    for ( var c = 0 ; c < datas.length ; c++){
+                    for (var c = 0; c < datas.length; c++) {
                         var data3 = new Array();
                         data3.push(datas[c].split(",")[0]);
                         data3.push(datas[c].split(",")[1]);
@@ -601,141 +636,133 @@
                     datafin.push(data2);
                 }
                 //alert(datafin);
-                var plot = $.jqplot (  'chart' , datafin , {
-                    title: 'TestCase Duration for <%=test%> <%=testCase%> () in <%=country%>' ,
-                    legend: { show: true
-                    },
-    
-    
+                var plot = $.jqplot('chart', datafin, {
+                    title: 'TestCase Duration for <%=test%> <%=testCase%> () in <%=country%>',
+                    legend: {show: true
+                },
                     grid: {
                         background: '#f3f3f3',
                         gridLineColor: '#accf9b'
                     },
-                    cursor:{
+                    cursor: {
                         show: true,
-                        zoom:true,
-                        showTooltip:false
-                    } ,
+                        zoom: true,
+                        showTooltip: false
+                    },
                     axes: {
-                        xaxis: { //customisation de l'axe x
+                        xaxis: {//customisation de l'axe x
                             renderer: $.jqplot.DateAxisRenderer
                         },
-                        yaxis:{
-                            min:0
-                            //                        ,max:maxValue
-                        }  
+                        yaxis: {
+                            min: 0
+                                    //                        ,max:maxValue
+                        }
                     }
                     ,
-                
-                    axesDefaults:{useSeriesColor: false}
+                    axesDefaults: {useSeriesColor: false}
                     ,
-                    series:[{showLine:false, markerOptions:{style:'filledDiamond'}, label :'OK'},
-                        {showLine:false, markerOptions:{style:'filledDiamond'}, label:'KO'}],
-                    seriesColors:["#22780F", "#ff5800"],
+                    series: [{showLine: false, markerOptions: {style: 'filledDiamond'}, label: 'OK'},
+                        {showLine: false, markerOptions: {style: 'filledDiamond'}, label: 'KO'}],
+                    seriesColors: ["#22780F", "#ff5800"],
                     //cursor:{show:true, zoom:true, showTooltip:false}, 
                     axesDefaults:{useSeriesColor: false},
-    
-                    highlighter: { //vignette lors du survol des point caracteristique de la courbe
+                    highlighter: {//vignette lors du survol des point caracteristique de la courbe
                         sizeAdjust: 10,
-                        show:true,
+                        show: true,
                         tooltipLocation: 'ne',
                         useAxesFormatters: true,
                         formatString: '<b>%s >> %s seconds</b>'
                     }
-                }); 
+                });
 
                 $('#chart').bind('jqplotDataClick',
-                function (ev, seriesIndex, pointIndex, datas) {
-                    window.location.href='ExecutionDetail.jsp?id_tc='+datas[2];
-                } );
+                        function(ev, seriesIndex, pointIndex, datas) {
+                            window.location.href = 'ExecutionDetail.jsp?id_tc=' + datas[2];
+                        });
             });
         </script>
 
         <script class="code" type="text/javascript">
 
-            $(document).ready(function(){
-       
+            $(document).ready(function() {
+
                 var test = document.getElementById("testValue").getAttribute("value");
                 var testcase = document.getElementById("testCaseValue").getAttribute("value");
                 var country = document.getElementById("countryValue").getAttribute("value");
-       
+
                 var ajaxDataRenderer = function(url, plot, options) {
                     var ret = null;
                     $.ajax({
                         async: false,
                         url: url,
-                        dataType:"json",
+                        dataType: "json",
                         success: function(data) {
-                            ret = data;}
+                            ret = data;
+                        }
                     });
                     return ret;
                 };
- 
+
                 // The url for our json data
-                var jsonurl = "./TestCaseActionExecutionDetail?test="+test+"&testcase="+testcase+"&country="+country;
+                var jsonurl = "./TestCaseActionExecutionDetail?test=" + test + "&testcase=" + testcase + "&country=" + country;
                 //var legend = "./TestCaseActionExecutionDetail?test="+test+"&testcase="+testcase+"&country="+country;
-  
-                var plot2 = $.jqplot (  'testchart' , jsonurl ,  {
-        
+
+                var plot2 = $.jqplot('testchart', jsonurl, {
                     dataRenderer: ajaxDataRenderer,
                     stackSeries: true,
-                    seriesDefaults:{
-                        renderer:$.jqplot.BarRenderer,
+                    seriesDefaults: {
+                        renderer: $.jqplot.BarRenderer,
                         rendererOptions: {
                             // Put a 30 pixel margin between bars.
                             barWidth: 5,
                             // Highlight bars when mouse button pressed.
                             // Disables default highlighting on mouse over.
-                            highlightMouseDown: true   
+                            highlightMouseDown: true
                         },
                         pointLabels: {show: true}
                     },
-     
-                    title: 'Sequence Duration' ,
+                    title: 'Sequence Duration',
                     legend: {
                         renderer: $.jqplot.EnhancedLegendRenderer,
-                        show:true,
+                        show: true,
                         location: 's',
-                        placement:'outside',
+                        placement: 'outside',
                         yoffset: 30,
-                        rendererOptions:{
+                        rendererOptions: {
                             numberRows: 2
                         }
                     },
-    
                     grid: {
                         background: '#f3f3f3',
                         gridLineColor: '#accf9b'
                     },
-                    cursor:{
+                    cursor: {
                         show: true,
-                        zoom:true,
-                        showTooltip:false
-                    } ,
+                        zoom: true,
+                        showTooltip: false
+                    },
                     axes: {
-                        xaxis: { //customisation de l'axe x
+                        xaxis: {//customisation de l'axe x
                             renderer: $.jqplot.DateAxisRenderer
-                        
+
                         },
-                        yaxis:{
-                            min:0,
-                            tickOptions: { showMark: false
-                                //                            , formatString: "%'d" 
+                        yaxis: {
+                            min: 0,
+                            tickOptions: {showMark: false
+                                        //                            , formatString: "%'d" 
                             }
-                        }  
+                        }
                     }
                     ,
-                
-                    axesDefaults:{useSeriesColor: false},
-    
-                    highlighter: { //vignette lors du survol des point caracteristique de la courbe
+                    axesDefaults: {useSeriesColor: false},
+                    highlighter: {//vignette lors du survol des point caracteristique de la courbe
                         //sizeAdjust: 10,
-                        show:true,
+                        show: true,
                         tooltipLocation: 'ne',
                         useAxesFormatters: true,
                         formatString: '<b>%s >> %s seconds</b>'
                     }
-                }); 
+                });
 
             });
         </script>

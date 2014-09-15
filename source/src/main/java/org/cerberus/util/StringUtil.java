@@ -142,8 +142,12 @@ public final class StringUtil {
      * @return a list of properties contained into the given {@link String}
      */
     public static List<String> getAllProperties(String str) {
-        Matcher propertyMatcher = PROPERTY_VARIABLE_PATTERN.matcher(str);
         List<String> properties = new ArrayList<String>();
+        if (str == null) {
+        	return properties;
+        }
+        
+        Matcher propertyMatcher = PROPERTY_VARIABLE_PATTERN.matcher(str);
         while (propertyMatcher.find()) {
             String rawProperty = propertyMatcher.group();
             // Removes the first and last '%' character to only get the property name

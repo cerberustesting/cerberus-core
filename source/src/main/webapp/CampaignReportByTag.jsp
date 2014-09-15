@@ -85,7 +85,7 @@
                 jQuery.ajax("./CampaignExecutionGraphByStatus?<%=query.toString() %>").done(function(data) {
                     // function used to generate the Pie graph about status number
                     var pie = createGraphFromDataToElement(data,"#myDonut", null);
-                    
+
                     $("#myDonut").on('click', function (evt) {
                         var activePoints = pie.getSegmentsAtEvent(evt);
 
@@ -220,7 +220,14 @@
 
             table.needToBeSort th:not(.sorttable_sorted):not(.sorttable_sorted_reverse):not(.sorttable_nosort):after { 
                 content: " \25B4\25BE" 
-            }            
+            }
+            
+            table tr td.title {
+                margin: 0 auto;
+                text-align: center;
+                font-weight: bold;
+            }
+            
         </style>
     </head>
     <body>
@@ -230,7 +237,11 @@
         <div id="main">
             <table class="fullSize noBorder">
                 <tr>
-                    <td style="width: 20%">
+                    <td class="title addborder"><h1>Report by Status</h1></td>
+                    <td class="title"><h1>Report by Function</h1></td>
+                </tr>
+                <tr>
+                    <td class="addborder" style="width: 20%">
                         <div class="executionStatus"></div>
                         <br>
                         <canvas id="myDonut"></canvas>
@@ -238,6 +249,12 @@
                     <td style="width: 78%">
                         <canvas id="functionBar"></canvas>
                     </td>
+                </tr>
+            </table>
+            <br>
+            <table class="fullSize noBorder">
+                <tr>
+                    <td class="title addborder" colspan="2"><h1>Radar by function</h1></td>
                 </tr>
                 <tr style="width: 98%">
                     <td colspan="2">
