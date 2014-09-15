@@ -23,10 +23,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.cerberus.entity.MessageGeneralEnum;
@@ -58,6 +60,7 @@ import org.cerberus.service.impl.LogEventService;
 import org.cerberus.service.impl.UserService;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
+import org.springframework.web.util.HtmlUtils;
 
 /**
  *
@@ -386,7 +389,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
         Integer priority = Integer.parseInt(request.getParameter("editPriority"));
         String group = request.getParameter("editGroup");
         String status = request.getParameter("editStatus");
-        String shortDescription = request.getParameter("editDescription");
+        String shortDescription = HtmlUtils.htmlEscape(request.getParameter("editDescription"));
         String description = request.getParameter("valueDetail");
         String howTo = request.getParameter("howtoDetail");
         String active = request.getParameter("editTcActive");
@@ -397,7 +400,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
         String bugID = request.getParameter("editBugID");
         String targetSprint = request.getParameter("editTargetBuild");
         String targetRevision = request.getParameter("editTargetRev");
-        String comment = request.getParameter("editComment");
+        String comment = HtmlUtils.htmlEscape(request.getParameter("editComment"));
         String function = request.getParameter("editFunction");
         return testCaseFactory.create(test, testCase, origin, refOrigin, creator, implementer, lastModifier, project, ticket, function, application,
                 runQA, runUAT, runPROD, priority, group, status, shortDescription, description, howTo, active, fromSprint, fromRevision, toSprint,
@@ -467,7 +470,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
                 String delete = getParameterIfExists(request, "step_delete_" + inc);
                 int step = Integer.valueOf(getParameterIfExists(request, "step_number_" + inc) == null ? "0" : getParameterIfExists(request, "step_number_" + inc));
                 int initialStep = Integer.valueOf(getParameterIfExists(request, "initial_step_number_" + inc) == null ? "0" : getParameterIfExists(request, "initial_step_number_" + inc));
-                String desc = getParameterIfExists(request, "step_description_" + inc);
+                String desc = HtmlUtils.htmlEscape(getParameterIfExists(request, "step_description_" + inc));
                 String useStep = getParameterIfExists(request, "step_useStep_" + inc);
                 String useStepTest = getParameterIfExists(request, "step_useStepTest_" + inc);
                 String useStepTestCase = getParameterIfExists(request, "step_useStepTestCase_" + inc);
@@ -494,7 +497,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
                 String action = getParameterIfExists(request, "action_action_" + stepInc + inc);
                 String object = getParameterIfExists(request, "action_object_" + stepInc + inc);
                 String property = getParameterIfExists(request, "action_property_" + stepInc + inc);
-                String description = getParameterIfExists(request, "action_description_" + stepInc + inc);
+                String description = HtmlUtils.htmlEscape(getParameterIfExists(request, "action_description_" + stepInc + inc));
                 if (delete == null) {
                     TestCaseStepAction tcsa = testCaseStepActionFactory.create(test, testCase, step, sequence, action, object, property, description);
                     testCaseStepAction.add(tcsa);
@@ -519,7 +522,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
                 String controlValue = getParameterIfExists(request, "control_value_" + inc);
                 String controlProperty = getParameterIfExists(request, "control_property_" + inc);
                 String fatal = getParameterIfExists(request, "control_fatal_" + inc);
-                String description = getParameterIfExists(request, "control_description_" + inc);
+                String description = HtmlUtils.htmlEscape(getParameterIfExists(request, "control_description_" + inc));
                 if (delete == null) {
                     testCaseStepActionControl.add(testCaseStepActionControlFactory.create(test, testCase, step, sequence, control, type, controlValue, controlProperty, fatal, description));
                 }

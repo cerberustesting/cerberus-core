@@ -43,6 +43,7 @@ import org.cerberus.service.impl.LogEventService;
 import org.cerberus.service.impl.UserService;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
+import org.springframework.web.util.HtmlUtils;
 
 /**
  * @author Tiago Bernardes <tbernardes@redoute.pt>
@@ -133,7 +134,7 @@ toPosition	161
             Collections.addAll(countries, request.getParameterValues("testcase_country_general"));
         }
         tc.setCountryList(countries);
-        tc.setShortDescription(request.getParameter("editDescription"));
+        tc.setShortDescription(HtmlUtils.htmlEscape(request.getParameter("editDescription")));
         tc.setDescription(request.getParameter("valueDetail"));
         tc.setHowTo(request.getParameter("howtoDetail"));
         tc.setActive(request.getParameter("editTcActive"));
@@ -144,7 +145,7 @@ toPosition	161
         tc.setBugID(request.getParameter("editBugID"));
         tc.setTargetSprint(request.getParameter("editTargetBuild"));
         tc.setTargetRevision(request.getParameter("editTargetRev"));
-        tc.setComment(request.getParameter("editComment"));
+        tc.setComment(HtmlUtils.htmlEscape(request.getParameter("editComment")));
         tc.setFunction(request.getParameter("function"));
         return tc;
     }

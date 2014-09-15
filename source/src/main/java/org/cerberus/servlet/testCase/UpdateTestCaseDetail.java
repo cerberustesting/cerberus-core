@@ -31,11 +31,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.cerberus.database.DatabaseSpring;
@@ -57,6 +59,7 @@ import org.cerberus.service.impl.LogEventService;
 import org.cerberus.service.impl.UserService;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
+import org.springframework.web.util.HtmlUtils;
 
 /**
  * @author bcivel
@@ -147,8 +150,12 @@ public class UpdateTestCaseDetail extends HttpServlet {
         }
         return "";
     }
-
+    
     public String[] getStringTable(String parameter, HttpServletRequest request) {
+    	return getStringTable(parameter, request, false);
+    }
+
+    public String[] getStringTable(String parameter, HttpServletRequest request, boolean toEscape) {
 
         if (request.getParameterValues(parameter) != null) {
             try {
@@ -158,7 +165,13 @@ public class UpdateTestCaseDetail extends HttpServlet {
                 e.printStackTrace();
             }
 //            System.out.println("Properties Values for : " + request.getParameter(parameter));
-            return request.getParameterValues(parameter);
+            String[] parameters = request.getParameterValues(parameter);
+            if (toEscape) {
+            	for (int i = 0; i < parameters.length; i++) {
+            		parameters[i] = HtmlUtils.htmlEscape(parameters[i]);
+            	}
+            }
+            return parameters;
 
         }
         return new String[0];
@@ -510,11 +523,11 @@ public class UpdateTestCaseDetail extends HttpServlet {
                 String step_id[] = this.getStringTable("testcasestep_hidden",
                         request);
                 String step_desc[] = this.getStringTable("step_description",
-                        request);
+                        request, true);
                 String step_number_toadd[] = this.getStringTable("step_number_add",
                         request);
                 String step_desc_toadd[] = this.getStringTable(
-                        "step_description_add", request);
+                        "step_description_add", request, true);
 
             /*
              * Step actions
@@ -531,7 +544,7 @@ public class UpdateTestCaseDetail extends HttpServlet {
                 String step_property[] = this.getStringTable("actions_property",
                         request);
                 String step_description[] = this.getStringTable("actions_description",
-                        request);
+                        request, true);
             /*
              * Get TestCase Step Controls Informations
              */
@@ -549,7 +562,7 @@ public class UpdateTestCaseDetail extends HttpServlet {
                 String controls_controlproperty[] = this.getStringTable(
                         "controls_controlproperty", request);
                 String controls_controldescription[] = this.getStringTable(
-                        "controls_controldescription", request);
+                        "controls_controldescription", request, true);
                 String controls_fatal[] = this.getStringTable("controls_fatal",
                         request);
 
