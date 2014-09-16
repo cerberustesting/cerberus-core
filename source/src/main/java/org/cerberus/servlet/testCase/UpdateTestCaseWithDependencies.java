@@ -222,9 +222,11 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
         List<TestCaseStepActionControl> tcsacFromPage = new ArrayList();
 
         for (TestCaseStep tcsL : tcsFromPage) {
+            if (tcsL.getTestCaseStepAction()!=null){
             tcsaFromPage.addAll(tcsL.getTestCaseStepAction());
             for (TestCaseStepAction tcsaL : tcsL.getTestCaseStepAction()) {
                 tcsacFromPage.addAll(tcsaL.getTestCaseStepActionControl());
+            }
             }
         }
 
@@ -485,7 +487,9 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
                 int useStepStep = Integer.valueOf(getParameterIfExists(request, "step_useStepStep_" + inc) == null ? "0" : getParameterIfExists(request, "step_useStepStep_" + inc));
                 if (delete == null) {
                     TestCaseStep tcStep = testCaseStepFactory.create(test, testCase, step, desc, useStep, useStepTest, useStepTestCase, useStepStep);
+                    if (useStep==null){
                     tcStep.setTestCaseStepAction(getTestCaseStepActionFromParameter(request, appContext, test, testCase, inc));
+                    }
                     testCaseStep.add(tcStep);
                     //System.out.print("FromPage" + tcStep.toString());
                 }

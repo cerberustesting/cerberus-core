@@ -2155,19 +2155,23 @@ if (document.getElementById('control_increment_'+incrementStep+'_'+incrementActi
 
 function addTestCasePropertiesNew(tableau, row_number, size, size2) {
 
+var incProp = document.getElementsByName('property_increment').length;
+var inc = incProp;
+incProp++;
+
     TR = document.createElement('tr');
 
     /* Delete box */
     // prop_line++;
     var form1 = document.createElement('input');
     form1.setAttribute('type', 'checkbox');
-    form1.setAttribute('name', 'properties_delete');
+    form1.setAttribute('name', 'properties_delete_'+incProp);
     form1.setAttribute('style', '');
     form1.setAttribute('value', row_number + 1);
     var form11 = document.createElement('input');
-    form11.setAttribute('name', 'property_hidden');
-    form11.setAttribute('type', 'hidden');
-    form11.setAttribute('value', row_number + 1);
+    form11.setAttribute('name', 'property_increment');
+    form11.setAttribute('value', incProp);
+    form11.setAttribute('hidden', 'hidden');
     var TD1 = document.createElement('td');
     TD1.setAttribute('style', 'background-color:white; text-align: center');
     TD1.appendChild(form1);
@@ -2176,7 +2180,7 @@ function addTestCasePropertiesNew(tableau, row_number, size, size2) {
 
     /* Property */
     var form2 = document.createElement('input');
-    form2.setAttribute('name', 'properties_property');
+    form2.setAttribute('name', 'properties_property_'+incProp);
     form2.setAttribute('class', 'wob properties_id_'+ eval(row_number + 1));
     form2.setAttribute('size', '130%');
     form2
@@ -2194,28 +2198,23 @@ function addTestCasePropertiesNew(tableau, row_number, size, size2) {
     /* Parse values from hidden containing all countries */
 
     var TD3 = document.createElement('td'); /* Create column */
-    if (document.getElementById("toto")) {
+    if (document.getElementById("hiddenProperty")) {
         TD3.setAttribute('style', 'font-size : x-small ; width: ' + size
                 + 'px;');
         TD3.setAttribute('style', 'background-color: white;');
         
-        var jToto = $('#toto');
-        jToto.find('input[name="properties_country"]').addClass('properties_id_'+ eval(row_number + 1));
+        var jToto = $('#hiddenProperty');
+        jToto.find('input[data-country="ctr"]').addClass('properties_id_'+ eval(row_number + 1));
+        jToto.find('input[data-country="ctr"]').attr('name', 'properties_country_'+incProp);
         TD3.innerHTML = (TD3.innerHTML + jToto.html());
         
-        // if (document.getElementById("checkbox-AT")) {
-        // tata=TD3.getElementById("checkbox-AT")
-        // tata.setAttribute('value', prop_line+' - AT');
-        // tata.setAttribute('name', property_country);
-        // }
-
     }
     TR.appendChild(TD3);
 
     /* Type */
     var form4 = document.createElement('select');
     if (document.getElementById("new_properties_type_new_properties_value")) {
-        form4.setAttribute('name', 'properties_type');
+        form4.setAttribute('name', 'properties_type_'+incProp);
         form4.setAttribute('id', 'typenew_properties_value');
         form4.setAttribute('style', 'width: 120px');
         form4.setAttribute('onchange', 'activateDatabaseBox(this.value, \'properties_dtb_typeID\' , \'properties_dtb_type_ID\'); activateValue2(this.value, \'tdValue2_new\', \'new_properties_value\',\'new_properties_value2\',\'' + size2 + '\')');
@@ -2235,7 +2234,7 @@ function addTestCasePropertiesNew(tableau, row_number, size, size2) {
     /* Database */
     var form41 = document.createElement('select');
     if (document.getElementById("properties_dtb_")) {
-        form41.setAttribute('name', 'properties_dtb');
+        form41.setAttribute('name', 'properties_dtb_'+incProp);
         form41.setAttribute('style', 'width: 40px');
         form41.setAttribute('style', 'display: inline');
         form41.setAttribute('class', 'wob');
@@ -2257,7 +2256,7 @@ function addTestCasePropertiesNew(tableau, row_number, size, size2) {
 
     /* Value */
     var form5 = document.createElement('textarea');
-    form5.setAttribute('name', 'properties_value');
+    form5.setAttribute('name', 'properties_value1_'+incProp);
     form5.setAttribute('class', 'wob');
     form5.setAttribute('id', 'new_properties_value');
     form5.setAttribute('style', 'width: ' + size2 + 'px');
@@ -2271,7 +2270,7 @@ function addTestCasePropertiesNew(tableau, row_number, size, size2) {
     TR51.appendChild(TD51);
 
     var form54 = document.createElement('textarea');
-    form54.setAttribute('name', 'properties_value2');
+    form54.setAttribute('name', 'properties_value2_'+incProp);
     form54.setAttribute('placeholder', 'Attribute');
     form54.setAttribute('class', 'wob');
     form54.setAttribute('id', 'new_properties_value2');
@@ -2305,7 +2304,7 @@ function addTestCasePropertiesNew(tableau, row_number, size, size2) {
 
     /* Length */
     var form6 = document.createElement('input');
-    form6.setAttribute('name', 'properties_length');
+    form6.setAttribute('name', 'properties_length_'+incProp);
     form6.setAttribute('value', 0);
     form6.setAttribute('class', 'wob');
     form6.setAttribute('style', 'width: 40px');
@@ -2316,7 +2315,7 @@ function addTestCasePropertiesNew(tableau, row_number, size, size2) {
 
     /* Row Limit */
     var form7 = document.createElement('input');
-    form7.setAttribute('name', 'properties_rowlimit');
+    form7.setAttribute('name', 'properties_rowlimit_'+incProp);
     form7.setAttribute('value', 0);
     form7.setAttribute('style', 'width: 40px');
     form7.setAttribute('class', 'wob');
@@ -2328,7 +2327,7 @@ function addTestCasePropertiesNew(tableau, row_number, size, size2) {
     /* Nature */
     var form8 = document.createElement('select');
     if (document.getElementById("properties_nature_")) {
-        form8.setAttribute('name', 'properties_nature');
+        form8.setAttribute('name', 'properties_nature_'+incProp);
         form8.setAttribute('class', 'wob');
         form8.setAttribute('style', 'width: 80px');
         form8.innerHTML = (form8.innerHTML + document

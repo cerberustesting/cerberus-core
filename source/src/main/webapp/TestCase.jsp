@@ -802,15 +802,15 @@
                                         <input style="float:right;margin-top:10px;font-weight: bold; width: 500px;background-color:transparent; font-weight:bold;font-size:16px ;font-family: Trebuchet MS; color:#333333; border-color:#EEEEEE; border-width: 0px" name="step_description_<%=incrementStep%>" value="<%=tcs.getDescription()%>">
                                     </div>
                                     <div id="StepUseStepDiv" style="float:left">UseStep
-                                        <input type="checkbox" name="step_useStep" style="margin-top:15px;font-weight: bold; width:20px"
+                                        <input type="checkbox" name="step_useStep_<%=incrementStep%>" style="margin-top:15px;font-weight: bold; width:20px"
                                                <% if (tcs.getUseStep().equals("Y")) {%>
                                                CHECKED
                                                <%}%>
-                                               value="Use Step">
+                                               value="Y">
                                     </div>
                                     <% if (tcs.getUseStep().equals("Y")) {%>
                                     <div id="StepCopiedFromDiv" style="float:left">
-                                        <span style="margin-top:15px;"> Copied from : </span>
+                                        <p style="margin-top:15px;"> Copied from : </p>
                                     </div>
                                     <div id="StepUseStepTestDiv" style="float:left">
                                         <input  size="100%" style="margin-top:15px;font-weight: bold; width: 200px" name="step_useStepTest_<%=incrementStep%>"
@@ -824,7 +824,7 @@
                                         <input size="100%" style="margin-top:15px;font-weight: bold; width: 50px" name="step_useStepStep_<%=incrementStep%>"
                                                value="<%=tcs.getUseStepStep()%>">
                                     </div>
-                                    <div id="StepUseStepLinkDiv" style="float:left">
+                                    <div id="StepUseStepLinkDiv" style="float:left;margin-top:15px">
                                         <a href="TestCase.jsp?Test=<%=tcs.getUseStepTest()%>&TestCase=<%=tcs.getUseStepTestCase()%>#stepAnchor_step<%=tcs.getStep()%>">Edit Used Step</a>
                                     </div>
                                     <%}%>
@@ -860,9 +860,11 @@
                                                 <div id="StepListOfActionDiv<%=tcsa.getStep()%><%=tcsa.getSequence()%>" class="RowActionDiv" style="display:inline-block;height:50px;width:100%;">
                                                     <div style="background-color:blue; width:8px;height:100%;display:inline-block;float:left">
                                                     </div>
-                                                    <div style="display:inline-block;float:left;height:100%;">
+                                                    <div style="display:inline-block;float:left;width:2%;height:100%;">
+                                                        <% if (!useStep){%>
                                                         <input  class="wob" type="checkbox" name="action_delete_<%=incrementStep%>_<%=incrementAction%>" style="margin-top:20px;width: 30px; background-color: transparent"
                                                                 value="<%=tcsa.getStep() + "-" + tcsa.getSequence()%>" <%=isReadonly%>>
+                                                        <%}%>
                                                         <input type="hidden" name="action_increment_<%=incrementStep%>" value="<%=incrementAction%>" >
                                                         <input type="hidden" name="action_step_<%=incrementStep%>_<%=incrementAction%>" value="<%=tcsa.getStep()%>" >
                                                     </div>
@@ -878,7 +880,7 @@
                                                         </div>
                                                         <%}%>
                                                     </div>
-                                                    <div style="height:100%;display:inline-block;float:left">
+                                                    <div style="height:100%;width:4%;display:inline-block;float:left">
                                                         <input class="wob" style="width: 40px; font-weight: bold; background-color: transparent; height:100%; color:<%=actionFontColor%>"
                                                                value="<%=tcsa.getSequence()%>"
                                                                name="action_sequence_<%=incrementStep%>_<%=incrementAction%>" id="action_sequence_<%=incrementStep%>_<%=incrementAction%>">
@@ -948,8 +950,8 @@
                                                 <div id="StepListOfControlDiv<%=tcsa.getStep()%><%=tcsa.getSequence()%><%=tcsac.getControl()%>" class="RowActionDiv" style="width:100%;height:50px;clear:both;display:inline-block;">
                                                     <div style="background-color:green; width:8px;height:100%;display:inline-block;float:left">
                                                     </div>
-                                                    <div style="height:100%;width: 30px;float:left; text-align: center;">
-                                                        <%  if (canEdit) {%>
+                                                    <div style="height:100%;width: 2%;float:left; text-align: center;">
+                                                        <%  if (!useStep) {%>
                                                         <input style="margin-top:20px;" type="checkbox" name="control_delete_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>" 
                                                                value="<%=tcsac.getStep() + '-' + tcsac.getSequence() + '-' + tcsac.getControl()%>">
                                                         <% }%>
@@ -968,11 +970,11 @@
                                                                          enableField('submitButtonChanges');">
                                                         </div>
                                                     </div>
-                                                    <div style="float:left;height:100%;display:inline-block">
+                                                    <div style="width:2%;float:left;height:100%;display:inline-block">
                                                         <input class="wob" style="margin-top:20px;width: 20px; font-weight: bold;color:<%=actionFontColor%>"
                                                                value="<%=tcsac.getSequence()%>" name="control_sequence_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>">
                                                     </div>
-                                                    <div style="float:left;height:100%;display:inline-block">
+                                                    <div style="width:2%;float:left;height:100%;display:inline-block">
                                                         <input class="wob" style="margin-top:20px;width: 20px; font-weight: bold; color:<%=actionFontColor%>"
                                                                value="<%=tcsac.getControl()%>" name="control_control_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>">
                                                     </div>
@@ -1271,9 +1273,7 @@
                                                 <br>
                                                 <%  if (canEdit) {%>
                                                 <input type="button" value="Add Property" id="AddProperty"
-                                                       onclick="addTestCasePropertiesNew('testcaseproperties_table', <%=rowNumber%>, <%=size%>, <%=size2%>);
-                                                               enableField('SavePropertyChanges');
-                                                               disableField('AddProperty');">
+                                                       onclick="addTestCasePropertiesNew('testcaseproperties_table', <%=rowNumber%>, <%=size%>, <%=size2%>);">
                                                 <input type="submit" value="Save Changes" id="SavePropertyChanges">              
                                                 <input type="hidden" id="Test" name="Test" value="<%=test%>">
                                                 <input type="hidden" id="TestCase" name="TestCase" value="<%=testcase%>">
@@ -1288,14 +1288,14 @@
                                             </td>
                                         </tr>
                                     </table>
-                                    <p id ="toto" style="font-size : x-small ; width: <%=size%>px; visibility:hidden">
+                                    <p id="hiddenProperty" style="font-size : x-small ; width: <%=size%>px; visibility:hidden">
                                         <% for (String c : countryListTestcase) {%>
                                         <%=c%> 
                                         <% } %>
                                         <br>
                                         <% for (String c : countryListTestcase) {
                                         %>
-                                        <input value="<%=rowNumber%> - <%=c%>" type="checkbox" id="properties_country" 
+                                        <input data-country="ctr" value="<%=c%>" type="checkbox" id="properties_country" 
                                                name="properties_country" >
                                         <% } %>
                                     </p>
