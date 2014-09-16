@@ -77,7 +77,7 @@
                         {"mDataProp": "request", "sName": "Request_Password"},
                         {"mDataProp": "email", "sName": "email"}
                     ],
-                    "fnCreatedRow": function(nRow, aData, iDisplayIndex) {
+                    "fnCreatedRow": function(nRow, aData) {
                         $(nRow).attr("id", aData.login);
                         return nRow;
                     }
@@ -98,7 +98,7 @@
                         icons: {primary: 'ui-icon-trash'}
                     },
                     sUpdateURL: "UpdateUser",
-                    fnOnEdited: function(status) {
+                    fnOnEdited: function() {
                         $(".dataTables_processing").css('visibility', 'hidden');
                     },
                     "aoColumns": [
@@ -236,14 +236,6 @@
         <%@ include file="include/header.jsp" %>
         <p class="dttTitle">User Management</p>
         <div style="width: 100%;font: 90% sans-serif">
-            <%
-                /*
-                 * Database connexion
-                 */
-                Connection conn = db.connect();
-                try {
-
-            %>
             Documentation on how to define groups can be found <a href="javascript:popup('Documentation.jsp?DocTable=usergroup&DocField=GroupName')">here</a>.
             <table id="usersTable" class="display">
                 <thead>
@@ -275,13 +267,13 @@
                 <input type="text" name="email" id="email" maxlength="100" rel="7" />
                 <br /><br />
                 <label for="team">Team</label>
-                <%=ComboInvariantAjax(conn, "team", "", "team", "3", "TEAM", "", "", false)%>
+                <%=ComboInvariantAjax(appContext, "team", "", "team", "3", "TEAM", "", "", false)%>
                 <br /><br />
                 <label for="groups">Systems</label>
-                <%=ComboInvariantMultipleAjax(conn, "systems", "", "systems", "4", "SYSTEM", "", "", false)%>
+                <%=ComboInvariantMultipleAjax(appContext, "systems", "", "systems", "4", "SYSTEM", "", "", false)%>
                 <br /><br />
                 <label for="defaultSystem">Default System</label>
-                <%=ComboInvariantAjax(conn, "defaultSystem", "", "defaultSystem", "5", "SYSTEM", "", "", false)%>
+                <%=ComboInvariantAjax(appContext, "defaultSystem", "", "defaultSystem", "5", "SYSTEM", "", "", false)%>
                 <br /><br />
                 <label for="newPassword">Request New Password ?</label>
                 <select name="newPassword" id="newPassword" rel="6">
@@ -290,21 +282,11 @@
                 </select>
                 <br /><br />
                 <label for="groups">User Group</label>
-                <%=ComboInvariantMultipleAjax(conn, "groups", "", "groups", "0", "USERGROUP", "", "", false)%>
+                <%=ComboInvariantMultipleAjax(appContext, "groups", "", "groups", "0", "USERGROUP", "", "", false)%>
                 <br /><br />
                 <button id="btnAddNewRowOk">Add</button>
                 <button id="btnAddNewRowCancel">Cancel</button>
             </form>
-            <%
-                } catch (Exception e) {
-                    out.println(e);
-                } finally {
-                    try {
-                        conn.close();
-                    } catch (Exception ex) {
-                    }
-                }
-            %>
         </div>
         <br><% out.print(display_footer(DatePageStart));%>
     </body>

@@ -144,6 +144,34 @@
         }
     }
 
+    String ComboInvariantAjax(ApplicationContext appContext, String HTMLComboName, String HTMLComboStyle, String HTMLId, String HTMLrel, String combonumber, String value, String HTMLOnChange, boolean emptyfirstoption) {
+        try {
+            IInvariantService invFunctionService = appContext.getBean(IInvariantService.class);
+            List<Invariant> invFunctionList = invFunctionService.findListOfInvariantById(combonumber);
+
+            String ret = "<select id=\"" + HTMLId + "\" rel=\"" + HTMLrel + "\" style=\"" + HTMLComboStyle + "\" name=\"" + HTMLComboName + "\"";
+            if (HTMLOnChange.compareToIgnoreCase("") != 0) {
+                ret += " onchange=\"" + HTMLOnChange + "\"";
+            }
+            ret += ">";
+            if (emptyfirstoption) {
+                ret += "<option value=\"\"></option>";
+            }
+            for (Invariant inv : invFunctionList) {
+                ret += "<option value=\"" + inv.getValue() + "\"";
+                if ((value != null) && (value.compareTo(inv.getValue()) == 0)) {
+                    ret += " SELECTED ";
+                }
+                ret += ">" + inv.getValue() + "</option>";
+            }
+            ret += "</select>";
+            return ret;
+
+        } catch (Exception e) {
+            return e.toString();
+        }
+    }
+
     String ComboInvariantMultipleAjax(Connection conn, String HTMLComboName, String HTMLComboStyle, String HTMLId, String HTMLrel, String combonumber, String value, String HTMLOnChange, boolean emptyfirstoption) {
         try {
             Statement stmtQuery = conn.createStatement();
@@ -175,6 +203,34 @@
             } finally {
                 stmtQuery.close();
             }
+        } catch (Exception e) {
+            return e.toString();
+        }
+    }
+
+    String ComboInvariantMultipleAjax(ApplicationContext appContext, String HTMLComboName, String HTMLComboStyle, String HTMLId, String HTMLrel, String combonumber, String value, String HTMLOnChange, boolean emptyfirstoption) {
+        try {
+            IInvariantService invFunctionService = appContext.getBean(IInvariantService.class);
+            List<Invariant> invFunctionList = invFunctionService.findListOfInvariantById(combonumber);
+
+            String ret = "<select id=\"" + HTMLId + "\" rel=\"" + HTMLrel + "\" style=\"" + HTMLComboStyle + "\" name=\"" + HTMLComboName + "\"";
+            if (HTMLOnChange.compareToIgnoreCase("") != 0) {
+                ret += " onchange=\"" + HTMLOnChange + "\"";
+            }
+            ret += " multiple >";
+            if (emptyfirstoption) {
+                ret += "<option value=\"\"></option>";
+            }
+            for (Invariant inv : invFunctionList) {
+                ret += "<option value=\"" + inv.getValue() + "\"";
+                if ((value != null) && (value.compareTo(inv.getValue()) == 0)) {
+                    ret += " SELECTED ";
+                }
+                ret += ">" + inv.getValue() + "</option>";
+            }
+            ret += "</select>";
+            return ret;
+
         } catch (Exception e) {
             return e.toString();
         }
@@ -288,9 +344,8 @@
     }
 
     Boolean checkSelected(Collection<Country> col, String selection) {
-        Iterator<Country> it = col.iterator();
-        while (it.hasNext()) {
-            if (it.next().getCountry().compareTo(selection) == 0) {
+        for (Country aCol : col) {
+            if (aCol.getCountry().compareTo(selection) == 0) {
                 return true;
             }
         }
@@ -343,7 +398,7 @@
         for (String key : options.keySet()) {
             select += " <option value=\"" + key + "\"";
 
-            if ((parameter != null) && (parameter.indexOf(key + ",") >= 0)) {
+            if (parameter.contains(key + ",")) {
                 select += " SELECTED ";
             }
             select += ">" + options.get(key) + "</option>\n";
@@ -354,7 +409,7 @@
     }
 
     String generateWhereClausesForParametersAndColumns(String[] parameters, String[] columns, HttpServletRequest request) {
-        StringBuffer whereClause = new StringBuffer();
+        StringBuilder whereClause = new StringBuilder();
         for (int index = 0; index < parameters.length; index++) {
             String[] values = request.getParameterValues(parameters[index]);
             if (values != null) {
@@ -380,20 +435,14 @@
                 && request.getParameter(parameter).compareTo("All") != 0) {
             result = request.getParameter(parameter);
         } else {
-            result = new String("%%");
+            result = "";
         }
         return result;
     }
 
     boolean getBooleanParameterFalseIfEmpty(HttpServletRequest request, String parameter) {
-        boolean result;
-        if (request.getParameter(parameter) != null
-                && request.getParameter(parameter).compareTo("Y") == 0) {
-            result = true;
-        } else {
-            result = false;
-        }
-        return result;
+        return request.getParameter(parameter) != null
+                && request.getParameter(parameter).compareTo("Y") == 0;
     }
 %>
 <% if (session.getAttribute("flashMessage") != null) {
