@@ -269,7 +269,7 @@
             <input id="urlForListOffunction" value="<%=listOfFunction%>" style="display:none">
             <form action="TestCase.jsp" method="post" name="selectTestCase" id="selectTestCase">
                 <div class="filters" style="float:left; width:100%; height:30px">
-                    <div style="float:left; width:100px">
+                    <div style="float:left; width:60px">
                         <p class="dttTitle">Filters
                         </p>
                     </div>
@@ -291,14 +291,14 @@
                     <div style="float:left"><%out.print(docService.findLabelHTML("testcase", "testcase", "TestCase"));%>
                     </div>
                     <div style="float:left">
-                        <select id="filtertestcase" name="TestCase" style="width: 850px" OnChange="document.selectTestCase.submit()">
+                        <select id="filtertestcase" name="TestCase" style="width: 750px" OnChange="document.selectTestCase.submit()">
                             <% if (test.compareTo("%%") == 0) { %>
-                            <option style="width: 850px" value="All">-- Choose Test First --
+                            <option style="width: 750px" value="All">-- Choose Test First --
                             </option>
                             <%  } else {
                                 List<TCase> tcList = testCaseService.findTestCaseByTest(test);
                                 for (TCase tc : tcList) {%>
-                            <option style="width: 850px;" class="font_weight_bold_<%=tc.getActive()%>" value="<%=tc.getTestCase()%>" <%=testcase.compareTo(tc.getTestCase()) == 0 ? " SELECTED " : ""%>><%=tc.getTestCase()%>  [<%=tc.getApplication()%>]  : <%=tc.getShortDescription()%>
+                            <option style="width: 750px;" class="font_weight_bold_<%=tc.getActive()%>" value="<%=tc.getTestCase()%>" <%=testcase.compareTo(tc.getTestCase()) == 0 ? " SELECTED " : ""%>><%=tc.getTestCase()%>  [<%=tc.getApplication()%>]  : <%=tc.getShortDescription()%>
                             </option>
                             <%  }
                                 } %>
@@ -766,6 +766,10 @@
                                         <input type="checkbox" name="step_delete_<%=incrementStep%>" style="margin-top:15px;font-weight: bold; width:20px"
                                                value="<%=tcs.getStep()%>">
                                                <%}%>
+                                               <%if (stepusedByAnotherTest){%>
+                                    <div id="StepWarnAlreadyInUse" title="Step In Use By Other Testcase" style="float:left;width:10px;height:100%;display:inline-block; background-color:yellow;">
+                                    </div>
+                                    <%}%>
                                         <input type="hidden" name="step_increment" value="<%=incrementStep%>">
                                         <input id="incrementStepNumber" value="<%=incrementStep%>" type="hidden">
 
@@ -819,11 +823,7 @@
                                         <a href="TestCase.jsp?Test=<%=tcs.getUseStepTest()%>&TestCase=<%=tcs.getUseStepTestCase()%>#stepAnchor_step<%=tcs.getStep()%>">Edit Used Step</a>
                                     </div>
                                     <%}%>
-                                    <%if (stepusedByAnotherTest){%>
-                                    <div id="StepWarnAlreadyInUse" style="float:right;width:60px;height:100%;display:inline-block; background-color:red;float:left">
-                                        <p style="margin-top:15px;">StepInUse</p>
-                                    </div>
-                                    <%}%>
+                                    
 
                                 </div>
                                 <div id="StepsBorderDiv<%=incrementStep%>" style="border-bottom-style: solid; border-left-style: solid;border-right-style: solid;border-width:thin ;clear:both;">
