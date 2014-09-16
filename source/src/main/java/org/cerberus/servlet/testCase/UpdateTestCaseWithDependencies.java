@@ -369,7 +369,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
             Logger.getLogger(UserService.class.getName()).log(Level.ERROR, null, ex);
         }
 
-        response.sendRedirect(response.encodeRedirectURL("TestCase_1.jsp?Load=Load&Test=" + tc.getTest() + "&TestCase=" + tc.getTestCase()));
+        response.sendRedirect(response.encodeRedirectURL("TestCase.jsp?Load=Load&Test=" + tc.getTest() + "&TestCase=" + tc.getTestCase()));
 
     }
 
