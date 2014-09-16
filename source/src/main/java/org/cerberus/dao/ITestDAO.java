@@ -45,4 +45,5 @@ public interface ITestDAO {
      */
     Test findTestByKey(String test);
     
+    List<Test> findListOfTestBySystems(List<String> systems);
 }

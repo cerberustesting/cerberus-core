@@ -64,4 +64,6 @@ public interface ITestService {
      * @return Test object
      */
     Test findTestByKey(String test);
+    
+    List<Test> findTestBySystems(List<String> systems);
 }

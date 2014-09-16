@@ -977,4 +977,9 @@ public class TestCaseDAO implements ITestCaseDAO {
         }
 
     }
+
+    @Override
+    public List<TCase> findTestCaseByTestSystems(String test, List<String> systems) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }

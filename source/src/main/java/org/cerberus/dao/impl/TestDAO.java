@@ -290,4 +290,55 @@ public class TestDAO implements ITestDAO {
         }
         return result;
     }
+
+    @Override
+    public List<Test> findListOfTestBySystems(List<String> systems) {
+        List<Test> result = null;
+        StringBuilder query = new StringBuilder("SELECT t.Test, t.Description, t.Active, t.Automated, t.TDateCrea FROM test t ");
+        query.append("JOIN Testcase tc ON t.test=tc.test ");
+        query.append("JOIN Application a ON tc.application=a.application ");
+        query.append("WHERE a.system IN (");
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            for (int a=0; a < systems.size(); a++){
+                if (a!=systems.size()-1){
+                query.append(" ? , ");
+                }
+                query.append("? ) GROUP BY t.test");
+            }
+            System.out.print(query.toString());
+            PreparedStatement preStat = connection.prepareStatement(query.toString());
+            for (int a=0; a < systems.size(); a++) {
+                preStat.setString(a+1, ParameterParserUtil.wildcardIfEmpty(systems.get(a)));
+                }
+            try {
+                ResultSet resultSet = preStat.executeQuery();
+                result = new ArrayList<Test>();
+                try {
+                    while (resultSet.next()) {
+                        result.add(this.loadTestFromResultSet(resultSet));
+                    }
+                } catch (SQLException exception) {
+                    MyLogger.log(TestDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                } finally {
+                    resultSet.close();
+                }
+            } catch (SQLException exception) {
+                MyLogger.log(TestDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(TestDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(TestDAO.class.getName(), Level.WARN, e.toString());
+            }
+        }
+        return result;}
 }

@@ -1880,7 +1880,28 @@ function addStepNew(div) {
 
     table.appendChild(document.createElement('br'));
     table.appendChild(document.createElement('br'));
-
+    
+    var form5 = document.createElement('input');
+    form5.setAttribute('type','button');
+    form5.setAttribute('value','Add Step');
+    form5.setAttribute('onclick','addStepNew(\'StepsEndDiv'+incStep+'\')');
+    var DIV5 = document.createElement('div');
+    DIV5.setAttribute('style', 'float:left');
+    DIV5.appendChild(form5);
+    var form6 = document.createElement('input');
+    form6.setAttribute('type','button');
+    form6.setAttribute('value','Save Changes');
+    form6.setAttribute('onclick','submitTestCaseModificationNew(\'stepAnchor_'+incStep+'\')');
+    var DIV6 = document.createElement('div');
+    DIV6.setAttribute('style', 'float:left');
+    DIV6.appendChild(form6);
+    var DIV7 = document.createElement('div');
+    DIV7.setAttribute('style', 'display:inline-block; width:100%');
+    DIV7.setAttribute('id', 'StepsEndDiv'+incStep);
+    
+    table.appendChild(DIV5);                            
+    table.appendChild(DIV6);
+    table.appendChild(DIV7);
     
     var referenceNode = document.getElementById(div);
     referenceNode.parentNode.insertBefore(table, referenceNode.nextSibling);

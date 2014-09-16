@@ -74,4 +74,9 @@ public class TestService implements ITestService {
         return testDao.findTestByKey(test);
                 }
 
+    @Override
+    public List<Test> findTestBySystems(List<String> systems) {
+        return testDao.findListOfTestBySystems(systems);
+    }
+
 }

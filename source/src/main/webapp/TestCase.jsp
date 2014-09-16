@@ -17,6 +17,7 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
+<%@page import="org.cerberus.service.IUserSystemService"%>
 <%@page import="org.cerberus.entity.SqlLibrary"%>
 <%@page import="org.cerberus.service.ISqlLibraryService"%>
 <%@page import="org.cerberus.entity.TestCaseCountryProperties"%>
@@ -233,6 +234,7 @@
                     ISqlLibraryService libService = appContext.getBean(ISqlLibraryService.class);
                     ITestCaseExecutionService testCaseExecutionService = appContext.getBean(ITestCaseExecutionService.class);
                     IInvariantService invariantService = appContext.getBean(IInvariantService.class);
+                    IUserSystemService userSystemService = appContext.getBean(IUserSystemService.class);
 
                     /**
                      * Function
@@ -281,7 +283,12 @@
                             <option style="width: 200px" value="All">-- Choose Test --
                             </option>
                             <%  }
-                                List<Test> tests = testService.getListOfTest();
+                            List<String> systems = new ArrayList();
+                 //            for (UserSystem us : userSystemService.findUserSystemByUser(request.getUserPrincipal().getName())){
+                            //systems.add(us.getSystem());
+                            //}
+                            systems.add(MySystem);
+                                List<Test> tests = testService.findTestBySystems(systems);
                                 for (Test tst : tests) {%>
                             <option style="width: 200px;" class="font_weight_bold_<%=tst.getActive()%>" value="<%=tst.getTest()%>" <%=test.compareTo(tst.getTest()) == 0 ? " SELECTED " : ""%>><%=tst.getTest()%>
                             </option>
@@ -313,6 +320,7 @@
             <br>
             <%if (!test.equals("%%") && !testcase.equals("%%")) {
                     TCase tcase = testCaseService.findTestCaseByKey(test, testcase);
+                    Test testObject = testService.findTestByKey(test);
                     List<Invariant> countryListInvariant = invariantService.findListOfInvariantById("COUNTRY");
                     List<String> countryListTestcase = testCaseCountryService.findListOfCountryByTestTestCase(test, testcase);
                     TestCaseExecution tce = testCaseExecutionService.findLastTestCaseExecutionNotPE(test, testcase);
@@ -384,18 +392,17 @@
                                 </tr>
                                 <tr>
                                     <td class="wob">
-                                        <input id="informationTest" style="width: 90px; font-weight: bold;" name="informationTest" value="<%=tcase.getTest()%>">
+                                        <input id="informationTest" style="width: 200px; font-weight: bold; background-color: #DCDCDC" name="informationTest" value="<%=tcase.getTest()%>" readonly="readonly">
                                         <input id="informationInitialTest" type="hidden" name="informationInitialTest" value="<%=tcase.getTest()%>">
                                     </td>
                                     <td class="wob">
-                                        <input id="informationTestCase" style="width: 90px; font-weight: bold;" name="informationTestCase" value="<%=tcase.getTestCase()%>">
+                                        <input id="informationTestCase" style="width: 100px; font-weight: bold; background-color: #DCDCDC" name="informationTestCase" value="<%=tcase.getTestCase()%>" readonly="readonly">
                                         <input id="informationInitialTestCase" type="hidden" name="informationInitialTestCase" value="<%=tcase.getTestCase()%>">
                                     </td>
                                     <td class="wob">
-                                        <input id="informationTestDescription" style="width: 950px; background-color: #DCDCDC" name="informationTestDescription" readonly="readonly"
-                                               value="<%=tcase.getShortDescription()%>">
-                                    </td>
-                                </tr>
+                                        <input id="informationTestDescription" style="width: 600px; background-color: #DCDCDC" name="informationTestDescription" readonly="readonly"
+                                               value="<%=testObject.getDescription()%>">
+                                    </td>                                </tr>
                             </table>
                             <br>
                             <%  if (canDelete) {%>
@@ -715,7 +722,17 @@
                     <div id="StepsMainDiv" style="width:100%;clear:both">
                         <div id="StepsDivUnderTitle" style="width:100%;clear:both">
                             <div id="StepsRightDiv" style="width:97%;float:left; margin:2%;">
-
+                                <div id="ButtonDiv0" style="float:left;">
+                                    <input type="button" value="Add Step" title="Add Step" 
+                                           onclick="addStepNew('StepNumberDiv0')">
+                                </div>
+                                <div style="float:left" id="wob">
+                                    <input value="Save Changes" onclick="submitTestCaseModificationNew('');"
+                                           id="submitButtonAction" name="submitChanges"
+                                           type="button" >
+                                </div>
+                                <div id="StepNumberDiv0" style="float:left;">
+                                </div>
                                 <%
                                     int incrementStep = 0;
                                     List<TestCaseStep> tcsList = tcsService.getListOfSteps(test, testcase);
@@ -749,15 +766,6 @@
                                         List<TestCaseStepAction> tcsaList = tcsaService.getListOfAction(testForQuery, testcaseForQuery, stepForQuery);
 
                                 %>
-                                <div id="StepNumberDiv<%=incrementStep%>" style="float:left;">
-                                    <input type="button" value="Add Step" title="Add Step" 
-                                           onclick="addStepNew('StepsEndDiv<%=incrementStep%>')">
-                                </div>
-                                <div style="float:left" id="wob">
-                                    <input value="Save Changes" onclick="submitTestCaseModificationNew('stepAnchor_<%=incrementStep%>');" id="submitButtonAction" name="submitChanges"
-                                           type="button" >
-                                    <%=ComboInvariant(appContext, "actions_action_", "width: 150px;visibility:hidden", "actions_action_", "actions_action_", "ACTION", "", "", null)%>
-                                </div>
                                 <div id="StepFirstLineDiv<%=incrementStep%>" class="StepHeaderDiv">
                                     <div id="StepComboDeleteDiv" style="float:left; width: 30px; text-align: center; height:100%">
                                         <a name="stepAnchor_<%=incrementStep%>"></a>
@@ -826,7 +834,7 @@
                                     
 
                                 </div>
-                                <div id="StepsBorderDiv<%=incrementStep%>" style="border-bottom-style: solid; border-left-style: solid;border-right-style: solid;border-width:thin ;clear:both;">
+                                <div id="StepsBorderDiv<%=incrementStep%>" style="border-style: solid;border-width:thin ;border-color:#EEEEEE; clear:both;">
                                     <div id="StepDetailsDiv" style="clear:both">
                                         <div id="ActionControlDivUnderTitle" style="height:100%;width:100%;clear:both">
                                             <div id="Action<%=tcs.getStep()%>" class="collapseOrExpandStep"  style="height:100%; width:100%;text-align: left; clear:both" >
@@ -853,7 +861,8 @@
                                                         }
                                                 %>
                                                 <div id="StepListOfActionDiv<%=tcsa.getStep()%><%=tcsa.getSequence()%>" class="RowActionDiv" style="display:inline-block;height:100%;width:100%;">
-                                                    <div style="background-color:blue; width:8px;height:50px;display:inline-block;float:left"><p style="height:50px;transform: rotate(-90deg);color:white">Action</p></div>
+                                                    <div style="background-color:blue; width:8px;height:50px;display:inline-block;float:left">
+                                                    </div>
                                                     <div style="display:inline-block;float:left;height:50px;background-color: transparent">
                                                         <input  class="wob" type="checkbox" name="action_delete_<%=incrementStep%>_<%=incrementAction%>" style="margin-top:20px;width: 30px; background-color: transparent"
                                                                 value="<%=tcsa.getStep() + "-" + tcsa.getSequence()%>" <%=isReadonly%>>
@@ -1028,6 +1037,15 @@
                                         </div>
                                         <%}%>
                                     </div>
+                                </div>
+                                    <div id="StepNumberDiv<%=incrementStep%>" style="float:left;">
+                                    <input type="button" value="Add Step" title="Add Step" 
+                                           onclick="addStepNew('StepsEndDiv<%=incrementStep%>')">
+                                </div>
+                                <div style="float:left" id="wob">
+                                    <input value="Save Changes" onclick="submitTestCaseModificationNew('stepAnchor_<%=incrementStep%>');" id="submitButtonAction" name="submitChanges"
+                                           type="button" >
+                                    <%=ComboInvariant(appContext, "actions_action_", "width: 150px;visibility:hidden", "actions_action_", "actions_action_", "ACTION", "", "", null)%>
                                 </div>
                                 <div id="StepsEndDiv<%=incrementStep%>" style="display:inline-block; width:100%"></div>
                                 <%=ComboInvariant(appContext, "controls_type_", "width: 200px;visibility:hidden", "controls_type_", "controls_type_", "CONTROL", "", "", null)%>
