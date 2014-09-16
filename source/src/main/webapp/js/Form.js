@@ -1616,12 +1616,12 @@ function addTestCaseActionNew(table, step) {
     var StepNum = document.getElementById('initial_step_number_'+step).value;
 
 
-    var form0 = document.createElement('p');                                                
-    form0.setAttribute('style', 'height:50px;transform: rotate(-90deg);color:white');
-    form0.innerHTML = 'Action';
+//    var form0 = document.createElement('p');                                                
+//    form0.setAttribute('style', 'height:50px;transform: rotate(-90deg);color:white');
+//    form0.innerHTML = 'Action';
     var DIV0 = document.createElement('div');
     DIV0.setAttribute('style', 'background-color:blue; width:8px;height:50px;display:inline-block;float:left');
-    DIV0.appendChild(form0);
+    //DIV0.appendChild(form0);
     DIV.appendChild(DIV0);
     /* Delete box */
     var form1 = document.createElement('input'); /* Create form */
@@ -1787,12 +1787,12 @@ function addTestCaseActionNew(table, step) {
     DIV5.appendChild(DIV52);
     DIV.appendChild(DIV5);
     
-    var form10 = document.createElement('p');                                                
-    form10.setAttribute('style', 'height:50px;transform: rotate(-90deg);color:white');
-    form10.innerHTML = 'Action';
+//    var form10 = document.createElement('p');                                                
+//    form10.setAttribute('style', 'height:50px;transform: rotate(-90deg);color:white');
+//    form10.innerHTML = 'Action';
     var DIV10 = document.createElement('div');
     DIV10.setAttribute('style', 'background-color:blue; width:3px;height:50px;display:inline-block;float:right');
-    DIV10.appendChild(form10);
+    //DIV10.appendChild(form10);
     DIV.appendChild(DIV10);
     DIV.setAttribute('style', 'display:inline-block; height:100%; width:100%;background-color:#C4EBFF');
     DIV.setAttribute('id', 'StepListOfActionDiv'+step+incAct);
@@ -1920,12 +1920,12 @@ if (document.getElementById('control_increment_'+incrementStep+'_'+incrementActi
     var inc = incCtrl;
     incCtrl++;
     
-    var form0 = document.createElement('p');                                                
-    form0.setAttribute('style', 'height:50px;transform: rotate(-90deg);color:white');
-    form0.innerHTML = 'Control';
+//    var form0 = document.createElement('p');                                                
+//    form0.setAttribute('style', 'height:50px;transform: rotate(-90deg);color:white');
+//    form0.innerHTML = 'Control';
     var DIV0 = document.createElement('div');
     DIV0.setAttribute('style', 'width:8px;height:50px;display:inline-block;float:left');
-    DIV0.appendChild(form0);
+    //DIV0.appendChild(form0);
     DIV.appendChild(DIV0);
     
     var StepNum = document.getElementById('initial_step_number_'+incrementStep).value;
@@ -2135,13 +2135,13 @@ if (document.getElementById('control_increment_'+incrementStep+'_'+incrementActi
     DIV.appendChild(DIV5);
     
     
-    var form10 = document.createElement('p');                                                
-    form10.setAttribute('style', 'height:50px;transform: rotate(-90deg);color:white');
-    form10.innerHTML = 'Control';
+//    var form10 = document.createElement('p');                                                
+//    form10.setAttribute('style', 'height:50px;transform: rotate(-90deg);color:white');
+//    form10.innerHTML = 'Control';
     var DIV10 = document.createElement('div');
     DIV10.setAttribute('style', 'background-color:green; width:3px;height:50px;display:inline-block;float:right');
     
-    DIV10.appendChild(form10);
+    //DIV10.appendChild(form10);
     DIV.appendChild(DIV10);
     DIV.setAttribute('style', 'background-color:#D4FFBF;display:inline-block;width:100%;');
     DIV.setAttribute('id', 'StepListOfControlDiv'+incrementStep+incrementAction+incCtrl);
