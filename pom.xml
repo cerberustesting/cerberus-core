@@ -4,14 +4,15 @@
 
 	<groupId>com.redcats</groupId>
 	<artifactId>Cerberus-Root</artifactId>
-	<version>1.0.2-SNAPSHOT</version>
+	<version>1.0.2</version>
 	<packaging>pom</packaging>
 
 	<name>Cerberus Root</name>
 
 	<scm>
 		<developerConnection>scm:git:https://github.com/vertigo17/Cerberus.git</developerConnection>
-	</scm>
+	  <tag>Cerberus-Root-1.0.2</tag>
+  </scm>
 
 	<modules>
 		<module>source</module>

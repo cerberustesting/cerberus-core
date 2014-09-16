@@ -4,7 +4,7 @@
 
 	<groupId>com.redcats</groupId>
 	<artifactId>Cerberus</artifactId>
-	<version>1.0.2-SNAPSHOT</version>
+	<version>1.0.2</version>
 	<packaging>war</packaging>
 
 	<name>Cerberus</name>
