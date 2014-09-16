@@ -2217,7 +2217,7 @@ incProp++;
         form4.setAttribute('name', 'properties_type_'+incProp);
         form4.setAttribute('id', 'typenew_properties_value');
         form4.setAttribute('style', 'width: 120px');
-        form4.setAttribute('onchange', 'activateDatabaseBox(this.value, \'properties_dtb_typeID\' , \'properties_dtb_type_ID\'); activateValue2(this.value, \'tdValue2_new\', \'new_properties_value\',\'new_properties_value2\',\'' + size2 + '\')');
+        form4.setAttribute('onchange', 'activateDatabaseBox(this.value, \'properties_nodtb_'+incProp+'\' , \'properties_dtb_'+incProp+'\'); activateValue2(this.value, \'tdValue2_new\', \'new_properties_value\',\'new_properties_value2\',\'' + size2 + '\')');
         form4.setAttribute('class', 'wob');
         form4.innerHTML = (form4.innerHTML + document
                 .getElementById('new_properties_type_new_properties_value').innerHTML);
@@ -2235,17 +2235,16 @@ incProp++;
     var form41 = document.createElement('select');
     if (document.getElementById("properties_dtb_")) {
         form41.setAttribute('name', 'properties_dtb_'+incProp);
-        form41.setAttribute('style', 'width: 40px');
-        form41.setAttribute('style', 'display: inline');
+        form41.setAttribute('style', 'width: 40px;display: inline');
         form41.setAttribute('class', 'wob');
         form41.innerHTML = (form41.innerHTML + document
                 .getElementById('properties_dtb_').innerHTML);
-        form41.setAttribute('id', 'properties_dtb_typeID');
+        form41.setAttribute('id', 'properties_dtb_'+incProp);
     }
 
     var form42 = document.createElement('input');
-    form42.setAttribute('style', 'display:none; width: 39px; background-color: white; text-align: center;');
-    form42.setAttribute('id', 'properties_dtb_type_ID');
+    form42.setAttribute('style', 'display: none; width: 39px; background-color: white; text-align: center;');
+    form42.setAttribute('id', 'properties_nodtb_'+incProp);
     form42.setAttribute('class', 'wob');
     form42.setAttribute('value', '---');
     var TD41 = document.createElement('td');

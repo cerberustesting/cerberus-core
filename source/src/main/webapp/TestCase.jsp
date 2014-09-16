@@ -1197,19 +1197,26 @@
                                                                 </tr>
                                                             </table>
                                                         </td>
-                                                        <td><%=ComboInvariant(appContext, "properties_type_" + incrementProperty, "width: 120px; background-color:" + color, "properties_type_" + incrementProperty, "wob", "PROPERTYTYPE", tccp.getType(), "activateDatabaseBox(this.value, '" + properties_dtbID + "' ,'" + properties_dtbID + "' );activateValue2(this.value, 'tdValue2_" + rowNumber + "', '" + valueID + "','" + valueID + "_2','" + size2 + "')", null)%>
+                                                        <td><%=ComboInvariant(appContext, "properties_type_" + incrementProperty, "width: 120px; background-color:" + color, "properties_type_" + incrementProperty, "wob", "PROPERTYTYPE", tccp.getType(), "activateDatabaseBox(this.value, 'properties_nodtb_"+incrementProperty+"' ,'properties_dtb_"+incrementProperty+"' );activateValue2(this.value, 'tdValue2_" + rowNumber + "', '" + valueID + "','" + valueID + "_2','" + size2 + "')", null)%>
                                                         </td>
                                                         <td>
                                                             <%
-                                                                if (tccp.getType().equals("executeSqlFromLib") || tccp.getType().equals("executeSql") || tccp.getType().equals("executeSoapFromLib")) {
+                                                            String displayDtbList = "";
+                                                            String displayNoList = "";
+                                                                if (tccp.getType().equals("executeSqlFromLib") ||
+                                                                        tccp.getType().equals("executeSql") ||
+                                                                        tccp.getType().equals("executeSoapFromLib")) {
+                                                                displayDtbList = "inline";
+                                                                displayNoList = "none";
+                                                                } else {
+                                                                displayDtbList = "none";
+                                                                displayNoList = "inline";
+                                                                }
                                                             %>
-                                                            <%=ComboInvariant(appContext, "properties_dtb_" + incrementProperty, "width: 40px; display: inline ; background-color:" + color, "properties_dtb_" + incrementProperty, "wob", "PROPERTYDATABASE", tccp.getDatabase(), "", null)%>
-                                                            <%
-                                                            } else {%>
-                                                            <select name="properties_dtb_<%=incrementProperty%>" style="width: 40px; display: inline ; background-color:<%=color%>" class="wob" id="properties_dtb_<%=incrementProperty%>">
+                                                            <%=ComboInvariant(appContext, "properties_dtb_" + incrementProperty, "width: 40px; display: "+displayDtbList+" ; background-color:" + color, "properties_dtb_" + incrementProperty, "wob", "PROPERTYDATABASE", tccp.getDatabase(), "", null)%>
+                                                            <select name="properties_nodtb_<%=incrementProperty%>" style="width: 40px; display: <%=displayNoList%> ; background-color:<%=color%>" class="wob" id="properties_nodtb_<%=incrementProperty%>">
                                                                 <option value="">---</option>
                                                             </select>
-                                                            <% }%>
                                                         </td>
                                                         <td>
                                                             <table>
