@@ -4,7 +4,7 @@
 
 	<groupId>com.redcats</groupId>
 	<artifactId>Cerberus</artifactId>
-	<version>1.0.3-SNAPSHOT</version>
+	<version>1.0.2-SNAPSHOT</version>
 	<packaging>war</packaging>
 
 	<name>Cerberus</name>
@@ -43,6 +43,10 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<netbeans.hint.deploy.server>gfv3ee6</netbeans.hint.deploy.server>
 	</properties>
+
+	<scm>
+		<developerConnection>scm:git:https://github.com/vertigo17/Cerberus.git</developerConnection>
+	</scm>
 
 	<repositories>
 		<repository>
@@ -293,6 +297,13 @@
 				<artifactId>maven-javadoc-plugin</artifactId>
 				<version>2.5</version>
 				<configuration>
+				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-release-plugin</artifactId>
+				<version>2.5</version>
+				<configuration>
+					<goals>install</goals>
 				</configuration>
 			</plugin>
 		</plugins>
