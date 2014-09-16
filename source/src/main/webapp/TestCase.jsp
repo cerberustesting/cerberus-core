@@ -730,7 +730,7 @@
                                         String complementName = "";
 
                                         List<TestCaseStep> tcsUsingThisStep = tcsService.getTestCaseStepUsingStepInParamter(test, testcase, tcs.getStep());
-                                        if (tcsUsingThisStep != null){
+                                        if (!tcsUsingThisStep.isEmpty()){
                                         stepusedByAnotherTest = true;
                                         }
                                         
