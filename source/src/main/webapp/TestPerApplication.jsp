@@ -20,7 +20,6 @@
 <%@page import="org.cerberus.entity.Application"%>
 <%@page import="org.cerberus.service.IDocumentationService"%>
 <%@page import="org.cerberus.service.IApplicationService"%>
-<%@page import="org.cerberus.service.IDatabaseVersioningService"%>
 <% Date DatePageStart = new Date();%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
@@ -65,8 +64,7 @@
         <script>
             function getSys()
             {
-                var x = document.getElementById("systemSelected").value;
-                return x;
+                return document.getElementById("systemSelected").value;
             }
         </script>
     </head>
@@ -74,11 +72,9 @@
         <%@ include file="include/function.jsp"%>
         <%@ include file="include/header.jsp"%>
 
-<%
-                IInvariantService invariantService = appContext.getBean(IInvariantService.class);
-%>
-        
         <%
+        try{
+            IInvariantService invariantService = appContext.getBean(IInvariantService.class);
             IUserService userService = appContext.getBean(IUserService.class);
             User myUser = userService.findUserByKey(request.getUserPrincipal().getName());
             String MySystem = ParameterParserUtil.parseStringParam(request.getParameter("MySystem"), "");
@@ -94,13 +90,13 @@
 
             String appSel = "";
             boolean filterApp = false;
-                    if (request.getParameter("Application") != null 
+                    if (request.getParameter("Application") != null
                             && !request.getParameter("Application").equals("All")) {
                         appSel = request.getParameter("Application");
                         filterApp = true;
                     }
 
-            
+
             IApplicationService applicationService = appContext.getBean(IApplicationService.class);
             List<Application> appList = applicationService.findApplicationBySystem(MySystem);
             List<Invariant> myInvariants = invariantService.findInvariantByIdGp1("TCSTATUS", "Y");
@@ -116,7 +112,7 @@
                             <%
                                 String optstyle = "";
                                 for (Application appL : appList) {
-                                    
+
                             %><option style="width: 500px;<%=optstyle%>" <%
                                 if (appSel.equalsIgnoreCase(appL.getApplication())) {
                                     out.print("selected=\"selected\"");
@@ -130,15 +126,15 @@
                 </div>
          </div>
                         <div style="clear:both"><br></div>
- <p class="dttTitle">Test Coverage Per Application</p> 
+ <p class="dttTitle">Test Coverage Per Application</p>
  <div id="tableList" style="display:none">
      <input id="systemSelected" value="<%=MySystem%>" style="display:none">
-        <%    
+        <%
             if (filterApp){
-                appList=new ArrayList();
+                appList=new ArrayList<Application>();
                 appList.add(applicationService.findApplicationByKey(appSel));
-            }                    
-                                
+            }
+
             for (Application applicationL : appList){
         %>
         <br>
@@ -185,7 +181,7 @@
                         {"sName": "Test", "sWidth": "40%"},
                         {"sName": "Total", "sWidth": "10%"}
                         <%
-                                    
+
             for (Invariant i : myInvariants) {
 
                         %>
@@ -195,7 +191,7 @@
                                             %>
 
                     ]
-                    
+
                 }
             );
             });
@@ -215,6 +211,14 @@
                 noneSelectedText: "Select an Option",
                 selectedList: 1
             }));
-        </script>   
+        </script>
+    <%
+        } catch (CerberusException ex){
+            MyLogger.log("TestPerApplication.jsp", Level.ERROR, "Cerberus exception : " + ex.toString());
+            out.println("</script>");
+            out.print("<script type='text/javascript'>alert(\"Unfortunately an error as occurred, try reload the page.\\n");
+            out.print("Detail error: " + ex.getMessageError().getDescription() + "\");</script>");
+        }
+    %>
     </body>
 </html>
