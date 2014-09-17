@@ -476,7 +476,14 @@
                                         for (TestCaseStepActionExecution myActionData : actionList) {
                                             TestCaseStepAction myTCSA;
                                             String descAction = "";
-                                            myTCSA = testCaseStepActionService.findTestCaseStepActionbyKey(myStepData.getTest(), myStepData.getTestCase(), myStepData.getStep(), myActionData.getSequence());
+                                            
+                                            if(myTCS.getUseStep() != null && !"".equals(myTCS.getUseStep())
+                                                    && myTCS.getUseStepStep() > 0) {
+                                                myTCSA = testCaseStepActionService.findTestCaseStepActionbyKey(myTCS.getUseStepTest(), myTCS.getUseStepTestCase(), myTCS.getUseStepStep(), myActionData.getSequence());
+                                            } else {
+                                                myTCSA = testCaseStepActionService.findTestCaseStepActionbyKey(myStepData.getTest(), myStepData.getTestCase(), myStepData.getStep(), myActionData.getSequence());
+                                            }
+
                                             String actionDesc = "";
                                             if ((myTCSA != null) && !(myTCSA.getDescription().trim().equalsIgnoreCase(""))) {
                                                 actionDesc = " title='" + myTCSA.getDescription() + "'";
@@ -522,7 +529,15 @@
 
                                                     for (TestCaseStepActionControlExecution myControlData : controlList) {
                                                         TestCaseStepActionControl myTCSAC;
-                                                        myTCSAC = testCaseStepActionControlService.findTestCaseStepActionControlByKey(myStepData.getTest(), myStepData.getTestCase(), myStepData.getStep(), myActionData.getSequence(), myControlData.getControl());
+                                                        
+                                                        if(myTCS.getUseStep() != null && !"".equals(myTCS.getUseStep())
+                                                                && myTCS.getUseStepStep() > 0) {
+                                                            myTCSAC = testCaseStepActionControlService.findTestCaseStepActionControlByKey(myTCS.getUseStepTest(), myTCS.getUseStepTestCase(), myTCS.getUseStepStep(), myActionData.getSequence(), myControlData.getControl());
+                                                        } else {
+                                                            myTCSAC = testCaseStepActionControlService.findTestCaseStepActionControlByKey(myStepData.getTest(), myStepData.getTestCase(), myStepData.getStep(), myActionData.getSequence(), myControlData.getControl());
+                                                        }
+
+
                                                         String controlDesc = "";
                                                         String descControl = "";
                                                         if ((myTCSAC != null) && !(myTCSAC.getDescription().trim().equalsIgnoreCase(""))) {
