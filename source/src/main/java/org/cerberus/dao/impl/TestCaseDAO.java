@@ -975,11 +975,49 @@ public class TestCaseDAO implements ITestCaseDAO {
                 MyLogger.log(TestCaseDAO.class.getName(), Level.WARN, e.toString());
             }
         }
-
     }
 
     @Override
     public List<TCase> findTestCaseByTestSystems(String test, List<String> systems) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public String getMaxNumberTestCase(String test) {
+        String max = "";
+        final String sql = "SELECT  Max( Testcase ) + 0 as MAXTC FROM testcase where test = ?";
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(sql);
+            try {
+                preStat.setString(1, test);
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+                    if (resultSet.next()) {
+                        max = resultSet.getString("MAXTC");
+                    }
+                } catch (SQLException exception) {
+                    MyLogger.log(TestCaseDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                } finally {
+                    resultSet.close();
+                }
+            } catch (SQLException exception) {
+                MyLogger.log(TestCaseDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(TestCaseDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(TestCaseDAO.class.getName(), Level.WARN, e.toString());
+            }
+        }
+        return max;
     }
 }

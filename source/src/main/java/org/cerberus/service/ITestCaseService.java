@@ -110,5 +110,12 @@ public interface ITestCaseService {
     List<TCase> findTestCaseByCampaignName(String campaign);
     
     public void updateTestCase(TCase tc) throws CerberusException;
-    
+
+    /**
+     *
+     * @param test
+     * @return
+     * @since 1.0.2
+     */
+    String getMaxNumberTestCase(String test);
 }

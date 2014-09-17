@@ -17,11 +17,13 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
-<%@page import="java.sql.Connection"%>
-<%@page import="java.sql.ResultSet"%>
-<%@page import="java.sql.Statement"%>
 <%@page import="org.apache.commons.lang3.StringUtils"%>
-<%@page import="org.cerberus.service.IDocumentationService"%>
+<%@ page import="org.cerberus.service.IDocumentationService" %>
+<%@ page import="org.cerberus.service.ITestService" %>
+<%@ page import="org.cerberus.service.ITestCaseService" %>
+<%@ page import="org.cerberus.service.IApplicationService" %>
+<%@ page import="org.cerberus.entity.Application" %>
+<%@ page import="org.cerberus.entity.Test" %>
 <% Date DatePageStart = new Date();%>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
@@ -65,8 +67,11 @@
         <%@ include file="include/header.jsp" %>
         <div id="body">
             <%
-                Connection conn = db.connect();
+                IApplicationService applicationService = appContext.getBean(IApplicationService.class);
                 IDocumentationService docService = appContext.getBean(IDocumentationService.class);
+                IInvariantService invariantService = appContext.getBean(IInvariantService.class);
+                ITestService testService = appContext.getBean(ITestService.class);
+                ITestCaseService testCaseService = appContext.getBean(ITestCaseService.class);
                 try {
 
                     String testselected;
@@ -74,11 +79,9 @@
                             && request.getParameter("createTest").compareTo("All") != 0) {
                         testselected = request.getParameter("createTest");
                     } else {
-                        testselected = new String("%%");
+                        testselected = "";
                     }
 
-                    Statement stmt30 = conn.createStatement();
-                    Statement stQueryTestCase = conn.createStatement();
             %>
             <table id="createTcTable" class="arrond" style="display : table">
                 <tr>
@@ -89,7 +92,7 @@
                                     <td colspan="2" class="wob"><h4 style="color : blue">Test Information</h4></td>
                                 </tr>
                                 <tr id="header"> 
-                                    <td class="wob" style="width: 300px"><%out.print(docService.findLabelHTML("test", "test", "Test"));%></td>
+                                    <td class="wob" style="width: 300px"><%=docService.findLabelHTML("test", "test", "Test")%></td>
                                 </tr>
                                 <tr>
                                     <td class="wob">
@@ -97,16 +100,15 @@
                                             <%	if (testselected.compareTo("%%") == 0) {
                                             %><option style="width: 200px" value="All">-- Choose Test --</option>
                                             <%}
-                                                ResultSet rsTestS = stmt30.executeQuery("SELECT DISTINCT Test, active FROM test where Test IS NOT NULL Order by Test asc");
-                                                String optstyle = "";
-                                                while (rsTestS.next()) {
-                                                    if (rsTestS.getString("active").equalsIgnoreCase("Y")) {
+                                                String optstyle;
+                                                for (Test test : testService.getListOfTest()) {
+                                                    if (test.getActive().equalsIgnoreCase("Y")) {
                                                         optstyle = "font-weight:bold;";
                                                     } else {
                                                         optstyle = "font-weight:lighter;";
-                                                    }
-                                            %><option style="width: 200px;<%=optstyle%>" value="<%=rsTestS.getString("Test")%>" <%=testselected.compareTo(rsTestS.getString("Test")) == 0 ? " SELECTED " : ""%>><%=rsTestS.getString("Test")%></option>
-                                            <%}%>
+                                                    }%>
+                                                    <option style="width: 200px;<%=optstyle%>" value="<%=test.getTest()%>" <%=testselected.compareTo(test.getTest()) == 0 ? " SELECTED " : ""%>><%=test.getTest()%></option>
+                                                <%}%>
                                         </select>
                                     </td>
                                 </tr>
@@ -122,27 +124,23 @@
                                                 <td colspan="6" class="wob"><h4 style="color : blue">Testcase Information</h4></td>
                                             </tr>
                                             <tr id="header">
-                                                <td class="wob" style="width: 100px"><%out.print(docService.findLabelHTML("testcase", "testcase", "TestCase"));%></td>
-                                                <td class="wob" style="width: 100px"><%out.print(docService.findLabelHTML("testcase", "Origine", "Origin"));%></td>
-                                                <td class="wob" style="width: 100px"><%out.print(docService.findLabelHTML("testcase", "RefOrigine", "RefOrigine"));%></td>
-                                                <td class="wob" style="width: 100px; visibility:hidden"><%out.print(docService.findLabelHTML("testcase", "Creator", "creator"));%></td>
-                                                <td class="wob" style="width: 100px"><%out.print(docService.findLabelHTML("project", "idproject", "Project"));%></td>
-                                                <td class="wob" style="width: 100px"><%out.print(docService.findLabelHTML("testcase", "ticket", "Ticket"));%></td>
-                                                <td class="wob" style="width: 70px"><%out.print(docService.findLabelHTML("testcase", "BugID", "BugID"));%></td>
+                                                <td class="wob" style="width: 100px"><%=docService.findLabelHTML("testcase", "testcase", "TestCase")%></td>
+                                                <td class="wob" style="width: 100px"><%=docService.findLabelHTML("testcase", "Origine", "Origin")%></td>
+                                                <td class="wob" style="width: 100px"><%=docService.findLabelHTML("testcase", "RefOrigine", "RefOrigine")%></td>
+                                                <td class="wob" style="width: 100px; visibility:hidden"><%docService.findLabelHTML("testcase", "Creator", "creator");%></td>
+                                                <td class="wob" style="width: 100px"><%=docService.findLabelHTML("project", "idproject", "Project")%></td>
+                                                <td class="wob" style="width: 100px"><%=docService.findLabelHTML("testcase", "ticket", "Ticket")%></td>
+                                                <td class="wob" style="width: 70px"><%=docService.findLabelHTML("testcase", "BugID", "BugID")%></td>
                                             </tr>
                                             <%
                                                 String tcnumber = "";
                                                 if (testselected.compareTo("%%") == 0) {
                                                 } else {
-                                                    int testcasenumber = 0;
+                                                    String maxTemp = testCaseService.getMaxNumberTestCase(testselected);
 
+                                                    if (StringUtils.isNotBlank(maxTemp)) {
 
-                                                    ResultSet rsTestCase = stQueryTestCase.executeQuery("SELECT  Max( Testcase ) + 1 as MAXTC FROM testcase where test = '"
-                                                            + testselected + "'");
-                                                    rsTestCase.first();
-                                                    if (StringUtils.isNotBlank(rsTestCase.getString("MAXTC")) == true) {
-
-                                                        testcasenumber = Integer.valueOf(rsTestCase.getString("MAXTC"));
+                                                        int testcasenumber = Integer.valueOf(maxTemp) + 1;
 
                                                         if (testcasenumber < 10) {
                                                             tcnumber = "000".concat(String.valueOf(testcasenumber)).concat("A");
@@ -166,21 +164,24 @@
 
                                             %>
                                             <tr>
-                                                <td class="wob"><input id="createTestcase" name="createTestcase" style="width: 100px; font-weight: bold"value="<%=tcnumber%>">
+                                                <td class="wob"><input id="createTestcase" name="createTestcase" style="width: 100px; font-weight: bold" value="<%=tcnumber%>">
                                                 </td>
                                                 <td class="wob">
                                                     <select id="createOrigine" style="width: 100px;" name="createOrigine">
                                                         <option value="All">-- Origin --</option>
-                                                        <%              ResultSet rsOri = stmt30.executeQuery(" SELECT value from invariant where idname = 'ORIGIN'");
-                                                            while (rsOri.next()) {%>
-                                                        <option value="<%=rsOri.getString("value")%>"><%=rsOri.getString("value")%></option><%
-                                                            }%>
+                                                        <%
+                                                            for (Invariant inv : invariantService.findListOfInvariantById("ORIGIN")) {
+                                                        %>
+                                                                <option value="<%=inv.getValue()%>"><%=inv.getValue()%></option>
+                                                        <%
+                                                            }
+                                                        %>
                                                     </select>
                                                 </td>
                                                 <td class="wob"><input id="createRefOrigine" style="width: 90px;" name="createRefOrigine"></td>
                                                 <td class="wob" style="visibility:hidden"><input id="createCreator" style="width: 90px;" name="createCreator"></td>
                                                 <td class="wob">
-                                                    <% out.print(ComboProject(conn, "createProject", "width: 90px", "createProject", "", "", "", true, "", "No Project Defined."));%>
+                                                    <%=ComboProject(appContext, "createProject", "width: 90px", "createProject", "", "", "", true, "", "No Project Defined.")%>
                                                 </td>
                                                 <td class="wob"><input id="createTicket" style="width: 90px;" name="createTicket"></td>
                                                 <td class="wob"><input id="createBugID" style="width: 70px;" name="createBugID"></td>
@@ -188,13 +189,6 @@
                                         </table>
                                     </td>
                                 </tr>
-                                <%
-                                    Statement stmt36 = conn.createStatement();
-                                    ResultSet rs_tccountgen = stmt36.executeQuery("SELECT value "
-                                            + " FROM invariant "
-                                            + " WHERE idname ='COUNTRY'"
-                                            + " ORDER BY sort asc");%>
-
                                 <tr>
                                     <td class="separation">
                                         <table style="text-align: left; border-collapse: collapse" border="0px" cellpadding="0px" cellspacing="0px">
@@ -211,31 +205,37 @@
                                                             <td class="wob" style="width: 150px"><%out.print(docService.findLabelHTML("invariant", "GROUP", "Group"));%></td>
                                                             <td class="wob" style="width: 150px"><%out.print(docService.findLabelHTML("testcase", "status", "Status"));%></td>
                                                             <%
-                                                                rs_tccountgen.first();
-                                                                do {%>
-                                                            <td class="wob" style="font-size : x-small ; width: 20px; text-align: center"><%=rs_tccountgen.getString("value")%> <input type="hidden" name="testcase_country_all" value="<%=rs_tccountgen.getString("value")%>"></td>
-                                                                <% 		} while (rs_tccountgen.next());
-                                                                %>
+                                                                List<Invariant> invariantList = invariantService.findListOfInvariantById("COUNTRY");
+                                                                for (Invariant inv : invariantList) {
+                                                            %>
+                                                                    <td class="wob" style="font-size : x-small ; width: 20px; text-align: center"><%=inv.getValue()%> <input type="hidden" name="testcase_country_all" value="<%=inv.getValue()%>"></td>
+                                                            <%
+                                                                }
+                                                            %>
                                                         </tr>
                                                         <tr>
-                                                            <td class="wob"><select id="createApplication" name="createApplication" style="width: 140px"><%
-                                                                ResultSet rsApp = stmt30.executeQuery(" SELECT distinct application from application where application != '' order by sort ");
-                                                                while (rsApp.next()) {
-                                                                    %><option value="<%=rsApp.getString("application")%>"><%=rsApp.getString("application")%></option><%
-                                                                        }
-                                                                    %></select></td>
-                                                            <td class="wob"><%=ComboInvariant(conn, "createRunQA", "width: 75px", "createRunQA", "runqa", "RUNQA", "", "", null)%></td>
-                                                            <td class="wob"><%=ComboInvariant(conn, "createRunUAT", "width: 75px", "createRunUAT", "runuat", "RUNUAT", "", "", null)%></td>
-                                                            <td class="wob"><%=ComboInvariant(conn, "createRunPROD", "width: 75px", "createRunPROD", "runprod", "RUNPROD", "", "", null)%></td>
-                                                            <td class="wob"><%=ComboInvariant(conn, "createPriority", "width: 90px", "createPriority", "priority", "PRIORITY", "", "", null)%></td>
-                                                            <td class="wob"><%=ComboInvariant(conn, "createGroup", "width: 140px", "createGroup", "editgroup", "GROUP", "", "", null)%></td>
-                                                            <td class="wob"><%=ComboInvariant(conn, "createStatus", "width: 140px", "createStatus", "editStatus", "TCSTATUS", "", "", null)%></td>
+                                                            <td class="wob"><select id="createApplication" name="createApplication" style="width: 140px">
                                                             <%
-                                                                rs_tccountgen.first();
-                                                                do {
+                                                                for (Application app : applicationService.findAllApplication()) {
+                                                            %>
+                                                                    <option value="<%=app.getApplication()%>"><%=app.getApplication()%></option>
+                                                            <%
+                                                                }
+                                                            %>
+                                                            </select></td>
+                                                            <td class="wob"><%=ComboInvariant(appContext, "createRunQA", "width: 75px", "createRunQA", "runqa", "RUNQA", "", "", null)%></td>
+                                                            <td class="wob"><%=ComboInvariant(appContext, "createRunUAT", "width: 75px", "createRunUAT", "runuat", "RUNUAT", "", "", null)%></td>
+                                                            <td class="wob"><%=ComboInvariant(appContext, "createRunPROD", "width: 75px", "createRunPROD", "runprod", "RUNPROD", "", "", null)%></td>
+                                                            <td class="wob"><%=ComboInvariant(appContext, "createPriority", "width: 90px", "createPriority", "priority", "PRIORITY", "", "", null)%></td>
+                                                            <td class="wob"><%=ComboInvariant(appContext, "createGroup", "width: 140px", "createGroup", "editgroup", "GROUP", "", "", null)%></td>
+                                                            <td class="wob"><%=ComboInvariant(appContext, "createStatus", "width: 140px", "createStatus", "editStatus", "TCSTATUS", "", "", null)%></td>
+                                                            <%
+                                                                for (Invariant inv : invariantList) {
                                                             %> 
-                                                            <td class="wob"><input value="<%=rs_tccountgen.getString("value")%>" type="checkbox" name="createTestcase_country_general" id="createTestcase_country_general"></td>
-                                                                <%} while (rs_tccountgen.next());%>
+                                                                    <td class="wob"><input value="<%=inv.getValue()%>" type="checkbox" name="createTestcase_country_general" id="createTestcase_country_general"></td>
+                                                            <%
+                                                                }
+                                                            %>
                                                         </tr>
                                                     </table>
                                                 </td>
@@ -295,14 +295,11 @@
 </tr>
 </table>
 <%
-    } catch (Exception e) {
-        out.println("<br> error message : " + e.getMessage() + " "
-                + e.toString() + "<br>");
-    } finally {
-        try {
-            conn.close();
-        } catch (Exception ex) {
-        }
+    } catch (CerberusException ex){
+        MyLogger.log("TestCaseCreate.jsp", Level.ERROR, "Cerberus exception : " + ex.toString());
+        out.println("</script>");
+        out.print("<script type='text/javascript'>alert(\"Unfortunately an error as occurred, try reload the page.\\n");
+        out.print("Detail error: " + ex.getMessageError().getDescription() + "\");</script>");
     }
 %>
 </div>

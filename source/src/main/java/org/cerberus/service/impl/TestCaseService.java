@@ -226,4 +226,8 @@ public class TestCaseService implements ITestCaseService {
         return testCaseDao.findTestCaseByCampaignName(campaign);
     }
 
+    @Override
+    public String getMaxNumberTestCase(String test){
+        return this.testCaseDao.getMaxNumberTestCase(test);
+    }
 }
