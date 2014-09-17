@@ -17,11 +17,6 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
-<%@page import="java.sql.Connection"%>
-<%@page import="java.sql.ResultSet"%>
-<%@page import="java.sql.Statement"%>
-<%@page import="org.apache.commons.lang3.StringUtils"%>
-<%@page import="org.cerberus.service.IDocumentationService"%>
 <% Date DatePageStart = new Date();%>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
@@ -62,14 +57,15 @@
 
             $(document).ready(function() {
                 $.getJSON('GetTestBySystem?system=' + systemSelected, function(data) {
-                    $("#test").empty();
+                    var test = $("#test");
+                    test.empty();
 
                     for (var i = 0; i < data.testsList.length; i++) {
-                        $("#test").append($("<option></option>")
+                        test.append($("<option></option>")
                                 .attr("value", data.testsList[i])
                                 .text(data.testsList[i]));
                     }
-                    $("#test").find('option').each(function(i, opt) {
+                    test.find('option').each(function(i, opt) {
                         if (opt.value === testS)
                             $(opt).attr('selected', 'selected');
                     });
@@ -93,19 +89,20 @@
                 var countryS = document.getElementById("defCountry").value;
 
                 $.getJSON('GetTestCaseForTest?system=' + systemSelected + '&test=' + testSelected, function(data) {
-                    $("#testcase").empty();
+                    var testcase = $("#testcase");
+                    testcase.empty();
                     $("#country").empty();
                     $("#environment").empty();
                     $("#myenvdata").empty();
 
                     for (var i = 0; i < data.testCaseList.length; i++) {
-                        $("#testcase").append($("<option></option>")
+                        testcase.append($("<option></option>")
                                 .attr("value", data.testCaseList[i].testCase)
                                 .attr("data-testcase", data.testCaseList[i].testCase)
                                 .attr("data-application", data.testCaseList[i].application)
                                 .text(data.testCaseList[i].description));
                     }
-                    $("#testcase").find('option').each(function(i, opt) {
+                    testcase.find('option').each(function(i, opt) {
                         if (opt.value === tcS)
                             $(opt).attr('selected', 'selected');
                     });
@@ -113,7 +110,6 @@
                     getCountryList();
                 });
             }
-            ;
         </script>
 </body>
 </html>
