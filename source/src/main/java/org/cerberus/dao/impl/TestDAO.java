@@ -295,8 +295,8 @@ public class TestDAO implements ITestDAO {
     public List<Test> findListOfTestBySystems(List<String> systems) {
         List<Test> result = null;
         StringBuilder query = new StringBuilder("SELECT t.Test, t.Description, t.Active, t.Automated, t.TDateCrea FROM test t ");
-        query.append("JOIN Testcase tc ON t.test=tc.test ");
-        query.append("JOIN Application a ON tc.application=a.application ");
+        query.append("JOIN testcase tc ON t.test=tc.test ");
+        query.append("JOIN application a ON tc.application=a.application ");
         query.append("WHERE a.system IN (");
 
         Connection connection = this.databaseSpring.connect();
