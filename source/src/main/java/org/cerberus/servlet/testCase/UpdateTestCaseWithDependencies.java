@@ -288,7 +288,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
         for (TestCaseStepAction tcsaDifference : tcsaToUpdateOrInsertToIterate) {
             for (TestCaseStepAction tcsaInDatabase : tcsaFromDtb) {
                 if (tcsaDifference.hasSameKey(tcsaInDatabase)) {
-                    System.out.print("Upd" + tcsaDifference.toString());
+                    //System.out.print("Upd" + tcsaDifference.toString());
                     tcsaService.updateTestCaseStepAction(tcsaDifference);
                     tcsaToUpdateOrInsert.remove(tcsaDifference);
                 }
@@ -306,10 +306,10 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
         List<TestCaseStepAction> tcsaToDeleteToIterate = new ArrayList(tcsaToDelete);
 
         for (TestCaseStepAction tcsaDifference : tcsaToDeleteToIterate) {
-            System.out.print("ToDlt" + tcsaDifference.toString());
+            //System.out.print("ToDlt" + tcsaDifference.toString());
             for (TestCaseStepAction tcsaInPage : tcsaFromPage) {
                 if (tcsaDifference.hasSameKey(tcsaInPage)) {
-                    System.out.print("Dlt" + tcsaDifference.toString());
+                    //System.out.print("Dlt" + tcsaDifference.toString());
                     tcsaToDelete.remove(tcsaDifference);
                 }
             }

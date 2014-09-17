@@ -364,7 +364,7 @@ function addTestCaseProperties(tableau, max_tcp_country,
     /* Property */
     var form2 = document.createElement('input');
     form2.setAttribute('name', 'properties_property');
-    form2.setAttribute('class', 'wob properties_id_'+ eval(row_number + 1));
+    form2.setAttribute('class', 'wob properties_id_' + eval(row_number + 1));
     form2.setAttribute('size', '130%');
     form2
             .setAttribute('style',
@@ -386,11 +386,11 @@ function addTestCaseProperties(tableau, max_tcp_country,
         TD3.setAttribute('style', 'font-size : x-small ; width: ' + size
                 + 'px;');
         TD3.setAttribute('style', 'background-color: white;');
-        
+
         var jToto = $('#toto');
-        jToto.find('input[name="properties_country"]').addClass('properties_id_'+ eval(row_number + 1));
+        jToto.find('input[name="properties_country"]').addClass('properties_id_' + eval(row_number + 1));
         TD3.innerHTML = (TD3.innerHTML + jToto.html());
-        
+
         // if (document.getElementById("checkbox-AT")) {
         // tata=TD3.getElementById("checkbox-AT")
         // tata.setAttribute('value', prop_line+' - AT');
@@ -1090,10 +1090,10 @@ function hideSqlDetails(valueId, buttonOneId, buttonTwoId) {
 
 function activateDatabaseBox(value, fieldOneId, fieldTwoId) {
     if (value === "executeSql" || value === "executeSqlFromLib" || value === "executeSoapFromLib") {
-        $("#"+fieldOneId).empty().append($('#'+fieldTwoId).html());
+        $("#" + fieldOneId).empty().append($('#' + fieldTwoId).html());
     } else
     {
-        $("#"+fieldOneId).empty().append($('<option></option>').text("---").val("---"));
+        $("#" + fieldOneId).empty().append($('<option></option>').text("---").val("---"));
     }
 }
 
@@ -1342,16 +1342,16 @@ function displayImportStep(attribute) {
     document.getElementById('import_step').value = value;
 
     var testSelected = GetCookie("ImportUseTest");
-    if(testSelected) {
-        $("#fromTest option[value='"+testSelected+"']").attr("selected","selected");
+    if (testSelected) {
+        $("#fromTest option[value='" + testSelected + "']").attr("selected", "selected");
         getTestCasesForImportStep();
     }
 
     $('#ImportStepButton').hide();
     $('#ImportStepTable').fadeIn(1000);
     $('#importbutton').removeAttr('onclick').attr('onclick', attribute);
-    if (attribute === "useStep()"){
-        document.getElementById('import_description').style.display="inline";
+    if (attribute === "useStep()") {
+        document.getElementById('import_description').style.display = "inline";
     }
 }
 
@@ -1361,15 +1361,15 @@ function getTestCasesForImportStep() {
 
     var URL = './ImportTestCase.jsp?Test=' + encodeURI(testSelected);
 
-    SetCookie("ImportUseTest",testSelected);
+    SetCookie("ImportUseTest", testSelected);
     var getImportUseTestCase = GetCookie("ImportUseTestCase");
 
     var selectTestCase = document.getElementById('fromTestCase');
     if (selectTestCase !== null && selectTestCase.selectedIndex >= 0) {
         var testCaseSelected = selectTestCase.options[selectTestCase.selectedIndex].value;
         URL += '&TestCase=' + encodeURI(testCaseSelected);
-        SetCookie("ImportUseTestCase",testCaseSelected);
-    } else if(getImportUseTestCase && getImportUseTestCase != "") {
+        SetCookie("ImportUseTestCase", testCaseSelected);
+    } else if (getImportUseTestCase && getImportUseTestCase != "") {
         URL += '&TestCase=' + encodeURI(getImportUseTestCase);
     }
 
@@ -1406,7 +1406,7 @@ function importStep() {
 
 
     var importStep = document.getElementById('import_step').value;
-    
+
     var urlImportStep = './ImportTestCaseStep?';
     urlImportStep += 'Test=' + encodeURI(test);
     urlImportStep += '&TestCase=' + encodeURI(testCase);
@@ -1448,7 +1448,7 @@ function useStep() {
 
     var importStep = document.getElementById('import_step').value;
     var importDescription = document.getElementById('import_description').value;
-    
+
     var urlImportStep = './UseTestCaseStep?';
     urlImportStep += 'Test=' + encodeURI(test);
     urlImportStep += '&TestCase=' + encodeURI(testCase);
@@ -1500,7 +1500,7 @@ function loadPropertyPopin(propertyID, test, testcase) {
     ;
     var value = $(document.getElementById(propertyID)).val();
     var db = $('select#properties_dtb' + propertyID + '[name=\'properties_dtb\']').val();
-    var type = $(document.getElementById('type'+propertyID)).val();
+    var type = $(document.getElementById('type' + propertyID)).val();
 
     $('#popin').load('ViewProperty.jsp?type=' + encodeURI(type) + '&db=' + encodeURI(db) + '&test=' + encodeURI(test) + '&testcase=' + encodeURI(testcase) + '&property=' + encodeURI(value));
 //    $('#popin').show();
@@ -1560,8 +1560,8 @@ function calculateProperty() {
     $.get('CalculatePropertyForTestCase', query, function(data) {
 
         if (data !== null && data.resultList !== null) {
-            $("#result").empty().text("Value: '"+data.resultList+"'");
-            $("#propdesc").empty().text("Description: '"+data.description+"'");
+            $("#result").empty().text("Value: '" + data.resultList + "'");
+            $("#propdesc").empty().text("Description: '" + data.description + "'");
         } else {
             $("#result").empty().append("<b>Unable to retrieve property in database !</b>");
         }
@@ -1576,14 +1576,14 @@ function deleteTestCase(test, testcase, page) {
         xhttp.open("GET", "DeleteTestCase?test=" + test + "&testcase=" + testcase + "&fromPage=" + page, false);
         xhttp.send();
         var xmlDoc = xhttp.responseText;
-        location.href=(page+"?Test="+test);
+        location.href = (page + "?Test=" + test);
     }
 
 }
 
 function exportTestCase(test, testcase, page) {
-        location.href=("ExportTestCase?test="+test+"&testcase="+testcase);
-    }
+    location.href = ("ExportTestCase?test=" + test + "&testcase=" + testcase);
+}
 
 function alertOnProperties() {
     return confirm("At least one property has empty name or no country selected, would you like to save, these properties will be deleted !");
@@ -1592,13 +1592,13 @@ function alertOnProperties() {
 function checkForm() {
     // Check all properties to be sure PK of each is OK
     var numberOfProperties = $("input[name='properties_property']").length;
-    for(var index=1; index <= numberOfProperties; index++) {
+    for (var index = 1; index <= numberOfProperties; index++) {
 
         // Check if name of property is not empty
-        if($("input.properties_id_"+index+"[name='properties_property']").val() == "") {
+        if ($("input.properties_id_" + index + "[name='properties_property']").val() == "") {
             return alertOnProperties();
         } else {
-            if($("input.properties_id_"+index+"[name='properties_country']:checked").length <= 0) {
+            if ($("input.properties_id_" + index + "[name='properties_country']:checked").length <= 0) {
                 return alertOnProperties();
             }
         }
@@ -1606,201 +1606,13 @@ function checkForm() {
     return true;
 }
 
-function addTestCaseActionNew(table, step) {
-
-    var incAct = document.getElementsByName('action_increment_'+step).length;
-    var inc = incAct;
-    incAct++;
-    var DIV = document.createElement('div');
-    
-    var StepNum = document.getElementById('initial_step_number_'+step).value;
-
-
-//    var form0 = document.createElement('p');                                                
-//    form0.setAttribute('style', 'height:50px;transform: rotate(-90deg);color:white');
-//    form0.innerHTML = 'Action';
-    var DIV0 = document.createElement('div');
-    DIV0.setAttribute('style', 'background-color:blue; width:8px;height:50px;display:inline-block;float:left');
-    //DIV0.appendChild(form0);
-    DIV.appendChild(DIV0);
-    /* Delete box */
-    var form1 = document.createElement('input'); /* Create form */
-    form1.setAttribute('type', 'checkbox');
-    form1.setAttribute('style', 'margin-top:20px;width: 30px; background-color: transparent');
-    form1.setAttribute('value', '');
-    form1.setAttribute('class', 'wob');
-    form1.setAttribute('name', 'action_delete_'+step+'_'+incAct);
-    var DIV1 = document.createElement('div'); /* Create column */
-    DIV1.setAttribute('style', 'display:inline-block;float:left;height:50px;background-color: transparent');
-    DIV1.appendChild(form1); /* Add form to column */
-
-    var form = document.createElement('input');
-    form.setAttribute('type', 'hidden');
-    form.setAttribute('name', 'action_increment_'+step);
-    form.setAttribute('value', incAct);
-    DIV1.appendChild(form);
-    
-    var form11 = document.createElement('input');
-    form11.setAttribute('type', 'hidden');
-    form11.setAttribute('name', 'action_step_'+step+'_'+incAct);
-    form11.setAttribute('value', StepNum);
-    DIV1.appendChild(form11);
-    
-    DIV.appendChild(DIV1);
-
-    /* Button */
-    var form41 = document.createElement('img');
-    form41.setAttribute('value', 'Add Action');
-    form41.setAttribute('src', 'images/addAction.png');
-    form41.setAttribute('style', 'width:15px; height:15px');
-    form41.setAttribute('onclick', 'addTestCaseActionNew(\'StepListOfActionDiv'+step+incAct+'\', \''+step+'\')');
-    var DIV41 = document.createElement('div');
-    DIV41.setAttribute('style', 'height:100%;width:100%;clear:both;color:blue;font-weight:bold;font-size:10px ;font-family: Trebuchet MS; background-color: transparent');
-    DIV41.appendChild(form41);
-    
-    var form42 = document.createElement('img');
-    form42.setAttribute('value', 'Add Control');
-    form42.setAttribute('src', 'images/addControl.png');
-    form42.setAttribute('style', 'width:15px; height:15px');
-    form42.setAttribute('onclick', 'addTestCaseControlNew(\'StepListOfActionDiv'+step+incAct+'\', \''+step+'\', \''+incAct+'\')');
-    var DIV42 = document.createElement('div');
-    DIV42.setAttribute('style', 'height:100%;width:100%;clear:both;color:blue;font-weight:bold;font-size:10px ;font-family: Trebuchet MS; background-color: transparent');
-    DIV42.appendChild(form42);
-    var DIV4 = document.createElement('div');
-    DIV4.setAttribute('style', 'margin-top:15px;height:100%;width:3%;float:left;color:blue;font-weight:bold;font-size:10px ;font-family: Trebuchet MS; background-color: transparent');
-    DIV4.appendChild(DIV41);
-    DIV4.appendChild(DIV42);
-    DIV.appendChild(DIV4);
-    
-    /* Sequence */
-
-    var value = getMaxValueForParentElementIdAndElementName(table, 'action_sequence_'+step+'_'+inc);
-
-    if (value && parseInt(value) > 0) {
-        value = parseInt(value) + 10;
-    } else {
-        value = 10;
+function incrementRows(DIV, element, incrementAction) {
+    var listAct = DIV.find(element);
+    for (var a = 0; a < listAct.length; a++) {
+        if (listAct[a].value > incrementAction) {
+            listAct[a].value = parseInt(listAct[a].value)+1;
+        }
     }
-
-    var form2 = document.createElement('input');
-    form2.setAttribute('name', 'action_sequence_'+step+'_'+incAct);
-    form2.setAttribute('id', 'action_sequence_'+step+'_'+incAct);
-    form2.setAttribute('style',
-                    'width: 40px; font-weight: bold; background-color: transparent; height:100%; color: #FF0000;');
-    form2.setAttribute('class', 'wob');
-    form2.setAttribute('value', value);
-    var DIV2 = document.createElement('div');
-    DIV2.setAttribute('style', 'height:50px;display:inline-block;float:left');
-    DIV2.appendChild(form2);
-    DIV.appendChild(DIV2);
-    
-           
-    var form5121 = document.createElement('p');
-    form5121.setAttribute('style', 'float:right;font-weight:bold;color:white;');
-    form5121.innerHTML = 'Description';
-    var form512 = document.createElement('div');
-    form512.setAttribute('style','float:left;width:80px;');
-    form512.appendChild(form5121);
-    var form511 = document.createElement('input');
-    form511.setAttribute('name', 'action_description_'+step+'_'+incAct);
-    form511.setAttribute('id', 'action_description_'+step+'_'+incAct);
-    form511.setAttribute('placeholder', 'Description');
-    form511.setAttribute('style',
-                    'float:left;width: 80%; background-color: transparent; font-weight:bold;font-size:15px ;font-family: Trebuchet MS; color:#333333border-style:groove;border-width:thin;border-color:white;border: 1px solid white; ');
-    form511.setAttribute('class', 'wob functional_description');
-    var DIV511 = document.createElement('div');
-    DIV511.setAttribute('style', 'float:left; width:80%');
-    DIV511.appendChild(form512);
-    DIV511.appendChild(form511);
-    var DIV51 = document.createElement('div');
-    DIV51.setAttribute('style', 'height:30px;display:inline-block;clear:both;width:100%; background-color: transparent');
-    DIV51.setAttribute('class', 'functional_description');
-    DIV51.appendChild(DIV511);
-    
-    var form5211 = document.createElement('p');
-    form5211.setAttribute('style', 'float:right;font-weight:bold;color:white;');
-    form5211.innerHTML = 'Action';
-    var form5212 = document.createElement('div');
-    form5212.setAttribute('style','float:left;width:80px;');
-    form5212.appendChild(form5211);
-    var form521 = document.createElement('select');
-    if (document.getElementById("action_action_temp")) {
-        form521.setAttribute('name', 'action_action_'+step+'_'+incAct);
-        form521.setAttribute('style', 'width: 70%');
-        form521.setAttribute('class', 'wob');
-        form521.innerHTML = (form521.innerHTML + document
-                .getElementById('action_action_temp').innerHTML);
-    }
-    var DIV521 = document.createElement('div');
-    DIV521.setAttribute('style', 'width: 30%; float:left; background-color: transparent');
-    DIV521.setAttribute('class', 'technical_part');
-    DIV521.appendChild(form5212);
-    DIV521.appendChild(form521);
-    
-    var form5221 = document.createElement('p');
-    form5221.setAttribute('style', 'float:right;font-weight:bold;color:white;');
-    form5221.innerHTML = 'Object';
-    var form5222 = document.createElement('div');
-    form5222.setAttribute('style','float:left;width:19%;');
-    form5222.appendChild(form5221);
-    var form522 = document.createElement('input');
-    form522.setAttribute('name', 'action_object_'+step+'_'+incAct);
-    form522.setAttribute('id', 'action_object_'+step+'_'+incAct);
-    form522.setAttribute('style',
-                    'width:80%; background-color: transparent;border-style:groove;border-width:thin;border-color:white;border: 1px solid white;');
-    form522.setAttribute('class', 'wob');
-    form522.setAttribute('class', 'functional_description');
-    var DIV522 = document.createElement('div');
-    DIV522.setAttribute('style', 'width: 40%; float:left; background-color: transparent;');
-    DIV522.setAttribute('class', 'technical_part');
-    DIV522.appendChild(form5222);
-    DIV522.appendChild(form522);
-    
-    var form5231 = document.createElement('p');
-    form5231.setAttribute('style', 'float:right;font-weight:bold;color:white;');
-    form5231.innerHTML = 'Property';
-    var form5232 = document.createElement('div');
-    form5232.setAttribute('style','float:left;width:19%;');
-    form5232.appendChild(form5231);
-    var form523 = document.createElement('input');
-    form523.setAttribute('name', 'action_property_'+step+'_'+incAct);
-    form523.setAttribute('id', 'action_property_'+step+'_'+incAct);
-    form523.setAttribute('style',
-                    'width:80%; background-color: transparent;;border-style:groove;border-width:thin;border-color:white;border: 1px solid white;');
-    form523.setAttribute('class', 'wob property_value');
-    form523.setAttribute('class', 'technical_part');
-    var DIV523 = document.createElement('div');
-    DIV523.setAttribute('style', 'width: 30%; float:left; background-color: transparent');
-    DIV523.setAttribute('class', 'technical_part');
-    DIV523.appendChild(form5232);
-    DIV523.appendChild(form523);
-    
-    var DIV52 = document.createElement('div');
-    DIV52.setAttribute('style', 'display:inline-block;clear:both; height:20px;width:100%;background-color:transparent');
-    DIV52.appendChild(DIV521);
-    DIV52.appendChild(DIV522);
-    DIV52.appendChild(DIV523);
-                                                           
-    var DIV5 = document.createElement('div');
-    DIV5.setAttribute('style', 'height:100%;width:90%;float:left; display:inline-block');
-    DIV5.appendChild(DIV51);
-    DIV5.appendChild(DIV52);
-    DIV.appendChild(DIV5);
-    
-//    var form10 = document.createElement('p');                                                
-//    form10.setAttribute('style', 'height:50px;transform: rotate(-90deg);color:white');
-//    form10.innerHTML = 'Action';
-    var DIV10 = document.createElement('div');
-    DIV10.setAttribute('style', 'background-color:blue; width:3px;height:50px;display:inline-block;float:right');
-    //DIV10.appendChild(form10);
-    DIV.appendChild(DIV10);
-    DIV.setAttribute('style', 'display:inline-block; height:100%; width:100%;background-color:#C4EBFF');
-    DIV.setAttribute('id', 'StepListOfActionDiv'+step+incAct);
-
-    //document.getElementById(table).appendChild(DIV);
-    var referenceNode = document.getElementById(table);
-    referenceNode.parentNode.insertBefore(DIV, referenceNode.nextSibling);
-    document.getElementById('incrementActionNumber'+step).value=incAct;
 }
 
 var numberOfCall = 0;
@@ -1810,7 +1622,7 @@ function addStepNew(div) {
     var incStep = document.getElementsByName('step_increment').length;
     var inc = incStep;
     incStep++;
-    
+
     var table = document.createElement('div');
     table.setAttribute('id', 'table');
     table.setAttribute('class', 'StepHeaderDiv');
@@ -1822,11 +1634,11 @@ function addStepNew(div) {
     var input1 = document.createElement('input');
     input1.setAttribute('style',
             'font-weight: bold;font-style: italic; width:20px');
-    input1.setAttribute('name', 'step_number_'+incStep);
+    input1.setAttribute('name', 'step_number_' + incStep);
     input1.setAttribute('class', 'wob');
     input1.setAttribute('title', 'Step ID');
 
-    var value = getMaxValueForParentElementIdAndElementName(null, 'step_number_'+inc);
+    var value = getMaxValueForParentElementIdAndElementName(null, 'step_number_' + inc);
     if (value && parseInt(value) > 0) {
         value = parseInt(value) + 10;
     } else {
@@ -1834,13 +1646,13 @@ function addStepNew(div) {
     }
 
     input1.setAttribute('value', value);
-    
+
     var input2 = document.createElement('input');
-    input2.setAttribute('style','display:none');
+    input2.setAttribute('style', 'display:none');
     input2.setAttribute('name', 'step_increment');
     input2.setAttribute('value', incStep);
-    
-    
+
+
     var TD1 = document.createElement('td'); /* Create column */
     TD1.setAttribute('style', 'background-color:#e1e7f3; text-align: center; valign:center');
     TD1.setAttribute('class', 'wob');
@@ -1853,7 +1665,7 @@ function addStepNew(div) {
     input2.setAttribute('size', '100%');
     input2.setAttribute('class', 'wob');
     input2.setAttribute('style', 'width : 500px');
-    input2.setAttribute('name', 'step_description_'+incStep);
+    input2.setAttribute('name', 'step_description_' + incStep);
     var TD2 = document.createElement('td'); /* Create column */
     TD2.setAttribute('style', 'background-color:#e1e7f3; text-align: center');
     TD2.setAttribute('class', 'wob');
@@ -1880,284 +1692,40 @@ function addStepNew(div) {
 
     table.appendChild(document.createElement('br'));
     table.appendChild(document.createElement('br'));
-    
+
     var form5 = document.createElement('input');
-    form5.setAttribute('type','button');
-    form5.setAttribute('value','Add Step');
-    form5.setAttribute('onclick','addStepNew(\'StepsEndDiv'+incStep+'\')');
+    form5.setAttribute('type', 'button');
+    form5.setAttribute('value', 'Add Step');
+    form5.setAttribute('onclick', 'addStepNew(\'StepsEndDiv' + incStep + '\')');
     var DIV5 = document.createElement('div');
     DIV5.setAttribute('style', 'float:left');
     DIV5.appendChild(form5);
     var form6 = document.createElement('input');
-    form6.setAttribute('type','button');
-    form6.setAttribute('value','Save Changes');
-    form6.setAttribute('onclick','submitTestCaseModificationNew(\'stepAnchor_'+incStep+'\')');
+    form6.setAttribute('type', 'button');
+    form6.setAttribute('value', 'Save Changes');
+    form6.setAttribute('onclick', 'submitTestCaseModificationNew(\'stepAnchor_' + incStep + '\')');
     var DIV6 = document.createElement('div');
     DIV6.setAttribute('style', 'float:left');
     DIV6.appendChild(form6);
     var DIV7 = document.createElement('div');
     DIV7.setAttribute('style', 'display:inline-block; width:100%');
-    DIV7.setAttribute('id', 'StepsEndDiv'+incStep);
-    
-    table.appendChild(DIV5);                            
+    DIV7.setAttribute('id', 'StepsEndDiv' + incStep);
+
+    table.appendChild(DIV5);
     table.appendChild(DIV6);
     table.appendChild(DIV7);
-    
+
     var referenceNode = document.getElementById(div);
     referenceNode.parentNode.insertBefore(table, referenceNode.nextSibling);
-    document.getElementById('incrementStepNumber').value=incStep;
-    
-}
-
-function addTestCaseControlNew(table, incrementStep, incrementAction ) {
-    
-    var DIV = document.createElement('div');
-
-var incCtrl = 0;
-if (document.getElementById('control_increment_'+incrementStep+'_'+incrementAction) !== null){
-    incCtrl = document.getElementById('control_increment_'+incrementStep+'_'+incrementAction).length;
-}
-    var inc = incCtrl;
-    incCtrl++;
-    
-//    var form0 = document.createElement('p');                                                
-//    form0.setAttribute('style', 'height:50px;transform: rotate(-90deg);color:white');
-//    form0.innerHTML = 'Control';
-    var DIV0 = document.createElement('div');
-    DIV0.setAttribute('style', 'width:8px;height:50px;display:inline-block;float:left');
-    //DIV0.appendChild(form0);
-    DIV.appendChild(DIV0);
-    
-    var StepNum = document.getElementById('initial_step_number_'+incrementStep).value;
-    /* Delete box */
-    var form1 = document.createElement('input'); /* Create form */
-    form1.setAttribute('type', 'checkbox');
-    form1.setAttribute('style', 'width:30px');
-    form1.setAttribute('class', 'wob');
-    form1.setAttribute('name', 'control_delete_'+incrementStep+'_'+incrementAction+'_'+incCtrl);
-    var DIV1 = document.createElement('div'); /* Create column */
-    DIV1.setAttribute('style', 'display:inline-block;float:left;height:50px;background-color: transparent');
-    DIV1.appendChild(form1); 
-    
-    var form = document.createElement('input');
-    form.setAttribute('type', 'hidden');
-    form.setAttribute('name', 'control_increment_'+incrementStep+'_'+incrementAction);
-    form.setAttribute('value', incCtrl);
-    DIV1.appendChild(form);
-    
-    var form11 = document.createElement('input');
-    form11.setAttribute('type', 'hidden');
-    form11.setAttribute('name', 'control_step_'+incrementStep+'_'+incrementAction+'_'+incCtrl);
-    form11.setAttribute('value', StepNum);
-    DIV1.appendChild(form11);
-
-    DIV.appendChild(DIV1);
-    
-    /* Button */
-    var form41 = document.createElement('img');
-    form41.setAttribute('value', 'Add Action');
-    form41.setAttribute('src', 'images/addAction.png');
-    form41.setAttribute('style', 'width:15px; height:15px');
-    form41.setAttribute('onclick', 'addTestCaseActionNew(\'StepListOfControlDiv' + incrementStep + incrementAction + incCtrl + '\', \''+incrementStep+'\')');
-    var DIV41 = document.createElement('div');
-    DIV41.setAttribute('style', 'height:100%;width:100%;clear:both;color:blue;font-weight:bold;font-size:10px ;font-family: Trebuchet MS; background-color: transparent');
-    DIV41.appendChild(form41);
-    
-    var form42 = document.createElement('img');
-    form42.setAttribute('value', 'Add Control');
-    form42.setAttribute('src', 'images/addControl.png');
-    form42.setAttribute('style', 'width:15px; height:15px');
-    form42.setAttribute('onclick', 'addTestCaseControlNew(\'StepListOfControlDiv'+incrementStep+ incrementAction + incCtrl + '\', \''+incrementStep+'\', \''+incrementAction+'\')');
-    var DIV42 = document.createElement('div');
-    DIV42.setAttribute('style', 'height:100%;width:100%;clear:both;color:blue;font-weight:bold;font-size:10px ;font-family: Trebuchet MS; background-color: transparent');
-    DIV42.appendChild(form42);
-    var DIV4 = document.createElement('div');
-    DIV4.setAttribute('style', 'height:100%;width:3%;float:left;color:blue;font-weight:bold;font-size:10px ;font-family: Trebuchet MS; background-color: transparent');
-    DIV4.appendChild(DIV41);
-    DIV4.appendChild(DIV42);
-    DIV.appendChild(DIV4);
-    
-  
-    /* Sequence */
-
-    var value = getMaxValueForParentElementIdAndElementName(table, 'control_sequence_'+incrementStep+'_'+incrementAction+'_'+inc);
-
-    if (value && parseInt(value) > 0) {
-        value = parseInt(value) + 10;
-    } else {
-        value = 10;
-    }
-
-    var form2 = document.createElement('input');
-    form2.setAttribute('name', 'control_sequence_'+incrementStep+'_'+incrementAction+'_'+incCtrl);
-    form2.setAttribute('id', 'control_sequence_'+incrementStep+'_'+incrementAction+'_'+incCtrl);
-    form2.setAttribute('size', '6%');
-    form2.setAttribute('style',
-                    'width: 20px; font-weight: bold; background-color: transparent; height:100%; color: #FF0000;');
-    form2.setAttribute('class', 'wob');
-    form2.setAttribute('value', value);
-    var form21 = document.createElement('input');
-    form21.setAttribute('name', 'control_control_'+incrementStep+'_'+incrementAction+'_'+incCtrl);
-    form21.setAttribute('id', 'control_control_'+incrementStep+'_'+incrementAction+'_'+incCtrl);
-    form21.setAttribute('size', '6%');
-    form21.setAttribute('style',
-                    'width:20px; font-weight: bold; background-color: transparent; height:100%; color: #FF0000;');
-    form21.setAttribute('class', 'wob');
-    form21.setAttribute('value', value);
-    var DIV2 = document.createElement('div');
-    DIV2.setAttribute('style', 'height:50px;display:inline-block;float:left');
-    DIV2.appendChild(form2);
-    DIV2.appendChild(form21);
-    DIV.appendChild(DIV2);
-    
-    var form5121 = document.createElement('p');
-    form5121.setAttribute('style', 'float:right;font-weight:bold;color:white;');
-    form5121.innerHTML = 'Description';
-    var form512 = document.createElement('div');
-    form512.setAttribute('style','float:left;width:80px;');
-    form512.appendChild(form5121);
-    var form511 = document.createElement('input');
-    form511.setAttribute('name', 'control_description_'+incrementStep+'_'+incrementAction+'_'+incCtrl);
-    form511.setAttribute('id', 'control_description_'+incrementStep+'_'+incrementAction+'_'+incCtrl);
-    form511.setAttribute('placeholder', 'Description');
-    form511.setAttribute('style',
-                    'width: 70%; background-color: transparent; font-weight:bold;font-size:15px ;font-family: Trebuchet MS; color:#333333 ');
-    form511.setAttribute('class', 'wob functional_description');
-    var DIV511 = document.createElement('div');
-    DIV511.setAttribute('style', 'float:left; width:70%');
-    DIV511.appendChild(form512);
-    DIV511.appendChild(form511);
-    var DIV51 = document.createElement('div');
-    DIV51.appendChild(DIV511);
-    DIV51.setAttribute('style', 'height:30px;display:inline-block;clear:both;width:100%; background-color: transparent');
-    DIV51.setAttribute('class', 'functional_description');
-    
-    var form5211 = document.createElement('p');
-    form5211.setAttribute('style', 'float:right;font-weight:bold;color:white;');
-    form5211.innerHTML = 'Control';
-    var form5212 = document.createElement('div');
-    form5212.setAttribute('style','float:left;width:80px;');
-    form5212.appendChild(form5211);
-    var form521 = document.createElement('select');
-    if (document.getElementById("controls_type_")) {
-        form521.setAttribute('name', 'control_type_'+incrementStep+'_'+incrementAction+'_'+incCtrl);
-        form521.setAttribute('style', 'width: 70%');
-        form521.setAttribute('class', 'wob');
-        form521.innerHTML = (form521.innerHTML + document
-                .getElementById('controls_type_').innerHTML);
-    }
-    var DIV521 = document.createElement('div');
-    DIV521.setAttribute('style', 'width: 30%; float:left; background-color: transparent');
-    DIV521.setAttribute('class', 'technical_part');
-    DIV521.appendChild(form5212);
-    DIV521.appendChild(form521);
-    
-    var form5221 = document.createElement('p');
-    form5221.setAttribute('style', 'float:right;font-weight:bold;color:white;');
-    form5221.innerHTML = 'CtrlObject';
-    var form5222 = document.createElement('div');
-    form5222.setAttribute('style','float:left;width:19%;');
-    form5222.appendChild(form5221);
-    var form522 = document.createElement('input');
-    form522.setAttribute('name', 'control_value_'+incrementStep+'_'+incrementAction+'_'+incCtrl);
-    form522.setAttribute('id', 'control_value_'+incrementStep+'_'+incrementAction+'_'+incCtrl);
-    form522.setAttribute('style',
-                    'width:80%; background-color: transparent;');
-    form522.setAttribute('class', 'wob');
-    form522.setAttribute('class', 'functional_description');
-    var DIV522 = document.createElement('div');
-    DIV522.setAttribute('style', 'width: 40%; float:left; background-color: transparent');
-    DIV522.setAttribute('class', 'technical_part');
-    DIV522.appendChild(form5222);
-    DIV522.appendChild(form522);
-    
-    var form5231 = document.createElement('p');
-    form5231.setAttribute('style', 'float:right;font-weight:bold;color:white;');
-    form5231.innerHTML = 'CtrlProp';
-    var form5232 = document.createElement('div');
-    form5232.setAttribute('style','float:left;width:19%;');
-    form5232.appendChild(form5231);
-    var form523 = document.createElement('input');
-    form523.setAttribute('name', 'control_property_'+incrementStep+'_'+incrementAction+'_'+incCtrl);
-    form523.setAttribute('id', 'control_property_'+incrementStep+'_'+incrementAction+'_'+incCtrl);
-    form523.setAttribute('style',
-                    'width:70%; background-color: transparent;');
-    form523.setAttribute('class', 'wob property_value');
-    form523.setAttribute('class', 'technical_part');
-    var DIV523 = document.createElement('div');
-    DIV523.setAttribute('style', 'width: 20%; float:left; background-color: transparent');
-    DIV523.setAttribute('class', 'technical_part');
-    DIV523.appendChild(form5232);
-    DIV523.appendChild(form523);
-    
-    /* Fatal */
-    var form71 = document.createElement('p');
-    form71.setAttribute('style', 'float:right;font-weight:bold;color:white;');
-    form71.innerHTML = 'Fatal';
-    var form72 = document.createElement('div');
-    form72.setAttribute('style','float:left;width:69%;');
-    form72.appendChild(form71);
-    var form7 = document.createElement('select');
-    if (document.getElementById("controls_fatal_")) {
-        form7.setAttribute('name', 'control_fatal_'+incrementStep+'_'+incrementAction+'_'+incCtrl);
-        form7.setAttribute('class', 'wob');
-        form7.setAttribute('style', 'width: 30%');
-        form7.innerHTML = (form7.innerHTML + document
-                .getElementById('controls_fatal_').innerHTML);
-    }
-    var DIV7 = document.createElement('div');
-    DIV7.setAttribute('style', 'width:8%; float:left');
-    if (displayOnlyFunctional) {
-        DIV7.setAttribute('class', 'technical_part only_functional');
-    } else {
-        DIV7.setAttribute('class', 'technical_part');
-    }
-
-    DIV7.appendChild(form72);
-    DIV7.appendChild(form7);
-    
-    
-    
-    var DIV52 = document.createElement('div');
-    DIV52.setAttribute('style', 'display:inline-block;clear:both; height:20px;width:100%;background-color:transparent');
-    DIV52.appendChild(DIV521);
-    DIV52.appendChild(DIV522);
-    DIV52.appendChild(DIV523);
-    DIV52.appendChild(DIV7);
-                                                           
-    var DIV5 = document.createElement('div');
-    DIV5.setAttribute('style', 'height:100%;width:90%;float:left; display:inline-block');
-    DIV5.appendChild(DIV51);
-    DIV5.appendChild(DIV52);
-    
-    
-  
-    DIV.appendChild(DIV5);
-    
-    
-//    var form10 = document.createElement('p');                                                
-//    form10.setAttribute('style', 'height:50px;transform: rotate(-90deg);color:white');
-//    form10.innerHTML = 'Control';
-    var DIV10 = document.createElement('div');
-    DIV10.setAttribute('style', 'background-color:green; width:3px;height:50px;display:inline-block;float:right');
-    
-    //DIV10.appendChild(form10);
-    DIV.appendChild(DIV10);
-    DIV.setAttribute('style', 'background-color:#D4FFBF;display:inline-block;width:100%;');
-    DIV.setAttribute('id', 'StepListOfControlDiv'+incrementStep+incrementAction+incCtrl);
-    
-    
-    
-    var referenceNode = document.getElementById(table);
-    referenceNode.parentNode.insertBefore(DIV, referenceNode.nextSibling);
+    document.getElementById('incrementStepNumber').value = incStep;
 
 }
 
 function addTestCasePropertiesNew(tableau, row_number, size, size2) {
 
-var incProp = document.getElementsByName('property_increment').length;
-var inc = incProp;
-incProp++;
+    var incProp = document.getElementsByName('property_increment').length;
+    var inc = incProp;
+    incProp++;
 
     TR = document.createElement('tr');
 
@@ -2165,7 +1733,7 @@ incProp++;
     // prop_line++;
     var form1 = document.createElement('input');
     form1.setAttribute('type', 'checkbox');
-    form1.setAttribute('name', 'properties_delete_'+incProp);
+    form1.setAttribute('name', 'properties_delete_' + incProp);
     form1.setAttribute('style', '');
     form1.setAttribute('value', row_number + 1);
     var form11 = document.createElement('input');
@@ -2180,8 +1748,8 @@ incProp++;
 
     /* Property */
     var form2 = document.createElement('input');
-    form2.setAttribute('name', 'properties_property_'+incProp);
-    form2.setAttribute('class', 'wob properties_id_'+ eval(row_number + 1));
+    form2.setAttribute('name', 'properties_property_' + incProp);
+    form2.setAttribute('class', 'wob properties_id_' + eval(row_number + 1));
     form2.setAttribute('size', '130%');
     form2
             .setAttribute('style',
@@ -2202,22 +1770,22 @@ incProp++;
         TD3.setAttribute('style', 'font-size : x-small ; width: ' + size
                 + 'px;');
         TD3.setAttribute('style', 'background-color: white;');
-        
+
         var jToto = $('#hiddenProperty');
-        jToto.find('input[data-country="ctr"]').addClass('properties_id_'+ eval(row_number + 1));
-        jToto.find('input[data-country="ctr"]').attr('name', 'properties_country_'+incProp);
+        jToto.find('input[data-country="ctr"]').addClass('properties_id_' + eval(row_number + 1));
+        jToto.find('input[data-country="ctr"]').attr('name', 'properties_country_' + incProp);
         TD3.innerHTML = (TD3.innerHTML + jToto.html());
-        
+
     }
     TR.appendChild(TD3);
 
     /* Type */
     var form4 = document.createElement('select');
     if (document.getElementById("new_properties_type_new_properties_value")) {
-        form4.setAttribute('name', 'properties_type_'+incProp);
+        form4.setAttribute('name', 'properties_type_' + incProp);
         form4.setAttribute('id', 'typenew_properties_value');
         form4.setAttribute('style', 'width: 120px');
-        form4.setAttribute('onchange', 'activateDatabaseBox(this.value, \'properties_nodtb_'+incProp+'\' , \'properties_dtb_'+incProp+'\'); activateValue2(this.value, \'tdValue2_new\', \'new_properties_value\',\'new_properties_value2\',\'' + size2 + '\')');
+        form4.setAttribute('onchange', 'activateDatabaseBox(this.value, \'properties_nodtb_' + incProp + '\' , \'properties_dtb_' + incProp + '\'); activateValue2(this.value, \'tdValue2_new\', \'new_properties_value\',\'new_properties_value2\',\'' + size2 + '\')');
         form4.setAttribute('class', 'wob');
         form4.innerHTML = (form4.innerHTML + document
                 .getElementById('new_properties_type_new_properties_value').innerHTML);
@@ -2234,17 +1802,17 @@ incProp++;
     /* Database */
     var form41 = document.createElement('select');
     if (document.getElementById("properties_dtb_")) {
-        form41.setAttribute('name', 'properties_dtb_'+incProp);
+        form41.setAttribute('name', 'properties_dtb_' + incProp);
         form41.setAttribute('style', 'width: 40px;display: inline');
         form41.setAttribute('class', 'wob');
         form41.innerHTML = (form41.innerHTML + document
                 .getElementById('properties_dtb_').innerHTML);
-        form41.setAttribute('id', 'properties_dtb_'+incProp);
+        form41.setAttribute('id', 'properties_dtb_' + incProp);
     }
 
     var form42 = document.createElement('input');
     form42.setAttribute('style', 'display: none; width: 39px; background-color: white; text-align: center;');
-    form42.setAttribute('id', 'properties_nodtb_'+incProp);
+    form42.setAttribute('id', 'properties_nodtb_' + incProp);
     form42.setAttribute('class', 'wob');
     form42.setAttribute('value', '---');
     var TD41 = document.createElement('td');
@@ -2255,7 +1823,7 @@ incProp++;
 
     /* Value */
     var form5 = document.createElement('textarea');
-    form5.setAttribute('name', 'properties_value1_'+incProp);
+    form5.setAttribute('name', 'properties_value1_' + incProp);
     form5.setAttribute('class', 'wob');
     form5.setAttribute('id', 'new_properties_value');
     form5.setAttribute('style', 'width: ' + size2 + 'px');
@@ -2269,7 +1837,7 @@ incProp++;
     TR51.appendChild(TD51);
 
     var form54 = document.createElement('textarea');
-    form54.setAttribute('name', 'properties_value2_'+incProp);
+    form54.setAttribute('name', 'properties_value2_' + incProp);
     form54.setAttribute('placeholder', 'Attribute');
     form54.setAttribute('class', 'wob');
     form54.setAttribute('id', 'new_properties_value2');
@@ -2303,7 +1871,7 @@ incProp++;
 
     /* Length */
     var form6 = document.createElement('input');
-    form6.setAttribute('name', 'properties_length_'+incProp);
+    form6.setAttribute('name', 'properties_length_' + incProp);
     form6.setAttribute('value', 0);
     form6.setAttribute('class', 'wob');
     form6.setAttribute('style', 'width: 40px');
@@ -2314,7 +1882,7 @@ incProp++;
 
     /* Row Limit */
     var form7 = document.createElement('input');
-    form7.setAttribute('name', 'properties_rowlimit_'+incProp);
+    form7.setAttribute('name', 'properties_rowlimit_' + incProp);
     form7.setAttribute('value', 0);
     form7.setAttribute('style', 'width: 40px');
     form7.setAttribute('class', 'wob');
@@ -2326,7 +1894,7 @@ incProp++;
     /* Nature */
     var form8 = document.createElement('select');
     if (document.getElementById("properties_nature_")) {
-        form8.setAttribute('name', 'properties_nature_'+incProp);
+        form8.setAttribute('name', 'properties_nature_' + incProp);
         form8.setAttribute('class', 'wob');
         form8.setAttribute('style', 'width: 80px');
         form8.innerHTML = (form8.innerHTML + document
@@ -2367,42 +1935,179 @@ function submitTestCaseModificationNew(anchor) {
     return false;
 }
 
-function SetCookie (name, value) {
-	var argv=SetCookie.arguments;
-	var argc=SetCookie.arguments.length;
-	var expires=(argc > 2) ? argv[2] : null;
-	var path=(argc > 3) ? argv[3] : null;
-	var domain=(argc > 4) ? argv[4] : null;
-	var secure=(argc > 5) ? argv[5] : false;
-	document.cookie=name+"="+escape(value)+
-		((expires==null) ? "" : ("; expires="+expires.toGMTString()))+
-		((path==null) ? "" : ("; path="+path))+
-		((domain==null) ? "" : ("; domain="+domain))+
-		((secure==true) ? "; secure" : "");
-};
+function SetCookie(name, value) {
+    var argv = SetCookie.arguments;
+    var argc = SetCookie.arguments.length;
+    var expires = (argc > 2) ? argv[2] : null;
+    var path = (argc > 3) ? argv[3] : null;
+    var domain = (argc > 4) ? argv[4] : null;
+    var secure = (argc > 5) ? argv[5] : false;
+    document.cookie = name + "=" + escape(value) +
+            ((expires == null) ? "" : ("; expires=" + expires.toGMTString())) +
+            ((path == null) ? "" : ("; path=" + path)) +
+            ((domain == null) ? "" : ("; domain=" + domain)) +
+            ((secure == true) ? "; secure" : "");
+}
+;
 
 
 function insertAfter(newNode, referenceNode) {
     referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
-};
+}
+;
 
 function getCookieVal(offset) {
-	var endstr=document.cookie.indexOf (";", offset);
-	if (endstr==-1)
-      		endstr=document.cookie.length;
-	return unescape(document.cookie.substring(offset, endstr));
-};
+    var endstr = document.cookie.indexOf(";", offset);
+    if (endstr == -1)
+        endstr = document.cookie.length;
+    return unescape(document.cookie.substring(offset, endstr));
+}
+;
 
-function GetCookie (name) {
-	var arg=name+"=";
-	var alen=arg.length;
-	var clen=document.cookie.length;
-	var i=0;
-	while (i<clen) {
-		var j=i+alen;
-		if (document.cookie.substring(i, j)==arg)
-                        return getCookieVal (j);
-                i=document.cookie.indexOf(" ",i)+1;
-                        if (i==0) break;}
-	return null;
-};
+function GetCookie(name) {
+    var arg = name + "=";
+    var alen = arg.length;
+    var clen = document.cookie.length;
+    var i = 0;
+    while (i < clen) {
+        var j = i + alen;
+        if (document.cookie.substring(i, j) == arg)
+            return getCookieVal(j);
+        i = document.cookie.indexOf(" ", i) + 1;
+        if (i == 0)
+            break;
+    }
+    return null;
+}
+;
+
+function addTCSANew(rowID, step, obj){
+    /**
+     * rowID : Name of the Row on which we'll add a line bellow
+     * incrementStep : number of the set increment
+     * obj : Object from where we call this function (button A+)
+     */
+    
+    /* Increment All fields bellow the current*/
+    var incremAction = obj.parentNode.parentNode.parentNode.querySelector('[data-field="sequence"]').value;
+    var incrementAction =  parseInt(incremAction);
+    var nextIncAction = incrementAction+1;
+    
+    incrementRows($('#StepsBorderDiv' + step), 'input[data-fieldtype="action_' + step + '"]', incrementAction);
+    incrementRows($('#StepsBorderDiv' + step), 'input[data-fieldtype="ctrlseq_' + step + '"]', incrementAction);
+    
+    /* Get the number of Action on the table and increment it*/
+    var numberOfAction = document.getElementsByName('action_increment_' + step).length;
+    var newNumberOfAction = parseInt(numberOfAction)+1;
+    var StepNum = document.getElementById('initial_step_number_' + step).value;
+    
+    
+    /* Create the new div and insert it in the page*/
+    var DIV = document.createElement('div');
+    if (document.getElementById("StepActionTemplateDiv")) {
+        DIV.innerHTML = (DIV.innerHTML + document
+                .getElementById('StepActionTemplateDiv').innerHTML);
+    }
+    DIV.setAttribute('style', 'display:inline-block; height:100%; width:100%;background-color:#C4EBFF');
+    DIV.setAttribute('id', 'StepListOfActionDiv' + step + newNumberOfAction);
+    var referenceNode = document.getElementById(rowID);
+    referenceNode.parentNode.insertBefore(DIV, referenceNode.nextSibling);
+    
+    /* Search fields and add new name and value*/
+    $('#StepListOfActionDiv' + step + newNumberOfAction).find('input[data-id="action_color_id"]')
+            .attr('style', 'background-color:blue; width:8px;height:100%;display:inline-block;float:left');
+    $('#StepListOfActionDiv' + step + newNumberOfAction).find('input[data-id="action_delete_template"]')
+            .attr('name', 'action_delete_'+step+'_'+ newNumberOfAction);
+    $('#StepListOfActionDiv' + step + newNumberOfAction).find('input[data-id="action_increment_template"]')
+            .attr('name', 'action_increment_'+step).val(newNumberOfAction);
+    $('#StepListOfActionDiv' + step + newNumberOfAction).find('input[data-id="action_step_template"]')
+            .attr('name', 'action_step_'+step+'_'+ newNumberOfAction).val(StepNum);
+    $('#StepListOfActionDiv' + step + newNumberOfAction).find('img[data-id="actionAddActionButton_template"]')
+            .attr('onclick', 'addTCSANew(\'StepListOfActionDiv' + step + newNumberOfAction + '\', \'' + step + '\', this)');
+    $('#StepListOfActionDiv' + step + newNumberOfAction).find('img[data-id="actionAddControlButton_template"]')
+            .attr('onclick', 'addTCSACNew(\'StepListOfActionDiv' + step + newNumberOfAction + '\', \'' + step + '\', \'' + newNumberOfAction + '\', this)');
+    $('#StepListOfActionDiv' + step + newNumberOfAction).find('input[data-id="action_sequence_template"]')
+            .attr('name', 'action_sequence_'+step+'_'+ newNumberOfAction).attr('data-fieldtype','action_'+step).val(nextIncAction);
+    $('#StepListOfActionDiv' + step + newNumberOfAction).find('input[data-id="action_description_template"]')
+            .attr('name', 'action_description_'+step+'_'+ newNumberOfAction);
+    $('#StepListOfActionDiv' + step + newNumberOfAction).find('#action_action_template')
+            .attr('name', 'action_action_'+step+'_'+ newNumberOfAction);
+    $('#StepListOfActionDiv' + step + newNumberOfAction).find('input[data-id="action_object_template"]')
+            .attr('name', 'action_object_'+step+'_'+ newNumberOfAction);
+    $('#StepListOfActionDiv' + step + newNumberOfAction).find('input[data-id="action_property_template"]')
+            .attr('name', 'action_property_'+step+'_'+ newNumberOfAction);
+    
+}
+
+function addTCSACNew(rowID, step, incrementAction, obj){
+    /**
+     * rowID : Name of the Row on which we'll add a line bellow
+     * incrementStep : number of the set increment
+     * obj : Object from where we call this function (button A+)
+     */
+    
+    
+    /* Increment All control fields bellow the current*/
+    var incremAction = obj.parentNode.parentNode.parentNode.querySelector('[data-field="sequence"]').value;
+    var actionNumber =  parseInt(incremAction);
+    var incremControl = obj.parentNode.parentNode.parentNode.querySelector('[data-fieldtype="control_' + step + '_'+incrementAction+'"]') === null ? 0 : obj.parentNode.parentNode.parentNode.querySelector('[data-fieldtype="control_' + step + '_'+incrementAction+'"]').value;
+    var incrementControl =  parseInt(incremControl);
+     
+    incrementRows($('#StepsBorderDiv' + step), 'input[data-fieldtype="control_' + step + '_'+actionNumber+'"]', incrementControl);
+    
+    /* Get the number of control on the table and increment it*/
+    var numberOfCtrl = 0;
+    if (document.getElementsByName('control_increment_' + step + '_' + incrementAction) !== null) {
+        numberOfCtrl = document.getElementsByName('control_increment_' + step + '_' + incrementAction).length;
+    }
+    var nextIncControl = parseInt(numberOfCtrl)+1;
+    var StepNum = document.getElementById('initial_step_number_' + step).value;
+    
+    
+    /* Create the new div and insert it in the page*/
+    var DIV = document.createElement('div');
+    if (document.getElementById("StepControlTemplateDiv")) {
+        DIV.innerHTML = (DIV.innerHTML + document
+                .getElementById('StepControlTemplateDiv').innerHTML);
+    }
+    DIV.setAttribute('style', 'display:inline-block; height:100%; width:100%;background-color:#C4EBFF');
+    DIV.setAttribute('id', 'StepListOfControlDiv' + step + incremAction + nextIncControl);
+    var referenceNode = document.getElementById(rowID);
+    referenceNode.parentNode.insertBefore(DIV, referenceNode.nextSibling);
+    
+    /* Search fields and add new name and value*/
+    $('#StepListOfControlDiv' + step + incremAction + nextIncControl).find('input[data-id="control_color_id"]')
+            .attr('style', 'background-color:blue; width:8px;height:100%;display:inline-block;float:left');
+    $('#StepListOfControlDiv' + step + incremAction + nextIncControl).find('input[data-id="control_delete_template"]')
+            .attr('name', 'control_delete_'+step+'_'+ incremAction+'_'+nextIncControl);
+    $('#StepListOfControlDiv' + step + incremAction + nextIncControl).find('input[data-id="control_increment_template"]')
+            .attr('name', 'control_increment_'+step+'_'+ incremAction).val(nextIncControl);
+    $('#StepListOfControlDiv' + step + incremAction + nextIncControl).find('input[data-id="control_step_template"]')
+            .attr('name', 'control_step_'+step+'_'+ incremAction+'_'+nextIncControl).val(StepNum);
+    $('#StepListOfControlDiv' + step + incremAction + nextIncControl).find('img[data-id="controlAddActionButton_template"]')
+            .attr('onclick', 'addTCSANew(\'StepListOfControlDiv' + step + incremAction + nextIncControl + '\', \'' + step + '\', this)');
+    $('#StepListOfControlDiv' + step + incremAction + nextIncControl).find('img[data-id="controlAddControlButton_template"]')
+            .attr('onclick', 'addTCSACNew(\'StepListOfControlDiv' + step + incremAction + nextIncControl + '\', \'' + step + '\', \'' + incremAction + '\', this)');
+    $('#StepListOfControlDiv' + step + incremAction + nextIncControl).find('input[data-id="control_sequence_template"]')
+            .attr('name', 'control_sequence_'+step+'_'+ incremAction+'_'+nextIncControl).attr('data-fieldtype', 'ctrlseq_'+step ).val(incremAction);
+    $('#StepListOfControlDiv' + step + incremAction + nextIncControl).find('input[data-id="control_control_template"]')
+            .attr('name', 'control_control_'+step+'_'+ incremAction+'_'+nextIncControl).attr('data-fieldtype' ,'control_'+step+'_'+incremAction).val(nextIncControl);
+    $('#StepListOfControlDiv' + step + incremAction + nextIncControl).find('input[data-id="control_description_template"]')
+            .attr('name', 'control_description_'+step+'_'+ incremAction+'_'+nextIncControl);
+    $('#StepListOfControlDiv' + step + incremAction + nextIncControl).find('#control_type_template')
+            .attr('name', 'control_type_'+step+'_'+ incremAction+'_'+nextIncControl);
+    $('#StepListOfControlDiv' + step + incremAction + nextIncControl).find('input[data-id="control_property_template"]')
+            .attr('name', 'control_property_'+step+'_'+ incremAction+'_'+nextIncControl);
+    $('#StepListOfControlDiv' + step + incremAction + nextIncControl).find('input[data-id="control_value_template"]')
+            .attr('name', 'control_value_'+step+'_'+ incremAction+'_'+nextIncControl);
+    $('#StepListOfControlDiv' + step + incremAction + nextIncControl).find('#control_fatal_template')
+            .attr('name', 'control_fatal_'+step+'_'+ incremAction+'_'+nextIncControl);
+    
+}
+
+
+
+
+
+
+ 
