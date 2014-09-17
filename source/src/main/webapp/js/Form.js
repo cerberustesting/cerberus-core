@@ -1610,7 +1610,7 @@ function incrementRows(DIV, element, incrementAction) {
     var listAct = DIV.find(element);
     for (var a = 0; a < listAct.length; a++) {
         if (listAct[a].value > incrementAction) {
-            listAct[a].value = parseInt(listAct[a].value)+1;
+            listAct[a].value = parseInt(listAct[a].value) + 1;
         }
     }
 }
@@ -1981,27 +1981,32 @@ function GetCookie(name) {
 }
 ;
 
-function addTCSANew(rowID, step, obj){
+function addTCSANew(rowID, step, obj) {
     /**
      * rowID : Name of the Row on which we'll add a line bellow
      * incrementStep : number of the set increment
      * obj : Object from where we call this function (button A+)
      */
-    
+
     /* Increment All fields bellow the current*/
-    var incremAction = obj.parentNode.parentNode.parentNode.querySelector('[data-field="sequence"]').value;
-    var incrementAction =  parseInt(incremAction);
-    var nextIncAction = incrementAction+1;
-    
+    var incremAction
+    if (obj === null) {
+        incremAction = 0;
+    } else {
+        incremAction = obj.parentNode.parentNode.parentNode.querySelector('[data-field="sequence"]').value;
+    }
+    var incrementAction = parseInt(incremAction);
+    var nextIncAction = incrementAction + 1;
+
     incrementRows($('#StepsBorderDiv' + step), 'input[data-fieldtype="action_' + step + '"]', incrementAction);
     incrementRows($('#StepsBorderDiv' + step), 'input[data-fieldtype="ctrlseq_' + step + '"]', incrementAction);
-    
+
     /* Get the number of Action on the table and increment it*/
     var numberOfAction = document.getElementsByName('action_increment_' + step).length;
-    var newNumberOfAction = parseInt(numberOfAction)+1;
+    var newNumberOfAction = parseInt(numberOfAction) + 1;
     var StepNum = document.getElementById('initial_step_number_' + step).value;
-    
-    
+
+
     /* Create the new div and insert it in the page*/
     var DIV = document.createElement('div');
     if (document.getElementById("StepActionTemplateDiv")) {
@@ -2012,58 +2017,58 @@ function addTCSANew(rowID, step, obj){
     DIV.setAttribute('id', 'StepListOfActionDiv' + step + newNumberOfAction);
     var referenceNode = document.getElementById(rowID);
     referenceNode.parentNode.insertBefore(DIV, referenceNode.nextSibling);
-    
+
     /* Search fields and add new name and value*/
     $('#StepListOfActionDiv' + step + newNumberOfAction).find('input[data-id="action_color_id"]')
             .attr('style', 'background-color:blue; width:8px;height:100%;display:inline-block;float:left');
     $('#StepListOfActionDiv' + step + newNumberOfAction).find('input[data-id="action_delete_template"]')
-            .attr('name', 'action_delete_'+step+'_'+ newNumberOfAction);
+            .attr('name', 'action_delete_' + step + '_' + newNumberOfAction);
     $('#StepListOfActionDiv' + step + newNumberOfAction).find('input[data-id="action_increment_template"]')
-            .attr('name', 'action_increment_'+step).val(newNumberOfAction);
+            .attr('name', 'action_increment_' + step).val(newNumberOfAction);
     $('#StepListOfActionDiv' + step + newNumberOfAction).find('input[data-id="action_step_template"]')
-            .attr('name', 'action_step_'+step+'_'+ newNumberOfAction).val(StepNum);
+            .attr('name', 'action_step_' + step + '_' + newNumberOfAction).val(StepNum);
     $('#StepListOfActionDiv' + step + newNumberOfAction).find('img[data-id="actionAddActionButton_template"]')
             .attr('onclick', 'addTCSANew(\'StepListOfActionDiv' + step + newNumberOfAction + '\', \'' + step + '\', this)');
     $('#StepListOfActionDiv' + step + newNumberOfAction).find('img[data-id="actionAddControlButton_template"]')
             .attr('onclick', 'addTCSACNew(\'StepListOfActionDiv' + step + newNumberOfAction + '\', \'' + step + '\', \'' + newNumberOfAction + '\', this)');
     $('#StepListOfActionDiv' + step + newNumberOfAction).find('input[data-id="action_sequence_template"]')
-            .attr('name', 'action_sequence_'+step+'_'+ newNumberOfAction).attr('data-fieldtype','action_'+step).val(nextIncAction);
+            .attr('name', 'action_sequence_' + step + '_' + newNumberOfAction).attr('data-fieldtype', 'action_' + step).val(nextIncAction);
     $('#StepListOfActionDiv' + step + newNumberOfAction).find('input[data-id="action_description_template"]')
-            .attr('name', 'action_description_'+step+'_'+ newNumberOfAction);
+            .attr('name', 'action_description_' + step + '_' + newNumberOfAction);
     $('#StepListOfActionDiv' + step + newNumberOfAction).find('#action_action_template')
-            .attr('name', 'action_action_'+step+'_'+ newNumberOfAction);
+            .attr('name', 'action_action_' + step + '_' + newNumberOfAction);
     $('#StepListOfActionDiv' + step + newNumberOfAction).find('input[data-id="action_object_template"]')
-            .attr('name', 'action_object_'+step+'_'+ newNumberOfAction);
+            .attr('name', 'action_object_' + step + '_' + newNumberOfAction);
     $('#StepListOfActionDiv' + step + newNumberOfAction).find('input[data-id="action_property_template"]')
-            .attr('name', 'action_property_'+step+'_'+ newNumberOfAction);
-    
+            .attr('name', 'action_property_' + step + '_' + newNumberOfAction);
+
 }
 
-function addTCSACNew(rowID, step, incrementAction, obj){
+function addTCSACNew(rowID, step, incrementAction, obj) {
     /**
      * rowID : Name of the Row on which we'll add a line bellow
      * incrementStep : number of the set increment
      * obj : Object from where we call this function (button A+)
      */
-    
-    
+
+
     /* Increment All control fields bellow the current*/
     var incremAction = obj.parentNode.parentNode.parentNode.querySelector('[data-field="sequence"]').value;
-    var actionNumber =  parseInt(incremAction);
-    var incremControl = obj.parentNode.parentNode.parentNode.querySelector('[data-fieldtype="control_' + step + '_'+incrementAction+'"]') === null ? 0 : obj.parentNode.parentNode.parentNode.querySelector('[data-fieldtype="control_' + step + '_'+incrementAction+'"]').value;
-    var incrementControl =  parseInt(incremControl);
-     
-    incrementRows($('#StepsBorderDiv' + step), 'input[data-fieldtype="control_' + step + '_'+actionNumber+'"]', incrementControl);
-    
+    var actionNumber = parseInt(incremAction);
+    var incremControl = obj.parentNode.parentNode.parentNode.querySelector('[data-fieldtype="control_' + step + '_' + incrementAction + '"]') === null ? 0 : obj.parentNode.parentNode.parentNode.querySelector('[data-fieldtype="control_' + step + '_' + incrementAction + '"]').value;
+    var incrementControl = parseInt(incremControl);
+
+    incrementRows($('#StepsBorderDiv' + step), 'input[data-fieldtype="control_' + step + '_' + actionNumber + '"]', incrementControl);
+
     /* Get the number of control on the table and increment it*/
     var numberOfCtrl = 0;
     if (document.getElementsByName('control_increment_' + step + '_' + incrementAction) !== null) {
         numberOfCtrl = document.getElementsByName('control_increment_' + step + '_' + incrementAction).length;
     }
-    var nextIncControl = parseInt(numberOfCtrl)+1;
+    var nextIncControl = parseInt(numberOfCtrl) + 1;
     var StepNum = document.getElementById('initial_step_number_' + step).value;
-    
-    
+
+
     /* Create the new div and insert it in the page*/
     var DIV = document.createElement('div');
     if (document.getElementById("StepControlTemplateDiv")) {
@@ -2074,35 +2079,35 @@ function addTCSACNew(rowID, step, incrementAction, obj){
     DIV.setAttribute('id', 'StepListOfControlDiv' + step + incremAction + nextIncControl);
     var referenceNode = document.getElementById(rowID);
     referenceNode.parentNode.insertBefore(DIV, referenceNode.nextSibling);
-    
+
     /* Search fields and add new name and value*/
     $('#StepListOfControlDiv' + step + incremAction + nextIncControl).find('input[data-id="control_color_id"]')
             .attr('style', 'background-color:blue; width:8px;height:100%;display:inline-block;float:left');
     $('#StepListOfControlDiv' + step + incremAction + nextIncControl).find('input[data-id="control_delete_template"]')
-            .attr('name', 'control_delete_'+step+'_'+ incremAction+'_'+nextIncControl);
+            .attr('name', 'control_delete_' + step + '_' + incremAction + '_' + nextIncControl);
     $('#StepListOfControlDiv' + step + incremAction + nextIncControl).find('input[data-id="control_increment_template"]')
-            .attr('name', 'control_increment_'+step+'_'+ incremAction).val(nextIncControl);
+            .attr('name', 'control_increment_' + step + '_' + incremAction).val(nextIncControl);
     $('#StepListOfControlDiv' + step + incremAction + nextIncControl).find('input[data-id="control_step_template"]')
-            .attr('name', 'control_step_'+step+'_'+ incremAction+'_'+nextIncControl).val(StepNum);
+            .attr('name', 'control_step_' + step + '_' + incremAction + '_' + nextIncControl).val(StepNum);
     $('#StepListOfControlDiv' + step + incremAction + nextIncControl).find('img[data-id="controlAddActionButton_template"]')
             .attr('onclick', 'addTCSANew(\'StepListOfControlDiv' + step + incremAction + nextIncControl + '\', \'' + step + '\', this)');
     $('#StepListOfControlDiv' + step + incremAction + nextIncControl).find('img[data-id="controlAddControlButton_template"]')
             .attr('onclick', 'addTCSACNew(\'StepListOfControlDiv' + step + incremAction + nextIncControl + '\', \'' + step + '\', \'' + incremAction + '\', this)');
     $('#StepListOfControlDiv' + step + incremAction + nextIncControl).find('input[data-id="control_sequence_template"]')
-            .attr('name', 'control_sequence_'+step+'_'+ incremAction+'_'+nextIncControl).attr('data-fieldtype', 'ctrlseq_'+step ).val(incremAction);
+            .attr('name', 'control_sequence_' + step + '_' + incremAction + '_' + nextIncControl).attr('data-fieldtype', 'ctrlseq_' + step).val(incremAction);
     $('#StepListOfControlDiv' + step + incremAction + nextIncControl).find('input[data-id="control_control_template"]')
-            .attr('name', 'control_control_'+step+'_'+ incremAction+'_'+nextIncControl).attr('data-fieldtype' ,'control_'+step+'_'+incremAction).val(nextIncControl);
+            .attr('name', 'control_control_' + step + '_' + incremAction + '_' + nextIncControl).attr('data-fieldtype', 'control_' + step + '_' + incremAction).val(nextIncControl);
     $('#StepListOfControlDiv' + step + incremAction + nextIncControl).find('input[data-id="control_description_template"]')
-            .attr('name', 'control_description_'+step+'_'+ incremAction+'_'+nextIncControl);
+            .attr('name', 'control_description_' + step + '_' + incremAction + '_' + nextIncControl);
     $('#StepListOfControlDiv' + step + incremAction + nextIncControl).find('#control_type_template')
-            .attr('name', 'control_type_'+step+'_'+ incremAction+'_'+nextIncControl);
+            .attr('name', 'control_type_' + step + '_' + incremAction + '_' + nextIncControl);
     $('#StepListOfControlDiv' + step + incremAction + nextIncControl).find('input[data-id="control_property_template"]')
-            .attr('name', 'control_property_'+step+'_'+ incremAction+'_'+nextIncControl);
+            .attr('name', 'control_property_' + step + '_' + incremAction + '_' + nextIncControl);
     $('#StepListOfControlDiv' + step + incremAction + nextIncControl).find('input[data-id="control_value_template"]')
-            .attr('name', 'control_value_'+step+'_'+ incremAction+'_'+nextIncControl);
+            .attr('name', 'control_value_' + step + '_' + incremAction + '_' + nextIncControl);
     $('#StepListOfControlDiv' + step + incremAction + nextIncControl).find('#control_fatal_template')
-            .attr('name', 'control_fatal_'+step+'_'+ incremAction+'_'+nextIncControl);
-    
+            .attr('name', 'control_fatal_' + step + '_' + incremAction + '_' + nextIncControl);
+
 }
 
 
@@ -2110,4 +2115,4 @@ function addTCSACNew(rowID, step, incrementAction, obj){
 
 
 
- 
+
