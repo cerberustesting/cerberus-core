@@ -2106,6 +2106,68 @@ function addTCSACNew(rowID, step, incrementAction, obj) {
 
 }
 
+function addTCSCNew(rowID, obj) {
+    /**
+     * rowID : Name of the Row on which we'll add a line bellow
+     * incrementStep : number of the set increment
+     * obj : Object from where we call this function (button A+)
+     */
+
+
+    /* Increment All step fields bellow the current*/
+    var initStep = obj.parentNode.parentNode.parentNode.querySelector('[data-fieldtype="stepNumber"]') === null ? 0 : obj.parentNode.parentNode.parentNode.querySelector('[data-fieldtype="stepNumber"]').value;
+    var incrementStep = parseInt(initStep);
+    incrementRows($('#StepsMainDiv'), 'input[data-fieldtype="stepNumber"]', incrementStep);
+
+    /* Get the number of control on the table and increment it*/
+    var numberOfStep = 0;
+    if (document.getElementsByName('step_increment') !== null) {
+        numberOfStep = document.getElementsByName('step_increment').length;
+    }
+    var nextIncStep = parseInt(numberOfStep) + 1;
+    
+    /* Create the new div and insert it in the page*/
+    var DIV = document.createElement('div');
+    if (document.getElementById("StepTemplateDiv")) {
+        DIV.innerHTML = (DIV.innerHTML + document
+                .getElementById('StepTemplateDiv').innerHTML);
+    }
+    DIV.setAttribute('id',  'StepFirstLineDiv'+nextIncStep);
+    DIV.setAttribute('class' , 'StepHeaderDiv');
+    var referenceNode = document.getElementById(rowID);
+    referenceNode.parentNode.insertBefore(DIV, referenceNode.nextSibling);
+
+    /* Search fields and add*/
+    
+    $('#StepFirstLineDiv'+nextIncStep).find('input[data-id="stepAnchor_template"]')
+            .attr('name', 'stepAnchor_' + nextIncStep);
+    $('#StepFirstLineDiv'+nextIncStep).find('input[data-id="stepAnchor_steptemplate"]')
+            .attr('name', 'stepAnchor_step' + nextIncStep);
+    $('#StepFirstLineDiv'+nextIncStep).find('input[data-id="step_delete_template"]')
+            .attr('name', 'step_delete_' + nextIncStep);
+    $('#StepFirstLineDiv'+nextIncStep).find('input[data-id="step_increment"]')
+            .attr('name', 'step_increment').val(nextIncStep);
+    $('#StepFirstLineDiv'+nextIncStep).find('input[data-id="step_number_template"]')
+            .attr('name', 'step_number_' + nextIncStep).val(incrementStep+1);
+     $('#StepFirstLineDiv'+nextIncStep).find('input[data-id="step_description_template"]')
+            .attr('name', 'step_description_' + nextIncStep);
+    $('#StepFirstLineDiv'+nextIncStep).find('input[data-id="initial_step_number_template"]')
+            .attr('name', 'initial_step_number_' + nextIncStep).val(nextIncStep);
+    $('#StepFirstLineDiv'+nextIncStep).find('input[data-id="step_useStep_template"]')
+            .attr('name', 'step_useStep_' + nextIncStep);
+    $('#StepFirstLineDiv'+nextIncStep).find('input[data-id="step_useStepTest_template"]')
+            .attr('name', 'step_useStepTest_' + nextIncStep);
+    $('#StepFirstLineDiv'+nextIncStep).find('input[data-id="step_useStepTestCase_template"]')
+            .attr('name', 'step_useStepTestCase_' + nextIncStep);
+    $('#StepFirstLineDiv'+nextIncStep).find('input[data-id="step_useStepStep_template"]')
+            .attr('name', 'step_useStepStep_' + nextIncStep);
+    
+    
+}
+
+
+
+
 
 
 
