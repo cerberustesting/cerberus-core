@@ -850,7 +850,7 @@
                                     </div>
                                     <div id="StepUseStepStepDiv" style="float:left">
                                         <select name="step_useStepStep_<%=incrementStep%>" style="width: 200px;margin-top:15px;font-weight: bold;" 
-                                                    id="step_useStepStep_<%=incrementStep%>">
+                                                    id="step_useStepStep_<%=incrementStep%>" onchange="javascript:$('#UpdateTestCase').submit();">
                             <%  if (tcs.getUseStepTest().equals("")||tcs.getUseStepTestCase().equals("")) { %>
                             <option style="width: 200px" value="All">---</option>
                             <%  } else {
@@ -1578,6 +1578,10 @@
     function findTestcaseByTest(test,system, field){
                 $.get('GetTestCaseForTest?system='+system+'&test='+test, function(data) {
                     $('#'+field).empty();
+                    $('#'+field).append($("<option></option>")
+                                .attr('value','')
+                                .attr('style','width:300px;')
+                                .text('Choose TestCase'));
                     for (var i = 0; i < data.testCaseList.length; i++) {
                         $('#'+field).append($("<option></option>")
                                 .attr('value',data.testCaseList[i].testCase)
@@ -1591,6 +1595,10 @@
     function findStepByTestCase(test,testcase, field){
                 $.get('GetTestCase?testcase='+testcase+'&test='+test, function(data) {
                     $('#'+field).empty();
+                    $('#'+field).append($("<option></option>")
+                                .attr('value','')
+                                .attr('style','width:300px;')
+                                .text('Choose Step'));
                     for (var i = 0; i < data.list.length; i++) {
                         $('#'+field).append($("<option></option>")
                                 .attr('value',data.list[i].number)
@@ -1603,9 +1611,21 @@
 <script>
     function confirmDeletingAction(checkbox, incrementStep) {
      if (checkbox.checked === true && document.getElementsByName('actionRow_color_'+incrementStep).length > 0){
-        confirm("Beware, all the action of this step will be deleted"); 
-    }  
+        if (confirm("Beware, all the action of this step will be deleted")){
+            $("#UpdateTestCase").submit();
+        }else{
+            checkbox.checked = false;
+        } 
+    } else {
+    if (checkbox.checked === false){
+        if (confirm("Beware, the link to the used step will be lost. Action and controle will be imported into the step")){
+            $("#UpdateTestCase").submit();
+        }else{
+         checkbox.checked = true;   
+        } 
     }
+    }
+}
 </script>
 <div id="popin"></div>
 <br><% out.print(display_footer(DatePageStart));%>
