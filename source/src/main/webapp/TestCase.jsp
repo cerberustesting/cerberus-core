@@ -747,15 +747,19 @@
                     int rowNumber = 0;
                 %>
                 <div id="AutomationScriptDiv" class="arrond" style="display : table">
-                    <div id="AutomationScriptFirstLine" style="clear:both">
-                        <div id="AutomationScriptFunctionalButtonDiv" style="float:left">
-                            <input id="button3" style="height:18px; width:10px" type="button" value="F" onclick="javascript:showOnlyFunctional();">
-                            <input id="button4" style="height:18px; width:10px" type="button" value="H" onclick="javascript:collapseOrExpandAllStep();">
-                        </div>
+                    <div id="AutomationScriptFirstLine" style="clear:both; height:30px">
                         <div id="AutomationScriptTitle" style="float:left">
                             <h3>TestCase Detailed Description</h3>
                         </div>
+                        <div id="AutomationScriptFunctionalButtonDiv" style="float:left;margin-left:30px">
+                        <select style="float:left; height:20px; width:100px" onchange="javascript:collapseOrExpandAllStep();">
+                            <option>Full View</option>
+                            <option>Show Only Step</option>
+                        </select>
+                        </div>
                     </div>
+                    
+                        
                     <div id="StepsMainDiv" style="width:100%;clear:both">
                         <div id="StepsDivUnderTitle" style="width:100%;clear:both">
                             <div id="StepsRightDiv" style="width:97%;float:left; margin:2%;">
