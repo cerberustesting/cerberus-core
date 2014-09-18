@@ -259,6 +259,10 @@
                     if (request.getParameter("system") != null && request.getParameter("system").compareTo("") != 0) {
                         MySystem = request.getParameter("system");
                     }
+                    List<String> systems = new ArrayList();
+                    systems.add(MySystem);
+                                
+                    List<Test> tests = new ArrayList();
 
                     String group = getRequestParameterWildcardIfEmpty(request, "group");
                     String status = getRequestParameterWildcardIfEmpty(request, "status");
@@ -277,27 +281,27 @@
                     </div>
                     <div style="float:left">
                         <select id="filtertest" name="Test" style="width: 200px" OnChange="document.selectTestCase.submit()">
-                            <%  if (test.compareTo("%%") == 0) { %>
+                            <%  if (test.compareTo("") == 0) { %>
                             <option style="width: 200px" value="All">-- Choose Test --
                             </option>
-                            <%  }
-                                List<String> systems = new ArrayList();
+                            <%  } 
+                                
                                 //            for (UserSystem us : userSystemService.findUserSystemByUser(request.getUserPrincipal().getName())){
                                 //systems.add(us.getSystem());
                                 //}
-                                systems.add(MySystem);
-                                List<Test> tests = testService.findTestBySystems(systems);
+                                tests = testService.findTestBySystems(systems);
                                 for (Test tst : tests) {%>
                             <option style="width: 200px;" class="font_weight_bold_<%=tst.getActive()%>" value="<%=tst.getTest()%>" <%=test.compareTo(tst.getTest()) == 0 ? " SELECTED " : ""%>><%=tst.getTest()%>
                             </option>
-                            <% } %>
+                            <% }
+                            %>
                         </select>
                     </div>
                     <div style="float:left"><%out.print(docService.findLabelHTML("testcase", "testcase", "TestCase"));%>
                     </div>
                     <div style="float:left">
                         <select id="filtertestcase" name="TestCase" style="width: 750px" OnChange="document.selectTestCase.submit()">
-                            <% if (test.compareTo("%%") == 0) { %>
+                            <% if (test.compareTo("") == 0) { %>
                             <option style="width: 750px" value="All">-- Choose Test First --
                             </option>
                             <%  } else {
@@ -316,7 +320,7 @@
             </form>
             <br>
             <br>
-            <%if (!test.equals("%%") && !testcase.equals("%%")) {
+            <%if (!test.equals("") && !testcase.equals("")) {
                     TCase tcase = testCaseService.findTestCaseByKey(test, testcase);
                     Test testObject = testService.findTestByKey(test);
                     List<Invariant> countryListInvariant = invariantService.findListOfInvariantById("COUNTRY");
@@ -815,42 +819,51 @@
                                         <p style="margin-top:15px;"> Copied from : </p>
                                     </div>
                                     <div id="StepUseStepTestDiv" style="float:left">
-                                        <select name="step_useStepTest_<%=incrementStep%>" style="width: 200px;margin-top:15px;font-weight: bold;" OnChange="findTestcaseByTest(this.value,'<%=MySystem%>', 'step_useStepTestCase_<%=incrementStep%>')">
+                                        <select id="step_useStepTest_<%=incrementStep%>" name="step_useStepTest_<%=incrementStep%>" style="width: 200px;margin-top:15px;font-weight: bold;" 
+                                                OnChange="findTestcaseByTest(this.value,'<%=MySystem%>', 'step_useStepTestCase_<%=incrementStep%>')">
                             <%  if (tcs.getUseStepTest().equals("")) { %>
                             <option style="width: 200px" value="All">-- Choose Test --
                             </option>
-                            <%  }
+                            <%  } 
                                 for (Test tst : tests) {%>
                             <option style="width: 200px;" class="font_weight_bold_<%=tst.getActive()%>" value="<%=tst.getTest()%>" <%=tcs.getUseStepTest().compareTo(tst.getTest()) == 0 ? " SELECTED " : ""%>><%=tst.getTest()%>
                             </option>
-                            <% } %>
+                            <% }
+                                 %>
                         </select>
                                     </div>
                     
                                     <div id="StepUseStepTestCaseDiv" style="float:left;">
-                                        <select style="margin-top:15px;font-weight: bold; width:100px" name="
-                                               id="step_useStepTestCase_<%=incrementStep%>" value="<%=tcs.getUseStepTestCase()%>">
-                                            <option value="">---</option>
-                                        </select>
-                                            <select name="step_useStepTestCase_<%=incrementStep%>" style="width: 200px;margin-top:15px;font-weight: bold;" 
-                                                    OnChange="findTestcaseByTest(this.value,'<%=MySystem%>', 'step_useStepTestCase_<%=incrementStep%>')"
+                                        <select name="step_useStepTestCase_<%=incrementStep%>" style="width: 200px;margin-top:15px;font-weight: bold;" 
+                                                    OnChange="findStepByTestCase($('#step_useStepTest_<%=incrementStep%>').val(),this.value, 'step_useStepStep_<%=incrementStep%>')"
                                                     id="step_useStepTestCase_<%=incrementStep%>">
                             <%  if (tcs.getUseStepTestCase().equals("")) { %>
                             <option style="width: 200px" value="All">---</option>
-                            <%  }
-                            
-                                for (Test tst : tests) {%>
-                            <option style="width: 200px;" class="font_weight_bold_<%=tst.getActive()%>" value="<%=tst.getTest()%>" <%=tcs.getUseStepTest().compareTo(tst.getTest()) == 0 ? " SELECTED " : ""%>><%=tst.getTest()%>
+                            <%  }else {
+                                List<TCase> tcList = testCaseService.findTestCaseByTest(test);
+                                for (TCase tc : tcList){%>
+                            <option style="width: 200px;" class="font_weight_bold_<%=tc.getActive()%>" value="<%=tc.getTestCase()%>" <%=tcs.getUseStepTestCase().compareTo(tc.getTestCase()) == 0 ? " SELECTED " : ""%>><%=tc.getTestCase()%>
                             </option>
-                            <% } %>
+                            <% }
+                            }%>
                         </select>
                                     </div>
                                     <div id="StepUseStepStepDiv" style="float:left">
-                                        <input size="100%" style="margin-top:15px;font-weight: bold; width: 50px" name="step_useStepStep_<%=incrementStep%>"
-                                               value="<%=tcs.getUseStepStep()%>">
+                                        <select name="step_useStepStep_<%=incrementStep%>" style="width: 200px;margin-top:15px;font-weight: bold;" 
+                                                    id="step_useStepStep_<%=incrementStep%>">
+                            <%  if (tcs.getUseStepTest().equals("")||tcs.getUseStepTestCase().equals("")) { %>
+                            <option style="width: 200px" value="All">---</option>
+                            <%  } else {
+                                List<TestCaseStep> tcstepList = tcsService.getListOfSteps(tcs.getUseStepTest(),tcs.getUseStepTestCase());
+                                for (TestCaseStep tcstep : tcstepList){%>
+                            <option style="width: 200px;" value="<%=tcstep.getStep()%>" <%=tcs.getUseStepStep().compareTo(tcstep.getStep()) == 0 ? " SELECTED " : ""%>><%=tcstep.getStep()%>
+                            </option>
+                            <% }
+                            }%>
+                        </select>
                                     </div>
                                     <div id="StepUseStepLinkDiv" style="float:left;margin-top:15px">
-                                        <a href="TestCase.jsp?Test=<%=tcs.getUseStepTest()%>&TestCase=<%=tcs.getUseStepTestCase()%>#stepAnchor_step<%=tcs.getStep()%>">Edit Used Step</a>
+                                        <a href="TestCase.jsp?Test=<%=tcs.getUseStepTest()%>&TestCase=<%=tcs.getUseStepTestCase()%>#stepAnchor_step<%=tcs.getUseStepStep()%>">Edit Used Step</a>
                                     </div>
                                     <%}%>
 
@@ -985,6 +998,7 @@
                                                         <input type="hidden" value="<%=incrementStep%>" name="control_step_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>">
                                                     </div>
                                                     <div style="height:100%;width:3%;float:left;display:inline-block">
+                                                        <% if (!useStep) {%>
                                                         <div style="margin-top:5px;height:50%;width:100%;clear:both;display:inline-block">
                                                             <img src="images/addAction.png" style="width:15px;height:15px" title="Add Action"
                                                                  onclick="addTCSANew('StepListOfControlDiv<%=incrementStep%><%=incrementAction%><%=incrementControl%>', '<%=incrementStep%>', this);
@@ -995,6 +1009,7 @@
                                                                  onclick="addTCSACNew('StepListOfControlDiv<%=incrementStep%><%=incrementAction%><%=incrementControl%>', '<%=incrementStep%>', '<%=incrementAction%>', this);
                                                                          enableField('submitButtonChanges');">
                                                         </div>
+                                                                         <%}%>
                                                     </div>
                                                     <div style="width:2%;float:left;height:100%;display:inline-block">
                                                         <input data-fieldtype="ctrlseq_<%=incrementStep%>" data-field="sequence" class="wob" style="margin-top:20px;width: 20px; font-weight: bold;color:<%=actionFontColor%>"
@@ -1385,9 +1400,8 @@
             <% }%>
         </tr>
     </table>
-    <div id="StepActionTemplateDiv" class="RowActionDiv" style="display:none;height:50px;width:100%;">
-        <div data-id="action_color_id" style=" width:8px;height:100%;display:inline-block;float:left">
-            <p style="display:inline-block;background-color:blue;height:100%"></p>
+    <div id="StepActionTemplateDiv" class="RowActionDiv" style="padding:0; margin:0;display:none;height:50px;width:100%;">
+        <div style="background-color:blue; width:8px;height:50px;display:inline-block;float:left">
         </div>
         <div style="display:inline-block;float:left;width:2%;height:100%;">
             <input  class="wob" type="checkbox" data-id="action_delete_template" style="margin-top:20px;width: 30px; background-color: transparent">
@@ -1439,7 +1453,7 @@
         </div>
     </div>
     <div id="StepControlTemplateDiv" class="RowActionDiv" style="width:100%;height:50px;clear:both;display:none">
-        <div data-id="control_color_id" style="background-color:green; width:8px;height:100%;display:inline-block;float:left">
+        <div data-id="control_color_id" style="background-color:green; width:8px;height:50px;display:inline-block;float:left">
         </div>
         <div style="height:100%;width: 2%;float:left; text-align: center;">
             <input style="margin-top:20px;" type="checkbox" data-id="control_delete_template">
@@ -1567,8 +1581,21 @@
                     for (var i = 0; i < data.testCaseList.length; i++) {
                         $('#'+field).append($("<option></option>")
                                 .attr('value',data.testCaseList[i].testCase)
-                                .attr('style','width:600px;')
+                                .attr('style','width:300px;')
                                 .text(data.testCaseList[i].description));
+                    }
+                });
+            }
+</script>
+<script type="text/javascript">
+    function findStepByTestCase(test,testcase, field){
+                $.get('GetTestCase?testcase='+testcase+'&test='+test, function(data) {
+                    $('#'+field).empty();
+                    for (var i = 0; i < data.list.length; i++) {
+                        $('#'+field).append($("<option></option>")
+                                .attr('value',data.list[i].number)
+                                .attr('style','width:100px;')
+                                .text(data.list[i].number+':'+data.list[i].name));
                     }
                 });
             }
