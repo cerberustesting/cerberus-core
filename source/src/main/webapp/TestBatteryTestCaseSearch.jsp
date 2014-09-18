@@ -18,58 +18,39 @@
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
 <%@page import="org.cerberus.entity.Invariant"%>
+<%@page import="org.cerberus.entity.Application"%>
 <%@page import="org.cerberus.entity.User"%>
-<%@page import="org.cerberus.service.IUserService"%>
+<%@page import="org.cerberus.entity.BuildRevisionInvariant"%>
 <%@page import="org.cerberus.service.IInvariantService"%>
 <%@page import="java.util.TreeMap"%>
-<%@page import="java.util.Map"%>
-<%@page import="java.util.Collections"%>
-<%@page import="java.util.HashSet"%>
-<%@page import="java.util.ArrayList"%>
-<%@page import="java.util.List"%>
-<%@page import="java.util.Set"%>
-<%@page import="java.util.HashMap"%>
-<%@page import="org.cerberus.entity.TestCaseCountry"%>
 <%@page import="org.cerberus.entity.Project"%>
 <%@page import="org.cerberus.entity.Test"%>
-<%@page import="org.cerberus.entity.BuildRevisionInvariant"%>
 <%@page import="org.cerberus.service.IProjectService"%>
 <%@page import="org.cerberus.service.ITestService"%>
-<%@page import="org.cerberus.service.ITestCaseService"%>
-<%@page import="org.cerberus.service.ITestCaseCountryService"%>
 <%@page import="org.cerberus.service.IDocumentationService"%>
-<%@page import="org.cerberus.service.impl.BuildRevisionInvariantService"%>
-<%@page import="org.cerberus.service.IBuildRevisionInvariantService"%>
 <%@page import="org.cerberus.service.impl.InvariantService"%>
 <%@page import="org.cerberus.service.IApplicationService"%>
-<%@page import="org.cerberus.log.MyLogger"%>
-<%@page import="org.apache.log4j.Level"%>
-<%@page import="org.apache.commons.lang3.StringUtils"%>
-<% Date DatePageStart = new Date();%>
+<%@page import="org.cerberus.service.IUserService"%>
+<%@page import="org.cerberus.service.IBuildRevisionInvariantService"%>
+<%@ page import="org.apache.log4j.Logger" %>
             <div id="filtersList" style="clear:both;">
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 
         <%@ include file="include/function.jsp" %>
             <%
-
+                final Logger LOG = Logger.getLogger(this.getClass());
                 TreeMap<String, String> options = new TreeMap<String, String>();
 
                 IInvariantService invariantService = appContext.getBean(InvariantService.class);
                 ITestService testService = appContext.getBean(ITestService.class);
-                List<Test> testList = testService.getListOfTest();
-
                 IProjectService projectService = appContext.getBean(IProjectService.class);
-                List<Project> projectList = projectService.findAllProject();
-
-                Connection conn = db.connect();
                 IDocumentationService docService = appContext.getBean(IDocumentationService.class);
+                IApplicationService applicationService = appContext.getBean(IApplicationService.class);
+                IUserService userService = appContext.getBean(IUserService.class);
+                IBuildRevisionInvariantService buildRevisionInvariantService = appContext.getBean(IBuildRevisionInvariantService.class);
 
                 try {
-
-                    Statement stmt = conn.createStatement();
-                    List<Invariant> invariantTCStatus = invariantService.findListOfInvariantById("TCSTATUS");
-
             %>
 
                 <form id="formAddNewContentSearch" action="TestBatteryTestCaseResult.jsp" method="post">
@@ -77,11 +58,11 @@
                         <p style="text-align:left" class="dttTitle">Testcase Filters (Displayed Rows)</p>
                         <div style="float:left">
                             <div style="float:left">
-                                <div style="width:150px; text-align: left"><%out.print(docService.findLabelHTML("test", "Test", "Test"));%></div>
+                                <div style="width:150px; text-align: left"><%=docService.findLabelHTML("test", "Test", "Test")%></div>
                                 <div>
                                     <%
                                         options.clear();
-                                        for (Test testL : testList) {
+                                        for (Test testL : testService.getListOfTest()) {
                                             options.put(testL.getTest(), testL.getTest());
                                         }
                                     %>
@@ -90,43 +71,40 @@
                                 </div>
                             </div>
                             <div style="float:left">
-                                <div style="width:150px; text-align: left"><%out.print(docService.findLabelHTML("project", "idproject", "Project"));%></div>
+                                <div style="width:150px; text-align: left"><%=docService.findLabelHTML("project", "idproject", "Project")%></div>
                                 <div>
                                     <%
                                         options.clear();
-                                        for (Project project : projectList) {
+                                        for (Project project : projectService.findAllProject()) {
                                             if (project.getIdProject() != null && !"".equals(project.getIdProject().trim())) {
                                                 options.put(project.getIdProject(), project.getIdProject() + " - " + project.getDescription());
                                             }
                                         }
-
-
                                     %>
                                     <%=generateMultiSelect("Project", request.getParameterValues("Project"), options,
                                             "Select a project", "Select Project", "# of # Project selected", 1, true)%>
                                 </div>
                             </div>
                             <div style="float:left">
-                                <div style="clear:both; width:150px; text-align: left"><%out.print(docService.findLabelHTML("application", "System", "System"));%></div>
+                                <div style="clear:both; width:150px; text-align: left"><%=docService.findLabelHTML("application", "System", "System")%></div>
                                 <div style="clear:both">
                                     <%
-                                        ResultSet rsSys = stmt.executeQuery("SELECT DISTINCT System FROM application Order by System asc");
                                         options.clear();
-                                        while (rsSys.next()) {
-                                            options.put(rsSys.getString("System"), rsSys.getString("System"));
-                                        }%>
+                                        for (String system : applicationService.findDistinctSystem()) {
+                                            options.put(system, system);
+                                        }
+                                    %>
                                     <%=generateMultiSelect("System", request.getParameterValues("System"), options,
                                             "Select a sytem", "Select System", "# of # System selected", 1, true)%>
                                 </div>
                             </div>
                             <div style="float:left">
-                                <div style="clear:both; width:150px; text-align: left"><%out.print(docService.findLabelHTML("application", "Application", "Application"));%></div>
+                                <div style="clear:both; width:150px; text-align: left"><%=docService.findLabelHTML("application", "Application", "Application")%></div>
                                 <div style="clear:both">
                                     <%
-                                        ResultSet rsApp = stmt.executeQuery("SELECT Application , System FROM application Order by Sort asc");
                                         options.clear();
-                                        while (rsApp.next()) {
-                                            options.put(rsApp.getString("Application"), rsApp.getString("Application") + " [" + rsApp.getString("System") + "]");
+                                        for (Application app : applicationService.findAllApplication()) {
+                                            options.put(app.getApplication(), app.getApplication() + " [" + app.getSystem() + "]");
                                         }
                                     %>
                                     <%=generateMultiSelect("Application", request.getParameterValues("Application"), options,
@@ -134,7 +112,7 @@
                                 </div>
                             </div>
                             <div style="float:left">
-                                <div style="clear:both; width:150px; text-align: left"><%out.print(docService.findLabelHTML("testcase", "tcactive", "TestCase Active"));%></div>
+                                <div style="clear:both; width:150px; text-align: left"><%=docService.findLabelHTML("testcase", "tcactive", "TestCase Active")%></div>
                                 <div style="clear:both">
                                     <%
                                         options.clear();
@@ -146,13 +124,12 @@
                                 </div>
                             </div>
                             <div style="float:left">
-                                <div style="clear:both; width:150px; text-align: left"><%out.print(docService.findLabelHTML("invariant", "PRIORITY", "Priority"));%></div>
+                                <div style="clear:both; width:150px; text-align: left"><%=docService.findLabelHTML("invariant", "PRIORITY", "Priority")%></div>
                                 <div style="clear:both">
                                     <%
-                                        ResultSet rsPri = stmt.executeQuery("SELECT DISTINCT value FROM invariant WHERE idname='PRIORITY' Order by sort asc");
                                         options.clear();
-                                        while (rsPri.next()) {
-                                            options.put(rsPri.getString(1), rsPri.getString(1));
+                                        for (Invariant invPriority : invariantService.findListOfInvariantById("PRIORITY")) {
+                                            options.put(invPriority.getValue(), invPriority.getValue());
                                         }
                                     %>
                                     <%=generateMultiSelect("Priority", request.getParameterValues("Priority"), options,
@@ -160,11 +137,11 @@
                                 </div>
                             </div>
                             <div style="float:left">
-                                <div style="clear:both; width:150px; text-align: left"><%out.print(docService.findLabelHTML("testcase", "Status", "Status"));%></div>
+                                <div style="clear:both; width:150px; text-align: left"><%=docService.findLabelHTML("testcase", "Status", "Status")%></div>
                                 <div style="clear:both">
                                     <%
                                         options.clear();
-                                        for (Invariant statusInv : invariantTCStatus) {
+                                        for (Invariant statusInv : invariantService.findListOfInvariantById("TCSTATUS")) {
                                             options.put(statusInv.getValue(), statusInv.getValue());
                                         }
                                     %>
@@ -173,14 +150,13 @@
                                 </div>
                             </div>
                             <div style="float:left">
-                                <div style="clear:both; width:150px; text-align: left"><%out.print(docService.findLabelHTML("invariant", "GROUP", "Group"));%></div>
+                                <div style="clear:both; width:150px; text-align: left"><%=docService.findLabelHTML("invariant", "GROUP", "Group")%></div>
                                 <div style="clear:both">
                                     <%
                                         options.clear();
-                                        ResultSet rsGroup = stmt.executeQuery("SELECT value from invariant where idname = 'GROUP' order by sort");
-                                        while (rsGroup.next()) {
-                                            if (rsGroup.getString(1) != null && !"".equals(rsGroup.getString(1).trim())) {
-                                                options.put(rsGroup.getString(1), rsGroup.getString(1));
+                                        for (Invariant invGroup : invariantService.findListOfInvariantById("GROUP")) {
+                                            if (invGroup.getValue() != null && !"".equals(invGroup.getValue().trim())) {
+                                                options.put(invGroup.getValue(), invGroup.getValue());
                                             }
                                         }
                                     %>
@@ -189,15 +165,14 @@
                                 </div>
                             </div>
                             <div style="float:left">
-                                <div style="clear:both; width:150px; text-align: left"><%out.print(docService.findLabelHTML("testcase", "targetBuild", "targetBuild"));%></div>
+                                <div style="clear:both; width:150px; text-align: left"><%=docService.findLabelHTML("testcase", "targetBuild", "targetBuild")%></div>
                                 <div style="clear:both">
                                     <%
                                         options.clear();
                                         options.put("NTB", "-- No Target Build --");
-                                        ResultSet rsTargetBuild = stmt.executeQuery("SELECT value from invariant where idname = 'BUILD' order by sort");
-                                        while (rsTargetBuild.next()) {
-                                            if (rsTargetBuild.getString(1) != null && !"".equals(rsTargetBuild.getString(1).trim())) {
-                                                options.put(rsTargetBuild.getString(1), rsTargetBuild.getString(1));
+                                        for (BuildRevisionInvariant invBuild : buildRevisionInvariantService.findAllBuildRevisionInvariantBySystemLevel(request.getParameter("system"), 1)) {
+                                            if (invBuild.getVersionName() != null && !"".equals(invBuild.getVersionName().trim())) {
+                                                options.put(invBuild.getVersionName(), invBuild.getVersionName());
                                             }
                                         }
                                     %>
@@ -206,15 +181,14 @@
                                 </div>
                             </div>
                             <div style="float:left">
-                                <div style="clear:both; width:150px; text-align: left"><%out.print(docService.findLabelHTML("testcase", "targetRev", "targetRev"));%></div>
+                                <div style="clear:both; width:150px; text-align: left"><%=docService.findLabelHTML("testcase", "targetRev", "targetRev")%></div>
                                 <div style="clear:both">
                                     <%
                                         options.clear();
                                         options.put("NTR", "-- No Target Rev --");
-                                        ResultSet rsTargetRev = stmt.executeQuery("SELECT value from invariant where idname = 'REVISION' order by sort");
-                                        while (rsTargetRev.next()) {
-                                            if (rsTargetRev.getString(1) != null && !"".equals(rsTargetRev.getString(1).trim())) {
-                                                options.put(rsTargetRev.getString(1), rsTargetRev.getString(1));
+                                        for (BuildRevisionInvariant invRevision : buildRevisionInvariantService.findAllBuildRevisionInvariantBySystemLevel(request.getParameter("system"), 2)) {
+                                            if (invRevision.getVersionName() != null && !"".equals(invRevision.getVersionName().trim())) {
+                                                options.put(invRevision.getVersionName(), invRevision.getVersionName());
                                             }
                                         }
                                     %>
@@ -223,14 +197,13 @@
                                 </div>
                             </div>
                             <div style="float:left">
-                                <div style="clear:both; width:150px; text-align: left"><%out.print(docService.findLabelHTML("testcase", "creator", "Creator"));%></div>
+                                <div style="clear:both; width:150px; text-align: left"><%=docService.findLabelHTML("testcase", "creator", "Creator")%></div>
                                 <div style="clear:both">
                                     <%
                                         options.clear();
-                                        ResultSet rsCreator = stmt.executeQuery("SELECT login from user");
-                                        while (rsCreator.next()) {
-                                            if (rsCreator.getString(1) != null && !"".equals(rsCreator.getString(1).trim())) {
-                                                options.put(rsCreator.getString(1), rsCreator.getString(1));
+                                        for (User user : userService.findallUser()) {
+                                            if (user.getLogin() != null && !"".equals(user.getLogin().trim())) {
+                                                options.put(user.getLogin(), user.getLogin());
                                             }
                                         }
                                     %>
@@ -239,7 +212,7 @@
                                 </div>
                             </div>
                             <div style="float:left">
-                                <div style="clear:both; width:150px; text-align: left"><%out.print(docService.findLabelHTML("testcase", "implementer", "implementer"));%></div>
+                                <div style="clear:both; width:150px; text-align: left"><%=docService.findLabelHTML("testcase", "implementer", "implementer")%></div>
                                 <div style="clear:both">
                                     <%=generateMultiSelect("Implementer", request.getParameterValues("Implementer"), options,
                                             "Select an Implementer", "Select Implementer", "# of # Implementer selected", 1, true)%> 
@@ -257,14 +230,13 @@
                     <br>
                     <br>
                 </div>
-                <%                    } catch (Exception e) {
-                        out.println(e);
-                    } finally {
-                        try {
-                            conn.close();
-                        } catch (Exception ex) {
-                        }
-                    }
+                <%
+                }  catch (CerberusException ex){
+                    LOG.error("Unable to find Invariant, Application or User : " + ex.toString());
+                    out.println("</script>");
+                    out.print("<script type='text/javascript'>alert(\"Unfortunately an error as occurred, try reload the page.\\n");
+                    out.print("Detail error: " + ex.getMessageError().getDescription() + "\");</script>");
+                }
 
                 %>
                 

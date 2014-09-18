@@ -17,10 +17,6 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
-<%@page import="org.cerberus.entity.Application"%>
-<%@page import="org.cerberus.service.IDocumentationService"%>
-<%@page import="org.cerberus.service.IApplicationService"%>
-<%@page import="org.cerberus.service.IDatabaseVersioningService"%>
 <% Date DatePageStart = new Date();%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
@@ -143,7 +139,7 @@
                         icons: {primary:'ui-icon-trash'}
                     },
                     sUpdateURL: "UpdateTestBattery",
-                    fnOnEdited: function(status){
+                    fnOnEdited: function(){
                         $(".dataTables_processing").css('visibility', 'hidden');
                     },
                     "aoColumns": [
@@ -158,10 +154,10 @@
                 });
                 
                 /* Add a click handler to the rows - this could be used as a callback */
-                $('#listOfTestBatteries tbody').click(function(event) {
+                $('#listOfTestBatteries').find('tbody').click(function(event) {
                         refreshContents($(event.target.parentNode).attr("id"));
                 });
-            };
+            }
             
             function refreshContents(id) {
                 $('#contents').hide();
@@ -170,8 +166,9 @@
                 
                 // This example is fairly pointless in reality, but shows how fnDestroy can be used
                 if(oTableContent) {
-                    $('#listOfContents tbody').empty();
-                    $('#listOfContents').dataTable().fnDestroy();
+                    var list = $('#listOfContents');
+                    list.find('tbody').empty();
+                    list.dataTable().fnDestroy();
                 }
 
                 $.getJSON("GetTestBattery","action=findAllTestBatteryContent&testBattery="+id,function(data){
@@ -215,7 +212,7 @@
                             show: "blind",
                             hide: "blind",
                             width: "900px",
-                            close: function(ev,ui) {
+                            close: function() {
                                 refreshContents(id);
                             }
                         },
@@ -226,7 +223,7 @@
                             icons: {primary:'ui-icon-trash'}
                         },
                         sUpdateURL: "UpdateTestBatteryContent",
-                        fnOnEdited: function(status){
+                        fnOnEdited: function(){
                             $(".dataTables_processing").css('visibility', 'hidden');
                         },
                         "aoColumns": [
@@ -236,12 +233,13 @@
                     });
                     $('#contents').show();
                 });
-            };
+            }
 
             $(document).ready(function(){
                 refreshTestBatteries();
-                
-                $('#testcasesearchdiv').load("TestBatteryTestCaseSearch.jsp");
+
+                var system = $('#MySystem').val();
+                $('#testcasesearchdiv').load("TestBatteryTestCaseSearch.jsp?system="+system);
             });
         </script>
             <form id="formAddNewTestBattery" class="formForDataTable" action="#" title="Add TestBattery Entry" style="width:600px" method="post">
