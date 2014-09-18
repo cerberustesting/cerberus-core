@@ -47,4 +47,6 @@ public interface ITestCaseStepActionControlService {
     public void deleteListTestCaseStepActionControl(List<TestCaseStepActionControl> tcsacToDelete) throws CerberusException;
     
     public void deleteTestCaseStepActionControl(TestCaseStepActionControl tcsac) throws CerberusException;
+    
+    public void compareListAndUpdateInsertDeleteElements(List<TestCaseStepActionControl> newList, List<TestCaseStepActionControl> oldList) throws CerberusException;
 }

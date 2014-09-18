@@ -19,6 +19,7 @@
  */
 package org.cerberus.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -100,5 +101,48 @@ public class TestCaseStepActionService implements ITestCaseStepActionService {
     @Override
     public void deleteTestCaseStepAction(TestCaseStepAction tcsa) throws CerberusException  {
         testCaseStepActionDAO.deleteTestCaseStepAction(tcsa);
+    }
+
+    @Override
+    public void compareListAndUpdateInsertDeleteElements(List<TestCaseStepAction> newList, List<TestCaseStepAction> oldList) throws CerberusException {
+        /**
+         * Iterate on (TestCaseStepAction From Page - TestCaseStepAction From
+         * Database) If TestCaseStepAction in Database has same key : Update and
+         * remove from the list. If TestCaseStepAction in database does ot exist
+         * : Insert it.
+         */
+        List<TestCaseStepAction> tcsaToUpdateOrInsert = new ArrayList(newList);
+        tcsaToUpdateOrInsert.removeAll(oldList);
+        List<TestCaseStepAction> tcsaToUpdateOrInsertToIterate = new ArrayList(tcsaToUpdateOrInsert);
+
+        for (TestCaseStepAction tcsaDifference : tcsaToUpdateOrInsertToIterate) {
+            for (TestCaseStepAction tcsaInDatabase : oldList) {
+                if (tcsaDifference.hasSameKey(tcsaInDatabase)) {
+                    //System.out.print("Upd" + tcsaDifference.toString());
+                    this.updateTestCaseStepAction(tcsaDifference);
+                    tcsaToUpdateOrInsert.remove(tcsaDifference);
+                }
+            }
+        }
+        this.insertListTestCaseStepAction(tcsaToUpdateOrInsert);
+
+        /**
+         * Iterate on (TestCaseStepAction From Database - TestCaseStepAction
+         * From Page). If TestCaseStepAction in Page has same key : remove from
+         * the list. Then delete the list of TestCaseStepAction
+         */
+        List<TestCaseStepAction> tcsaToDelete = new ArrayList(oldList);
+        tcsaToDelete.removeAll(newList);
+        List<TestCaseStepAction> tcsaToDeleteToIterate = new ArrayList(tcsaToDelete);
+
+        for (TestCaseStepAction tcsaDifference : tcsaToDeleteToIterate) {
+            //System.out.print("ToDlt" + tcsaDifference.toString());
+            for (TestCaseStepAction tcsaInPage : newList) {
+                if (tcsaDifference.hasSameKey(tcsaInPage)) {
+                    tcsaToDelete.remove(tcsaDifference);
+                }
+             }
+        }
+        this.deleteListTestCaseStepAction(tcsaToDelete);
     }
 }

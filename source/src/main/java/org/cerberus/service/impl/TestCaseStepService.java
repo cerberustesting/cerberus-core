@@ -19,8 +19,8 @@
  */
 package org.cerberus.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
-
 import org.apache.log4j.Level;
 import org.cerberus.dao.ITestCaseStepDAO;
 import org.cerberus.entity.TestCaseStep;
@@ -39,11 +39,11 @@ public class TestCaseStepService implements ITestCaseStepService {
 
     @Autowired
     private ITestCaseStepDAO testCaseStepDAO;
-    
+
     @Override
     public List<TestCaseStep> getListOfSteps(String test, String testcase) {
         return testCaseStepDAO.findTestCaseStepByTestCase(test, testcase);
-        }
+    }
 
     @Override
     public List<String> getLoginStepFromTestCase(String countryCode, String application) {
@@ -57,7 +57,7 @@ public class TestCaseStepService implements ITestCaseStepService {
 
     @Override
     public boolean insertListTestCaseStep(List<TestCaseStep> testCaseStepList) {
-        for (TestCaseStep tcs : testCaseStepList){
+        for (TestCaseStep tcs : testCaseStepList) {
             try {
                 insertTestCaseStep(tcs);
             } catch (CerberusException ex) {
@@ -80,7 +80,7 @@ public class TestCaseStepService implements ITestCaseStepService {
 
     @Override
     public void deleteListTestCaseStep(List<TestCaseStep> tcsToDelete) throws CerberusException {
-        for (TestCaseStep tcs : tcsToDelete){
+        for (TestCaseStep tcs : tcsToDelete) {
             deleteTestCaseStep(tcs);
         }
     }
@@ -94,5 +94,45 @@ public class TestCaseStepService implements ITestCaseStepService {
     public List<TestCaseStep> getTestCaseStepUsingStepInParamter(String test, String testCase, int step) throws CerberusException {
         return testCaseStepDAO.getTestCaseStepUsingStepInParamter(test, testCase, step);
     }
-    
+
+    @Override
+    public void compareListAndUpdateInsertDeleteElements(List<TestCaseStep> newList, List<TestCaseStep> oldList) throws CerberusException {
+        /**
+         * Iterate on (TestCaseStep From Page - TestCaseStep From Database) If
+         * TestCaseStep in Database has same key : Update and remove from the
+         * list. If TestCaseStep in database does ot exist : Insert it.
+         */
+        List<TestCaseStep> tcsToUpdateOrInsert = new ArrayList(newList);
+        tcsToUpdateOrInsert.removeAll(oldList);
+        List<TestCaseStep> tcsToUpdateOrInsertToIterate = new ArrayList(tcsToUpdateOrInsert);
+
+        for (TestCaseStep tcsDifference : tcsToUpdateOrInsertToIterate) {
+            for (TestCaseStep tcsInDatabase : oldList) {
+                if (tcsDifference.hasSameKey(tcsInDatabase)) {
+                    this.updateTestCaseStep(tcsDifference);
+                    tcsToUpdateOrInsert.remove(tcsDifference);
+                }
+            }
+        }
+        this.insertListTestCaseStep(tcsToUpdateOrInsert);
+
+        /**
+         * Iterate on (TestCaseStep From Database - TestCaseStep From Page). If
+         * TestCaseStep in Page has same key : remove from the list. Then delete
+         * the list of TestCaseStep
+         */
+        List<TestCaseStep> tcsToDelete = new ArrayList(oldList);
+        tcsToDelete.removeAll(newList);
+        List<TestCaseStep> tcsToDeleteToIterate = new ArrayList(tcsToDelete);
+
+        for (TestCaseStep tcsDifference : tcsToDeleteToIterate) {
+            for (TestCaseStep tcsInPage : newList) {
+                if (tcsDifference.hasSameKey(tcsInPage)) {
+                    tcsToDelete.remove(tcsDifference);
+                }
+            }
+        }
+        this.deleteListTestCaseStep(tcsToDelete);
+    }
+
 }

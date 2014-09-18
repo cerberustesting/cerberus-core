@@ -222,143 +222,65 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
         List<TestCaseStepActionControl> tcsacFromPage = new ArrayList();
 
         for (TestCaseStep tcsL : tcsFromPage) {
-            if (tcsL.getTestCaseStepAction()!=null){
-            tcsaFromPage.addAll(tcsL.getTestCaseStepAction());
-            for (TestCaseStepAction tcsaL : tcsL.getTestCaseStepAction()) {
-                tcsacFromPage.addAll(tcsaL.getTestCaseStepActionControl());
-            }
-            }
-        }
-
-        List<TestCaseStep> tcsFromDtb = tcsService.getListOfSteps(initialTest, initialTestCase);
-
-        /**
-         * Iterate on (TestCaseStep From Page - TestCaseStep From Database) If
-         * TestCaseStep in Database has same key : Update and remove from the
-         * list. If TestCaseStep in database does ot exist : Insert it.
-         */
-        List<TestCaseStep> tcsToUpdateOrInsert = new ArrayList(tcsFromPage);
-        tcsToUpdateOrInsert.removeAll(tcsFromDtb);
-        List<TestCaseStep> tcsToUpdateOrInsertToIterate = new ArrayList(tcsToUpdateOrInsert);
-
-        for (TestCaseStep tcsDifference : tcsToUpdateOrInsertToIterate) {
-            for (TestCaseStep tcsInDatabase : tcsFromDtb) {
-                if (tcsDifference.hasSameKey(tcsInDatabase)) {
-                    tcsService.updateTestCaseStep(tcsDifference);
-                    tcsToUpdateOrInsert.remove(tcsDifference);
+            if (tcsL.getTestCaseStepAction() != null) {
+                tcsaFromPage.addAll(tcsL.getTestCaseStepAction());
+                for (TestCaseStepAction tcsaL : tcsL.getTestCaseStepAction()) {
+                    tcsacFromPage.addAll(tcsaL.getTestCaseStepActionControl());
                 }
             }
         }
-        tcsService.insertListTestCaseStep(tcsToUpdateOrInsert);
 
-        /**
-         * Iterate on (TestCaseStep From Database - TestCaseStep From Page). If
-         * TestCaseStep in Page has same key : remove from the list. Then delete
-         * the list of TestCaseStep
-         */
-        List<TestCaseStep> tcsToDelete = new ArrayList(tcsFromDtb);
-        tcsToDelete.removeAll(tcsFromPage);
-        List<TestCaseStep> tcsToDeleteToIterate = new ArrayList(tcsToDelete);
-
-        for (TestCaseStep tcsDifference : tcsToDeleteToIterate) {
-            for (TestCaseStep tcsInPage : tcsFromPage) {
-                if (tcsDifference.hasSameKey(tcsInPage)) {
-                    tcsToDelete.remove(tcsDifference);
+        List<TestCaseStep> tcsFromDtb = new ArrayList(tcsService.getListOfSteps(initialTest, initialTestCase));
+        tcsService.compareListAndUpdateInsertDeleteElements(tcsFromPage, tcsFromDtb);
+        
+        List<TestCaseStepAction> tcsaFromDtb = new ArrayList(tcsaService.findTestCaseStepActionbyTestTestCase(initialTest, initialTestCase));
+        tcsaService.compareListAndUpdateInsertDeleteElements(tcsaFromPage, tcsaFromDtb);
+        
+        List<TestCaseStepActionControl> tcsacFromDtb = new ArrayList(tcsacService.findControlByTestTestCase(initialTest, initialTestCase));
+        tcsacService.compareListAndUpdateInsertDeleteElements(tcsacFromPage, tcsacFromDtb);
+        
+        
+        List<TestCaseStep> tcsNewFromPage = new ArrayList();
+        List<TestCaseStepAction> tcsaNewFromPage = new ArrayList();
+        List<TestCaseStepActionControl> tcsacNewFromPage = new ArrayList();
+        List<TestCaseStep> tcsNewFromDtb = new ArrayList();
+        List<TestCaseStepAction> tcsaNewFromDtb = new ArrayList();
+        List<TestCaseStepActionControl> tcsacNewFromDtb = new ArrayList();
+        
+        tcsNewFromDtb = tcsService.getListOfSteps(initialTest, initialTestCase);
+        int incrementStep = 0;
+        for (TestCaseStep tcsNew : tcsNewFromDtb) {
+            incrementStep++;
+            tcsaNewFromDtb = tcsaService.getListOfAction(initialTest, initialTestCase, tcsNew.getStep());
+            int incrementAction = 0;
+            for (TestCaseStepAction tcsaNew : tcsaNewFromDtb) {
+                incrementAction++;
+                tcsacNewFromDtb = tcsacService.findControlByTestTestCaseStepSequence(initialTest, initialTestCase, tcsaNew.getStep(), tcsaNew.getSequence());
+                int incrementControl = 0;
+                for (TestCaseStepActionControl tcsacNew : tcsacNewFromDtb) {
+                    incrementControl++;
+                    tcsacNew.setControl(incrementControl);
+                    tcsacNew.setSequence(incrementAction);
+                    tcsacNew.setStep(incrementStep);
+                    tcsacNewFromPage.add(tcsacNew);
                 }
+                tcsaNew.setSequence(incrementAction);
+                tcsaNew.setStep(incrementStep);
+                tcsaNewFromPage.add(tcsaNew);
             }
+            tcsNew.setStep(incrementStep);
+            tcsNewFromPage.add(tcsNew);
         }
-        tcsService.deleteListTestCaseStep(tcsToDelete);
-
-        /**
-         * For the list of testcasestep verify it exists. If it does not exists
-         * > create it If it exist, verify if it's the
-         */
-        List<TestCaseStepAction> tcsaFromDtb = tcsaService.findTestCaseStepActionbyTestTestCase(initialTest, initialTestCase);
-
-        /**
-         * Iterate on (TestCaseStepAction From Page - TestCaseStepAction From
-         * Database) If TestCaseStepAction in Database has same key : Update and
-         * remove from the list. If TestCaseStepAction in database does ot exist
-         * : Insert it.
-         */
-        List<TestCaseStepAction> tcsaToUpdateOrInsert = new ArrayList(tcsaFromPage);
-        tcsaToUpdateOrInsert.removeAll(tcsaFromDtb);
-        List<TestCaseStepAction> tcsaToUpdateOrInsertToIterate = new ArrayList(tcsaToUpdateOrInsert);
-
-        for (TestCaseStepAction tcsaDifference : tcsaToUpdateOrInsertToIterate) {
-            for (TestCaseStepAction tcsaInDatabase : tcsaFromDtb) {
-                if (tcsaDifference.hasSameKey(tcsaInDatabase)) {
-                    //System.out.print("Upd" + tcsaDifference.toString());
-                    tcsaService.updateTestCaseStepAction(tcsaDifference);
-                    tcsaToUpdateOrInsert.remove(tcsaDifference);
-                }
-            }
-        }
-        tcsaService.insertListTestCaseStepAction(tcsaToUpdateOrInsert);
-
-        /**
-         * Iterate on (TestCaseStepAction From Database - TestCaseStepAction
-         * From Page). If TestCaseStepAction in Page has same key : remove from
-         * the list. Then delete the list of TestCaseStepAction
-         */
-        List<TestCaseStepAction> tcsaToDelete = new ArrayList(tcsaFromDtb);
-        tcsaToDelete.removeAll(tcsaFromPage);
-        List<TestCaseStepAction> tcsaToDeleteToIterate = new ArrayList(tcsaToDelete);
-
-        for (TestCaseStepAction tcsaDifference : tcsaToDeleteToIterate) {
-            //System.out.print("ToDlt" + tcsaDifference.toString());
-            for (TestCaseStepAction tcsaInPage : tcsaFromPage) {
-                if (tcsaDifference.hasSameKey(tcsaInPage)) {
-                    //System.out.print("Dlt" + tcsaDifference.toString());
-                    tcsaToDelete.remove(tcsaDifference);
-                }
-            }
-        }
-        tcsaService.deleteListTestCaseStepAction(tcsaToDelete);
-
-        /**
-         * For the list of testcasestepactioncontrol verify it exists. If it
-         * does not exists > create it If it exist, verify if it's the
-         */
-        List<TestCaseStepActionControl> tcsacFromDtb = tcsacService.findControlByTestTestCase(initialTest, initialTestCase);
-
-        /**
-         * Iterate on (TestCaseStepActionControl From Page -
-         * TestCaseStepActionControl From Database) If TestCaseStepActionControl
-         * in Database has same key : Update and remove from the list. If
-         * TestCaseStepActionControl in database does ot exist : Insert it.
-         */
-        List<TestCaseStepActionControl> tcsacToUpdateOrInsert = new ArrayList(tcsacFromPage);
-        tcsacToUpdateOrInsert.removeAll(tcsacFromDtb);
-        List<TestCaseStepActionControl> tcsacToUpdateOrInsertToIterate = new ArrayList(tcsacToUpdateOrInsert);
-
-        for (TestCaseStepActionControl tcsacDifference : tcsacToUpdateOrInsertToIterate) {
-            for (TestCaseStepActionControl tcsacInDatabase : tcsacFromDtb) {
-                if (tcsacDifference.hasSameKey(tcsacInDatabase)) {
-                    tcsacService.updateTestCaseStepActionControl(tcsacDifference);
-                    tcsacToUpdateOrInsert.remove(tcsacDifference);
-                }
-            }
-        }
-        tcsacService.insertListTestCaseStepActionControl(tcsacToUpdateOrInsert);
-
-        /**
-         * Iterate on (TestCaseStep From Database - TestCaseStep From Page). If
-         * TestCaseStep in Page has same key : remove from the list. Then delete
-         * the list of TestCaseStep
-         */
-        List<TestCaseStepActionControl> tcsacToDelete = new ArrayList(tcsacFromDtb);
-        tcsacToDelete.removeAll(tcsacFromPage);
-        List<TestCaseStepActionControl> tcsacToDeleteToIterate = new ArrayList(tcsacToDelete);
-
-        for (TestCaseStepActionControl tcsacDifference : tcsacToDeleteToIterate) {
-            for (TestCaseStepActionControl tcsacInPage : tcsacFromPage) {
-                if (tcsacDifference.hasSameKey(tcsacInPage)) {
-                    tcsacToDelete.remove(tcsacDifference);
-                }
-            }
-        }
-        tcsacService.deleteListTestCaseStepActionControl(tcsacToDelete);
+        
+        
+        List<TestCaseStep> tcsNewNewFromDtb = new ArrayList(tcsService.getListOfSteps(initialTest, initialTestCase));
+        tcsService.compareListAndUpdateInsertDeleteElements(tcsNewFromPage, tcsNewNewFromDtb);
+        
+        List<TestCaseStepAction> tcsaNewNewFromDtb = new ArrayList(tcsaService.findTestCaseStepActionbyTestTestCase(initialTest, initialTestCase));
+        tcsaService.compareListAndUpdateInsertDeleteElements(tcsaNewFromPage, tcsaNewNewFromDtb);
+        
+        List<TestCaseStepActionControl> tcsacNewNewFromDtb = new ArrayList(tcsacService.findControlByTestTestCase(initialTest, initialTestCase));
+        tcsacService.compareListAndUpdateInsertDeleteElements(tcsacNewFromPage, tcsacNewNewFromDtb);
 
         /**
          * Adding Log entry.
@@ -487,8 +409,8 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
                 int useStepStep = Integer.valueOf(getParameterIfExists(request, "step_useStepStep_" + inc) == null ? "0" : getParameterIfExists(request, "step_useStepStep_" + inc));
                 if (delete == null) {
                     TestCaseStep tcStep = testCaseStepFactory.create(test, testCase, step, desc, useStep, useStepTest, useStepTestCase, useStepStep);
-                    if (useStep==null){
-                    tcStep.setTestCaseStepAction(getTestCaseStepActionFromParameter(request, appContext, test, testCase, inc));
+                    if (useStep == null) {
+                        tcStep.setTestCaseStepAction(getTestCaseStepActionFromParameter(request, appContext, test, testCase, inc));
                     }
                     testCaseStep.add(tcStep);
                     //System.out.print("FromPage" + tcStep.toString());

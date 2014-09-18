@@ -19,6 +19,7 @@
  */
 package org.cerberus.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Level;
@@ -86,18 +87,59 @@ public class TestCaseStepActionControlService implements ITestCaseStepActionCont
 
     @Override
     public List<TestCaseStepActionControl> findControlByTestTestCase(String test, String testCase) throws CerberusException {
-        return testCaseStepActionControlDao.findControlByTestTestCase(test,testCase);
+        return testCaseStepActionControlDao.findControlByTestTestCase(test, testCase);
     }
 
     @Override
     public void deleteListTestCaseStepActionControl(List<TestCaseStepActionControl> tcsacToDelete) throws CerberusException {
-        for (TestCaseStepActionControl tcsac : tcsacToDelete){
-        deleteTestCaseStepActionControl(tcsac);
+        for (TestCaseStepActionControl tcsac : tcsacToDelete) {
+            deleteTestCaseStepActionControl(tcsac);
         }
     }
 
     @Override
-    public void deleteTestCaseStepActionControl(TestCaseStepActionControl tcsac) throws CerberusException{
+    public void deleteTestCaseStepActionControl(TestCaseStepActionControl tcsac) throws CerberusException {
         testCaseStepActionControlDao.deleteTestCaseStepActionControl(tcsac);
+    }
+
+    @Override
+    public void compareListAndUpdateInsertDeleteElements(List<TestCaseStepActionControl> newList, List<TestCaseStepActionControl> oldList) throws CerberusException {
+        /**
+         * Iterate on (TestCaseStepActionControl From Page -
+         * TestCaseStepActionControl From Database) If TestCaseStepActionControl
+         * in Database has same key : Update and remove from the list. If
+         * TestCaseStepActionControl in database does ot exist : Insert it.
+         */
+        List<TestCaseStepActionControl> tcsacToUpdateOrInsert = new ArrayList(newList);
+        tcsacToUpdateOrInsert.removeAll(oldList);
+        List<TestCaseStepActionControl> tcsacToUpdateOrInsertToIterate = new ArrayList(tcsacToUpdateOrInsert);
+
+        for (TestCaseStepActionControl tcsacDifference : tcsacToUpdateOrInsertToIterate) {
+            for (TestCaseStepActionControl tcsacInDatabase : oldList) {
+                if (tcsacDifference.hasSameKey(tcsacInDatabase)) {
+                    this.updateTestCaseStepActionControl(tcsacDifference);
+                    tcsacToUpdateOrInsert.remove(tcsacDifference);
+                }
+            }
+        }
+        this.insertListTestCaseStepActionControl(tcsacToUpdateOrInsert);
+
+        /**
+         * Iterate on (TestCaseStep From Database - TestCaseStep From Page). If
+         * TestCaseStep in Page has same key : remove from the list. Then delete
+         * the list of TestCaseStep
+         */
+        List<TestCaseStepActionControl> tcsacToDelete = new ArrayList(oldList);
+        tcsacToDelete.removeAll(newList);
+        List<TestCaseStepActionControl> tcsacToDeleteToIterate = new ArrayList(tcsacToDelete);
+
+        for (TestCaseStepActionControl tcsacDifference : tcsacToDeleteToIterate) {
+            for (TestCaseStepActionControl tcsacInPage : newList) {
+                if (tcsacDifference.hasSameKey(tcsacInPage)) {
+                    tcsacToDelete.remove(tcsacDifference);
+                }
+            }
+        }
+        this.deleteListTestCaseStepActionControl(tcsacToDelete);
     }
 }
