@@ -724,13 +724,13 @@
                     <div id="StepsMainDiv" style="width:100%;clear:both">
                         <div id="StepsDivUnderTitle" style="width:100%;clear:both">
                             <div id="StepsRightDiv" style="width:97%;float:left; margin:2%;">
-                                <div id="ButtonDiv0" style="float:left;">
-                                    <input type="button" value="Add Step" title="Add Step" 
+                                <div id="ButtonDiv0" style="float:left; height:40px">
+                                    <input type="button" value="Add Step" title="Add Step" class="buttonAddStep"
                                            onclick="addStepNew('StepNumberDiv0')">
                                 </div>
-                                <div style="float:left" id="wob">
+                                <div style="float:left;height:40px" id="wob">
                                     <input value="Save Changes" onclick="submitTestCaseModificationNew('');"
-                                           id="submitButtonAction" name="submitChanges"
+                                           id="submitButtonAction" name="submitChanges" class="buttonSaveChanges"
                                            type="button" >
                                 </div>
                                 <div id="StepNumberDiv0" style="float:left;">
@@ -1080,16 +1080,16 @@
                                     <%}%>
                                 </div>
                             </div>
-                            <div id="StepNumberDiv<%=incrementStep%>" style="float:left;">
-                                <input type="button" value="Add Step" title="Add Step" 
+                            <div id="StepNumberDiv<%=incrementStep%>" style="margin-top:25px;float:left;">
+                                <input type="button" value="Add Step" title="Add Step"  class="buttonAddStep"
                                        onclick="addStepNew('StepsEndDiv<%=incrementStep%>')">
                             </div>
-                            <div style="float:left" id="wob">
-                                <input value="Save Changes" onclick="submitTestCaseModificationNew('stepAnchor_<%=incrementStep%>');" id="submitButtonAction" name="submitChanges"
+                            <div style="float:left;margin-top:25px" id="wob">
+                                <input value="Save Changes" class="buttonSaveChanges" onclick="submitTestCaseModificationNew('stepAnchor_<%=incrementStep%>');" id="submitButtonAction" name="submitChanges"
                                        type="button" >
                                 <%=ComboInvariant(appContext, "actions_action_", "width: 150px;visibility:hidden", "actions_action_", "actions_action_", "ACTION", "", "", null)%>
                             </div>
-                            <div id="StepsEndDiv<%=incrementStep%>" style="display:inline-block; width:100%"></div>
+                            <div id="StepsEndDiv<%=incrementStep%>" style="display:inline-block; width:100%;"></div>
                             <%=ComboInvariant(appContext, "controls_type_", "width: 200px;visibility:hidden", "controls_type_", "controls_type_", "CONTROL", "", "", null)%>
                             <%=ComboInvariant(appContext, "controls_fatal_", "width: 40px;visibility:hidden", "controls_fatal_", "controls_fatal_", "CTRLFATAL", "", "", null)%>
                             <% } %>

@@ -19,6 +19,32 @@ body {
 input{
     font-size:80%;
 }
+.buttonAddStep{
+    height:20px;
+    font-weight:bold;
+font-family: Trebuchet MS;
+border-color:orange;
+border-width:1px;
+border-style:solid;
+background-color:white;
+color:orange;
+text-align: center;
+border-radius: 5px;
+    
+}
+.buttonSaveChanges{
+    height:20px;
+    font-weight:bold;
+font-family: Trebuchet MS;
+border-color:#333333;
+border-width:1px;
+border-style:solid;
+background-color:white;
+color:#333333;
+text-align: center;
+border-radius: 5px;
+    
+}
 select{
     font-size:90%;
 }

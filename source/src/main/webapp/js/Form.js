@@ -1683,12 +1683,6 @@ function addStepNew(div) {
     TD13.setAttribute('class', 'wob');
     TR2.appendChild(TD13);
 
-    var input4 = document.createElement('input');
-    input4.setAttribute('type', 'submit');
-    input4.setAttribute('value', 'Save Changes');
-
-    table.appendChild(input4);
-
 
     table.appendChild(document.createElement('br'));
     table.appendChild(document.createElement('br'));
@@ -1696,16 +1690,18 @@ function addStepNew(div) {
     var form5 = document.createElement('input');
     form5.setAttribute('type', 'button');
     form5.setAttribute('value', 'Add Step');
+    form5.setAttribute('class','buttonAddStep');
     form5.setAttribute('onclick', 'addStepNew(\'StepsEndDiv' + incStep + '\')');
     var DIV5 = document.createElement('div');
-    DIV5.setAttribute('style', 'float:left');
+    DIV5.setAttribute('style', 'float:left;margin-top:25px');
     DIV5.appendChild(form5);
     var form6 = document.createElement('input');
     form6.setAttribute('type', 'button');
     form6.setAttribute('value', 'Save Changes');
+    form6.setAttribute('class','buttonSaveChanges');
     form6.setAttribute('onclick', 'submitTestCaseModificationNew(\'stepAnchor_' + incStep + '\')');
     var DIV6 = document.createElement('div');
-    DIV6.setAttribute('style', 'float:left');
+    DIV6.setAttribute('style', 'float:left;margin-top:25px');
     DIV6.appendChild(form6);
     var DIV7 = document.createElement('div');
     DIV7.setAttribute('style', 'display:inline-block; width:100%');
