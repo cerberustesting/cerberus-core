@@ -816,6 +816,10 @@
                                             <div id="StepWarnAlreadyInUse" title="Step In Use By Other Testcase" style="float:left;width:10px;height:100%;display:inline-block; background-color:yellow;">
                                             </div>
                                             <%}%>
+                                            <%if (useStep) {%>
+                                            <div id="StepWarnAlreadyInUse" title="Step In Use By Other Testcase" style="float:left;width:10px;height:100%;display:inline-block; background-color:black;">
+                                            </div>
+                                            <%}%>
                                             <input type="hidden" name="step_increment" value="<%=incrementStep%>">
                                             <input id="incrementStepNumber" value="<%=incrementStep%>" type="hidden">
 
@@ -855,7 +859,7 @@
                                             <p style="margin-top:15px;"> Copied from : </p>
                                         </div>
                                         <div id="StepUseStepTestDiv" style="float:left">
-                                            <select id="step_useStepTest_<%=incrementStep%>" name="step_useStepTest_<%=incrementStep%>" style="width: 200px;margin-top:15px;font-weight: bold;" 
+                                            <select id="step_useStepTest_<%=incrementStep%>" name="step_useStepTest_<%=incrementStep%>" style="width: 100px;margin-top:15px;font-weight: bold;" 
                                                     OnChange="findTestcaseByTest(this.value, '<%=MySystem%>', 'step_useStepTestCase_<%=incrementStep%>')">
                                                 <%  if (tcs.getUseStepTest().equals("")) { %>
                                                 <option style="width: 200px" value="All">-- Choose Test --
@@ -870,7 +874,7 @@
                                         </div>
 
                                         <div id="StepUseStepTestCaseDiv" style="float:left;">
-                                            <select name="step_useStepTestCase_<%=incrementStep%>" style="width: 200px;margin-top:15px;font-weight: bold;" 
+                                            <select name="step_useStepTestCase_<%=incrementStep%>" style="width: 50px;margin-top:15px;font-weight: bold;" 
                                                     OnChange="findStepByTestCase($('#step_useStepTest_<%=incrementStep%>').val(), this.value, 'step_useStepStep_<%=incrementStep%>')"
                                                     id="step_useStepTestCase_<%=incrementStep%>">
                                                 <%  if (tcs.getUseStepTestCase().equals("")) { %>
@@ -885,7 +889,7 @@
                                             </select>
                                         </div>
                                         <div id="StepUseStepStepDiv" style="float:left">
-                                            <select name="step_useStepStep_<%=incrementStep%>" style="width: 200px;margin-top:15px;font-weight: bold;" 
+                                            <select name="step_useStepStep_<%=incrementStep%>" style="width: 50px;margin-top:15px;font-weight: bold;" 
                                                     id="step_useStepStep_<%=incrementStep%>" onchange="javascript:$('#UpdateTestCase').submit();">
                                                 <%  if (tcs.getUseStepTest().equals("") || tcs.getUseStepTestCase().equals("")) { %>
                                                 <option style="width: 200px" value="All">---</option>
