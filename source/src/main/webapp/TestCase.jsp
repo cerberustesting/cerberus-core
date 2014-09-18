@@ -815,8 +815,8 @@
                                         <p style="margin-top:15px;"> Copied from : </p>
                                     </div>
                                     <div id="StepUseStepTestDiv" style="float:left">
-                                        <select name="step_useStepTest_<%=incrementStep%>" style="width: 200px;margin-top:15px;font-weight: bold;" OnChange="document.selectTestCase.submit()">
-                            <%  if (test.compareTo("%%") == 0) { %>
+                                        <select name="step_useStepTest_<%=incrementStep%>" style="width: 200px;margin-top:15px;font-weight: bold;" OnChange="findTestcaseByTest(this.value,'<%=MySystem%>', 'step_useStepTestCase_<%=incrementStep%>')">
+                            <%  if (tcs.getUseStepTest().equals("")) { %>
                             <option style="width: 200px" value="All">-- Choose Test --
                             </option>
                             <%  }
@@ -827,9 +827,23 @@
                         </select>
                                     </div>
                     
-                                    <div id="StepUseStepTestCaseDiv" style="float:left">
-                                        <input size="100%" style="margin-top:15px;font-weight: bold; width: 50px" name="step_useStepTestCase_<%=incrementStep%>"
-                                               value="<%=tcs.getUseStepTestCase()%>">
+                                    <div id="StepUseStepTestCaseDiv" style="float:left;">
+                                        <select style="margin-top:15px;font-weight: bold; width:100px" name="
+                                               id="step_useStepTestCase_<%=incrementStep%>" value="<%=tcs.getUseStepTestCase()%>">
+                                            <option value="">---</option>
+                                        </select>
+                                            <select name="step_useStepTestCase_<%=incrementStep%>" style="width: 200px;margin-top:15px;font-weight: bold;" 
+                                                    OnChange="findTestcaseByTest(this.value,'<%=MySystem%>', 'step_useStepTestCase_<%=incrementStep%>')"
+                                                    id="step_useStepTestCase_<%=incrementStep%>">
+                            <%  if (tcs.getUseStepTestCase().equals("")) { %>
+                            <option style="width: 200px" value="All">---</option>
+                            <%  }
+                            
+                                for (Test tst : tests) {%>
+                            <option style="width: 200px;" class="font_weight_bold_<%=tst.getActive()%>" value="<%=tst.getTest()%>" <%=tcs.getUseStepTest().compareTo(tst.getTest()) == 0 ? " SELECTED " : ""%>><%=tst.getTest()%>
+                            </option>
+                            <% } %>
+                        </select>
                                     </div>
                                     <div id="StepUseStepStepDiv" style="float:left">
                                         <input size="100%" style="margin-top:15px;font-weight: bold; width: 50px" name="step_useStepStep_<%=incrementStep%>"
@@ -1066,7 +1080,7 @@
                             <% } %>
                             <%  if (canEdit) {%>
                             <div id="hide_div"></div>
-                            <div id="ButtonAddStepDiv" style="display:none;width: 100%">
+                            <div id="ButtonAddStepDiv" style="width: 100%">
                                 <div id="wob">
 
                                     <input type="button" value="Import Step" id="ImportStepButton" style="display:inline"
@@ -1545,6 +1559,19 @@
         ;
     }
     ;
+</script>
+<script type="text/javascript">
+    function findTestcaseByTest(test,system, field){
+                $.get('GetTestCaseForTest?system='+system+'&test='+test, function(data) {
+                    $('#'+field).empty();
+                    for (var i = 0; i < data.testCaseList.length; i++) {
+                        $('#'+field).append($("<option></option>")
+                                .attr('value',data.testCaseList[i].testCase)
+                                .attr('style','width:600px;')
+                                .text(data.testCaseList[i].description));
+                    }
+                });
+            }
 </script>
 <div id="popin"></div>
 <br><% out.print(display_footer(DatePageStart));%>
