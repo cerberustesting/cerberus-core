@@ -808,7 +808,7 @@
                                         <input style="float:right;margin-top:10px;font-weight: bold; width: 500px;background-color:transparent; font-weight:bold;font-size:16px ;font-family: Trebuchet MS; color:#333333; border-color:#EEEEEE; border-width: 0px" name="step_description_<%=incrementStep%>" value="<%=tcs.getDescription()%>">
                                     </div>
                                     <div id="StepUseStepDiv" style="float:left">UseStep
-                                        <input type="checkbox" name="step_useStep_<%=incrementStep%>" style="margin-top:15px;font-weight: bold; width:20px"
+                                        <input type="checkbox" name="step_useStep_<%=incrementStep%>" style="margin-top:15px;font-weight: bold; width:20px" onclick="confirmDeletingAction(this, '<%=incrementStep%>')"
                                                <% if (tcs.getUseStep().equals("Y")) {%>
                                                CHECKED
                                                <%}%>
@@ -896,7 +896,7 @@
                                                         }
                                                 %>
                                                 <div id="StepListOfActionDiv<%=incrementStep%><%=incrementAction%>" class="RowActionDiv" style="margin-top:0px;display:inline-block;height:50px;width:100%;">
-                                                    <div style="background-color:blue; width:8px;height:100%;display:inline-block;float:left">
+                                                    <div name="actionRow_color_<%=incrementStep%>" style="background-color:blue; width:8px;height:100%;display:inline-block;float:left">
                                                     </div>
                                                     <div style="display:inline-block;float:left;width:2%;height:100%;">
                                                         <% if (!useStep) {%>
@@ -1599,6 +1599,13 @@
                     }
                 });
             }
+</script>
+<script>
+    function confirmDeletingAction(checkbox, incrementStep) {
+     if (checkbox.checked === true && document.getElementsByName('actionRow_color_'+incrementStep).length > 0){
+        confirm("Beware, all the action of this step will be deleted"); 
+    }  
+    }
 </script>
 <div id="popin"></div>
 <br><% out.print(display_footer(DatePageStart));%>
