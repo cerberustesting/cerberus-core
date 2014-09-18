@@ -102,7 +102,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
          */
         if (!tc.getTest().equals(initialTest)) {
             if (tService.findTestByKey(tc.getTest()) == null) {
-                Test newTest = tService.findTestByKey(initialTestCase);
+                Test newTest = tService.findTestByKey(initialTest);
                 newTest.setTest(tc.getTest());
                 tService.createTest(newTest);
             }
