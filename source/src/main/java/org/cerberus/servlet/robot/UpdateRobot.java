@@ -1,7 +1,19 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/* DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+ *
+ * This file is part of Cerberus.
+ *
+ * Cerberus is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Cerberus is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.cerberus.servlet.robot;
 
@@ -34,9 +46,8 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 public class UpdateRobot extends HttpServlet {
 
     /**
-     * Processes requests for both HTTP
-     * <code>GET</code> and
-     * <code>POST</code> methods.
+     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
+     * methods.
      *
      * @param request servlet request
      * @param response servlet response
@@ -60,13 +71,13 @@ public class UpdateRobot extends HttpServlet {
 
             if (columnName != null && "Platform".equals(columnName.trim())) {
                 robot.setPlatform(value);
-            }else if (columnName != null && "Browser".equals(columnName.trim())) {
+            } else if (columnName != null && "Browser".equals(columnName.trim())) {
                 robot.setBrowser(value);
             } else if (columnName != null && "Version".equals(columnName.trim())) {
                 robot.setVersion(value);
             } else if (columnName != null && "Host".equals(columnName.trim())) {
                 robot.setHost(value);
-            }else if (columnName != null && "Port".equals(columnName.trim())) {
+            } else if (columnName != null && "Port".equals(columnName.trim())) {
                 robot.setPort(value);
             } else if (columnName != null && "Robot".equals(columnName.trim())) {
                 robot.setRobot(value);
@@ -86,9 +97,8 @@ public class UpdateRobot extends HttpServlet {
             try {
                 logEventService.insertLogEvent(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/UpdateRobot", "UPDATE", "Updated Robot : " + id, "", ""));
             } catch (CerberusException ex) {
-                MyLogger.log(UpdateRobot.class.getName(), Level.ERROR,  ex.toString());
+                MyLogger.log(UpdateRobot.class.getName(), Level.ERROR, ex.toString());
             }
-
 
             out.print(value);
         } finally {
@@ -98,8 +108,7 @@ public class UpdateRobot extends HttpServlet {
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
-     * Handles the HTTP
-     * <code>GET</code> method.
+     * Handles the HTTP <code>GET</code> method.
      *
      * @param request servlet request
      * @param response servlet response
@@ -112,13 +121,12 @@ public class UpdateRobot extends HttpServlet {
         try {
             processRequest(request, response);
         } catch (CerberusException ex) {
-       MyLogger.log(UpdateRobot.class.getName(), Level.ERROR,  ex.toString());
+            MyLogger.log(UpdateRobot.class.getName(), Level.ERROR, ex.toString());
         }
     }
 
     /**
-     * Handles the HTTP
-     * <code>POST</code> method.
+     * Handles the HTTP <code>POST</code> method.
      *
      * @param request servlet request
      * @param response servlet response
@@ -132,7 +140,7 @@ public class UpdateRobot extends HttpServlet {
             String t = request.getParameter("value");
             processRequest(request, response);
         } catch (CerberusException ex) {
-            MyLogger.log(UpdateRobot.class.getName(), Level.ERROR,  ex.toString());
+            MyLogger.log(UpdateRobot.class.getName(), Level.ERROR, ex.toString());
         }
     }
 

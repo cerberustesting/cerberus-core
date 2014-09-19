@@ -1,7 +1,19 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/* DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+ *
+ * This file is part of Cerberus.
+ *
+ * Cerberus is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Cerberus is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.cerberus.entity;
 
@@ -19,19 +31,19 @@ public class SoapLibrary {
     private String servicePath;
     private String parsingAnswer;
     private String method;
-    
+
     public void setMethod(String method) {
         this.method = method;
     }
-    
+
     public void setParsingAnswer(String parsingAnswer) {
         this.parsingAnswer = parsingAnswer;
     }
-    
+
     public void setServicePath(String servicePath) {
         this.servicePath = servicePath;
     }
-    
+
     public void setType(String type) {
         this.type = type;
     }
@@ -51,15 +63,15 @@ public class SoapLibrary {
     public String getMethod() {
         return method;
     }
-    
+
     public String getParsingAnswer() {
         return parsingAnswer;
     }
-            
+
     public String getServicePath() {
         return servicePath;
     }
-    
+
     public String getType() {
         return type;
     }
@@ -75,7 +87,5 @@ public class SoapLibrary {
     public String getDescription() {
         return description;
     }
-
-   
 
 }

@@ -1,9 +1,20 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/* DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+ *
+ * This file is part of Cerberus.
+ *
+ * Cerberus is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Cerberus is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.cerberus.service.impl;
 
 import java.util.List;
@@ -23,7 +34,7 @@ public class SoapLibraryService implements ISoapLibraryService {
 
     @Autowired
     SoapLibraryDAO soapLibraryDao;
-     
+
     @Override
     public SoapLibrary findSoapLibraryByKey(String name) throws CerberusException {
         return soapLibraryDao.findSoapLibraryByKey(name);
@@ -62,5 +73,5 @@ public class SoapLibraryService implements ISoapLibraryService {
     @Override
     public Integer getNumberOfSoapLibraryPerCrtiteria(String searchTerm, String inds) {
         return soapLibraryDao.getNumberOfSoapLibraryPerCrtiteria(searchTerm, inds);
-    }    
+    }
 }

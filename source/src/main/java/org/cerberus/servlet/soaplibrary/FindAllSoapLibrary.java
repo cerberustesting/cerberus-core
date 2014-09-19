@@ -1,9 +1,20 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/* DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+ *
+ * This file is part of Cerberus.
+ *
+ * Cerberus is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Cerberus is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.cerberus.servlet.soaplibrary;
 
 import java.io.IOException;
@@ -31,10 +42,10 @@ import org.springframework.web.util.HtmlUtils;
  *
  * @author cte
  */
-public class FindAllSoapLibrary extends HttpServlet{
-    
+public class FindAllSoapLibrary extends HttpServlet {
+
     private final static String ASC = "asc";
-    
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -49,7 +60,7 @@ public class FindAllSoapLibrary extends HttpServlet{
         response.setContentType("text/html;charset=UTF-8");
         final PrintWriter out = response.getWriter();
         final PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
-        
+
         try {
             final String echo = policy.sanitize(request.getParameter("sEcho"));
             final String sStart = policy.sanitize(request.getParameter("iDisplayStart"));
@@ -57,7 +68,7 @@ public class FindAllSoapLibrary extends HttpServlet{
             final String sCol = policy.sanitize(request.getParameter("iSortCol_0"));
             final String sdir = policy.sanitize(request.getParameter("sSortDir_0"));
             String dir = ASC;
-            final String[] cols = { "Name", "Type", "Envelope", "Description", "ServicePath", "Method", "ParsingAnswer}"};
+            final String[] cols = {"Name", "Type", "Envelope", "Description", "ServicePath", "Method", "ParsingAnswer}"};
 
             //JSONObject result = new JSONObject();
             //JSONArray array = new JSONArray();
@@ -72,7 +83,7 @@ public class FindAllSoapLibrary extends HttpServlet{
             String servicePath = "";
             String parsingAnswer = "";
             String method = "";
-            
+
             name = policy.sanitize(request.getParameter("sSearch_0"));
             type = policy.sanitize(request.getParameter("sSearch_1"));
             envelope = HtmlUtils.htmlEscape(request.getParameter("sSearch_2"));
@@ -178,15 +189,14 @@ public class FindAllSoapLibrary extends HttpServlet{
 
                 data.put(row);
             }
-            
+
             Integer iTotalRecords = soapLibService.getNumberOfSoapLibraryPerCrtiteria("", "");
             Integer iTotalDisplayRecords = soapLibService.getNumberOfSoapLibraryPerCrtiteria(searchTerm, inds);
-            
+
             jsonResponse.put("aaData", data);
             jsonResponse.put("sEcho", echo);
             jsonResponse.put("iTotalRecords", iTotalRecords);
             jsonResponse.put("iTotalDisplayRecords", iTotalDisplayRecords);
-             
 
             response.setContentType("application/json");
             response.getWriter().print(jsonResponse.toString());
@@ -196,8 +206,8 @@ public class FindAllSoapLibrary extends HttpServlet{
             out.close();
         }
     }
-    
-      // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
+
+    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.
      *

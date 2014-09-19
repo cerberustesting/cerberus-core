@@ -1,7 +1,19 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/* DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+ *
+ * This file is part of Cerberus.
+ *
+ * Cerberus is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Cerberus is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.cerberus.servlet.robot;
 
@@ -32,9 +44,8 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 public class FindAllRobot extends HttpServlet {
 
     /**
-     * Processes requests for both HTTP
-     * <code>GET</code> and
-     * <code>POST</code> methods.
+     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
+     * methods.
      *
      * @param request servlet request
      * @param response servlet response
@@ -68,7 +79,7 @@ public class FindAllRobot extends HttpServlet {
             String version = "";
             String active = "";
             String description = "";
-            
+
             robot = policy.sanitize(request.getParameter("sSearch_1"));
             host = policy.sanitize(request.getParameter("sSearch_2"));
             port = policy.sanitize(request.getParameter("sSearch_3"));
@@ -77,8 +88,7 @@ public class FindAllRobot extends HttpServlet {
             version = policy.sanitize(request.getParameter("sSearch_6"));
             active = policy.sanitize(request.getParameter("sSearch_7"));
             description = policy.sanitize(request.getParameter("sSearch_8"));
-            
-            
+
             List<String> sArray = new ArrayList<String>();
             if (!platform.equals("")) {
                 String sPlatform = " `platform` like '%" + platform + "%'";
@@ -112,7 +122,6 @@ public class FindAllRobot extends HttpServlet {
                 String sDescription = " `description` like '%" + description + "%'";
                 sArray.add(sDescription);
             }
-            
 
             StringBuilder individualSearch = new StringBuilder();
             if (sArray.size() == 1) {
@@ -178,7 +187,6 @@ public class FindAllRobot extends HttpServlet {
                         .put(robotInv.getVersion())
                         .put(robotInv.getActive())
                         .put(robotInv.getDescription());
-                        
 
                 data.put(row);
             }
@@ -190,7 +198,6 @@ public class FindAllRobot extends HttpServlet {
             jsonResponse.put("sEcho", echo);
             jsonResponse.put("iTotalRecords", iTotalRecords);
             jsonResponse.put("iTotalDisplayRecords", iTotalDisplayRecords);
-
 
             response.setContentType("application/json");
             response.getWriter().print(jsonResponse.toString());
@@ -204,8 +211,7 @@ public class FindAllRobot extends HttpServlet {
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
-     * Handles the HTTP
-     * <code>GET</code> method.
+     * Handles the HTTP <code>GET</code> method.
      *
      * @param request servlet request
      * @param response servlet response
@@ -219,8 +225,7 @@ public class FindAllRobot extends HttpServlet {
     }
 
     /**
-     * Handles the HTTP
-     * <code>POST</code> method.
+     * Handles the HTTP <code>POST</code> method.
      *
      * @param request servlet request
      * @param response servlet response
