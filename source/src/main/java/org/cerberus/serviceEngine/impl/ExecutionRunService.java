@@ -82,6 +82,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class ExecutionRunService implements IExecutionRunService {
     
+    private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(ExecutionRunService.class);
+    
     @Autowired
     private ISeleniumService seleniumService;
     @Autowired
@@ -438,6 +440,7 @@ public class ExecutionRunService implements IExecutionRunService {
                  * Calculating the data (Property).
                  */
                 TestCaseExecutionData testCaseExecutionData = propertyService.calculateProperty(propertyToCalculate, testCaseStepActionExecution);
+                LOG.warn(testCaseExecutionData.toString());
                 /**
                  * Adding the calculated data to the current step Execution and
                  * ActionExecution.

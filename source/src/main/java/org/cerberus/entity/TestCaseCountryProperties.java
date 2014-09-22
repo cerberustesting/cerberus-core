@@ -235,6 +235,11 @@ public class TestCaseCountryProperties {
         }
         return true;
     }
+
+    @Override
+    public String toString() {
+        return "TestCaseCountryProperties{" + "test=" + test + ", testCase=" + testCase + ", country=" + country + ", property=" + property + ", type=" + type + ", database=" + database + ", value1=" + value1 + ", value2=" + value2 + ", length=" + length + ", rowLimit=" + rowLimit + ", nature=" + nature + '}';
+    }
     
     
 }

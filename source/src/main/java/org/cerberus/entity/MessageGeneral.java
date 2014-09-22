@@ -73,4 +73,11 @@ public class MessageGeneral {
     public int hashCode() {
         return super.hashCode();
     }
+
+    @Override
+    public String toString() {
+        return "MessageGeneral{" + "code=" + code + ", codeString=" + codeString + ", description=" + description + '}';
+    }
+    
+    
 }

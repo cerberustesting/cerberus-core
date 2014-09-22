@@ -116,4 +116,11 @@ public enum MessageGeneralEnum {
     public String getDescription() {
         return this.description;
     }
+
+    @Override
+    public String toString() {
+        return "MessageGeneralEnum{" + "code=" + code + ", codeString=" + codeString + ", description=" + description + '}';
+    }
+    
+    
 }

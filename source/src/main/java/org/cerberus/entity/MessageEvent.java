@@ -116,4 +116,11 @@ public class MessageEvent {
     public void setDescription(String description) {
         this.description = description;
     }
+
+    @Override
+    public String toString() {
+        return "MessageEvent{" + "code=" + code + ", codeString=" + codeString + ", description=" + description + ", stopTest=" + stopTest + ", doScreenshot=" + doScreenshot + ", getPageSource=" + getPageSource + ", message=" + message.toString() + '}';
+    }
+    
+    
 }
