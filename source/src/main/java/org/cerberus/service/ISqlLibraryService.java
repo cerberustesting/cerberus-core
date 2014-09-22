@@ -87,4 +87,10 @@ public interface ISqlLibraryService {
      * @return The number of records for these criterias
      */
     Integer getNumberOfSqlLibraryPerCriteria(String searchTerm, String inds);
+
+    /**
+     *
+     * @return
+     */
+    List<String> findDistinctTypeOfSqlLibrary();
 }
