@@ -17,7 +17,6 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
-<%@page import="org.cerberus.service.IDocumentationService"%>
 <% Date DatePageStart = new Date();%>
 
 <!DOCTYPE html>
@@ -76,7 +75,7 @@
                         icons: {primary: 'ui-icon-trash'}
                     },
                     sUpdateURL: "UpdateSqlLibrary",
-                    fnOnEdited: function(status) {
+                    fnOnEdited: function() {
                         $(".dataTables_processing").css('visibility', 'hidden');
                     },
                     oAddNewRowFormOptions: {
@@ -112,15 +111,6 @@
     <body  id="wrapper">
         <%@ include file="include/function.jsp" %>
         <%@ include file="include/header.jsp" %>
-        <%
-            /*
-             * Database connexion
-             */
-            Connection conn = db.connect();
-            try {
-                IDocumentationService docService = appContext.getBean(IDocumentationService.class);
-
-        %>
 
         <p class="dttTitle">SQL Library</p>
         <div style="width: 100%; font: 90% sans-serif">
@@ -154,7 +144,7 @@
                 <br />
                 <br />
                 <label for="Database" style="font-weight:bold">Database</label>
-                <%=ComboInvariantAjax(conn, "Database", "", "Database", "2", "PROPERTYDATABASE", "", "", false)%>
+                <%=ComboInvariantAjax(appContext, "Database", "", "Database", "2", "PROPERTYDATABASE", "", "", false)%>
                 <br />
                 <label for="Script" style="font-weight:bold">Script</label>
                 <textarea id="Script" name="Script" style="width:800px;" rows="5" 
@@ -166,16 +156,6 @@
                     <button id="btnAddNewRowCancel">Cancel</button>
                 </div>
             </form>
-            <%
-                } catch (Exception e) {
-                    out.println(e);
-                } finally {
-                    try {
-                        conn.close();
-                    } catch (Exception ex) {
-                    }
-                }
-            %>
         </div>
         <br><%
             out.print(display_footer(DatePageStart));
