@@ -233,21 +233,20 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
 
         List<TestCaseStep> tcsFromDtb = new ArrayList(tcsService.getListOfSteps(initialTest, initialTestCase));
         tcsService.compareListAndUpdateInsertDeleteElements(tcsFromPage, tcsFromDtb);
-        
+
         List<TestCaseStepAction> tcsaFromDtb = new ArrayList(tcsaService.findTestCaseStepActionbyTestTestCase(initialTest, initialTestCase));
         tcsaService.compareListAndUpdateInsertDeleteElements(tcsaFromPage, tcsaFromDtb);
-        
+
         List<TestCaseStepActionControl> tcsacFromDtb = new ArrayList(tcsacService.findControlByTestTestCase(initialTest, initialTestCase));
         tcsacService.compareListAndUpdateInsertDeleteElements(tcsacFromPage, tcsacFromDtb);
-        
-        
+
         List<TestCaseStep> tcsNewFromPage = new ArrayList();
         List<TestCaseStepAction> tcsaNewFromPage = new ArrayList();
         List<TestCaseStepActionControl> tcsacNewFromPage = new ArrayList();
         List<TestCaseStep> tcsNewFromDtb = new ArrayList();
         List<TestCaseStepAction> tcsaNewFromDtb = new ArrayList();
         List<TestCaseStepActionControl> tcsacNewFromDtb = new ArrayList();
-        
+
         tcsNewFromDtb = tcsService.getListOfSteps(initialTest, initialTestCase);
         int incrementStep = 0;
         for (TestCaseStep tcsNew : tcsNewFromDtb) {
@@ -272,14 +271,13 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
             tcsNew.setStep(incrementStep);
             tcsNewFromPage.add(tcsNew);
         }
-        
-        
+
         List<TestCaseStep> tcsNewNewFromDtb = new ArrayList(tcsService.getListOfSteps(initialTest, initialTestCase));
         tcsService.compareListAndUpdateInsertDeleteElements(tcsNewFromPage, tcsNewNewFromDtb);
-        
+
         List<TestCaseStepAction> tcsaNewNewFromDtb = new ArrayList(tcsaService.findTestCaseStepActionbyTestTestCase(initialTest, initialTestCase));
         tcsaService.compareListAndUpdateInsertDeleteElements(tcsaNewFromPage, tcsaNewNewFromDtb);
-        
+
         List<TestCaseStepActionControl> tcsacNewNewFromDtb = new ArrayList(tcsacService.findControlByTestTestCase(initialTest, initialTestCase));
         tcsacService.compareListAndUpdateInsertDeleteElements(tcsacNewFromPage, tcsacNewNewFromDtb);
 
@@ -396,6 +394,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
 
     private List<TestCaseStep> getTestCaseStepFromParameter(HttpServletRequest request, ApplicationContext appContext, String test, String testCase) {
         List<TestCaseStep> testCaseStep = new ArrayList();
+        ITestCaseStepService tcsService = appContext.getBean(ITestCaseStepService.class);
         String[] testcase_step_increment = getParameterValuesIfExists(request, "step_increment");
         IFactoryTestCaseStep testCaseStepFactory = appContext.getBean(IFactoryTestCaseStep.class);
         if (testcase_step_increment != null) {
@@ -408,10 +407,20 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
                 String useStepTest = getParameterIfExists(request, "step_useStepTest_" + inc);
                 String useStepTestCase = getParameterIfExists(request, "step_useStepTestCase_" + inc);
                 int useStepStep = Integer.valueOf(getParameterIfExists(request, "step_useStepStep_" + inc) == null ? "0" : getParameterIfExists(request, "step_useStepStep_" + inc));
+                /* If delete, don't add it to the list of steps */
                 if (delete == null) {
                     TestCaseStep tcStep = testCaseStepFactory.create(test, testCase, step, desc, useStep, useStepTest, useStepTestCase, useStepStep);
+                    /* Take action and control only if not use step*/
                     if (useStep == null) {
                         tcStep.setTestCaseStepAction(getTestCaseStepActionFromParameter(request, appContext, test, testCase, inc));
+                    } else {
+                        /* If use step, verify if used step alread use another one */
+                        TestCaseStep tcs = tcsService.findTestCaseStep(useStepTest, useStepTestCase, useStepStep);
+                        if (tcs != null && tcs.getUseStep().equals("Y")) {
+                            tcStep.setUseStepTest(tcs.getUseStepTest());
+                            tcStep.setUseStepTestCase(tcs.getUseStepTestCase());
+                            tcStep.setUseStepStep(tcs.getUseStepStep());
+                        }
                     }
                     testCaseStep.add(tcStep);
                     //System.out.print("FromPage" + tcStep.toString());
