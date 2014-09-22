@@ -76,4 +76,9 @@ public class SqlLibraryService implements ISqlLibraryService {
     public Integer getNumberOfSqlLibraryPerCriteria(String searchTerm, String inds) {
         return sqlLibraryDao.getNumberOfSqlLibraryPerCriteria(searchTerm, inds);
     }
+
+    @Override
+    public List<String> findDistinctTypeOfSqlLibrary(){
+        return this.sqlLibraryDao.findDistinctTypeOfSqlLibrary();
+    }
 }

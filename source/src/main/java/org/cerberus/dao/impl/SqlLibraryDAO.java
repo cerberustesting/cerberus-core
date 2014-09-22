@@ -478,4 +478,43 @@ public class SqlLibraryDAO implements ISqlLibraryDAO {
         return result;
 
     }
+
+    @Override
+    public List<String> findDistinctTypeOfSqlLibrary() {
+        List<String> list = null;
+        final String query = "SELECT DISTINCT Type FROM SqlLibrary";
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            try {
+                ResultSet resultSet = preStat.executeQuery();
+                list = new ArrayList<String>();
+                try {
+                    while (resultSet.next()) {
+                        list.add(resultSet.getString("Type"));
+                    }
+                } catch (SQLException exception) {
+                    MyLogger.log(SqlLibraryDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                } finally {
+                    resultSet.close();
+                }
+            } catch (SQLException exception) {
+                MyLogger.log(SqlLibraryDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(SqlLibraryDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(SqlLibraryDAO.class.getName(), Level.WARN, e.toString());
+            }
+        }
+        return list;
+    }
 }

@@ -120,14 +120,7 @@
     <body  id="wrapper">
         <%@ include file="include/function.jsp" %>
         <%@ include file="include/header.jsp" %>
-        <%
-            /*
-             * Database connexion
-             */
-            Connection conn = db.connect();
-            try {
 
-        %>
         <p class="dttTitle">Public Invariants</p>
         <div style="width: 100%;  font: 90% sans-serif">
             <table id="invariantPublicList" class="display">
@@ -156,7 +149,7 @@
                            class="ncdetailstext" rel="0" >
                 </div>
                 <label for="IDName" style="font-weight:bold">ID Name</label>
-                <%=ComboInvariantAjax(conn, "IDName", "", "IDName", "1", "INVARIANTPUBLIC", "", "", false)%>
+                <%=ComboInvariantAjax(appContext, "IDName", "", "IDName", "1", "INVARIANTPUBLIC", "", "", false)%>
 
                 <label for="Value" style="font-weight:bold">Value</label>
                 <input id="Value" name="Value" style="width:150px;" 
@@ -186,16 +179,6 @@
                 <button id="btnAddNewRowOk">Add</button>
                 <button id="btnAddNewRowCancel">Cancel</button>
             </form>
-            <%
-                } catch (Exception e) {
-                    out.println(e);
-                } finally {
-                    try {
-                        conn.close();
-                    } catch (Exception ex) {
-                    }
-                }
-            %>
         </div>
         <br><%
             out.print(display_footer(DatePageStart));

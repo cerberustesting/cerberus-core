@@ -109,13 +109,7 @@
         <%@ include file="include/function.jsp" %>
         <%@ include file="include/header.jsp" %>
             <%
-                /*
-                 * Database connexion
-                 */
-                Connection conn = db.connect();
-                try {
-                    IDocumentationService docService = appContext.getBean(IDocumentationService.class);
-
+                IDocumentationService docService = appContext.getBean(IDocumentationService.class);
             %>
         <p class="dttTitle">Project</p>
         <div style="width: 100%;  font: 90% sans-serif">
@@ -148,7 +142,7 @@
                            class="ncdetailstext" rel="2" >
                 <br>
                     <label for="Active" style="font-weight:bold"><%=docService.findLabelHTML("Project","Active","")%></label>
-                    <%=ComboInvariantAjax(conn, "Active", "", "Active", "3", "PROJECTACTIVE", "", "", false)%>
+                    <%=ComboInvariantAjax(appContext, "Active", "", "Active", "3", "PROJECTACTIVE", "", "", false)%>
                 <div style="width: 200px; float:left; display: none">
                     <label for="dateCreation" style="font-weight:bold"><%=docService.findLabelHTML("Project","dateCreation","")%></label>
                     <input id="dateCreation" name="dateCreation" style="width:100px;" 
@@ -158,16 +152,6 @@
                 <button id="btnAddNewRowOk">Add</button>
                 <button id="btnAddNewRowCancel">Cancel</button>
             </form>
-        <%
-            } catch (Exception e) {
-                out.println(e);
-            } finally {
-                try {
-                    conn.close();
-                } catch (Exception ex) {
-                }
-            }
-        %>
     </div>
         <br><%
             out.print(display_footer(DatePageStart));
