@@ -41,6 +41,8 @@
 <%@page import="java.text.SimpleDateFormat"%>
 <%@page import="org.cerberus.version.Version"%>
 <%@page import="org.cerberus.database.DatabaseSpring" %>
+<%@ page import="org.cerberus.service.IDeployTypeService" %>
+<%@ page import="org.cerberus.entity.DeployType" %>
 <%!
     String ComboInvariant(Connection conn, String HTMLComboName, String HTMLComboStyle, String HTMLId, String HTMLClass, String combonumber, String value, String HTMLOnChange, String firstOption) {
         try {
@@ -310,34 +312,26 @@
         }
     }
 
-    String ComboDeployTypeAjax(Connection conn, String HTMLComboName, String HTMLComboStyle, String HTMLId, String HTMLrel, String value, String HTMLOnChange) {
+    String ComboDeployTypeAjax(ApplicationContext appContext, String HTMLComboName, String HTMLComboStyle, String HTMLId, String HTMLrel, String value, String HTMLOnChange) {
         try {
-            Statement stmtQuery = conn.createStatement();
-            try {
-                String sq = "SELECT deploytype from deploytype ";
-                ResultSet q = stmtQuery.executeQuery(sq);
-                try {
-                    String ret = "<select id=\"" + HTMLId + "\" rel=\"" + HTMLrel + "\" style=\"" + HTMLComboStyle + "\" name=\"" + HTMLComboName + "\"";
-                    if (HTMLOnChange.compareToIgnoreCase("") != 0) {
-                        ret = ret + " onchange=\"" + HTMLOnChange + "\"";
-                    }
-                    ret = ret + ">";
-                    while (q.next()) {
-                        ret = ret + "<option value=\"" + q.getString("deploytype") + "\"";
-                        if ((value != null) && (value.compareTo(q.getString("deploytype")) == 0)) {
-                            ret = ret + " SELECTED ";
-                        }
-                        ret = ret + ">" + q.getString("deploytype");
-                        ret = ret + "</option>";
-                    }
-                    ret = ret + "</select>";
-                    return ret;
-                } finally {
-                    q.close();
-                }
-            } finally {
-                stmtQuery.close();
+            IDeployTypeService deployTypeService = appContext.getBean(IDeployTypeService.class);
+
+            String ret = "<select id=\"" + HTMLId + "\" rel=\"" + HTMLrel + "\" style=\"" + HTMLComboStyle + "\" name=\"" + HTMLComboName + "\"";
+            if (HTMLOnChange.compareToIgnoreCase("") != 0) {
+                ret += " onchange=\"" + HTMLOnChange + "\"";
             }
+            ret += ">";
+            for (DeployType deployType : deployTypeService.findAllDeployType()) {
+                ret += "<option value=\"" + deployType.getDeploytype() + "\"";
+                if ((value != null) && (value.compareTo(deployType.getDeploytype()) == 0)) {
+                    ret += " SELECTED ";
+                }
+                ret += ">" + deployType.getDeploytype();
+                ret += "</option>";
+            }
+            ret += "</select>";
+            return ret;
+
         } catch (Exception e) {
             return e.toString();
         }

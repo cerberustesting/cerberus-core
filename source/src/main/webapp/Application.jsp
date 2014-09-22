@@ -43,13 +43,7 @@
         <%@ include file="include/function.jsp" %>
         <%@ include file="include/header.jsp" %>
         <%
-            /*
-             * Database connexion
-             */
-            Connection conn = db.connect();
-            try {
-                IDocumentationService docService = appContext.getBean(IDocumentationService.class);
-
+            IDocumentationService docService = appContext.getBean(IDocumentationService.class);
         %>
         <script type="text/javascript">      
             $(document).ready(function(){
@@ -191,7 +185,7 @@
                 <input id="SubSystem" name="SubSystem" style="width:100px;" 
                        class="ncdetailstext" rel="2" >
                 <label for="Type" style="font-weight:bold"><%=docService.findLabelHTML("Application", "type", "")%></label>
-                <%=ComboInvariantAjax(conn, "Type", "", "Type", "4", "APPLITYPE", "", "", false)%>
+                <%=ComboInvariantAjax(appContext, "Type", "", "Type", "4", "APPLITYPE", "", "", false)%>
                 <br>
                 <br>
                 <label for="Description" style="font-weight:bold"><%=docService.findLabelHTML("Application", "description", "")%></label>
@@ -207,7 +201,7 @@
                        class="ncdetailstext" rel="5" >
                 <br>
                 <label for="DeployType" style="font-weight:bold"><%=docService.findLabelHTML("Application", "deploytype", "")%></label>
-                <%=ComboDeployTypeAjax(conn, "DeployType", "", "DeployType", "6", "", "")%>
+                <%=ComboDeployTypeAjax(appContext, "DeployType", "", "DeployType", "6", "", "")%>
                 <br><br>
                 <label for="SVNURL" style="font-weight:bold"><%=docService.findLabelHTML("Application", "svnurl", "")%></label>
                 <input id="SVNURL" name="SVNURL" style="width:600px;" 
@@ -224,16 +218,6 @@
                 <button id="btnAddNewRowOk">Add</button>
                 <button id="btnAddNewRowCancel">Cancel</button>
             </form>
-            <%
-                } catch (Exception e) {
-                    out.println(e);
-                } finally {
-                    try {
-                        conn.close();
-                    } catch (Exception ex) {
-                    }
-                }
-            %>
         </div>
         <br><%
             out.print(display_footer(DatePageStart));
