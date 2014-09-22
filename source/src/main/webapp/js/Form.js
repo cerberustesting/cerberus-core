@@ -1572,11 +1572,12 @@ function calculateProperty() {
 function deleteTestCase(test, testcase, page) {
     if (confirm('Do you really want to delete this TestCase ? This operation cannot be reverted')) {
         $("#deleteTCDiv").append('<img src="images/loading.gif">');
-        var xhttp = new XMLHttpRequest();
-        xhttp.open("GET", "DeleteTestCase?test=" + test + "&testcase=" + testcase + "&fromPage=" + page, false);
-        xhttp.send();
-        var xmlDoc = xhttp.responseText;
-        location.href = (page + "?Test=" + test);
+        //var xhttp = new XMLHttpRequest();
+        //xhttp.open("GET", "DeleteTestCase?test=" + test + "&testcase=" + testcase + "&fromPage=" + page, false);
+        //xhttp.send();
+        //var xmlDoc = xhttp.responseText;
+        //location.href = (page + "?Test=" + test);
+        window.open("DeleteTestCase?test=" + test + "&testcase=" + testcase + "&fromPage=" + page);
     }
 
 }

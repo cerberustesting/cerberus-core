@@ -382,4 +382,54 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
         }
         return list;
     }
+
+    @Override
+    public List<TestCaseStep> getTestCaseStepUsingTestCaseInParamter(String test, String testCase) throws CerberusException {
+        List<TestCaseStep> list = null;
+        final String query = "SELECT * FROM testcasestep WHERE usestep='Y' AND usesteptest = ? AND usesteptestcase = ?";
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            try {
+                preStat.setString(1, test);
+                preStat.setString(2, testCase);
+                
+                ResultSet resultSet = preStat.executeQuery();
+                list = new ArrayList<TestCaseStep>();
+                try {
+                    while (resultSet.next()) {
+                        String t = resultSet.getString("Test");
+                        String tc = resultSet.getString("TestCase");
+                        int s = resultSet.getInt("Step");
+                        String description = resultSet.getString("Description");
+                        String useStep = resultSet.getString("useStep");
+                        String useStepTest = resultSet.getString("useStepTest");
+                        String useStepTestCase = resultSet.getString("useStepTestCase");
+                        Integer useStepStep = resultSet.getInt("useStepStep");
+                        list.add(factoryTestCaseStep.create(t, tc, s, description, useStep, useStepTest, useStepTestCase, useStepStep));
+                    }
+                } catch (SQLException exception) {
+                    LOG.error("Unable to execute query : " + exception.toString());
+                } finally {
+                    resultSet.close();
+                }
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception.toString());
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                LOG.warn("Exception Closing the connection : " + e.toString());
+            }
+        }
+        return list;
+    }
 }

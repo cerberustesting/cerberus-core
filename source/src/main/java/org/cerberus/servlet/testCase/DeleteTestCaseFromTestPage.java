@@ -21,6 +21,7 @@ package org.cerberus.servlet.testCase;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -30,8 +31,10 @@ import org.apache.log4j.Logger;
 import org.cerberus.entity.MessageGeneral;
 import org.cerberus.entity.MessageGeneralEnum;
 import org.cerberus.entity.TCase;
+import org.cerberus.entity.TestCaseStep;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.service.ITestCaseService;
+import org.cerberus.service.ITestCaseStepService;
 import org.cerberus.service.impl.UserService;
 import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;
@@ -62,11 +65,18 @@ public class DeleteTestCaseFromTestPage extends HttpServlet {
 
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         ITestCaseService tcService = appContext.getBean(ITestCaseService.class);
+        ITestCaseStepService tcsService = appContext.getBean(ITestCaseStepService.class);
         try {
             for (String ttd : tcToDelete) {
                 TCase testCase = tcService.findTestCaseByKey(testToDelete, ttd);
                 if (testCase != null) {
+                    List<TestCaseStep> tcsList = tcsService.getTestCaseStepUsingTestCaseInParamter(testCase.getTest(), testCase.getTestCase());
+                    if (tcsList != null && !tcsList.isEmpty()){
+                        response.sendError(403, MessageGeneralEnum.GUI_TESTCASE_DELETE_USED_STEP.getDescription());
+                        return;
+                    }
                     tcService.deleteTestCase(testCase);
+            
                 } else {
                     throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
                 }

@@ -135,4 +135,9 @@ public class TestCaseStepService implements ITestCaseStepService {
         this.deleteListTestCaseStep(tcsToDelete);
     }
 
+    @Override
+    public List<TestCaseStep> getTestCaseStepUsingTestCaseInParamter(String test, String testCase) throws CerberusException {
+        return testCaseStepDAO.getTestCaseStepUsingTestCaseInParamter(test, testCase);
+    }
+
 }
