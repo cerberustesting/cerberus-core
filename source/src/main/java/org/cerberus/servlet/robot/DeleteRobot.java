@@ -1,9 +1,20 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/* DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+ *
+ * This file is part of Cerberus.
+ *
+ * Cerberus is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Cerberus is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.cerberus.servlet.robot;
 
 import java.io.IOException;
@@ -32,7 +43,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  */
 public class DeleteRobot extends HttpServlet {
 
-     /**
+    /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
      *
@@ -49,10 +60,10 @@ public class DeleteRobot extends HttpServlet {
 
         try {
             String id = policy.sanitize(request.getParameter("id"));
-            
+
             ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
             IRobotService robotService = appContext.getBean(IRobotService.class);
-            
+
             Robot robot = robotService.findRobotByKey(Integer.valueOf(id));
             robotService.deleteRobot(robot);
 
@@ -62,12 +73,11 @@ public class DeleteRobot extends HttpServlet {
             ILogEventService logEventService = appContext.getBean(LogEventService.class);
             IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
             try {
-                logEventService.insertLogEvent(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/DeleteRobot", "DELETE", "Delete Robot : " + robot.getPlatform() + "/"+robot.getBrowser()+"/"+robot.getVersion(), "", ""));
+                logEventService.insertLogEvent(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/DeleteRobot", "DELETE", "Delete Robot : " + robot.getPlatform() + "/" + robot.getBrowser() + "/" + robot.getVersion(), "", ""));
             } catch (CerberusException ex) {
-                MyLogger.log(DeleteRobot.class.getName(), Level.ERROR,  ex.toString());
+                MyLogger.log(DeleteRobot.class.getName(), Level.ERROR, ex.toString());
             }
 
-            
         } finally {
             out.close();
         }

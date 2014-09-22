@@ -1,6 +1,4 @@
-/*
- * Cerberus  Copyright (C) 2013  vertigo17
- * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+/* DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This file is part of Cerberus.
  *
@@ -16,11 +14,6 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
- */
-
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
  */
 package org.cerberus.dao.impl;
 

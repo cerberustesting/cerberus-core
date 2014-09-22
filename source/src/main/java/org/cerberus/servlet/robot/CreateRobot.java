@@ -1,9 +1,20 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/* DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+ *
+ * This file is part of Cerberus.
+ *
+ * Cerberus is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Cerberus is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.cerberus.servlet.robot;
 
 import java.io.IOException;
@@ -47,35 +58,35 @@ public class CreateRobot extends HttpServlet {
         response.setContentType("text/html;charset=UTF-8");
         PrintWriter out = response.getWriter();
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
-        
+
         try {
-        String robot = policy.sanitize(request.getParameter("Robot"));
-        String host = policy.sanitize(request.getParameter("Host"));
-        String port = policy.sanitize(request.getParameter("Port"));
-        String description = policy.sanitize(request.getParameter("Description"));
-        String platform = policy.sanitize(request.getParameter("Platform"));
-        String browser = policy.sanitize(request.getParameter("Browser"));
-        String active = policy.sanitize(request.getParameter("Active"));
-        String version = policy.sanitize(request.getParameter("Version"));
-        
-        ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-        IRobotService robotService = appContext.getBean(IRobotService.class);
-        IFactoryRobot factoryRobot = appContext.getBean(IFactoryRobot.class);
-        
-        Robot robotObj = factoryRobot.create(0, robot, host, port, platform, browser, version, active, description);
-        robotService.createRobot(robotObj);
+            String robot = policy.sanitize(request.getParameter("Robot"));
+            String host = policy.sanitize(request.getParameter("Host"));
+            String port = policy.sanitize(request.getParameter("Port"));
+            String description = policy.sanitize(request.getParameter("Description"));
+            String platform = policy.sanitize(request.getParameter("Platform"));
+            String browser = policy.sanitize(request.getParameter("Browser"));
+            String active = policy.sanitize(request.getParameter("Active"));
+            String version = policy.sanitize(request.getParameter("Version"));
+
+            ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+            IRobotService robotService = appContext.getBean(IRobotService.class);
+            IFactoryRobot factoryRobot = appContext.getBean(IFactoryRobot.class);
+
+            Robot robotObj = factoryRobot.create(0, robot, host, port, platform, browser, version, active, description);
+            robotService.createRobot(robotObj);
             /**
              * Adding Log entry.
              */
             ILogEventService logEventService = appContext.getBean(LogEventService.class);
             IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
             try {
-                logEventService.insertLogEvent(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/CreateRobot", "CREATE", "Create Robot : " + platform + "/"+browser+"/"+version, "", ""));
+                logEventService.insertLogEvent(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/CreateRobot", "CREATE", "Create Robot : " + platform + "/" + browser + "/" + version, "", ""));
             } catch (CerberusException ex) {
                 MyLogger.log(CreateRobot.class.getName(), Level.ERROR, ex.toString());
             }
 
-        response.sendRedirect("Robot.jsp");
+            response.sendRedirect("Robot.jsp");
         } finally {
             out.close();
         }
@@ -96,7 +107,7 @@ public class CreateRobot extends HttpServlet {
         try {
             processRequest(request, response);
         } catch (CerberusException ex) {
-       MyLogger.log(CreateRobot.class.getName(), Level.FATAL, ex.toString());
+            MyLogger.log(CreateRobot.class.getName(), Level.FATAL, ex.toString());
         }
     }
 

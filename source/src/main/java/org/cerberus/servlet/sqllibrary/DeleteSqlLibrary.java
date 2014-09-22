@@ -1,9 +1,20 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/* DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+ *
+ * This file is part of Cerberus.
+ *
+ * Cerberus is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Cerberus is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.cerberus.servlet.sqllibrary;
 
 import java.io.IOException;
@@ -33,7 +44,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  */
 public class DeleteSqlLibrary extends HttpServlet {
 
-     /**
+    /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
      *
@@ -50,12 +61,12 @@ public class DeleteSqlLibrary extends HttpServlet {
 
         try {
             String name = policy.sanitize(request.getParameter("id"));
-            
+
             ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
             ISqlLibraryService sqlLibraryService = appContext.getBean(ISqlLibraryService.class);
             IFactorySqlLibrary factorySqlLibrary = appContext.getBean(IFactorySqlLibrary.class);
 
-            SqlLibrary sqlLib = factorySqlLibrary.create(name, null, null, null,  null);
+            SqlLibrary sqlLib = factorySqlLibrary.create(name, null, null, null, null);
             sqlLibraryService.deleteSqlLibrary(sqlLib);
 
             /**
@@ -69,7 +80,6 @@ public class DeleteSqlLibrary extends HttpServlet {
                 org.apache.log4j.Logger.getLogger(DeleteSqlLibrary.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex);
             }
 
-            
         } finally {
             out.close();
         }
