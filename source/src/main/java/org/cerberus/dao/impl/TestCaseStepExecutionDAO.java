@@ -188,7 +188,7 @@ public class TestCaseStepExecutionDAO implements ITestCaseStepExecutionDAO {
                         long fullend = resultSet.getLong("Fullend");
                         long timeelapsed = resultSet.getLong("timeelapsed");
                         String returnCode = resultSet.getString("returncode");
-                        resultData = factoryTestCaseStepExecution.create(id, test, testcase, step, batNumExe, start, end, fullstart, fullend, timeelapsed, returnCode, null, null, null);
+                        resultData = factoryTestCaseStepExecution.create(id, test, testcase, step, batNumExe, start, end, fullstart, fullend, timeelapsed, returnCode, null, null, null,null,null,null,0);
                         result.add(resultData);
                     }
                 } catch (SQLException exception) {

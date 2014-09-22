@@ -62,6 +62,16 @@ public class TestCaseExecutionDataService implements ITestCaseExecutionDataServi
     public List<TestCaseExecutionData> findTestCaseExecutionDataByCriteria1(String property, String value, String controlStatus, Integer nbMinutes) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
+
+    @Override
+    public void insertOrUpdateTestCaseExecutionData(TestCaseExecutionData testCaseExecutionData) throws CerberusException {
+        if (findTestCaseExecutionDataByKey(testCaseExecutionData.getId(), testCaseExecutionData.getProperty())!=null){
+        updateTestCaseExecutionData(testCaseExecutionData);
+        } else {
+        insertTestCaseExecutionData(testCaseExecutionData);
+        }
+        
+    }
     
     
 }

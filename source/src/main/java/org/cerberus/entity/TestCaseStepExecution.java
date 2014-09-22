@@ -44,7 +44,43 @@ public class TestCaseStepExecution {
     private MessageEvent stepResultMessage;
     private MessageGeneral executionResultMessage;
     private boolean stopExecution;
+    private String useStep;
+    private String useStepTest;
+    private String useStepTestCase;
+    private int useStepTestCaseStep;
 
+    public String getUseStep() {
+        return useStep;
+    }
+
+    public void setUseStep(String useStep) {
+        this.useStep = useStep;
+    }
+
+    public String getUseStepTest() {
+        return useStepTest;
+    }
+
+    public void setUseStepTest(String useStepTest) {
+        this.useStepTest = useStepTest;
+    }
+
+    public String getUseStepTestCase() {
+        return useStepTestCase;
+    }
+
+    public void setUseStepTestCase(String useStepTestCase) {
+        this.useStepTestCase = useStepTestCase;
+    }
+
+    public int getUseStepTestCaseStep() {
+        return useStepTestCaseStep;
+    }
+
+    public void setUseStepTestCaseStep(int useStepTestCaseStep) {
+        this.useStepTestCaseStep = useStepTestCaseStep;
+    }
+    
     public List<TestCaseExecutionData> getTestCaseExecutionDataList() {
         return testCaseExecutionDataList;
     }

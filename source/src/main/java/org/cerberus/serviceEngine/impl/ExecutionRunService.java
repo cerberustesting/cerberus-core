@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
-
 import org.apache.log4j.Level;
 import org.cerberus.entity.CountryEnvLink;
 import org.cerberus.entity.CountryEnvParam;
@@ -34,6 +33,7 @@ import org.cerberus.entity.MessageEventEnum;
 import org.cerberus.entity.MessageGeneral;
 import org.cerberus.entity.MessageGeneralEnum;
 import org.cerberus.entity.TCase;
+import org.cerberus.entity.TestCaseCountryProperties;
 import org.cerberus.entity.TestCaseExecution;
 import org.cerberus.entity.TestCaseExecutionData;
 import org.cerberus.entity.TestCaseExecutionSysVer;
@@ -235,7 +235,7 @@ public class ExecutionRunService implements IExecutionRunService {
             MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, runID + " - Pre testcase : " + myTCase.getTest() + "-" + myTCase.getTestCase() + " With " + myTCase.getTestCaseStep().size() + " Step(s) found.");
         }
         tCExecution.setPreTCase(preTestCase);
-
+        
         /**
          * Start Execution of the steps/Actions/controls Iterate Steps.
          * mainExecutionTestCaseStepList will contain the list of steps to
@@ -274,7 +274,8 @@ public class ExecutionRunService implements IExecutionRunService {
             TestCaseStepExecution testCaseStepExecution = factoryTestCaseStepExecution.create(
                     runID, testCaseStep.getTest(), testCaseStep.getTestCase(),
                     testCaseStep.getStep(), null,
-                    startStep, 0, startStep, 0, 0, null, new MessageEvent(MessageEventEnum.STEP_PENDING), testCaseStep, tCExecution);
+                    startStep, 0, startStep, 0, 0, null, new MessageEvent(MessageEventEnum.STEP_PENDING), testCaseStep, tCExecution, 
+                    testCaseStep.getUseStep(),testCaseStep.getUseStepTest(), testCaseStep.getUseStepTestCase(), testCaseStep.getUseStepStep());
             testCaseStepExecutionService.insertTestCaseStepExecution(testCaseStepExecution);
             testCaseStepExecution.setExecutionResultMessage(new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_TESTSTARTED));
 

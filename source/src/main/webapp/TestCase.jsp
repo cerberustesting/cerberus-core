@@ -765,7 +765,7 @@
                             <div id="StepsRightDiv" style="width:97%;float:left; margin:2%;">
                                 <div id="ButtonDiv0" style="float:left; height:40px">
                                     <input type="button" value="Add Step" title="Add Step" class="buttonAddStep"
-                                           onclick="addTCSCNew('StepNumberDiv0', this)">
+                                           onclick="addTCSCNew('StepNumberDiv0', null)">
                                 </div>
                                 <div style="float:left;height:40px" id="wob">
                                     <input value="Save Changes" onclick="submitTestCaseModificationNew('');"

@@ -40,7 +40,7 @@ public interface IPropertyService {
         
         TestCaseExecutionData getPropertiesAndPerformCalculation(String property, TestCaseStepActionExecution testCaseStepActionExecution);
         
-        List<TestCaseCountryProperties> getListOfPropertiesLinkedToProperty(String test, String testCase, String country, String property, List<String> crossedProperties) throws CerberusEventException;
+        List<TestCaseCountryProperties> getListOfPropertiesLinkedToProperty(String test, String testCase, String country, String property,String test2, String testCase2, List<String> crossedProperties) throws CerberusEventException;
 	
     String decodeValue(String myString, TestCaseStepActionExecution testCaseStepActionExecution) throws CerberusEventException;
     

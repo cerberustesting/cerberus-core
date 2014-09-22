@@ -2115,7 +2115,10 @@ function addTCSCNew(rowID, obj) {
 
 
     /* Increment All step fields bellow the current*/
+    var initStep = 0;
+    if (obj !== null){
     var initStep = obj.parentNode.parentNode.parentNode.querySelector('[data-fieldtype="stepNumber"]') === null ? 0 : obj.parentNode.parentNode.parentNode.querySelector('[data-fieldtype="stepNumber"]').value;
+    }
     var incrementStep = parseInt(initStep);
     incrementRows($('#StepsMainDiv'), 'input[data-fieldtype="stepNumber"]', incrementStep);
 

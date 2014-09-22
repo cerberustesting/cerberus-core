@@ -49,7 +49,7 @@ public enum MessageEventEnum {
     PROPERTY_SUCCESS_HTMLVISIBLE(100, "OK", "HTML Visible property calculated with '%VALUE%' from element '%ELEMENT%'", false, false ,false , MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     PROPERTY_SUCCESS_GETFROMXML(100, "OK", "Property from Xml '%VALUE1%' calculated and returned '%VALUE2%'", false, false ,false , MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     PROPERTY_SUCCESS_GETDIFFERENCESFROMXML(100, "OK", "Differences successfully computed between '%VALUE1%' and '%VALUE2%'", false, false ,false , MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
-    PROPERTY_SUCCESS_RANDOM(100, "OK", "Random property calculated with '%VALUE%'.", false, false ,false , MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
+    PROPERTY_SUCCESS_RANDOM(100, "OK", "Random property %FORCED%calculated with '%VALUE%'.", false, false ,false , MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     PROPERTY_SUCCESS_TEXT(100, "OK", "Text property calculated with '%VALUE%'.", false, false ,false , MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     PROPERTY_SUCCESS_RANDOM_NEW(100, "OK", "Random New property calculated with '%VALUE%'.", false, false ,false , MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     PROPERTY_SUCCESS_GETATTRIBUTEFROMHTML(100, "OK", "Attribute '%ATTRIBUTE%' has returned '%VALUE%' for element '%ELEMENT%'.", false, false ,false , MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
