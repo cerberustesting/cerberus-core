@@ -752,14 +752,14 @@
                             <h3>TestCase Detailed Description</h3>
                         </div>
                         <div id="AutomationScriptFunctionalButtonDiv" style="float:left;margin-left:30px">
-                        <select style="float:left; height:20px; width:100px" onchange="javascript:collapseOrExpandAllStep();">
-                            <option>Full View</option>
-                            <option>Show Only Step</option>
-                        </select>
+                            <select style="float:left; height:20px; width:100px" onchange="javascript:collapseOrExpandAllStep();">
+                                <option>Full View</option>
+                                <option>Show Only Step</option>
+                            </select>
                         </div>
                     </div>
-                    
-                        
+
+
                     <div id="StepsMainDiv" style="width:100%;clear:both">
                         <div id="StepsDivUnderTitle" style="width:100%;clear:both">
                             <div id="StepsRightDiv" style="width:97%;float:left; margin:2%;">
@@ -807,6 +807,14 @@
                                         List<TestCaseStepAction> tcsaList = tcsaService.getListOfAction(testForQuery, testcaseForQuery, stepForQuery);
 
                                 %>
+                                <div id="listOfTestCaseUsingStep" style="display:none;">
+                                    <%                                    if (!tcsUsingThisStep.isEmpty()) {
+                                            for (TestCaseStep TcUsed : tcsUsingThisStep) {
+                                    %>    
+                                    <ul><%=TcUsed.getTest()%> - <%=TcUsed.getTestCase()%></ul><%    }
+
+                                            }%>
+                                </div>
                                 <div>
                                     <div id="StepFirstLineDiv<%=incrementStep%>" class="StepHeaderDiv">
                                         <div id="StepComboDeleteDiv" style="float:left; width: 30px; text-align: center; height:100%">
@@ -817,7 +825,8 @@
                                                    value="<%=tcs.getStep()%>">
                                             <%}%>
                                             <%if (stepusedByAnotherTest) {%>
-                                            <div id="StepWarnAlreadyInUse" title="Step In Use By Other Testcase" style="float:left;width:10px;height:100%;display:inline-block; background-color:yellow;">
+                                            <div id="StepWarnAlreadyInUse" title="Step In Use By Other Testcase" style="float:left;width:10px;height:100%;display:inline-block; background-color:yellow;"
+                                                 onclick="showTestCaseUsingThisStep()">
                                             </div>
                                             <%}%>
                                             <%if (useStep) {%>
@@ -869,7 +878,7 @@
                                                 <option style="width: 200px" value="All">-- Choose Test --
                                                 </option>
                                                 <%  }
-                                                for (Test tst : tests) {%>
+                                                    for (Test tst : tests) {%>
                                                 <option style="width: 200px;" class="font_weight_bold_<%=tst.getActive()%>" value="<%=tst.getTest()%>" <%=tcs.getUseStepTest().compareTo(tst.getTest()) == 0 ? " SELECTED " : ""%>><%=tst.getTest()%>
                                                 </option>
                                                 <% }
@@ -889,7 +898,7 @@
                                                 <option style="width: 200px;" class="font_weight_bold_<%=tc.getActive()%>" value="<%=tc.getTestCase()%>" <%=tcs.getUseStepTestCase().compareTo(tc.getTestCase()) == 0 ? " SELECTED " : ""%>><%=tc.getTestCase()%>
                                                 </option>
                                                 <% }
-                                                }%>
+                                                    }%>
                                             </select>
                                         </div>
                                         <div id="StepUseStepStepDiv" style="float:left">
@@ -903,7 +912,7 @@
                                                 <option style="width: 200px;" value="<%=tcstep.getStep()%>" <%=tcs.getUseStepStep().compareTo(tcstep.getStep()) == 0 ? " SELECTED " : ""%>><%=tcstep.getStep()%>
                                                 </option>
                                                 <% }
-                                                }%>
+                                                    }%>
                                             </select>
                                         </div>
                                         <div id="StepUseStepLinkDiv" style="float:left;margin-top:15px">
@@ -976,21 +985,21 @@
                                                                     <input class="wob" class="functional_description" style="border-style:groove;border-width:thin;border-color:white;border: 1px solid white; color:#333333; width: 80%; background-color: transparent; font-weight:bold;font-size:14px ;font-family: Trebuchet MS; "
                                                                            value="<%=tcsa.getDescription()%>" placeholder="Description"
                                                                            name="action_description_<%=incrementStep%>_<%=incrementAction%>" <%=isReadonly%>
-                                                                           maxlength="1000">
+                                                                           onchange="showChangedRow(this.parentNode.parentNode.parentNode.parentNode)" maxlength="1000">
                                                                 </div>
                                                             </div>
                                                             <div style="display:inline-block;clear:both; height:20px;width:100%;background-color:transparent">
                                                                 <div class="technical_part" style="width: 30%; float:left; background-color: transparent">
                                                                     <div style="float:left;width:80px; "><p style="float:right;font-weight:bold;color:white;" link="white" ><%out.print(docService.findLabelHTML("testcasestepaction", "action", "Action"));%></p>
                                                                     </div>
-                                                                    <%=ComboInvariant(appContext, "action_action_" + incrementStep + "_" + incrementAction, "width: 70%;border: 1px solid white; background-color:transparent;color:" + actionFontColor, "action_action_" + incrementStep + "_" + incrementAction, "wob", "ACTION", tcsa.getAction(), "trackChanges(0, this.selectedIndex, 'submitButtonAction')", null)%>
+                                                                    <%=ComboInvariant(appContext, "action_action_" + incrementStep + "_" + incrementAction, "width: 70%;border: 1px solid white; background-color:transparent;color:" + actionFontColor, "action_action_" + incrementStep + "_" + incrementAction, "wob", "ACTION", tcsa.getAction(), "showChangedRow(this.parentNode.parentNode.parentNode.parentNode)", null)%>
                                                                 </div>
                                                                 <div class="technical_part" style="width: 40%; float:left; background-color: transparent">
                                                                     <div style="float:left;width:19%; "><p style="float:right;font-weight:bold;color:white;" link="white" ><%out.print(docService.findLabelHTML("testcasestepaction", "object", "Object"));%></p>
                                                                     </div>
                                                                     <input style="float:left;border-style:groove;border-width:thin;border-color:white;border: 1px solid white; height:100%;width:80%; background-color: transparent; color:<%=actionFontColor%>"
                                                                            value="<%=tcsa.getObject()%>"
-                                                                           name="action_object_<%=incrementStep%>_<%=incrementAction%>" <%=isReadonly%>>
+                                                                           onchange="showChangedRow(this.parentNode.parentNode.parentNode.parentNode)" name="action_object_<%=incrementStep%>_<%=incrementAction%>" <%=isReadonly%>>
                                                                 </div>
                                                                 <div class="technical_part" style="width: 30%; float:left; background-color:transparent">
                                                                     <div style="float:left;width:19%; "><p style="float:right;font-weight:bold;color:white;" link="white" ><%out.print(docService.findLabelHTML("testcasestepaction", "property", "Property"));%></p>
@@ -1002,7 +1011,7 @@
                                                                             data-usestep-testcase="<%=testcaseForQuery%>"
                                                                             data-usestep-step="<%=stepForQuery%>"
                                                                             <%}%>
-                                                                            name="action_property_<%=incrementStep%>_<%=incrementAction%>" <%=isReadonly%>>
+                                                                            onchange="showChangedRow(this.parentNode.parentNode.parentNode.parentNode)" name="action_property_<%=incrementStep%>_<%=incrementAction%>" <%=isReadonly%>>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -1557,7 +1566,7 @@
                 </div>
 
             </div>
-            <div id="StepTemplateDiv" class="StepHeaderDiv">
+            <div id="StepTemplateDiv" class="StepHeaderDiv" style="display:none">
                 <div id="StepComboDeleteDiv" style="float:left; width: 30px; text-align: center; height:100%">
                     <a data-id="stepAnchor_template"></a>
                     <a data-id="stepAnchor_steptemplate"></a>
@@ -1755,6 +1764,24 @@
                 document.getElementById('FirstSaveChanges').style.display = 'inline-block';
             }
 
+        </script>
+        <script>
+            function showTestCaseUsingThisStep() {
+                $("#listOfTestCaseUsingStep").dialog({
+                    width: "800",
+                    height: "600",
+                    buttons: {
+                        "OK": function() {
+                            $(this).dialog("close");
+                        }
+                    }
+                });
+            }
+        </script>
+        <script>
+            function showChangedRow(row){
+                $(row).css('background-color', '#FFEBC4');
+            }
         </script>
         <div id="popin"></div>
         <br><% out.print(display_footer(DatePageStart));%>
