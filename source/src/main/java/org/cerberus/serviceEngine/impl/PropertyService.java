@@ -207,7 +207,6 @@ public class PropertyService implements IPropertyService {
                     LOG.debug("Calculating property " + tecd.getProperty());
                 }
                 tecd = calculateProperty(tecd, testCaseStepActionExecution, tccp);
-                LOG.warn("result of calculation " + tecd.toString());
                 // Finally store result and return it
                 try {
                     testCaseExecutionDataService.insertTestCaseExecutionData(tecd);
