@@ -440,7 +440,6 @@ public class ExecutionRunService implements IExecutionRunService {
                  * Calculating the data (Property).
                  */
                 TestCaseExecutionData testCaseExecutionData = propertyService.calculateProperty(propertyToCalculate, testCaseStepActionExecution);
-                LOG.warn(testCaseExecutionData.toString());
                 /**
                  * Adding the calculated data to the current step Execution and
                  * ActionExecution.
