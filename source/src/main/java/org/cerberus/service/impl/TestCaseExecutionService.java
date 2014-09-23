@@ -113,4 +113,9 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
     public TestCaseExecution findLastTestCaseExecutionNotPE(String test, String testCase) throws CerberusException {
         return testCaseExecutionDao.findLastTestCaseExecutionNotPE(test, testCase);
     }
+
+    @Override
+    public List<String> findDistinctTag(boolean withUUIDTag) throws CerberusException {
+        return testCaseExecutionDao.findDistinctTag(withUUIDTag);
+    }
 }
