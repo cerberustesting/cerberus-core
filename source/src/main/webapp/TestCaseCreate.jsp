@@ -17,6 +17,7 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
+<%@page import="java.net.URLDecoder"%>
 <%@page import="org.apache.commons.lang3.StringUtils"%>
 <%@ page import="org.cerberus.service.IDocumentationService" %>
 <%@ page import="org.cerberus.service.ITestService" %>
@@ -48,13 +49,13 @@
             $().ready(function() {
                 elRTE.prototype.options.toolbars.cerberus = ['style', 'alignment', 'colors', 'format', 'indent', 'lists', 'links'];
                 var opts = {
-                    lang         : 'en',
-                    styleWithCSS : false,
-                    width        : 615,
-                    height       : 200,
-                    toolbar      : 'cerberus',
-                    allowSource  : false,
-                    cssfiles     : ['css/crb_style.css']
+                    lang: 'en',
+                    styleWithCSS: false,
+                    width: 615,
+                    height: 200,
+                    toolbar: 'cerberus',
+                    allowSource: false,
+                    cssfiles: ['css/crb_style.css']
                 };
 
                 $('#createHowTo').elrte(opts);
@@ -74,12 +75,19 @@
                 ITestCaseService testCaseService = appContext.getBean(ITestCaseService.class);
                 try {
 
-                    String testselected;
+                    String testselected = "";
                     if (request.getParameter("createTest") != null
                             && request.getParameter("createTest").compareTo("All") != 0) {
                         testselected = request.getParameter("createTest");
                     } else {
-                        testselected = "";
+                        Cookie[] cookies = request.getCookies();
+                            if (cookies != null) { 
+                             for (Cookie cookie : cookies) {
+                               if (cookie.getName().equals("TestPageCreateTest")) {
+                                 testselected = URLDecoder.decode(cookie.getValue(), "UTF-8");
+                                }
+                              }
+                            } 
                     }
 
             %>
@@ -96,7 +104,7 @@
                                 </tr>
                                 <tr>
                                     <td class="wob">
-                                        <select id="createTest" name="createTest" style="width: 300px ; font-weight: bold " OnChange="document.testSelected.submit()">
+                                        <select id="createTest" name="createTest" style="width: 300px ; font-weight: bold " OnChange="document.testSelected.submit(); SetCookie('TestPageCreateTest', this.value)">
                                             <%	if (testselected.compareTo("%%") == 0) {
                                             %><option style="width: 200px" value="All">-- Choose Test --</option>
                                             <%}
@@ -107,8 +115,8 @@
                                                     } else {
                                                         optstyle = "font-weight:lighter;";
                                                     }%>
-                                                    <option style="width: 200px;<%=optstyle%>" value="<%=test.getTest()%>" <%=testselected.compareTo(test.getTest()) == 0 ? " SELECTED " : ""%>><%=test.getTest()%></option>
-                                                <%}%>
+                                            <option style="width: 200px;<%=optstyle%>" value="<%=test.getTest()%>" <%=testselected.compareTo(test.getTest()) == 0 ? " SELECTED " : ""%>><%=test.getTest()%></option>
+                                            <%}%>
                                         </select>
                                     </td>
                                 </tr>
@@ -167,12 +175,12 @@
                                                 <td class="wob"><input id="createTestcase" name="createTestcase" style="width: 100px; font-weight: bold" value="<%=tcnumber%>">
                                                 </td>
                                                 <td class="wob">
-                                                    <select id="createOrigine" style="width: 100px;" name="createOrigine">
+                                                    <select id="createOrigine" style="width: 100px;" name="createOrigine" onchange="SetCookie('TestPageCreateOrigin', this.value) ">
                                                         <option value="All">-- Origin --</option>
                                                         <%
                                                             for (Invariant inv : invariantService.findListOfInvariantById("ORIGIN")) {
                                                         %>
-                                                                <option value="<%=inv.getValue()%>"><%=inv.getValue()%></option>
+                                                        <option value="<%=inv.getValue()%>"><%=inv.getValue()%></option>
                                                         <%
                                                             }
                                                         %>
@@ -181,7 +189,7 @@
                                                 <td class="wob"><input id="createRefOrigine" style="width: 90px;" name="createRefOrigine"></td>
                                                 <td class="wob" style="visibility:hidden"><input id="createCreator" style="width: 90px;" name="createCreator"></td>
                                                 <td class="wob">
-                                                    <%=ComboProject(appContext, "createProject", "width: 90px", "createProject", "", "", "", true, "", "No Project Defined.")%>
+                                                    <%=ComboProject(appContext, "createProject", "width: 90px", "createProject", "", "", "SetCookie('TestPageCreateProject', this.value)", true, "", "No Project Defined.")%>
                                                 </td>
                                                 <td class="wob"><input id="createTicket" style="width: 90px;" name="createTicket"></td>
                                                 <td class="wob"><input id="createBugID" style="width: 70px;" name="createBugID"></td>
@@ -208,34 +216,34 @@
                                                                 List<Invariant> invariantList = invariantService.findListOfInvariantById("COUNTRY");
                                                                 for (Invariant inv : invariantList) {
                                                             %>
-                                                                    <td class="wob" style="font-size : x-small ; width: 20px; text-align: center"><%=inv.getValue()%> <input type="hidden" name="testcase_country_all" value="<%=inv.getValue()%>"></td>
-                                                            <%
-                                                                }
-                                                            %>
+                                                            <td class="wob" style="font-size : x-small ; width: 20px; text-align: center"><%=inv.getValue()%> <input type="hidden" name="testcase_country_all" value="<%=inv.getValue()%>"></td>
+                                                                <%
+                                                                    }
+                                                                %>
                                                         </tr>
                                                         <tr>
-                                                            <td class="wob"><select id="createApplication" name="createApplication" style="width: 140px">
-                                                            <%
-                                                                for (Application app : applicationService.findAllApplication()) {
-                                                            %>
+                                                            <td class="wob"><select id="createApplication" name="createApplication" style="width: 140px" onchange="SetCookie('TestPageCreateApplication', this.value)">
+                                                                    <%
+                                                                        for (Application app : applicationService.findAllApplication()) {
+                                                                    %>
                                                                     <option value="<%=app.getApplication()%>"><%=app.getApplication()%></option>
-                                                            <%
-                                                                }
-                                                            %>
-                                                            </select></td>
-                                                            <td class="wob"><%=ComboInvariant(appContext, "createRunQA", "width: 75px", "createRunQA", "runqa", "RUNQA", "", "", null)%></td>
-                                                            <td class="wob"><%=ComboInvariant(appContext, "createRunUAT", "width: 75px", "createRunUAT", "runuat", "RUNUAT", "", "", null)%></td>
-                                                            <td class="wob"><%=ComboInvariant(appContext, "createRunPROD", "width: 75px", "createRunPROD", "runprod", "RUNPROD", "", "", null)%></td>
-                                                            <td class="wob"><%=ComboInvariant(appContext, "createPriority", "width: 90px", "createPriority", "priority", "PRIORITY", "", "", null)%></td>
-                                                            <td class="wob"><%=ComboInvariant(appContext, "createGroup", "width: 140px", "createGroup", "editgroup", "GROUP", "", "", null)%></td>
-                                                            <td class="wob"><%=ComboInvariant(appContext, "createStatus", "width: 140px", "createStatus", "editStatus", "TCSTATUS", "", "", null)%></td>
+                                                                    <%
+                                                                        }
+                                                                    %>
+                                                                </select></td>
+                                                            <td class="wob"><%=ComboInvariant(appContext, "createRunQA", "width: 75px", "createRunQA", "runqa", "RUNQA", "", "SetCookie('TestPageCreateRunQA', this.value) ", null)%></td>
+                                                            <td class="wob"><%=ComboInvariant(appContext, "createRunUAT", "width: 75px", "createRunUAT", "runuat", "RUNUAT", "", "SetCookie('TestPageCreateRunUAT', this.value) ", null)%></td>
+                                                            <td class="wob"><%=ComboInvariant(appContext, "createRunPROD", "width: 75px", "createRunPROD", "runprod", "RUNPROD", "", "SetCookie('TestPageCreateRunPROD', this.value) ", null)%></td>
+                                                            <td class="wob"><%=ComboInvariant(appContext, "createPriority", "width: 90px", "createPriority", "priority", "PRIORITY", "", "SetCookie('TestPageCreatePriority', this.value) ", null)%></td>
+                                                            <td class="wob"><%=ComboInvariant(appContext, "createGroup", "width: 140px", "createGroup", "editgroup", "GROUP", "", "SetCookie('TestPageCreateGroup', this.value) ", null)%></td>
+                                                            <td class="wob"><%=ComboInvariant(appContext, "createStatus", "width: 140px", "createStatus", "editStatus", "TCSTATUS", "", "SetCookie('TestPageCreateStatus', this.value) ", null)%></td>
                                                             <%
                                                                 for (Invariant inv : invariantList) {
                                                             %> 
-                                                                    <td class="wob"><input value="<%=inv.getValue()%>" type="checkbox" name="createTestcase_country_general" id="createTestcase_country_general"></td>
-                                                            <%
-                                                                }
-                                                            %>
+                                                            <td class="wob"><input value="<%=inv.getValue()%>" type="checkbox" name="createTestcase_country_general" id="createTestcase_country_general_<%=inv.getValue()%>" onchange="SetCookie('TestPageCreateCountry'+this.value, this.checked===true?'TRUE':'FALSE')"></td>
+                                                                <%
+                                                                    }
+                                                                %>
                                                         </tr>
                                                     </table>
                                                 </td>
@@ -284,7 +292,8 @@
                         <input type="hidden" id="createTestSelect" name="createTestSelect" value="<%=testselected%>"> 
                         <table>
                             <tr>
-                                <td class="wob"><input type="submit" name="submitCreation" value="Create Test Case" onclick="$('#howtoDetail').val($('#createHowTo').elrte('val'));$('#valueDetail').val($('#createBehaviorOrValueExpected').elrte('val'));">
+                                <td class="wob"><input type="submit" name="submitCreation" value="Create Test Case" onclick="$('#howtoDetail').val($('#createHowTo').elrte('val'));
+                                        $('#valueDetail').val($('#createBehaviorOrValueExpected').elrte('val'));">
                                 </td>
                             </tr>
                         </table>
@@ -295,7 +304,7 @@
 </tr>
 </table>
 <%
-    } catch (CerberusException ex){
+    } catch (CerberusException ex) {
         MyLogger.log("TestCaseCreate.jsp", Level.ERROR, "Cerberus exception : " + ex.toString());
         out.println("</script>");
         out.print("<script type='text/javascript'>alert(\"Unfortunately an error as occurred, try reload the page.\\n");
@@ -303,6 +312,38 @@
     }
 %>
 </div>
+<script type="text/javascript">
+    $(document).ready(function() {
+        var cookies = new Array;
+        cookies.push(['#createGroup', GetCookie('TestPageCreateGroup')]);
+        cookies.push(['#createStatus', GetCookie('TestPageCreateStatus')]);
+        cookies.push(['#createPriority', GetCookie('TestPageCreatePriority')]);
+        cookies.push(['#createRunPROD', GetCookie('TestPageCreateRunPROD')]);
+        cookies.push(['#createRunUAT', GetCookie('TestPageCreateRunUAT')]);
+        cookies.push(['#createRunQA', GetCookie('TestPageCreateRunQA')]);
+        cookies.push(['#createApplication', GetCookie('TestPageCreateApplication')]);
+        cookies.push(['#createProject', GetCookie('TestPageCreateProject')]);
+        cookies.push(['#createOrigine', GetCookie('TestPageCreateOrigin')]);
+        
+        for (var a = 0; a < cookies.length; a++) {
+            $(cookies[a][0]).find('option').each(function(i, opt) {
+                if (opt.value === cookies[a][1]) {
+                    $(opt).attr('selected', 'selected');
+                }
+            });
+
+        }
+        var countries = document.getElementsByName("createTestcase_country_general");
+        for(var c=0 ; c<countries.length;c++){
+            var name = '#'+countries[c].id;
+            if (GetCookie('TestPageCreateCountry'+countries[c].value)==="TRUE"){
+            $(name).attr('checked', 'checked');
+        }
+        }
+    });
+
+</script>
+
 <br><% out.print(display_footer(DatePageStart));%>
 </body>
 </html>

@@ -159,6 +159,24 @@
                 </tbody>
             </table>
         </div>
+                    <br>
+<p class="dttTitle">Step Library</p>
+<br>
+<p class="dttTitle" style="font-size:12px"><%=applicationL.getApplication()%></p>
+        <div style="width: 100%; font: 90% sans-serif">
+            <table id="stepTable<%=applicationL.getApplication()%>" class="display">
+                <thead>
+                    <tr>
+                        <th>Test</th>
+                        <th>TestCase</th>
+                        <th>Step</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
                     <script type="text/javascript">
 
             $(document).ready(function() {
@@ -176,7 +194,7 @@
                     "sPaginationType": "full_numbers",
                     "bSearchable": true,
                     "aTargets": [0],
-                    "iDisplayLength": 25,
+                    "iDisplayLength": 10,
                     "aoColumns": [
                         {"sName": "Test", "sWidth": "40%"},
                         {"sName": "Total", "sWidth": "10%"}
@@ -190,6 +208,37 @@
                                                                                        }
                                             %>
 
+                    ]
+
+                }
+            );
+            });
+
+
+        </script>
+        <script type="text/javascript">
+
+            $(document).ready(function() {
+                var mySys = getSys();
+                var myApp = '<%=applicationL.getApplication()%>';
+                var tableName = '#stepTable'+myApp.replace('.','\\.');
+                var oTable = $(tableName).dataTable({
+                    "aaSorting": [[0, "asc"]],
+                    "bServerSide": false,
+                    "sAjaxSource": "GetStepUsedAsLibraryInOtherTestCasePerApplication?Application="+myApp,
+                    "bJQueryUI": true,
+                    "bProcessing": true,
+                    "bPaginate": true,
+                    "bAutoWidth": false,
+                    "sPaginationType": "full_numbers",
+                    "bSearchable": true,
+                    "aTargets": [0],
+                    "iDisplayLength": 10,
+                    "aoColumns": [
+                        {"sName": "Test", "sWidth": "10%"},
+                        {"sName": "TestCase", "sWidth": "10%"},
+                        {"sName": "Step", "sWidth": "10%"},
+                        {"sName": "Description", "sWidth": "40%"}
                     ]
 
                 }

@@ -432,4 +432,55 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
         }
         return list;
     }
+    
+    @Override
+    public List<TestCaseStep> getStepUsedAsLibraryInOtherTestCaseByApplication(String application) throws CerberusException{
+    List<TestCaseStep> list = null;
+        StringBuilder query = new StringBuilder();
+        query.append("SELECT tcs.usesteptest, tcs.usesteptestcase,tcs.usestepstep, tcs2.description FROM testcasestep tcs ");
+        query.append("join testcase tc on tc.test=tcs.test and tc.testcase=tcs.testcase ");
+        query.append("join testcasestep tcs2 on tcs.test=tcs2.test and tcs.testcase=tcs2.testcase and tcs.step=tcs2.step ");
+        query.append("where tcs.usestep = 'Y' and tc.application = ?  ");
+        query.append("group by tcs.usesteptest, tcs.usesteptestcase, tcs.usestepstep ");
+        
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query.toString());
+            try {
+                preStat.setString(1, application);
+                
+                ResultSet resultSet = preStat.executeQuery();
+                list = new ArrayList<TestCaseStep>();
+                try {
+                    while (resultSet.next()) {
+                        String t = resultSet.getString("usesteptest");
+                        String tc = resultSet.getString("usesteptestcase");
+                        int s = resultSet.getInt("usestepstep");
+                        String description = resultSet.getString("description");
+                        list.add(factoryTestCaseStep.create(t, tc, s, description, null, null, null, 0));
+                    }
+                } catch (SQLException exception) {
+                    LOG.error("Unable to execute query : " + exception.toString());
+                } finally {
+                    resultSet.close();
+                }
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception.toString());
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                LOG.warn("Exception Closing the connection : " + e.toString());
+            }
+        }
+        return list;
+
+    }
 }

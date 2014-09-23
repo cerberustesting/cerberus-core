@@ -454,6 +454,10 @@
         <servlet-class>org.cerberus.servlet.guiPages.FindTestImplementationStatusPerApplication</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>GetStepUsedAsLibraryInOtherTestCasePerApplication</servlet-name>
+        <servlet-class>org.cerberus.servlet.guiPages.GetStepUsedAsLibraryInOtherTestCasePerApplication</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>CreateRobot</servlet-name>
         <servlet-class>org.cerberus.servlet.robot.CreateRobot</servlet-class>
     </servlet>
@@ -986,6 +990,10 @@
         <url-pattern>/FindTestImplementationStatusPerApplication</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
+        <servlet-name>GetStepUsedAsLibraryInOtherTestCasePerApplication</servlet-name>
+        <url-pattern>/GetStepUsedAsLibraryInOtherTestCasePerApplication</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
         <servlet-name>CreateRobot</servlet-name>
         <url-pattern>/CreateRobot</url-pattern>
     </servlet-mapping>
@@ -1185,6 +1193,7 @@
             <url-pattern>/TestCaseActionExecutionDetail</url-pattern>
             <url-pattern>/ExecutionPerBuildRevision</url-pattern>
             <url-pattern>/FindInvariantByID</url-pattern>
+            <url-pattern>/GetStepUsedAsLibraryInOtherTestCasePerApplication</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <description>TestRO</description>
@@ -1447,7 +1456,7 @@
             <url-pattern>/CampaignExecutionRadarGraphByFunction</url-pattern>
             <url-pattern>/CampaignExecutionStatusBarGraphByFunction</url-pattern>
             <url-pattern>/CampaignExecutionReport</url-pattern>
-            <url-pattern>/CampaignExecutionGraphByStatus</url-pattern>            
+            <url-pattern>/CampaignExecutionGraphByStatus</url-pattern>
         </web-resource-collection>
     </security-constraint>
     <security-constraint>
@@ -1507,4 +1516,4 @@
     <listener>
         <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
     </listener>
-    </web-app>
+</web-app>
