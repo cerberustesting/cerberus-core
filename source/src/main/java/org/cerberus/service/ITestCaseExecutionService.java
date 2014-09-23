@@ -103,4 +103,12 @@ public interface ITestCaseExecutionService {
     public TestCaseExecution findLastTCExecutionInGroup(String test, String testCase, String environment, String country,
                                                         String build, String revision, String browser, String browserVersion,
                                                         String ip, String port, String tag);
+    
+    /**
+     * @param withUUIDTag determine of we must retreive UUID tag or not
+     * @return a list of String tag
+     * @throws CerberusException when no tags can be found.
+     */
+    List<String> findDistinctTag(boolean withUUIDTag) throws CerberusException;
+    
 }
