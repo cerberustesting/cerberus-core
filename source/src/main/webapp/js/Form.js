@@ -2010,7 +2010,7 @@ function addTCSANew(rowID, step, obj) {
         DIV.innerHTML = (DIV.innerHTML + document
                 .getElementById('StepActionTemplateDiv').innerHTML);
     }
-    DIV.setAttribute('style', 'display:inline-block; height:100%; width:100%;background-color:#C4EBFF');
+    DIV.setAttribute('style', 'display:block;height:40px; width:100%;background-color:#C4EBFF;border-style: solid; border-width:thin ; border-color:#CCCCCC;');
     DIV.setAttribute('id', 'StepListOfActionDiv' + step + newNumberOfAction);
     var referenceNode = document.getElementById(rowID);
     referenceNode.parentNode.insertBefore(DIV, referenceNode.nextSibling);
@@ -2025,7 +2025,7 @@ function addTCSANew(rowID, step, obj) {
     $('#StepListOfActionDiv' + step + newNumberOfAction).find('input[data-id="action_step_template"]')
             .attr('name', 'action_step_' + step + '_' + newNumberOfAction).val(StepNum);
     $('#StepListOfActionDiv' + step + newNumberOfAction).find('img[data-id="actionAddActionButton_template"]')
-            .attr('onclick', 'addTCSANew(\'StepListOfActionDiv' + step + newNumberOfAction + '\', \'' + step + '\', this)');
+            .attr('onclick', 'addTCSANew(\'DivActionEndOfAction' + step + newNumberOfAction + '\', \'' + step + '\', this)');
     $('#StepListOfActionDiv' + step + newNumberOfAction).find('img[data-id="actionAddControlButton_template"]')
             .attr('onclick', 'addTCSACNew(\'StepListOfActionDiv' + step + newNumberOfAction + '\', \'' + step + '\', \'' + newNumberOfAction + '\', this)');
     $('#StepListOfActionDiv' + step + newNumberOfAction).find('input[data-id="action_sequence_template"]')
@@ -2038,6 +2038,8 @@ function addTCSANew(rowID, step, obj) {
             .attr('name', 'action_object_' + step + '_' + newNumberOfAction);
     $('#StepListOfActionDiv' + step + newNumberOfAction).find('input[data-id="action_property_template"]')
             .attr('name', 'action_property_' + step + '_' + newNumberOfAction);
+    
+    callEvent();
 
 }
 
@@ -2072,7 +2074,7 @@ function addTCSACNew(rowID, step, incrementAction, obj) {
         DIV.innerHTML = (DIV.innerHTML + document
                 .getElementById('StepControlTemplateDiv').innerHTML);
     }
-    DIV.setAttribute('style', 'display:inline-block; height:100%; width:100%;background-color:#C4FFEB');
+    DIV.setAttribute('style', 'display:block; height:40px; width:100%;background-color:#C4FFEB;border-style: solid; border-width:thin ; border-color:#CCCCCC;');
     DIV.setAttribute('id', 'StepListOfControlDiv' + step + incremAction + nextIncControl);
     var referenceNode = document.getElementById(rowID);
     referenceNode.parentNode.insertBefore(DIV, referenceNode.nextSibling);
@@ -2087,7 +2089,7 @@ function addTCSACNew(rowID, step, incrementAction, obj) {
     $('#StepListOfControlDiv' + step + incremAction + nextIncControl).find('input[data-id="control_step_template"]')
             .attr('name', 'control_step_' + step + '_' + incremAction + '_' + nextIncControl).val(StepNum);
     $('#StepListOfControlDiv' + step + incremAction + nextIncControl).find('img[data-id="controlAddActionButton_template"]')
-            .attr('onclick', 'addTCSANew(\'StepListOfControlDiv' + step + incremAction + nextIncControl + '\', \'' + step + '\', this)');
+            .attr('onclick', 'addTCSANew(\'DivActionEndOfAction' + step + incremAction + '\', \'' + step + '\', this)');
     $('#StepListOfControlDiv' + step + incremAction + nextIncControl).find('img[data-id="controlAddControlButton_template"]')
             .attr('onclick', 'addTCSACNew(\'StepListOfControlDiv' + step + incremAction + nextIncControl + '\', \'' + step + '\', \'' + incremAction + '\', this)');
     $('#StepListOfControlDiv' + step + incremAction + nextIncControl).find('input[data-id="control_sequence_template"]')
