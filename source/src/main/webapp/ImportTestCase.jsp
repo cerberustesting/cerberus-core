@@ -17,18 +17,8 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
-<%@page import="java.sql.Connection"%>
-<%@page import="java.util.ArrayList"%>
-<%@page import="java.util.List"%>
-<%@page import="java.sql.ResultSet"%>
-<%@page import="java.sql.Statement"%>
-<%@page import="java.net.URLEncoder"%>
-<%@page import="org.apache.commons.lang3.StringUtils"%>
-<%@page import="org.cerberus.service.IDocumentationService"%>
-<%@page import="org.cerberus.entity.BuildRevisionInvariant"%>
-<%@page import="org.cerberus.service.impl.BuildRevisionInvariantService"%>
-<%@page import="org.cerberus.service.IBuildRevisionInvariantService"%>
-<%@page import="org.cerberus.service.IApplicationService"%>
+<%@ page import="org.cerberus.service.*" %>
+<%@ page import="org.cerberus.entity.*" %>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
@@ -45,7 +35,7 @@
             && request.getParameter("TestCase").compareTo("All") != 0) {
         testcase = request.getParameter("TestCase");
     } else {
-        testcase = new String("%%");
+        testcase = "%%";
     }
 
     String step;
@@ -53,15 +43,14 @@
             && request.getParameter("Step").compareTo("All") != 0) {
         step = request.getParameter("Step");
     } else {
-        step = new String("%%");
+        step = "%%";
     }
 
-    Connection conn = db.connect();
     IDocumentationService docService = appContext.getBean(IDocumentationService.class);
+    ITestCaseService testCaseService = appContext.getBean(ITestCaseService.class);
+    ITestCaseStepService testCaseStepService = appContext.getBean(ITestCaseStepService.class);
 
     String optstyle;
-    Statement stQueryTestCase = conn.createStatement();
-    Statement stQueryTestCaseStep = conn.createStatement();
 
 %>
 <tr>
@@ -72,17 +61,15 @@
             %><option value="All">-- Choose Test First --</option><%                    } else {%>
             <option value="---">-- Choose TestCase --</option>
             <%
-                String sql = "SELECT TestCase, Application,  Description, tcactive FROM testcase where TestCase IS NOT NULL and test like '" + test + "'Order by TestCase asc";
-                ResultSet rsTestCase = stQueryTestCase.executeQuery(sql);
-                while (rsTestCase.next()) {
-                    if (rsTestCase.getString("tcactive").equalsIgnoreCase("Y")) {
+                for (TCase tCase : testCaseService.findTestCaseByTest(test)) {
+                    if (tCase.getActive().equalsIgnoreCase("Y")) {
                         optstyle = "font-weight:bold;";
                     } else {
                         optstyle = "font-weight:lighter;";
                     }
-            %><option style="<%=optstyle%>" value="<%=rsTestCase.getString("TestCase")%>" <%=testcase.compareTo(rsTestCase.getString("TestCase")) == 0 ? " SELECTED " : ""%>><%=rsTestCase.getString("TestCase")%>  [<%=rsTestCase.getString("Application")%>]  : <%=rsTestCase.getString("Description")%></option><%
-                    }
+            %><option style="<%=optstyle%>" value="<%=tCase.getTestCase()%>" <%=testcase.compareTo(tCase.getTestCase()) == 0 ? " SELECTED " : ""%>><%=tCase.getTestCase()%>  [<%=tCase.getApplication()%>]  : <%=tCase.getShortDescription()%></option><%
                 }
+            }
             %>
         </select>
 </tr>
@@ -94,13 +81,8 @@
             %><option value="All">-- Choose Test Case First --</option><%                    } else {%>
             <option value="---">-- Choose Step --</option>
             <%
-
-                String sql = "SELECT Step, Description FROM testcasestep WHERE Test like '" + test + "' and TestCase like '" + testcase + "' Order by Step asc";
-                //String sql = "SELECT TestCase, Application,  Description, tcactive FROM testcase where TestCase IS NOT NULL and test like '" + test + "'Order by TestCase asc";
-
-                ResultSet rsTestCaseStep = stQueryTestCaseStep.executeQuery(sql);
-                while (rsTestCaseStep.next()) {
-            %><option data-desc="<%=rsTestCaseStep.getString("Description")%>" value="<%=rsTestCaseStep.getString("Step")%>" <%=step.compareTo(rsTestCaseStep.getString("Step")) == 0 ? " SELECTED " : ""%>>[<%=rsTestCaseStep.getString("Step")%>] <%=rsTestCaseStep.getString("Description")%></option><%
+                for (TestCaseStep testCaseStep : testCaseStepService.getListOfSteps(test, testcase)) {
+            %><option data-desc="<%=testCaseStep.getDescription()%>" value="<%=testCaseStep.getStep()%>" <%=step.compareTo(testCaseStep.getTest()) == 0 ? " SELECTED " : ""%>>[<%=testCaseStep.getStep()%>] <%=testCaseStep.getDescription()%></option><%
                     }
                 }
             %>
