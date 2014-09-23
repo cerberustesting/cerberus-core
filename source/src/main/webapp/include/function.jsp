@@ -44,43 +44,6 @@
 <%@ page import="org.cerberus.service.IDeployTypeService" %>
 <%@ page import="org.cerberus.entity.DeployType" %>
 <%!
-    String ComboInvariant(Connection conn, String HTMLComboName, String HTMLComboStyle, String HTMLId, String HTMLClass, String combonumber, String value, String HTMLOnChange, String firstOption) {
-        try {
-            Statement stmtQuery = conn.createStatement();
-            try {
-                String sq = "SELECT value from invariant where idname = '" + combonumber + "' order by sort";
-                ResultSet q = stmtQuery.executeQuery(sq);
-                try {
-                    String ret = "<select id=\"" + HTMLId + "\" class=\"" + HTMLClass + "\" style=\"" + HTMLComboStyle + "\" name=\"" + HTMLComboName + "\"";
-                    if (HTMLOnChange.compareToIgnoreCase("") != 0) {
-                        ret = ret + " onchange=\"" + HTMLOnChange + "\"";
-                    }
-                    ret = ret + ">";
-                    if (firstOption != null) {
-                        ret = ret + "<option value=\"" + firstOption + "\">--" + firstOption + "--</option>";
-                    }
-                    while (q.next()) {
-                        ret = ret + "<option value=\"" + q.getString("value") + "\"";
-                        if ((value != null) && (value.compareTo(q.getString("value")) == 0)) {
-                            ret = ret + " SELECTED ";
-                        }
-                        ret = ret + ">" + q.getString("value");
-                        ret = ret + "</option>";
-                    }
-                    ret = ret + "</select>";
-
-                    return ret;
-                } finally {
-                    q.close();
-                }
-            } finally {
-                stmtQuery.close();
-            }
-        } catch (SQLException e) {
-            return e.toString();
-        }
-    }
-
     String ComboInvariant(ApplicationContext appContext, String HTMLComboName, String HTMLComboStyle, String HTMLId, String HTMLClass, String combonumber, String value, String HTMLOnChange, String firstOption) {
         try {
             IInvariantService invFunctionService = appContext.getBean(IInvariantService.class);
