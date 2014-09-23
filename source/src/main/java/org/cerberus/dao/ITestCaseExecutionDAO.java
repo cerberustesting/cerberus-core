@@ -90,6 +90,13 @@ public interface ITestCaseExecutionDAO {
      */
     List<TestCaseExecution> findExecutionsByCampaignNameAndTag(String campaign, String tag) throws CerberusException;
     
+    /**
+     * @param withUUIDTag determine of we must retreive UUID tag or not
+     * @return a list of String tag
+     * @throws CerberusException when no tags can be found.
+     */
+    List<String> findDistinctTag(boolean withUUIDTag) throws CerberusException;
+    
     TestCaseExecution findLastTestCaseExecutionNotPE(String test, String testCase) throws CerberusException;
 
 
