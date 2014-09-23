@@ -364,7 +364,7 @@
 
             %>
             <br>
-            <form method="post" name="UpdateTestCase"  id="UpdateTestCase" action="UpdateTestCaseWithDependencies" onkeypress="return event.keyCode !== 13;">
+            <form method="post" name="UpdateTestCase"  id="UpdateTestCase" action="UpdateTestCaseWithDependencies">
                 <table id="generalparameter" class="arrond"
                        <%if (tinf == false) {%> style="display : none" <%} else {%>style="display : table"<%}%> >
                     <tr>
@@ -759,17 +759,18 @@
                     <div id="StepsMainDiv" style="width:100%;clear:both">
                         <div id="StepsDivUnderTitle" style="width:100%;clear:both">
                             <div id="StepsRightDiv" style="width:97%;float:left; margin:2%;">
-                                <div id="ButtonDiv0" style="float:left; height:40px">
-                                    <input type="button" value="Add Step" title="Add Step" class="buttonAddStep"
+                                <div id="ButtonDiv0" style="float:left; height:20px">
+                                    <input type="button" value="Add Step" title="Add Step" class="buttonSaveChanges"
                                            onclick="addTCSCNew('StepNumberDiv0', null)">
                                 </div>
-                                <div style="float:left;height:40px" id="wob">
+                                <div style="float:left;height:25px" id="wob">
                                     <input value="Save Changes" onclick="submitTestCaseModificationNew('');"
                                            id="submitButtonAction" name="submitChanges" class="buttonSaveChanges"
                                            type="button" >
                                 </div>
                                 <div id="StepNumberDiv0" style="float:left;">
                                 </div>
+                                <input style="display:none" value="<%=MySystem%>">
                                 <%=ComboInvariant(appContext, "action_action_temp", "width: 136px; display:none", "action_action_temp", "wob", "ACTION", null, "", null)%>
                                 <%=ComboInvariant(appContext, "actions_action_", "width: 150px;visibility:hidden", "actions_action_", "actions_action_", "ACTION", "", "", null)%>
 
@@ -876,7 +877,7 @@
                                                 <option style="width: 200px" value="All">-- Choose Test --
                                                 </option>
                                                 <%  }
-                                                List<Test> tList = testService.findTestBySystems(systems);
+                                                    List<Test> tList = testService.findTestBySystems(systems);
                                                     for (Test tst : tList) {%>
                                                 <option style="width: 200px;" class="font_weight_bold_<%=tst.getActive()%>" value="<%=tst.getTest()%>" <%=tcs.getUseStepTest().compareTo(tst.getTest()) == 0 ? " SELECTED " : ""%>><%=tst.getTest()%>
                                                 </option>
@@ -1139,8 +1140,8 @@
                                     <div style="display:block;clear:both;margin-top:5px">
                                         <input value="Save Changes" class="buttonSaveChanges" onclick="submitTestCaseModificationNew('stepAnchor_<%=incrementStep%>');" id="submitButtonAction" name="submitChanges"
                                                type="button" >
-                                        <img src="images/addStep.png" style="width:20px;height:20px; margin-left:30px" title="Add Step"
-                                             onclick="addTCSCNew('StepsEndDiv<%=incrementStep%>', this)">
+                                        <input type="button" value="Add Step" title="Add Step" class="buttonSaveChanges"
+                                               onclick="addTCSCNew('StepsEndDiv<%=incrementStep%>', this)">
 
                                     </div>
                                     <div id="StepsEndDiv<%=incrementStep%>" style="display:none; width:100%;"></div>
@@ -1533,10 +1534,12 @@
                 </div>
                 <div style="height:100%;width:90%;float:left;display:inline-block">
                     <div class="functional_description_control" style="clear:both;width:100%;height:20px">
-                        <div style="float:left;width:80px; "><p style="float:right;font-weight:bold;color:white;" link="white" ><%out.print(docService.findLabelHTML("testcasestepaction", "description", "Description"));%></p>
+                        <div style="float:left; width:80%">
+                            <div style="float:left;width:80px; "><p style="float:right;font-weight:bold;color:white;" link="white" ><%out.print(docService.findLabelHTML("testcasestepaction", "description", "Description"));%></p>
+                            </div>
+                            <input class="wob" placeholder="Description" class="functional_description_control" style="border-style:groove;border-width:thin;border-color:white;border: 1px solid white; color:#333333; width: 80%; background-color: transparent; font-weight:bold;font-size:14px ;font-family: Trebuchet MS; "
+                                   data-id="control_description_template" data-fieldtype="Description">
                         </div>
-                        <input class="wob" placeholder="Description" class="functional_description_control" style="border-style:groove;border-width:thin;border-color:white;border: 1px solid white; color:#333333; width: 80%; background-color: transparent; font-weight:bold;font-size:14px ;font-family: Trebuchet MS; "
-                               data-id="control_description_template" data-fieldtype="Description">
                     </div>
                     <div style="clear:both; width:100%; height:15px">
                         <div style="width:30%; float:left;">
@@ -1566,54 +1569,50 @@
                 </div>
 
             </div>
-            <div id="StepTemplateDiv" class="StepHeaderDiv" style="display:none">
-                <div id="StepComboDeleteDiv" style="float:left; width: 30px; text-align: center; height:100%">
-                    <a data-id="stepAnchor_template"></a>
-                    <a data-id="stepAnchor_steptemplate"></a>
-                    <input type="checkbox" data-id="step_delete_template" style="margin-top:15px;font-weight: bold; width:20px">
-                    <input type="hidden" data-id="step_increment">
-                </div>
-                <div style="margin-top:10px;height:100%;width:3%;float:left;color:blue;font-weight:bold;font-size:10px ;font-family: Trebuchet MS; background-color: transparent">
-                    <div style="height:100%;width:100%;clear:both;color:blue;font-weight:bold;font-size:10px ;font-family: Trebuchet MS; background-color: transparent">
-                        <div>
-                            <div>
-                                <img src="images/addAction.png" style="width:15px;height:15px" title="Add Action">
-                            </div>
-                        </div>
+            <div id="StepTemplateDiv" class="StepHeaderDiv" style="display:none; height:60px;">
+                <div style="clear:both">
+                    <div id="StepComboDeleteDiv" style="float:left; width: 30px; text-align: center; height:100%">
+                        <a data-id="stepAnchor_template"></a>
+                        <a data-id="stepAnchor_steptemplate"></a>
+                        <input type="checkbox" data-id="step_delete_template" style="margin-top:15px;font-weight: bold; width:20px">
+                        <input type="hidden" data-id="step_increment">
+                    </div>
+                    <div id="StepNumberDiv" style="float:left; width:80px">
+                        &nbsp;&nbsp;Step&nbsp;&nbsp;
+                        <input data-id="step_number_template" data-fieldtype="stepNumber" style="margin-top:15px;font-weight: bold; width:20px;background-color:transparent; border-width:0px">
+                        <input type="hidden" data-id="initial_step_number_template">
+                    </div>
+                    <div id="StepDescDiv" style="width:550px;float:left">
+                        <input style="float:right;margin-top:10px;font-weight: bold; width: 500px;background-color:transparent; font-weight:bold;font-size:16px ;font-family: Trebuchet MS;
+                               color:#333333; border-color:#EEEEEE; border-width: 1px" data-id="step_description_template">
+                    </div>
+                    <div id="StepUseStepDiv" style="float:left">UseStep
+                        <input type="checkbox" data-id="step_useStep_template" style="margin-top:15px;font-weight: bold; width:20px">
                     </div>
                 </div>
-                <div id="StepNumberDiv" style="float:left; width:80px">
-                    &nbsp;&nbsp;Step&nbsp;&nbsp;
-                    <input data-id="step_number_template" data-fieldtype="stepNumber" style="margin-top:15px;font-weight: bold; width:20px;background-color:transparent; border-width:0px">
-                    <input type="hidden" data-id="initial_step_number_template">
-                </div>
-                <div id="StepDescDiv" style="width:550px;float:left">
-                    <input style="float:right;margin-top:10px;font-weight: bold; width: 500px;background-color:transparent; font-weight:bold;font-size:16px ;font-family: Trebuchet MS;
-                           color:#333333; border-color:#EEEEEE; border-width: 1px" data-id="step_description_template">
-                </div>
-                <div id="StepUseStepDiv" style="float:left">UseStep
-                    <input type="checkbox" data-id="step_useStep_template" style="margin-top:15px;font-weight: bold; width:20px">
-                </div>
-                <div id="StepCopiedFromDiv" style="float:left">
-                    <p style="margin-top:15px;"> Copied from : </p>
-                </div>
-                <div id="StepUseStepTestDiv" style="float:left">
-                    <select data-id="step_useStepTest_template" style="width: 200px;margin-top:15px;font-weight: bold;">
-                        <% for (Test tst : tests) {%>
-                        <option style="width: 200px;" class="font_weight_bold_<%=tst.getActive()%>" value="<%=tst.getTest()%>"><%=tst.getTest()%>
-                        </option>
-                        <% }%>
-                    </select>
-                </div>
-                <div id="StepUseStepTestCaseDiv" style="float:left;">
-                    <select data-id="step_useStepTestCase_template" style="width: 200px;margin-top:15px;font-weight: bold;">
-                        <option style="width: 200px" value="All">---</option>
-                    </select>
-                </div>
-                <div id="StepUseStepStepDiv" style="float:left">
-                    <select data-id="step_useStepStep_template" style="width: 200px;margin-top:15px;font-weight: bold;">
-                        <option style="width: 200px" value="All">---</option>
-                    </select>
+                <div style="clear:both">
+                    <div id="StepCopiedFromDiv" style="float:left">
+                        <p style="margin-top:15px;"> Copied from : </p>
+                    </div>
+                    <div id="StepUseStepTestDiv" style="float:left">
+                        <select data-id="step_useStepTest_template" style="width: 200px;margin-top:15px;font-weight: bold;">
+                            <% List<Test> tList = testService.findTestBySystems(systems);
+                            for (Test tst : tList) {%>
+                            <option style="width: 200px;" class="font_weight_bold_<%=tst.getActive()%>" value="<%=tst.getTest()%>"><%=tst.getTest()%>
+                            </option>
+                            <% }%>
+                        </select>
+                    </div>
+                    <div id="StepUseStepTestCaseDiv" style="float:left;">
+                        <select data-id="step_useStepTestCase_template" style="width: 200px;margin-top:15px;font-weight: bold;">
+                            <option style="width: 200px" value="All">---</option>
+                        </select>
+                    </div>
+                    <div id="StepUseStepStepDiv" style="float:left">
+                        <select data-id="step_useStepStep_template" style="width: 200px;margin-top:15px;font-weight: bold;">
+                            <option style="width: 200px" value="All">---</option>
+                        </select>
+                    </div>
                 </div>
             </div>
             <script>
@@ -1785,17 +1784,18 @@
 
             function callEvent() {
                 $("input[data-fieldtype='Description']").each(function(index, field) {
-        $(field).keydown(function(e) {
+                    $(field).off('keydown');
+                    $(field).on('keydown', function(e) {
                         if (e.which === 67 && e.altKey) {
                             var f = $(field).parent().parent().parent().parent();
                             f.find('img[data-fieldtype="addActionButton"]').click();
-                            f.next().find("input[data-fieldtype='Description']").focus();
+                            f.next(".RowActionDiv").find("input[data-fieldtype='Description']").focus();
 
                         }
                         if (e.which === 86 && e.altKey) {
                             var f = $(field).parent().parent().parent().parent();
                             f.find('img[data-fieldtype="addControlButton"]').click();
-                            f.next().find("input[data-fieldtype='Description']").focus();
+                            f.next(".RowActionDiv").find("input[data-fieldtype='Description']").focus();
 
                         }
                     });
