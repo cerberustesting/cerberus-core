@@ -20,7 +20,6 @@
 <%@ page import="java.util.*" %>
 <%@ page import="org.apache.commons.lang3.StringUtils" %>
 <%@ page import="org.cerberus.service.*" %>
-<%@ page import="org.cerberus.service.impl.InvariantService" %>
 <%@ page import="org.cerberus.entity.*" %>
 <%@ page import="org.cerberus.exception.CerberusException" %>
 
@@ -30,7 +29,7 @@
     IDocumentationService docService = appContext.getBean(IDocumentationService.class);
     ITestService testService = appContext.getBean(ITestService.class);
     IProjectService projectService = appContext.getBean(IProjectService.class);
-    IInvariantService invariantService = appContext.getBean(InvariantService.class);
+    IInvariantService invariantService = appContext.getBean(IInvariantService.class);
     IBuildRevisionInvariantService buildRevisionInvariantService = appContext.getBean(IBuildRevisionInvariantService.class);
     IApplicationService applicationService = appContext.getBean(IApplicationService.class);
     IUserService userService = appContext.getBean(IUserService.class);
@@ -154,7 +153,7 @@
                         }
                     },
                     {"aTargets": ['bugIDColumn'],
-                        "mRender": function (data, type, full) {
+                        "mRender": function (data) {
                             var text = "";
                             if (data.bugID != ""){
                                 text += "<a target='_blank' href='"+data.bugURL+"'>"+data.bugID+"</a> ";
@@ -163,6 +162,11 @@
                                 text += "for "+data.targetSprint+"/"+data.targetRevision;
                             }
                             return text;
+                        }
+                    },
+                    {"aTargets": ['testCaseColumn'],
+                        "mRender": function (data, type, full) {
+                            return "<a href='TestCase.jsp?Load=Load&Test="+full[0]+"&TestCase="+data+"' target='_blank'>"+data+"</a>";
                         }
                     }
                 ],
@@ -184,8 +188,8 @@
                             .append("<div class='NOINF' style='float: left;margin-left: 3px;margin-right: 3px;' title='Test Case not available for the country XX.'><span class='NOINFF'>XX</span></div>")
                             .append("</div>");
 
-                    $('#reporting tbody tr').on('click',function(event) {
-                        $('#reporting tbody tr').removeClass('row_selected');
+                    $('#reporting').find('tbody tr').on('click',function() {
+                        $('#reporting').find('tbody tr').removeClass('row_selected');
                         $(this).addClass('row_selected');
                     });
 
@@ -201,8 +205,9 @@
                         "bAutoWidth": false,
                         "iDisplayLength": -1,
                         "fnInitComplete": function () {
-                            $('#statistic thead th').css('padding', '0px');
-                            $('#statistic').css({'width': 'auto', 'margin': '0px'});
+                            var s = $('#statistic');
+                            s.find('thead th').css('padding', '0px');
+                            s.css({'width': 'auto', 'margin': '0px'});
                             $('#divStatistic').hide();
                         }
                     });
@@ -219,9 +224,10 @@
                         "bAutoWidth": false,
                         "iDisplayLength": -1,
                         "fnInitComplete": function () {
-                            $('#tableStatus thead th').css('padding', '0px');
-                            $('#tableStatus td').css('padding', '0px');
-                            $('#tableStatus').css({'width': 'auto', 'margin': '0px', 'text-align': 'center'});
+                            var ts = $('#tableStatus');
+                            ts.find('thead th').css('padding', '0px');
+                            ts.find('td').css('padding', '0px');
+                            ts.css({'width': 'auto', 'margin': '0px', 'text-align': 'center'});
                             $('#divStatus').hide();
                         }
                     });
@@ -238,9 +244,10 @@
                         "bAutoWidth": false,
                         "iDisplayLength": -1,
                         "fnInitComplete": function () {
-                            $('#tableGroup thead th').css('padding', '0px');
-                            $('#tableGroup td').css('padding', '0px');
-                            $('#tableGroup').css({'width': 'auto', 'margin': '0px', 'text-align': 'center'});
+                            var tg = $('#tableGroup');
+                            tg.find('thead th').css('padding', '0px');
+                            tg.find('td').css('padding', '0px');
+                            tg.css({'width': 'auto', 'margin': '0px', 'text-align': 'center'});
                             $('#divGroup').hide();
                         }
                     });
@@ -765,7 +772,7 @@
         <thead>
         <tr>
             <th rowspan="3">Test</th>
-            <th rowspan="3">TestCase</th>
+            <th rowspan="3" class="testCaseColumn">TestCase</th>
             <th rowspan="3">Application</th>
             <th rowspan="3">Description</th>
             <th rowspan="3">Priority</th>

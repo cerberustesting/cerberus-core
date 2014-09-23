@@ -518,7 +518,7 @@
                                                 <td class="wob"><input id="implementer" style="width: 90px;" name="editImplementer" value="<%=rs_testcase_general_info.getString("tc.implementer") == null ? "" : rs_testcase_general_info.getString("tc.implementer")%>"></td>
                                                 <td class="wob"><input readonly="readonly" id="lastModifier" style="width: 90px; background-color: #DCDCDC" name="editLastModifier" value="<%=rs_testcase_general_info.getString("tc.lastModifier")%>"></td>
                                                 <td class="wob">
-                                                    <% out.print(ComboProject(conn, "editProject", "width: 90px", "project", "", rs_testcase_general_info.getString("tc.project"), "", true, "", "No Project Defined."));%>
+                                                    <% out.print(ComboProject(appContext, "editProject", "width: 90px", "project", "", rs_testcase_general_info.getString("tc.project"), "", true, "", "No Project Defined."));%>
                                                 </td>
                                                 <td class="wob"><input id="ticket" style="width: 90px;" name="editTicket" value="<%=rs_testcase_general_info.getString("Ticket") == null ? "" : rs_testcase_general_info.getString("Ticket")%>"></td>
                                                 <td class="wob"><input id="function" style="width: 390px;" list="functions" name="function" value="<%=rs_testcase_general_info.getString("Function") == null ? "" : rs_testcase_general_info.getString("Function")%>"></td>
@@ -625,12 +625,12 @@
                                                         %><option value="<%=rsApp.getString("application")%>"<%=defApp.compareTo(rsApp.getString("application")) == 0 ? " SELECTED " : ""%>><%=rsApp.getString("application")%></option><%
                                                             }
                                                         %></select></td>
-                                                <td class="wob"><%=ComboInvariant(conn, "editRunQA", "width: 75px", "editRunQA", "runqa", "RUNQA", rs_testcase_general_info.getString("activeQA"), "", null)%></td>
-                                                <td class="wob"><%=ComboInvariant(conn, "editRunUAT", "width: 75px", "editRunUAT", "runuat", "RUNUAT", rs_testcase_general_info.getString("activeUAT"), "", null)%></td>
-                                                <td class="wob"><%=ComboInvariant(conn, "editRunPROD", "width: 75px", "editRunPROD", "runprod", "RUNPROD", rs_testcase_general_info.getString("activePROD"), "", null)%></td>
-                                                <td class="wob"><%=ComboInvariant(conn, "editPriority", "width: 75px", "editPriority", "priority", "PRIORITY", rs_testcase_general_info.getString("Priority"), "", null)%></td>
-                                                <td class="wob"><%=ComboInvariant(conn, "editGroup", "width: 140px", "editGroup", "editgroup", "GROUP", group, "", null)%></td>
-                                                <td class="wob"><%=ComboInvariant(conn, "editStatus", "width: 140px", "editStatus", "editStatus", "TCSTATUS", status, "", null)%></td>
+                                                <td class="wob"><%=ComboInvariant(appContext, "editRunQA", "width: 75px", "editRunQA", "runqa", "RUNQA", rs_testcase_general_info.getString("activeQA"), "", null)%></td>
+                                                <td class="wob"><%=ComboInvariant(appContext, "editRunUAT", "width: 75px", "editRunUAT", "runuat", "RUNUAT", rs_testcase_general_info.getString("activeUAT"), "", null)%></td>
+                                                <td class="wob"><%=ComboInvariant(appContext, "editRunPROD", "width: 75px", "editRunPROD", "runprod", "RUNPROD", rs_testcase_general_info.getString("activePROD"), "", null)%></td>
+                                                <td class="wob"><%=ComboInvariant(appContext, "editPriority", "width: 75px", "editPriority", "priority", "PRIORITY", rs_testcase_general_info.getString("Priority"), "", null)%></td>
+                                                <td class="wob"><%=ComboInvariant(appContext, "editGroup", "width: 140px", "editGroup", "editgroup", "GROUP", group, "", null)%></td>
+                                                <td class="wob"><%=ComboInvariant(appContext, "editStatus", "width: 140px", "editStatus", "editStatus", "TCSTATUS", status, "", null)%></td>
                                                 <%
                                                     if (rs_country_gen.next()) {
                                                         rs_country_gen.first();
@@ -758,7 +758,7 @@
 
                                 </tr>
                                 <tr>
-                                    <td class="wob"><%=ComboInvariant(conn, "editTcActive", "width: 50px", "editTcActive", "active", "TCACTIVE", rs_testcase_general_info.getString("TcActive"), "", null)%></td>
+                                    <td class="wob"><%=ComboInvariant(appContext, "editTcActive", "width: 50px", "editTcActive", "active", "TCACTIVE", rs_testcase_general_info.getString("TcActive"), "", null)%></td>
                                     <td class="wob">
                                         <select id="editFromBuild" name="editFromBuild" class="active" style="width: 70px" >
                                             <% String fromBuild = "";
@@ -1190,7 +1190,7 @@
                                                                                                                                       value="<%=rs_stepaction.getString("Sequence")%>"
                                                                                                                                       name="actions_sequence<%=complementName%>" readonly="readonly">
                                                                                 </td>
-                                                                                <td style="background-color: <%=actionColor%>"><%=ComboInvariant(conn, "actions_action" + complementName, "width: 136px; background-color:" + actionColor + ";color:" + actionFontColor, "actions_action", "wob", "ACTION", rs_stepaction.getString("Action"), "trackChanges(0, this.selectedIndex, 'submitButtonAction')", null)%></td>
+                                                                                <td style="background-color: <%=actionColor%>"><%=ComboInvariant(appContext, "actions_action" + complementName, "width: 136px; background-color:" + actionColor + ";color:" + actionFontColor, "actions_action", "wob", "ACTION", rs_stepaction.getString("Action"), "trackChanges(0, this.selectedIndex, 'submitButtonAction')", null)%></td>
                                                                                 <td class="technical_part" style="background-color: <%=actionColor%>"><input class="wob" style="width: 350px; background-color: <%=actionColor%>; color:<%=actionFontColor%>"
                                                                                                                                                              value="<%=rs_stepaction.getString("Object")%>"
                                                                                                                                                              name="actions_object<%=complementName%>" <%=isReadonly%>
@@ -1237,7 +1237,7 @@
                                                                                 <td id="wob"><input type="button" value="import HTML Scenario" onclick="importer('ImportHTML.jsp?Test=<%=test%>&Testcase=<%=testcase%>&Step=<%=rs_step.getString("step")%>')"></td>
                                                                             <%}%><td id="wob"><input value="Save Changes" onclick="submitTestCaseModification('stepAnchor_<%=i1%>');" id="submitButtonAction" name="submitChanges"
                                                                                                      type="button" >
-                                                                            <%=ComboInvariant(conn, "actions_action_", "width: 150px;visibility:hidden", "actions_action_", "actions_action_", "ACTION", "", "", null)%>
+                                                                            <%=ComboInvariant(appContext, "actions_action_", "width: 150px;visibility:hidden", "actions_action_", "actions_action_", "ACTION", "", "", null)%>
                                                                             </td>
                                                                             <% }%>
                                                                             </tr>
@@ -1316,7 +1316,7 @@
                                                                                             <td style="background-color: <%=controlColor%>"><input class="wob" style="width: 60px; font-weight: bold;background-color: <%=controlColor%>; color:<%=actionFontColor%>"
                                                                                                                                                    value="<%=rs_controls.getString("Control")%>"
                                                                                                                                                    name="controls_control<%=complementName%>" readonly="readonly"></td>
-                                                                                            <td style="background-color: <%=controlColor%>"><%=ComboInvariant(conn, "controls_type" + complementName, "width: 150px; background-color:" + controlColor + ";color:" + actionFontColor, "controls_type", "wob", "CONTROL", rs_controls.getString("Type"), "trackChanges(this.value, '" + rs_controls.getString("Type") + "', 'submitButtonChanges')", null)%></td>
+                                                                                            <td style="background-color: <%=controlColor%>"><%=ComboInvariant(appContext, "controls_type" + complementName, "width: 150px; background-color:" + controlColor + ";color:" + actionFontColor, "controls_type", "wob", "CONTROL", rs_controls.getString("Type"), "trackChanges(this.value, '" + rs_controls.getString("Type") + "', 'submitButtonChanges')", null)%></td>
                                                                                             <td class="technical_part" style="background-color: <%=controlColor%>"><input class="wob" style="width: 260px;background-color: <%=controlColor%>; color:<%=actionFontColor%>"
                                                                                                                                                                           value="<%=rs_controls.getString("ControlProperty")%>"
                                                                                                                                                                           name="controls_controlproperty<%=complementName%>"
@@ -1325,7 +1325,7 @@
                                                                                                                                                                           value="<%=rs_controls.getString("ControlValue")%>"
                                                                                                                                                                           name="controls_controlvalue<%=complementName%>"
                                                                                                                                                                           onchange="trackChanges(this.value, '<%=rs_controls.getString("ControlDescription")%>', 'submitButtonChanges')"></td>
-                                                                                            <td class="technical_part" style="background-color: <%=controlColor%>"><%=ComboInvariant(conn, "controls_fatal" + complementName, "width: 40px; background-color:" + controlColor + ";color:" + actionFontColor, "controls_fatal", "wob", "CTRLFATAL", rs_controls.getString("Fatal"), "trackChanges(this.value, '" + rs_controls.getString("Fatal") + "', 'submitButtonChanges')", null)%></td>
+                                                                                            <td class="technical_part" style="background-color: <%=controlColor%>"><%=ComboInvariant(appContext, "controls_fatal" + complementName, "width: 40px; background-color:" + controlColor + ";color:" + actionFontColor, "controls_fatal", "wob", "CTRLFATAL", rs_controls.getString("Fatal"), "trackChanges(this.value, '" + rs_controls.getString("Fatal") + "', 'submitButtonChanges')", null)%></td>
                                                                                             <td class="functional_description_control" style="background-color: <%=controlColor%>"><input class="wob" class="functional_description_control" style="width: 100%;background-color: <%=controlColor%>; color:<%=actionFontColor%>"
                                                                                                                                                                                           value="<%=rs_controls.getString("ControlDescription")%>"
                                                                                                                                                                                           name="controls_controldescription<%=complementName%>"
@@ -1341,8 +1341,8 @@
 
                                                                                     %>
                                                                                 </table>
-                                                                                <%=ComboInvariant(conn, "controls_type_", "width: 200px;visibility:hidden", "controls_type_", "controls_type_", "CONTROL", "", "", null)%>
-                                                                                <%=ComboInvariant(conn, "controls_fatal_", "width: 40px;visibility:hidden", "controls_fatal_", "controls_fatal_", "CTRLFATAL", "", "", null)%>
+                                                                                <%=ComboInvariant(appContext, "controls_type_", "width: 200px;visibility:hidden", "controls_type_", "controls_type_", "CONTROL", "", "", null)%>
+                                                                                <%=ComboInvariant(appContext, "controls_fatal_", "width: 40px;visibility:hidden", "controls_fatal_", "controls_fatal_", "CTRLFATAL", "", "", null)%>
                                                                                 <table>
                                                                                     <tr>
                                                                                 <%  if (canEdit) {
@@ -1527,7 +1527,7 @@
 
                                             if (rs_properties.first()) {
                                     %><div id="cache_properties">
-                                        <%=ComboInvariant(conn, "properties_dtb_type_ID", "display: none;", "properties_dtb_type_ID", "wob", "PROPERTYDATABASE", rs_properties.getString("a.Database"), "", null)%>
+                                        <%=ComboInvariant(appContext, "properties_dtb_type_ID", "display: none;", "properties_dtb_type_ID", "wob", "PROPERTYDATABASE", rs_properties.getString("a.Database"), "", null)%>
                                     </div><%
 
                                         do {
@@ -1643,12 +1643,12 @@
                                                             rs_tccountry.first();
                                                         %>
                                                 </tr></table></td>
-                                        <td><%=ComboInvariant(conn, "properties_type", "width: 120px; background-color:" + color, typeID, "wob", "PROPERTYTYPE", rs_properties.getString("a.Type"), "activateDatabaseBox(this.value, '" + properties_dtbID + "' ,'" + properties_dtb_ID + "' );activateValue2(this.value, 'tdValue2_" + rowNumber + "', '" + valueID + "','" + valueID + "_2','" + size2 + "')", null)%></td>
+                                        <td><%=ComboInvariant(appContext, "properties_type", "width: 120px; background-color:" + color, typeID, "wob", "PROPERTYTYPE", rs_properties.getString("a.Type"), "activateDatabaseBox(this.value, '" + properties_dtbID + "' ,'" + properties_dtb_ID + "' );activateValue2(this.value, 'tdValue2_" + rowNumber + "', '" + valueID + "','" + valueID + "_2','" + size2 + "')", null)%></td>
                                         <td>
                                             <%
                                                 if (rs_properties.getString("a.Type").equals("executeSqlFromLib") || rs_properties.getString("a.Type").equals("executeSql") || rs_properties.getString("a.Type").equals("executeSoapFromLib")) {
                                             %>
-                                            <%=ComboInvariant(conn, "properties_dtb", "width: 40px; display: inline ; background-color:" + color, properties_dtbID, "wob", "PROPERTYDATABASE", rs_properties.getString("a.Database"), "", null)%>
+                                            <%=ComboInvariant(appContext, "properties_dtb", "width: 40px; display: inline ; background-color:" + color, properties_dtbID, "wob", "PROPERTYDATABASE", rs_properties.getString("a.Database"), "", null)%>
                                             <%
                                             } else {
                                             %><select name="properties_dtb" style="width: 40px; display: inline ; background-color:<%=color%>" class="wob" id="<%=properties_dtbID%>">
@@ -1707,7 +1707,7 @@
                                                    onchange="trackChanges(this.value, '<%=rs_properties.getString("a.RowLimit")%>', 'SavePropertyChanges')"
                                                    maxlength="<%=testcase_proproperties_maxlength_rowlimit%>">
                                         </td>
-                                        <td><%=ComboInvariant(conn, "properties_nature", "width: 80px; background-color:" + color, "properties_nature", "wob", "PROPERTYNATURE", rs_properties.getString("a.Nature"), "trackChanges(0, this.selectedIndex, 'submitButtonChanges')", null)%></td>
+                                        <td><%=ComboInvariant(appContext, "properties_nature", "width: 80px; background-color:" + color, "properties_nature", "wob", "PROPERTYNATURE", rs_properties.getString("a.Nature"), "trackChanges(0, this.selectedIndex, 'submitButtonChanges')", null)%></td>
                                     </tr>
                                     <%
                                                     rs_properties_maxlength_cpt = 1; // Reset counter for max length properties
@@ -1735,9 +1735,9 @@
                                                + " - "
                                                + rs_testcase_general_info.getString("tc.testcase")%>">
                                 <input type="hidden" id="CountryList" name="CountryList" value="<%=countries%>">
-                                <%=ComboInvariant(conn, "new_properties_type_new_properties_value", "width: 70px;visibility:hidden", "new_properties_type_new_properties_value", "new_properties_type_new_properties_value", "PROPERTYTYPE", "", "", null)%>
-                                <%=ComboInvariant(conn, "properties_dtb_", "width: 40px;visibility:hidden", "properties_dtb_", "properties_dtb_", "PROPERTYDATABASE", "", "", null)%>
-                                <%=ComboInvariant(conn, "properties_nature_", "width: 80px;visibility:hidden", "properties_nature_", "properties_nature_", "PROPERTYNATURE", "", "", null)%>
+                                <%=ComboInvariant(appContext, "new_properties_type_new_properties_value", "width: 70px;visibility:hidden", "new_properties_type_new_properties_value", "new_properties_type_new_properties_value", "PROPERTYTYPE", "", "", null)%>
+                                <%=ComboInvariant(appContext, "properties_dtb_", "width: 40px;visibility:hidden", "properties_dtb_", "properties_dtb_", "PROPERTYDATABASE", "", "", null)%>
+                                <%=ComboInvariant(appContext, "properties_nature_", "width: 80px;visibility:hidden", "properties_nature_", "properties_nature_", "PROPERTYNATURE", "", "", null)%>
                                 <input type="hidden" name="testcase_hidden"
                                        value="<%=rs_testcase_general_info.getString("t.Test")
                                                + " - "

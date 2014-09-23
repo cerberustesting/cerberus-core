@@ -18,7 +18,6 @@
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
 <%@page import="org.cerberus.service.IDocumentationService"%>
-<%@page import="org.cerberus.service.IDatabaseVersioningService"%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE HTML>
@@ -54,9 +53,7 @@
         <%@ include file="include/function.jsp"%>
         <%@ include file="include/header.jsp"%>
         <%
-            Connection conn = db.connect();
             IDocumentationService docService = appContext.getBean(IDocumentationService.class);
-            try {
         %>
 
         <%
@@ -300,15 +297,6 @@
             <h3 style="color: blue"><%=title1%></h3>
         </div>
         <%
-                }
-            } finally {
-                if (conn != null) {
-                    try {
-                        conn.close();
-                    } catch (SQLException e) {
-                        //TODO logger
-                    }
-                }
             }
         %>
         <script type="text/javascript">
