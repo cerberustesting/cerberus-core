@@ -339,7 +339,7 @@
                                                                 <input id="ScTestCase" name="ScTestCase" value="<%=ScTestCase%>" style="width: 60px">
                                                             </td>
                                                             <td class="wob">
-                                                                <% out.print(ComboProject(conn, "ScProject", "width: 90px", "ScProject", "", scProject, "", true, "All", "-- ALL --"));%>
+                                                                <% out.print(ComboProject(appContext, "ScProject", "width: 90px", "ScProject", "", scProject, "", true, "All", "-- ALL --"));%>
                                                             </td>
                                                             <td class="wob">
                                                                 <select id="ScTicket" name="ScTicket" style="width: 100px">
