@@ -85,7 +85,7 @@ public class CampaignExecutionStatusBarGraphByFunction extends HttpServlet {
             
             List<TestCaseWithExecution> testCaseWithExecutions = campaignService.getCampaignTestCaseExecutionForEnvCountriesBrowserTag(campaignName, tag, env, country, browser);
             
-            HashMap<String, TestCaseWithExecution> testCaseWithExecutionsList = TestCaseWithExecution.generateEmptyResultOfExecutions(testCaseService.findTestCaseByCampaignName(campaignName), env, country, browser);
+            HashMap<String, TestCaseWithExecution> testCaseWithExecutionsList = TestCaseWithExecution.generateEmptyResultOfExecutions(testCaseService.findTestCaseByCampaignNameAndCountries(campaignName, country), env, country, browser);
 
             for (TestCaseWithExecution testCaseWithExecution : testCaseWithExecutions) {
                 String key = testCaseWithExecution.getBrowser() + "_" 
@@ -101,16 +101,6 @@ public class CampaignExecutionStatusBarGraphByFunction extends HttpServlet {
             HashMap<String, List<String>> datas = generateMultiBarAxisFromStatus(testCaseWithExecutions);
 
             List<JSONObject> axis = new ArrayList<JSONObject>();
-            
-            
-/*
-            createDatasetMultiBar("OK",dataBar.OK,"#00EE00","#33DD33","#33FF55"),
-            createDatasetMultiBar("KO",dataBar.KO,"#F7464A","#FF5A5E","#FF7A7E"),
-            createDatasetMultiBar("FA",dataBar.FA,"#FDB45C","#FFC870","#FFE890"),
-            createDatasetMultiBar("NA",dataBar.NA,"#EEEE00","#EEEE55","#EEFE65"),
-            createDatasetMultiBar("NE",dataBar.NE,"#000","#000","#000"),
-            createDatasetMultiBar("PE",dataBar.PE,"#555555","#333333","#33F3F3")
-            */
             
             axis.add(GraphicHelper.generateAxisForMultiBar("OK", 
                     datas.get("OK").toArray(new String[1]),"#00EE00","#33DD33","#33FF55"));
@@ -204,8 +194,6 @@ public class CampaignExecutionStatusBarGraphByFunction extends HttpServlet {
                 key = testCaseWithExecution.getTest();
             }
 
-            LOGGER.error("Key=" + key);
-
             if(!results.get("labels").contains(key)) {
                 results.get("labels").add(key);
 
@@ -219,7 +207,6 @@ public class CampaignExecutionStatusBarGraphByFunction extends HttpServlet {
 
                 results.get("total").add("0");
             }
-
             
             index = results.get("labels").indexOf(key);
             

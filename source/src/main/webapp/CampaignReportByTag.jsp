@@ -77,7 +77,47 @@
 
             var executionStatus, pieExecutionStatus;
 
+            function appendValueInInvariantSelect(selectId,invariantId) {
+                
+                $.get("ListCampaignParameter","invariant="+invariantId,function(data){
+                    var index, parameter;
+                    var select = $(selectId);
+                    select.empty();
+                    for(index=0; index<data.ParameterValues.length; index++) {
+                        parameter = data.ParameterValues[index];
+                        //console.log(parameter);
+                        select.append(
+                                $("<option></option>").attr('value', parameter[1])
+                                .text(parameter[3]+" - "+parameter[1])
+                                .attr("title", parameter[3]+" - "+parameter[1])
+                            );
+                     }
+                });
+            }
+
+
             $(document).ready(function () {
+                
+                appendValueInInvariantSelect("#country","COUNTRY");
+                appendValueInInvariantSelect("#environment","ENVIRONMENT");
+                appendValueInInvariantSelect("#browser","BROWSER");
+                
+                jQuery.ajax('./GetTagExecutions?withUUID').done(function(data) {
+                    var index;
+                    for(index=0; index<data.tags.length; index++) {
+                       $('#selectTag').append($('<option></option>').attr("value",data.tags[index]).text(data.tags[index]));
+                    }
+                });
+                
+                jQuery.ajax('./GetCampaign?action=findAllCampaign&withoutLink=true').done(function(data) {
+                    var index;
+                    for(index=0; index<data.Campaigns.length; index++) {
+                       $('#selectCampaign').append($('<option></option>').attr("value",data.Campaigns[index][1])
+                               .text(data.Campaigns[index][0]+" - "+data.Campaigns[index][1]+" - "+data.Campaigns[index][2]));
+                    }
+                });
+                
+                
                 
                 createGraphFromAjaxToElement("./CampaignExecutionReportByFunction?<%=query.toString() %>","#functionTest", null);
                 createGraphFromAjaxToElement("./CampaignExecutionStatusBarGraphByFunction?<%=query.toString() %>","#functionBar", null);
@@ -235,6 +275,14 @@
         <%@ include file="include/header.jsp" %>
 
         <div id="main">
+            <form method="get">
+                <label for="selectCampaign">Campaign: </label><select name="CampaignName" id="selectCampaign"></select><br>
+                <label for="selectTag">Tag: </label><select name="Tag" id="selectTag"></select><br>
+                <label for="environment">Environment: </label><select name="Environment" id="environment"></select><br>
+                <label for="country">Country: </label><select name="Country" id="country"></select><br>
+                <label for="browser">Browser: </label><select name="Browser" id="browser"></select><br>
+                <br><button type="submit" value="Load">Load</button>
+            </form>
             <table class="fullSize noBorder">
                 <tr>
                     <td class="title addborder"><h1>Report by Status</h1></td>

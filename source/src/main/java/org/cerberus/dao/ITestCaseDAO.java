@@ -89,6 +89,15 @@ public interface ITestCaseDAO {
      */
     List<TCase> findTestCaseByCampaignName(String campaign);
     
+    /**
+     *
+     * @param campaign the campaign name
+     * @param countries arrays of country
+     * @return the list of TCase used in the campaign
+     * @since 1.0.2
+     */
+    List<TCase> findTestCaseByCampaignNameAndCountries(String campaign, String[] countries);
+    
     public void updateTestCase(TCase tc) throws CerberusException;
     
     List<TCase> findTestCaseByTestSystems(String test, List<String> systems);

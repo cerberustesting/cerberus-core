@@ -26,6 +26,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.cerberus.dao.IApplicationDAO;
 import org.cerberus.dao.ICampaignDAO;
 import org.cerberus.database.DatabaseSpring;
@@ -54,6 +55,7 @@ public class CampaignDAO implements ICampaignDAO {
     @Autowired
     private IApplicationDAO applicationDAO;
 
+    private static final Logger LOGGER = Logger.getLogger(CampaignDAO.class);
 
     @Override
     public List<Campaign> findAll() throws CerberusException {
@@ -365,11 +367,15 @@ public class CampaignDAO implements ICampaignDAO {
                                     .append("inner join testbatterycontent tbc ")
                                     .append("on tbc.Test = tc.Test ")
                                     .append("and tbc.TestCase = tc.TestCase ")
+                                    .append("inner join testcasecountry tcc ")
+                                    .append("on tc.test = tcc.test ")
+                                    .append("and tc.testcase = tcc.testcase ")
                                     .append("inner join campaigncontent cc ")
                                     .append("on cc.testbattery = tbc.testbattery ")
                                     .append("left join testcaseexecution tce ")
                                     .append("on tce.Test = tc.Test ")
                                     .append("and tce.TestCase = tc.TestCase ")
+                                    .append("and tce.Country = tcc.Country ")
                                     .append("where cc.campaign = ? ")
                                     .append("and tce.tag = ? ");
         
@@ -389,7 +395,8 @@ public class CampaignDAO implements ICampaignDAO {
             }
         }
 
-        query.append(") and tce.Country in (");
+        
+        query.append(") and tcc.Country in (");
         for (int i = 0; i < country.length; i++) {
             query.append("?");
             if(i<country.length-1) {
