@@ -86,7 +86,7 @@ public class CampaignExecutionGraphByStatus extends HttpServlet {
             
             List<TestCaseWithExecution> testCaseWithExecutions = campaignService.getCampaignTestCaseExecutionForEnvCountriesBrowserTag(campaignName, tag, env, country, browser);
             
-            HashMap<String, TestCaseWithExecution> testCaseWithExecutionsList = TestCaseWithExecution.generateEmptyResultOfExecutions(testCaseService.findTestCaseByCampaignName(campaignName), env, country, browser);
+            HashMap<String, TestCaseWithExecution> testCaseWithExecutionsList = TestCaseWithExecution.generateEmptyResultOfExecutions(testCaseService.findTestCaseByCampaignNameAndCountries(campaignName, country), env, country, browser);
 
             for (TestCaseWithExecution testCaseWithExecution : testCaseWithExecutions) {
                 String key = testCaseWithExecution.getBrowser() + "_" 

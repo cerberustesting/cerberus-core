@@ -109,7 +109,7 @@
                     }
                 });
                 
-                jQuery.ajax('.//GetCampaign?action=findAllCampaign&withoutLink=true').done(function(data) {
+                jQuery.ajax('./GetCampaign?action=findAllCampaign&withoutLink=true').done(function(data) {
                     var index;
                     for(index=0; index<data.Campaigns.length; index++) {
                        $('#selectCampaign').append($('<option></option>').attr("value",data.Campaigns[index][1])

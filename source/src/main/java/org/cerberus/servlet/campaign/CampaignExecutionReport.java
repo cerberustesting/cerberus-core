@@ -31,11 +31,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.cerberus.dto.TestCaseWithExecution;
-import org.cerberus.entity.CampaignContent;
-import org.cerberus.entity.TestBatteryContent;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.service.ICampaignService;
-import org.cerberus.service.ITestBatteryService;
 import org.cerberus.service.ITestCaseService;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -91,7 +88,7 @@ public class CampaignExecutionReport extends HttpServlet {
 
             List<TestCaseWithExecution> testCaseWithExecutions = campaignService.getCampaignTestCaseExecutionForEnvCountriesBrowserTag(campaignName, tag, env, country, browser);
             
-            HashMap<String, TestCaseWithExecution> testCaseWithExecutionsList = TestCaseWithExecution.generateEmptyResultOfExecutions(testCaseService.findTestCaseByCampaignName(campaignName), env, country, browser);
+            HashMap<String, TestCaseWithExecution> testCaseWithExecutionsList = TestCaseWithExecution.generateEmptyResultOfExecutions(testCaseService.findTestCaseByCampaignNameAndCountries(campaignName,country), env, country, browser);
 
             for (TestCaseWithExecution testCaseWithExecution : testCaseWithExecutions) {
                 String key = testCaseWithExecution.getBrowser() + "_" 

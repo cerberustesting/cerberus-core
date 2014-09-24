@@ -230,4 +230,9 @@ public class TestCaseService implements ITestCaseService {
     public String getMaxNumberTestCase(String test){
         return this.testCaseDao.getMaxNumberTestCase(test);
     }
+
+    @Override
+    public List<TCase> findTestCaseByCampaignNameAndCountries(String campaign, String[] countries) {
+        return this.testCaseDao.findTestCaseByCampaignNameAndCountries(campaign, countries);
+    }
 }
