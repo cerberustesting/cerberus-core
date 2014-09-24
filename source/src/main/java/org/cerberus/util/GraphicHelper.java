@@ -74,7 +74,11 @@ public class GraphicHelper {
             
             JSONArray datas = new JSONArray();
             for (String dataStr : data) {
-                datas.put(Float.parseFloat(dataStr));
+                if(dataStr != null) {
+                    datas.put(Float.parseFloat(dataStr));
+                } else {
+                    datas.put(Float.parseFloat("0"));
+                }
             }
             jSONObject.put("data", datas);
 

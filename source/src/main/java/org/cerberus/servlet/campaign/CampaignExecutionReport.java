@@ -186,7 +186,7 @@ public class CampaignExecutionReport extends HttpServlet {
 
         String bugId;
         if (testCaseWithExecution.getApplicationObject() != null && testCaseWithExecution.getApplicationObject().getBugTrackerUrl() != null
-                && !"".equals(testCaseWithExecution.getApplicationObject().getBugTrackerUrl())) {
+                && !"".equals(testCaseWithExecution.getApplicationObject().getBugTrackerUrl()) && testCaseWithExecution.getBugID() != null) {
             bugId = testCaseWithExecution.getApplicationObject().getBugTrackerUrl().replaceAll("%BUGID%", testCaseWithExecution.getBugID());
             bugId = new StringBuffer("<a href='")
                     .append(bugId)
