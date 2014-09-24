@@ -173,9 +173,6 @@ public class CampaignExecutionRadarGraphByFunction extends HttpServlet {
                 key = testCaseWithExecution.getTest();
             }
             
-            LOGGER.error("Key=" + key);
-
-            
             if(!results.get("labels").contains(key)) {
                 results.get("labels").add(key);
 
