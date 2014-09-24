@@ -57,6 +57,7 @@ public class GetCampaign extends HttpServlet {
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
 
         String action = policy.sanitize(request.getParameter("action"));
+        String withoutLink = policy.sanitize(request.getParameter("withoutLink"));
         String campaign = policy.sanitize(request.getParameter("campaign"));
         String testBattery = policy.sanitize(request.getParameter("TestBattery"));
 
@@ -64,7 +65,11 @@ public class GetCampaign extends HttpServlet {
             JSONObject jsonResponse = new JSONObject();
             try {
                 if (action != null && "findAllCampaign".equals(action.trim())) {
-                    jsonResponse.put("Campaigns", findAllCampaignToJSON());
+                    boolean withLink=true;
+                    if(withoutLink != null && "true".equalsIgnoreCase(withoutLink)) {
+                        withLink=false;
+                    }
+                    jsonResponse.put("Campaigns", findAllCampaignToJSON(withLink));
                 } else if (action != null && "findAllCampaignContent".equals(action.trim())) {
                     jsonResponse.put("CampaignContents", findAllCampaignContentToJSON(campaignService.findCampaignByKey(Integer.parseInt(campaign)).getCampaign()));
 
@@ -89,10 +94,11 @@ public class GetCampaign extends HttpServlet {
         }
     }
 
-    private JSONArray findAllCampaignToJSON() throws JSONException, CerberusException {
+    private JSONArray findAllCampaignToJSON(boolean withLink) throws JSONException, CerberusException {
         JSONArray jsonResponse = new JSONArray();
+
         for (Campaign campaign : campaignService.findAll()) {
-            jsonResponse.put(convertCampaignToJSONObject(campaign, true));
+            jsonResponse.put(convertCampaignToJSONObject(campaign, withLink));
         }
 
         return jsonResponse;
