@@ -73,42 +73,6 @@
         }
     }
 
-    String ComboInvariantAjax(Connection conn, String HTMLComboName, String HTMLComboStyle, String HTMLId, String HTMLrel, String combonumber, String value, String HTMLOnChange, boolean emptyfirstoption) {
-        try {
-            Statement stmtQuery = conn.createStatement();
-            try {
-                String sq = "SELECT value from invariant where idname = '" + combonumber + "' order by sort";
-                ResultSet q = stmtQuery.executeQuery(sq);
-                try {
-                    String ret = "<select id=\"" + HTMLId + "\" rel=\"" + HTMLrel + "\" style=\"" + HTMLComboStyle + "\" name=\"" + HTMLComboName + "\"";
-                    if (HTMLOnChange.compareToIgnoreCase("") != 0) {
-                        ret = ret + " onchange=\"" + HTMLOnChange + "\"";
-                    }
-                    ret = ret + ">";
-                    if (emptyfirstoption) {
-                        ret = ret + "<option value=\"\"></option>";
-                    }
-                    while (q.next()) {
-                        ret = ret + "<option value=\"" + q.getString("value") + "\"";
-                        if ((value != null) && (value.compareTo(q.getString("value")) == 0)) {
-                            ret = ret + " SELECTED ";
-                        }
-                        ret = ret + ">" + q.getString("value");
-                        ret = ret + "</option>";
-                    }
-                    ret = ret + "</select>";
-                    return ret;
-                } finally {
-                    q.close();
-                }
-            } finally {
-                stmtQuery.close();
-            }
-        } catch (Exception e) {
-            return e.toString();
-        }
-    }
-
     String ComboInvariantAjax(ApplicationContext appContext, String HTMLComboName, String HTMLComboStyle, String HTMLId, String HTMLrel, String combonumber, String value, String HTMLOnChange, boolean emptyfirstoption) {
         try {
             IInvariantService invFunctionService = appContext.getBean(IInvariantService.class);
@@ -132,42 +96,6 @@
             ret += "</select>";
             return ret;
 
-        } catch (Exception e) {
-            return e.toString();
-        }
-    }
-
-    String ComboInvariantMultipleAjax(Connection conn, String HTMLComboName, String HTMLComboStyle, String HTMLId, String HTMLrel, String combonumber, String value, String HTMLOnChange, boolean emptyfirstoption) {
-        try {
-            Statement stmtQuery = conn.createStatement();
-            try {
-                String sq = "SELECT value from invariant where idname = '" + combonumber + "' order by sort";
-                ResultSet q = stmtQuery.executeQuery(sq);
-                try {
-                    String ret = "<select id=\"" + HTMLId + "\" rel=\"" + HTMLrel + "\" style=\"" + HTMLComboStyle + "\" name=\"" + HTMLComboName + "\"";
-                    if (HTMLOnChange.compareToIgnoreCase("") != 0) {
-                        ret = ret + " onchange=\"" + HTMLOnChange + "\"";
-                    }
-                    ret = ret + " multiple >";
-                    if (emptyfirstoption) {
-                        ret = ret + "<option value=\"\"></option>";
-                    }
-                    while (q.next()) {
-                        ret = ret + "<option value=\"" + q.getString("value") + "\"";
-                        if ((value != null) && (value.compareTo(q.getString("value")) == 0)) {
-                            ret = ret + " SELECTED ";
-                        }
-                        ret = ret + ">" + q.getString("value");
-                        ret = ret + "</option>";
-                    }
-                    ret = ret + "</select>";
-                    return ret;
-                } finally {
-                    q.close();
-                }
-            } finally {
-                stmtQuery.close();
-            }
         } catch (Exception e) {
             return e.toString();
         }
@@ -197,47 +125,6 @@
             return ret;
 
         } catch (Exception e) {
-            return e.toString();
-        }
-    }
-
-    String ComboProject(Connection conn, String HTMLComboName, String HTMLComboStyle, String HTMLId, String HTMLClass, String value, String HTMLOnChange, boolean emptyfirstoption, String FirstValue, String FirstDescription) {
-        try {
-            Statement stmtQuery = conn.createStatement();
-            try {
-                String sq = "SELECT idproject, VCCode, Description, active FROM project WHERE active='Y' or idproject='" + value + "' ORDER BY idproject";
-                ResultSet q = stmtQuery.executeQuery(sq);
-                try {
-                    String ret = "<select id=\"" + HTMLId + "\" class=\"" + HTMLClass + "\" style=\"" + HTMLComboStyle + "\" name=\"" + HTMLComboName + "\"";
-                    if (HTMLOnChange.compareToIgnoreCase("") != 0) {
-                        ret = ret + " onchange=\"" + HTMLOnChange + "\"";
-                    }
-                    ret = ret + ">";
-                    if (emptyfirstoption) {
-                        ret = ret + " <option value=\"" + FirstValue + "\">" + FirstDescription + "</option>";
-                    }
-                    while (q.next()) {
-                        ret = ret + " <option value=\"" + q.getString("idproject") + "\"";
-                        ret = ret + " style=\"width: 200px;";
-                        if (q.getString("active").equalsIgnoreCase("Y")) {
-                            ret = ret + "font-weight:bold;";
-                        }
-                        ret = ret + "\"";
-                        if ((value != null) && (value.compareTo(q.getString("idproject")) == 0)) {
-                            ret = ret + " SELECTED ";
-                        }
-                        ret = ret + ">" + q.getString("idproject") + " " + q.getString("Description");
-                        ret = ret + "</option>";
-                    }
-                    ret = ret + " </select>";
-                    return ret;
-                } finally {
-                    q.close();
-                }
-            } finally {
-                stmtQuery.close();
-            }
-        } catch (SQLException e) {
             return e.toString();
         }
     }

@@ -334,7 +334,7 @@
                                                     </select>
                                                 </td>
                                                 <td id="wob">
-                                                    <% out.print(ComboProject(conn, "project", "width: 100px;", "project", "", project, "", true, "All", "-- ALL --"));%>
+                                                    <% out.print(ComboProject(appContext, "project", "width: 100px;", "project", "", project, "", true, "All", "-- ALL --"));%>
                                                 </td>
                                                 <td id="wob"><select id="application" style="width: 110px"  name="Application">
                                                         <option value="All">-- ALL --</option>
