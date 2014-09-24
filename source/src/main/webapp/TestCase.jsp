@@ -842,6 +842,7 @@
 
                                             <div style="width:100%;clear:both;color:blue;font-weight:bold;font-size:10px ;font-family: Trebuchet MS; background-color: transparent">
                                                 <div><div><img src="images/addAction.png" style="width:15px;height:15px" title="Add Action"
+                                                               data-fieldtype="addActionButton"
                                                                onclick="addTCSANew('BeforeFirstAction<%=tcs.getStep()%>', '<%=incrementStep%>', null);
                                                                        enableField('submitButtonAction');">
                                                     </div></div>
@@ -857,8 +858,9 @@
                                             <input type="hidden" name="initial_step_number_<%=incrementStep%>" id="initial_step_number_<%=incrementStep%>" value="<%=tcs.getStep()%>">
                                         </div>
                                         <div id="StepDescDiv" style="width:550px;float:left">
-                                            <input style="float:right;margin-top:10px;font-weight: bold; width: 500px;background-color:transparent; font-weight:bold;font-size:14px ;font-family: Trebuchet MS; color:#333333; border-color:#EEEEEE;border-style:solid; border-width:thin" name="step_description_<%=incrementStep%>" value="<%=tcs.getDescription()%>">
-                                        </div>
+                                            <div><div><input style="float:right;margin-top:10px;font-weight: bold; width: 500px;background-color:transparent; font-weight:bold;font-size:14px ;font-family: Trebuchet MS; color:#333333; border-color:#EEEEEE;border-style:solid; border-width:thin"
+                                                data-fieldtype="Description" name="step_description_<%=incrementStep%>" value="<%=tcs.getDescription()%>">
+                                                </div></div></div>
                                         <div id="StepUseStepDiv" style="float:left">UseStep
                                             <input type="checkbox" name="step_useStep_<%=incrementStep%>" style="margin-top:15px;font-weight: bold; width:20px" onclick="confirmDeletingAction(this, '<%=incrementStep%>')"
                                                    <% if (tcs.getUseStep().equals("Y")) {%>
@@ -1112,7 +1114,7 @@
 
                                                     </div>    
                                                     <%   }%>
-                                                    <div id="DivActionEndOfAction<%=incrementStep%><%=incrementAction%>"></div>
+                                                    <div id="DivActionEndOfAction<%=incrementStep%><%=incrementAction%>" class="endOfAction"></div>
                                                     <%
                                                         } /*
                                                          * End actions loop
@@ -1577,6 +1579,16 @@
                         <input type="checkbox" data-id="step_delete_template" style="margin-top:15px;font-weight: bold; width:20px">
                         <input type="hidden" data-id="step_increment">
                     </div>
+                    <div style="margin-top:10px;width:3%;float:left;color:blue;font-weight:bold;font-size:10px ;font-family: Trebuchet MS; background-color: transparent">
+                        <div style="width:100%;clear:both;color:blue;font-weight:bold;font-size:10px ;font-family: Trebuchet MS; background-color: transparent">
+                            <div>
+                                <div>
+                                    <img src="images/addAction.png" data-id="step_addActionButton_template" 
+                                         data-fieldtype="addActionButton" style="width:15px;height:15px" title="Add Action">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <div id="StepNumberDiv" style="float:left; width:80px">
                         &nbsp;&nbsp;Step&nbsp;&nbsp;
                         <input data-id="step_number_template" data-fieldtype="stepNumber" style="margin-top:15px;font-weight: bold; width:20px;background-color:transparent; border-width:0px">
@@ -1597,7 +1609,7 @@
                     <div id="StepUseStepTestDiv" style="float:left">
                         <select data-id="step_useStepTest_template" style="width: 200px;margin-top:15px;font-weight: bold;">
                             <% List<Test> tList = testService.findTestBySystems(systems);
-                            for (Test tst : tList) {%>
+                                for (Test tst : tList) {%>
                             <option style="width: 200px;" class="font_weight_bold_<%=tst.getActive()%>" value="<%=tst.getTest()%>"><%=tst.getTest()%>
                             </option>
                             <% }%>
@@ -1610,7 +1622,7 @@
                     </div>
                     <div id="StepUseStepStepDiv" style="float:left">
                         <select data-id="step_useStepStep_template" style="width: 200px;margin-top:15px;font-weight: bold;">
-                            <option style="width: 200px" value="All">---</option>
+                            <option style="width: 200px" value="0">---</option>
                         </select>
                     </div>
                 </div>
@@ -1789,13 +1801,13 @@
                         if (e.which === 67 && e.altKey) {
                             var f = $(field).parent().parent().parent().parent();
                             f.find('img[data-fieldtype="addActionButton"]').click();
-                            f.next(".RowActionDiv").find("input[data-fieldtype='Description']").focus();
+            f.nextUntil('.RowActionDiv').next().find("input[data-fieldtype='Description']").focus();
 
                         }
                         if (e.which === 86 && e.altKey) {
                             var f = $(field).parent().parent().parent().parent();
                             f.find('img[data-fieldtype="addControlButton"]').click();
-                            f.next(".RowActionDiv").find("input[data-fieldtype='Description']").focus();
+                            f.next().find("input[data-fieldtype='Description']").focus();
 
                         }
                     });
