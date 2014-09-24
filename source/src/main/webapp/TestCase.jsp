@@ -827,14 +827,15 @@
                                             <%if (stepusedByAnotherTest) {%>
                                             <div id="StepWarnAlreadyInUse" title="Step In Use By Other Testcase" style="float:left;width:10px;height:100%;display:inline-block; background-color:yellow;"
                                                  onclick="showTestCaseUsingThisStep()">
-                                            </div>
+                                           </div>
                                             <%}%>
                                             <%if (useStep) {%>
                                             <div id="StepWarnAlreadyInUse" title="Step Using another step" style="float:left;width:10px;height:100%;display:inline-block; background-color:black;">
                                             </div>
                                             <%}%>
-                                            <input type="hidden" name="step_increment" value="<%=incrementStep%>">
-                                            <input id="incrementStepNumber" value="<%=incrementStep%>" type="hidden">
+                                            <input style="display:none" name="step_InUseInOtherTestCase_<%=incrementStep%>" value="<%=stepusedByAnotherTest?"Y":"N"%>">
+                                            <input style="display:none" name="step_increment" value="<%=incrementStep%>">
+                                            <input id="incrementStepNumber" value="<%=incrementStep%>" style="display:none">
 
                                         </div>
                                         <%if (!useStep) {%>

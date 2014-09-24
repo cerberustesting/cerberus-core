@@ -281,6 +281,17 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
         List<TestCaseStepActionControl> tcsacNewNewFromDtb = new ArrayList(tcsacService.findControlByTestTestCase(initialTest, initialTestCase));
         tcsacService.compareListAndUpdateInsertDeleteElements(tcsacNewFromPage, tcsacNewNewFromDtb);
 
+        /*Update the testcasestep using the steps*/
+        for (TestCaseStep tcsL : tcsFromPage) {
+            if (tcsL.isIsStepInUseByOtherTestCase()) {
+                List<TestCaseStep> tcsUsingStep = tcsService.getTestCaseStepUsingStepInParamter(tcsL.getTest(), tcsL.getTestCase(), tcsL.getInitialStep());
+                for (TestCaseStep tcsUS : tcsUsingStep) {
+                    tcsUS.setUseStepStep(tcsL.getStep());
+                    tcsService.updateTestCaseStep(tcsUS);
+                }
+            }
+        }
+
         /**
          * Adding Log entry.
          */
@@ -400,6 +411,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
         if (testcase_step_increment != null) {
             for (String inc : testcase_step_increment) {
                 String delete = getParameterIfExists(request, "step_delete_" + inc);
+                String stepInUse = getParameterIfExists(request, "step_InUseInOtherTestCase_" + inc);
                 int step = Integer.valueOf(getParameterIfExists(request, "step_number_" + inc) == null ? "0" : getParameterIfExists(request, "step_number_" + inc));
                 int initialStep = Integer.valueOf(getParameterIfExists(request, "initial_step_number_" + inc) == null ? "0" : getParameterIfExists(request, "initial_step_number_" + inc));
                 String desc = HtmlUtils.htmlEscape(getParameterIfExists(request, "step_description_" + inc));
@@ -421,6 +433,12 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
                             tcStep.setUseStepTestCase(tcs.getUseStepTestCase());
                             tcStep.setUseStepStep(tcs.getUseStepStep());
                         }
+                    }
+                    if (stepInUse != null && stepInUse.equals("Y") && initialStep!=step) {
+                        tcStep.setIsStepInUseByOtherTestCase(true);
+                        tcStep.setInitialStep(initialStep);
+                    } else {
+                        tcStep.setIsStepInUseByOtherTestCase(false);
                     }
                     testCaseStep.add(tcStep);
                     //System.out.print("FromPage" + tcStep.toString());

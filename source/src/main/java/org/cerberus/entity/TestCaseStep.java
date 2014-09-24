@@ -33,7 +33,25 @@ public class TestCaseStep {
     private String useStepTestCase;  // The testcase of the used step
     private Integer useStepStep;   //  the step used
     private List<TestCaseStepAction> testCaseStepAction;
+    private boolean isStepInUseByOtherTestCase;
+    private int initialStep;
 
+    public int getInitialStep() {
+        return initialStep;
+    }
+
+    public void setInitialStep(int initialStep) {
+        this.initialStep = initialStep;
+    }
+    
+    public boolean isIsStepInUseByOtherTestCase() {
+        return isStepInUseByOtherTestCase;
+    }
+
+    public void setIsStepInUseByOtherTestCase(boolean isStepInUseByOtherTestCase) {
+        this.isStepInUseByOtherTestCase = isStepInUseByOtherTestCase;
+    }
+    
     public String getUseStep() {
         return useStep;
     }
