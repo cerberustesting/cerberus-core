@@ -275,41 +275,37 @@
         <%@ include file="include/header.jsp" %>
 
         <div id="main">
-            <form method="get">
-                <label for="selectCampaign">Campaign: </label><select name="CampaignName" id="selectCampaign"></select><br>
-                <label for="selectTag">Tag: </label><select name="Tag" id="selectTag"></select><br>
-                <label for="environment">Environment: </label><select name="Environment" id="environment"></select><br>
-                <label for="country">Country: </label><select name="Country" id="country"></select><br>
-                <label for="browser">Browser: </label><select name="Browser" id="browser"></select><br>
-                <br><button type="submit" value="Load">Load</button>
-            </form>
             <table class="fullSize noBorder">
                 <tr>
-                    <td class="title addborder"><h1>Report by Status</h1></td>
-                    <td class="title"><h1>Report by Function</h1></td>
-                </tr>
-                <tr>
-                    <td class="addborder" style="width: 20%">
+                    <td style="width: 48%" class="title addborder">
+                        <form method="get">
+                            <label for="selectCampaign">Campaign: </label><select name="CampaignName" id="selectCampaign"></select><br>
+                            <label for="selectTag">Tag: </label><select name="Tag" id="selectTag"></select><br>
+                            <label for="environment">Environment: </label><select name="Environment" id="environment"></select><br>
+                            <label for="country">Country: </label><select name="Country" id="country"></select><br>
+                            <label for="browser">Browser: </label><select name="Browser" id="browser"></select><br>
+                            <br><button type="submit" value="Load">Load</button>
+                        </form>
+                    </td>
+                    <td style="width: 48%">
+                        <h1>Report by Status</h1>
                         <div class="executionStatus"></div>
                         <br>
                         <canvas id="myDonut"></canvas>
                     </td>
-                    <td style="width: 78%">
+                </tr>
+                <tr>
+                    <td style="width: 48%">
+                        <h1>Report by Function</h1>
                         <canvas id="functionBar"></canvas>
                     </td>
-                </tr>
-            </table>
-            <br>
-            <table class="fullSize noBorder">
-                <tr>
-                    <td class="title addborder" colspan="2"><h1>Radar by function</h1></td>
-                </tr>
-                <tr style="width: 98%">
-                    <td colspan="2">
+                    <td style="width: 48%">
+                        <h1>Radar by function</h1>
                         <canvas id="functionTest"></canvas>
                     </td>
                 </tr>
             </table>
+            <br>
             <h1><a name="StatusNE" class="StatusNE">Not Executed</a></h1>
             <table id="StatusNE" class="arrondTable fullSize needToBeSort">
                 <thead>
