@@ -647,25 +647,15 @@ public class SeleniumService implements ISeleniumService {
     }
 
     @Override
-    public void doScreenShot(Selenium selenium, String runId, String name) {
+    public BufferedImage takeScreenShot(Selenium selenium) {
+        BufferedImage newImage = null;
         try {
             WebDriver augmentedDriver = new Augmenter().augment(selenium.getDriver());
             File image = ((TakesScreenshot) augmentedDriver).getScreenshotAs(OutputType.FILE);
             BufferedImage bufferedImage = ImageIO.read(image);
 
-            String imgPath;
-            try {
-                imgPath = parameterService.findParameterByKey("cerberus_picture_path", "").getValue();
-                File dir = new File(imgPath + runId);
-                dir.mkdirs();
-
-                BufferedImage newImage = new BufferedImage(bufferedImage.getWidth(), bufferedImage.getHeight(), BufferedImage.TYPE_INT_RGB);
-                newImage.createGraphics().drawImage(bufferedImage, 0, 0, Color.WHITE, null);
-                ImageIO.write(newImage, "jpg", new File(imgPath + runId + File.separator + name));
-            } catch (CerberusException ex) {
-                Logger.getLogger(SeleniumService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-            }
-
+            newImage = new BufferedImage(bufferedImage.getWidth(), bufferedImage.getHeight(), BufferedImage.TYPE_INT_RGB);
+            newImage.createGraphics().drawImage(bufferedImage, 0, 0, Color.WHITE, null);
         } catch (IOException exception) {
             MyLogger.log(SeleniumService.class.getName(), Level.WARN, exception.toString());
         } catch (WebDriverException exception) {
@@ -673,6 +663,7 @@ public class SeleniumService implements ISeleniumService {
             //possible that the page still loading
             MyLogger.log(SeleniumService.class.getName(), Level.WARN, exception.toString());
         }
+        return newImage;
     }
 
     @Override
