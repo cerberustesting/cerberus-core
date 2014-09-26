@@ -19,6 +19,8 @@
  */
 package org.cerberus.entity;
 
+import java.util.List;
+
 /**
  *
  * @author bcivel
@@ -34,6 +36,15 @@ public class Robot {
     String version;
     String active;
     String description;
+    List<RobotCapabilities> capabilities;
+
+    public List<RobotCapabilities> getCapabilities() {
+        return capabilities;
+    }
+
+    public void setCapabilities(List<RobotCapabilities> capabilities) {
+        this.capabilities = capabilities;
+    }
 
     public String getPort() {
         return port;
