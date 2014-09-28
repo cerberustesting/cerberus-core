@@ -38,7 +38,6 @@ import org.cerberus.exception.CerberusException;
 import org.cerberus.log.MyLogger;
 import org.cerberus.service.IParameterService;
 import org.cerberus.serviceEngine.IRecorderService;
-import org.cerberus.serviceEngine.ISeleniumService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -50,11 +49,11 @@ import org.springframework.stereotype.Service;
 public class RecorderService implements IRecorderService {
 
     @Autowired
-    ISeleniumService seleniumService;
-    @Autowired
     IParameterService parameterService;
     @Autowired
     ExecutionSOAPResponse eSResponse;
+    @Autowired
+    WebDriverService webdriverService;
 
     @Override
     public String recordScreenshotAndGetName(TestCaseExecution testCaseExecution,
@@ -78,13 +77,13 @@ public class RecorderService implements IRecorderService {
          */
         String imgPath;
             try {
-                BufferedImage newImage = this.seleniumService.takeScreenShot(testCaseExecution.getSelenium());
+                BufferedImage newImage = this.webdriverService.takeScreenShot(testCaseExecution.getSession());
                 imgPath = parameterService.findParameterByKey("cerberus_picture_path", "").getValue();
                 File dir = new File(imgPath + runId);
                 dir.mkdirs();
                 ImageIO.write(newImage, "jpg", new File(imgPath + runId + File.separator + screenshotFilename));
             } catch (CerberusException ex) {
-                Logger.getLogger(SeleniumService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+                Logger.getLogger(RecorderService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
             } catch (IOException ex) {
             Logger.getLogger(RecorderService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
@@ -201,7 +200,7 @@ public class RecorderService implements IRecorderService {
         FileOutputStream fileOutputStream = null;
         try {
             fileOutputStream = new FileOutputStream(file);
-            fileOutputStream.write(this.seleniumService.getPageSource(testCaseExecution.getSelenium()).getBytes());
+            fileOutputStream.write(this.webdriverService.getPageSource(testCaseExecution.getSession()).getBytes());
             fileOutputStream.close();
         } catch (FileNotFoundException ex) {
             Logger.getLogger(ExecutionRunService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
@@ -239,7 +238,7 @@ public class RecorderService implements IRecorderService {
             fileOutputStream = new FileOutputStream(file);
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             DataOutputStream out = new DataOutputStream(baos);
-            for (String element : this.seleniumService.getSeleniumLog(testCaseExecution.getSelenium())) {
+            for (String element : this.webdriverService.getSeleniumLog(testCaseExecution.getSession())) {
                 out.writeBytes(element);
             }
             byte[] bytes = baos.toByteArray();

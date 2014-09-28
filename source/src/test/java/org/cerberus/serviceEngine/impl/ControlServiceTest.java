@@ -20,12 +20,10 @@
 
 package org.cerberus.serviceEngine.impl;
 
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.when;
 import junit.framework.Assert;
 import org.cerberus.entity.Selenium;
+import org.cerberus.entity.Session;
 import org.cerberus.entity.TestCaseExecution;
-
 import org.cerberus.entity.TestCaseStepActionControlExecution;
 import org.cerberus.entity.TestCaseStepActionExecution;
 import org.cerberus.entity.TestCaseStepExecution;
@@ -33,7 +31,9 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
+import static org.mockito.Matchers.anyString;
 import org.mockito.Mock;
+import static org.mockito.Mockito.when;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.openqa.selenium.WebDriverException;
 import org.springframework.test.context.ContextConfiguration;
@@ -50,9 +50,9 @@ import org.springframework.test.context.ContextConfiguration;
 public class ControlServiceTest {
 
     @Mock
-    private Selenium selenium;
+    private Session session;
     @Mock
-    private SeleniumService seleniumService;
+    private WebDriverService webdriverService;
     @Mock
     private TestCaseExecution tCExecution;
     @Mock
@@ -358,7 +358,7 @@ public class ControlServiceTest {
         tcsae.setTestCaseStepExecution(tcse);
         tcsace.setTestCaseStepActionExecution(tcsae);
 
-        when(seleniumService.isElementPresent(selenium, anyString())).thenReturn(true);
+        when(webdriverService.isElementPresent(session, anyString())).thenReturn(true);
 
         this.controlService.doControl(tcsace);
 
@@ -384,7 +384,7 @@ public class ControlServiceTest {
         tcsae.setTestCaseStepExecution(tcse);
         tcsace.setTestCaseStepActionExecution(tcsae);
 
-        when(seleniumService.isElementPresent(selenium, anyString())).thenReturn(false);
+        when(webdriverService.isElementPresent(session, anyString())).thenReturn(false);
 
         this.controlService.doControl(tcsace);
 
@@ -430,14 +430,14 @@ public class ControlServiceTest {
         tcsace.setControlProperty(property);
         tcsace.setControlValue(value);
         tcsace.setFatal("Y");
-        tCExecution.setSelenium(selenium);
+        tCExecution.setSession(session);
         TestCaseStepExecution tcse = new TestCaseStepExecution();
         tcse.settCExecution(tCExecution);
         TestCaseStepActionExecution tcsae = new TestCaseStepActionExecution();
         tcsae.setTestCaseStepExecution(tcse);
         tcsace.setTestCaseStepActionExecution(tcsae);
         
-        when(seleniumService.isElementPresent(tCExecution.getSelenium(), anyString())).thenThrow(new WebDriverException());
+        when(webdriverService.isElementPresent(tCExecution.getSession(), anyString())).thenThrow(new WebDriverException());
 
         this.controlService.doControl(tcsace);
 
@@ -463,7 +463,7 @@ public class ControlServiceTest {
         tcsae.setTestCaseStepExecution(tcse);
         tcsace.setTestCaseStepActionExecution(tcsae);
 
-        when(seleniumService.isElementPresent(selenium, anyString())).thenReturn(false);
+        when(webdriverService.isElementPresent(session, anyString())).thenReturn(false);
 
         this.controlService.doControl(tcsace);
 
@@ -489,7 +489,7 @@ public class ControlServiceTest {
         tcsae.setTestCaseStepExecution(tcse);
         tcsace.setTestCaseStepActionExecution(tcsae);
 
-        when(seleniumService.isElementPresent(selenium, anyString())).thenReturn(true);
+        when(webdriverService.isElementPresent(session, anyString())).thenReturn(true);
 
         this.controlService.doControl(tcsace);
 
@@ -541,7 +541,7 @@ public class ControlServiceTest {
         tcsae.setTestCaseStepExecution(tcse);
         tcsace.setTestCaseStepActionExecution(tcsae);
 
-        when(seleniumService.isElementPresent(selenium, anyString())).thenThrow(new WebDriverException());
+        when(webdriverService.isElementPresent(session, anyString())).thenThrow(new WebDriverException());
 
         this.controlService.doControl(tcsace);
 
@@ -569,8 +569,8 @@ public class ControlServiceTest {
         tcsae.setTestCaseStepExecution(tcse);
         tcsace.setTestCaseStepActionExecution(tcsae);
         
-        when(seleniumService.isElementPresent(selenium, anyString())).thenReturn(true);
-        when(seleniumService.isElementNotVisible(selenium, anyString())).thenReturn(true);
+        when(webdriverService.isElementPresent(session, anyString())).thenReturn(true);
+        when(webdriverService.isElementNotVisible(session, anyString())).thenReturn(true);
 
         this.controlService.doControl(tcsace);
 
@@ -596,8 +596,8 @@ public class ControlServiceTest {
         tcsae.setTestCaseStepExecution(tcse);
         tcsace.setTestCaseStepActionExecution(tcsae);
 
-        when(seleniumService.isElementPresent(selenium, anyString())).thenReturn(true);
-        when(seleniumService.isElementNotVisible(selenium, anyString())).thenReturn(false);
+        when(webdriverService.isElementPresent(session, anyString())).thenReturn(true);
+        when(webdriverService.isElementNotVisible(session, anyString())).thenReturn(false);
 
         this.controlService.doControl(tcsace);
 
@@ -648,7 +648,7 @@ public class ControlServiceTest {
         tcsae.setTestCaseStepExecution(tcse);
         tcsace.setTestCaseStepActionExecution(tcsae);
 
-        when(seleniumService.isElementPresent(selenium, anyString())).thenThrow(new WebDriverException());
+        when(webdriverService.isElementPresent(session, anyString())).thenThrow(new WebDriverException());
 
         this.controlService.doControl(tcsace);
 
@@ -713,7 +713,7 @@ public class ControlServiceTest {
         String value = "id=child";
         String msg = "Element '"+value+"' is not child of element '"+property+"'.";
 
-        when(seleniumService.isElementInElement(selenium, property, value)).thenReturn(Boolean.FALSE);
+        when(webdriverService.isElementInElement(session, property, value)).thenReturn(Boolean.FALSE);
 
         TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
         tcsace.setControlType("verifyElementInElement");
@@ -740,7 +740,7 @@ public class ControlServiceTest {
         String value = "id=child";
         String msg = "Element '"+value+"' in child of element '"+property+"'.";
 
-        when(seleniumService.isElementInElement(selenium, property, value)).thenReturn(Boolean.TRUE);
+        when(webdriverService.isElementInElement(session, property, value)).thenReturn(Boolean.TRUE);
 
         TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
         tcsace.setControlType("verifyElementInElement");

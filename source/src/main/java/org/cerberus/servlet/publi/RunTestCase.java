@@ -24,29 +24,33 @@ import java.io.PrintWriter;
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import java.util.logging.Logger;
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
-
 import org.apache.log4j.Level;
 import org.cerberus.entity.ExecutionSOAPResponse;
 import org.cerberus.entity.ExecutionUUID;
 import org.cerberus.entity.MessageGeneral;
 import org.cerberus.entity.MessageGeneralEnum;
+import org.cerberus.entity.Parameter;
 import org.cerberus.entity.Robot;
-import org.cerberus.entity.TestCaseExecution;
+import org.cerberus.entity.Session;
+import org.cerberus.entity.SessionCapabilities;
 import org.cerberus.entity.TCase;
+import org.cerberus.entity.TestCaseExecution;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.factory.IFactoryTestCaseExecution;
 import org.cerberus.factory.IFactoryTCase;
+import org.cerberus.factory.IFactoryTestCaseExecution;
 import org.cerberus.log.MyLogger;
 import org.cerberus.service.ILogEventService;
+import org.cerberus.service.IParameterService;
 import org.cerberus.service.IRobotService;
 import org.cerberus.service.impl.LogEventService;
 import org.cerberus.serviceEngine.IRunTestCaseService;
@@ -120,7 +124,7 @@ public class RunTestCase extends HttpServlet {
                 Logger.getLogger(RunTestCase.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
             }
         }
-                
+
         //Test
         String test = ParameterParserUtil.parseStringParam(policy.sanitize(request.getParameter("Test")), "");
         String testCase = ParameterParserUtil.parseStringParam(policy.sanitize(request.getParameter("TestCase")), "");
@@ -219,6 +223,40 @@ public class RunTestCase extends HttpServlet {
 
             ExecutionSOAPResponse eSResponse = appContext.getBean(ExecutionSOAPResponse.class);
             eSResponse.setExecutionSOAPResponse(executionUUID.toString(), "init");
+
+            /**
+             * Set Session
+             */
+            IParameterService parameterService = appContext.getBean(IParameterService.class);
+            long defaultWait;
+            try {
+                Parameter param = parameterService.findParameterByKey("selenium_defaultWait", "");
+                String to = tCExecution.getTimeout().equals("") ? param.getValue() : tCExecution.getTimeout();
+                defaultWait = Long.parseLong(to);
+            } catch (CerberusException ex) {
+                MyLogger.log(RunTestCase.class.getName(), Level.WARN, "Parameter (selenium_defaultWait) not in Parameter table, default wait set to 90 seconds");
+                defaultWait = 90;
+            }
+
+            List<SessionCapabilities> capabilities = new ArrayList();
+            SessionCapabilities sc = new SessionCapabilities();
+            sc.create("browser", browser);
+            capabilities.add(sc);
+            sc = new SessionCapabilities();
+            sc.create("platform", platform);
+            capabilities.add(sc);
+            sc = new SessionCapabilities();
+            sc.create("version", version);
+            capabilities.add(sc);
+            
+            Session session = new Session();
+            session.setDefaultWait(defaultWait);
+            session.setHost(tCExecution.getSeleniumIP());
+            session.setPort(tCExecution.getPort());
+            session.setCapabilities(capabilities);
+            MyLogger.log(RunTestCase.class.getName(), Level.FATAL, "Set Session: ");
+            
+            tCExecution.setSession(session);
 
             try {
                 tCExecution = runTestCaseService.runTestCase(tCExecution);
