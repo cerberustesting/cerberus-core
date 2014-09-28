@@ -23,28 +23,10 @@ package org.cerberus.entity;
  *
  * @author bcivel
  */
-public class RobotCapabilities {
-    
-    Integer id;
-    Integer robotID;
+public class SessionCapabilities {
+
     String capability;
     String value;
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public Integer getRobotID() {
-        return robotID;
-    }
-
-    public void setRobotId(Integer robotID) {
-        this.robotID = robotID;
-    }
 
     public String getCapability() {
         return capability;
@@ -61,6 +43,10 @@ public class RobotCapabilities {
     public void setValue(String value) {
         this.value = value;
     }
-    
-    
+
+    public void create(String capability, String value) {
+        this.capability = (capability);
+        this.value = (value);
+    }
+
 }

@@ -26,7 +26,6 @@ import java.util.logging.Logger;
 import org.apache.log4j.Level;
 import org.cerberus.entity.MessageEvent;
 import org.cerberus.entity.MessageEventEnum;
-import org.cerberus.entity.MessageGeneral;
 import org.cerberus.entity.Property;
 import org.cerberus.entity.SoapLibrary;
 import org.cerberus.entity.TestCaseCountryProperties;
@@ -45,13 +44,12 @@ import org.cerberus.service.ITestDataService;
 import org.cerberus.service.impl.TestCaseCountryPropertiesService;
 import org.cerberus.serviceEngine.IPropertyService;
 import org.cerberus.serviceEngine.ISQLService;
-import org.cerberus.serviceEngine.ISeleniumService;
 import org.cerberus.serviceEngine.ISoapService;
+import org.cerberus.serviceEngine.IWebDriverService;
 import org.cerberus.serviceEngine.IXmlUnitService;
 import org.cerberus.util.DateUtil;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
-import org.cerberus.util.TestCaseExecutionDataUtil;
 import org.openqa.selenium.NoSuchElementException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -68,7 +66,7 @@ public class PropertyService implements IPropertyService {
     private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(PropertyService.class);
 
     @Autowired
-    private ISeleniumService seleniumService;
+    private IWebDriverService webdriverService;
     @Autowired
     private ISqlLibraryService sqlLibraryService;
     @Autowired
@@ -480,7 +478,7 @@ public class PropertyService implements IPropertyService {
 
     private TestCaseExecutionData getFromHTML(TestCaseExecutionData testCaseExecutionData, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseCountryProperty) {
         try {
-            String valueFromHTML = this.seleniumService.getValueFromHTML(tCExecution.getSelenium(), testCaseCountryProperty.getValue1());
+            String valueFromHTML = this.webdriverService.getValueFromHTML(tCExecution.getSession(), testCaseCountryProperty.getValue1());
             if (valueFromHTML != null) {
                 testCaseExecutionData.setValue(valueFromHTML);
                 MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_HTML);
@@ -503,7 +501,7 @@ public class PropertyService implements IPropertyService {
         String valueFromJS;
         String message = "";
         try {
-            valueFromJS = this.seleniumService.getValueFromJS(tCExecution.getSelenium(), script);
+            valueFromJS = this.webdriverService.getValueFromJS(tCExecution.getSession(), script);
         } catch (Exception e) {
             message = e.getMessage().split("\n")[0];
             MyLogger.log(PropertyService.class.getName(), Level.DEBUG, "Exception Running JS Script :" + message);
@@ -550,7 +548,7 @@ public class PropertyService implements IPropertyService {
     private TestCaseExecutionData getAttributeFromHtml(TestCaseExecutionData testCaseExecutionData, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseCountryProperty) {
         MessageEvent res;
         try {
-            String valueFromHTML = this.seleniumService.getAttributeFromHtml(tCExecution.getSelenium(), testCaseCountryProperty.getValue1(), testCaseCountryProperty.getValue2());
+            String valueFromHTML = this.webdriverService.getAttributeFromHtml(tCExecution.getSession(), testCaseCountryProperty.getValue1(), testCaseCountryProperty.getValue2());
             if (valueFromHTML != null) {
                 testCaseExecutionData.setValue(valueFromHTML);
                 res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETATTRIBUTEFROMHTML);
@@ -592,7 +590,7 @@ public class PropertyService implements IPropertyService {
 
     private TestCaseExecutionData getFromHtmlVIsible(TestCaseExecutionData testCaseExecutionData, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseCountryProperty) {
         try {
-            String valueFromHTML = this.seleniumService.getValueFromHTMLVisible(tCExecution.getSelenium(), testCaseCountryProperty.getValue1());
+            String valueFromHTML = this.webdriverService.getValueFromHTMLVisible(tCExecution.getSession(), testCaseCountryProperty.getValue1());
             if (valueFromHTML != null) {
                 testCaseExecutionData.setValue(valueFromHTML);
                 MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_HTMLVISIBLE);
@@ -631,7 +629,7 @@ public class PropertyService implements IPropertyService {
 
     private TestCaseExecutionData getFromCookie(TestCaseExecutionData testCaseExecutionData, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseCountryProperty) {
         try {
-            String valueFromCookie = this.seleniumService.getFromCookie(tCExecution.getSelenium(), testCaseCountryProperty.getValue1(), testCaseCountryProperty.getValue2());
+            String valueFromCookie = this.webdriverService.getFromCookie(tCExecution.getSession(), testCaseCountryProperty.getValue1(), testCaseCountryProperty.getValue2());
             if (valueFromCookie != null) {
                 if (!valueFromCookie.equals("cookieNotFound")) {
                     testCaseExecutionData.setValue(valueFromCookie);
