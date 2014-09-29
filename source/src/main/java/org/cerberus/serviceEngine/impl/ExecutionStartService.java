@@ -41,7 +41,7 @@ import org.cerberus.service.ITestCaseExecutionService;
 import org.cerberus.service.ITestCaseService;
 import org.cerberus.serviceEngine.IExecutionCheckService;
 import org.cerberus.serviceEngine.IExecutionStartService;
-import org.cerberus.serviceEngine.ISeleniumService;
+import org.cerberus.serviceEngine.ISeleniumServerService;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,8 +56,6 @@ public class ExecutionStartService implements IExecutionStartService {
 
     @Autowired
     private IExecutionCheckService executionCheckService;
-    @Autowired
-    private ISeleniumService seleniumService;
     @Autowired
     private ITestCaseService testCaseService;
     @Autowired
@@ -74,6 +72,8 @@ public class ExecutionStartService implements IExecutionStartService {
     private IInvariantService invariantService;
     @Autowired
     ExecutionUUID executionUUIDObject;
+    @Autowired
+    private ISeleniumServerService serverService;
 
     @Override
     public TestCaseExecution startExecution(TestCaseExecution tCExecution) throws CerberusException {
@@ -278,7 +278,7 @@ public class ExecutionStartService implements IExecutionStartService {
             MyLogger.log(ExecutionStartService.class.getName(),Level.DEBUG, mes.getDescription());
             throw new CerberusException(mes);
         }
-
+        
         /**
          * Check if test can be executed TODO : Replace Message with try/catch
          * cerberus exception
@@ -297,7 +297,8 @@ public class ExecutionStartService implements IExecutionStartService {
         /**
          * Check if Browser is supported and if selenium server is reachable.
          */
-        if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")) {
+        if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")||
+                tCExecution.getApplication().getType().equalsIgnoreCase("APK")) {
 
             try {
                 myInvariant = this.invariantService.findInvariantByIdValue("BROWSER", tCExecution.getBrowser());
@@ -328,10 +329,10 @@ public class ExecutionStartService implements IExecutionStartService {
              */
             String url = ParameterParserUtil.parseStringParam(tCExecution.getCountryEnvironmentApplication().getIp() + tCExecution.getCountryEnvironmentApplication().getUrl(), "");
             String login = ParameterParserUtil.parseStringParam(tCExecution.getCountryEnvironmentApplication().getUrlLogin(), "");
-            MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Starting Selenium Server.");
+            MyLogger.log(RunTestCaseService.class.getName(), Level.FATAL, "Starting Selenium Server.");
 
             try {
-                this.seleniumService.startSeleniumServer(tCExecution, tCExecution.getSeleniumIP(), tCExecution.getSeleniumPort(), tCExecution.getBrowser(), tCExecution.getVersion(), tCExecution.getPlatform(), url, login, tCExecution.getVerbose(), tCExecution.getCountry());
+                this.serverService.startServer(tCExecution);
             } catch (CerberusException ex) {
                 MyLogger.log(ExecutionStartService.class.getName(),Level.DEBUG, ex.getMessageError().getDescription());
                 throw new CerberusException(ex.getMessageError());

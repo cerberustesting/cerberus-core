@@ -20,7 +20,6 @@
 package org.cerberus.serviceEngine.impl;
 
 import java.util.Date;
-
 import org.apache.log4j.Level;
 import org.cerberus.entity.MessageEvent;
 import org.cerberus.entity.MessageEventEnum;
@@ -36,8 +35,8 @@ import org.cerberus.service.ISoapLibraryService;
 import org.cerberus.serviceEngine.IActionService;
 import org.cerberus.serviceEngine.IPropertyService;
 import org.cerberus.serviceEngine.IRecorderService;
-import org.cerberus.serviceEngine.ISeleniumService;
 import org.cerberus.serviceEngine.ISoapService;
+import org.cerberus.serviceEngine.IWebDriverService;
 import org.cerberus.serviceEngine.IXmlUnitService;
 import org.cerberus.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,7 +52,7 @@ public class ActionService implements IActionService {
     @Autowired
     private IPropertyService propertyService;
     @Autowired
-    private ISeleniumService seleniumService;
+    private IWebDriverService webdriverService;
     @Autowired
     private ISoapService soapService;
     @Autowired
@@ -200,8 +199,9 @@ public class ActionService implements IActionService {
 
     private MessageEvent doActionClick(TestCaseExecution tCExecution, String string1, String string2) {
         MessageEvent message;
-        if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")) {
-            return seleniumService.doSeleniumActionClick(tCExecution.getSelenium(), string1, string2);
+        if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")||
+                tCExecution.getApplication().getType().equalsIgnoreCase("APK")) {
+            return webdriverService.doSeleniumActionClick(tCExecution.getSession(), string1, string2);
         }
         message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
         message.setDescription(message.getDescription().replaceAll("%ACTION%", "Click"));
@@ -212,7 +212,7 @@ public class ActionService implements IActionService {
     private MessageEvent doActionMouseDown(TestCaseExecution tCExecution, String string1, String string2) {
         MessageEvent message;
         if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")) {
-            return seleniumService.doSeleniumActionMouseDown(tCExecution.getSelenium(), string1, string2);
+            return webdriverService.doSeleniumActionMouseDown(tCExecution.getSession(), string1, string2);
         }
         message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
         message.setDescription(message.getDescription().replaceAll("%ACTION%", "MouseDown"));
@@ -223,7 +223,7 @@ public class ActionService implements IActionService {
     private MessageEvent doActionMouseUp(TestCaseExecution tCExecution, String string1, String string2) {
         MessageEvent message;
         if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")) {
-            return seleniumService.doSeleniumActionMouseUp(tCExecution.getSelenium(), string1, string2);
+            return webdriverService.doSeleniumActionMouseUp(tCExecution.getSession(), string1, string2);
         }
         message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
         message.setDescription(message.getDescription().replaceAll("%ACTION%", "MouseUp"));
@@ -234,7 +234,7 @@ public class ActionService implements IActionService {
     private MessageEvent doActionSwitchToWindow(TestCaseExecution tCExecution, String string1, String string2) {
         MessageEvent message;
         if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")) {
-            return seleniumService.doSeleniumActionSwitchToWindow(tCExecution.getSelenium(), string1, string2);
+            return webdriverService.doSeleniumActionSwitchToWindow(tCExecution.getSession(), string1, string2);
         }
         message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
         message.setDescription(message.getDescription().replaceAll("%ACTION%", "SwitchToWindow"));
@@ -245,7 +245,7 @@ public class ActionService implements IActionService {
     private MessageEvent doActionManageDialog(TestCaseExecution tCExecution, String string1, String string2) {
         MessageEvent message;
         if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")) {
-            return seleniumService.doSeleniumActionManageDialog(tCExecution.getSelenium(), string1, string2);
+            return webdriverService.doSeleniumActionManageDialog(tCExecution.getSession(), string1, string2);
         }
         message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
         message.setDescription(message.getDescription().replaceAll("%ACTION%", "ManageDialog"));
@@ -256,7 +256,7 @@ public class ActionService implements IActionService {
     private MessageEvent doActionClickWait(TestCaseExecution tCExecution, String string1, String string2) {
         MessageEvent message;
         if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")) {
-            return seleniumService.doSeleniumActionClickWait(tCExecution.getSelenium(), string1, string2);
+            return webdriverService.doSeleniumActionClickWait(tCExecution.getSession(), string1, string2);
         }
         message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
         message.setDescription(message.getDescription().replaceAll("%ACTION%", "ClickAndWait"));
@@ -266,8 +266,9 @@ public class ActionService implements IActionService {
 
     private MessageEvent doActionDoubleClick(TestCaseExecution tCExecution, String string1, String string2) {
         MessageEvent message;
-        if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")) {
-            return seleniumService.doSeleniumActionDoubleClick(tCExecution.getSelenium(), string1, string2);
+        if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")||
+                tCExecution.getApplication().getType().equalsIgnoreCase("APK")) {
+            return webdriverService.doSeleniumActionDoubleClick(tCExecution.getSession(), string1, string2);
         }
         message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
         message.setDescription(message.getDescription().replaceAll("%ACTION%", "ClickAndWait"));
@@ -277,8 +278,9 @@ public class ActionService implements IActionService {
 
     private MessageEvent doActionType(TestCaseExecution tCExecution, String html, String property, String propertyName) {
         MessageEvent message;
-        if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")) {
-            return seleniumService.doSeleniumActionType(tCExecution.getSelenium(), html, property, propertyName);
+        if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")||
+                tCExecution.getApplication().getType().equalsIgnoreCase("APK")) {
+            return webdriverService.doSeleniumActionType(tCExecution.getSession(), html, property, propertyName);
         }
         message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
         message.setDescription(message.getDescription().replaceAll("%ACTION%", "ClickAndWait"));
@@ -289,7 +291,7 @@ public class ActionService implements IActionService {
     private MessageEvent doActionMouseOver(TestCaseExecution tCExecution, String html, String property) {
         MessageEvent message;
         if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")) {
-            return seleniumService.doSeleniumActionMouseOver(tCExecution.getSelenium(), html, property);
+            return webdriverService.doSeleniumActionMouseOver(tCExecution.getSession(), html, property);
         }
         message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
         message.setDescription(message.getDescription().replaceAll("%ACTION%", "ClickAndWait"));
@@ -300,7 +302,7 @@ public class ActionService implements IActionService {
     private MessageEvent doActionMouseOverAndWait(TestCaseExecution tCExecution, String actionObject, String actionProperty) {
         MessageEvent message;
         if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")) {
-            return seleniumService.doSeleniumActionMouseOverAndWait(tCExecution.getSelenium(), actionObject, actionProperty);
+            return webdriverService.doSeleniumActionMouseOverAndWait(tCExecution.getSession(), actionObject, actionProperty);
         }
         message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
         message.setDescription(message.getDescription().replaceAll("%ACTION%", "ClickAndWait"));
@@ -310,8 +312,9 @@ public class ActionService implements IActionService {
 
     private MessageEvent doActionWait(TestCaseExecution tCExecution, String object, String property) {
         MessageEvent message;
-        if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")) {
-            return seleniumService.doSeleniumActionWait(tCExecution.getSelenium(), object, property);
+        if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")||
+                tCExecution.getApplication().getType().equalsIgnoreCase("APK")) {
+            return webdriverService.doSeleniumActionWait(tCExecution.getSession(), object, property);
         }
         message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
         message.setDescription(message.getDescription().replaceAll("%ACTION%", "ClickAndWait"));
@@ -322,7 +325,7 @@ public class ActionService implements IActionService {
     private MessageEvent doActionKeyPress(TestCaseExecution tCExecution, String html, String property) {
         MessageEvent message;
         if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")) {
-            return seleniumService.doSeleniumActionKeyPress(tCExecution.getSelenium(), html, property);
+            return webdriverService.doSeleniumActionKeyPress(tCExecution.getSession(), html, property);
         }
         message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
         message.setDescription(message.getDescription().replaceAll("%ACTION%", "KeyPress"));
@@ -333,7 +336,7 @@ public class ActionService implements IActionService {
     private MessageEvent doActionOpenURLWithBase(TestCaseExecution tCExecution, String value, String property) {
         MessageEvent message;
         if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")) {
-            return seleniumService.doSeleniumActionOpenURL(tCExecution.getSelenium(), value, property, true);
+            return webdriverService.doSeleniumActionOpenURL(tCExecution.getSession(),tCExecution.getCountryEnvironmentApplication().getIp(), value, property, true);
         }
         message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
         message.setDescription(message.getDescription().replaceAll("%ACTION%", "OpenURLWithBase"));
@@ -344,7 +347,7 @@ public class ActionService implements IActionService {
     private MessageEvent doActionOpenURL(TestCaseExecution tCExecution, String value, String property) {
         MessageEvent message;
         if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")) {
-            return seleniumService.doSeleniumActionOpenURL(tCExecution.getSelenium(), value, property, false);
+            return webdriverService.doSeleniumActionOpenURL(tCExecution.getSession(),tCExecution.getCountryEnvironmentApplication().getIp(), value, property, false);
         }
         message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
         message.setDescription(message.getDescription().replaceAll("%ACTION%", "OpenURL"));
@@ -354,8 +357,9 @@ public class ActionService implements IActionService {
 
     private MessageEvent doActionSelect(TestCaseExecution tCExecution, String html, String property) {
         MessageEvent message;
-        if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")) {
-            return seleniumService.doSeleniumActionSelect(tCExecution.getSelenium(), html, property);
+        if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")||
+                tCExecution.getApplication().getType().equalsIgnoreCase("APK")) {
+            return webdriverService.doSeleniumActionSelect(tCExecution.getSession(), html, property);
         }
         message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
         message.setDescription(message.getDescription().replaceAll("%ACTION%", "Select"));
@@ -366,7 +370,7 @@ public class ActionService implements IActionService {
     private MessageEvent doActionUrlLogin(TestCaseExecution tCExecution) {
         MessageEvent message;
         if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")) {
-            return seleniumService.doSeleniumActionUrlLogin(tCExecution.getSelenium());
+            return webdriverService.doSeleniumActionUrlLogin(tCExecution.getSession(),tCExecution.getCountryEnvironmentApplication().getIp(),tCExecution.getCountryEnvironmentApplication().getUrlLogin());
         }
         message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
         message.setDescription(message.getDescription().replaceAll("%ACTION%", "UrlLogin"));
@@ -377,7 +381,7 @@ public class ActionService implements IActionService {
     private MessageEvent doActionFocusToIframe(TestCaseExecution tCExecution, String object, String property) {
         MessageEvent message;
         if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")) {
-            return seleniumService.doSeleniumActionFocusToIframe(tCExecution.getSelenium(), object, property);
+            return webdriverService.doSeleniumActionFocusToIframe(tCExecution.getSession(), object, property);
         }
         message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
         message.setDescription(message.getDescription().replaceAll("%ACTION%", "FocusToIframe"));
@@ -388,7 +392,7 @@ public class ActionService implements IActionService {
     private MessageEvent doActionFocusDefaultIframe(TestCaseExecution tCExecution) {
         MessageEvent message;
         if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")) {
-            return seleniumService.doSeleniumActionFocusDefaultIframe(tCExecution.getSelenium());
+            return webdriverService.doSeleniumActionFocusDefaultIframe(tCExecution.getSession());
         }
         message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
         message.setDescription(message.getDescription().replaceAll("%ACTION%", "FocusDefaultIframe"));
@@ -436,7 +440,7 @@ public class ActionService implements IActionService {
     private MessageEvent doActionMouseDownMouseUp(TestCaseExecution tCExecution, String object, String property) {
         MessageEvent message;
         if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")) {
-            return seleniumService.doSeleniumActionMouseDownMouseUp(tCExecution.getSelenium(), object, property);
+            return webdriverService.doSeleniumActionMouseDownMouseUp(tCExecution.getSession(), object, property);
         }
         message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
         message.setDescription(message.getDescription().replaceAll("%ACTION%", "Click"));
@@ -446,7 +450,8 @@ public class ActionService implements IActionService {
 
     private MessageEvent doActionTakeScreenshot(TestCaseStepActionExecution testCaseStepActionExecution) {
         MessageEvent message;
-        if (testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getApplication().getType().equalsIgnoreCase("GUI")) {
+        if (testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getApplication().getType().equalsIgnoreCase("GUI")||
+                testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getApplication().getType().equalsIgnoreCase("APK")) {
             String screenshotPath = recorderService.recordScreenshotAndGetName(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution(),
                     testCaseStepActionExecution, 0);
             testCaseStepActionExecution.setScreenshotFilename(screenshotPath);
@@ -461,7 +466,8 @@ public class ActionService implements IActionService {
 
     private MessageEvent doActionGetPageSource(TestCaseStepActionExecution testCaseStepActionExecution) {
         MessageEvent message;
-        if (testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getApplication().getType().equalsIgnoreCase("GUI")) {
+        if (testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getApplication().getType().equalsIgnoreCase("GUI")||
+                testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getApplication().getType().equalsIgnoreCase("APK")) {
             String screenshotPath = recorderService.recordPageSourceAndGetName(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution(),
                     testCaseStepActionExecution, 0);
             testCaseStepActionExecution.setScreenshotFilename(screenshotPath);

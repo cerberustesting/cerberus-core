@@ -77,6 +77,15 @@ public class TestCaseExecution {
     private String executionUUID;
     private Integer pageSource;
     private Integer seleniumLog;
+    private Session session;
+
+    public Session getSession() {
+        return session;
+    }
+
+    public void setSession(Session session) {
+        this.session = session;
+    }
 
     public Integer getPageSource() {
         return pageSource;

@@ -33,7 +33,6 @@ import org.cerberus.entity.MessageEventEnum;
 import org.cerberus.entity.MessageGeneral;
 import org.cerberus.entity.MessageGeneralEnum;
 import org.cerberus.entity.TCase;
-import org.cerberus.entity.TestCaseCountryProperties;
 import org.cerberus.entity.TestCaseExecution;
 import org.cerberus.entity.TestCaseExecutionData;
 import org.cerberus.entity.TestCaseExecutionSysVer;
@@ -67,7 +66,8 @@ import org.cerberus.serviceEngine.IControlService;
 import org.cerberus.serviceEngine.IExecutionRunService;
 import org.cerberus.serviceEngine.IPropertyService;
 import org.cerberus.serviceEngine.IRecorderService;
-import org.cerberus.serviceEngine.ISeleniumService;
+import org.cerberus.serviceEngine.ISeleniumServerService;
+import org.cerberus.serviceEngine.IWebDriverService;
 import org.cerberus.util.StringUtil;
 import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.remote.UnreachableBrowserException;
@@ -85,7 +85,9 @@ public class ExecutionRunService implements IExecutionRunService {
     private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(ExecutionRunService.class);
     
     @Autowired
-    private ISeleniumService seleniumService;
+    private ISeleniumServerService serverService;
+    @Autowired
+    private IWebDriverService webdriverService;
     @Autowired
     private IActionService actionService;
     @Autowired
@@ -184,7 +186,7 @@ public class ExecutionRunService implements IExecutionRunService {
          */
         if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")) {
             try {
-                Capabilities caps = this.seleniumService.getUsedCapabilities(tCExecution.getSelenium());
+                Capabilities caps = this.serverService.getUsedCapabilities(tCExecution.getSession());
                 tCExecution.setBrowserFullVersion(caps.getBrowserName() + " " + caps.getVersion() + " " + caps.getPlatform().toString());
                 tCExecution.setVersion(caps.getVersion());
                 tCExecution.setPlatform(caps.getPlatform().toString());
@@ -346,7 +348,11 @@ public class ExecutionRunService implements IExecutionRunService {
             MyLogger.log(ExecutionRunService.class.getName(), Level.FATAL, "Exception cleaning Memory: " + ex.toString());
         }
 
-        MyLogger.log(ExecutionRunService.class.getName(), Level.INFO, "Execution Finished : UUID=" + tCExecution.getExecutionUUID() + "__ID=" + tCExecution.getId() + "__RC=" + tCExecution.getControlStatus());
+        MyLogger.log(ExecutionRunService.class.getName(), Level.INFO, "Execution Finished : UUID=" + tCExecution.getExecutionUUID()
+        + "__ID=" + tCExecution.getId() + "__RC=" + tCExecution.getControlStatus()+"__"
+                + "TestName="+tCExecution.getEnvironment()+"."+tCExecution.getCountry()+"."+
+                tCExecution.getBuild()+"."+tCExecution.getRevision()+"."+tCExecution.getTest()+"_"+
+                tCExecution.getTestCase()+"_"+tCExecution.gettCase().getShortDescription().replace(".", ""));
 
         return tCExecution;
 
@@ -614,9 +620,10 @@ public class ExecutionRunService implements IExecutionRunService {
     }
 
     private TestCaseExecution stopRunTestCase(TestCaseExecution tCExecution) {
-        if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")) {
+        if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")||
+                tCExecution.getApplication().getType().equalsIgnoreCase("APK")) {
             try {
-                this.seleniumService.stopSeleniumServer(tCExecution.getSelenium());
+                this.serverService.stopServer(tCExecution.getSession());
             } catch (UnreachableBrowserException exception) {
                 MyLogger.log(ExecutionRunService.class.getName(), Level.FATAL, "Selenium didn't manage to close browser - " + exception.toString());
             }

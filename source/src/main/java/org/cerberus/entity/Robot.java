@@ -34,7 +34,7 @@ public class Robot {
     String version;
     String active;
     String description;
-
+    
     public String getPort() {
         return port;
     }
