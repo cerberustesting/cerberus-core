@@ -37,7 +37,7 @@ public class TestCaseManualExecutionDTO implements ITestCaseManualExecutionDTO {
     private DatabaseSpring databaseSpring;
 
     @Override
-    public List<TestCaseManualExecution> findTestCaseManualExecution(TCase testCase, String text, String system, String country, String env, String campaign) {
+    public List<TestCaseManualExecution> findTestCaseManualExecution(TCase testCase, String text, String system, String country, String env, String campaign, String battery) {
         List<TestCaseManualExecution> list = null;
         final String query = "SELECT tc.test, tc.testcase, tc.behaviororvalueexpected, tc.howto, tcc.country, a.application, a.system, a.type, CONCAT( CONCAT( cep.ip , cep.url ), cep.urllogin ) AS url, cenvp.build, cenvp.revision, tce.controlstatus, tce.end, tce.id, tce.build as lastbuild, tce.revision as lastrevision " +
                 "FROM testcase tc " +
@@ -61,7 +61,7 @@ public class TestCaseManualExecutionDTO implements ITestCaseManualExecutionDTO {
                 "AND tc.status LIKE ? AND tc.activePROD LIKE ? AND tc.activeUAT LIKE ? AND tc.activeQA LIKE ? AND " +
                 "( tc.description LIKE ? OR tc.howto LIKE ? OR tc.behaviororvalueexpected LIKE ? OR tc.comment LIKE ?) " +
                 "AND tc.frombuild LIKE ? AND tc.fromrev LIKE ? AND tc.tobuild LIKE ? " +
-                "AND tc.torev LIKE ? AND tc.targetbuild LIKE ? AND tc.targetrev LIKE ? AND tc.testcase LIKE ? AND tc.group LIKE ? AND cc.campaign like ? ";
+                "AND tc.torev LIKE ? AND tc.targetbuild LIKE ? AND tc.targetrev LIKE ? AND tc.testcase LIKE ? AND tc.group LIKE ? AND cc.campaign like ? AND tbc.testbattery like ? ";
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -106,6 +106,7 @@ public class TestCaseManualExecutionDTO implements ITestCaseManualExecutionDTO {
                 preStat.setString(26, ParameterParserUtil.wildcardIfEmpty(testCase.getTestCase()));
                 preStat.setString(27, ParameterParserUtil.wildcardIfEmpty(testCase.getGroup()));
                 preStat.setString(28, ParameterParserUtil.wildcardIfEmpty(campaign));
+                preStat.setString(29, ParameterParserUtil.wildcardIfEmpty(battery));
 
                 ResultSet resultSet = preStat.executeQuery();
                 list = new ArrayList<TestCaseManualExecution>();
