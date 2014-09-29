@@ -620,7 +620,8 @@ public class ExecutionRunService implements IExecutionRunService {
     }
 
     private TestCaseExecution stopRunTestCase(TestCaseExecution tCExecution) {
-        if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")) {
+        if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")||
+                tCExecution.getApplication().getType().equalsIgnoreCase("APK")) {
             try {
                 this.serverService.stopServer(tCExecution.getSession());
             } catch (UnreachableBrowserException exception) {

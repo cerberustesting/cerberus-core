@@ -52,6 +52,7 @@ import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxProfile;
+import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.HttpCommandExecutor;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -86,8 +87,9 @@ public class SeleniumServerService implements ISeleniumServerService {
             /**
              * SetUp Driver
              */
-            MyLogger.log(SeleniumServerService.class.getName(), Level.DEBUG, "Set Driver");
+            MyLogger.log(SeleniumServerService.class.getName(), Level.FATAL, "Set Driver");
             WebDriver driver = new RemoteWebDriver(new URL("http://" + tCExecution.getSession().getHost() + ":" + tCExecution.getSession().getPort() + "/wd/hub"), caps);
+            MyLogger.log(SeleniumServerService.class.getName(), Level.FATAL, "Set2 Driver");
             tCExecution.getSession().setDriver(driver);
 
             /**
@@ -225,23 +227,32 @@ public class SeleniumServerService implements ISeleniumServerService {
     private DesiredCapabilities setCapabilities(TestCaseExecution tCExecution) throws CerberusException {
         DesiredCapabilities caps = new DesiredCapabilities();
         for (SessionCapabilities cap : tCExecution.getSession().getCapabilities()) {
-            if (!cap.getValue().equals("")) {
-                //caps.setCapability("browserName", "firefox");
+            
+            if (!cap.getValue().equals("")){
+            if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")){
             if (cap.getCapability().equalsIgnoreCase("browser")){
             caps = this.setCapabilityBrowser(caps, cap.getValue(), tCExecution);
+            MyLogger.log(SeleniumServerService.class.getName(), Level.FATAL, "Set Browser"+cap.getValue());
             }else{
             caps.setCapability(cap.getCapability(), cap.getValue());
+            MyLogger.log(SeleniumServerService.class.getName(), Level.FATAL, "Set "+cap.getCapability());
+            }
+            }
+            }
+            
+            if(tCExecution.getApplication().getType().equalsIgnoreCase("APK")){
+            if (cap.getCapability().equalsIgnoreCase("browser")){
+            caps.setCapability(CapabilityType.BROWSER_NAME, "android");
+            }
+            if (cap.getCapability().equalsIgnoreCase("platform")){
+            caps.setCapability("platformName", cap.getValue());
+            }
+            if (cap.getCapability().equalsIgnoreCase("version")){
+            caps.setCapability("deviceName", cap.getValue());
+            }
             }
             
             
-            }
-            /**
-             * If browser is firefox, set up a profile (specially for netork
-             * trafic capture)
-             */
-//            if (cap.getCapability().equalsIgnoreCase("browser") && cap.getValue().equalsIgnoreCase("firefox")) {
-//                setFirefoxProfile(tCExecution);
-//            }
         }
         /**
          * If android app, set app capability with the link where is stored the

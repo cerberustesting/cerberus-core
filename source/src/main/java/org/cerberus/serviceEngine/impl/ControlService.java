@@ -314,7 +314,8 @@ public class ControlService implements IControlService {
         MyLogger.log(ControlService.class.getName(), Level.DEBUG, "Control : verifyElementPresent on : " + html);
         MessageEvent mes;
         if (!StringUtil.isNull(html)) {
-            if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")) {
+            if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")||
+                    tCExecution.getApplication().getType().equalsIgnoreCase("APK")) {
                 try {
                     if (this.webdriverService.isElementPresent(tCExecution.getSession(), html)) {
                         mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_PRESENT);
@@ -448,7 +449,8 @@ public class ControlService implements IControlService {
     private MessageEvent VerifyTextInElement(TestCaseExecution tCExecution, String html, String value) {
         MyLogger.log(ControlService.class.getName(), Level.DEBUG, "Control : VerifyTextInElement on : " + html + " element against value : " + value);
         MessageEvent mes;
-        if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")) {
+        if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")||
+                    tCExecution.getApplication().getType().equalsIgnoreCase("APK")) {
         try {
             String str = this.webdriverService.getValueFromHTML(tCExecution.getSession(), html);
             MyLogger.log(ControlService.class.getName(), Level.DEBUG, "Control : VerifyTextInElement element : " + html + " has value : " + str);
@@ -721,7 +723,8 @@ public class ControlService implements IControlService {
         MyLogger.log(ControlService.class.getName(), Level.DEBUG, "Control : verifyElementClickable : " + html);
         MessageEvent mes;
         if (!StringUtil.isNull(html)) {
-            if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")) {
+            if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")||
+                    tCExecution.getApplication().getType().equalsIgnoreCase("APK")) {
                 try {
                     if (this.webdriverService.isElementClickable(tCExecution.getSession(), html)) {
                         mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_CLICKABLE);
@@ -750,7 +753,8 @@ public class ControlService implements IControlService {
         MyLogger.log(ControlService.class.getName(), Level.DEBUG, "Control : verifyElementNotClickable on : " + html);
         MessageEvent mes;
         if (!StringUtil.isNull(html)) {
-            if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")) {
+            if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")||
+                    tCExecution.getApplication().getType().equalsIgnoreCase("APK")) {
                 try {
                     if (this.webdriverService.isElementNotClickable(tCExecution.getSession(), html)) {
                         mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_NOTCLICKABLE);

@@ -199,7 +199,8 @@ public class ActionService implements IActionService {
 
     private MessageEvent doActionClick(TestCaseExecution tCExecution, String string1, String string2) {
         MessageEvent message;
-        if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")) {
+        if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")||
+                tCExecution.getApplication().getType().equalsIgnoreCase("APK")) {
             return webdriverService.doSeleniumActionClick(tCExecution.getSession(), string1, string2);
         }
         message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
@@ -265,7 +266,8 @@ public class ActionService implements IActionService {
 
     private MessageEvent doActionDoubleClick(TestCaseExecution tCExecution, String string1, String string2) {
         MessageEvent message;
-        if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")) {
+        if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")||
+                tCExecution.getApplication().getType().equalsIgnoreCase("APK")) {
             return webdriverService.doSeleniumActionDoubleClick(tCExecution.getSession(), string1, string2);
         }
         message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
@@ -276,7 +278,8 @@ public class ActionService implements IActionService {
 
     private MessageEvent doActionType(TestCaseExecution tCExecution, String html, String property, String propertyName) {
         MessageEvent message;
-        if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")) {
+        if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")||
+                tCExecution.getApplication().getType().equalsIgnoreCase("APK")) {
             return webdriverService.doSeleniumActionType(tCExecution.getSession(), html, property, propertyName);
         }
         message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
@@ -309,7 +312,8 @@ public class ActionService implements IActionService {
 
     private MessageEvent doActionWait(TestCaseExecution tCExecution, String object, String property) {
         MessageEvent message;
-        if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")) {
+        if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")||
+                tCExecution.getApplication().getType().equalsIgnoreCase("APK")) {
             return webdriverService.doSeleniumActionWait(tCExecution.getSession(), object, property);
         }
         message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
@@ -353,7 +357,8 @@ public class ActionService implements IActionService {
 
     private MessageEvent doActionSelect(TestCaseExecution tCExecution, String html, String property) {
         MessageEvent message;
-        if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")) {
+        if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")||
+                tCExecution.getApplication().getType().equalsIgnoreCase("APK")) {
             return webdriverService.doSeleniumActionSelect(tCExecution.getSession(), html, property);
         }
         message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
@@ -445,7 +450,8 @@ public class ActionService implements IActionService {
 
     private MessageEvent doActionTakeScreenshot(TestCaseStepActionExecution testCaseStepActionExecution) {
         MessageEvent message;
-        if (testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getApplication().getType().equalsIgnoreCase("GUI")) {
+        if (testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getApplication().getType().equalsIgnoreCase("GUI")||
+                testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getApplication().getType().equalsIgnoreCase("APK")) {
             String screenshotPath = recorderService.recordScreenshotAndGetName(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution(),
                     testCaseStepActionExecution, 0);
             testCaseStepActionExecution.setScreenshotFilename(screenshotPath);
@@ -460,7 +466,8 @@ public class ActionService implements IActionService {
 
     private MessageEvent doActionGetPageSource(TestCaseStepActionExecution testCaseStepActionExecution) {
         MessageEvent message;
-        if (testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getApplication().getType().equalsIgnoreCase("GUI")) {
+        if (testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getApplication().getType().equalsIgnoreCase("GUI")||
+                testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getApplication().getType().equalsIgnoreCase("APK")) {
             String screenshotPath = recorderService.recordPageSourceAndGetName(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution(),
                     testCaseStepActionExecution, 0);
             testCaseStepActionExecution.setScreenshotFilename(screenshotPath);
