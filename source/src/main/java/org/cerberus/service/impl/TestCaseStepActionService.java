@@ -42,23 +42,23 @@ public class TestCaseStepActionService implements ITestCaseStepActionService {
     private ITestCaseStepActionDAO testCaseStepActionDAO;
 
     @Override
-    public TestCaseStepAction findTestCaseStepActionbyKey (String test, String testCase, int step, int sequence){
+    public TestCaseStepAction findTestCaseStepActionbyKey(String test, String testCase, int step, int sequence) {
         return testCaseStepActionDAO.findTestCaseStepActionbyKey(test, testCase, step, sequence);
     }
-    
+
     @Override
     public List<TestCaseStepAction> getListOfAction(String test, String testcase, int step) {
         return testCaseStepActionDAO.findActionByTestTestCaseStep(test, testcase, step);
     }
 
     @Override
-    public void insertTestCaseStepAction(TestCaseStepAction testCaseStepAction) throws CerberusException  {
+    public void insertTestCaseStepAction(TestCaseStepAction testCaseStepAction) throws CerberusException {
         testCaseStepActionDAO.insertTestCaseStepAction(testCaseStepAction);
-        }
+    }
 
     @Override
     public boolean insertListTestCaseStepAction(List<TestCaseStepAction> testCaseStepActionList) {
-        for (TestCaseStepAction tcsa : testCaseStepActionList){
+        for (TestCaseStepAction tcsa : testCaseStepActionList) {
             try {
                 insertTestCaseStepAction(tcsa);
             } catch (CerberusException ex) {
@@ -86,25 +86,25 @@ public class TestCaseStepActionService implements ITestCaseStepActionService {
     }
 
     @Override
-    public List<TestCaseStepAction> findTestCaseStepActionbyTestTestCase(String test, String testCase)  throws CerberusException {
+    public List<TestCaseStepAction> findTestCaseStepActionbyTestTestCase(String test, String testCase) throws CerberusException {
         return testCaseStepActionDAO.findTestCaseStepActionbyTestTestCase(test, testCase);
 
     }
 
     @Override
-    public void deleteListTestCaseStepAction(List<TestCaseStepAction> tcsaToDelete) throws CerberusException  {
-        for (TestCaseStepAction tcsa : tcsaToDelete){
+    public void deleteListTestCaseStepAction(List<TestCaseStepAction> tcsaToDelete) throws CerberusException {
+        for (TestCaseStepAction tcsa : tcsaToDelete) {
             deleteTestCaseStepAction(tcsa);
         }
     }
 
     @Override
-    public void deleteTestCaseStepAction(TestCaseStepAction tcsa) throws CerberusException  {
+    public void deleteTestCaseStepAction(TestCaseStepAction tcsa) throws CerberusException {
         testCaseStepActionDAO.deleteTestCaseStepAction(tcsa);
     }
 
     @Override
-    public void compareListAndUpdateInsertDeleteElements(List<TestCaseStepAction> newList, List<TestCaseStepAction> oldList) throws CerberusException {
+    public void compareListAndUpdateInsertDeleteElements(List<TestCaseStepAction> newList, List<TestCaseStepAction> oldList, boolean duplicate) throws CerberusException {
         /**
          * Iterate on (TestCaseStepAction From Page - TestCaseStepAction From
          * Database) If TestCaseStepAction in Database has same key : Update and
@@ -131,18 +131,20 @@ public class TestCaseStepActionService implements ITestCaseStepActionService {
          * From Page). If TestCaseStepAction in Page has same key : remove from
          * the list. Then delete the list of TestCaseStepAction
          */
-        List<TestCaseStepAction> tcsaToDelete = new ArrayList(oldList);
-        tcsaToDelete.removeAll(newList);
-        List<TestCaseStepAction> tcsaToDeleteToIterate = new ArrayList(tcsaToDelete);
+        if (!duplicate) {
+            List<TestCaseStepAction> tcsaToDelete = new ArrayList(oldList);
+            tcsaToDelete.removeAll(newList);
+            List<TestCaseStepAction> tcsaToDeleteToIterate = new ArrayList(tcsaToDelete);
 
-        for (TestCaseStepAction tcsaDifference : tcsaToDeleteToIterate) {
-            //System.out.print("ToDlt" + tcsaDifference.toString());
-            for (TestCaseStepAction tcsaInPage : newList) {
-                if (tcsaDifference.hasSameKey(tcsaInPage)) {
-                    tcsaToDelete.remove(tcsaDifference);
+            for (TestCaseStepAction tcsaDifference : tcsaToDeleteToIterate) {
+                //System.out.print("ToDlt" + tcsaDifference.toString());
+                for (TestCaseStepAction tcsaInPage : newList) {
+                    if (tcsaDifference.hasSameKey(tcsaInPage)) {
+                        tcsaToDelete.remove(tcsaDifference);
+                    }
                 }
-             }
+            }
+            this.deleteListTestCaseStepAction(tcsaToDelete);
         }
-        this.deleteListTestCaseStepAction(tcsaToDelete);
     }
 }
