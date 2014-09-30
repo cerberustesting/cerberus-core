@@ -118,15 +118,27 @@
                 jQuery.ajax('./GetTagExecutions?withUUID').done(function(data) {
                     var index;
                     for(index=0; index<data.tags.length; index++) {
-                       $('#selectTag').append($('<option></option>').attr("value",data.tags[index]).text(data.tags[index]));
+                        var option = $('<option></option>').attr("value",data.tags[index]).text(data.tags[index]);
+                        
+                        if($.isParamInURL("Tag", data.tags[index])) {
+                            option.attr("selected","selected");
+                        }
+                        
+                        $('#selectTag').append(option);
                     }
                 });
                 
                 jQuery.ajax('./GetCampaign?action=findAllCampaign&withoutLink=true').done(function(data) {
                     var index;
                     for(index=0; index<data.Campaigns.length; index++) {
-                       $('#selectCampaign').append($('<option></option>').attr("value",data.Campaigns[index][1])
-                               .text(data.Campaigns[index][0]+" - "+data.Campaigns[index][1]+" - "+data.Campaigns[index][2]));
+                        var option = $('<option></option>').attr("value",data.Campaigns[index][1])
+                               .text(data.Campaigns[index][0]+" - "+data.Campaigns[index][1]+" - "+data.Campaigns[index][2]);
+
+                        if($.isParamInURL("CampaignName", data.Campaigns[index][1])) {
+                            option.attr("selected","selected");
+                        }
+
+                        $('#selectCampaign').append(option);
                     }
                 });
                 
