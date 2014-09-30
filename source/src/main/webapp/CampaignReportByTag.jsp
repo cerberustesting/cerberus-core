@@ -86,15 +86,28 @@
                     for(index=0; index<data.ParameterValues.length; index++) {
                         parameter = data.ParameterValues[index];
                         //console.log(parameter);
-                        select.append(
-                                $("<option></option>").attr('value', parameter[1])
-                                .text(parameter[3]+" - "+parameter[1])
-                                .attr("title", parameter[3]+" - "+parameter[1])
-                            );
+                        var option = $("<option></option>").attr('value', parameter[1])
+                            .text(parameter[3]+" - "+parameter[1])
+                            .attr("title", parameter[3]+" - "+parameter[1]);
+                        
+                        if($.isParamInURL(select.attr("name"), parameter[1])) {
+                            option.attr("selected","selected");
+                        }
+                        
+                        select.append(option);
                      }
                 });
             }
 
+            $.isParamInURL = function(name, value){
+                var results = new RegExp('[\?&]' + name + '=' + value + '([^&#]*)').exec(window.location.href);
+                if (results==null){
+                   return false;
+                }
+                else{
+                   return true;
+                }
+            };
 
             $(document).ready(function () {
                 
@@ -105,15 +118,27 @@
                 jQuery.ajax('./GetTagExecutions?withUUID').done(function(data) {
                     var index;
                     for(index=0; index<data.tags.length; index++) {
-                       $('#selectTag').append($('<option></option>').attr("value",data.tags[index]).text(data.tags[index]));
+                        var option = $('<option></option>').attr("value",data.tags[index]).text(data.tags[index]);
+                        
+                        if($.isParamInURL("Tag", data.tags[index])) {
+                            option.attr("selected","selected");
+                        }
+                        
+                        $('#selectTag').append(option);
                     }
                 });
                 
                 jQuery.ajax('./GetCampaign?action=findAllCampaign&withoutLink=true').done(function(data) {
                     var index;
                     for(index=0; index<data.Campaigns.length; index++) {
-                       $('#selectCampaign').append($('<option></option>').attr("value",data.Campaigns[index][1])
-                               .text(data.Campaigns[index][0]+" - "+data.Campaigns[index][1]+" - "+data.Campaigns[index][2]));
+                        var option = $('<option></option>').attr("value",data.Campaigns[index][1])
+                               .text(data.Campaigns[index][0]+" - "+data.Campaigns[index][1]+" - "+data.Campaigns[index][2]);
+
+                        if($.isParamInURL("CampaignName", data.Campaigns[index][1])) {
+                            option.attr("selected","selected");
+                        }
+
+                        $('#selectCampaign').append(option);
                     }
                 });
                 
@@ -281,9 +306,9 @@
                         <form method="get">
                             <label for="selectCampaign">Campaign: </label><select name="CampaignName" id="selectCampaign"></select><br>
                             <label for="selectTag">Tag: </label><select name="Tag" id="selectTag"></select><br>
-                            <label for="environment">Environment: </label><select name="Environment" id="environment"></select><br>
-                            <label for="country">Country: </label><select name="Country" id="country"></select><br>
-                            <label for="browser">Browser: </label><select name="Browser" id="browser"></select><br>
+                            <label for="environment">Environment: </label><select multiple="true" name="Environment" id="environment"></select><br>
+                            <label for="country">Country: </label><select multiple="true" name="Country" id="country"></select><br>
+                            <label for="browser">Browser: </label><select multiple="true" name="Browser" id="browser"></select><br>
                             <br><button type="submit" value="Load">Load</button>
                         </form>
                     </td>
