@@ -322,17 +322,17 @@
                         <h1>Report by Status</h1>
                         <div class="executionStatus"></div>
                         <br>
-                        <canvas id="myDonut"></canvas>
+                        <canvas id="myDonut" height="100px"></canvas>
                     </td>
                 </tr>
                 <tr>
                     <td style="width: 48%">
                         <h1>Report by Function</h1>
-                        <canvas id="functionBar"></canvas>
+                        <canvas id="functionBar" height="200px"></canvas>
                     </td>
                     <td style="width: 48%">
                         <h1>Radar by function</h1>
-                        <canvas id="functionTest"></canvas>
+                        <canvas id="functionTest" height="200px"></canvas>
                     </td>
                 </tr>
             </table>
