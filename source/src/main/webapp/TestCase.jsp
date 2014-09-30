@@ -395,7 +395,7 @@
                                     <td class="wob">
                                         <fieldset class="wob">
                                             <select id="informationTest" name="informationTest" style="width: 250px;background-color: #DCDCDC" OnChange="findTestcaseByTest(this.value, '', 'informationTestCase')"
-                                                    readonly="readonly">
+                                                    disabled="disabled">
                                                 <%  if (test.compareTo("") == 0) { %>
                                                 <option style="width: 250px" value="All">-- Choose Test --
                                                 </option>
@@ -414,7 +414,7 @@
                                     </td>
                                     <td class="wob">
                                         <fieldset class="wob">
-                                            <select id="informationTestCase" name="informationTestCase" style="width: 200px; background-color: #DCDCDC" readonly="readonly">
+                                            <select id="informationTestCase" name="informationTestCase" style="width: 200px; background-color: #DCDCDC" disabled="disabled">
                                                 <% if (test.compareTo("") == 0) { %>
                                                 <option style="width: 250px" value="All">-- Choose Test First --
                                                 </option>
@@ -1769,6 +1769,8 @@
                 document.getElementById('inputAddTestInSelectTest').style.display = 'inline-block';
                 document.getElementById('saveAs').style.display = 'none';
                 document.getElementById('FirstSaveChanges').style.display = 'inline-block';
+                document.getElementById('informationTest').disabled = false;
+                document.getElementById('informationTestCase').disabled = false;
             }
 
         </script>
