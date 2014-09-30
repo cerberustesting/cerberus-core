@@ -86,15 +86,28 @@
                     for(index=0; index<data.ParameterValues.length; index++) {
                         parameter = data.ParameterValues[index];
                         //console.log(parameter);
-                        select.append(
-                                $("<option></option>").attr('value', parameter[1])
-                                .text(parameter[3]+" - "+parameter[1])
-                                .attr("title", parameter[3]+" - "+parameter[1])
-                            );
+                        var option = $("<option></option>").attr('value', parameter[1])
+                            .text(parameter[3]+" - "+parameter[1])
+                            .attr("title", parameter[3]+" - "+parameter[1]);
+                        
+                        if($.isParamInURL(select.attr("name"), parameter[1])) {
+                            option.attr("selected","selected");
+                        }
+                        
+                        select.append(option);
                      }
                 });
             }
 
+            $.isParamInURL = function(name, value){
+                var results = new RegExp('[\?&]' + name + '=' + value + '([^&#]*)').exec(window.location.href);
+                if (results==null){
+                   return false;
+                }
+                else{
+                   return true;
+                }
+            };
 
             $(document).ready(function () {
                 
@@ -281,9 +294,9 @@
                         <form method="get">
                             <label for="selectCampaign">Campaign: </label><select name="CampaignName" id="selectCampaign"></select><br>
                             <label for="selectTag">Tag: </label><select name="Tag" id="selectTag"></select><br>
-                            <label for="environment">Environment: </label><select name="Environment" id="environment"></select><br>
-                            <label for="country">Country: </label><select name="Country" id="country"></select><br>
-                            <label for="browser">Browser: </label><select name="Browser" id="browser"></select><br>
+                            <label for="environment">Environment: </label><select multiple="true" name="Environment" id="environment"></select><br>
+                            <label for="country">Country: </label><select multiple="true" name="Country" id="country"></select><br>
+                            <label for="browser">Browser: </label><select multiple="true" name="Browser" id="browser"></select><br>
                             <br><button type="submit" value="Load">Load</button>
                         </form>
                     </td>
