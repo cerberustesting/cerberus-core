@@ -105,6 +105,9 @@ function createGraphFromDataToElement(data,element, config) {
 
             //String - Colour of the grid lines
             scaleGridLineColor: "rgba(0,0,0,0.2)",
+            
+            // Number - Scale label font size in pixels
+    scaleFontSize: 9,
 
             // String - Template string for single tooltips
             tooltipTemplate: "<%if (label){%><%=label%>: <%}%><%= value %>",
