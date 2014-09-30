@@ -17,6 +17,8 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
+<%@page import="org.cerberus.entity.BuildRevisionInvariant"%>
+<%@page import="org.cerberus.service.IBuildRevisionInvariantService"%>
 <%@page import="org.cerberus.service.IDocumentationService"%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
@@ -52,6 +54,24 @@
     <body id="body">
         <%@ include file="include/function.jsp"%>
         <%@ include file="include/header.jsp"%>
+        <form action="ExecutionPerBuildRevision" name="sprintForm" id="sprintForm">
+            <select name="Sprint" onchange="document.sprintForm.submit()">
+                <option value="">Choose Sprint</option>
+                <%
+                IUserService myUserService = appContext.getBean(IUserService.class);
+                User MyUserobj = myUserService.findUserByKeyWithDependencies(request.getUserPrincipal().getName());
+                
+                    String MySystem = MyUserobj.getDefaultSystem();
+                IBuildRevisionInvariantService buildRevisionInvariantService = 
+                        appContext.getBean(IBuildRevisionInvariantService.class);
+                List<BuildRevisionInvariant> myBuildRevisionInvariant = 
+                        buildRevisionInvariantService.findAllBuildRevisionInvariantBySystemLevel(MySystem, 1);
+                for (BuildRevisionInvariant bri : myBuildRevisionInvariant){
+                    %>
+                <option value="<%=bri.getVersionName()%>"><%=bri.getVersionName()%></option>
+                <%}%>
+            </select>
+        </form>
         <%
             IDocumentationService docService = appContext.getBean(IDocumentationService.class);
         %>

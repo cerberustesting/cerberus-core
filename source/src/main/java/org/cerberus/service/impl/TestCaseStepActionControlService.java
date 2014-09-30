@@ -103,7 +103,7 @@ public class TestCaseStepActionControlService implements ITestCaseStepActionCont
     }
 
     @Override
-    public void compareListAndUpdateInsertDeleteElements(List<TestCaseStepActionControl> newList, List<TestCaseStepActionControl> oldList) throws CerberusException {
+    public void compareListAndUpdateInsertDeleteElements(List<TestCaseStepActionControl> newList, List<TestCaseStepActionControl> oldList, boolean duplicate) throws CerberusException {
         /**
          * Iterate on (TestCaseStepActionControl From Page -
          * TestCaseStepActionControl From Database) If TestCaseStepActionControl
@@ -129,17 +129,19 @@ public class TestCaseStepActionControlService implements ITestCaseStepActionCont
          * TestCaseStep in Page has same key : remove from the list. Then delete
          * the list of TestCaseStep
          */
-        List<TestCaseStepActionControl> tcsacToDelete = new ArrayList(oldList);
-        tcsacToDelete.removeAll(newList);
-        List<TestCaseStepActionControl> tcsacToDeleteToIterate = new ArrayList(tcsacToDelete);
+        if (!duplicate) {
+            List<TestCaseStepActionControl> tcsacToDelete = new ArrayList(oldList);
+            tcsacToDelete.removeAll(newList);
+            List<TestCaseStepActionControl> tcsacToDeleteToIterate = new ArrayList(tcsacToDelete);
 
-        for (TestCaseStepActionControl tcsacDifference : tcsacToDeleteToIterate) {
-            for (TestCaseStepActionControl tcsacInPage : newList) {
-                if (tcsacDifference.hasSameKey(tcsacInPage)) {
-                    tcsacToDelete.remove(tcsacDifference);
+            for (TestCaseStepActionControl tcsacDifference : tcsacToDeleteToIterate) {
+                for (TestCaseStepActionControl tcsacInPage : newList) {
+                    if (tcsacDifference.hasSameKey(tcsacInPage)) {
+                        tcsacToDelete.remove(tcsacDifference);
+                    }
                 }
             }
+            this.deleteListTestCaseStepActionControl(tcsacToDelete);
         }
-        this.deleteListTestCaseStepActionControl(tcsacToDelete);
     }
 }

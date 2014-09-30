@@ -66,8 +66,8 @@ public class TestCaseExecutionStatisticsServiceImpl implements ITestCaseExecutio
     }
 
     @Override
-    public List<BuildRevisionStatistics> getListOfXLastBuildAndRev(String system, int listSize) {
-        return testCaseExecutionStatisticsDAO.getListOfXLastBuildAndRev(system, listSize);
+    public List<BuildRevisionStatistics> getListOfXLastBuildAndRev(String system, int listSize, String sprint) {
+        return testCaseExecutionStatisticsDAO.getListOfXLastBuildAndRev(system, listSize, sprint);
     }
     
 }

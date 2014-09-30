@@ -61,6 +61,7 @@ public class SearchManualTestCaseInformation extends HttpServlet {
         String country = this.getValue(req, "ScCountry");
         String env = this.getValue(req, "ScEnv");
         String campaign = this.getValue(req, "ScCampaign");
+        String testBattery = this.getValue(req, "ScTestBattery");
         TCase tCase = this.getTestCaseFromRequest(req);
 
         tCase.setActive("Y");
@@ -79,7 +80,7 @@ public class SearchManualTestCaseInformation extends HttpServlet {
 
             ObjectMapper mapper = new ObjectMapper();
             OutputStream out = new ByteArrayOutputStream();
-            mapper.writeValue(out, manualTestCaseService.findTestCaseManualExecution(tCase, text, system, country, env, campaign));
+            mapper.writeValue(out, manualTestCaseService.findTestCaseManualExecution(tCase, text, system, country, env, campaign, testBattery));
             JSONArray data = new JSONArray(out.toString());
 
             JSONObject jsonResponse = new JSONObject();

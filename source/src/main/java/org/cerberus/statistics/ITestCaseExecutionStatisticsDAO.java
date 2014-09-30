@@ -33,6 +33,6 @@ public interface ITestCaseExecutionStatisticsDAO {
     
     List<BuildRevisionStatistics> getListOfXLastBuildAndRevExecuted(String system, int listSize);
     
-    List<BuildRevisionStatistics> getListOfXLastBuildAndRev(String system, int listSize);
+    List<BuildRevisionStatistics> getListOfXLastBuildAndRev(String system, int listSize, String sprint);
     
 }
