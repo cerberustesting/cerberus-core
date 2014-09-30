@@ -40,12 +40,14 @@ import org.cerberus.entity.CampaignParameter;
 import org.cerberus.entity.Parameter;
 import org.cerberus.entity.Robot;
 import org.cerberus.entity.TestBatteryContent;
+import org.cerberus.entity.TestCaseExecution;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.service.ICampaignService;
 import org.cerberus.service.ILogEventService;
 import org.cerberus.service.IParameterService;
 import org.cerberus.service.IRobotService;
 import org.cerberus.service.ITestBatteryService;
+import org.cerberus.service.ITestCaseExecutionService;
 import org.cerberus.service.impl.LogEventService;
 import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;
@@ -62,6 +64,7 @@ public class GetCampaignExecutionsCommand extends HttpServlet {
     private final PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
     private ICampaignService campaignService;
     private ITestBatteryService testBatteryService;
+    private ITestCaseExecutionService testCaseExecutionService;
     private IRobotService robotService;
     private IParameterService parameterService;
 
@@ -79,6 +82,7 @@ public class GetCampaignExecutionsCommand extends HttpServlet {
 
         campaignService = appContext.getBean(ICampaignService.class);
         testBatteryService = appContext.getBean(ITestBatteryService.class);
+        testCaseExecutionService = appContext.getBean(ITestCaseExecutionService.class);
         parameterService = appContext.getBean(IParameterService.class);
 
         String campaignId = policy.sanitize(request.getParameter("campaign"));
@@ -135,6 +139,8 @@ public class GetCampaignExecutionsCommand extends HttpServlet {
         }
 
         tag = policy.sanitize(request.getParameter("tag"));
+        String notOnTag = policy.sanitize(request.getParameter("notOnTag"));
+
 
         url = url.replaceAll("__HOST__", host)
                 .replaceAll("__PORT__", port)
@@ -152,9 +158,15 @@ public class GetCampaignExecutionsCommand extends HttpServlet {
             }
 
             List<CampaignContent> campaignContentList = campaignService.findCampaignContentsByCampaignName(campaign.getCampaign());
+
+            List<String> testCaseExecutionAlreadyOnTag = new ArrayList<String>();
+            if(notOnTag != null && !"".equals(notOnTag.trim())) {
+                testCaseExecutionAlreadyOnTag = convertTestCaseExecutionsToListOfKeys(testCaseExecutionService.findExecutionsByCampaignNameAndTag(campaignName, notOnTag));
+            }
+            
             List<CampaignParameter> campaignParameterList = campaignService.findCampaignParametersByCampaignName(campaign.getCampaign());
 
-            List<String> queries = convertListOfContentToListOfQueries(campaignContentList);
+            List<String> queries = convertListOfContentToListOfQueries(campaignContentList,testCaseExecutionAlreadyOnTag);
             List<String> listOfQueriesForCampaignParameters = convertParametersListToListOfQueries(campaignParameterList, queries);
 
             if (fromStr != null && !"".equals(fromStr.trim()) && onStr != null && !"".equals(onStr.trim())) {
@@ -208,22 +220,39 @@ public class GetCampaignExecutionsCommand extends HttpServlet {
         return queries;
     }
 
-    private List<String> convertListOfContentToListOfQueries(List<CampaignContent> campaignContentList) {
+    private List<String> convertTestCaseExecutionsToListOfKeys(List<TestCaseExecution> testCaseExecutions) {
+        List<String> testCaseExecutionKeys = new ArrayList<String>();
+        if(testCaseExecutions != null && testCaseExecutions.size() > 0) {
+            String key;
+            for (TestCaseExecution testCaseExecution : testCaseExecutions) {
+                key = testCaseExecution.getTest()+"_"+testCaseExecution.getTestCase();
+                testCaseExecutionKeys.add(key);
+            }
+        }
+        return testCaseExecutionKeys;
+        
+    }
+
+    private List<String> convertListOfContentToListOfQueries(List<CampaignContent> campaignContentList, List<String>  testCaseExecutionAlreadyOnTag) {
         List<String> queries = new ArrayList<String>();
 
         List<TestBatteryContent> testBatteryContents;
 
         StringBuilder sb;
+        String key;
         for (CampaignContent campaignContent : campaignContentList) {
             try {
                 testBatteryContents = testBatteryService.findTestBatteryContentsByTestBatteryName(campaignContent.getTestbattery());
                 for (TestBatteryContent testBatteryContent : testBatteryContents) {
-                    sb = new StringBuilder("&Test=")
-                            .append(URLEncoder.encode(testBatteryContent.getTest(), "UTF-8"))
-                            .append("&TestCase=")
-                            .append(URLEncoder.encode(testBatteryContent.getTestCase(), "UTF-8"));
-                    if (!queries.contains(sb.toString())) {
-                        queries.add(sb.toString());
+                    key = testBatteryContent.getTest() + "_" + testBatteryContent.getTestCase();
+                    if( !testCaseExecutionAlreadyOnTag.contains(key)) {
+                        sb = new StringBuilder("&Test=")
+                                .append(URLEncoder.encode(testBatteryContent.getTest(), "UTF-8"))
+                                .append("&TestCase=")
+                                .append(URLEncoder.encode(testBatteryContent.getTestCase(), "UTF-8"));
+                        if (!queries.contains(sb.toString())) {
+                            queries.add(sb.toString());
+                        }
                     }
                 }
             } catch (CerberusException ex) {
