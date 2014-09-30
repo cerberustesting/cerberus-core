@@ -293,6 +293,10 @@
                 font-weight: bold;
             }
             
+            form {
+                text-align: left;
+            }
+            
         </style>
     </head>
     <body>
@@ -304,12 +308,14 @@
                 <tr>
                     <td style="width: 48%" class="title addborder">
                         <form method="get">
-                            <label for="selectCampaign">Campaign: </label><select name="CampaignName" id="selectCampaign"></select><br>
-                            <label for="selectTag">Tag: </label><select name="Tag" id="selectTag"></select><br>
-                            <label for="environment">Environment: </label><select multiple="true" name="Environment" id="environment"></select><br>
-                            <label for="country">Country: </label><select multiple="true" name="Country" id="country"></select><br>
-                            <label for="browser">Browser: </label><select multiple="true" name="Browser" id="browser"></select><br>
-                            <br><button type="submit" value="Load">Load</button>
+                            <table>
+                                <tr><td><label for="selectCampaign">Campaign: </label></td><td><select name="CampaignName" id="selectCampaign"></select></td></tr>
+                                <tr><td><label for="selectTag">Tag: </label></td><td><select name="Tag" id="selectTag"></select></td></tr>
+                                <tr><td><label for="environment">Environment: </label></td><td><select multiple="true" name="Environment" id="environment"></select></td></tr>
+                                <tr><td><label for="country">Country: </label></td><td><select multiple="true" name="Country" id="country"></select></td></tr>
+                                <tr><td><label for="browser">Browser: </label></td><td><select multiple="true" name="Browser" id="browser"></select></td></tr>
+                                <tr><td colspan="2"><button type="submit" value="Load">Load</button></td></tr>
+                            </table>
                         </form>
                     </td>
                     <td style="width: 48%">
