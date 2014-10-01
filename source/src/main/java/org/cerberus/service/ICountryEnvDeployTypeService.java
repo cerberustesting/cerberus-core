@@ -17,21 +17,12 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.serviceEmail;
 
-import org.cerberus.entity.User;
+package org.cerberus.service;
 
-/**
- *
- * @author bcivel
- */
-public interface IEmailGeneration {
+import java.util.List;
 
-    public String EmailGenerationRevisionChange(String system, String country, String env, String build, String revision);
+public interface ICountryEnvDeployTypeService {
 
-    public String EmailGenerationDisableEnv(String system, String country, String env);
-
-    public String EmailGenerationNewChain(String system, String country, String env, String build, String revision, String chain);
-
-    public void BuildAndSendAccountCreationEmail(User user);
+    List<String> findJenkinsAgentByKey(String system, String country, String env, String deploy);
 }

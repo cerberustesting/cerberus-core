@@ -97,7 +97,7 @@ public class NewBuildRev extends HttpServlet {
             IEmailGeneration emailGenerationService = appContext.getBean(EmailGeneration.class);
 
             //TODO remove passing connection
-            String eMailContent = emailGenerationService.EmailGenerationRevisionChange(system, country, env, build, rev, connection);
+            String eMailContent = emailGenerationService.EmailGenerationRevisionChange(system, country, env, build, rev);
 
             // Split the result to extract all the data
             String[] eMailContentTable = eMailContent.split("///");
