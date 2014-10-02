@@ -53,6 +53,7 @@
     <script type="text/javascript" src="js/jquery.dataTables.min.js"></script>
     <script type="text/javascript" src="js/FixedHeader.js"></script>
     <script type="text/javascript" src="js/jquery.multiselect.js"></script>
+    <script type="text/javascript" src="js/jquery.jeditable.mini.js"></script>
 
 <%
     try{
@@ -98,7 +99,7 @@
 
 
             $.each(country, function (index, elem) {
-                $('#TCComment').before("<th class='jsAdded' colspan='" + (browser.length * 2) + "'>" + elem + "</th>");
+                $('.TCComment').before("<th class='jsAdded' colspan='" + (browser.length * 2) + "'>" + elem + "</th>");
                 $.each(browser, function (i, e) {
                     $('#tableCountry').append("<th class='jsAdded' colspan='2'>" + e + "</th>");
                     $('#TCResult').append("<th class='TCResult jsAdded'></th><th class='TCTime jsAdded'></th>");
@@ -168,6 +169,18 @@
                         "mRender": function (data, type, full) {
                             return "<a href='TestCase.jsp?Load=Load&Test="+full[0]+"&TestCase="+data+"' target='_blank'>"+data+"</a>";
                         }
+                    },
+                    {"aTargets": ['TCComment'],
+                        "fnCreatedCell": function (nTd, sData, oData) {
+                            $(nTd).editable("UpdateTestCaseField", {
+                                type: "textarea",
+                                onblur: "submit",
+                                submitdata: {test: oData[0],testcase: oData[1], columnName: "comment"},
+                                tooltip: "Doubleclick to edit...",
+                                event : "dblclick",
+                                placeholder: ""
+                            });
+                        }
                     }
                 ],
                 "fnInitComplete": function (oSettings, json) {
@@ -186,6 +199,7 @@
                             .append("<div class='PE' style='float: left;margin-left: 3px;margin-right: 3px;' title='PE : Test execution is still running...'><input type='checkbox' name='PE' value='PE' class='filterCheckbox' id='FPE' disabled='disabled' onchange='toogleDisplay(this)'><label class='PEF'>PE</label></div>")
                             .append("<div class='NotExecuted' style='float: left;margin-left: 3px;margin-right: 3px;' title='Test Case has not been executed for that country.'><span class='NotExecutedF'>XX</span></div>")
                             .append("<div class='NOINF' style='float: left;margin-left: 3px;margin-right: 3px;' title='Test Case not available for the country XX.'><span class='NOINFF'>XX</span></div>")
+                            .append("<divstyle='float: left;margin-left: 3px;margin-right: 3px;' title='URL for quick access'><a href='./ReportingExecution.jsp?"+json.requestUrl+"'><b>URL for quick access</b></a></div>")
                             .append("</div>");
 
                     $('#reporting').find('tbody tr').on('click',function() {
@@ -260,12 +274,12 @@
 
     function filterDisplay(checked) {
         if(checked) {
-            $('#reporting tbody tr').hide();
+            $('#reporting').find('tbody tr').hide();
 
             $('input.filterCheckbox').removeAttr('disabled');
             $('input.filterDisplay').attr('checked','checked');
         } else {
-            $('#reporting tbody tr').show();
+            $('#reporting').find('tbody tr').show();
 
             $('input.filterCheckbox').attr('disabled','disabled').removeAttr('checked');
             $('input.filterDisplay').removeAttr('checked');
@@ -412,7 +426,7 @@
     </div>
 </div>
 <div id="filtersList" style="display:block">
-<form id="formReporting">
+<form id="formReporting" onsubmit="return hideStatistic()">
     <div>
         <div class="underlinedDiv"></div>
         <p style="text-align:left" class="dttTitle">Testcase Filters (Displayed Rows)</p>
@@ -777,7 +791,7 @@
             <th rowspan="3">Description</th>
             <th rowspan="3">Priority</th>
             <th rowspan="3">Status</th>
-            <th rowspan="3" id="TCComment">Comment</th>
+            <th rowspan="3" class="TCComment">Comment</th>
             <th rowspan="3" class="bugIDColumn">Bug ID</th>
             <th rowspan="3">Group</th>
         </tr>
