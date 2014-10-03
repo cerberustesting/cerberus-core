@@ -17,10 +17,19 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
   --%>
-<%@ page import="java.util.*" %>
+<%@ page import="java.util.TreeMap" %>
 <%@ page import="org.apache.commons.lang3.StringUtils" %>
-<%@ page import="org.cerberus.service.*" %>
-<%@ page import="org.cerberus.entity.*" %>
+<%@ page import="org.cerberus.service.IDocumentationService" %>
+<%@ page import="org.cerberus.service.ITestService" %>
+<%@ page import="org.cerberus.service.IProjectService" %>
+<%@ page import="org.cerberus.service.IInvariantService" %>
+<%@ page import="org.cerberus.service.IBuildRevisionInvariantService" %>
+<%@ page import="org.cerberus.service.IApplicationService" %>
+<%@ page import="org.cerberus.service.IUserService" %>
+<%@ page import="org.cerberus.entity.Test" %>
+<%@ page import="org.cerberus.entity.Project" %>
+<%@ page import="org.cerberus.entity.Application" %>
+<%@ page import="org.cerberus.entity.BuildRevisionInvariant" %>
 <%@ page import="org.cerberus.exception.CerberusException" %>
 
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
@@ -66,18 +75,57 @@
 
         var country = [];
         var browser = [];
+        var oldSystem = null;
         $(document).ready(function () {
             $(".multiSelectOptions").each(function () {
                 var currentElement = $(this);
 
-                currentElement.multiselect({
-                    multiple: true,
-                    minWidth: 150,
-                    header: currentElement.data('header'),
-                    noneSelectedText: currentElement.data('none-selected-text'),
-                    selectedText: currentElement.data('selected-text'),
-                    selectedList: currentElement.data('selected-list')
-                });
+                if (currentElement.attr("id") === "System") {
+                    currentElement.multiselect({
+                        multiple: true,
+                        minWidth: 150,
+                        header: currentElement.data('header'),
+                        noneSelectedText: currentElement.data('none-selected-text'),
+                        selectedText: currentElement.data('selected-text'),
+                        selectedList: currentElement.data('selected-list'),
+                        beforeclose: function() {
+                            var system = $("#System").val();
+
+//                            if (!compareArrays(oldSystem, system)) {
+                                var appSelect = $("#Application");
+
+//                                if (oldSystem != null) {
+//                                    $.each(oldSystem, function(i, v){
+//                                        if ($.inArray(v, system) === -1) {
+//                                            appSelect.find("option:contains('["+v+"]')").removeAttr('selected');
+//                                        }
+//                                    });
+//                                }
+
+                                if (system === null) {
+                                    appSelect.find("option").removeAttr('disabled');
+                                } else {
+                                    appSelect.find("option").attr('disabled','disabled');
+                                    $.each(system, function(i, v){
+                                        appSelect.find("option:contains('["+v+"]')").removeAttr('disabled');
+                                    });
+                                }
+                                appSelect.multiselect("refresh");
+
+                                oldSystem = system;
+//                            }
+                        }
+                    });
+                } else {
+                    currentElement.multiselect({
+                        multiple: true,
+                        minWidth: 150,
+                        header: currentElement.data('header'),
+                        noneSelectedText: currentElement.data('none-selected-text'),
+                        selectedText: currentElement.data('selected-text'),
+                        selectedList: currentElement.data('selected-list')
+                    });
+                }
             });
 
         $('#formReporting').submit(function(e){
@@ -331,6 +379,10 @@
             zTop: 98
         });
     }
+
+    function compareArrays(arr1, arr2) {
+        return $(arr1).not(arr2).length == 0 && $(arr2).not(arr1).length == 0
+    };
     </script>
     <style>
         .underlinedDiv{
