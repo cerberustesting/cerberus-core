@@ -2217,7 +2217,8 @@ function addPropertyNew(widthValue){
     $('#propertyRow'+nextIncrementValue).find('input[data-id="property_increment_template"]')
             .attr('name', 'property_increment').val(nextIncrementValue);
     $('#propertyRow'+nextIncrementValue).find('input[data-id="properties_property_template"]')
-            .attr('name', 'properties_property_' + nextIncrementValue);
+            .attr('name', 'properties_property_' + nextIncrementValue)
+            .attr('placeholder', 'Feed Property Name');
     $('#propertyRow'+nextIncrementValue).find('input[data-id="properties_country_template"]')
             .attr('name', 'properties_country_' + nextIncrementValue);
     $('#propertyRow'+nextIncrementValue).find('#properties_type_template')
@@ -2240,9 +2241,9 @@ function addPropertyNew(widthValue){
     $('#propertyRow'+nextIncrementValue).find('textarea[data-id="properties_value2_template"]')
             .attr('name', 'properties_value2_' + nextIncrementValue);
     $('#propertyRow'+nextIncrementValue).find('input[data-id="properties_length_template"]')
-            .attr('name', 'properties_length_' + nextIncrementValue);
+            .attr('name', 'properties_length_' + nextIncrementValue).val("0");
     $('#propertyRow'+nextIncrementValue).find('input[data-id="properties_rowlimit_template"]')
-            .attr('name', 'properties_rowlimit_' + nextIncrementValue);
+            .attr('name', 'properties_rowlimit_' + nextIncrementValue).val("0");
     $('#propertyRow'+nextIncrementValue).find('#properties_nature_template')
             .attr('name', 'properties_nature_' + nextIncrementValue);
 }

@@ -132,6 +132,68 @@
                     $('#generalparameter').hide();
                 }
             });</script>
+                <script>
+            function customizeView(value){
+                if (value === 'onlyStep'){
+                    var elem = document.getElementsByClassName('RowActionDiv');
+                    for (var a = 0 ; a < elem.length ; a++ ){
+                        elem[a].style.display = 'none';
+                    }
+                }
+                
+                if (value === 'full'){
+                    var elem = document.getElementsByClassName('RowActionDiv');
+                    for (var a = 0 ; a < elem.length ; a++ ){
+                        elem[a].style.display = 'block';
+                    }
+                    var elem = document.getElementsByClassName('functional_description');
+                    for (var a = 0 ; a < elem.length ; a++ ){
+                        elem[a].style.display = 'block';
+                    }
+                    var elem = document.getElementsByClassName('technical_part');
+                    for (var a = 0 ; a < elem.length ; a++ ){
+                        elem[a].style.display = 'block';
+                    }
+                }
+                
+                if (value === 'hideUseStep'){
+                    var elem = document.getElementsByClassName('ActionOfUseStep');
+                    for (var a = 0 ; a < elem.length ; a++ ){
+                        elem[a].style.display = 'none';
+                    }
+                    var elem = document.getElementsByClassName('ActionOfNormalStep');
+                    for (var a = 0 ; a < elem.length ; a++ ){
+                        elem[a].style.display = 'block';
+                    }
+                }
+                
+                if (value === 'technicalView'){
+                    var elem = document.getElementsByClassName('functional_description');
+                    for (var a = 0 ; a < elem.length ; a++ ){
+                        elem[a].style.display = 'none';
+                    }
+                    var elem = document.getElementsByClassName('technical_part');
+                    for (var a = 0 ; a < elem.length ; a++ ){
+                        elem[a].style.display = 'block';
+                    }
+                }
+                
+                if (value === 'fonctionalView'){
+                    var elem = document.getElementsByClassName('functional_description');
+                    for (var a = 0 ; a < elem.length ; a++ ){
+                        elem[a].style.display = 'block';
+                    }
+                    var elem = document.getElementsByClassName('technical_part');
+                    for (var a = 0 ; a < elem.length ; a++ ){
+                        elem[a].style.display = 'none';
+                    }
+                }
+                
+                
+                
+                
+            }
+        </script>
         <script type="text/javascript">
             var track = 0;
             function trackChanges(originalValue, newValue, element) {
@@ -748,15 +810,29 @@
                     int j = 1;
                     int rowNumber = 0;
                 %>
+                <script>
+                $(document).ready(function() {
+                var cookie = GetCookie('TestCasePageDefaultView');
+                $("#selectView option").each(function(){
+                    if (this.value === cookie){
+                        this.selected='selected';
+                    }
+                });
+                customizeView(cookie);
+            });    
+                </script>
                 <div id="AutomationScriptDiv" class="arrond" style="display : inline-block">
                     <div id="AutomationScriptFirstLine" style="clear:both; height:30px">
                         <div id="AutomationScriptTitle" style="float:left">
                             <h3>TestCase Detailed Description</h3>
                         </div>
                         <div id="AutomationScriptFunctionalButtonDiv" style="float:left;margin-left:30px">
-                            <select style="float:left; height:20px; width:100px" onchange="javascript:collapseOrExpandAllStep();">
-                                <option>Full View</option>
-                                <option>Show Only Step</option>
+                            <select id="selectView" style="float:left; height:20px; width:100px" onchange="javascript:customizeView(this.value);SetCookie('TestCasePageDefaultView', this.value)">
+                                <option value="full">Full View</option>
+                                <option value="onlyStep">Show Only Step</option>
+                                <option value="hideUseStep">Hide Use Step</option>
+                                <option value="fonctionalView">Functional Information Only</option>
+                                <option value="technicalView">Technical Information Only</option>
                             </select>
                         </div>
                     </div>
@@ -792,6 +868,7 @@
                                         boolean useStep = false;
                                         boolean stepusedByAnotherTest = false;
                                         String complementName = "";
+                                        String classStep = "ActionOfNormalStep";
 
                                         List<TestCaseStep> tcsUsingThisStep = tcsService.getTestCaseStepUsingStepInParamter(test, testcase, tcs.getStep());
                                         if (!tcsUsingThisStep.isEmpty()) {
@@ -809,6 +886,7 @@
                                             isReadonly = "readonly";
                                             useStep = true;
                                             complementName = "Block";
+                                            classStep = "ActionOfUseStep";
                                         }
                                         List<TestCaseStepAction> tcsaList = tcsaService.getListOfAction(testForQuery, testcaseForQuery, stepForQuery);
 
@@ -934,7 +1012,7 @@
                                     <div id="StepsBorderDiv<%=incrementStep%>" style="display:block;margin-top:0px;border-style: solid; border-width:thin ; border-color:#EEEEEE; clear:both;">
                                         <div id="StepDetailsDiv" style="clear:both">
                                             <div id="ActionControlDivUnderTitle" style="height:100%;width:100%;clear:both">
-                                                <div id="Action<%=tcs.getStep()%>" class="collapseOrExpandStep"  style="height:100%; width:100%;text-align: left; clear:both" >
+                                                <div id="Action<%=tcs.getStep()%>" style="height:100%; width:100%;text-align: left; clear:both" >
                                                     <div id="BeforeFirstAction<%=tcs.getStep()%>"></div>
                                                     <%
                                                         String actionColor = "";
@@ -956,7 +1034,7 @@
                                                                 actionFontColor = "grey";
                                                             }
                                                     %>
-                                                    <div id="StepListOfActionDiv<%=incrementStep%><%=incrementAction%>" class="RowActionDiv" style="margin-top:0px;display:block;height:40px;width:100%;border-style: solid; border-width:thin ; border-color:#CCCCCC;">
+                                                    <div id="StepListOfActionDiv<%=incrementStep%><%=incrementAction%>" class="RowActionDiv <%=classStep%>" style="margin-top:0px;display:block;height:40px;width:100%;border-style: solid; border-width:thin ; border-color:#CCCCCC;">
                                                         <div name="actionRow_color_<%=incrementStep%>" style="background-color:blue; width:8px;height:100%;display:inline-block;float:left">
                                                         </div>
                                                         <div style="display:inline-block;float:left;width:2%;height:100%;">
@@ -1050,7 +1128,7 @@
                                                                 controlColor = "#DCDCDC";
                                                             }
                                                     %>
-                                                    <div id="StepListOfControlDiv<%=incrementStep%><%=incrementAction%><%=incrementControl%>" class="RowActionDiv" style="width:100%;height:40px;clear:both;display:block;border-style: solid; border-width:thin ; border-color:#CCCCCC;">
+                                                    <div id="StepListOfControlDiv<%=incrementStep%><%=incrementAction%><%=incrementControl%>" class="RowActionDiv <%=classStep%>" style="width:100%;height:40px;clear:both;display:block;border-style: solid; border-width:thin ; border-color:#CCCCCC;">
                                                         <div style="background-color:#33CC33; width:8px;height:100%;display:inline-block;float:left">
                                                         </div>
                                                         <div style="height:100%;width: 2%;float:left; text-align: center;">
@@ -1084,11 +1162,11 @@
                                                                    data-fieldtype="control_<%=incrementStep%>_<%=incrementAction%>" value="<%=incrementControl%>" name="control_control_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>">
                                                         </div>
                                                         <div style="height:100%;width:90%;float:left;display:inline-block">
-                                                            <div class="functional_description_control" style="clear:both;width:100%;height:20px">
+                                                            <div class="functional_description" style="clear:both;width:100%;height:20px">
                                                                 <div style="float:left; width:80%">
                                                                     <div style="float:left;width:80px; "><p style="float:right;font-weight:bold;color:white;" link="white" ><%out.print(docService.findLabelHTML("testcasestepaction", "description", "Description"));%></p>
                                                                     </div>
-                                                                    <input class="wob" placeholder="Description" class="functional_description_control" style="border-style:groove;border-width:thin;border-color:white;border: 2px solid white; color:#333333; width: 80%; background-color: transparent; font-weight:bold;font-size:12px ;font-family: Trebuchet MS; "
+                                                                    <input class="wob" placeholder="Description" class="functional_description" style="border-style:groove;border-width:thin;border-color:white;border: 2px solid white; color:#333333; width: 80%; background-color: transparent; font-weight:bold;font-size:12px ;font-family: Trebuchet MS; "
                                                                            data-fieldtype="Description" value="<%=tcsac.getDescription()%>" name="control_description_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>" maxlength="1000">
                                                                 </div>
                                                             </div>
@@ -1096,7 +1174,7 @@
                                                                 <div style="width:30%; float:left;">
                                                                     <div style="float:left;width:80px; "><p style="float:right;font-weight:bold;color:white;" link="white" ><%out.print(docService.findLabelHTML("testcasestepactioncontrol", "control", "Control"));%></p>
                                                                     </div>
-                                                                    <%=ComboInvariant(appContext, "control_type_" + incrementStep + "_" + incrementAction + "_" + incrementControl, "width: 70%;font-size:10px ;border: 1px solid white; background-color:transparent;color:" + actionFontColor, "control_type_" + incrementStep + "_" + incrementAction + "_" + incrementControl, "wob", "CONTROL", tcsac.getType(), "trackChanges(this.value, '" + tcsac.getType() + "', 'submitButtonChanges')", null)%>
+                                                                    <%=ComboInvariant(appContext, "control_type_" + incrementStep + "_" + incrementAction + "_" + incrementControl, "width: 70%;font-size:10px ;border: 1px solid white; background-color:transparent;color:" + actionFontColor, "control_type_" + incrementStep + "_" + incrementAction + "_" + incrementControl, "technical_part", "CONTROL", tcsac.getType(), "", null)%>
                                                                 </div>
                                                                 <div class="technical_part" style="width:30%;float:left;">
                                                                     <div style="float:left;width:19%; "><p style="float:right;font-weight:bold;color:white;" link="white" ><%out.print(docService.findLabelHTML("testcasestepactioncontrol", "controleproperty", "controleproperty"));%></p>
