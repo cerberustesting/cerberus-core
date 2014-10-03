@@ -395,8 +395,8 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
                 String type = getParameterIfExists(request, "properties_type_" + inc);
                 String value = getParameterIfExists(request, "properties_value1_" + inc);
                 String value2 = getParameterIfExists(request, "properties_value2_" + inc);
-                int length = Integer.valueOf(getParameterIfExists(request, "properties_length_" + inc));
-                int rowLimit = Integer.valueOf(getParameterIfExists(request, "properties_rowlimit_" + inc));
+                int length = Integer.valueOf(getParameterIfExists(request, "properties_length_" + inc).equals("") ? "0" : getParameterIfExists(request, "properties_length_" + inc));
+                int rowLimit = Integer.valueOf(getParameterIfExists(request, "properties_rowlimit_" + inc).equals("") ? "0" : getParameterIfExists(request, "properties_rowlimit_" + inc));
                 String nature = getParameterIfExists(request, "properties_nature_" + inc);
                 String database = getParameterIfExists(request, "properties_dtb_" + inc);
                 for (String country : countries) {

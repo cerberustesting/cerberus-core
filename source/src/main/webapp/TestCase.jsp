@@ -177,11 +177,21 @@
             .RowActionDiv:focus{
                 background-color: #CCCCCC;
             }
+            .generalPropertyDiv{
+                display:inline-block;
+                background-color: white;
+            }
+            .generalPropertyDiv:hover{
+                background-color: #CCCCCC;
+            }
+            .generalPropertyDiv:focus{
+                background-color: #CCCCCC;
+            }
             .StepHeaderDiv {
                 width:100%;
                 height:40px;
                 clear:both;
-                display:block;
+                /*display:block;*/
                 border-style: solid;
                 border-width:thin;
                 border-color:#CCCCCC;
@@ -408,6 +418,7 @@
                                                 <% }
                                                 %>
                                             </select>
+                                            <input id ="hiddenInformationTest" name="informationTest" style="display:none" value="<%=test%>">
                                             <input type="text" style="width:250px; display:none" placeholder="Select test above or define new one" id="inputAddTestInSelectTest" onchange="addOptionInSelect('inputAddTestInSelectTest', 'informationTest')"/>
                                         </fieldset>
                                         <input id="informationInitialTest" type="hidden" name="informationInitialTest" value="<%=tcase.getTest()%>">
@@ -426,6 +437,7 @@
                                                 <%  }
                                                     }%>
                                             </select>
+                                            <input id ="hiddenInformationTestCase" name="informationTestCase" style="display:none" value="<%=testcase%>">
                                             <input id="inputAddTestCaseInSelectTestCase" type="text" style="width: 250px;display:none" 
                                                    placeholder="Define TestCase Identifiant different than these value" onchange="addOptionInSelect('inputAddTestCaseInSelectTestCase', 'informationTestCase')"/>
                                         </fieldset>
@@ -732,17 +744,11 @@
                 </table>
                 <br>
                 <%
-                    int size = countryListTestcase.size() * 16 + 30;
-                    int size2 = 570 + 80 - size;
-                    int size3 = 0;
-                    int size4 = size2;
-
-                    String color = "white";
                     int i = 1;
                     int j = 1;
                     int rowNumber = 0;
                 %>
-                <div id="AutomationScriptDiv" style="display : block">
+                <div id="AutomationScriptDiv" class="arrond" style="display : inline-block">
                     <div id="AutomationScriptFirstLine" style="clear:both; height:30px">
                         <div id="AutomationScriptTitle" style="float:left">
                             <h3>TestCase Detailed Description</h3>
@@ -827,13 +833,13 @@
                                             <%if (stepusedByAnotherTest) {%>
                                             <div id="StepWarnAlreadyInUse" title="Step In Use By Other Testcase" style="float:left;width:10px;height:100%;display:inline-block; background-color:yellow;"
                                                  onclick="showTestCaseUsingThisStep()">
-                                           </div>
+                                            </div>
                                             <%}%>
                                             <%if (useStep) {%>
                                             <div id="StepWarnAlreadyInUse" title="Step Using another step" style="float:left;width:10px;height:100%;display:inline-block; background-color:black;">
                                             </div>
                                             <%}%>
-                                            <input style="display:none" name="step_InUseInOtherTestCase_<%=incrementStep%>" value="<%=stepusedByAnotherTest?"Y":"N"%>">
+                                            <input style="display:none" name="step_InUseInOtherTestCase_<%=incrementStep%>" value="<%=stepusedByAnotherTest ? "Y" : "N"%>">
                                             <input style="display:none" name="step_increment" value="<%=incrementStep%>">
                                             <input id="incrementStepNumber" value="<%=incrementStep%>" style="display:none">
 
@@ -860,7 +866,7 @@
                                         </div>
                                         <div id="StepDescDiv" style="width:550px;float:left">
                                             <div><div><input style="float:right;margin-top:10px;font-weight: bold; width: 500px;background-color:transparent; font-weight:bold;font-size:14px ;font-family: Trebuchet MS; color:#333333; border-color:#EEEEEE;border-style:solid; border-width:thin"
-                                                data-fieldtype="Description" name="step_description_<%=incrementStep%>" value="<%=tcs.getDescription()%>">
+                                                             data-fieldtype="Description" name="step_description_<%=incrementStep%>" value="<%=tcs.getDescription()%>">
                                                 </div></div></div>
                                         <div id="StepUseStepDiv" style="float:left">UseStep
                                             <input type="checkbox" name="step_useStep_<%=incrementStep%>" style="margin-top:15px;font-weight: bold; width:20px" onclick="confirmDeletingAction(this, '<%=incrementStep%>')"
@@ -1082,7 +1088,7 @@
                                                                 <div style="float:left; width:80%">
                                                                     <div style="float:left;width:80px; "><p style="float:right;font-weight:bold;color:white;" link="white" ><%out.print(docService.findLabelHTML("testcasestepaction", "description", "Description"));%></p>
                                                                     </div>
-                                                                    <input class="wob" placeholder="Description" class="functional_description_control" style="border-style:groove;border-width:thin;border-color:white;border: 1px solid white; color:#333333; width: 80%; background-color: transparent; font-weight:bold;font-size:12px ;font-family: Trebuchet MS; "
+                                                                    <input class="wob" placeholder="Description" class="functional_description_control" style="border-style:groove;border-width:thin;border-color:white;border: 2px solid white; color:#333333; width: 80%; background-color: transparent; font-weight:bold;font-size:12px ;font-family: Trebuchet MS; "
                                                                            data-fieldtype="Description" value="<%=tcsac.getDescription()%>" name="control_description_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>" maxlength="1000">
                                                                 </div>
                                                             </div>
@@ -1198,205 +1204,203 @@
                                 <div id="wob"><h4>Properties</h4>
                                 </div>
                                 <div id="propertiesPartDiv">
+                                    <a name="propertyAnchor"></a>
                                     <%
                                         if (tccpList != null) {
                                     %>
-                                    <table>
-                                        <tr>
-                                            <td id="wob" style="width:10px">
-                                            </td>
-                                            <td id="leftlined"  style="width:10px">
-                                            </td>
-                                            <td id="underlined">
-                                                <table id="testcaseproperties_table" style="text-align: left; border-collapse: collapse"
-                                                       border="0">
-                                                    <tr id="header">
-                                                        <td style="width: 30px"><%out.print(docService.findLabelHTML("page_testcase", "delete", "Delete"));%></td>
-                                                        <td style="width: 100px"><%out.print(docService.findLabelHTML("testcasecountryproperties", "property", "Property"));%></td>
-                                                        <td style="width: <%=size%>px"><%out.print(docService.findLabelHTML("invariant", "country", "Country"));%></td>
-                                                        <td style="width: 120px"><%out.print(docService.findLabelHTML("testcasecountryproperties", "type", "Type"));%></td>
-                                                        <td style="width: 40px"><%out.print(docService.findLabelHTML("testcasecountryproperties", "database", "Database"));%></td>
-                                                        <td style="width: <%=size2%>px"><%out.print(docService.findLabelHTML("testcasecountryproperties", "value", "Value"));%>
-                                                        <td style="width: 40px"><%out.print(docService.findLabelHTML("testcasecountryproperties", "length", "Length"));%></td>
-                                                        <td style="width: 40px"><%out.print(docService.findLabelHTML("testcasecountryproperties", "rowlimit", "RowLimit"));%></td>
-                                                        <td style="width: 80px"><%out.print(docService.findLabelHTML("testcasecountryproperties", "nature", "Nature"));%></td>
-                                                    </tr>
-                                                    <div id="cache_properties">
-                                                        <%//ComboInvariant(appContext, "properties_dtb_type_ID", "display: none;", "properties_dtb_type_ID", "wob", "PROPERTYDATABASE", tccpList.get(0).getDatabase(), "", null)%>
-                                                    </div><%
+                                    <div id="testcaseproperties_table" style="text-align: left;">
+                                        <div class="StepHeaderDiv">
+                                            <div style="width: 3%; float:left"><%out.print(docService.findLabelHTML("page_testcase", "delete", "Delete"));%>
+                                            </div>
+                                            <div style="width: 10%; float:left"><%out.print(docService.findLabelHTML("testcasecountryproperties", "property", "Property"));%>
+                                            </div>
+                                            <div style="width: <%=1.5 * countryListTestcase.size()%>%; float:left"><%out.print(docService.findLabelHTML("invariant", "country", "Country"));%>
+                                            </div>
+                                            <div style="width: 10%; float:left"><%out.print(docService.findLabelHTML("testcasecountryproperties", "type", "Type"));%>
+                                            </div>
+                                            <div style="width: 5%; float:left"><%out.print(docService.findLabelHTML("testcasecountryproperties", "database", "Database"));%>
+                                            </div>
+                                            <div style="width: <%=55 - (1.5 * countryListTestcase.size())%>%; float:left"><%out.print(docService.findLabelHTML("testcasecountryproperties", "value", "Value"));%>
+                                            </div>
+                                            <div style="width: 3%; float:left"><%out.print(docService.findLabelHTML("testcasecountryproperties", "length", "Length"));%>
+                                            </div>
+                                            <div style="width: 3%; float:left"><%out.print(docService.findLabelHTML("testcasecountryproperties", "rowlimit", "RowLimit"));%>
+                                            </div>
+                                            <div style="width: 8%; float:left"><%out.print(docService.findLabelHTML("testcasecountryproperties", "nature", "Nature"));%>
+                                            </div>
+                                        </div>
+                                        <div id="cache_properties">
+                                            <%//ComboInvariant(appContext, "properties_dtb_type_ID", "display: none;", "properties_dtb_type_ID", "wob", "PROPERTYDATABASE", tccpList.get(0).getDatabase(), "", null)%>
+                                        </div><%
 
-                                                        int incrementProperty = 0;
-                                                        for (TestCaseCountryProperties tccp : tccpList) {
-                                                            incrementProperty++;
-                                                            List<String> countryOfProperty = tccpService.findCountryByProperty(tccp);
+                                            int incrementProperty = 0;
+                                            double widthValue = 55 - (1.5 * countryListTestcase.size());
+                                                
+                                            for (TestCaseCountryProperties tccp : tccpList) {
+                                                incrementProperty++;
+                                                List<String> countryOfProperty = tccpService.findCountryByProperty(tccp);
 
-                                                            rowNumber = rowNumber + 1;
-                                                            proplist = proplist + "" + tccp.getProperty() + "  /  ";
+                                                rowNumber = rowNumber + 1;
+                                                proplist = proplist + "" + tccp.getProperty() + "  /  ";
 
-                                                            if (tccp.getType().equals("executeSqlFromLib")) {
-                                                                SqlLibrary sqllib = libService.findSqlLibraryByKey(tccp.getValue1().replaceAll("'", "''"));
-                                                            }
+                                                if (tccp.getType().equals("executeSqlFromLib")) {
+                                                    SqlLibrary sqllib = libService.findSqlLibraryByKey(tccp.getValue1().replaceAll("'", "''"));
+                                                }
 
-                                                            size3 = 0;
-                                                            size4 = size2;
-                                                            String styleValue2 = "none";
-                                                            if (tccp.getType().equals("getAttributeFromHtml")
-                                                                    || tccp.getType().equals("getFromXml")
-                                                                    || tccp.getType().equals("getFromCookie")
-                                                                    || tccp.getType().equals("getDifferencesFromXml")) {
-                                                                size3 = 1 * size2 / 3;
-                                                                size4 = (2 * size2 / 3) - 5;
-                                                                styleValue2 = "inline";
-                                                            }
+                                                double widthValue1 = widthValue;
+                                                double widthValue2 = 0;
+                                                String displayValue2 = "none";
+                                                if (tccp.getType().equals("getAttributeFromHtml")
+                                                        || tccp.getType().equals("getFromXml")
+                                                        || tccp.getType().equals("getFromCookie")
+                                                        || tccp.getType().equals("getDifferencesFromXml")) {
+                                                    widthValue1 = widthValue / 2;
+                                                    widthValue2 = widthValue / 2;
+                                                    displayValue2 = "inline-block";
+                                                } 
 
-                                                            int nbline = tccp.getValue1().split("\n").length;
-                                                            String valueID = rowNumber + "-" + tccp.getProperty();
+                                                int nbline = tccp.getValue1().split("\n").length;
+                                                String valueID = rowNumber + "-" + tccp.getProperty();
 
-                                                            String showEntireValueB1 = "showEntireValueB1" + valueID;
-                                                            String showEntireValueB2 = "showEntireValueB2" + valueID;
-                                                            String sqlDetails = "sqlDetails" + valueID;
-                                                            String sqlDetailsB1 = "sqlDetailsB1" + valueID;
-                                                            String sqlDetailsB2 = "sqlDetailsB2" + valueID;
-                                                            String properties_dtbID = "properties_dtb" + valueID;
-                                                            i++;
+                                                String showEntireValueB1 = "showEntireValueB1" + valueID;
+                                                String showEntireValueB2 = "showEntireValueB2" + valueID;
+                                                String sqlDetails = "sqlDetails" + valueID;
+                                                String sqlDetailsB1 = "sqlDetailsB1" + valueID;
+                                                String sqlDetailsB2 = "sqlDetailsB2" + valueID;
+                                                String properties_dtbID = "properties_dtb" + valueID;
+                                                i++;
 
-                                                            j = i % 2;
-                                                            if (j == 1) {
-                                                                color = "#f3f6fa";
-                                                            } else {
-                                                                color = "White";
-                                                            }
-                                                    %>
-                                                    <tr style="background-color : <%=color%>">
-                                                        <td>
-                                                            <%  if (canEdit) {%>
-                                                            <input name="properties_delete_<%=incrementProperty%>" type="checkbox" style="width: 30px" value="">
-                                                            <%}%>
-                                                            <input type="hidden" name="property_increment" value="<%=incrementProperty%>">
-                                                        </td>
-                                                        <td>
-                                                            <input class="wob properties_id_<%=rowNumber%> property_name" style="width: 100px; font-weight: bold; background-color : <%=color%>"
-                                                                   name="properties_property_<%=incrementProperty%>" value="<%=tccp.getProperty()%>">
-                                                        </td>
-                                                        <td style="font-size : x-small ; width: <%=size%>px;">
-                                                            <table>
-                                                                <tr>
-                                                                    <%  for (String c : countryListTestcase) {%>
-                                                                    <td class="wob"><%=c%>
-                                                                    </td> 
-                                                                    <% 	} %>
-                                                                </tr>
-                                                                <tr>
-                                                                    <%
-                                                                        for (String c : countryListTestcase) {
-                                                                    %>
-                                                                    <td class="wob">
-                                                                        <input value="<%=c%>" type="checkbox" <% if (countryOfProperty.contains(c)) {%>  CHECKED  <% }%>
-                                                                               class="properties_id_<%=rowNumber%>" name="properties_country_<%=incrementProperty%>">
-                                                                    </td>
-                                                                    <%  }%>
-                                                                </tr>
-                                                            </table>
-                                                        </td>
-                                                        <td><%=ComboInvariant(appContext, "properties_type_" + incrementProperty, "width: 120px; background-color:" + color, "properties_type_" + incrementProperty, "wob", "PROPERTYTYPE", tccp.getType(), "activateDatabaseBox(this.value, 'properties_nodtb_" + incrementProperty + "' ,'properties_dtb_" + incrementProperty + "' );activateValue2(this.value, 'tdValue2_" + rowNumber + "', '" + valueID + "','" + valueID + "_2','" + size2 + "')", null)%>
-                                                        </td>
-                                                        <td>
-                                                            <%
-                                                                String displayDtbList = "";
-                                                                String displayNoList = "";
-                                                                if (tccp.getType().equals("executeSqlFromLib")
-                                                                        || tccp.getType().equals("executeSql")
-                                                                        || tccp.getType().equals("executeSoapFromLib")) {
-                                                                    displayDtbList = "inline";
-                                                                    displayNoList = "none";
-                                                                } else {
-                                                                    displayDtbList = "none";
-                                                                    displayNoList = "inline";
-                                                                }
-                                                            %>
-                                                            <%=ComboInvariant(appContext, "properties_dtb_" + incrementProperty, "width: 40px; display: " + displayDtbList + " ; background-color:" + color, "properties_dtb_" + incrementProperty, "wob", "PROPERTYDATABASE", tccp.getDatabase(), "", null)%>
-                                                            <select name="properties_nodtb_<%=incrementProperty%>" style="width: 40px; display: <%=displayNoList%> ; background-color:<%=color%>" class="wob" id="properties_nodtb_<%=incrementProperty%>">
-                                                                <option value="">---</option>
-                                                            </select>
-                                                        </td>
-                                                        <td>
-                                                            <table>
-                                                                <tr>
-                                                                    <td class="wob" rowspan="2">
-                                                                        <textarea id="properties_value1_<%=incrementProperty%>" rows="2" class="wob" style="width: <%=size4%>px; background-color : <%=color%>; " 
-                                                                                  name="properties_value1_<%=incrementProperty%>" value="<%=tccp.getValue1()%>"><%=tccp.getValue1()%></textarea>
-                                                                    </td>
-                                                                    <td class="wob" rowspan="2" style="display:<%=styleValue2%>">
-                                                                        <textarea id="properties_value2_<%=incrementProperty%>" rows="2" class="wob" style="width: <%=size3%>px; background-color : <%=color%>;"
-                                                                                  name="properties_value2_<%=incrementProperty%>" value="<%=tccp.getValue2()%>"><%=tccp.getValue2()%></textarea>
-                                                                    </td>
-                                                                    <%
-                                                                        if (tccp.getType().equals("executeSqlFromLib")
-                                                                                || tccp.getType().equals("executeSql")) {
-                                                                    %>
-                                                                    <td class="wob">
-                                                                        <input style="display:inline; height:20px; width:20px; background-color: <%=color%>; color:blue; font-weight:bolder" title="Open SQL Library" class="smallbutton" type="button" value="L" name="opensql-library"  onclick="openSqlLibraryPopin('<%=valueID%>')">
-                                                                    </td>
-                                                                    <% }%>
-                                                                    <%
-                                                                        if (tccp.getType().equals("executeSqlFromLib")
-                                                                                || tccp.getType().equals("executeSql")
-                                                                                || tccp.getType().equals("getFromTestData")
-                                                                                || tccp.getType().equals("executeSoapFromLib")) {
-                                                                    %>
-                                                                    <td class="wob">
-                                                                        <input style="display:inline; height:20px; width:20px; background-color: <%=color%>; color:green; font-weight:bolder" title="View property" class="smallbutton" type="button" value="V" name="openview-library"  onclick="openViewPropertyPopin('<%=valueID%>', '<%=test%>', '<%=testcase%>')">
-                                                                    </td>
-                                                                    <%}%>
-                                                                </tr>
-                                                                <tr>
-                                                                    <% if (nbline > 3) {%>
-                                                                    <td class="wob" style="background-color: <%=color%>; text-align: center; border-left-color:white">
-                                                                        <input style="display:inline; height:20px; width:20px; background-color: <%=color%>; color: green; font-weight:bolder" class="smallbutton" title="Show the Full Sql" type="button" value="+" id="<%=showEntireValueB1%>" onclick="showEntireValue('<%=valueID%>', '<%=nbline%>', '<%=showEntireValueB1%>', '<%=showEntireValueB2%>');">
-                                                                        <input style="display:none; height:20px; width:20px; background-color: <%=color%>; color: red; font-weight:bolder" class="smallbutton" title="Hide Details" type="button" value="-" id="<%=showEntireValueB2%>" onclick="showLessValue('<%=valueID%>', '<%=showEntireValueB1%>', '<%=showEntireValueB2%>');">
-                                                                    </td>
-                                                                    <%} else {%>
-                                                                    <td class="wob" style="background-color: <%=color%>; text-align: center; border-left-color:white">
-                                                                        <% if (tccp.getType().equals("executeSqlFromLib")) {%>
-                                                                        <input style="display:inline; height:20px; width:20px; background-color: <%=color%>; color: orange; font-weight:bolder" class="smallbutton" type="button" value="e" title="Show the SQL" id="<%=sqlDetailsB1%>" onclick="showSqlDetails('<%=sqlDetails%>', '<%=sqlDetailsB1%>', '<%=sqlDetailsB2%>');">
-                                                                        <input style="display:none; height:20px; width:20px; background-color: <%=color%>; color: orange; font-weight:bolder" class="smallbutton" type="button" value="-" title="Hide the SQL" id="<%=sqlDetailsB2%>" onclick="hideSqlDetails('<%=sqlDetails%>', '<%=sqlDetailsB1%>', '<%=sqlDetailsB2%>');">
-                                                                        <% } %>
-                                                                    </td>
-                                                                    <% }%>
-                                                                </tr>
-                                                            </table>
-                                                        </td>
-                                                        <td>
-                                                            <input class="wob" style="width: 40px; background-color : <%=color%>" name="properties_length_<%=incrementProperty%>"
-                                                                   value="<%=tccp.getLength()%>" onchange="trackChanges(this.value, '<%=tccp.getLength()%>', 'SavePropertyChanges')">
-                                                        </td>
-                                                        <td>
-                                                            <input class="wob" style="width: 40px; background-color : <%=color%>" name="properties_rowlimit_<%=incrementProperty%>"
-                                                                   value="<%=tccp.getRowLimit()%>" onchange="trackChanges(this.value, '<%=tccp.getRowLimit()%>', 'SavePropertyChanges')">
-                                                        </td>
-                                                        <td><%=ComboInvariant(appContext, "properties_nature_" + incrementProperty, "width: 80px; background-color:" + color, "properties_nature_" + incrementProperty, "wob", "PROPERTYNATURE", tccp.getNature(), "trackChanges(0, this.selectedIndex, 'submitButtonChanges')", null)%></td>
-                                                    </tr>
-                                                    <%}%>
-                                                </table>
-                                                <br>
+                                        %>
+                                        <div id="propertyRow<%=incrementProperty%>" class="generalPropertyDiv" style="height:50px; clear:both; display:block;border-style: solid; border-width:thin ; border-color:#CCCCCC;">
+                                            <div style="float:left;width: 8px; height:100%;position:relative; background-color: yellow; display:inline-block">
+                                            </div>
+                                            <div style="border-right-width:thin;border-right-style:solid;border-right-color:#CCCCCC;width:2%;float:left;display:inline-block;height:100%; text-align:center">
                                                 <%  if (canEdit) {%>
-                                                <input type="button" value="Add Property" id="AddProperty"
-                                                       onclick="addTestCasePropertiesNew('testcaseproperties_table', <%=rowNumber%>, <%=size%>, <%=size2%>);">
-                                                <input type="submit" value="Save Changes" id="SavePropertyChanges">              
-                                                <input type="hidden" id="Test" name="Test" value="<%=test%>">
-                                                <input type="hidden" id="TestCase" name="TestCase" value="<%=testcase%>">
-                                                <input type="hidden" name="testcase_hidden" value="<%=test + " - " + testcase%>">
-                                                <input type="hidden" id="CountryList" name="CountryList" value="<%=countries%>">
-                                                <%=ComboInvariant(appContext, "new_properties_type_new_properties_value", "width: 70px;visibility:hidden", "new_properties_type_new_properties_value", "new_properties_type_new_properties_value", "PROPERTYTYPE", "", "", null)%>
-                                                <%=ComboInvariant(appContext, "properties_dtb_", "width: 40px;visibility:hidden", "properties_dtb_", "properties_dtb_", "PROPERTYDATABASE", "", "", null)%>
-                                                <%=ComboInvariant(appContext, "properties_nature_", "width: 80px;visibility:hidden", "properties_nature_", "properties_nature_", "PROPERTYNATURE", "", "", null)%>
-                                                <input type="hidden" name="testcase_hidden" value="<%=test + " - " + testcase%>">
-                                                <input type="hidden" name="testcase_country_hidden" value="<%=countries%>">
+                                                <input style="margin-top:20px;" name="properties_delete_<%=incrementProperty%>" type="checkbox" value="">
+                                                <%}%>
+                                                <input type="hidden" name="property_increment" value="<%=incrementProperty%>">
+                                            </div>
+                                            <div style="border-right-width:thin;border-right-style:solid;border-right-color:#CCCCCC;width:10%;float:left;display:inline-block;height:100%">
+                                                <input class="wob properties_id_<%=rowNumber%> property_name" style="background-color:transparent;margin-top:20px;width:100%;font-weight: bold;"
+                                                       name="properties_property_<%=incrementProperty%>" value="<%=tccp.getProperty()%>">
+                                            </div>
+                                            <div style="border-right-width:thin;border-right-style:solid;border-right-color:#CCCCCC;float:left; font-size : x-small ;display:inline-block;height:100%; width: <%=1.5 * countryListTestcase.size()%>%;">
+                                                <table>
+                                                    <tr>
+                                                        <%  for (String c : countryListTestcase) {%>
+                                                        <td class="wob"><%=c%>
+                                                        </td> 
+                                                        <% 	} %>
+                                                    </tr>
+                                                    <tr>
+                                                        <%
+                                                            for (String c : countryListTestcase) {
+                                                        %>
+                                                        <td class="wob">
+                                                            <input value="<%=c%>" type="checkbox" <% if (countryOfProperty.contains(c)) {%>  CHECKED  <% }%>
+                                                                   class="properties_id_<%=rowNumber%>" name="properties_country_<%=incrementProperty%>">
+                                                        </td>
+                                                        <%  }%>
+                                                    </tr>
+                                                </table>
+                                            </div>
+                                            <div style="border-right-width:thin;border-right-style:solid;border-right-color:#CCCCCC;width:10%; float:left;display:inline-block;height:100%"><%=ComboInvariant(appContext, "properties_type_" + incrementProperty, "background-color:transparent;margin-top:20px;width: 99%; float:left", "properties_type_" + incrementProperty, "wob", "PROPERTYTYPE", tccp.getType(), "activateDatabaseBox(this.value, 'properties_nodtb_" + incrementProperty + "' ,'properties_dtb_" + incrementProperty + "' );newActivateValue2(this.value, 'divProperties_value1_" + incrementProperty + "', 'divProperties_value2_" + incrementProperty + "','" + widthValue + "')", null)%>
+                                            </div>
+                                            <div style="border-right-width:thin;border-right-style:solid;border-right-color:#CCCCCC;float:left;width:5%;display:inline-block;height:100%">
+                                                <%
+                                                    String displayDtbList = "";
+                                                    String displayNoList = "";
+                                                    if (tccp.getType().equals("executeSqlFromLib")
+                                                            || tccp.getType().equals("executeSql")
+                                                            || tccp.getType().equals("executeSoapFromLib")) {
+                                                        displayDtbList = "inline";
+                                                        displayNoList = "none";
+                                                    } else {
+                                                        displayDtbList = "none";
+                                                        displayNoList = "inline";
+                                                    }
+                                                %>
+                                                <%=ComboInvariant(appContext, "properties_dtb_" + incrementProperty, "background-color:transparent;margin-top:20px;width: 100%; display: " + displayDtbList + " ;", "properties_dtb_" + incrementProperty, "wob", "PROPERTYDATABASE", tccp.getDatabase(), "", null)%>
+                                                <select name="properties_nodtb_<%=incrementProperty%>" style="background-color:transparent;margin-top:20px;width: 100%; display: <%=displayNoList%> ;" class="wob" id="properties_nodtb_<%=incrementProperty%>">
+                                                    <option value="">---</option>
+                                                </select>
+                                            </div>
+                                            <div id="divProperties_value1_<%=incrementProperty%>" style="background-color:transparent;float:left;border-right-width:thin;border-right-style:solid;border-right-color:#CCCCCC;width:<%=widthValue1%>%;display:inline-block;height:100%">
+                                                <textarea id="properties_value1_<%=incrementProperty%>" rows="2" class="wob" style="background-color:transparent;width: 100%;" 
+                                                          name="properties_value1_<%=incrementProperty%>" value="<%=tccp.getValue1()%>"><%=tccp.getValue1()%></textarea>
+                                            </div>
+                                            <div id="divProperties_value2_<%=incrementProperty%>" style="float:left;border-right-width:thin;border-right-style:solid;border-right-color:#CCCCCC;display:<%=displayValue2%>;width:<%=widthValue2%>%;height:100%">
+                                                <textarea id="properties_value2_<%=incrementProperty%>" rows="2" class="wob" style="background-color:transparent;width: 100%;"
+                                                          name="properties_value2_<%=incrementProperty%>" value="<%=tccp.getValue2()%>"><%=tccp.getValue2()%></textarea>
+                                            </div>
+                                            <div style="border-right-width:thin;border-right-style:solid;border-right-color:#CCCCCC;float:left;width:3%;display:inline-block;height:100%">
+                                                <input class="wob" style="background-color:transparent;width:  100%;margin-top:20px;" name="properties_length_<%=incrementProperty%>"
+                                                       value="<%=tccp.getLength()%>">
+                                            </div>
+                                            <div style="border-right-width:thin;border-right-style:solid;border-right-color:#CCCCCC;float:left;width:3%;display:inline-block;height:100%">
+                                                <input class="wob" style="background-color:transparent;width: 100%;margin-top:20px;" name="properties_rowlimit_<%=incrementProperty%>"
+                                                       value="<%=tccp.getRowLimit()%>">
+                                            </div>
+                                            <div style="float:left;width:8%;display:inline-block;height:100%"><%=ComboInvariant(appContext, "properties_nature_" + incrementProperty, "background-color:transparent;margin-top:20px;width: 100%;", "properties_nature_" + incrementProperty, "wob", "PROPERTYNATURE", tccp.getNature(), "trackChanges(0, this.selectedIndex, 'submitButtonChanges')", null)%>
+                                            </div>
+                                            <div style="background-color:yellow; width:3px;height:100%;display:inline-block;float:right">
+                                            </div>
+                                            <div style="float:right ; width:2%">
+                                                <%
+                                                    if (tccp.getType().equals("executeSqlFromLib")
+                                                            || tccp.getType().equals("executeSql")) {
+                                                %>
+                                                <div style="clear:both" class="wob">
+                                                    <input style="display:inline; height:18px; width:18px; color:blue; font-weight:bolder" title="Open SQL Library" class="smallbutton" type="button" value="L" name="opensql-library"  onclick="openSqlLibraryPopin('<%=valueID%>')">
+                                                </div>
                                                 <% }%>
-                                            </td>
-                                        </tr>
+                                                <%
+                                                    if (tccp.getType().equals("executeSqlFromLib")
+                                                            || tccp.getType().equals("executeSql")
+                                                            || tccp.getType().equals("getFromTestData")
+                                                            || tccp.getType().equals("executeSoapFromLib")) {
+                                                %>
+                                                <div style="clear:both" class="wob">
+                                                    <input style="display:inline; height:18px; width:18px; color:green; font-weight:bolder" title="View property" class="smallbutton" type="button" value="V" name="openview-library"  onclick="openViewPropertyPopin('<%=valueID%>', '<%=test%>', '<%=testcase%>')">
+                                                </div>
+                                                <%}%>
+                                                <% if (nbline > 3) {%>
+                                                <div class="wob" style="clear:both;text-align: center; border-left-color:white">
+                                                    <input style="display:inline; height:18px; width:18px; color: green; font-weight:bolder" class="smallbutton" title="Show the Full Sql" type="button" value="+" id="<%=showEntireValueB1%>" onclick="showEntireValue('<%=valueID%>', '<%=nbline%>', '<%=showEntireValueB1%>', '<%=showEntireValueB2%>');">
+                                                    <input style="display:none; height:18px; width:18px; color: red; font-weight:bolder" class="smallbutton" title="Hide Details" type="button" value="-" id="<%=showEntireValueB2%>" onclick="showLessValue('<%=valueID%>', '<%=showEntireValueB1%>', '<%=showEntireValueB2%>');">
+                                                </div>
+                                                <%} else {%>
+                                                <div class="wob" style="clear:both;text-align: center; border-left-color:white">
+                                                    <% if (tccp.getType().equals("executeSqlFromLib")) {%>
+                                                    <input style="display:inline; height:18px; width:18px; color: orange; font-weight:bolder" class="smallbutton" type="button" value="e" title="Show the SQL" id="<%=sqlDetailsB1%>" onclick="showSqlDetails('<%=sqlDetails%>', '<%=sqlDetailsB1%>', '<%=sqlDetailsB2%>');">
+                                                    <input style="display:none; height:18px; width:18px; color: orange; font-weight:bolder" class="smallbutton" type="button" value="-" title="Hide the SQL" id="<%=sqlDetailsB2%>" onclick="hideSqlDetails('<%=sqlDetails%>', '<%=sqlDetailsB1%>', '<%=sqlDetailsB2%>');">
+                                                    <% } %>
+                                                </div>
+                                                <% }%>
+                                            </div>
+                                            
+                                        </div>
+                                        <%}%>
+                                    </div>
+                                    <br>
+                                    <%  if (canEdit) {%>
+                                    <input type="button" class="buttonSaveChanges" value="Add Property" id="AddProperty"
+                                           onclick="addPropertyNew('<%=widthValue%>')">
+                                    <input type="button" onclick="submitTestCaseModificationNew('propertyAnchor');" class="buttonSaveChanges" value="Save Changes" id="SavePropertyChanges">              
+                                    <input type="hidden" id="Test" name="Test" value="<%=test%>">
+                                    <input type="hidden" id="TestCase" name="TestCase" value="<%=testcase%>">
+                                    <input type="hidden" name="testcase_hidden" value="<%=test + " - " + testcase%>">
+                                    <input type="hidden" id="CountryList" name="CountryList" value="<%=countries%>">
+                                    <%=ComboInvariant(appContext, "new_properties_type_new_properties_value", "width: 70px;visibility:hidden", "new_properties_type_new_properties_value", "new_properties_type_new_properties_value", "PROPERTYTYPE", "", "", null)%>
+                                    <%=ComboInvariant(appContext, "properties_dtb_", "width: 40px;visibility:hidden", "properties_dtb_", "properties_dtb_", "PROPERTYDATABASE", "", "", null)%>
+                                    <%=ComboInvariant(appContext, "properties_nature_", "width: 80px;visibility:hidden", "properties_nature_", "properties_nature_", "PROPERTYNATURE", "", "", null)%>
+                                    <input type="hidden" name="testcase_hidden" value="<%=test + " - " + testcase%>">
+                                    <input type="hidden" name="testcase_country_hidden" value="<%=countries%>">
+                                    <% }%>
+                                    </td>
+                                    </tr>
                                     </table>
-                                    <p id="hiddenProperty" style="font-size : x-small ; width: <%=size%>px; visibility:hidden">
+                                    <p id="hiddenProperty" style="font-size : x-small ; width: <%=countryListTestcase.size()%>px; visibility:hidden">
                                         <% for (String c : countryListTestcase) {%>
                                         <%=c%> 
                                         <% } %>
@@ -1628,6 +1632,71 @@
                     </div>
                 </div>
             </div>
+                        <div id="PropertyTemplateDiv" style="display:none">
+                                            <div data-id="property_color_id" style="float:left;width: 8px; height:100%;position:relative; background-color: yellow; display:inline-block">
+                                            </div>
+                                            <div style="border-right-width:thin;border-right-style:solid;border-right-color:#CCCCCC;width:2%;float:left;display:inline-block;height:100%; text-align:center">
+                                                <input style="margin-top:20px;" data-id="properties_delete_template" type="checkbox" value="">
+                                                <input type="hidden" data-id="property_increment_template">
+                                            </div>
+                                            <div style="border-right-width:thin;border-right-style:solid;border-right-color:#CCCCCC;width:10%;float:left;display:inline-block;height:100%">
+                                                <input class="wob property_name" style="background-color:transparent;margin-top:20px;width:100%;font-weight: bold;"
+                                                       data-id="properties_property_template">
+                                            </div>
+                                            <div style="border-right-width:thin;border-right-style:solid;border-right-color:#CCCCCC;float:left; font-size : x-small ;display:inline-block;height:100%; width: <%=1.5 * countryListTestcase.size()%>%;">
+                                                <table>
+                                                    <tr>
+                                                        <%  for (String c : countryListTestcase) {%>
+                                                        <td class="wob"><%=c%>
+                                                        </td> 
+                                                        <% 	} %>
+                                                    </tr>
+                                                    <tr>
+                                                        <%
+                                                            for (String c : countryListTestcase) {
+                                                        %>
+                                                        <td class="wob">
+                                                            <input value="<%=c%>" type="checkbox"
+                                                                   class="properties_id_template" data-id="properties_country_template">
+                                                        </td>
+                                                        <%  }%>
+                                                    </tr>
+                                                </table>
+                                            </div>
+                                            <div style="border-right-width:thin;border-right-style:solid;border-right-color:#CCCCCC;width:10%; float:left;display:inline-block;height:100%">
+                                                <%=ComboInvariant(appContext, "", "background-color:transparent;margin-top:20px;width: 99%; float:left", "properties_type_template", "wob", "PROPERTYTYPE", "", "", null)%>
+                                            </div>
+                                            <div style="border-right-width:thin;border-right-style:solid;border-right-color:#CCCCCC;float:left;width:5%;display:inline-block;height:100%">
+                                                <%=ComboInvariant(appContext, "", "display:none;background-color:transparent;margin-top:20px;width: 100%;", "properties_dtb_template", "wob", "PROPERTYDATABASE", "", "", null)%>
+                                                <select data-id="properties_nodtb_template" style="background-color:transparent;margin-top:20px;width: 100%; display: inline-block ;" class="wob">
+                                                    <option value="">---</option>
+                                                </select>
+                                            </div>
+                                            <div data-id="divProperties_value1_template" style="background-color:transparent;float:left;border-right-width:thin;border-right-style:solid;border-right-color:#CCCCCC;width:<%=55 - (1.5 * countryListTestcase.size())%>%;display:inline-block;height:100%">
+                                                <textarea data-id="properties_value1_template" rows="2" class="wob" style="background-color:transparent;width: 100%;" 
+                                                          ></textarea>
+                                            </div>
+                                            <div data-id="divProperties_value2_template" style="float:left;border-right-width:thin;border-right-style:solid;border-right-color:#CCCCCC;display:none;width:0%;height:100%">
+                                                <textarea data-id="properties_value2_template" rows="2" class="wob" style="background-color:transparent;width: 100%;"
+                                                          ></textarea>
+                                            </div>
+                                            <div style="border-right-width:thin;border-right-style:solid;border-right-color:#CCCCCC;float:left;width:3%;display:inline-block;height:100%">
+                                                <input class="wob" style="background-color:transparent;width:  100%;margin-top:20px;" 
+                                                       data-id="properties_length_template">
+                                            </div>
+                                            <div style="border-right-width:thin;border-right-style:solid;border-right-color:#CCCCCC;float:left;width:3%;display:inline-block;height:100%">
+                                                <input class="wob" style="background-color:transparent;width: 100%;margin-top:20px;" 
+                                                       data-id="properties_rowlimit_template">
+                                            </div>
+                                            <div style="float:left;width:8%;display:inline-block;height:100%">
+                                                <%=ComboInvariant(appContext, "", "background-color:transparent;margin-top:20px;width: 100%;", "properties_nature_template", "wob", "PROPERTYNATURE", "", "", null)%>
+                                            </div>
+                                            <div style="background-color:yellow; width:3px;height:100%;display:inline-block;float:right">
+                                            </div>
+                                            <div style="float:right ; width:2%">
+                                            </div>
+                                            
+                                        </div>
             <script>
                 $("input.property_value").each(function() {
                     //var jinput = $(this);
@@ -1771,6 +1840,8 @@
                 document.getElementById('FirstSaveChanges').style.display = 'inline-block';
                 document.getElementById('informationTest').disabled = false;
                 document.getElementById('informationTestCase').disabled = false;
+                document.getElementById('hiddenInformationTest').disabled = true;
+                document.getElementById('hiddenInformationTestCase').disabled = true;
             }
 
         </script>
@@ -1804,7 +1875,7 @@
                         if (e.which === 67 && e.altKey) {
                             var f = $(field).parent().parent().parent().parent();
                             f.find('img[data-fieldtype="addActionButton"]').click();
-            f.nextUntil('.RowActionDiv').next().find("input[data-fieldtype='Description']").focus();
+                            f.nextUntil('.RowActionDiv').next().find("input[data-fieldtype='Description']").focus();
 
                         }
                         if (e.which === 86 && e.altKey) {
