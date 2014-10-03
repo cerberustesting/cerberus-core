@@ -17,21 +17,14 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.serviceEmail;
 
-import org.cerberus.entity.User;
+package org.cerberus.dao;
 
-/**
- *
- * @author bcivel
- */
-public interface IEmailGeneration {
+import org.cerberus.entity.BuildRevisionParameters;
 
-    public String EmailGenerationRevisionChange(String system, String country, String env, String build, String revision);
+import java.util.List;
 
-    public String EmailGenerationDisableEnv(String system, String country, String env);
+public interface IBuildRevisionParametersDAO {
 
-    public String EmailGenerationNewChain(String system, String country, String env, String build, String revision, String chain);
-
-    public void BuildAndSendAccountCreationEmail(User user);
+    List<BuildRevisionParameters> findBuildRevisionParametersFromMaxRevision(String build, String revision, String lastBuild, String lastRevision);
 }

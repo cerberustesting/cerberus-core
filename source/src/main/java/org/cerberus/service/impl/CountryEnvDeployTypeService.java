@@ -17,21 +17,24 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.serviceEmail;
 
-import org.cerberus.entity.User;
+package org.cerberus.service.impl;
 
-/**
- *
- * @author bcivel
- */
-public interface IEmailGeneration {
+import org.cerberus.dao.ICountryEnvDeployTypeDAO;
+import org.cerberus.service.ICountryEnvDeployTypeService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-    public String EmailGenerationRevisionChange(String system, String country, String env, String build, String revision);
+import java.util.List;
 
-    public String EmailGenerationDisableEnv(String system, String country, String env);
+@Service
+public class CountryEnvDeployTypeService implements ICountryEnvDeployTypeService {
 
-    public String EmailGenerationNewChain(String system, String country, String env, String build, String revision, String chain);
+    @Autowired
+    private ICountryEnvDeployTypeDAO countryEnvDeployTypeDAO;
 
-    public void BuildAndSendAccountCreationEmail(User user);
+    @Override
+    public List<String> findJenkinsAgentByKey(String system, String country, String env, String deploy) {
+        return this.countryEnvDeployTypeDAO.findJenkinsAgentByKey(system, country, env, deploy);
+    }
 }

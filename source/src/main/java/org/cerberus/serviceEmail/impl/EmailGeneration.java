@@ -20,13 +20,16 @@
 package org.cerberus.serviceEmail.impl;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.cerberus.database.DatabaseSpring;
 import org.cerberus.entity.BatchInvariant;
 import org.cerberus.entity.CountryEnvParam;
 import org.cerberus.entity.User;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.log.MyLogger;
 import org.cerberus.service.IBatchInvariantService;
 import org.cerberus.service.ICountryEnvParamService;
 import org.cerberus.service.IParameterService;
@@ -52,10 +55,14 @@ public class EmailGeneration implements IEmailGeneration {
     private IEmailBodyGeneration emailBodyGeneration;
     @Autowired
     private IBatchInvariantService batchInvariantService;
+    //TODO remove connection from Service
+    @Autowired
+    private DatabaseSpring databaseSpring;
 
     @Override
-    public String EmailGenerationRevisionChange(String system, String country, String env, String build, String revision, Connection conn) {
+    public String EmailGenerationRevisionChange(String system, String country, String env, String build, String revision) {
         String result = "";
+        Connection conn = databaseSpring.connect();
         try {
             CountryEnvParam myCountryEnvParam;
             myCountryEnvParam = countryEnvParamService.findCountryEnvParamByKey(system, country, env);
@@ -106,6 +113,14 @@ public class EmailGeneration implements IEmailGeneration {
 
         } catch (CerberusException e) {
             Logger.getLogger(EmailGeneration.class.getName()).log(Level.SEVERE, Version.PROJECT_NAME_VERSION + " - Exception catched.", e);
+        } finally {
+            try {
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(EmailGeneration.class.getName(), org.apache.log4j.Level.WARN, e.toString());
+            }
         }
 
         return result;
