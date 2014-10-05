@@ -19,7 +19,6 @@
  */
 package org.cerberus.serviceEmail;
 
-import java.sql.Connection;
 import org.cerberus.entity.User;
 
 /**
@@ -28,7 +27,7 @@ import org.cerberus.entity.User;
  */
 public interface IEmailGeneration {
 
-    public String EmailGenerationRevisionChange(String system, String country, String env, String build, String revision, Connection conn);
+    public String EmailGenerationRevisionChange(String system, String country, String env, String build, String revision);
 
     public String EmailGenerationDisableEnv(String system, String country, String env);
 

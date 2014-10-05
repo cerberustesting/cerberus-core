@@ -17,22 +17,36 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-package org.cerberus.service;
-
-import java.util.List;
-
-import org.cerberus.dto.TestCaseManualExecution;
-import org.cerberus.entity.TCase;
+package org.cerberus.entity;
 
 /**
- * {Insert class description here}
  *
- * @author Tiago Bernardes
- * @version 1.0, 25/11/2013
- * @since 0.9.1
+ * @author bcivel
  */
-public interface IManualTestCaseService {
+public class SessionCapabilities {
 
-    List<TestCaseManualExecution> findTestCaseManualExecution(TCase testCase, String text, String system, String country, String env, String campaign, String battery);
+    String capability;
+    String value;
+
+    public String getCapability() {
+        return capability;
+    }
+
+    public void setCapability(String capability) {
+        this.capability = capability;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
+    }
+
+    public void create(String capability, String value) {
+        this.capability = (capability);
+        this.value = (value);
+    }
+
 }

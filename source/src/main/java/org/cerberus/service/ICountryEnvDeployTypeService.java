@@ -22,17 +22,7 @@ package org.cerberus.service;
 
 import java.util.List;
 
-import org.cerberus.dto.TestCaseManualExecution;
-import org.cerberus.entity.TCase;
+public interface ICountryEnvDeployTypeService {
 
-/**
- * {Insert class description here}
- *
- * @author Tiago Bernardes
- * @version 1.0, 25/11/2013
- * @since 0.9.1
- */
-public interface IManualTestCaseService {
-
-    List<TestCaseManualExecution> findTestCaseManualExecution(TCase testCase, String text, String system, String country, String env, String campaign, String battery);
+    List<String> findJenkinsAgentByKey(String system, String country, String env, String deploy);
 }

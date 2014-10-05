@@ -75,6 +75,7 @@ public class ExecutionPerBuildRevision extends HttpServlet {
         Connection connection = database.connect();
 
         String MySystem = ParameterParserUtil.parseStringParam(request.getParameter("MySystem"), "");
+        String sprint = ParameterParserUtil.parseStringParam(request.getParameter("Sprint"), "");
 
         try {
 
@@ -104,7 +105,7 @@ public class ExecutionPerBuildRevision extends HttpServlet {
                 } else {
                     inSQL = " and application in ('') ";
                 }
-
+                
                 ArrayList<String> al;
 
                 IParameterService parameterService = appContext.getBean(ParameterService.class);
@@ -113,7 +114,7 @@ public class ExecutionPerBuildRevision extends HttpServlet {
 
                 TestCaseExecutionStatisticsServiceImpl tceStatsService = appContext.getBean(TestCaseExecutionStatisticsServiceImpl.class);
 
-                List<BuildRevisionStatistics> buildRev = tceStatsService.getListOfXLastBuildAndRev(MySystem, numberOfLastBR);
+                List<BuildRevisionStatistics> buildRev = tceStatsService.getListOfXLastBuildAndRev(MySystem, numberOfLastBR, sprint);
 
                 ArrayList<ArrayList<String>> arrayBuildRevision = new ArrayList<ArrayList<String>>();
                 List<List<List<String>>> arrayBuildRevisionEnv = new ArrayList<List<List<String>>>();
@@ -167,7 +168,7 @@ public class ExecutionPerBuildRevision extends HttpServlet {
                             + "Where t.build = ? and t.revision = ? "+inSQL;
                     MyLogger.log(ExecutionPerBuildRevision.class.getName(), Level.DEBUG, contentSQL);
                     PreparedStatement stmtContent = connection.prepareStatement(contentSQL);
-
+                    
                     try {
                         stmtContent.setString(1, build);
                         stmtContent.setString(2, revision);

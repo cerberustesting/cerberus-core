@@ -90,6 +90,7 @@ public class GetReport extends HttpServlet {
 
             //Build JSON response
             JSONObject json = new JSONObject();
+            json.put("requestUrl", req.getQueryString().split("&sEcho")[0]);
             json.put("statistic", this.getJSONObjectFromMap(mapTests));
             json.put("groups", this.getJSONObjectFromMap(mapGroups, tcGroups));
             json.put("status", this.getJSONObjectFromMap(mapStatus, tcStatus));
@@ -407,6 +408,15 @@ public class GetReport extends HttpServlet {
 
             oldTest = tc.getTest();
         }
+
+        if (mapTotal.isEmpty()) {
+            Map<String, Integer> total = new LinkedHashMap<String, Integer>();
+            for (Invariant inv : tceStatus) {
+                total.put(inv.getValue(), 0);
+            }
+            mapTotal.put("TOTAL", total);
+        }
+
         //add TOTAL lines to tables
         mapTests.put("TOTAL", mapTotal);
         mapGroups.put("TOTAL", groupTotal);

@@ -410,7 +410,7 @@ public class TestCaseExecutionStatisticsDAOImpl implements ITestCaseExecutionSta
     }
 
     @Override
-    public List<BuildRevisionStatistics> getListOfXLastBuildAndRev(String MySystem, int listSize) {
+    public List<BuildRevisionStatistics> getListOfXLastBuildAndRev(String MySystem, int listSize, String sprint) {
         List<BuildRevisionStatistics> lastBuildAndRevisionFromContent = new ArrayList<BuildRevisionStatistics>();
         StringBuilder query = new StringBuilder();
         String appliSQL = "";
@@ -425,7 +425,13 @@ public class TestCaseExecutionStatisticsDAOImpl implements ITestCaseExecutionSta
         query.append(" FROM buildrevisionparameters br");
         query.append(" JOIN buildrevisioninvariant l1 on br.build = l1.versionname AND l1.`level`=1 ");
         query.append(" JOIN buildrevisioninvariant l2 on br.revision = l2.versionname AND l2.`level`=2 ");
-        query.append(" WHERE build <> 'NONE' and application ");
+        query.append(" WHERE build <> 'NONE' ");
+        if (!sprint.equals("")){
+        query.append(" and build like '");
+        query.append(sprint);
+        query.append("' ");
+        } 
+        query.append(" and application ");
         query.append(appliSQL);
         query.append(" ORDER BY seq1 desc, seq2 desc ");
         query.append(" LIMIT ");

@@ -19,6 +19,8 @@
  */
 package org.cerberus.serviceEngine.impl;
 
+import java.awt.Color;
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -26,6 +28,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.logging.Logger;
+import javax.imageio.ImageIO;
 import org.apache.log4j.Level;
 import org.cerberus.entity.ExecutionSOAPResponse;
 import org.cerberus.entity.TestCaseExecution;
@@ -35,7 +38,6 @@ import org.cerberus.exception.CerberusException;
 import org.cerberus.log.MyLogger;
 import org.cerberus.service.IParameterService;
 import org.cerberus.serviceEngine.IRecorderService;
-import org.cerberus.serviceEngine.ISeleniumService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -47,11 +49,11 @@ import org.springframework.stereotype.Service;
 public class RecorderService implements IRecorderService {
 
     @Autowired
-    ISeleniumService seleniumService;
-    @Autowired
     IParameterService parameterService;
     @Autowired
     ExecutionSOAPResponse eSResponse;
+    @Autowired
+    WebDriverService webdriverService;
 
     @Override
     public String recordScreenshotAndGetName(TestCaseExecution testCaseExecution,
@@ -62,11 +64,29 @@ public class RecorderService implements IRecorderService {
         String step = String.valueOf(testCaseStepActionExecution.getStep());
         String sequence = String.valueOf(testCaseStepActionExecution.getSequence());
         String controlString = control.equals(0) ? null : String.valueOf(control);
+        long runId = testCaseExecution.getId();
 
         MyLogger.log(RecorderService.class.getName(), Level.INFO, "Doing screenshot.");
+        /**
+         * Generate FileName
+         */
         String screenshotFilename = this.generateScreenshotFilename(test, testCase, step, sequence, controlString, null, "jpg");
 
-        this.seleniumService.doScreenShot(testCaseExecution.getSelenium(), Long.toString(testCaseExecution.getId()), screenshotFilename);
+        /**
+         * Take Screenshot and write it
+         */
+        String imgPath;
+            try {
+                BufferedImage newImage = this.webdriverService.takeScreenShot(testCaseExecution.getSession());
+                imgPath = parameterService.findParameterByKey("cerberus_picture_path", "").getValue();
+                File dir = new File(imgPath + runId);
+                dir.mkdirs();
+                ImageIO.write(newImage, "jpg", new File(imgPath + runId + File.separator + screenshotFilename));
+            } catch (CerberusException ex) {
+                Logger.getLogger(RecorderService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            } catch (IOException ex) {
+            Logger.getLogger(RecorderService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
         String screenshotPath = Long.toString(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getId()) + File.separator + screenshotFilename;
         MyLogger.log(RecorderService.class.getName(), Level.DEBUG, "Screenshot done in : " + screenshotPath);
 
@@ -180,7 +200,7 @@ public class RecorderService implements IRecorderService {
         FileOutputStream fileOutputStream = null;
         try {
             fileOutputStream = new FileOutputStream(file);
-            fileOutputStream.write(this.seleniumService.getPageSource(testCaseExecution.getSelenium()).getBytes());
+            fileOutputStream.write(this.webdriverService.getPageSource(testCaseExecution.getSession()).getBytes());
             fileOutputStream.close();
         } catch (FileNotFoundException ex) {
             Logger.getLogger(ExecutionRunService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
@@ -218,7 +238,7 @@ public class RecorderService implements IRecorderService {
             fileOutputStream = new FileOutputStream(file);
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             DataOutputStream out = new DataOutputStream(baos);
-            for (String element : this.seleniumService.getSeleniumLog(testCaseExecution.getSelenium())) {
+            for (String element : this.webdriverService.getSeleniumLog(testCaseExecution.getSession())) {
                 out.writeBytes(element);
             }
             byte[] bytes = baos.toByteArray();

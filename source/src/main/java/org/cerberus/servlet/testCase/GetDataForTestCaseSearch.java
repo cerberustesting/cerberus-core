@@ -30,11 +30,13 @@ import org.apache.log4j.Level;
 import org.cerberus.entity.BuildRevisionInvariant;
 import org.cerberus.entity.Campaign;
 import org.cerberus.entity.Invariant;
+import org.cerberus.entity.TestBattery;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.log.MyLogger;
 import org.cerberus.service.IBuildRevisionInvariantService;
 import org.cerberus.service.ICampaignService;
 import org.cerberus.service.IInvariantService;
+import org.cerberus.service.ITestBatteryService;
 import org.cerberus.service.ITestCaseService;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -59,6 +61,7 @@ public class GetDataForTestCaseSearch extends HttpServlet {
         ITestCaseService testService = appContext.getBean(ITestCaseService.class);
         IInvariantService invariantService = appContext.getBean(IInvariantService.class);
         ICampaignService campaignService = appContext.getBean(ICampaignService.class);
+        ITestBatteryService testBatteryService = appContext.getBean(ITestBatteryService.class);
         IBuildRevisionInvariantService buildRevisionInvariantService = appContext.getBean(IBuildRevisionInvariantService.class);
 
         String system = req.getParameter("system");
@@ -135,6 +138,15 @@ public class GetDataForTestCaseSearch extends HttpServlet {
             data = new JSONObject();
             data.put("data", campaign);
             data.put("name", "campaign");
+            jsonResponse.put(data);
+            
+            JSONArray battery = new JSONArray();
+            for (TestBattery c : testBatteryService.findAll()) {
+                battery.put(c.getTestbattery());
+            }
+            data = new JSONObject();
+            data.put("data", battery);
+            data.put("name", "testBattery");
             jsonResponse.put(data);
 
             resp.setContentType("application/json");

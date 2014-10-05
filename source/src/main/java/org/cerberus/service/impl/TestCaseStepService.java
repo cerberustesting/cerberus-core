@@ -96,7 +96,7 @@ public class TestCaseStepService implements ITestCaseStepService {
     }
 
     @Override
-    public void compareListAndUpdateInsertDeleteElements(List<TestCaseStep> newList, List<TestCaseStep> oldList) throws CerberusException {
+    public void compareListAndUpdateInsertDeleteElements(List<TestCaseStep> newList, List<TestCaseStep> oldList, boolean duplicate) throws CerberusException {
         /**
          * Iterate on (TestCaseStep From Page - TestCaseStep From Database) If
          * TestCaseStep in Database has same key : Update and remove from the
@@ -121,6 +121,7 @@ public class TestCaseStepService implements ITestCaseStepService {
          * TestCaseStep in Page has same key : remove from the list. Then delete
          * the list of TestCaseStep
          */
+        if (!duplicate){
         List<TestCaseStep> tcsToDelete = new ArrayList(oldList);
         tcsToDelete.removeAll(newList);
         List<TestCaseStep> tcsToDeleteToIterate = new ArrayList(tcsToDelete);
@@ -133,6 +134,7 @@ public class TestCaseStepService implements ITestCaseStepService {
             }
         }
         this.deleteListTestCaseStep(tcsToDelete);
+        }
     }
 
     @Override

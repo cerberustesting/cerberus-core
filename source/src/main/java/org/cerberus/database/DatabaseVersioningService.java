@@ -3856,6 +3856,13 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("CHANGE COLUMN `gp2` `gp2` VARCHAR(255) NULL DEFAULT NULL , ");
         SQLS.append("CHANGE COLUMN `gp3` `gp3` VARCHAR(255) NULL DEFAULT NULL");
         SQLInstruction.add(SQLS.toString());
+        
+// Insert new private invariant value for APPLITYPE
+//-- ------------------------ 544
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) ");
+        SQLS.append("VALUES ('APPLITYPE', 'APK', '40', 'Android Application', '')");
+        SQLInstruction.add(SQLS.toString());
 
         return SQLInstruction;
     }

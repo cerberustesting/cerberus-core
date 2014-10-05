@@ -48,9 +48,9 @@ public class ManualTestCaseService implements IManualTestCaseService {
     private ITestCaseService testCaseService;
 
     @Override
-    public List<TestCaseManualExecution> findTestCaseManualExecution(TCase testCase, String text, String system, String country, String env, String campaign) {
+    public List<TestCaseManualExecution> findTestCaseManualExecution(TCase testCase, String text, String system, String country, String env, String campaign, String battery) {
         List<TestCaseManualExecution> result = new ArrayList();
-        List<TestCaseManualExecution> tcmeList = testCaseManualExecutionDTO.findTestCaseManualExecution(testCase, text, system, country, env, campaign);
+        List<TestCaseManualExecution> tcmeList = testCaseManualExecutionDTO.findTestCaseManualExecution(testCase, text, system, country, env, campaign, battery);
         try {
             for (TestCaseManualExecution tcme : tcmeList) {
                 TCase tcComplete = testCaseService.findTestCaseByKeyWithDependency(tcme.getTest(), tcme.getTestCase());

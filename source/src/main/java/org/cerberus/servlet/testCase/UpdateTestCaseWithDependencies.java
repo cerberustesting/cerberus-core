@@ -86,6 +86,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
         String test = request.getParameter("informationTest");
         String testCase = request.getParameter("informationTestCase");
         TCase tc = getTestCaseFromParameter(request, appContext, test, testCase);
+        boolean duplicate = false;
 
         ITestService tService = appContext.getBean(ITestService.class);
         ITestCaseService tcService = appContext.getBean(ITestCaseService.class);
@@ -124,6 +125,10 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
             }
         }
 
+        if (!tc.getTest().equals(initialTest) || !tc.getTestCase().equals(initialTestCase)) {
+            duplicate = true;
+        }
+
         /**
          * For the list of testcase country verify it exists. If it does not
          * exists > create it If it exist, verify if it's the
@@ -155,19 +160,20 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
          * Page). If TestCaseCountry in Page has same key : remove from the
          * list. Then delete the list of TestCaseCountry
          */
-        List<TestCaseCountry> tccToDelete = new ArrayList(tccFromDtb);
-        tccToDelete.removeAll(tccFromPage);
-        List<TestCaseCountry> tccToDeleteToIterate = new ArrayList(tccToDelete);
+        if (!duplicate) { 
+            List<TestCaseCountry> tccToDelete = new ArrayList(tccFromDtb);
+            tccToDelete.removeAll(tccFromPage);
+            List<TestCaseCountry> tccToDeleteToIterate = new ArrayList(tccToDelete);
 
-        for (TestCaseCountry tccDifference : tccToDeleteToIterate) {
-            for (TestCaseCountry tccInPage : tccFromPage) {
-                if (tccDifference.hasSameKey(tccInPage)) {
-                    tccToDelete.remove(tccDifference);
+            for (TestCaseCountry tccDifference : tccToDeleteToIterate) {
+                for (TestCaseCountry tccInPage : tccFromPage) {
+                    if (tccDifference.hasSameKey(tccInPage)) {
+                        tccToDelete.remove(tccDifference);
+                    }
                 }
             }
+            tccService.deleteListTestCaseCountry(tccToDelete);
         }
-        tccService.deleteListTestCaseCountry(tccToDelete);
-
         /**
          * For the list of testcase country verify it exists. If it does not
          * exists > create it If it exist, verify if it's the
@@ -201,19 +207,20 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
          * Page has same key : remove from the list. Then delete the list of
          * TestCaseCountryProperties
          */
-        List<TestCaseCountryProperties> tccpToDelete = new ArrayList(tccpFromDtb);
-        tccpToDelete.removeAll(tccpFromPage);
-        List<TestCaseCountryProperties> tccpToDeleteToIterate = new ArrayList(tccpToDelete);
+        if (!duplicate) {
+            List<TestCaseCountryProperties> tccpToDelete = new ArrayList(tccpFromDtb);
+            tccpToDelete.removeAll(tccpFromPage);
+            List<TestCaseCountryProperties> tccpToDeleteToIterate = new ArrayList(tccpToDelete);
 
-        for (TestCaseCountryProperties tccpDifference : tccpToDeleteToIterate) {
-            for (TestCaseCountryProperties tccpInPage : tccpFromPage) {
-                if (tccpDifference.hasSameKey(tccpInPage)) {
-                    tccpToDelete.remove(tccpDifference);
+            for (TestCaseCountryProperties tccpDifference : tccpToDeleteToIterate) {
+                for (TestCaseCountryProperties tccpInPage : tccpFromPage) {
+                    if (tccpDifference.hasSameKey(tccpInPage)) {
+                        tccpToDelete.remove(tccpDifference);
+                    }
                 }
             }
+            tccpService.deleteListTestCaseCountryProperties(tccpToDelete);
         }
-        tccpService.deleteListTestCaseCountryProperties(tccpToDelete);
-
         /**
          * For the list of testcasestep verify it exists. If it does not exists
          * > create it If it exist, verify if it's the
@@ -232,13 +239,13 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
         }
 
         List<TestCaseStep> tcsFromDtb = new ArrayList(tcsService.getListOfSteps(initialTest, initialTestCase));
-        tcsService.compareListAndUpdateInsertDeleteElements(tcsFromPage, tcsFromDtb);
+        tcsService.compareListAndUpdateInsertDeleteElements(tcsFromPage, tcsFromDtb, duplicate);
 
         List<TestCaseStepAction> tcsaFromDtb = new ArrayList(tcsaService.findTestCaseStepActionbyTestTestCase(initialTest, initialTestCase));
-        tcsaService.compareListAndUpdateInsertDeleteElements(tcsaFromPage, tcsaFromDtb);
+        tcsaService.compareListAndUpdateInsertDeleteElements(tcsaFromPage, tcsaFromDtb, duplicate);
 
         List<TestCaseStepActionControl> tcsacFromDtb = new ArrayList(tcsacService.findControlByTestTestCase(initialTest, initialTestCase));
-        tcsacService.compareListAndUpdateInsertDeleteElements(tcsacFromPage, tcsacFromDtb);
+        tcsacService.compareListAndUpdateInsertDeleteElements(tcsacFromPage, tcsacFromDtb, duplicate);
 
         List<TestCaseStep> tcsNewFromPage = new ArrayList();
         List<TestCaseStepAction> tcsaNewFromPage = new ArrayList();
@@ -273,13 +280,13 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
         }
 
         List<TestCaseStep> tcsNewNewFromDtb = new ArrayList(tcsService.getListOfSteps(initialTest, initialTestCase));
-        tcsService.compareListAndUpdateInsertDeleteElements(tcsNewFromPage, tcsNewNewFromDtb);
+        tcsService.compareListAndUpdateInsertDeleteElements(tcsNewFromPage, tcsNewNewFromDtb, duplicate);
 
         List<TestCaseStepAction> tcsaNewNewFromDtb = new ArrayList(tcsaService.findTestCaseStepActionbyTestTestCase(initialTest, initialTestCase));
-        tcsaService.compareListAndUpdateInsertDeleteElements(tcsaNewFromPage, tcsaNewNewFromDtb);
+        tcsaService.compareListAndUpdateInsertDeleteElements(tcsaNewFromPage, tcsaNewNewFromDtb, duplicate);
 
         List<TestCaseStepActionControl> tcsacNewNewFromDtb = new ArrayList(tcsacService.findControlByTestTestCase(initialTest, initialTestCase));
-        tcsacService.compareListAndUpdateInsertDeleteElements(tcsacNewFromPage, tcsacNewNewFromDtb);
+        tcsacService.compareListAndUpdateInsertDeleteElements(tcsacNewFromPage, tcsacNewNewFromDtb, duplicate);
 
         /*Update the testcasestep using the steps*/
         for (TestCaseStep tcsL : tcsFromPage) {
@@ -388,8 +395,8 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
                 String type = getParameterIfExists(request, "properties_type_" + inc);
                 String value = getParameterIfExists(request, "properties_value1_" + inc);
                 String value2 = getParameterIfExists(request, "properties_value2_" + inc);
-                int length = Integer.valueOf(getParameterIfExists(request, "properties_length_" + inc));
-                int rowLimit = Integer.valueOf(getParameterIfExists(request, "properties_rowlimit_" + inc));
+                int length = Integer.valueOf(getParameterIfExists(request, "properties_length_" + inc).equals("") ? "0" : getParameterIfExists(request, "properties_length_" + inc));
+                int rowLimit = Integer.valueOf(getParameterIfExists(request, "properties_rowlimit_" + inc).equals("") ? "0" : getParameterIfExists(request, "properties_rowlimit_" + inc));
                 String nature = getParameterIfExists(request, "properties_nature_" + inc);
                 String database = getParameterIfExists(request, "properties_dtb_" + inc);
                 for (String country : countries) {
@@ -434,7 +441,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
                             tcStep.setUseStepStep(tcs.getUseStepStep());
                         }
                     }
-                    if (stepInUse != null && stepInUse.equals("Y") && initialStep!=step) {
+                    if (stepInUse != null && stepInUse.equals("Y") && initialStep != step) {
                         tcStep.setIsStepInUseByOtherTestCase(true);
                         tcStep.setInitialStep(initialStep);
                     } else {

@@ -17,22 +17,23 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
+package org.cerberus.serviceEngine;
 
-package org.cerberus.service;
-
-import java.util.List;
-
-import org.cerberus.dto.TestCaseManualExecution;
-import org.cerberus.entity.TCase;
+import org.cerberus.entity.Session;
+import org.cerberus.entity.TestCaseExecution;
+import org.cerberus.exception.CerberusException;
+import org.openqa.selenium.Capabilities;
 
 /**
- * {Insert class description here}
  *
- * @author Tiago Bernardes
- * @version 1.0, 25/11/2013
- * @since 0.9.1
+ * @author bcivel
  */
-public interface IManualTestCaseService {
+public interface ISeleniumServerService {
+    
+    void startServer(TestCaseExecution tCExecution) throws CerberusException ;
 
-    List<TestCaseManualExecution> findTestCaseManualExecution(TCase testCase, String text, String system, String country, String env, String campaign, String battery);
+    boolean stopServer(Session session);
+    
+    Capabilities getUsedCapabilities(Session session);
+     
 }

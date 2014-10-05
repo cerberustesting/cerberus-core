@@ -20,16 +20,17 @@
 
 package org.cerberus.serviceEngine.impl;
 
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.when;
 import junit.framework.Assert;
 import org.cerberus.entity.MessageEvent;
 
 import org.cerberus.entity.Selenium;
+import org.cerberus.entity.Session;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
+import static org.mockito.Matchers.anyString;
 import org.mockito.Mock;
+import static org.mockito.Mockito.when;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
@@ -54,14 +55,14 @@ import org.springframework.test.context.ContextConfiguration;
  * @since 0.9.0
  */
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ExpectedConditions.class, By.class, SeleniumService.class})
+@PrepareForTest({ExpectedConditions.class, By.class, WebDriverService.class})
 @ContextConfiguration(locations = {"/applicationContextTest.xml"})
 public class SeleniumServiceTest {
 
     @Mock
     private WebDriver driver;
     @Mock
-    private Selenium selenium;
+    private Session session;
     @Mock
     private RemoteWebElement element;
     @Mock
@@ -73,7 +74,7 @@ public class SeleniumServiceTest {
     @Mock
     private FluentWait fluentWait;
     @InjectMocks
-    private SeleniumService seleniumService;
+    private WebDriverService webdriverService;
 
     /**
      * Action Click
@@ -84,7 +85,7 @@ public class SeleniumServiceTest {
         String property = "null";
         String msg = "Object and Property are ‘null’. At least one is mandatory in order to perform the action click.";
      
-        MessageEvent message = this.seleniumService.doSeleniumActionClick(selenium, object, property);
+        MessageEvent message = this.webdriverService.doSeleniumActionClick(session, object, property);
 
         Assert.assertEquals(msg, message.getDescription());
     }
@@ -98,14 +99,14 @@ public class SeleniumServiceTest {
         PowerMockito.mockStatic(ExpectedConditions.class);
         PowerMockito.mockStatic(By.class);
 
-        when(selenium.getDriver()).thenReturn(driver);
+        when(session.getDriver()).thenReturn(driver);
         when(By.id(anyString())).thenReturn(by);
         PowerMockito.whenNew(WebDriverWait.class).withAnyArguments().thenReturn(webDriverWait);
         when(ExpectedConditions.visibilityOfElementLocated(by)).thenReturn(expectedCondition);
         when(fluentWait.until(expectedCondition)).thenReturn(element);
         when(driver.findElement(by)).thenReturn(element);
 
-        MessageEvent message = this.seleniumService.doSeleniumActionClick(selenium, object, property);
+        MessageEvent message = this.webdriverService.doSeleniumActionClick(session, object, property);
 
         Assert.assertEquals(msg, message.getDescription());
     }
@@ -117,10 +118,10 @@ public class SeleniumServiceTest {
         String msg = "Failed to click because could not find element '" + object + "'!";
 
     
-        when(selenium.getDriver()).thenReturn(driver);
+        when(session.getDriver()).thenReturn(driver);
         when(driver.findElement(By.id(anyString()))).thenThrow(new NoSuchElementException(""));
 
-        MessageEvent message = this.seleniumService.doSeleniumActionClick(selenium, object, property);
+        MessageEvent message = this.webdriverService.doSeleniumActionClick(session, object, property);
 
         Assert.assertEquals(msg, message.getDescription());
     }
@@ -134,14 +135,14 @@ public class SeleniumServiceTest {
         PowerMockito.mockStatic(ExpectedConditions.class);
         PowerMockito.mockStatic(By.class);
 
-        when(selenium.getDriver()).thenReturn(driver);
+        when(session.getDriver()).thenReturn(driver);
         when(By.id(anyString())).thenReturn(by);
         PowerMockito.whenNew(WebDriverWait.class).withAnyArguments().thenReturn(webDriverWait);
         when(ExpectedConditions.visibilityOfElementLocated(by)).thenReturn(expectedCondition);
         when(fluentWait.until(ExpectedConditions.visibilityOfElementLocated(by))).thenReturn(element);
         when(driver.findElement(by)).thenReturn(element);
 
-        MessageEvent message = this.seleniumService.doSeleniumActionClick(selenium, object, property);
+        MessageEvent message = this.webdriverService.doSeleniumActionClick(session, object, property);
 
         Assert.assertEquals(msg, message.getDescription());
     }
@@ -152,10 +153,10 @@ public class SeleniumServiceTest {
         String property = "id=test";
         String msg = "Failed to click because could not find element '" + property + "'!";
 
-        when(selenium.getDriver()).thenReturn(driver);
+        when(session.getDriver()).thenReturn(driver);
         when(driver.findElement(By.id(anyString()))).thenThrow(new NoSuchElementException(""));
 
-        MessageEvent message = this.seleniumService.doSeleniumActionClick(selenium, object, property);
+        MessageEvent message = this.webdriverService.doSeleniumActionClick(session, object, property);
 
         Assert.assertEquals(msg, message.getDescription());
     }
@@ -166,9 +167,9 @@ public class SeleniumServiceTest {
         String property = "null";
         String msg = "The test case is canceled due to lost connection to Selenium Server!";
 
-        when(selenium.getDriver()).thenThrow(new WebDriverException());
+        when(session.getDriver()).thenThrow(new WebDriverException());
 
-        MessageEvent message = this.seleniumService.doSeleniumActionClick(selenium, object, property);
+        MessageEvent message = this.webdriverService.doSeleniumActionClick(session, object, property);
 
         Assert.assertEquals(msg, message.getDescription());
     }
@@ -185,14 +186,14 @@ public class SeleniumServiceTest {
         PowerMockito.mockStatic(ExpectedConditions.class);
         PowerMockito.mockStatic(By.class);
 
-        when(selenium.getDriver()).thenReturn(driver);
+        when(session.getDriver()).thenReturn(driver);
         when(By.id(anyString())).thenReturn(by);
         PowerMockito.whenNew(WebDriverWait.class).withAnyArguments().thenReturn(webDriverWait);
         when(ExpectedConditions.visibilityOfElementLocated(by)).thenReturn(expectedCondition);
         when(webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(by))).thenReturn(element);
         when(driver.findElement(by)).thenReturn(element);
 
-        MessageEvent message = this.seleniumService.doSeleniumActionClickWait(selenium, object, property);
+        MessageEvent message = this.webdriverService.doSeleniumActionClickWait(session, object, property);
 
         Assert.assertEquals(msg, message.getDescription());
     }
@@ -204,12 +205,12 @@ public class SeleniumServiceTest {
         String property = "100";
         String msg = "Element '" + object + "' clicked but failed to wait '" + property + "' ms.";
 
-        when(selenium.getDriver()).thenReturn(driver);
+        when(session.getDriver()).thenReturn(driver);
         when(driver.findElement(By.id(anyString()))).thenReturn(element);
 //        doThrow(new InterruptedException()).when(Thread);
 //        when(Thread.sleep(anyLong())).thenThrow(new InterruptedException());
 
-        MessageEvent message = this.seleniumService.doSeleniumActionClickWait(selenium, object, property);
+        MessageEvent message = this.webdriverService.doSeleniumActionClickWait(session, object, property);
 
         Assert.assertEquals(msg, message.getDescription());
     }
@@ -223,14 +224,14 @@ public class SeleniumServiceTest {
         PowerMockito.mockStatic(ExpectedConditions.class);
         PowerMockito.mockStatic(By.class);
 
-        when(selenium.getDriver()).thenReturn(driver);
+        when(session.getDriver()).thenReturn(driver);
         when(By.id(anyString())).thenReturn(by);
         PowerMockito.whenNew(WebDriverWait.class).withAnyArguments().thenReturn(webDriverWait);
         when(ExpectedConditions.visibilityOfElementLocated(by)).thenReturn(expectedCondition);
         when(webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(by))).thenReturn(element);
         when(driver.findElement(by)).thenReturn(element);
 
-        MessageEvent message = this.seleniumService.doSeleniumActionClickWait(selenium, object, property);
+        MessageEvent message = this.webdriverService.doSeleniumActionClickWait(session, object, property);
 
         Assert.assertEquals(msg, message.getDescription());
     }
@@ -241,10 +242,10 @@ public class SeleniumServiceTest {
         String property = "5000";
         String msg = "Failed to click because could not find element '" + object + "'!";
 
-        when(selenium.getDriver()).thenReturn(driver);
+        when(session.getDriver()).thenReturn(driver);
         when(driver.findElement(By.id(anyString()))).thenThrow(new NoSuchElementException(""));
 
-        MessageEvent message = this.seleniumService.doSeleniumActionClickWait(selenium, object, property);
+        MessageEvent message = this.webdriverService.doSeleniumActionClickWait(session, object, property);
 
         Assert.assertEquals(msg, message.getDescription());
     }
@@ -255,7 +256,7 @@ public class SeleniumServiceTest {
         String property = "null";
         String msg = "Object is 'null'. This is mandatory in order to perform the action click and wait.";
 
-        MessageEvent message = this.seleniumService.doSeleniumActionClickWait(selenium, object, property);
+        MessageEvent message = this.webdriverService.doSeleniumActionClickWait(session, object, property);
 
         Assert.assertEquals(msg, message.getDescription());
     }
@@ -269,14 +270,14 @@ public class SeleniumServiceTest {
         PowerMockito.mockStatic(ExpectedConditions.class);
         PowerMockito.mockStatic(By.class);
 
-        when(selenium.getDriver()).thenReturn(driver);
+        when(session.getDriver()).thenReturn(driver);
         when(By.id(anyString())).thenReturn(by);
         PowerMockito.whenNew(WebDriverWait.class).withAnyArguments().thenReturn(webDriverWait);
         when(ExpectedConditions.visibilityOfElementLocated(by)).thenReturn(expectedCondition);
         when(webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(by))).thenReturn(element);
         when(driver.findElement(by)).thenReturn(element);
 
-        MessageEvent message = this.seleniumService.doSeleniumActionClickWait(selenium, object, property);
+        MessageEvent message = this.webdriverService.doSeleniumActionClickWait(session, object, property);
 
         Assert.assertEquals(msg, message.getDescription());
     }
@@ -287,10 +288,10 @@ public class SeleniumServiceTest {
         String property = "null";
         String msg = "Failed to click because could not find element '" + object + "'!";
 
-        when(selenium.getDriver()).thenReturn(driver);
+        when(session.getDriver()).thenReturn(driver);
         when(driver.findElement(By.id(anyString()))).thenThrow(new NoSuchElementException(""));
 
-        MessageEvent message = this.seleniumService.doSeleniumActionClickWait(selenium, object, property);
+        MessageEvent message = this.webdriverService.doSeleniumActionClickWait(session, object, property);
 
         Assert.assertEquals(msg, message.getDescription());
     }
@@ -301,9 +302,9 @@ public class SeleniumServiceTest {
         String property = "null";
         String msg = "The test case is canceled due to lost connection to Selenium Server!";
 
-        when(selenium.getDriver()).thenThrow(new WebDriverException());
+        when(session.getDriver()).thenThrow(new WebDriverException());
 
-        MessageEvent message = this.seleniumService.doSeleniumActionClickWait(selenium, object, property);
+        MessageEvent message = this.webdriverService.doSeleniumActionClickWait(session, object, property);
 
         Assert.assertEquals(msg, message.getDescription());
     }
@@ -315,9 +316,9 @@ public class SeleniumServiceTest {
         String property = "null";
         String msg = "Opened URL 'http://" + property + object + "'.";
 
-        when(selenium.getDriver()).thenReturn(driver);
+        when(session.getDriver()).thenReturn(driver);
 
-        MessageEvent message = this.seleniumService.doSeleniumActionOpenURL(selenium, object, property, true);
+        MessageEvent message = this.webdriverService.doSeleniumActionOpenURL(session, "null", object, property, true);
 
         Assert.assertEquals(msg, message.getDescription());
     }
@@ -328,9 +329,9 @@ public class SeleniumServiceTest {
         String property = "/test";
         String msg = "Opened URL 'http://" + object + property + "'.";
 
-        when(selenium.getDriver()).thenReturn(driver);
+        when(session.getDriver()).thenReturn(driver);
 
-        MessageEvent message = this.seleniumService.doSeleniumActionOpenURL(selenium, object, property, true);
+        MessageEvent message = this.webdriverService.doSeleniumActionOpenURL(session,"null", object, property, true);
 
         Assert.assertEquals(msg, message.getDescription());
     }
@@ -341,9 +342,9 @@ public class SeleniumServiceTest {
         String property = "null";
         String msg = "Failed to open '" + object + "'.";
 
-        when(selenium.getDriver()).thenReturn(driver);
+        when(session.getDriver()).thenReturn(driver);
 
-        MessageEvent message = this.seleniumService.doSeleniumActionOpenURL(selenium, object, property, true);
+        MessageEvent message = this.webdriverService.doSeleniumActionOpenURL(session,"null", object, property, true);
 
         Assert.assertEquals(msg, message.getDescription());
     }
