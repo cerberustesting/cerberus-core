@@ -577,6 +577,10 @@
         <servlet-name>GetTestDataLib</servlet-name>
         <servlet-class>org.cerberus.servlet.testdata.GetTestDataLib</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>RunManualTest</servlet-name>
+        <servlet-class>org.cerberus.servlet.manualTestCase.RunManualTest</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>RunTestCase</servlet-name>
         <url-pattern>/RunTestCase</url-pattern>
@@ -1117,6 +1121,10 @@
         <servlet-name>GetTestDataLib</servlet-name>
         <url-pattern>/GetTestDataLib</url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>RunManualTest</servlet-name>
+        <url-pattern>/RunManualTest</url-pattern>
+    </servlet-mapping>
     <session-config>
         <session-timeout>
             60
@@ -1295,12 +1303,14 @@
             <url-pattern>/RunTests.jsp</url-pattern>
             <url-pattern>/RunTestsManually.jsp</url-pattern>
             <url-pattern>/V2_RunTests.jsp</url-pattern>
+            <url-pattern>/TestCaseManualRun.jsp</url-pattern>
         </web-resource-collection>
         <web-resource-collection>
             <web-resource-name>servlet</web-resource-name>
             <description>servlet</description>
             <url-pattern>/findEnvironmentByCriteria</url-pattern>
             <url-pattern>/UpdateUserRobotPreference</url-pattern>
+            <url-pattern>/RunManualTest</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <description>RunTest</description>

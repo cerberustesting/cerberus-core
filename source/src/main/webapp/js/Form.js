@@ -2185,8 +2185,68 @@ function addTCSCNew(rowID, obj) {
     
 }
 
+function newActivateValue2(value, fieldValue1Id, fieldValue2Id, size) {
+    if (value === "getAttributeFromHtml" || value === "getFromXml" || value === "getFromCookie" || value === "getDifferencesFromXml") {
+        document.getElementById(fieldValue2Id).style.display = "inline-block";
+        document.getElementById(fieldValue2Id).style.width = size/2 + "%";
+        document.getElementById(fieldValue1Id).style.width = size/2 + "%";
+    } else
+    {
+        document.getElementById(fieldValue2Id).style.display = "none";
+        document.getElementById(fieldValue1Id).style.width = size + "%";
+    }
+}
 
-
+function addPropertyNew(widthValue){
+    var numberOfProperty = document.getElementsByName("property_increment").length;
+    var nextIncrementValue = parseInt(numberOfProperty)+1;
+    
+    var DIV = document.createElement('div');
+    if (document.getElementById("PropertyTemplateDiv")) {
+        DIV.innerHTML = (DIV.innerHTML + document
+                .getElementById('PropertyTemplateDiv').innerHTML);
+    }
+    DIV.setAttribute('class' , 'generalPropertyDiv');
+    DIV.setAttribute('id' , 'propertyRow'+nextIncrementValue);
+    DIV.setAttribute('style', 'height:50px; clear:both; display:block;border-style: solid; border-width:thin ; border-color:#CCCCCC;');
+    var referenceNode = document.getElementById('propertyRow'+numberOfProperty);
+    referenceNode.parentNode.insertBefore(DIV, referenceNode.nextSibling);
+    
+    $('#propertyRow'+nextIncrementValue).find('input[data-id="properties_delete_template"]')
+            .attr('name', 'properties_delete_' + nextIncrementValue);
+    $('#propertyRow'+nextIncrementValue).find('input[data-id="property_increment_template"]')
+            .attr('name', 'property_increment').val(nextIncrementValue);
+    $('#propertyRow'+nextIncrementValue).find('input[data-id="properties_property_template"]')
+            .attr('name', 'properties_property_' + nextIncrementValue)
+            .attr('placeholder', 'Feed Property Name');
+    $('#propertyRow'+nextIncrementValue).find('input[data-id="properties_country_template"]')
+            .attr('name', 'properties_country_' + nextIncrementValue);
+    $('#propertyRow'+nextIncrementValue).find('#properties_type_template')
+            .attr('name', 'properties_type_' + nextIncrementValue)
+            .attr('onchange', 'activateDatabaseBox(this.value, \'properties_nodtb_' + nextIncrementValue + '\' ,\'properties_dtb_' + nextIncrementValue + '\');newActivateValue2(this.value, \'divProperties_value1_' + nextIncrementValue + '\', \'divProperties_value2_' + nextIncrementValue + '\',\'' + widthValue + '\')');
+    $('#propertyRow'+nextIncrementValue).find('#properties_dtb_template')
+            .attr('name', 'properties_dtb_' + nextIncrementValue)
+            .attr('id', 'properties_dtb_' + nextIncrementValue);
+    $('#propertyRow'+nextIncrementValue).find('select[data-id="properties_nodtb_template"]')
+            .attr('name', 'properties_nodtb_' + nextIncrementValue)
+            .attr('id', 'properties_nodtb_' + nextIncrementValue);
+    $('#propertyRow'+nextIncrementValue).find('div[data-id="divProperties_value1_template"]')
+            .attr('name', 'divProperties_value1_' + nextIncrementValue)
+            .attr('id', 'divProperties_value1_' + nextIncrementValue);
+    $('#propertyRow'+nextIncrementValue).find('div[data-id="divProperties_value2_template"]')
+            .attr('name', 'divProperties_value2_' + nextIncrementValue)
+            .attr('id', 'divProperties_value2_' + nextIncrementValue);
+    $('#propertyRow'+nextIncrementValue).find('textarea[data-id="properties_value1_template"]')
+            .attr('name', 'properties_value1_' + nextIncrementValue);
+    $('#propertyRow'+nextIncrementValue).find('textarea[data-id="properties_value2_template"]')
+            .attr('name', 'properties_value2_' + nextIncrementValue);
+    $('#propertyRow'+nextIncrementValue).find('input[data-id="properties_length_template"]')
+            .attr('name', 'properties_length_' + nextIncrementValue).val("0");
+    $('#propertyRow'+nextIncrementValue).find('input[data-id="properties_rowlimit_template"]')
+            .attr('name', 'properties_rowlimit_' + nextIncrementValue).val("0");
+    $('#propertyRow'+nextIncrementValue).find('#properties_nature_template')
+            .attr('name', 'properties_nature_' + nextIncrementValue);
+}
 
 
 

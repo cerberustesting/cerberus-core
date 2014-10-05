@@ -23,26 +23,26 @@
     String[] environments = request.getParameterValues("Environment");
     String[] countries = request.getParameterValues("Country");
     String[] browsers = request.getParameterValues("Browser");
-    
+
     boolean onlyFunction = ("true".equalsIgnoreCase(request.getParameter("OnlyFunction")));
 
     StringBuffer query = new StringBuffer("CampaignName=").append(campaignName);
     query.append("&Tag=").append(tag);
-    
-    if(environments != null && environments.length > 0) {
-        for(String environment : environments) {
+
+    if (environments != null && environments.length > 0) {
+        for (String environment : environments) {
             query.append("&Environment=").append(environment);
         }
     }
-    
-    if(countries != null && countries.length > 0) {
-        for(String country : countries) {
+
+    if (countries != null && countries.length > 0) {
+        for (String country : countries) {
             query.append("&Country=").append(country);
         }
     }
-    
-    if(browsers != null && browsers.length > 0) {
-        for(String browser : browsers) {
+
+    if (browsers != null && browsers.length > 0) {
+        for (String browser : browsers) {
             query.append("&Browser=").append(browser);
         }
     }
@@ -73,60 +73,85 @@
         <script>
             Chart.defaults.global.responsive = true;
             // Number - Scale label font size in pixels
-            Chart.defaults.global.scaleFontSize= '14';
+            Chart.defaults.global.scaleFontSize = '14';
 
             var executionStatus, pieExecutionStatus;
 
-            function appendValueInInvariantSelect(selectId,invariantId) {
-                
-                $.get("ListCampaignParameter","invariant="+invariantId,function(data){
+            function appendValueInInvariantSelect(selectId, invariantId) {
+
+                $.get("ListCampaignParameter", "invariant=" + invariantId, function(data) {
                     var index, parameter;
                     var select = $(selectId);
                     select.empty();
-                    for(index=0; index<data.ParameterValues.length; index++) {
+                    for (index = 0; index < data.ParameterValues.length; index++) {
                         parameter = data.ParameterValues[index];
                         //console.log(parameter);
-                        select.append(
-                                $("<option></option>").attr('value', parameter[1])
-                                .text(parameter[3]+" - "+parameter[1])
-                                .attr("title", parameter[3]+" - "+parameter[1])
-                            );
-                     }
+                        var option = $("<option></option>").attr('value', parameter[1])
+                                .text(parameter[3] + " - " + parameter[1])
+                                .attr("title", parameter[3] + " - " + parameter[1]);
+
+                        if ($.isParamInURL(select.attr("name"), parameter[1])) {
+                            option.attr("selected", "selected");
+                        }
+
+                        select.append(option);
+                    }
                 });
             }
 
+            $.isParamInURL = function(name, value) {
+                var results = new RegExp('[\?&]' + name + '=' + value + '([^&#]*)').exec(window.location.href);
+                if (results == null) {
+                    return false;
+                }
+                else {
+                    return true;
+                }
+            };
 
-            $(document).ready(function () {
-                
-                appendValueInInvariantSelect("#country","COUNTRY");
-                appendValueInInvariantSelect("#environment","ENVIRONMENT");
-                appendValueInInvariantSelect("#browser","BROWSER");
-                
+            $(document).ready(function() {
+
+                appendValueInInvariantSelect("#country", "COUNTRY");
+                appendValueInInvariantSelect("#environment", "ENVIRONMENT");
+                appendValueInInvariantSelect("#browser", "BROWSER");
+
                 jQuery.ajax('./GetTagExecutions?withUUID').done(function(data) {
                     var index;
-                    for(index=0; index<data.tags.length; index++) {
-                       $('#selectTag').append($('<option></option>').attr("value",data.tags[index]).text(data.tags[index]));
+                    for (index = 0; index < data.tags.length; index++) {
+                        var option = $('<option></option>').attr("value", data.tags[index]).text(data.tags[index]);
+
+                        if ($.isParamInURL("Tag", data.tags[index])) {
+                            option.attr("selected", "selected");
+                        }
+
+                        $('#selectTag').append(option);
                     }
                 });
-                
+
                 jQuery.ajax('./GetCampaign?action=findAllCampaign&withoutLink=true').done(function(data) {
                     var index;
-                    for(index=0; index<data.Campaigns.length; index++) {
-                       $('#selectCampaign').append($('<option></option>').attr("value",data.Campaigns[index][1])
-                               .text(data.Campaigns[index][0]+" - "+data.Campaigns[index][1]+" - "+data.Campaigns[index][2]));
+                    for (index = 0; index < data.Campaigns.length; index++) {
+                        var option = $('<option></option>').attr("value", data.Campaigns[index][1])
+                                .text(data.Campaigns[index][0] + " - " + data.Campaigns[index][1] + " - " + data.Campaigns[index][2]);
+
+                        if ($.isParamInURL("CampaignName", data.Campaigns[index][1])) {
+                            option.attr("selected", "selected");
+                        }
+
+                        $('#selectCampaign').append(option);
                     }
                 });
-                
-                
-                
-                createGraphFromAjaxToElement("./CampaignExecutionReportByFunction?<%=query.toString() %>","#functionTest", null);
-                createGraphFromAjaxToElement("./CampaignExecutionStatusBarGraphByFunction?<%=query.toString() %>","#functionBar", null);
-                
-                jQuery.ajax("./CampaignExecutionGraphByStatus?<%=query.toString() %>").done(function(data) {
-                    // function used to generate the Pie graph about status number
-                    var pie = createGraphFromDataToElement(data,"#myDonut", null);
 
-                    $("#myDonut").on('click', function (evt) {
+
+
+                createGraphFromAjaxToElement("./CampaignExecutionReportByFunction?<%=query.toString()%>", "#functionTest", null);
+                createGraphFromAjaxToElement("./CampaignExecutionStatusBarGraphByFunction?<%=query.toString()%>", "#functionBar", null);
+
+                jQuery.ajax("./CampaignExecutionGraphByStatus?<%=query.toString()%>").done(function(data) {
+                    // function used to generate the Pie graph about status number
+                    var pie = createGraphFromDataToElement(data, "#myDonut", null);
+
+                    $("#myDonut").on('click', function(evt) {
                         var activePoints = pie.getSegmentsAtEvent(evt);
 
                         var anchor = $('a[name="Status' + activePoints[0].label + '"]');
@@ -137,7 +162,7 @@
                         return false;
                     });
 
-                    
+
                     // code used to create the execution status table.
                     $("div.executionStatus").empty().append("<table  class='arrondTable fullSize'><thead><tr><th>Execution status</th><th>TestCase Number</th></tr></thead><tbody></tbody></table>");
                     var total = 0;
@@ -147,36 +172,36 @@
                                 $("<tr></tr>").append(
                                 $("<td></td>").text(data.axis[index].label))
                                 .append($("<td></td>").text(data.axis[index].value))
-                            );
+                                );
                         // increase the total execution
                         total = total + data.axis[index].value;
                     }
                     // add a line for the total
                     $("div.executionStatus table tbody").append(
                             $("<tr></tr>").append(
-                                $("<th>Total</th>"))
+                            $("<th>Total</th>"))
                             .append($("<th></th>").text(total))
-                    );
+                            );
                 });
 
-                $.get("./CampaignExecutionReport", "<%=query.toString() %>", function (report) {
+                $.get("./CampaignExecutionReport", "<%=query.toString()%>", function(report) {
                     // Get context with jQuery - using jQuery's .get() method.
 
                     for (var index = 0; index < report.length; index++) {
-<%
-                        if(!onlyFunction) {
-%>
-                            report[index].Function = (report[index].Function ? report[index].Function : report[index].Test);
-<%
-                        }
-%>
+            <%
+                if (!onlyFunction) {
+            %>
+                        report[index].Function = (report[index].Function ? report[index].Function : report[index].Test);
+            <%
+                }
+            %>
                         addTestCaseToStatusTabs(report[index]);
                     }
 
-                    $("table.needToBeSort").each(function(){
+                    $("table.needToBeSort").each(function() {
                         sorttable.makeSortable(this);
                     });
-                    
+
                 });
             });
         </script>
@@ -187,42 +212,42 @@
                 padding:0; margin:0;
                 background: white;
             }
-            
 
-        .ID {
+
+            .ID {
                 width: 5%;
             }
-        .Test {
+            .Test {
                 width: 10%;
             }
-        .TestCase {
+            .TestCase {
                 width: 5%;
             }
-        .ShortDescription {
+            .ShortDescription {
                 width: 32%;
             }
-        .Function {
+            .Function {
                 width: 10%;
             }
-        .Control {
+            .Control {
                 width: 3%;
             }
-        .Status {
+            .Status {
                 width: 5%;
             }
-        .Application {
+            .Application {
                 width: 5%;
             }
-        .BugID {
+            .BugID {
                 width: 5%;
             }
-        .Comment {
+            .Comment {
                 width: 10%;
             }
-        .Start {
+            .Start {
                 width: 10%;
             }
-        .End {
+            .End {
                 width: 10%;
             }
 
@@ -261,13 +286,13 @@
             table.needToBeSort th:not(.sorttable_sorted):not(.sorttable_sorted_reverse):not(.sorttable_nosort):after { 
                 content: " \25B4\25BE" 
             }
-            
+
             table tr td.title {
                 margin: 0 auto;
                 text-align: center;
                 font-weight: bold;
             }
-            
+
         </style>
     </head>
     <body>
@@ -275,161 +300,173 @@
         <%@ include file="include/header.jsp" %>
 
         <div id="main">
-            <form method="get">
-                <label for="selectCampaign">Campaign: </label><select name="CampaignName" id="selectCampaign"></select><br>
-                <label for="selectTag">Tag: </label><select name="Tag" id="selectTag"></select><br>
-                <label for="environment">Environment: </label><select name="Environment" id="environment"></select><br>
-                <label for="country">Country: </label><select name="Country" id="country"></select><br>
-                <label for="browser">Browser: </label><select name="Browser" id="browser"></select><br>
-                <br><button type="submit" value="Load">Load</button>
-            </form>
-            <table class="fullSize noBorder">
-                <tr>
-                    <td class="title addborder"><h1>Report by Status</h1></td>
-                    <td class="title"><h1>Report by Function</h1></td>
-                </tr>
-                <tr>
-                    <td class="addborder" style="width: 20%">
-                        <div class="executionStatus"></div>
-                        <br>
-                        <canvas id="myDonut"></canvas>
-                    </td>
-                    <td style="width: 78%">
-                        <canvas id="functionBar"></canvas>
-                    </td>
-                </tr>
-            </table>
+            <div style="margin-left:3%; display:block;height:200px;" class="title addborder">
+                <div class="arrondTable fullSize" style="width: 46%; float:left; height:200px; overflow: auto;">
+                    <div style="width: 99%;float:left">
+                        <h1 style="width: 99%; text-align: center">Filters</h1>
+                    </div>
+                    <div style="width: 99%;clear:both; display:block">
+                        <form method="get">
+                            <label style="width:20%;display:block" for="selectCampaign">Campaign: </label><select style="float:left;width:79%;display:block" name="CampaignName" id="selectCampaign"></select><br>
+                            <label style="width:20%;display:block" for="selectTag">Tag: </label><select style="width:79%;display:block" name="Tag" id="selectTag"></select><br>
+                            <label style="width:20%;display:block" for="environment">Environment: </label><select style="width:79%;display:block" multiple="true" name="Environment" id="environment"></select><br>
+                            <label style="width:20%;display:block" for="country">Country: </label><select style="width:79%;display:block" multiple="true" name="Country" id="country"></select><br>
+                            <label style="width:20%;display:block;" for="browser">Browser: </label><select style="width:79%;display:block" multiple="true" name="Browser" id="browser"></select><br>
+                            <br>
+                            <button style="float:right" type="submit" value="Load">Load</button>
+                        </form>
+                    </div>
+                </div>
+                <div class="arrondTable fullSize" style="width: 46%;float:left; display:block;margin-left:2%; height:200px">
+                    <div style="width: 99%;float:left">
+                        <h1 style="width: 99%; text-align: center">Report by Status</h1>
+                    </div>
+                    <div style="width: 99%;clear:both; display:block">
+                        <div style="width: 48%;float:left;float:bottom; margin-left:1%" class="executionStatus"></div>
+                        <div  style="width: 48%;float:left">
+                            <canvas id="myDonut"></canvas>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div style="margin-left:3%; margin-top:20px;clear:both;display:block;height:400px;" class="title addborder">
+                <div class="arrondTable fullSize" style="width: 46%; float:left;height:400px;">
+                    <div style="width: 99%;float:left">
+                        <h1 style="width: 99%; text-align: center">Report by Function</h1>
+                    </div>
+                    <canvas style="height:380px;" id="functionBar"></canvas>
+                </div>
+                <div class="arrondTable fullSize" style="width: 46%; float:left;height:400px;margin-left:2%">
+                    <div style="width: 99%;float:left">
+                        <h1 style="width: 99%; text-align: center">Radar by function</h1>
+                    </div>
+                    <canvas style="height:400px;" id="functionTest"></canvas>
+                </div>
+            </div>
             <br>
-            <table class="fullSize noBorder">
-                <tr>
-                    <td class="title addborder" colspan="2"><h1>Radar by function</h1></td>
-                </tr>
-                <tr style="width: 98%">
-                    <td colspan="2">
-                        <canvas id="functionTest"></canvas>
-                    </td>
-                </tr>
-            </table>
-            <h1><a name="StatusNE" class="StatusNE">Not Executed</a></h1>
-            <table id="StatusNE" class="arrondTable fullSize needToBeSort">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Function</th>
-                        <th>Test</th>
-                        <th>TestCase</th>
-                        <th>Description</th>
-                        <th>Control</th>
-                        <th>Status</th>
-                        <th>Application</th>
-                        <th>BugID</th>
-                        <th class="wrapAll">Comment</th>
-                        <th>Start</th>
-                    </tr>
-                </thead>
-                <tbody>
-                </tbody>
-            </table>            
-            <h1><a name="StatusKO" class="StatusKO">Status KO</a></h1>
-            <table id="StatusKO" class="arrondTable fullSize needToBeSort">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Function</th>
-                        <th>Test</th>
-                        <th>TestCase</th>
-                        <th>Description</th>
-                        <th>Control</th>
-                        <th>Status</th>
-                        <th>Application</th>
-                        <th>BugID</th>
-                        <th class="wrapAll">Comment</th>
-                        <th>Start</th>
-                    </tr>
-                </thead>
-                <tbody>
-                </tbody>
-            </table>
-            <h1><a name="StatusFA" class="StatusFA">Status FA</a></h1>
-            <table id="StatusFA" class="arrondTable fullSize needToBeSort">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Function</th>
-                        <th>Test</th>
-                        <th>TestCase</th>
-                        <th>Description</th>
-                        <th>Control</th>
-                        <th>Status</th>
-                        <th>Application</th>
-                        <th>BugID</th>
-                        <th class="wrapAll">Comment</th>
-                        <th>Start</th>
-                    </tr>
-                </thead>
-                <tbody>
-                </tbody>
-            </table>
-            <h1><a name="StatusNA" class="StatusNA">Status NA</a></h1>
-            <table id="StatusNA" class="arrondTable fullSize needToBeSort">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Function</th>
-                        <th>Test</th>
-                        <th>TestCase</th>
-                        <th>Description</th>
-                        <th>Control</th>
-                        <th>Status</th>
-                        <th>Application</th>
-                        <th>BugID</th>
-                        <th class="wrapAll">Comment</th>
-                        <th>Start</th>
-                    </tr>
-                </thead>
-                <tbody>
-                </tbody>
-            </table>
-            <h1><a name="StatusPE" class="StatusPE">Status PE</a></h1>
-            <table id="StatusPE" class="arrondTable fullSize needToBeSort">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Function</th>
-                        <th>Test</th>
-                        <th>TestCase</th>
-                        <th>Description</th>
-                        <th>Control</th>
-                        <th>Status</th>
-                        <th>Application</th>
-                        <th>BugID</th>
-                        <th class="wrapAll">Comment</th>
-                        <th>Start</th>
-                    </tr>
-                </thead>
-                <tbody>
-                </tbody>
-            </table>
-            <h1><a name="StatusOK" class="StatusOK">Status OK</a></h1>
-            <table id="StatusOK" class="arrondTable fullSize needToBeSort">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Function</th>
-                        <th>Test</th>
-                        <th>TestCase</th>
-                        <th>Description</th>
-                        <th>Control</th>
-                        <th>Status</th>
-                        <th>Application</th>
-                        <th>BugID</th>
-                        <th class="wrapAll">Comment</th>
-                        <th>Start</th>
-                    </tr>
-                </thead>
-                <tbody>
-                </tbody>
-            </table>
+            <div style="clear:both; width:92%; margin-left:3%">
+                <h1><a name="StatusNE" class="StatusNE">Not Executed</a></h1>
+                <table id="StatusNE" class="arrondTable fullSize needToBeSort">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Function</th>
+                            <th>Test</th>
+                            <th>TestCase</th>
+                            <th>Description</th>
+                            <th>Control</th>
+                            <th>Status</th>
+                            <th>Application</th>
+                            <th>BugID</th>
+                            <th class="wrapAll">Comment</th>
+                            <th>Start</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>            
+                <h1><a name="StatusKO" class="StatusKO">Status KO</a></h1>
+                <table id="StatusKO" class="arrondTable fullSize needToBeSort">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Function</th>
+                            <th>Test</th>
+                            <th>TestCase</th>
+                            <th>Description</th>
+                            <th>Control</th>
+                            <th>Status</th>
+                            <th>Application</th>
+                            <th>BugID</th>
+                            <th class="wrapAll">Comment</th>
+                            <th>Start</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+                <h1><a name="StatusFA" class="StatusFA">Status FA</a></h1>
+                <table id="StatusFA" class="arrondTable fullSize needToBeSort">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Function</th>
+                            <th>Test</th>
+                            <th>TestCase</th>
+                            <th>Description</th>
+                            <th>Control</th>
+                            <th>Status</th>
+                            <th>Application</th>
+                            <th>BugID</th>
+                            <th class="wrapAll">Comment</th>
+                            <th>Start</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+                <h1><a name="StatusNA" class="StatusNA">Status NA</a></h1>
+                <table id="StatusNA" class="arrondTable fullSize needToBeSort">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Function</th>
+                            <th>Test</th>
+                            <th>TestCase</th>
+                            <th>Description</th>
+                            <th>Control</th>
+                            <th>Status</th>
+                            <th>Application</th>
+                            <th>BugID</th>
+                            <th class="wrapAll">Comment</th>
+                            <th>Start</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+                <h1><a name="StatusPE" class="StatusPE">Status PE</a></h1>
+                <table id="StatusPE" class="arrondTable fullSize needToBeSort">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Function</th>
+                            <th>Test</th>
+                            <th>TestCase</th>
+                            <th>Description</th>
+                            <th>Control</th>
+                            <th>Status</th>
+                            <th>Application</th>
+                            <th>BugID</th>
+                            <th class="wrapAll">Comment</th>
+                            <th>Start</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+                <h1><a name="StatusOK" class="StatusOK">Status OK</a></h1>
+                <table id="StatusOK" class="arrondTable fullSize needToBeSort">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Function</th>
+                            <th>Test</th>
+                            <th>TestCase</th>
+                            <th>Description</th>
+                            <th>Control</th>
+                            <th>Status</th>
+                            <th>Application</th>
+                            <th>BugID</th>
+                            <th class="wrapAll">Comment</th>
+                            <th>Start</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </body>
 </html>

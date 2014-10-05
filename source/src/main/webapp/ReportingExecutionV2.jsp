@@ -17,10 +17,19 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
   --%>
-<%@ page import="java.util.*" %>
+<%@ page import="java.util.TreeMap" %>
 <%@ page import="org.apache.commons.lang3.StringUtils" %>
-<%@ page import="org.cerberus.service.*" %>
-<%@ page import="org.cerberus.entity.*" %>
+<%@ page import="org.cerberus.service.IDocumentationService" %>
+<%@ page import="org.cerberus.service.ITestService" %>
+<%@ page import="org.cerberus.service.IProjectService" %>
+<%@ page import="org.cerberus.service.IInvariantService" %>
+<%@ page import="org.cerberus.service.IBuildRevisionInvariantService" %>
+<%@ page import="org.cerberus.service.IApplicationService" %>
+<%@ page import="org.cerberus.service.IUserService" %>
+<%@ page import="org.cerberus.entity.Test" %>
+<%@ page import="org.cerberus.entity.Project" %>
+<%@ page import="org.cerberus.entity.Application" %>
+<%@ page import="org.cerberus.entity.BuildRevisionInvariant" %>
 <%@ page import="org.cerberus.exception.CerberusException" %>
 
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
@@ -53,6 +62,7 @@
     <script type="text/javascript" src="js/jquery.dataTables.min.js"></script>
     <script type="text/javascript" src="js/FixedHeader.js"></script>
     <script type="text/javascript" src="js/jquery.multiselect.js"></script>
+    <script type="text/javascript" src="js/jquery.jeditable.mini.js"></script>
 
 <%
     try{
@@ -65,18 +75,57 @@
 
         var country = [];
         var browser = [];
+        var oldSystem = null;
         $(document).ready(function () {
             $(".multiSelectOptions").each(function () {
                 var currentElement = $(this);
 
-                currentElement.multiselect({
-                    multiple: true,
-                    minWidth: 150,
-                    header: currentElement.data('header'),
-                    noneSelectedText: currentElement.data('none-selected-text'),
-                    selectedText: currentElement.data('selected-text'),
-                    selectedList: currentElement.data('selected-list')
-                });
+                if (currentElement.attr("id") === "System") {
+                    currentElement.multiselect({
+                        multiple: true,
+                        minWidth: 150,
+                        header: currentElement.data('header'),
+                        noneSelectedText: currentElement.data('none-selected-text'),
+                        selectedText: currentElement.data('selected-text'),
+                        selectedList: currentElement.data('selected-list'),
+                        beforeclose: function() {
+                            var system = $("#System").val();
+
+//                            if (!compareArrays(oldSystem, system)) {
+                                var appSelect = $("#Application");
+
+//                                if (oldSystem != null) {
+//                                    $.each(oldSystem, function(i, v){
+//                                        if ($.inArray(v, system) === -1) {
+//                                            appSelect.find("option:contains('["+v+"]')").removeAttr('selected');
+//                                        }
+//                                    });
+//                                }
+
+                                if (system === null) {
+                                    appSelect.find("option").removeAttr('disabled');
+                                } else {
+                                    appSelect.find("option").attr('disabled','disabled');
+                                    $.each(system, function(i, v){
+                                        appSelect.find("option:contains('["+v+"]')").removeAttr('disabled');
+                                    });
+                                }
+                                appSelect.multiselect("refresh");
+
+                                oldSystem = system;
+//                            }
+                        }
+                    });
+                } else {
+                    currentElement.multiselect({
+                        multiple: true,
+                        minWidth: 150,
+                        header: currentElement.data('header'),
+                        noneSelectedText: currentElement.data('none-selected-text'),
+                        selectedText: currentElement.data('selected-text'),
+                        selectedList: currentElement.data('selected-list')
+                    });
+                }
             });
 
         $('#formReporting').submit(function(e){
@@ -98,7 +147,7 @@
 
 
             $.each(country, function (index, elem) {
-                $('#TCComment').before("<th class='jsAdded' colspan='" + (browser.length * 2) + "'>" + elem + "</th>");
+                $('.TCComment').before("<th class='jsAdded' colspan='" + (browser.length * 2) + "'>" + elem + "</th>");
                 $.each(browser, function (i, e) {
                     $('#tableCountry').append("<th class='jsAdded' colspan='2'>" + e + "</th>");
                     $('#TCResult').append("<th class='TCResult jsAdded'></th><th class='TCTime jsAdded'></th>");
@@ -168,6 +217,18 @@
                         "mRender": function (data, type, full) {
                             return "<a href='TestCase.jsp?Load=Load&Test="+full[0]+"&TestCase="+data+"' target='_blank'>"+data+"</a>";
                         }
+                    },
+                    {"aTargets": ['TCComment'],
+                        "fnCreatedCell": function (nTd, sData, oData) {
+                            $(nTd).editable("UpdateTestCaseField", {
+                                type: "textarea",
+                                onblur: "submit",
+                                submitdata: {test: oData[0],testcase: oData[1], columnName: "comment"},
+                                tooltip: "Doubleclick to edit...",
+                                event : "dblclick",
+                                placeholder: ""
+                            });
+                        }
                     }
                 ],
                 "fnInitComplete": function (oSettings, json) {
@@ -186,6 +247,7 @@
                             .append("<div class='PE' style='float: left;margin-left: 3px;margin-right: 3px;' title='PE : Test execution is still running...'><input type='checkbox' name='PE' value='PE' class='filterCheckbox' id='FPE' disabled='disabled' onchange='toogleDisplay(this)'><label class='PEF'>PE</label></div>")
                             .append("<div class='NotExecuted' style='float: left;margin-left: 3px;margin-right: 3px;' title='Test Case has not been executed for that country.'><span class='NotExecutedF'>XX</span></div>")
                             .append("<div class='NOINF' style='float: left;margin-left: 3px;margin-right: 3px;' title='Test Case not available for the country XX.'><span class='NOINFF'>XX</span></div>")
+                            .append("<divstyle='float: left;margin-left: 3px;margin-right: 3px;' title='URL for quick access'><a href='./ReportingExecution.jsp?"+json.requestUrl+"'><b>URL for quick access</b></a></div>")
                             .append("</div>");
 
                     $('#reporting').find('tbody tr').on('click',function() {
@@ -260,12 +322,12 @@
 
     function filterDisplay(checked) {
         if(checked) {
-            $('#reporting tbody tr').hide();
+            $('#reporting').find('tbody tr').hide();
 
             $('input.filterCheckbox').removeAttr('disabled');
             $('input.filterDisplay').attr('checked','checked');
         } else {
-            $('#reporting tbody tr').show();
+            $('#reporting').find('tbody tr').show();
 
             $('input.filterCheckbox').attr('disabled','disabled').removeAttr('checked');
             $('input.filterDisplay').removeAttr('checked');
@@ -317,6 +379,10 @@
             zTop: 98
         });
     }
+
+    function compareArrays(arr1, arr2) {
+        return $(arr1).not(arr2).length == 0 && $(arr2).not(arr1).length == 0
+    };
     </script>
     <style>
         .underlinedDiv{
@@ -412,7 +478,7 @@
     </div>
 </div>
 <div id="filtersList" style="display:block">
-<form id="formReporting">
+<form id="formReporting" onsubmit="return hideStatistic()">
     <div>
         <div class="underlinedDiv"></div>
         <p style="text-align:left" class="dttTitle">Testcase Filters (Displayed Rows)</p>
@@ -777,7 +843,7 @@
             <th rowspan="3">Description</th>
             <th rowspan="3">Priority</th>
             <th rowspan="3">Status</th>
-            <th rowspan="3" id="TCComment">Comment</th>
+            <th rowspan="3" class="TCComment">Comment</th>
             <th rowspan="3" class="bugIDColumn">Bug ID</th>
             <th rowspan="3">Group</th>
         </tr>

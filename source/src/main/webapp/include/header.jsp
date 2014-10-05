@@ -106,6 +106,7 @@
                     <li id="subactive"><a name="menu" id="menuReportingExecutionStatus" href="ReportingExecution.jsp" style="width:170px">Execution Status</a></li>
                     <li id="subactive"><a name="menu" id="menuReportingExecutionTime" href="ReportingExecutionTime.jsp" style="width:170px">Execution Time</a></li>
                     <li id="subactive"><a name="menu" id="menuReportingExecutionDetail" href="ExecutionDetailList.jsp" style="width:170px">Execution Detail</a></li>
+                    <li id="subactive"><a name="menu" id="menuReportingExecutionCampaign" href="CampaignReportByTag.jsp" style="width:170px">Execution For Campaign</a></li>
                 </ul>
             </li>
             <% }%>
