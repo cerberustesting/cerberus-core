@@ -106,7 +106,7 @@
                     "sPaginationType": "full_numbers",
                     "bSearchable": true,
                     "aTargets": [0],
-                    "iDisplayLength": 25,
+                    "iDisplayLength": 10,
                     "aoColumns": [
                         {"sName": "ID", "bVisible": false},
                         {"sName": "Test Battery", "sWidth": "30%"},

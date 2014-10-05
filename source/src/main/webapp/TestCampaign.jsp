@@ -118,7 +118,7 @@
                     "sPaginationType": "full_numbers",
                     "bSearchable": true,
                     "aTargets": [0],
-                    "iDisplayLength": 25,
+                    "iDisplayLength": 10,
                     "aoColumns": [
                         {"sName": "ID", "bVisible": false},
                         {"sName": "Campaign", "sWidth": "30%"},
