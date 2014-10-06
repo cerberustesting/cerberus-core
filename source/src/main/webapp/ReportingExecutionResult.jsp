@@ -210,7 +210,7 @@
                                     <td id="wob" class="PE" title="PE : Test execution is still running..."><input type="checkbox" name="PE" value="PE" class="filterCheckbox" id="FPE" disabled="disabled" onchange="toogleDisplay(this)"><label class="PEF">PE</label></td>
                                     <td id="wob" class="NotExecuted" title="Test Case has not been executed for that country."><a class="NotExecutedF">XX</a></td>
                                     <td id="wob" class="NOINF" title="Test Case not available for the country XX."><a class="NOINFF">XX</a></td>
-                                    <td id="wob" ><a href="./ReportingExecution.jsp?Apply=Apply&<%=request.getQueryString() %>">URL for quick access</a></td>
+                                    <td id="wob" ><a href="ReportingExecutionOld.jsp?Apply=Apply&<%=request.getQueryString() %>">URL for quick access</a></td>
                                 </tr>
                             </table>
                         </td>
@@ -403,7 +403,7 @@
                                                             + "' and tce.browser = '"
                                                             + columnBrowser[k]
                                                             + "' order by tce.ID desc LIMIT 1";
-                                                    MyLogger.log("ReportingExecution.jsp", Level.DEBUG, stmt3SQL);
+                                                    MyLogger.log("ReportingExecutionOld.jsp", Level.DEBUG, stmt3SQL);
 
                                                     ResultSet rs_exec = stmt3.executeQuery(stmt3SQL);
                                                     if (rs_exec.first()) {
