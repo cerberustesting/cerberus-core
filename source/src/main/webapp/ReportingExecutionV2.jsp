@@ -90,19 +90,22 @@
                         selectedList: currentElement.data('selected-list'),
                         beforeclose: function() {
                             var system = $("#System").val();
+                            var appSelect = $("#Application");
 
-//                            if (!compareArrays(oldSystem, system)) {
-                                var appSelect = $("#Application");
 
-//                                if (oldSystem != null) {
-//                                    $.each(oldSystem, function(i, v){
-//                                        if ($.inArray(v, system) === -1) {
-//                                            appSelect.find("option:contains('["+v+"]')").removeAttr('selected');
-//                                        }
-//                                    });
-//                                }
+                            if (system === null) {
+                                appSelect.find("option").removeAttr('disabled');
+                                appSelect.find("option").removeAttr('selected');
+                            } else {
+                                if (oldSystem != null) {
+                                    $.each(oldSystem, function(i, v){
+                                        if ($.inArray(v, system) === -1) {
+                                            appSelect.find("option:contains('["+v+"]')").removeAttr('selected');
+                                        }
+                                    });
+                                }
 
-                                if (system === null) {
+                                if ($.inArray("All", system) >= 0){
                                     appSelect.find("option").removeAttr('disabled');
                                 } else {
                                     appSelect.find("option").attr('disabled','disabled');
@@ -110,10 +113,10 @@
                                         appSelect.find("option:contains('["+v+"]')").removeAttr('disabled');
                                     });
                                 }
-                                appSelect.multiselect("refresh");
+                            }
+                            appSelect.multiselect("refresh");
 
-                                oldSystem = system;
-//                            }
+                            oldSystem = system;
                         }
                     });
                 } else {
@@ -382,7 +385,7 @@
 
     function compareArrays(arr1, arr2) {
         return $(arr1).not(arr2).length == 0 && $(arr2).not(arr1).length == 0
-    };
+    }
     </script>
     <style>
         .underlinedDiv{
