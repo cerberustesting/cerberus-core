@@ -124,29 +124,29 @@ public class PropertyService implements IPropertyService {
          * Calculate Property regarding the type
          */
         if (testCaseCountryProperty.getType().equals("executeSqlFromLib")) {
-            testCaseExecutionData = this.executeSqlFromLib(testCaseExecutionData, testCaseCountryProperty, tCExecution);
+            testCaseExecutionData = this.executeSqlFromLib(testCaseExecutionData, testCaseCountryProperty, tCExecution, forceRecalculation);
         } else if (testCaseCountryProperty.getType().equals("executeSql")) {
-            testCaseExecutionData = this.executeSql(testCaseExecutionData, testCaseCountryProperty, tCExecution);
+            testCaseExecutionData = this.executeSql(testCaseExecutionData, testCaseCountryProperty, tCExecution, forceRecalculation);
         } else if (testCaseCountryProperty.getType().equals("text")) {
             testCaseExecutionData = this.calculateText(testCaseExecutionData, testCaseCountryProperty, forceRecalculation);
         } else if (testCaseCountryProperty.getType().equals("getFromHtmlVisible")) {
-            testCaseExecutionData = this.getFromHtmlVIsible(testCaseExecutionData, tCExecution, testCaseCountryProperty);
+            testCaseExecutionData = this.getFromHtmlVIsible(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceRecalculation);
         } else if (testCaseCountryProperty.getType().equals("getFromHtml")) {
-            testCaseExecutionData = this.getFromHTML(testCaseExecutionData, tCExecution, testCaseCountryProperty);
+            testCaseExecutionData = this.getFromHTML(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceRecalculation);
         } else if (testCaseCountryProperty.getType().equals("getFromJS")) {
-            testCaseExecutionData = this.getFromJS(testCaseExecutionData, tCExecution, testCaseCountryProperty);
+            testCaseExecutionData = this.getFromJS(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceRecalculation);
         } else if (testCaseCountryProperty.getType().equals("getFromTestData")) {
-            testCaseExecutionData = this.getFromTestData(testCaseExecutionData, tCExecution, testCaseCountryProperty);
+            testCaseExecutionData = this.getFromTestData(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceRecalculation);
         } else if (testCaseCountryProperty.getType().equals("getAttributeFromHtml")) {
-            testCaseExecutionData = this.getAttributeFromHtml(testCaseExecutionData, tCExecution, testCaseCountryProperty);
+            testCaseExecutionData = this.getAttributeFromHtml(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceRecalculation);
         } else if (testCaseCountryProperty.getType().equals("getFromCookie")) {
-            testCaseExecutionData = this.getFromCookie(testCaseExecutionData, tCExecution, testCaseCountryProperty);
+            testCaseExecutionData = this.getFromCookie(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceRecalculation);
         } else if (testCaseCountryProperty.getType().equals("getFromXml")) {
-            testCaseExecutionData = this.getFromXml(testCaseExecutionData, tCExecution, testCaseCountryProperty);
+            testCaseExecutionData = this.getFromXml(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceRecalculation);
         } else if ("executeSoapFromLib".equals(testCaseCountryProperty.getType())) {
-            testCaseExecutionData = this.executeSoapFromLib(testCaseExecutionData, tCExecution, testCaseCountryProperty);
+            testCaseExecutionData = this.executeSoapFromLib(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceRecalculation);
         } else if ("getDifferencesFromXml".equals(testCaseCountryProperty.getType())) {
-            testCaseExecutionData = this.getDifferencesFromXml(testCaseExecutionData, tCExecution, testCaseCountryProperty);
+            testCaseExecutionData = this.getDifferencesFromXml(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceRecalculation);
         } else {
             res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_UNKNOWNPROPERTY);
             res.setDescription(res.getDescription().replaceAll("%PROPERTY%", testCaseCountryProperty.getType()));
@@ -174,22 +174,22 @@ public class PropertyService implements IPropertyService {
         TestCaseExecutionData testCaseExecutionData = factoryTestCaseExecutionData.create(tCExecution.getId(), property, null, null, null, null, null, null, now, now, now, now, new MessageEvent(MessageEventEnum.PROPERTY_PENDING));
         TestCaseCountryProperties testCaseCountryProperty = null;
         /*
-        * Check if property is defined for this testcase
-        */
+         * Check if property is defined for this testcase
+         */
         try {
             testCaseCountryProperty = testCaseCountryPropertiesService.findTestCaseCountryPropertiesByKey(test, testCase, country, property);
-            } catch (CerberusException cex) {
+        } catch (CerberusException cex) {
             /*
              * If property doesn't exists, check if it is defined in the used Step   
-            */
+             */
             try {
                 testCaseCountryProperty = testCaseCountryPropertiesService.findTestCaseCountryPropertiesByKey(usedTest, usedTestCase, country, property);
             } catch (CerberusException ce) {
                 /*
-                * If property is not defined nor on testcase, nor on used testcase
-                * then check if property is defined in the testcase at least for one country.
-                * Report FA is not defined and NA if defined but not for this country.
-                */
+                 * If property is not defined nor on testcase, nor on used testcase
+                 * then check if property is defined in the testcase at least for one country.
+                 * Report FA is not defined and NA if defined but not for this country.
+                 */
                 if (testCaseCountryPropertiesService.findCountryByPropertyNameAndTestCase(test, testCase, property) != null) {
                     MessageEvent msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_NO_PROPERTY_DEFINITION);
                     msg.setDescription(msg.getDescription().replaceAll("%COUNTRY%", country));
@@ -205,8 +205,7 @@ public class PropertyService implements IPropertyService {
                 }
             }
         }
-         
-        
+
         /*
          * Get the list of properties needed to calculate the required property.
          * Property can provide from original test/testcase or used test/testcase
@@ -218,20 +217,20 @@ public class PropertyService implements IPropertyService {
             testCaseExecutionData.setPropertyResultMessage(ex.getMessageError());
             return testCaseExecutionData;
         }
-       
+
         /*
-        *  Iterate on the properties needed and calculate it if necessary.
-        */
+         *  Iterate on the properties needed and calculate it if necessary.
+         */
         for (TestCaseCountryProperties tccp : propertiesToCalculate) {
             /* First initialize testcaseexecutiondata object */
             now = new Date().getTime();
             TestCaseExecutionData tecd = factoryTestCaseExecutionData.create(tCExecution.getId(), tccp.getProperty(), null, tccp.getType(),
                     tccp.getValue1(), tccp.getValue2(), null, null, now, now, now, now, new MessageEvent(MessageEventEnum.PROPERTY_PENDING));
             tecd.setTestCaseCountryProperties(tccp);
-            
+
             /* Check if property has already been calculated 
-            *  if action is calculateProperty, then set isKnownData to false. 
-            */
+             *  if action is calculateProperty, then set isKnownData to false. 
+             */
             boolean isKnownData = false;
             for (TestCaseExecutionData knownData : tCExecution.getTestCaseExecutionDataList()) {
                 if (knownData.getProperty().equalsIgnoreCase(tccp.getProperty())) {
@@ -244,14 +243,14 @@ public class PropertyService implements IPropertyService {
                 }
             }
             boolean forceRecalculation = false;
-            if (isKnownData && testCaseStepActionExecution.getAction().equals("calculateProperty")){
-            forceRecalculation = true;
+            if (isKnownData && testCaseStepActionExecution.getAction().equals("calculateProperty")) {
+                forceRecalculation = true;
             }
 
             /*
-            * If not already calculated, or calculateProperty, then calculate it and insert or update it.
-            */            
-              if (!isKnownData || forceRecalculation) {
+             * If not already calculated, or calculateProperty, then calculate it and insert or update it.
+             */
+            if (!isKnownData || forceRecalculation) {
                 if (LOG.isDebugEnabled()) {
                     LOG.debug("Calculating property " + tecd.getProperty());
                 }
@@ -285,68 +284,68 @@ public class PropertyService implements IPropertyService {
         List<TestCaseCountryProperties> result = new ArrayList();
         TestCaseCountryProperties testCaseCountryProperty = null;
         /*
-        * Check if property is not already known (recursive case)
-        */
+         * Check if property is not already known (recursive case)
+         */
         if (crossedProperties.contains(property)) {
             MessageEvent msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_CYCLICDEFINITION);
             msg.setDescription(msg.getDescription().replaceAll("%PROP%", property));
             throw new CerberusEventException(msg);
         }
         crossedProperties.add(property);
-        
+
         /*
-        * Check if property is defined for this testcase
-        */
+         * Check if property is defined for this testcase
+         */
         try {
             testCaseCountryProperty = testCaseCountryPropertiesService.findTestCaseCountryPropertiesByKey(test, testCase, country, property);
-            } catch (CerberusException cex) {
+        } catch (CerberusException cex) {
             /*
              * If property doesn't exists, check if it is defined in the used Step   
-            */
+             */
             try {
                 testCaseCountryProperty = testCaseCountryPropertiesService.findTestCaseCountryPropertiesByKey(usedTest, usedTestCase, country, property);
             } catch (CerberusException ce) {
                 /*
-                * If internal property is not defined return result;
-                */
-                    return result;
-                }
+                 * If internal property is not defined return result;
+                 */
+                return result;
             }
-        
+        }
+
 
         /* 
-        * Check if property value1 contains internal properties
-        */
-        if (testCaseCountryProperty!=null){
-        for (String internalProperty : StringUtil.getAllProperties(testCaseCountryProperty.getValue1())) {
-            LOG.warn("ip"+internalProperty);
-            /*
-            * If the internal property is defined in the test case then we trigger a calculation
-            */
-            boolean isADefinedProperty = false;
-            List<TestCaseCountryProperties> definedProperties = testCaseCountryPropertiesService.findDistinctPropertiesOfTestCase(test, testCase);
-            definedProperties.addAll(testCaseCountryPropertiesService.findDistinctPropertiesOfTestCase(usedTest, usedTestCase));
-            for (TestCaseCountryProperties definedProperty : definedProperties) {
-                if (internalProperty.equals(definedProperty.getProperty())) {
-                    isADefinedProperty = true;
-                    break;
+         * Check if property value1 contains internal properties
+         */
+        if (testCaseCountryProperty != null) {
+            for (String internalProperty : StringUtil.getAllProperties(testCaseCountryProperty.getValue1())) {
+                LOG.warn("ip" + internalProperty);
+                /*
+                 * If the internal property is defined in the test case then we trigger a calculation
+                 */
+                boolean isADefinedProperty = false;
+                List<TestCaseCountryProperties> definedProperties = testCaseCountryPropertiesService.findDistinctPropertiesOfTestCase(test, testCase);
+                definedProperties.addAll(testCaseCountryPropertiesService.findDistinctPropertiesOfTestCase(usedTest, usedTestCase));
+                for (TestCaseCountryProperties definedProperty : definedProperties) {
+                    if (internalProperty.equals(definedProperty.getProperty())) {
+                        isADefinedProperty = true;
+                        break;
+                    }
                 }
-            }
 
-            /*
-            *If it is not a defined property then we don't have to calculate it
-            */
-            if (!isADefinedProperty) {
-                continue;
-            }
-            try {
-            result.addAll(getListOfPropertiesLinkedToProperty(test, testCase, country, internalProperty, usedTest, usedTestCase, crossedProperties));
-            } catch (CerberusEventException ex){
-            
-            }
+                /*
+                 *If it is not a defined property then we don't have to calculate it
+                 */
+                if (!isADefinedProperty) {
+                    continue;
+                }
+                try {
+                    result.addAll(getListOfPropertiesLinkedToProperty(test, testCase, country, internalProperty, usedTest, usedTestCase, crossedProperties));
+                } catch (CerberusEventException ex) {
 
-        }
-        result.add(testCaseCountryProperty);
+                }
+
+            }
+            result.add(testCaseCountryProperty);
         }
         return result;
     }
@@ -410,7 +409,7 @@ public class PropertyService implements IPropertyService {
                 if (internalProperty.equals(tctProperty.getProperty())) {
                     TestCaseExecutionData internalData = getPropertiesAndPerformCalculation(internalProperty, testCaseStepActionExecution);
                     // If an error occurred (except no property definition (error 151), then throws an exception
-                    if (internalData.getPropertyResultMessage().getCode() % 100 != 0 && internalData.getPropertyResultMessage().getCode()!=151) {
+                    if (internalData.getPropertyResultMessage().getCode() % 100 != 0 && internalData.getPropertyResultMessage().getCode() != 151) {
                         throw new CerberusEventException(internalData.getPropertyResultMessage());
                     }
                     myString = StringUtil.replaceAllProperties(myString, "%" + internalProperty + "%", internalData.getValue());
@@ -421,7 +420,7 @@ public class PropertyService implements IPropertyService {
         return myString;
     }
 
-    private TestCaseExecutionData executeSqlFromLib(TestCaseExecutionData testCaseExecutionData, TestCaseCountryProperties testCaseCountryProperty, TestCaseExecution tCExecution) {
+    private TestCaseExecutionData executeSqlFromLib(TestCaseExecutionData testCaseExecutionData, TestCaseCountryProperties testCaseCountryProperty, TestCaseExecution tCExecution, boolean forceCalculation) {
         try {
             String script = this.sqlLibraryService.findSqlLibraryByKey(testCaseCountryProperty.getValue1()).getScript();
             testCaseExecutionData.setValue(script);
@@ -433,11 +432,11 @@ public class PropertyService implements IPropertyService {
             testCaseExecutionData.setEnd(new Date().getTime());
             return testCaseExecutionData;
         }
-        testCaseExecutionData = this.executeSql(testCaseExecutionData, testCaseCountryProperty, tCExecution);
+        testCaseExecutionData = this.executeSql(testCaseExecutionData, testCaseCountryProperty, tCExecution, forceCalculation);
         return testCaseExecutionData;
     }
 
-    private TestCaseExecutionData executeSql(TestCaseExecutionData testCaseExecutionData, TestCaseCountryProperties testCaseCountryProperty, TestCaseExecution tCExecution) {
+    private TestCaseExecutionData executeSql(TestCaseExecutionData testCaseExecutionData, TestCaseCountryProperties testCaseCountryProperty, TestCaseExecution tCExecution, boolean forceCalculation) {
         return sQLService.calculateOnDatabase(testCaseExecutionData, testCaseCountryProperty, tCExecution);
     }
 
@@ -476,7 +475,7 @@ public class PropertyService implements IPropertyService {
         return testCaseExecutionData;
     }
 
-    private TestCaseExecutionData getFromHTML(TestCaseExecutionData testCaseExecutionData, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseCountryProperty) {
+    private TestCaseExecutionData getFromHTML(TestCaseExecutionData testCaseExecutionData, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseCountryProperty, boolean forceCalculation) {
         try {
             String valueFromHTML = this.webdriverService.getValueFromHTML(tCExecution.getSession(), testCaseCountryProperty.getValue1());
             if (valueFromHTML != null) {
@@ -495,7 +494,7 @@ public class PropertyService implements IPropertyService {
         return testCaseExecutionData;
     }
 
-    private TestCaseExecutionData getFromJS(TestCaseExecutionData testCaseExecutionData, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseCountryProperty) {
+    private TestCaseExecutionData getFromJS(TestCaseExecutionData testCaseExecutionData, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseCountryProperty, boolean forceCalculation) {
 
         String script = testCaseCountryProperty.getValue1();
         String valueFromJS;
@@ -522,7 +521,7 @@ public class PropertyService implements IPropertyService {
         return testCaseExecutionData;
     }
 
-    private TestCaseExecutionData getFromTestData(TestCaseExecutionData testCaseExecutionData, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseCountryProperty) {
+    private TestCaseExecutionData getFromTestData(TestCaseExecutionData testCaseExecutionData, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseCountryProperty, boolean forceCalculation) {
         String propertyValue = "";
 
         try {
@@ -545,7 +544,7 @@ public class PropertyService implements IPropertyService {
         return testCaseExecutionData;
     }
 
-    private TestCaseExecutionData getAttributeFromHtml(TestCaseExecutionData testCaseExecutionData, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseCountryProperty) {
+    private TestCaseExecutionData getAttributeFromHtml(TestCaseExecutionData testCaseExecutionData, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseCountryProperty, boolean forceCalculation) {
         MessageEvent res;
         try {
             String valueFromHTML = this.webdriverService.getAttributeFromHtml(tCExecution.getSession(), testCaseCountryProperty.getValue1(), testCaseCountryProperty.getValue2());
@@ -567,7 +566,7 @@ public class PropertyService implements IPropertyService {
         return testCaseExecutionData;
     }
 
-    private TestCaseExecutionData executeSoapFromLib(TestCaseExecutionData testCaseExecutionData, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseCountryProperty) {
+    private TestCaseExecutionData executeSoapFromLib(TestCaseExecutionData testCaseExecutionData, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseCountryProperty, boolean forceCalculation) {
         try {
             SoapLibrary soapLib = this.soapLibraryService.findSoapLibraryByKey(testCaseCountryProperty.getValue1());
             if (soapLib != null) {
@@ -588,7 +587,7 @@ public class PropertyService implements IPropertyService {
         return testCaseExecutionData;
     }
 
-    private TestCaseExecutionData getFromHtmlVIsible(TestCaseExecutionData testCaseExecutionData, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseCountryProperty) {
+    private TestCaseExecutionData getFromHtmlVIsible(TestCaseExecutionData testCaseExecutionData, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseCountryProperty, boolean forceCalculation) {
         try {
             String valueFromHTML = this.webdriverService.getValueFromHTMLVisible(tCExecution.getSession(), testCaseCountryProperty.getValue1());
             if (valueFromHTML != null) {
@@ -607,7 +606,7 @@ public class PropertyService implements IPropertyService {
         return testCaseExecutionData;
     }
 
-    private TestCaseExecutionData getFromXml(TestCaseExecutionData testCaseExecutionData, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseCountryProperty) {
+    private TestCaseExecutionData getFromXml(TestCaseExecutionData testCaseExecutionData, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseCountryProperty, boolean forceCalculation) {
         try {
             String valueFromXml = xmlUnitService.getFromXml(tCExecution.getExecutionUUID(), testCaseCountryProperty.getValue1(), testCaseCountryProperty.getValue2());
             if (valueFromXml != null) {
@@ -627,7 +626,7 @@ public class PropertyService implements IPropertyService {
         return testCaseExecutionData;
     }
 
-    private TestCaseExecutionData getFromCookie(TestCaseExecutionData testCaseExecutionData, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseCountryProperty) {
+    private TestCaseExecutionData getFromCookie(TestCaseExecutionData testCaseExecutionData, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseCountryProperty, boolean forceCalculation) {
         try {
             String valueFromCookie = this.webdriverService.getFromCookie(tCExecution.getSession(), testCaseCountryProperty.getValue1(), testCaseCountryProperty.getValue2());
             if (valueFromCookie != null) {
@@ -670,7 +669,7 @@ public class PropertyService implements IPropertyService {
      * @return the {@link TestCaseExecutionData} added by the
      * <code>getDifferencesFromXML</code> result
      */
-    private TestCaseExecutionData getDifferencesFromXml(TestCaseExecutionData testCaseExecutionData, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseCountryProperty) {
+    private TestCaseExecutionData getDifferencesFromXml(TestCaseExecutionData testCaseExecutionData, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseCountryProperty, boolean forceCalculation) {
         try {
             MyLogger.log(PropertyService.class.getName(), Level.INFO, "Computing differences between " + testCaseCountryProperty.getValue1() + " and " + testCaseCountryProperty.getValue2());
             String differences = xmlUnitService.getDifferencesFromXml(testCaseCountryProperty.getValue1(), testCaseCountryProperty.getValue2());

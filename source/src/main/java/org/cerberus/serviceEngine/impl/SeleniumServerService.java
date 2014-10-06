@@ -87,9 +87,8 @@ public class SeleniumServerService implements ISeleniumServerService {
             /**
              * SetUp Driver
              */
-            MyLogger.log(SeleniumServerService.class.getName(), Level.FATAL, "Set Driver");
+            MyLogger.log(SeleniumServerService.class.getName(), Level.DEBUG, "Set Driver");
             WebDriver driver = new RemoteWebDriver(new URL("http://" + tCExecution.getSession().getHost() + ":" + tCExecution.getSession().getPort() + "/wd/hub"), caps);
-            MyLogger.log(SeleniumServerService.class.getName(), Level.FATAL, "Set2 Driver");
             tCExecution.getSession().setDriver(driver);
 
             /**
@@ -107,7 +106,9 @@ public class SeleniumServerService implements ISeleniumServerService {
             throw new CerberusException(exception.getMessageError());
         } catch (MalformedURLException exception) {
             MyLogger.log(Selenium.class.getName(), Level.ERROR, exception.toString());
-            //throw new CerberusException(exception.getMessageError());
+            MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_URL_MALFORMED);
+            mes.setDescription(mes.getDescription().replace("%URL%", tCExecution.getSession().getHost()+":"+tCExecution.getSession().getPort()));
+            throw new CerberusException(mes);
         } catch (UnreachableBrowserException exception) {
             MyLogger.log(Selenium.class.getName(), Level.ERROR, exception.toString());
             MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_SELENIUM_COULDNOTCONNECT);
@@ -227,32 +228,31 @@ public class SeleniumServerService implements ISeleniumServerService {
     private DesiredCapabilities setCapabilities(TestCaseExecution tCExecution) throws CerberusException {
         DesiredCapabilities caps = new DesiredCapabilities();
         for (SessionCapabilities cap : tCExecution.getSession().getCapabilities()) {
-            
-            if (!cap.getValue().equals("")){
-            if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")){
-            if (cap.getCapability().equalsIgnoreCase("browser")){
-            caps = this.setCapabilityBrowser(caps, cap.getValue(), tCExecution);
-            MyLogger.log(SeleniumServerService.class.getName(), Level.FATAL, "Set Browser"+cap.getValue());
-            }else{
-            caps.setCapability(cap.getCapability(), cap.getValue());
-            MyLogger.log(SeleniumServerService.class.getName(), Level.FATAL, "Set "+cap.getCapability());
+
+            if (!cap.getValue().equals("")) {
+                if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")) {
+                    if (cap.getCapability().equalsIgnoreCase("browser")) {
+                        caps = this.setCapabilityBrowser(caps, cap.getValue(), tCExecution);
+                        MyLogger.log(SeleniumServerService.class.getName(), Level.FATAL, "Set Browser" + cap.getValue());
+                    } else {
+                        caps.setCapability(cap.getCapability(), cap.getValue());
+                        MyLogger.log(SeleniumServerService.class.getName(), Level.FATAL, "Set " + cap.getCapability());
+                    }
+                }
             }
+
+            if (tCExecution.getApplication().getType().equalsIgnoreCase("APK")) {
+                if (cap.getCapability().equalsIgnoreCase("browser")) {
+                    caps.setCapability(CapabilityType.BROWSER_NAME, "android");
+                }
+                if (cap.getCapability().equalsIgnoreCase("platform")) {
+                    caps.setCapability("platformName", cap.getValue());
+                }
+                if (cap.getCapability().equalsIgnoreCase("version")) {
+                    caps.setCapability("deviceName", cap.getValue());
+                }
             }
-            }
-            
-            if(tCExecution.getApplication().getType().equalsIgnoreCase("APK")){
-            if (cap.getCapability().equalsIgnoreCase("browser")){
-            caps.setCapability(CapabilityType.BROWSER_NAME, "android");
-            }
-            if (cap.getCapability().equalsIgnoreCase("platform")){
-            caps.setCapability("platformName", cap.getValue());
-            }
-            if (cap.getCapability().equalsIgnoreCase("version")){
-            caps.setCapability("deviceName", cap.getValue());
-            }
-            }
-            
-            
+
         }
         /**
          * If android app, set app capability with the link where is stored the
@@ -267,16 +267,16 @@ public class SeleniumServerService implements ISeleniumServerService {
 
     @Override
     public boolean stopServer(Session session) {
-        if (session.isStarted()){
+        if (session.isStarted()) {
             try {
-            // Wait 2 sec till HAR is exported
-            Thread.sleep(2000);
-        } catch (InterruptedException ex) {
-            Logger.getLogger(SeleniumServerService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
+                // Wait 2 sec till HAR is exported
+                Thread.sleep(2000);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(SeleniumServerService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            }
 
-        session.getDriver().quit();
-        return true;
+            session.getDriver().quit();
+            return true;
         }
         return false;
     }
@@ -342,14 +342,11 @@ public class SeleniumServerService implements ISeleniumServerService {
         }
         return capabilities;
     }
-    
+
     @Override
     public Capabilities getUsedCapabilities(Session session) {
-
         Capabilities caps = ((RemoteWebDriver) session.getDriver()).getCapabilities();
         return caps;
     }
-
-    
 
 }

@@ -29,11 +29,28 @@ import org.openqa.selenium.Capabilities;
  * @author bcivel
  */
 public interface ISeleniumServerService {
-    
-    void startServer(TestCaseExecution tCExecution) throws CerberusException ;
 
+    /**
+     * Start the selenium Server
+     *
+     * @param tCExecution (with Session object and capabilities)
+     * @throws CerberusException
+     */
+    void startServer(TestCaseExecution tCExecution) throws CerberusException;
+
+    /**
+     * Stop the server if started
+     *
+     * @param session
+     * @return true if server succassfully closed
+     */
     boolean stopServer(Session session);
-    
+
+    /**
+     * Find the capabilities used by the server
+     * @param session
+     * @return the capabilities of the server 
+     */
     Capabilities getUsedCapabilities(Session session);
-     
+
 }
