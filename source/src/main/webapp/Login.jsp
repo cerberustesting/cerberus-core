@@ -90,6 +90,6 @@
     } catch (Exception ex) {
         // This exception should only happen when the database is empty. In 
         // that case we redirect to the page that will automatically create the database.        
-        request.getRequestDispatcher("/DatabaseMaintenance.jsp?GO=Y").forward(request, response);
+        request.getRequestDispatcher("/DatabaseMaintenance.jsp").forward(request, response);
     }
 %>

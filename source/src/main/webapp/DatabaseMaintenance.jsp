@@ -103,7 +103,7 @@
                         for (String MySQL : SQLInstruction) {
                             i = i + 1;
                             if ((i > DtbVersion.getValue()) && ((request.getParameter("GO") != null))) { // Only if the SQL has not been executed already. and button pressed.
-                                if ((i < SQLLimit) || (SQLExecuted == false)) { // After version SQLLimit, only 1 execution at a time.
+                            if ((i < SQLLimit) || (SQLExecuted == false)) { // After version SQLLimit, only 1 execution at a time.
                                     out.print("<tr><td>");
                                     out.print(i);
                                     out.print("</td><td class=\"wob\" style=\"width: 900px\"><textarea name=\"SQL\" rows=\"5\" style=\"font-size:x-small;width: 100%\" readonly>");
