@@ -16,530 +16,109 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
---%>
-<%@page import="java.util.TreeMap"%>
-<%@page import="java.util.Map"%>
-<%@page import="java.util.Collections"%>
-<%@page import="java.util.HashSet"%>
-<%@page import="java.util.ArrayList"%>
-<%@page import="java.util.List"%>
-<%@page import="java.util.Set"%>
-<%@page import="java.util.HashMap"%>
-<%@page import="org.cerberus.entity.TestCaseCountry"%>
-<%@page import="org.cerberus.entity.Project"%>
-<%@page import="org.cerberus.entity.Test"%>
-<%@page import="org.cerberus.entity.BuildRevisionInvariant"%>
-<%@page import="org.cerberus.service.IProjectService"%>
-<%@page import="org.cerberus.service.ITestService"%>
-<%@page import="org.cerberus.service.ITestCaseService"%>
-<%@page import="org.cerberus.service.ITestCaseCountryService"%>
-<%@page import="org.cerberus.service.IDocumentationService"%>
-<%@page import="org.cerberus.service.impl.BuildRevisionInvariantService"%>
-<%@page import="org.cerberus.service.IBuildRevisionInvariantService"%>
-<%@page import="org.cerberus.service.impl.InvariantService"%>
-<%@page import="org.cerberus.service.IApplicationService"%>
-<%@page import="org.cerberus.log.MyLogger"%>
-<%@page import="org.apache.log4j.Level"%>
-<%@page import="org.apache.commons.lang3.StringUtils"%>
-<% Date DatePageStart = new Date();%>
+  --%>
+<%@ page import="java.util.TreeMap" %>
+<%@ page import="org.cerberus.service.IDocumentationService" %>
+<%@ page import="org.cerberus.service.ITestService" %>
+<%@ page import="org.cerberus.service.IProjectService" %>
+<%@ page import="org.cerberus.service.IInvariantService" %>
+<%@ page import="org.cerberus.service.IBuildRevisionInvariantService" %>
+<%@ page import="org.cerberus.service.IApplicationService" %>
+<%@ page import="org.cerberus.service.IUserService" %>
+<%@ page import="org.cerberus.entity.Test" %>
+<%@ page import="org.cerberus.entity.Project" %>
+<%@ page import="org.cerberus.entity.Application" %>
+<%@ page import="org.cerberus.entity.BuildRevisionInvariant" %>
+<%@ page import="org.cerberus.exception.CerberusException" %>
 
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-    "http://www.w3.org/TR/html4/loose.dtd">
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ include file="include/function.jsp" %>
+<%
+    IDocumentationService docService = appContext.getBean(IDocumentationService.class);
+    ITestService testService = appContext.getBean(ITestService.class);
+    IProjectService projectService = appContext.getBean(IProjectService.class);
+    IInvariantService invariantService = appContext.getBean(IInvariantService.class);
+    IBuildRevisionInvariantService buildRevisionInvariantService = appContext.getBean(IBuildRevisionInvariantService.class);
+    IApplicationService applicationService = appContext.getBean(IApplicationService.class);
+    IUserService userService = appContext.getBean(IUserService.class);
+%>
+
+<!DOCTYPE html>
 <html>
-    <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Execution Reporting : Status</title>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Execution Reporting : Status</title>
 
-        <link rel="stylesheet" type="text/css" href="css/crb_style.css">
-        <link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico" />
-        <link type="text/css" rel="stylesheet" href="css/jquery.multiselect.css">
-        <link type="text/css" rel="stylesheet" href="css/jquery.dataTables.css">
-        <link type="text/css" rel="stylesheet" href="css/jquery-ui.css">
-        <script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>
-        <script type="text/javascript" src="js/jquery-ui-1.10.2.js"></script>
-        <script type="text/javascript" src="js/jquery.multiselect.js" charset="utf-8"></script>
-        <script type="text/javascript" src="js/jquery.form.js"></script>
-    </head>
-    <body>
-        <%@ include file="include/function.jsp" %>
-        <%@ include file="include/header.jsp" %>
-        <div id="body">
-            <%
+    <link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico"/>
 
-                TreeMap<String, String> options = new TreeMap<String, String>();
+    <link rel="stylesheet" type="text/css" href="css/crb_style.css">
+    <link rel="stylesheet" type="text/css" href="css/jquery.dataTables.css">
+    <link rel="stylesheet" type="text/css" href="css/jquery-ui.css">
+    <link rel="stylesheet" type="text/css" href="css/dataTables_jui.css">
+    <link type="text/css" rel="stylesheet" href="css/jquery.multiselect.css">
+    <script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>
+    <script type="text/javascript" src="js/jquery-ui-1.10.2.js"></script>
+    <script type="text/javascript" src="js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="js/FixedHeader.js"></script>
+    <script type="text/javascript" src="js/jquery.multiselect.js"></script>
+    <script type="text/javascript" src="js/jquery.jeditable.mini.js"></script>
 
-                IInvariantService invariantService = appContext.getBean(InvariantService.class);
-                IBuildRevisionInvariantService buildRevisionInvariantService = appContext.getBean(BuildRevisionInvariantService.class);
-                ITestService testService = appContext.getBean(ITestService.class);
-                List<Test> testList = testService.getListOfTest();
+<%
+    try{
+%>
 
-                IProjectService projectService = appContext.getBean(IProjectService.class);
-                List<Project> projectList = projectService.findAllProject();
+    <script type="text/javascript">
+        var oTable;
+        var oTableStatistic;
+        var postData;
 
-                String tag;
-                if (request.getParameter("Tag") != null && request.getParameter("Tag").compareTo("") != 0) {
-                    tag = request.getParameter("Tag");
-                } else {
-                    tag = new String("");
-                }
+        var country = [];
+        var browser = [];
+        var oldSystem = null;
+        $(document).ready(function () {
+            $(".multiSelectOptions").each(function () {
+                var currentElement = $(this);
 
-                String browserFullVersion;
-                if (request.getParameter("BrowserFullVersion") != null && request.getParameter("BrowserFullVersion").compareTo("") != 0) {
-                    browserFullVersion = request.getParameter("BrowserFullVersion");
-                } else {
-                    browserFullVersion = new String("");
-                }
+                if (currentElement.attr("id") === "System") {
+                    currentElement.multiselect({
+                        multiple: true,
+                        minWidth: 150,
+                        header: currentElement.data('header'),
+                        noneSelectedText: currentElement.data('none-selected-text'),
+                        selectedText: currentElement.data('selected-text'),
+                        selectedList: currentElement.data('selected-list'),
+                        beforeclose: function() {
+                            var system = $("#System").val();
+                            var appSelect = $("#Application");
 
-                String systemBR; // Used for filtering Build and Revision.
-                if (request.getParameter("SystemExe") != null && request.getParameter("SystemExe").compareTo("All") != 0) {
-                    systemBR = request.getParameter("SystemExe");
-                } else {
-                    systemBR = request.getAttribute("MySystem").toString();
-                    if (request.getParameter("system") != null && request.getParameter("system").compareTo("") != 0) {
-                        systemBR = request.getParameter("system");
-                    }
-                }
 
-                String port;
-                if (request.getParameter("Port") != null && request.getParameter("Port").compareTo("") != 0) {
-                    port = request.getParameter("Port");
-                } else {
-                    port = new String("");
-                }
-                String ip;
-                if (request.getParameter("Ip") != null && request.getParameter("Ip").compareTo("") != 0) {
-                    ip = request.getParameter("Ip");
-                } else {
-                    ip = new String("");
-                }
-                String comment;
-                if (request.getParameter("Comment") != null && request.getParameter("Comment").compareTo("") != 0) {
-                    comment = request.getParameter("Comment");
-                } else {
-                    comment = new String("");
-                }
+                            if (system === null) {
+                                appSelect.find("option").removeAttr('disabled');
+                                appSelect.find("option").removeAttr('selected');
+                            } else {
+                                if (oldSystem != null) {
+                                    $.each(oldSystem, function(i, v){
+                                        if ($.inArray(v, system) === -1) {
+                                            appSelect.find("option:contains('["+v+"]')").removeAttr('selected');
+                                        }
+                                    });
+                                }
 
-                String tcActive;
-                if (request.getParameter("TcActive") != null) {
-                    if (request.getParameter("TcActive").compareTo("A") == 0) {
-                        tcActive = "%%";
-                    } else {
-                        tcActive = request.getParameter("TcActive");
-                    }
-                } else {
-                    tcActive = new String("Y");
-                }
+                                if ($.inArray("All", system) >= 0){
+                                    appSelect.find("option").removeAttr('disabled');
+                                } else {
+                                    appSelect.find("option").attr('disabled','disabled');
+                                    $.each(system, function(i, v){
+                                        appSelect.find("option:contains('["+v+"]')").removeAttr('disabled');
+                                    });
+                                }
+                            }
+                            appSelect.multiselect("refresh");
 
-                String targetBuild = "";
-                if (request.getParameter("TargetBuild") != null) {
-                    if (request.getParameter("TargetBuild").compareTo("All") == 0) {
-                        targetBuild = "All";
-                    } else {
-                        if (request.getParameter("TargetBuild").equals("NTB")) {
-                            targetBuild = "";
-                        } else {
-                            targetBuild = request.getParameter("TargetBuild");
+                            oldSystem = system;
                         }
-                    }
+                    });
                 } else {
-                    targetBuild = "All";
-                }
-
-                String targetRev = "";
-                if (request.getParameter("TargetRev") != null) {
-                    if (request.getParameter("TargetRev").compareTo("All") == 0) {
-                        targetRev = "All";
-                    } else {
-                        if (request.getParameter("TargetRev").equals("NTR")) {
-                            targetRev = "";
-                        } else {
-                            targetRev = request.getParameter("TargetRev");
-                        }
-                    }
-                } else {
-                    targetRev = "All";
-                }
-
-                Boolean apply;
-                if (request.getParameter("Apply") != null
-                        && request.getParameter("Apply").compareTo("Apply") == 0) {
-                    apply = true;
-                } else {
-                    apply = false;
-                }
-
-                IUserService userService = appContext.getBean(IUserService.class);
-                User usr = userService.findUserByKey(request.getUserPrincipal().getName());
-                String reportingFavorite = "ReportingExecution.jsp?"+usr.getReportingFavorite();
-
-                Connection conn = db.connect();
-                IDocumentationService docService = appContext.getBean(IDocumentationService.class);
-
-                try {
-
-                    Statement stmt = conn.createStatement();
-                    List<Invariant> invariantCountry = invariantService.findListOfInvariantById("COUNTRY");
-                    List<Invariant> invariantTCStatus = invariantService.findListOfInvariantById("TCSTATUS");
-                    List<Invariant> invariantBrowser = invariantService.findListOfInvariantById("BROWSER");
-
-            %>
-            <form method="GET" name="Apply" id="Apply" action="ReportingExecutionResult.jsp">
-                <div class="filters" style="float:left; width:100%;">
-                    <p style="float:left" class="dttTitle">Filters</p>
-
-                    <div id="dropDownUpArrow" style="float:left; display:none"><a 
-                            onclick="javascript:switchDivVisibleInvisible('filtersList', 'dropDownUpArrow');switchDivVisibleInvisible('dropDownDownArrow', 'dropDownUpArrow'); "><img src="images/dropdown.gif"/></a>
-                    </div>
-                    <div id="dropDownDownArrow" style="float:left"><a 
-                                onclick="javascript:switchDivVisibleInvisible('dropDownUpArrow', 'filtersList'); switchDivVisibleInvisible('dropDownUpArrow', 'dropDownDownArrow')"><img src="images/dropdown.gif"/></a>
-                    </div>
-                    <div id="filtersList" style="clear:both;">
-                    <br><div class="underlinedDiv"></div>
-                        <p style="text-align:left" class="dttTitle">Testcase Filters (Displayed Rows)</p>
-                        <div style="float:left">
-                            <div style="float:left">
-                                <div style="width:150px; text-align: left"><%out.print(docService.findLabelHTML("test", "Test", "Test"));%></div>
-                                <div>
-                                    <%
-                                        options.clear();
-                                        for (Test testL : testList) {
-                                            options.put(testL.getTest(), testL.getTest());
-                                        }
-                                    %>
-                                    <%=generateMultiSelect("Test", request.getParameterValues("Test"), options,
-                                            "Select a test", "Select Test", "# of # Test selected", 1, true)%>
-                                </div>
-                            </div>
-                            <div style="float:left">
-                                <div style="width:150px; text-align: left"><%out.print(docService.findLabelHTML("project", "idproject", "Project"));%></div>
-                                <div>
-                                    <%
-                                        options.clear();
-                                        for (Project project : projectList) {
-                                            if (project.getIdProject() != null && !"".equals(project.getIdProject().trim())) {
-                                                options.put(project.getIdProject(), project.getIdProject() + " - " + project.getDescription());
-                                            }
-                                        }
-
-
-                                    %>
-                                    <%=generateMultiSelect("Project", request.getParameterValues("Project"), options,
-                                            "Select a project", "Select Project", "# of # Project selected", 1, true)%>
-                                </div>
-                            </div>
-                            <div style="float:left">
-                                <div style="clear:both; width:150px; text-align: left"><%out.print(docService.findLabelHTML("application", "System", "System"));%></div>
-                                <div style="clear:both">
-                                    <%
-                                        ResultSet rsSys = stmt.executeQuery("SELECT DISTINCT System FROM application Order by System asc");
-                                        options.clear();
-                                        while (rsSys.next()) {
-                                            options.put(rsSys.getString("System"), rsSys.getString("System"));
-                                        }%>
-                                    <%=generateMultiSelect("System", request.getParameterValues("System"), options,
-                                            "Select a sytem", "Select System", "# of # System selected", 1, true)%>
-                                </div>
-                            </div>
-                            <div style="float:left">
-                                <div style="clear:both; width:150px; text-align: left"><%out.print(docService.findLabelHTML("application", "Application", "Application"));%></div>
-                                <div style="clear:both">
-                                    <%
-                                        ResultSet rsApp = stmt.executeQuery("SELECT Application , System FROM application Order by Sort asc");
-                                        options.clear();
-                                        while (rsApp.next()) {
-                                            options.put(rsApp.getString("Application"), rsApp.getString("Application") + " [" + rsApp.getString("System") + "]");
-                                        }
-                                    %>
-                                    <%=generateMultiSelect("Application", request.getParameterValues("Application"), options,
-                                            "Select an application", "Select Application", "# of # Application selected", 1, true)%>
-                                </div>
-                            </div>
-                            <div style="float:left">
-                                <div style="clear:both; width:150px; text-align: left"><%out.print(docService.findLabelHTML("testcase", "tcactive", "TestCase Active"));%></div>
-                                <div style="clear:both">
-                                    <%
-                                        options.clear();
-                                        options.put("Y", "Yes");
-                                        options.put("N", "No");
-                                    %>
-                                    <%=generateMultiSelect("TcActive", request.getParameterValues("TcActive"), options,
-                                            "Select Activation state", "Select Activation", "# of # Activation state selected", 1, true)%> 
-                                </div>
-                            </div>
-                            <div style="float:left">
-                                <div style="clear:both; width:150px; text-align: left"><%out.print(docService.findLabelHTML("invariant", "PRIORITY", "Priority"));%></div>
-                                <div style="clear:both">
-                                    <%
-                                        ResultSet rsPri = stmt.executeQuery("SELECT DISTINCT value FROM invariant WHERE idname='PRIORITY' Order by sort asc");
-                                        options.clear();
-                                        while (rsPri.next()) {
-                                            options.put(rsPri.getString(1), rsPri.getString(1));
-                                        }
-                                    %>
-                                    <%=generateMultiSelect("Priority", request.getParameterValues("Priority"), options,
-                                            "Select a Priority", "Select Priority", "# of # Priority selected", 1, true)%>
-                                </div>
-                            </div>
-                            <div style="float:left">
-                                <div style="clear:both; width:150px; text-align: left"><%out.print(docService.findLabelHTML("testcase", "Status", "Status"));%></div>
-                                <div style="clear:both">
-                                    <%
-                                        options.clear();
-                                        for (Invariant statusInv : invariantTCStatus) {
-                                            options.put(statusInv.getValue(), statusInv.getValue());
-                                        }
-                                    %>
-                                    <%=generateMultiSelect("Status", request.getParameterValues("Status"), options,
-                                            "Select an option", "Select Status", "# of # Status selected", 1, true)%>
-                                </div>
-                            </div>
-                            <div style="float:left">
-                                <div style="clear:both; width:150px; text-align: left"><%out.print(docService.findLabelHTML("invariant", "GROUP", "Group"));%></div>
-                                <div style="clear:both">
-                                    <%
-                                        options.clear();
-                                        ResultSet rsGroup = stmt.executeQuery("SELECT value from invariant where idname = 'GROUP' order by sort");
-                                        while (rsGroup.next()) {
-                                            if (rsGroup.getString(1) != null && !"".equals(rsGroup.getString(1).trim())) {
-                                                options.put(rsGroup.getString(1), rsGroup.getString(1));
-                                            }
-                                        }
-                                    %>
-                                    <%=generateMultiSelect("Group", request.getParameterValues("Group"), options,
-                                            "Select a Group", "Select Group", "# of # Group selected", 1, true)%> 
-                                </div>
-                            </div>
-                            <div style="float:left">
-                                <div style="clear:both; width:150px; text-align: left"><%out.print(docService.findLabelHTML("testcase", "targetBuild", "targetBuild"));%></div>
-                                <div style="clear:both">
-                                    <%
-                                        options.clear();
-                                        options.put("NTB", "-- No Target Build --");
-                                        ResultSet rsTargetBuild = stmt.executeQuery("SELECT value from invariant where idname = 'BUILD' order by sort");
-                                        while (rsTargetBuild.next()) {
-                                            if (rsTargetBuild.getString(1) != null && !"".equals(rsTargetBuild.getString(1).trim())) {
-                                                options.put(rsTargetBuild.getString(1), rsTargetBuild.getString(1));
-                                            }
-                                        }
-                                    %>
-                                    <%=generateMultiSelect("TargetBuild", request.getParameterValues("TargetBuild"), options,
-                                            "Select a Target Build", "Select Target Build", "# of # Target Build selected", 1, true)%> 
-                                </div>
-                            </div>
-                            <div style="float:left">
-                                <div style="clear:both; width:150px; text-align: left"><%out.print(docService.findLabelHTML("testcase", "targetRev", "targetRev"));%></div>
-                                <div style="clear:both">
-                                    <%
-                                        options.clear();
-                                        options.put("NTR", "-- No Target Rev --");
-                                        ResultSet rsTargetRev = stmt.executeQuery("SELECT value from invariant where idname = 'REVISION' order by sort");
-                                        while (rsTargetRev.next()) {
-                                            if (rsTargetRev.getString(1) != null && !"".equals(rsTargetRev.getString(1).trim())) {
-                                                options.put(rsTargetRev.getString(1), rsTargetRev.getString(1));
-                                            }
-                                        }
-                                    %>
-                                    <%=generateMultiSelect("TargetRev", request.getParameterValues("TargetRev"), options,
-                                            "Select a Target Rev", "Select Target Rev", "# of # Target Rev selected", 1, true)%> 
-                                </div>
-                            </div>
-                            <div style="float:left">
-                                <div style="clear:both; width:150px; text-align: left"><%out.print(docService.findLabelHTML("testcase", "creator", "Creator"));%></div>
-                                <div style="clear:both">
-                                    <%
-                                        options.clear();
-                                        ResultSet rsCreator = stmt.executeQuery("SELECT login from user");
-                                        while (rsCreator.next()) {
-                                            if (rsCreator.getString(1) != null && !"".equals(rsCreator.getString(1).trim())) {
-                                                options.put(rsCreator.getString(1), rsCreator.getString(1));
-                                            }
-                                        }
-                                    %>
-                                    <%=generateMultiSelect("Creator", request.getParameterValues("Creator"), options,
-                                            "Select a Creator", "Select Creator", "# of # Creator selected", 1, true)%> 
-                                </div>
-                            </div>
-                            <div style="float:left">
-                                <div style="clear:both; width:150px; text-align: left"><%out.print(docService.findLabelHTML("testcase", "implementer", "implementer"));%></div>
-                                <div style="clear:both">
-                                    <%=generateMultiSelect("Implementer", request.getParameterValues("Implementer"), options,
-                                            "Select an Implementer", "Select Implementer", "# of # Implementer selected", 1, true)%> 
-                                </div>
-                            </div>
-                            <div style="float:left">
-                                <div style="clear:both; width:150px; text-align: left"><%out.print(docService.findLabelHTML("testcase", "comment", "comment"));%></div>
-                                <div style="clear:both"><input style="font-weight: bold; width: 130px; height:16px" id="Comment" name="Comment" value="<%=comment%>"></div>
-                            </div>
-                        </div>
-                               
-<div style="clear:both">
-                                <br><div class="underlinedDiv"></div>
-                        <p style="text-align:left" class="dttTitle">Testcase Execution Filters (Displayed Content)</p>
-                        
-                            <div style="float:left">
-                                <div style="clear:both; width:150px; text-align: left"><%out.print(docService.findLabelHTML("invariant", "Environment", "Environment"));%></div>
-                                <div style="clear:both"><%
-                                    options.clear();
-                                    ResultSet rsEnv = stmt.executeQuery("SELECT value from invariant where idname = 'ENVIRONMENT' order by sort");
-                                    while (rsEnv.next()) {
-                                        if (rsEnv.getString(1) != null && !"".equals(rsEnv.getString(1).trim())) {
-                                            options.put(rsEnv.getString(1), rsEnv.getString(1));
-                                        }
-                                    }
-                                    %>
-                                    <%=generateMultiSelect("Environment", request.getParameterValues("Environment"), options,
-                                                "Select an Environment", "Select Environment", "# of # Environment selected", 1, true)%> 
-                                </div>
-                            </div>
-                            <div style="float:left">
-                                <div style="clear:both; width:150px; text-align: left"><%out.print(docService.findLabelHTML("application", "system", "System"));%></div>
-                                <div style="clear:both"><%
-                                    List<Invariant> systemList = invariantService.findListOfInvariantById("SYSTEM");
-                                    options.clear();
-                                    for (Invariant systemInv : systemList) {
-                                        options.put(systemInv.getValue(), systemInv.getValue());
-                                    }
-                                    %>
-                                    <%=generateMultiSelect("SystemExe", request.getParameterValues("SystemExe"), options,
-                                                "Select a System", "Select System", "# of # System selected", 1, true)%>
-                                </div>
-                            </div>
-                            <div style="float:left">
-                                <div style="clear:both; width:150px; text-align: left"><%out.print(docService.findLabelHTML("buildrevisioninvariant", "versionname01", "Build"));%></div>
-                                <div style="clear:both"><%
-                                    List<BuildRevisionInvariant> listBuildRev = buildRevisionInvariantService.findAllBuildRevisionInvariantBySystemLevel(systemBR, 1);
-                                    options.clear();
-                                    for (BuildRevisionInvariant myBR : listBuildRev) {
-                                        options.put(myBR.getVersionName(), myBR.getVersionName());
-                                    }
-                                    %>
-                                    <%=generateMultiSelect("Build", request.getParameterValues("Build"), options,
-                                                "Select a Build", "Select Build", "# of # Build selected", 1, true)%>
-                                </div>
-                            </div>
-                            <div style="float:left">
-                                <div style="clear:both; width:150px; text-align: left"><%out.print(docService.findLabelHTML("buildrevisioninvariant", "versionname02", "Revision"));%></div>
-                                <div style="clear:both"> <%
-                                    listBuildRev = buildRevisionInvariantService.findAllBuildRevisionInvariantBySystemLevel(systemBR, 2);
-                                    options.clear();
-                                    for (BuildRevisionInvariant myBR : listBuildRev) {
-                                        options.put(myBR.getVersionName(), myBR.getVersionName());
-                                    }
-                                    %>
-                                    <%=generateMultiSelect("Revision", request.getParameterValues("Revision"), options,
-                                                "Select a Revision", "Select Revision", "# of # Revision selected", 1, true)%>
-                                </div>
-                            </div>
-                            <div style="float:left">
-                                <div style="clear:both; width:150px; text-align: left"><%out.print(docService.findLabelHTML("testcaseexecution", "status", ""));%></div>
-                                <div style="clear:both">   <%
-                                    options.clear();
-                                    for (Invariant statusInv : invariantTCStatus) {
-                                        options.put(statusInv.getValue(), statusInv.getValue());
-                                    }
-                                    %>
-                                    <%=generateMultiSelect("ExeStatus", request.getParameterValues("exeStatus"), options,
-                                                "Select a TC Status", "Select TC Status", "# of # TC Status selected", 1, true)%>
-                                </div>
-                            </div>
-                            <div style="float:left">
-                                <div style="clear:both; width:150px; text-align: left"><%out.print(docService.findLabelHTML("testcaseexecution", "IP", "Ip"));%></div>
-                                <div style="clear:both"><input style="font-weight: bold; width: 130px; height:16px" name="Ip" id="Ip" value="<%=ip%>"></div>
-                            </div>
-                            <div style="float:left">
-                                <div style="clear:both; width:150px; text-align: left"><%out.print(docService.findLabelHTML("testcaseexecution", "Port", "Port"));%></div>
-                                <div style="clear:both"><input style="font-weight: bold; width: 130px; height:16px" name="Port" id="Port" value="<%=port%>"></div>
-                            </div>
-                            <div style="float:left">
-                                <div style="clear:both; width:150px; text-align: left"><%out.print(docService.findLabelHTML("testcaseexecution", "tag", "Tag"));%></div>
-                                <div style="clear:both"><input style="font-weight: bold; width: 130px; height:16px" name="Tag" id="Tag" value="<%=tag%>"></div>
-                            </div>
-                            <div style="float:left">
-                                <div style="clear:both; width:150px; text-align: left"><%out.print(docService.findLabelHTML("testcaseexecution", "browserfullversion", ""));%></div>
-                                <div style="clear:both"><input style="font-weight: bold; width: 130px; height:16px" name="BrowserFullVersion" id="Tag" value="<%=browserFullVersion%>"></div>
-                            </div>
-                        </div>
-                        <%
-                        %>
-                        
-                        <div style="clear:both">
-                            <br><div class="underlinedDiv"></div>
-                        <p style="text-align:left" class="dttTitle">Execution Context Filters (Displayed Columns)</p>
-                            <div style="float:left">
-                                <div style="clear:both; width:150px; text-align: left">Country <span class="error-message requiered">*</span></div>
-                                <div style="clear:both"><%
-                                    options.clear();
-                                    for (Invariant countryInv : invariantCountry) {
-                                        options.put(countryInv.getValue(), countryInv.getValue() + " - " + countryInv.getDescription());
-                                    }
-
-
-                                    %><%=generateMultiSelect("Country", request.getParameterValues("Country"), options,
-                                                        "Select a country", "Select Country", "# of # Country selected", 1, false)%></div>
-                            </div>
-                            <div style="float:left">
-                                <div style="clear:both; width:150px; text-align: left"><%out.print(docService.findLabelHTML("testcaseexecution", "Browser", "browser"));%><span class="error-message requiered">*</span></div>
-                                <div style="clear:both"><%
-                                    options.clear();
-                                    for (Invariant browserInv : invariantBrowser) {
-                                        options.put(browserInv.getValue(), browserInv.getValue());
-                                    }
-                                    %>
-                                    <%=generateMultiSelect("Browser", request.getParameterValues("Browser"), options,
-                                                "Select a Browser", "Select Browser", "# of # Browser selected", 1, false)%>
-                                </div>
-                            </div>
-                            <div style="clear:both; text-align: left">
-                                <br><span class="error-message requiered">* Requiered Fields</span>
-                            </div>
-                        </div>
-                        <div style="clear:both">
-                        <br><div class="underlinedDiv"></div>
-                        <br>
-                        <div style="float:left">
-                            <input id="button" type="submit" name="Apply" value="Apply">
-                        </div>
-                        <%if (!apply) {
-                        %>
-                        <div style="float:left">
-                            <input id="button" type="button" name="defaultFilter" value="Select My Default Filters" onclick="loadReporting('<%=reportingFavorite%>')">           
-                        </div><% }
-
-                        %>
-                        <div style="float:left">
-                            <input id="button" type="button" value="Set As My Default Filter" onclick="saveFilters()">
-                        </div>         
-                    </div> 
-                    </div></div>
-
-                <br><br>
-                <div id="displayResult">
-                    <br>
-                    <br>
-                    <br>
-                    <br>
-                    <br>
-                    <br>
-                </div>
-                <%                    } catch (Exception e) {
-                        out.println(e);
-                    } finally {
-                        try {
-                            conn.close();
-                        } catch (Exception ex) {
-                        }
-                    }
-
-                %>
-
-            </form>
-        </div>
-
-        <script type="text/javascript">
-            $(document).ready(function() {
-                $(".multiSelectOptions").each(function() {
-                    var currentElement = $(this);
                     currentElement.multiselect({
                         multiple: true,
                         minWidth: 150,
@@ -548,62 +127,759 @@
                         selectedText: currentElement.data('selected-text'),
                         selectedList: currentElement.data('selected-list')
                     });
-                });
+                }
             });
-        </script>
 
-        <script type="text/javascript">
-            $(document).ready(function() {
+        $('#formReporting').submit(function(e){
+            e.preventDefault();
 
-                // prepare all forms for ajax submission
-                $('#Apply').on('submit', function(e) {
-                    $('#displayResult').html('<img src="./images/loading.gif"> loading...');
-                    e.preventDefault(); // <-- important
-                    $(this).ajaxSubmit({
-                        target: '#displayResult'
-                    });
-                });
-
-            <%                    if ("Apply".equals(request.getParameter("Apply"))) {
-            %>
-                $('#Apply').submit();
+            postData = $(this).serialize();
+            country = $('#Country').val();
+            browser= $('#Browser').val();
+            var status = [
             <%
+                for (Invariant status : invariantService.findListOfInvariantById("TCESTATUS")){
+                    out.print("'" + status.getValue() + "',");
                 }
             %>
+                    ];
 
-                
+            $('.fixedHeader').remove();
+            $('.jsAdded').remove();
 
+
+            $.each(country, function (index, elem) {
+                $('.TCComment').before("<th class='jsAdded' colspan='" + (browser.length * 2) + "'>" + elem + "</th>");
+                $.each(browser, function (i, e) {
+                    $('#tableCountry').append("<th class='jsAdded' colspan='2'>" + e + "</th>");
+                    $('#TCResult').append("<th class='TCResult jsAdded'></th><th class='TCTime jsAdded'></th>");
+                });
+
+                $('#statisticCountry').append("<th class='jsAdded' colspan='" + (status.length + 1) +"'>" + elem + "</th>");
+                $.each(status, function(i, e){
+                    $('#statisticStatus').append("<th class='"+e+" "+e+"F jsAdded'>"+ e +"</th>");
+                });
+                $('#statisticStatus').append("<th class='jsAdded' style='color:#000000'>TOTAL</th>");
             });
-        </script>
-            <script>
-            function saveFilters() {
-                $("#Apply").attr("action", "./ReportingExecutionResult.jsp?Apply=Apply&RecordPref=Y"); 
-                    $('#Apply').submit();
+
+            $('#divReporting').show();
+
+            oTable = $('#reporting').dataTable({
+                "bServerSide": true,
+                "sAjaxSource": "GetReport?"+postData,
+                "bJQueryUI": true,
+                "bProcessing": true,
+                "bFilter": false,
+                "bInfo": false,
+                "bSort": false,
+                "bPaginate": false,
+                "bDestroy": true,
+                "iDisplayLength": -1,
+                "aoColumnDefs": [
+                    {"aTargets": ['TCResult'],
+                        "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
+                            if (oData[iCol] === "") {
+                                $(nTd).addClass('NOINF');
+                            } else {
+                                $(nTd).addClass(oData[iCol].result);
+                            }
+                        },
+                        "mRender": function (data, type, full) {
+                            if (data != ""){
+                                if (data.result === "NotExecuted"){
+                                    return "<a target='_blank' class='" + data.result + "F' href='RunTests.jsp?Test="+full[0]+"&TestCase="+full[1]+"&Country="+data.country+"'>"+data.country+"</a>";
+                                } else {
+                                    return "<a target='_blank' class='" + data.result + "F' href='ExecutionDetail.jsp?id_tc=" + data.execID + "'>" + data.result + "</a>";
+                                }
+                            } else{
+                                return "";
+                            }
+                        }
+                    },
+                    {"aTargets": ['TCTime'],
+                        "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
+                            if (oData[iCol-1] === "") {
+                                $(nTd).addClass('NOINF');
+                            }
+                        }
+                    },
+                    {"aTargets": ['bugIDColumn'],
+                        "mRender": function (data) {
+                            var text = "";
+                            if (data.bugID != ""){
+                                text += "<a target='_blank' href='"+data.bugURL+"'>"+data.bugID+"</a> ";
+                            }
+                            if (data.targetSprint != ""){
+                                text += "for "+data.targetSprint+"/"+data.targetRevision;
+                            }
+                            return text;
+                        }
+                    },
+                    {"aTargets": ['testCaseColumn'],
+                        "mRender": function (data, type, full) {
+                            return "<a href='TestCase.jsp?Load=Load&Test="+full[0]+"&TestCase="+data+"' target='_blank'>"+data+"</a>";
+                        }
+                    },
+                    {"aTargets": ['TCComment'],
+                        "fnCreatedCell": function (nTd, sData, oData) {
+                            $(nTd).editable("UpdateTestCaseField", {
+                                type: "textarea",
+                                onblur: "submit",
+                                submitdata: {test: oData[0],testcase: oData[1], columnName: "comment"},
+                                tooltip: "Doubleclick to edit...",
+                                event : "dblclick",
+                                placeholder: ""
+                            });
+                        }
+                    }
+                ],
+                "fnInitComplete": function (oSettings, json) {
+                    new FixedHeader(oTable, {
+                        zTop: 98
+                    });
+
+                    $('.ui-corner-tl').append("<div style='font-weight: bold;font-family: Trebuchet MS; clear: both'>")
+                            .append("<div style='float: left'><input id='ShowS' type='button' onclick='showStatistic();' value='Show Summary'></div>")
+                            .append("<div style='float: left'>Legend : </div>")
+                            .append("<div style='float: left;margin-left: 3px;margin-right: 3px;' title='FILTER : Use this checkbox to filter status.'><input type='checkbox' name='FILTER' class='filterDisplay' value='FILTER' onchange='filterDisplay($(this).is(\":checked\"))'><label title='FILTER'>FILTER</label></div>")
+                            .append("<div class='OK' style='float: left;margin-left: 3px;margin-right: 3px;' title='OK : Test was fully executed and no bug are to be reported.'><input type='checkbox' id='FOK' name='OK' value='OK' class='filterCheckbox' disabled='disabled' onchange='toogleDisplay(this)'><label class='OKF' title='OK'>OK</label></div>")
+                            .append("<div class='KO' style='float: left;margin-left: 3px;margin-right: 3px;' title='KO : Test was executed and bug have been detected.'><input type='checkbox' name='KO' id='FKO' value='KO' class='filterCheckbox' disabled='disabled' onchange='toogleDisplay(this)'><label  class='KOF' title='KO'>KO</label></div>")
+                            .append("<div class='NA' style='float: left;margin-left: 3px;margin-right: 3px;' title='NA : Test could not be executed because some test data are not available.'><input type='checkbox' id='FNA' class='filterCheckbox' disabled='disabled' name='NA' value='NA' onchange='toogleDisplay(this)'><label  title='NA' class='NAF'>NA</label></div>")
+                            .append("<div class='FA' style='float: left;margin-left: 3px;margin-right: 3px;' title='FA : Test could not be executed because there is a bug on the test.'><input type='checkbox' name='FA'  id='FFA' class='filterCheckbox' disabled='disabled' value='FA' onchange='toogleDisplay(this)'><label  class='FAF'>FA</label></div>")
+                            .append("<div class='PE' style='float: left;margin-left: 3px;margin-right: 3px;' title='PE : Test execution is still running...'><input type='checkbox' name='PE' value='PE' class='filterCheckbox' id='FPE' disabled='disabled' onchange='toogleDisplay(this)'><label class='PEF'>PE</label></div>")
+                            .append("<div class='NotExecuted' style='float: left;margin-left: 3px;margin-right: 3px;' title='Test Case has not been executed for that country.'><span class='NotExecutedF'>XX</span></div>")
+                            .append("<div class='NOINF' style='float: left;margin-left: 3px;margin-right: 3px;' title='Test Case not available for the country XX.'><span class='NOINFF'>XX</span></div>")
+                            .append("<divstyle='float: left;margin-left: 3px;margin-right: 3px;' title='URL for quick access'><a href='./ReportingExecution.jsp?"+json.requestUrl+"'><b>URL for quick access</b></a></div>")
+                            .append("</div>");
+
+                    $('#reporting').find('tbody tr').on('click',function() {
+                        $('#reporting').find('tbody tr').removeClass('row_selected');
+                        $(this).addClass('row_selected');
+                    });
+
+                    $('#divStatistic').show();
+                    oTableStatistic = $('#statistic').dataTable({
+                        "aaData": json.statistic.aaData,
+                        "bJQueryUI": false,
+                        "bFilter": false,
+                        "bInfo": false,
+                        "bSort": false,
+                        "bPaginate": false,
+                        "bDestroy": true,
+                        "bAutoWidth": false,
+                        "iDisplayLength": -1,
+                        "fnInitComplete": function () {
+                            var s = $('#statistic');
+                            s.find('thead th').css('padding', '0px');
+                            s.css({'width': 'auto', 'margin': '0px'});
+                            $('#divStatistic').hide();
+                        }
+                    });
+
+                    $('#divStatus').show();
+                    $('#tableStatus').dataTable({
+                        "aaData": json.status.aaData,
+                        "bJQueryUI": false,
+                        "bFilter": false,
+                        "bInfo": false,
+                        "bSort": false,
+                        "bPaginate": false,
+                        "bDestroy": true,
+                        "bAutoWidth": false,
+                        "iDisplayLength": -1,
+                        "fnInitComplete": function () {
+                            var ts = $('#tableStatus');
+                            ts.find('thead th').css('padding', '0px');
+                            ts.find('td').css('padding', '0px');
+                            ts.css({'width': 'auto', 'margin': '0px', 'text-align': 'center'});
+                            $('#divStatus').hide();
+                        }
+                    });
+
+                    $('#divGroup').show();
+                    $('#tableGroup').dataTable({
+                        "aaData": json.groups.aaData,
+                        "bJQueryUI": false,
+                        "bFilter": false,
+                        "bInfo": false,
+                        "bSort": false,
+                        "bPaginate": false,
+                        "bDestroy": true,
+                        "bAutoWidth": false,
+                        "iDisplayLength": -1,
+                        "fnInitComplete": function () {
+                            var tg = $('#tableGroup');
+                            tg.find('thead th').css('padding', '0px');
+                            tg.find('td').css('padding', '0px');
+                            tg.css({'width': 'auto', 'margin': '0px', 'text-align': 'center'});
+                            $('#divGroup').hide();
+                        }
+                    });
+
+                    $('html, body').animate({scrollTop : 425},800);
                 }
-            </script>
-            <script>
-  function saveCommentChanges(test,tc) {
-  
-  var value = document.getElementById('commentField_'+test+'_'+tc).value;
-          
-    var xhttp = new XMLHttpRequest();
-                xhttp.open("GET", "UpdateTestCaseField?test=" + test + "&testcase=" + tc + "&columnName=comment&value=" + value, false);
-                xhttp.send();
-                var xmlDoc = xhttp.responseText;
-    
-    switchDivVisibleInvisible('commentSpan_'+test+'_'+tc,'commentField_'+test+'_'+tc);
-    
-    document.getElementById('commentSpan_'+test+'_'+tc).innerHTML = value;
-         
-  }
-            </script>
-            <script>
-                function editComment(field1, field2){
-    
-        switchDivVisibleInvisible(field1, field2);
-        document.getElementById(field1).focus();
-         }
-            </script>
-        <br><% out.print(display_footer(DatePageStart));%>
-    </body>
+            });
+        });
+    });
+
+    function filterDisplay(checked) {
+        if(checked) {
+            $('#reporting').find('tbody tr').hide();
+
+            $('input.filterCheckbox').removeAttr('disabled');
+            $('input.filterDisplay').attr('checked','checked');
+        } else {
+            $('#reporting').find('tbody tr').show();
+
+            $('input.filterCheckbox').attr('disabled','disabled').removeAttr('checked');
+            $('input.filterDisplay').removeAttr('checked');
+        }
+    }
+
+    function toogleDisplay(input) {
+        input = $(input);
+        var value = input.val();
+        if(input.is(':checked')) {
+            $('td.'+value).parent().show();
+        } else {
+            $('td.'+value).parent().hide();
+        }
+    }
+
+    function saveFilters(){
+        var data = $('#formReporting').serialize();
+
+        $.ajax({
+            type: "POST",
+            url: "UpdateUserReporting",
+            data: {reporting: data, login: "<%=request.getUserPrincipal().getName()%>"}
+        });
+    }
+
+    function showStatistic(){
+        $('.fixedHeader').remove();
+
+        $('#divReporting').hide();
+        $('#divStatistic').show();
+        $('#divStatus').show();
+        $('#divGroup').show();
+
+        new FixedHeader(oTableStatistic, {
+            zTop: 98
+        });
+    }
+
+    function hideStatistic(){
+        $('.fixedHeader').remove();
+
+        $('#divStatistic').hide();
+        $('#divStatus').hide();
+        $('#divGroup').hide();
+        $('#divReporting').show();
+
+        new FixedHeader(oTable, {
+            zTop: 98
+        });
+    }
+
+    function compareArrays(arr1, arr2) {
+        return $(arr1).not(arr2).length == 0 && $(arr2).not(arr1).length == 0
+    }
+    </script>
+    <style>
+        .underlinedDiv{
+            padding-top: 15px;
+        }
+        div.FixedHeader_Cloned th,
+        div.FixedHeader_Cloned td {
+            background-color: white !important;
+        }
+
+        tr.row_selected {
+            background-color: rgba(248, 255, 33, 0.45);
+        }
+    </style>
+</head>
+<body>
+<%@ include file="include/header.jsp" %>
+
+<%!
+    String getParam(String param) {
+        return (param != null && !param.isEmpty()) ? param : "";
+    }
+%>
+
+<%
+    String ip = getParam(request.getParameter("Ip"));
+    String port = getParam(request.getParameter("Port"));
+    String tag = getParam(request.getParameter("Tag"));
+    String browserFullVersion = getParam(request.getParameter("BrowserFullVersion"));
+    String comment = getParam(request.getParameter("Comment"));
+
+    String systemBR; // Used for filtering Build and Revision.
+    if (request.getParameter("SystemExe") != null && request.getParameter("SystemExe").compareTo("All") != 0) {
+        systemBR = request.getParameter("SystemExe");
+    } else {
+        if (request.getParameter("system") != null && !request.getParameter("system").isEmpty()) {
+            systemBR = request.getParameter("system");
+        } else {
+            systemBR = request.getAttribute("MySystem").toString();
+        }
+    }
+%>
+
+<%
+    TreeMap<String, String> options = new TreeMap<String, String>();
+
+    User usr = userService.findUserByKey(request.getUserPrincipal().getName());
+    String reportingFavorite = "ReportingExecution.jsp?"+usr.getReportingFavorite();
+%>
+<div class="filters" style="text-align: left; width:100%;">
+<div style="display: block; width: 100%">
+    <p class="dttTitle" style="float:left">Filters</p>
+
+    <div id="dropDownUpArrow" style="display:none;">
+        <a onclick="switchDivVisibleInvisible('filtersList', 'dropDownUpArrow');switchDivVisibleInvisible('dropDownDownArrow', 'dropDownUpArrow')">
+            <img src="images/dropdown.gif"/>
+        </a>
+    </div>
+    <div id="dropDownDownArrow" style="display: inline-block">
+        <a onclick="switchDivVisibleInvisible('dropDownUpArrow', 'filtersList'); switchDivVisibleInvisible('dropDownUpArrow', 'dropDownDownArrow')">
+            <img src="images/dropdown.gif"/>
+        </a>
+    </div>
+</div>
+<div id="filtersList" style="display:block">
+<form id="formReporting" onsubmit="return hideStatistic()">
+    <div>
+        <div class="underlinedDiv"></div>
+        <p style="text-align:left" class="dttTitle">Testcase Filters (Displayed Rows)</p>
+
+        <div style="float: left">
+            <div>
+                <div>
+                    <%=docService.findLabelHTML("test", "Test", "Test")%>
+                </div>
+                <div>
+                    <%
+                        options.clear();
+                        for (Test testL : testService.getListOfTest()) {
+                            options.put(testL.getTest(), testL.getTest());
+                        }
+                    %>
+                    <%=generateMultiSelect("Test", request.getParameterValues("Test"), options, "Select a test",
+                            "Select Test", "# of # Test selected", 1, true)%>
+                </div>
+            </div>
+        </div>
+        <div style="float: left">
+            <div>
+                <div>
+                    <%=docService.findLabelHTML("project", "idproject", "Project")%>
+                </div>
+                <div>
+                    <%
+                        options.clear();
+                        for (Project project : projectService.findAllProject()) {
+                            if (project.getIdProject() != null && !"".equals(project.getIdProject().trim())) {
+                                options.put(project.getIdProject(), project.getIdProject() + " - " + project.getDescription());
+                            }
+                        }
+                    %>
+                    <%=generateMultiSelect("Project", request.getParameterValues("Project"), options, "Select a project",
+                            "Select Project", "# of # Project selected", 1, true)%>
+                </div>
+            </div>
+        </div>
+        <div style="float: left">
+            <div>
+                <div>
+                    <%=docService.findLabelHTML("application", "System", "System")%>
+                </div>
+                <div>
+                    <%
+                        options.clear();
+                        for (Invariant systemInv : invariantService.findListOfInvariantById("SYSTEM")) {
+                            options.put(systemInv.getValue(), systemInv.getValue());
+                        }
+                    %>
+                    <%=generateMultiSelect("System", request.getParameterValues("System"), options, "Select a sytem",
+                            "Select System", "# of # System selected", 1, true)%>
+                </div>
+            </div>
+        </div>
+        <div style="float: left">
+            <div>
+                <div>
+                    <%=docService.findLabelHTML("application", "Application", "Application")%>
+                </div>
+                <div>
+                    <%
+                        options.clear();
+                        for(Application app : applicationService.findAllApplication()){
+                            options.put(app.getApplication(), app.getApplication()+" ["+app.getSystem()+"]");
+                        }
+                    %>
+                    <%=generateMultiSelect("Application", request.getParameterValues("Application"), options,
+                            "Select an application", "Select Application", "# of # Application selected", 1, true)%>
+                </div>
+            </div>
+        </div>
+        <div style="float: left">
+            <div>
+                <div>
+                    <%=docService.findLabelHTML("testcase", "tcactive", "TestCase Active")%>
+                </div>
+                <div>
+                    <%
+                        options.clear();
+                        options.put("Y", "Yes");
+                        options.put("N", "No");
+                    %>
+                    <%=generateMultiSelect("TcActive", request.getParameterValues("TcActive"), options,
+                            "Select Activation state", "Select Activation", "# of # Activation state selected", 1, true)%>
+                </div>
+            </div>
+        </div>
+        <div style="float: left">
+            <div>
+                <div>
+                    <%=docService.findLabelHTML("invariant", "PRIORITY", "Priority")%>
+                </div>
+                <div>
+                    <%
+                        options.clear();
+                        for (Invariant statusInv : invariantService.findListOfInvariantById("PRIORITY")) {
+                            options.put(statusInv.getValue(), statusInv.getValue());
+                        }
+                    %>
+                    <%=generateMultiSelect("Priority", request.getParameterValues("Priority"), options, "Select a Priority",
+                            "Select Priority", "# of # Priority selected", 1, true)%>
+                </div>
+            </div>
+        </div>
+        <div style="float: left">
+            <div>
+                <div>
+                    <%=docService.findLabelHTML("testcase", "Status", "Status")%>
+                </div>
+                <div>
+                    <%
+                        options.clear();
+                        List<Invariant> statusList = invariantService.findListOfInvariantById("TCSTATUS");
+                        for (Invariant statusInv : statusList) {
+                            options.put(statusInv.getValue(), statusInv.getValue());
+                        }
+                    %>
+                    <%=generateMultiSelect("Status", request.getParameterValues("Status"), options, "Select an option",
+                            "Select Status", "# of # Status selected", 1, true)%>
+                </div>
+            </div>
+        </div>
+        <div style="float: left">
+            <div>
+                <div>
+                    <%=docService.findLabelHTML("invariant", "GROUP", "Group")%>
+                </div>
+                <div>
+                    <%
+                        options.clear();
+                        List<Invariant> groupList = invariantService.findListOfInvariantById("GROUP");
+                        groupList.remove(0);
+                        for (Invariant statusInv : groupList) {
+                            if(!statusInv.getValue().isEmpty()){
+                                options.put(statusInv.getValue(), statusInv.getValue());
+                            }
+                        }
+                    %>
+                    <%=generateMultiSelect("Group", request.getParameterValues("Group"), options, "Select a Group",
+                            "Select Group", "# of # Group selected", 1, true)%>
+                </div>
+            </div>
+        </div>
+        <div style="float: left">
+            <div>
+                <div>
+                    <%=docService.findLabelHTML("testcase", "targetBuild", "targetBuild")%>
+                </div>
+                <div>
+                    <%
+                        options.clear();
+                        List<BuildRevisionInvariant> buildList = buildRevisionInvariantService.findAllBuildRevisionInvariantBySystemLevel(systemBR, 1);
+                        for (BuildRevisionInvariant myBR : buildList) {
+                            options.put(myBR.getVersionName(), myBR.getVersionName());
+                        }
+                    %>
+                    <%=generateMultiSelect("TargetBuild", request.getParameterValues("TargetBuild"), options,
+                            "Select a Target Build", "Select Target Build", "# of # Target Build selected", 1, true)%>
+                </div>
+            </div>
+        </div>
+        <div style="float: left">
+            <div>
+                <div>
+                    <%=docService.findLabelHTML("testcase", "targetRev", "targetRev")%>
+                </div>
+                <div>
+                    <%
+                        options.clear();
+                        List<BuildRevisionInvariant> revisionList = buildRevisionInvariantService.findAllBuildRevisionInvariantBySystemLevel(systemBR, 2);
+                        for (BuildRevisionInvariant myBR : revisionList) {
+                            options.put(myBR.getVersionName(), myBR.getVersionName());
+                        }
+                    %>
+                    <%=generateMultiSelect("TargetRev", request.getParameterValues("TargetRev"), options,
+                            "Select a Target Rev", "Select Target Rev", "# of # Target Rev selected", 1, true)%>
+                </div>
+            </div>
+        </div>
+        <div style="float: left">
+            <div>
+                <div>
+                    <%=docService.findLabelHTML("testcase", "creator", "Creator")%>
+                </div>
+                <div>
+                    <%
+                        options.clear();
+                        for(User user : userService.findallUser()){
+                            options.put(user.getLogin(), user.getLogin());
+                        }
+                    %>
+                    <%=generateMultiSelect("Creator", request.getParameterValues("Creator"), options, "Select a Creator",
+                            "Select Creator", "# of # Creator selected", 1, true)%>
+                </div>
+            </div>
+        </div>
+        <div style="float: left">
+            <div>
+                <div>
+                    <%=docService.findLabelHTML("testcase", "implementer", "implementer")%>
+                </div>
+                <div>
+                    <%=generateMultiSelect("Implementer", request.getParameterValues("Implementer"), options,
+                            "Select an Implementer", "Select Implementer", "# of # Implementer selected", 1, true)%>
+                </div>
+            </div>
+        </div>
+        <div style="float: left">
+            <div>
+                <div>
+                    <%=docService.findLabelHTML("testcase", "comment", "comment")%>
+                </div>
+                <div>
+                    <input style="font-weight: bold; width: 130px; height:16px" id="Comment" name="Comment" value="<%=comment%>"/>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div style="clear:both">
+        <div class="underlinedDiv"></div>
+        <p class="dttTitle">Testcase Execution Filters (Displayed Content)</p>
+
+        <div style="float: left">
+            <div>
+                <%=docService.findLabelHTML("invariant", "Environment", "Environment")%>
+            </div>
+            <div>
+                <%
+                    options.clear();
+                    for (Invariant statusInv : invariantService.findListOfInvariantById("ENVIRONMENT")) {
+                        options.put(statusInv.getValue(), statusInv.getValue());
+                    }
+                %>
+                <%=generateMultiSelect("Environment", request.getParameterValues("Environment"), options,
+                        "Select an Environment", "Select Environment", "# of # Environment selected", 1, true)%>
+            </div>
+        </div>
+        <div style="float: left">
+            <div>
+                <%=docService.findLabelHTML("buildrevisioninvariant", "versionname01", "Build")%>
+            </div>
+            <div>
+                <%
+                    options.clear();
+                    for (BuildRevisionInvariant myBR : buildList) {
+                        options.put(myBR.getVersionName(), myBR.getVersionName());
+                    }
+                %>
+                <%=generateMultiSelect("Build", request.getParameterValues("Build"), options, "Select a Build",
+                        "Select Build", "# of # Build selected", 1, true)%>
+            </div>
+        </div>
+        <div style="float: left">
+            <div>
+                <%=docService.findLabelHTML("buildrevisioninvariant", "versionname02", "Revision")%>
+            </div>
+            <div>
+                <%
+                    options.clear();
+                    for (BuildRevisionInvariant myBR : revisionList) {
+                        options.put(myBR.getVersionName(), myBR.getVersionName());
+                    }
+                %>
+                <%=generateMultiSelect("Revision", request.getParameterValues("Revision"), options, "Select a Revision",
+                        "Select Revision", "# of # Revision selected", 1, true)%>
+            </div>
+        </div>
+        <div style="float: left">
+            <div>
+                <%=docService.findLabelHTML("testcaseexecution", "IP", "Ip")%>
+            </div>
+            <div>
+                <input style="font-weight: bold; width: 130px; height:16px" name="Ip" id="Ip" value="<%=ip%>"/>
+            </div>
+        </div>
+        <div style="float: left">
+            <div>
+                <%=docService.findLabelHTML("testcaseexecution", "Port", "Port")%>
+            </div>
+            <div>
+                <input style="font-weight: bold; width: 130px; height:16px" name="Port" id="Port" value="<%=port%>"/>
+            </div>
+        </div>
+        <div style="float: left">
+            <div>
+                <%=docService.findLabelHTML("testcaseexecution", "tag", "Tag")%>
+            </div>
+            <div>
+                <input style="font-weight: bold; width: 130px; height:16px" name="Tag" id="Tag" value="<%=tag%>"/>
+            </div>
+        </div>
+        <div style="float: left">
+            <div>
+                <%=docService.findLabelHTML("testcaseexecution", "browserfullversion", "")%>
+            </div>
+            <div>
+                <input style="font-weight: bold; width: 130px; height:16px" name="BrowserFullVersion"
+                       id="BrowserFullVersion" value="<%=browserFullVersion%>"/>
+            </div>
+        </div>
+    </div>
+    <div style="clear:both">
+        <div class="underlinedDiv"></div>
+        <p class="dttTitle">Execution Context Filters (Displayed Columns)</p>
+
+        <div style="float: left">
+            <div>
+                Country <span class="error-message required">*</span>
+            </div>
+            <div>
+                <%
+                    options.clear();
+                    for (Invariant countryInv : invariantService.findListOfInvariantById("COUNTRY")) {
+                        options.put(countryInv.getValue(), countryInv.getValue() + " - " + countryInv.getDescription());
+                    }
+                %>
+                <%=generateMultiSelect("Country", request.getParameterValues("Country"), options, "Select a country",
+                        "Select Country", "# of # Country selected", 1, false)%>
+            </div>
+        </div>
+        <div style="float: left">
+            <div>
+                <%=docService.findLabelHTML("testcaseexecution", "Browser", "browser")%> <span
+                    class="error-message required">*</span>
+            </div>
+            <div>
+                <%
+                    options.clear();
+                    for (Invariant browserInv : invariantService.findListOfInvariantById("BROWSER")) {
+                        options.put(browserInv.getValue(), browserInv.getValue());
+                    }
+                %>
+                <%=generateMultiSelect("Browser", request.getParameterValues("Browser"), options, "Select a Browser",
+                        "Select Browser", "# of # Browser selected", 1, false)%>
+            </div>
+        </div>
+        <div style="clear:both; text-align: left">
+            <br><span class="error-message required">* Required Fields</span>
+        </div>
+    </div>
+    <div style="clear:both">
+        <div class="underlinedDiv"></div>
+    </div>
+    <div>
+        <input id="apply" type="submit" name="Apply" value="Apply">
+        <input id="loadFilters" type="button" name="defaultFilter" value="Select My Default Filters" onclick="loadReporting('<%=reportingFavorite%>')">
+        <input id="button" type="button" value="Set As My Default Filter" onclick="saveFilters()">
+    </div>
+</form>
+</div>
+</div>
+<div id="divReporting" style="display: none; margin-top: 25px">
+    <table id="reporting" class="display" style="color: #555555;font-family: Trebuchet MS;font-weight: bold;">
+        <thead>
+        <tr>
+            <th rowspan="3">Test</th>
+            <th rowspan="3" class="testCaseColumn">TestCase</th>
+            <th rowspan="3">Application</th>
+            <th rowspan="3">Description</th>
+            <th rowspan="3">Priority</th>
+            <th rowspan="3">Status</th>
+            <th rowspan="3" class="TCComment">Comment</th>
+            <th rowspan="3" class="bugIDColumn">Bug ID</th>
+            <th rowspan="3">Group</th>
+        </tr>
+        <tr id="tableCountry"></tr>
+        <tr id="TCResult"></tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</div>
+
+<div id="divStatistic" style="margin-top: 25px; display: none">
+    <div style='float: left'>
+        <input id='ShowD' type='button' onclick='hideStatistic();' value='Show Details'>
+    </div>
+    <table id="statistic" style="color: #555555;font-family: Trebuchet MS;font-weight: bold;">
+        <thead>
+            <tr id="statisticCountry">
+                <th rowspan="2">Tests</th>
+            </tr>
+            <tr id="statisticStatus">
+            </tr>
+        </thead>
+    </table>
+</div>
+
+<div id="divGroup" style="margin-top: 25px; display: none">
+    <table id="tableGroup" style="color: #555555;font-family: Trebuchet MS;font-weight: bold;">
+        <thead>
+            <tr id="groupHeader">
+                <th>Tests</th>
+                <%
+                    for(Invariant inv : groupList){
+                        out.println("<th>"+inv.getValue()+"</th>");
+                    }
+                %>
+                <th>TOTAL</th>
+            </tr>
+        </thead>
+    </table>
+</div>
+
+<div id="divStatus" style="margin-top: 25px; display: none;">
+    <table id="tableStatus" style="color: #555555;font-family: Trebuchet MS;font-weight: bold;">
+        <thead>
+            <tr id="statusHeader">
+                <th>Tests</th>
+                <%
+                    for(Invariant inv : statusList){
+                        out.println("<th>"+inv.getValue()+"</th>");
+                    }
+                %>
+                <th>TOTAL</th>
+            </tr>
+        </thead>
+    </table>
+</div>
+
+</body>
+<%
+    } catch (CerberusException ex){
+        MyLogger.log("ReportingExecution.jsp", Level.ERROR, "Cerberus exception : " + ex.toString());
+        out.println("</script>");
+        out.print("<script type='text/javascript'>alert(\"Unfortunately an error as occurred, try reload the page.\\n");
+        out.print("Detail error: " + ex.getMessageError().getDescription() + "\");</script>");
+    }
+%>
 </html>

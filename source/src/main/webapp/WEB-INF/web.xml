@@ -574,6 +574,10 @@
         <servlet-class>org.cerberus.servlet.testCase.DeleteTestCaseFromTestPage</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>GetTestDataLib</servlet-name>
+        <servlet-class>org.cerberus.servlet.testdata.GetTestDataLib</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>RunManualTest</servlet-name>
         <servlet-class>org.cerberus.servlet.manualTestCase.RunManualTest</servlet-class>
     </servlet>
@@ -1114,6 +1118,10 @@
         <url-pattern>/DeleteTestCaseFromTestPage</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
+        <servlet-name>GetTestDataLib</servlet-name>
+        <url-pattern>/GetTestDataLib</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
         <servlet-name>RunManualTest</servlet-name>
         <url-pattern>/RunManualTest</url-pattern>
     </servlet-mapping>
@@ -1124,15 +1132,15 @@
     </session-config>
     <error-page>
         <error-code>403</error-code>
-        <location>/ErrorPages/Error.jsp</location>
+        <location>/ErrorPages/Error.jsp?error=403</location>
     </error-page>
     <error-page>
         <error-code>404</error-code>
-        <location>/ErrorPages/Error.jsp</location>
+        <location>/ErrorPages/Error.jsp?error=404</location>
     </error-page>
     <error-page>
         <error-code>500</error-code>
-        <location>/ErrorPages/Error.jsp</location>
+        <location>/ErrorPages/Error.jsp?error=500</location>
     </error-page>
     <!-- Start JAAS Configuration -->
     <security-role>
@@ -1246,6 +1254,7 @@
             <url-pattern>/DeleteTestData</url-pattern>
             <url-pattern>/UpdateTestData</url-pattern>
             <url-pattern>/FindAllTestData</url-pattern>
+            <url-pattern>/GetTestDataLib</url-pattern>
             <url-pattern>/GetApplicationList</url-pattern>
             <url-pattern>/FindAllSqlLibrary</url-pattern>
             <url-pattern>/PictureConnector</url-pattern>
