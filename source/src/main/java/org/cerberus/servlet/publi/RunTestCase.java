@@ -254,7 +254,6 @@ public class RunTestCase extends HttpServlet {
             session.setHost(tCExecution.getSeleniumIP());
             session.setPort(tCExecution.getPort());
             session.setCapabilities(capabilities);
-            MyLogger.log(RunTestCase.class.getName(), Level.FATAL, "Set Session: ");
             
             tCExecution.setSession(session);
 

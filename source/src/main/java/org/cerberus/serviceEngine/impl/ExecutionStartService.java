@@ -329,7 +329,7 @@ public class ExecutionStartService implements IExecutionStartService {
              */
             String url = ParameterParserUtil.parseStringParam(tCExecution.getCountryEnvironmentApplication().getIp() + tCExecution.getCountryEnvironmentApplication().getUrl(), "");
             String login = ParameterParserUtil.parseStringParam(tCExecution.getCountryEnvironmentApplication().getUrlLogin(), "");
-            MyLogger.log(RunTestCaseService.class.getName(), Level.FATAL, "Starting Selenium Server.");
+            MyLogger.log(ExecutionStartService.class.getName(), Level.DEBUG, "Starting Selenium Server.");
 
             try {
                 this.serverService.startServer(tCExecution);

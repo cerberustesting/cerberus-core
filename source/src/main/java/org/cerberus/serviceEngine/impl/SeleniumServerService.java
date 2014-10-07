@@ -233,10 +233,8 @@ public class SeleniumServerService implements ISeleniumServerService {
                 if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")) {
                     if (cap.getCapability().equalsIgnoreCase("browser")) {
                         caps = this.setCapabilityBrowser(caps, cap.getValue(), tCExecution);
-                        MyLogger.log(SeleniumServerService.class.getName(), Level.FATAL, "Set Browser" + cap.getValue());
                     } else {
                         caps.setCapability(cap.getCapability(), cap.getValue());
-                        MyLogger.log(SeleniumServerService.class.getName(), Level.FATAL, "Set " + cap.getCapability());
                     }
                 }
             }
