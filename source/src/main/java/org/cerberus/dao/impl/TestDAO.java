@@ -307,7 +307,6 @@ public class TestDAO implements ITestDAO {
                 }
                 query.append("? ) GROUP BY t.test");
             }
-            System.out.print(query.toString());
             PreparedStatement preStat = connection.prepareStatement(query.toString());
             for (int a=0; a < systems.size(); a++) {
                 preStat.setString(a+1, ParameterParserUtil.wildcardIfEmpty(systems.get(a)));

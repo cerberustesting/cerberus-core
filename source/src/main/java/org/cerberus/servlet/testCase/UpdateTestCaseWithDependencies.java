@@ -160,7 +160,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
          * Page). If TestCaseCountry in Page has same key : remove from the
          * list. Then delete the list of TestCaseCountry
          */
-        if (!duplicate) { 
+        if (!duplicate) {
             List<TestCaseCountry> tccToDelete = new ArrayList(tccFromDtb);
             tccToDelete.removeAll(tccFromPage);
             List<TestCaseCountry> tccToDeleteToIterate = new ArrayList(tccToDelete);
@@ -425,7 +425,8 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
                 String useStep = getParameterIfExists(request, "step_useStep_" + inc);
                 String useStepTest = getParameterIfExists(request, "step_useStepTest_" + inc);
                 String useStepTestCase = getParameterIfExists(request, "step_useStepTestCase_" + inc);
-                int useStepStep = Integer.valueOf(getParameterIfExists(request, "step_useStepStep_" + inc) == null ? "0" : getParameterIfExists(request, "step_useStepStep_" + inc));
+                String stepValue = getParameterIfExists(request, "step_useStepStep_" + inc);
+                int useStepStep = Integer.valueOf(stepValue == null || stepValue.equals("") ? "-1" : getParameterIfExists(request, "step_useStepStep_" + inc));
                 /* If delete, don't add it to the list of steps */
                 if (delete == null) {
                     TestCaseStep tcStep = testCaseStepFactory.create(test, testCase, step, desc, useStep, useStepTest, useStepTestCase, useStepStep);
@@ -433,12 +434,14 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
                     if (useStep == null) {
                         tcStep.setTestCaseStepAction(getTestCaseStepActionFromParameter(request, appContext, test, testCase, inc));
                     } else {
-                        /* If use step, verify if used step alread use another one */
-                        TestCaseStep tcs = tcsService.findTestCaseStep(useStepTest, useStepTestCase, useStepStep);
-                        if (tcs != null && tcs.getUseStep().equals("Y")) {
-                            tcStep.setUseStepTest(tcs.getUseStepTest());
-                            tcStep.setUseStepTestCase(tcs.getUseStepTestCase());
-                            tcStep.setUseStepStep(tcs.getUseStepStep());
+                        if (useStepStep!=-1&&!useStepTest.equals("")&&!useStepTestCase.equals("")) {
+                            /* If use step, verify if used step alread use another one */
+                            TestCaseStep tcs = tcsService.findTestCaseStep(useStepTest, useStepTestCase, useStepStep);
+                            if (tcs != null && tcs.getUseStep().equals("Y")) {
+                                tcStep.setUseStepTest(tcs.getUseStepTest());
+                                tcStep.setUseStepTestCase(tcs.getUseStepTestCase());
+                                tcStep.setUseStepStep(tcs.getUseStepStep());
+                            }
                         }
                     }
                     if (stepInUse != null && stepInUse.equals("Y") && initialStep != step) {

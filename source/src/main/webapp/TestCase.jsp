@@ -961,7 +961,7 @@
                                             <select id="step_useStepTest_<%=incrementStep%>" name="step_useStepTest_<%=incrementStep%>" style="width: 100px;margin-top:15px;font-weight: bold;" 
                                                     OnChange="findTestcaseByTest(this.value, '<%=MySystem%>', 'step_useStepTestCase_<%=incrementStep%>')">
                                                 <%  if (tcs.getUseStepTest().equals("")) { %>
-                                                <option style="width: 200px" value="All">-- Choose Test --
+                                                <option style="width: 200px" value="">-- Choose Test --
                                                 </option>
                                                 <%  }
                                                     List<Test> tList = testService.findTestBySystems(systems);
@@ -978,7 +978,7 @@
                                                     OnChange="findStepByTestCase($('#step_useStepTest_<%=incrementStep%>').val(), this.value, 'step_useStepStep_<%=incrementStep%>')"
                                                     id="step_useStepTestCase_<%=incrementStep%>">
                                                 <%  if (tcs.getUseStepTestCase().equals("")) { %>
-                                                <option style="width: 200px" value="All">---</option>
+                                                <option style="width: 200px" value="">---</option>
                                                 <%  } else {
                                                     List<TCase> tcList = testCaseService.findTestCaseByTest(test);
                                                     for (TCase tc : tcList) {%>
@@ -992,7 +992,7 @@
                                             <select name="step_useStepStep_<%=incrementStep%>" style="width: 70px;margin-top:15px;font-weight: bold;" 
                                                     id="step_useStepStep_<%=incrementStep%>" onchange="javascript:$('#UpdateTestCase').submit();">
                                                 <%  if (tcs.getUseStepTest().equals("") || tcs.getUseStepTestCase().equals("")) { %>
-                                                <option style="width: 200px" value="All">---</option>
+                                                <option style="width: 200px" value="">---</option>
                                                 <%  } else {
                                                     List<TestCaseStep> tcstepList = tcsService.getListOfSteps(tcs.getUseStepTest(), tcs.getUseStepTestCase());
                                                     for (TestCaseStep tcstep : tcstepList) {%>
