@@ -990,7 +990,7 @@
                                         </div>
                                         <div id="StepUseStepStepDiv" style="float:left">
                                             <select name="step_useStepStep_<%=incrementStep%>" style="width: 70px;margin-top:15px;font-weight: bold;" 
-                                                    id="step_useStepStep_<%=incrementStep%>" onchange="javascript:$('#UpdateTestCase').submit();">
+                                                    id="step_useStepStep_<%=incrementStep%>" onchange="javascript:$('#UpdateTestCase').attr('action', $('#UpdateTestCase').attr('action') + '#stepAnchor_<%=incrementStep%>').submit();">
                                                 <%  if (tcs.getUseStepTest().equals("") || tcs.getUseStepTestCase().equals("")) { %>
                                                 <option style="width: 200px" value="">---</option>
                                                 <%  } else {
@@ -1895,17 +1895,19 @@
             function confirmDeletingAction(checkbox, incrementStep) {
                 if (checkbox.checked === true && document.getElementsByName('actionRow_color_' + incrementStep).length > 0) {
                     if (confirm("Beware, all the action of this step will be deleted")) {
-                        $("#UpdateTestCase").submit();
+                        $("#UpdateTestCase").attr("action", $("#UpdateTestCase").attr("action") + "#stepAnchor_" + incrementStep).submit();
                     } else {
                         checkbox.checked = false;
                     }
                 } else {
                     if (checkbox.checked === false) {
                         if (confirm("Beware, the link to the used step will be lost. Action and controle will be imported into the step")) {
-                            $("#UpdateTestCase").submit();
+                            $("#UpdateTestCase").attr("action", $("#UpdateTestCase").attr("action") + "#stepAnchor_" + incrementStep).submit();
                         } else {
                             checkbox.checked = true;
                         }
+                    } else if (checkbox.checked === true) {
+                        $("#UpdateTestCase").attr("action", $("#UpdateTestCase").attr("action") + "#stepAnchor_" + incrementStep).submit();
                     }
                 }
             }
