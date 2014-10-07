@@ -270,7 +270,7 @@
                 margin-top:15px; 
             }
 
-            a:link{
+            a.docOnline{
                 color:white;
             }
 
@@ -974,7 +974,7 @@
                                         </div>
 
                                         <div id="StepUseStepTestCaseDiv" style="float:left;">
-                                            <select name="step_useStepTestCase_<%=incrementStep%>" style="width: 50px;margin-top:15px;font-weight: bold;" 
+                                            <select name="step_useStepTestCase_<%=incrementStep%>" style="width: 70px;margin-top:15px;font-weight: bold;" 
                                                     OnChange="findStepByTestCase($('#step_useStepTest_<%=incrementStep%>').val(), this.value, 'step_useStepStep_<%=incrementStep%>')"
                                                     id="step_useStepTestCase_<%=incrementStep%>">
                                                 <%  if (tcs.getUseStepTestCase().equals("")) { %>
@@ -982,21 +982,21 @@
                                                 <%  } else {
                                                     List<TCase> tcList = testCaseService.findTestCaseByTest(test);
                                                     for (TCase tc : tcList) {%>
-                                                <option style="width: 200px;" class="font_weight_bold_<%=tc.getActive()%>" value="<%=tc.getTestCase()%>" <%=tcs.getUseStepTestCase().compareTo(tc.getTestCase()) == 0 ? " SELECTED " : ""%>><%=tc.getTestCase()%>
+                                                <option style="width: 400px;" class="font_weight_bold_<%=tc.getActive()%>" value="<%=tc.getTestCase()%>" <%=tcs.getUseStepTestCase().compareTo(tc.getTestCase()) == 0 ? " SELECTED " : ""%>><%=tc.getTestCase()%> [<%=tc.getApplication()%>] : <%=tc.getShortDescription()%>
                                                 </option>
                                                 <% }
                                                     }%>
                                             </select>
                                         </div>
                                         <div id="StepUseStepStepDiv" style="float:left">
-                                            <select name="step_useStepStep_<%=incrementStep%>" style="width: 50px;margin-top:15px;font-weight: bold;" 
+                                            <select name="step_useStepStep_<%=incrementStep%>" style="width: 70px;margin-top:15px;font-weight: bold;" 
                                                     id="step_useStepStep_<%=incrementStep%>" onchange="javascript:$('#UpdateTestCase').submit();">
                                                 <%  if (tcs.getUseStepTest().equals("") || tcs.getUseStepTestCase().equals("")) { %>
                                                 <option style="width: 200px" value="All">---</option>
                                                 <%  } else {
                                                     List<TestCaseStep> tcstepList = tcsService.getListOfSteps(tcs.getUseStepTest(), tcs.getUseStepTestCase());
                                                     for (TestCaseStep tcstep : tcstepList) {%>
-                                                <option style="width: 200px;" value="<%=tcstep.getStep()%>" <%=tcs.getUseStepStep().compareTo(tcstep.getStep()) == 0 ? " SELECTED " : ""%>><%=tcstep.getStep()%>
+                                                <option style="width: 200px;" value="<%=tcstep.getStep()%>" <%=tcs.getUseStepStep().compareTo(tcstep.getStep()) == 0 ? " SELECTED " : ""%>><%=tcstep.getStep()%> : <%=tcstep.getDescription()%>
                                                 </option>
                                                 <% }
                                                     }%>
@@ -1513,7 +1513,7 @@
                 </div>
             </form>
             <br>
-            <table id="arrond" style="text-align: left" border="1" >
+            <table class="arrond" style="width:100%;text-align: left" border="1" >
                 <tr>
                     <td colspan="3">
                         <h4>Contextual Actions</h4>
@@ -1541,7 +1541,7 @@
                     <% }%>
                 </tr>
             </table>
-            <div id="StepActionTemplateDiv" class="RowActionDiv" style="padding:0; margin:0;display:none;height:40px;width:100%;border-style: solid; border-width:thin ; border-color:#CCCCCC;">
+            <div id="StepActionTemplateDiv" style="padding:0; margin:0;display:none;height:40px;width:100%;border-style: solid; border-width:thin ; border-color:#CCCCCC;">
                 <div style="background-color:blue; width:8px;height:40px;display:inline-block;float:left">
                 </div>
                 <div style="display:inline-block;float:left;width:2%;height:100%;">
@@ -1593,7 +1593,7 @@
                 <div style="background-color:blue; width:3px;height:40px;display:inline-block;float:right">
                 </div>
             </div>
-            <div id="StepControlTemplateDiv" class="RowActionDiv" style="width:100%;height:40px;clear:both;display:none">
+            <div id="StepControlTemplateDiv" style="width:100%;height:40px;clear:both;display:none">
                 <div data-id="control_color_id" style="background-color:#33CC33; width:8px;height:40px;display:block;float:left">
                 </div>
                 <div style="height:100%;width: 2%;float:left; text-align: center;">

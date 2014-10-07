@@ -75,7 +75,7 @@ public class DocumentationService implements IDocumentationService {
             labelFromDB = myDoc.getDocLabel();
             label.append(labelFromDB);
             if (!(StringUtil.isNullOrEmpty(myDoc.getDocDesc().trim()))) {
-                label.append(" <a href=\'javascript:popup(\"Documentation.jsp?DocTable=");
+                label.append(" <a class=\"docOnline\" href=\'javascript:popup(\"Documentation.jsp?DocTable=");
                 label.append(docTable);
                 label.append("&DocField=");
                 label.append(docField);

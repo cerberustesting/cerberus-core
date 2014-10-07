@@ -2082,6 +2082,7 @@ function addTCSACNew(rowID, step, incrementAction, obj) {
     }
     DIV.setAttribute('style', 'display:block; height:40px; width:100%;background-color:#C4FFEB;border-style: solid; border-width:thin ; border-color:#CCCCCC;');
     DIV.setAttribute('id', 'StepListOfControlDiv' + step + incrementAction + nextIncControl);
+    DIV.setAttribute('class', 'RowActionDiv');
     var referenceNode = document.getElementById(rowID);
     referenceNode.parentNode.insertBefore(DIV, referenceNode.nextSibling);
 
