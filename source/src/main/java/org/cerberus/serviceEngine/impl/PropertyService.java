@@ -265,7 +265,7 @@ public class PropertyService implements IPropertyService {
 
             /* If an error occurred then it is not necessary to continue calculation */
             if (tecd.getPropertyResultMessage().getCode() % 100 != 0) {
-                LOG.error("Error found");
+                LOG.error("Error found calculating property: "+tecd.getPropertyResultMessage().getDescription());
                 return tecd;
 
             }
@@ -318,7 +318,6 @@ public class PropertyService implements IPropertyService {
          */
         if (testCaseCountryProperty != null) {
             for (String internalProperty : StringUtil.getAllProperties(testCaseCountryProperty.getValue1())) {
-                LOG.warn("ip" + internalProperty);
                 /*
                  * If the internal property is defined in the test case then we trigger a calculation
                  */
