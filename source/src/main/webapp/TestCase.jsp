@@ -132,66 +132,66 @@
                     $('#generalparameter').hide();
                 }
             });</script>
-                <script>
-            function customizeView(value){
-                if (value === 'onlyStep'){
+        <script>
+            function customizeView(value) {
+                if (value === 'onlyStep') {
                     var elem = document.getElementsByClassName('RowActionDiv');
-                    for (var a = 0 ; a < elem.length ; a++ ){
+                    for (var a = 0; a < elem.length; a++) {
                         elem[a].style.display = 'none';
                     }
                 }
-                
-                if (value === 'full'){
+
+                if (value === 'full') {
                     var elem = document.getElementsByClassName('RowActionDiv');
-                    for (var a = 0 ; a < elem.length ; a++ ){
+                    for (var a = 0; a < elem.length; a++) {
                         elem[a].style.display = 'block';
                     }
                     var elem = document.getElementsByClassName('functional_description');
-                    for (var a = 0 ; a < elem.length ; a++ ){
+                    for (var a = 0; a < elem.length; a++) {
                         elem[a].style.display = 'block';
                     }
                     var elem = document.getElementsByClassName('technical_part');
-                    for (var a = 0 ; a < elem.length ; a++ ){
+                    for (var a = 0; a < elem.length; a++) {
                         elem[a].style.display = 'block';
                     }
                 }
-                
-                if (value === 'hideUseStep'){
+
+                if (value === 'hideUseStep') {
                     var elem = document.getElementsByClassName('ActionOfUseStep');
-                    for (var a = 0 ; a < elem.length ; a++ ){
+                    for (var a = 0; a < elem.length; a++) {
                         elem[a].style.display = 'none';
                     }
                     var elem = document.getElementsByClassName('ActionOfNormalStep');
-                    for (var a = 0 ; a < elem.length ; a++ ){
+                    for (var a = 0; a < elem.length; a++) {
                         elem[a].style.display = 'block';
                     }
                 }
-                
-                if (value === 'technicalView'){
+
+                if (value === 'technicalView') {
                     var elem = document.getElementsByClassName('functional_description');
-                    for (var a = 0 ; a < elem.length ; a++ ){
+                    for (var a = 0; a < elem.length; a++) {
                         elem[a].style.display = 'none';
                     }
                     var elem = document.getElementsByClassName('technical_part');
-                    for (var a = 0 ; a < elem.length ; a++ ){
+                    for (var a = 0; a < elem.length; a++) {
                         elem[a].style.display = 'block';
                     }
                 }
-                
-                if (value === 'fonctionalView'){
+
+                if (value === 'fonctionalView') {
                     var elem = document.getElementsByClassName('functional_description');
-                    for (var a = 0 ; a < elem.length ; a++ ){
+                    for (var a = 0; a < elem.length; a++) {
                         elem[a].style.display = 'block';
                     }
                     var elem = document.getElementsByClassName('technical_part');
-                    for (var a = 0 ; a < elem.length ; a++ ){
+                    for (var a = 0; a < elem.length; a++) {
                         elem[a].style.display = 'none';
                     }
                 }
-                
-                
-                
-                
+
+
+
+
             }
         </script>
         <script type="text/javascript">
@@ -811,15 +811,15 @@
                     int rowNumber = 0;
                 %>
                 <script>
-                $(document).ready(function() {
-                var cookie = GetCookie('TestCasePageDefaultView');
-                $("#selectView option").each(function(){
-                    if (this.value === cookie){
-                        this.selected='selected';
-                    }
-                });
-                customizeView(cookie);
-            });    
+                    $(document).ready(function() {
+                        var cookie = GetCookie('TestCasePageDefaultView');
+                        $("#selectView option").each(function() {
+                            if (this.value === cookie) {
+                                this.selected = 'selected';
+                            }
+                        });
+                        customizeView(cookie);
+                    });
                 </script>
                 <div id="AutomationScriptDiv" class="arrond" style="display : inline-block">
                     <div id="AutomationScriptFirstLine" style="clear:both; height:30px">
@@ -827,7 +827,8 @@
                             <h3>TestCase Detailed Description</h3>
                         </div>
                         <div id="AutomationScriptFunctionalButtonDiv" style="float:left;margin-left:30px">
-                            <select id="selectView" style="float:left; height:20px; width:100px" onchange="javascript:customizeView(this.value);SetCookie('TestCasePageDefaultView', this.value)">
+                            <select id="selectView" style="float:left; height:20px; width:100px" onchange="javascript:customizeView(this.value);
+                                    SetCookie('TestCasePageDefaultView', this.value)">
                                 <option value="full">Full View</option>
                                 <option value="onlyStep">Show Only Step</option>
                                 <option value="hideUseStep">Hide Use Step</option>
@@ -944,7 +945,7 @@
                                         </div>
                                         <div id="StepDescDiv" style="width:550px;float:left">
                                             <div><div><input style="float:right;margin-top:10px;font-weight: bold; width: 500px;background-color:transparent; font-weight:bold;font-size:14px ;font-family: Trebuchet MS; color:#333333; border-color:#EEEEEE;border-style:solid; border-width:thin"
-                                                             data-fieldtype="Description" name="step_description_<%=incrementStep%>" value="<%=tcs.getDescription()%>">
+                                                             placeholder="Description" data-fieldtype="Description" name="step_description_<%=incrementStep%>" value="<%=tcs.getDescription()%>">
                                                 </div></div></div>
                                         <div id="StepUseStepDiv" style="float:left">UseStep
                                             <input type="checkbox" name="step_useStep_<%=incrementStep%>" style="margin-top:15px;font-weight: bold; width:20px" onclick="confirmDeletingAction(this, '<%=incrementStep%>')"
@@ -1313,7 +1314,7 @@
 
                                             int incrementProperty = 0;
                                             double widthValue = 55 - (1.5 * countryListTestcase.size());
-                                                
+
                                             for (TestCaseCountryProperties tccp : tccpList) {
                                                 incrementProperty++;
                                                 List<String> countryOfProperty = tccpService.findCountryByProperty(tccp);
@@ -1335,7 +1336,7 @@
                                                     widthValue1 = widthValue / 2;
                                                     widthValue2 = widthValue / 2;
                                                     displayValue2 = "inline-block";
-                                                } 
+                                                }
 
                                                 int nbline = tccp.getValue1().split("\n").length;
                                                 String valueID = rowNumber + "-" + tccp.getProperty();
@@ -1456,7 +1457,7 @@
                                                 </div>
                                                 <% }%>
                                             </div>
-                                            
+
                                         </div>
                                         <%}%>
                                     </div>
@@ -1665,10 +1666,7 @@
                     <div style="margin-top:10px;width:3%;float:left;color:blue;font-weight:bold;font-size:10px ;font-family: Trebuchet MS; background-color: transparent">
                         <div style="width:100%;clear:both;color:blue;font-weight:bold;font-size:10px ;font-family: Trebuchet MS; background-color: transparent">
                             <div>
-                                <div>
-                                    <img src="images/addAction.png" data-id="step_addActionButton_template" 
-                                         data-fieldtype="addActionButton" style="width:15px;height:15px" title="Add Action">
-                                </div>
+                                
                             </div>
                         </div>
                     </div>
@@ -1685,7 +1683,7 @@
                         <input type="checkbox" data-id="step_useStep_template" style="margin-top:15px;font-weight: bold; width:20px">
                     </div>
                 </div>
-                <div style="clear:both">
+                <div data-id="useStepForNewStep" style="display:none; clear:both">
                     <div id="StepCopiedFromDiv" style="float:left">
                         <p style="margin-top:15px;"> Copied from : </p>
                     </div>
@@ -1710,71 +1708,71 @@
                     </div>
                 </div>
             </div>
-                        <div id="PropertyTemplateDiv" style="display:none">
-                                            <div data-id="property_color_id" style="float:left;width: 8px; height:100%;position:relative; background-color: yellow; display:inline-block">
-                                            </div>
-                                            <div style="border-right-width:thin;border-right-style:solid;border-right-color:#CCCCCC;width:2%;float:left;display:inline-block;height:100%; text-align:center">
-                                                <input style="margin-top:20px;" data-id="properties_delete_template" type="checkbox" value="">
-                                                <input type="hidden" data-id="property_increment_template">
-                                            </div>
-                                            <div style="border-right-width:thin;border-right-style:solid;border-right-color:#CCCCCC;width:10%;float:left;display:inline-block;height:100%">
-                                                <input class="wob property_name" style="background-color:transparent;margin-top:20px;width:100%;font-weight: bold;"
-                                                       data-id="properties_property_template">
-                                            </div>
-                                            <div style="border-right-width:thin;border-right-style:solid;border-right-color:#CCCCCC;float:left; font-size : x-small ;display:inline-block;height:100%; width: <%=1.5 * countryListTestcase.size()%>%;">
-                                                <table>
-                                                    <tr>
-                                                        <%  for (String c : countryListTestcase) {%>
-                                                        <td class="wob"><%=c%>
-                                                        </td> 
-                                                        <% 	} %>
-                                                    </tr>
-                                                    <tr>
-                                                        <%
-                                                            for (String c : countryListTestcase) {
-                                                        %>
-                                                        <td class="wob">
-                                                            <input value="<%=c%>" type="checkbox"
-                                                                   class="properties_id_template" data-id="properties_country_template">
-                                                        </td>
-                                                        <%  }%>
-                                                    </tr>
-                                                </table>
-                                            </div>
-                                            <div style="border-right-width:thin;border-right-style:solid;border-right-color:#CCCCCC;width:10%; float:left;display:inline-block;height:100%">
-                                                <%=ComboInvariant(appContext, "", "background-color:transparent;margin-top:20px;width: 99%; float:left", "properties_type_template", "wob", "PROPERTYTYPE", "", "", null)%>
-                                            </div>
-                                            <div style="border-right-width:thin;border-right-style:solid;border-right-color:#CCCCCC;float:left;width:5%;display:inline-block;height:100%">
-                                                <%=ComboInvariant(appContext, "", "display:none;background-color:transparent;margin-top:20px;width: 100%;", "properties_dtb_template", "wob", "PROPERTYDATABASE", "", "", null)%>
-                                                <select data-id="properties_nodtb_template" style="background-color:transparent;margin-top:20px;width: 100%; display: inline-block ;" class="wob">
-                                                    <option value="">---</option>
-                                                </select>
-                                            </div>
-                                            <div data-id="divProperties_value1_template" style="background-color:transparent;float:left;border-right-width:thin;border-right-style:solid;border-right-color:#CCCCCC;width:<%=55 - (1.5 * countryListTestcase.size())%>%;display:inline-block;height:100%">
-                                                <textarea data-id="properties_value1_template" rows="2" class="wob" style="background-color:transparent;width: 100%;" 
-                                                          ></textarea>
-                                            </div>
-                                            <div data-id="divProperties_value2_template" style="float:left;border-right-width:thin;border-right-style:solid;border-right-color:#CCCCCC;display:none;width:0%;height:100%">
-                                                <textarea data-id="properties_value2_template" rows="2" class="wob" style="background-color:transparent;width: 100%;"
-                                                          ></textarea>
-                                            </div>
-                                            <div style="border-right-width:thin;border-right-style:solid;border-right-color:#CCCCCC;float:left;width:3%;display:inline-block;height:100%">
-                                                <input class="wob" style="background-color:transparent;width:  100%;margin-top:20px;" 
-                                                       data-id="properties_length_template">
-                                            </div>
-                                            <div style="border-right-width:thin;border-right-style:solid;border-right-color:#CCCCCC;float:left;width:3%;display:inline-block;height:100%">
-                                                <input class="wob" style="background-color:transparent;width: 100%;margin-top:20px;" 
-                                                       data-id="properties_rowlimit_template">
-                                            </div>
-                                            <div style="float:left;width:8%;display:inline-block;height:100%">
-                                                <%=ComboInvariant(appContext, "", "background-color:transparent;margin-top:20px;width: 100%;", "properties_nature_template", "wob", "PROPERTYNATURE", "", "", null)%>
-                                            </div>
-                                            <div style="background-color:yellow; width:3px;height:100%;display:inline-block;float:right">
-                                            </div>
-                                            <div style="float:right ; width:2%">
-                                            </div>
-                                            
-                                        </div>
+            <div id="PropertyTemplateDiv" style="display:none">
+                <div data-id="property_color_id" style="float:left;width: 8px; height:100%;position:relative; background-color: yellow; display:inline-block">
+                </div>
+                <div style="border-right-width:thin;border-right-style:solid;border-right-color:#CCCCCC;width:2%;float:left;display:inline-block;height:100%; text-align:center">
+                    <input style="margin-top:20px;" data-id="properties_delete_template" type="checkbox" value="">
+                    <input type="hidden" data-id="property_increment_template">
+                </div>
+                <div style="border-right-width:thin;border-right-style:solid;border-right-color:#CCCCCC;width:10%;float:left;display:inline-block;height:100%">
+                    <input class="wob property_name" style="background-color:transparent;margin-top:20px;width:100%;font-weight: bold;"
+                           data-id="properties_property_template">
+                </div>
+                <div style="border-right-width:thin;border-right-style:solid;border-right-color:#CCCCCC;float:left; font-size : x-small ;display:inline-block;height:100%; width: <%=1.5 * countryListTestcase.size()%>%;">
+                    <table>
+                        <tr>
+                            <%  for (String c : countryListTestcase) {%>
+                            <td class="wob"><%=c%>
+                            </td> 
+                            <% 	} %>
+                        </tr>
+                        <tr>
+                            <%
+                                for (String c : countryListTestcase) {
+                            %>
+                            <td class="wob">
+                                <input value="<%=c%>" type="checkbox"
+                                       class="properties_id_template" data-id="properties_country_template">
+                            </td>
+                            <%  }%>
+                        </tr>
+                    </table>
+                </div>
+                <div style="border-right-width:thin;border-right-style:solid;border-right-color:#CCCCCC;width:10%; float:left;display:inline-block;height:100%">
+                    <%=ComboInvariant(appContext, "", "background-color:transparent;margin-top:20px;width: 99%; float:left", "properties_type_template", "wob", "PROPERTYTYPE", "", "", null)%>
+                </div>
+                <div style="border-right-width:thin;border-right-style:solid;border-right-color:#CCCCCC;float:left;width:5%;display:inline-block;height:100%">
+                    <%=ComboInvariant(appContext, "", "display:none;background-color:transparent;margin-top:20px;width: 100%;", "properties_dtb_template", "wob", "PROPERTYDATABASE", "", "", null)%>
+                    <select data-id="properties_nodtb_template" style="background-color:transparent;margin-top:20px;width: 100%; display: inline-block ;" class="wob">
+                        <option value="">---</option>
+                    </select>
+                </div>
+                <div data-id="divProperties_value1_template" style="background-color:transparent;float:left;border-right-width:thin;border-right-style:solid;border-right-color:#CCCCCC;width:<%=55 - (1.5 * countryListTestcase.size())%>%;display:inline-block;height:100%">
+                    <textarea data-id="properties_value1_template" rows="2" class="wob" style="background-color:transparent;width: 100%;" 
+                              ></textarea>
+                </div>
+                <div data-id="divProperties_value2_template" style="float:left;border-right-width:thin;border-right-style:solid;border-right-color:#CCCCCC;display:none;width:0%;height:100%">
+                    <textarea data-id="properties_value2_template" rows="2" class="wob" style="background-color:transparent;width: 100%;"
+                              ></textarea>
+                </div>
+                <div style="border-right-width:thin;border-right-style:solid;border-right-color:#CCCCCC;float:left;width:3%;display:inline-block;height:100%">
+                    <input class="wob" style="background-color:transparent;width:  100%;margin-top:20px;" 
+                           data-id="properties_length_template">
+                </div>
+                <div style="border-right-width:thin;border-right-style:solid;border-right-color:#CCCCCC;float:left;width:3%;display:inline-block;height:100%">
+                    <input class="wob" style="background-color:transparent;width: 100%;margin-top:20px;" 
+                           data-id="properties_rowlimit_template">
+                </div>
+                <div style="float:left;width:8%;display:inline-block;height:100%">
+                    <%=ComboInvariant(appContext, "", "background-color:transparent;margin-top:20px;width: 100%;", "properties_nature_template", "wob", "PROPERTYNATURE", "", "", null)%>
+                </div>
+                <div style="background-color:yellow; width:3px;height:100%;display:inline-block;float:right">
+                </div>
+                <div style="float:right ; width:2%">
+                </div>
+
+            </div>
             <script>
                 $("input.property_value").each(function() {
                     //var jinput = $(this);
@@ -1967,6 +1965,13 @@
                     });
                 });
             }</script>
+        <script>function showUseStep(checkbox, incStep) {
+                if (checkbox.checked === true) {
+                    document.getElementById("useStepForNewStep_" + incStep).style.display = 'block';
+                } else {
+                    document.getElementById("useStepForNewStep_" + incStep).style.display = 'none';
+                }
+}</script>
         <div id="popin"></div>
         <br><% out.print(display_footer(DatePageStart));%>
     </body>

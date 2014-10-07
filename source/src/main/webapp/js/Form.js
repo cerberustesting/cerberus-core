@@ -2166,11 +2166,15 @@ function addTCSCNew(rowID, obj) {
     $('#StepFirstLineDiv'+nextIncStep).find('input[data-id="step_number_template"]')
             .attr('name', 'step_number_' + nextIncStep).val(incrementStep+1);
      $('#StepFirstLineDiv'+nextIncStep).find('input[data-id="step_description_template"]')
-            .attr('name', 'step_description_' + nextIncStep).attr('data-fieldtype', 'Description');
+            .attr('name', 'step_description_' + nextIncStep).attr('data-fieldtype', 'Description')
+            .attr('placeholder', 'Description');
     $('#StepFirstLineDiv'+nextIncStep).find('input[data-id="initial_step_number_template"]')
             .attr('name', 'initial_step_number_' + nextIncStep).val(nextIncStep);
     $('#StepFirstLineDiv'+nextIncStep).find('input[data-id="step_useStep_template"]')
-            .attr('name', 'step_useStep_' + nextIncStep).val("Y");
+            .attr('name', 'step_useStep_' + nextIncStep).val("Y")
+            .attr('onclick', 'showUseStep(this, '+ nextIncStep +')');
+    $('#StepFirstLineDiv'+nextIncStep).find('div[data-id="useStepForNewStep"]')
+            .attr('id', 'useStepForNewStep_'+ nextIncStep);
     $('#StepFirstLineDiv'+nextIncStep).find('select[data-id="step_useStepTest_template"]')
             .attr('name', 'step_useStepTest_' + nextIncStep).attr('id', 'step_useStepTest_' + nextIncStep)
             .attr('onchange', 'findTestcaseByTest(this.value, \''+mySystem+'\', \'step_useStepTestCase_'+nextIncStep+'\')');
