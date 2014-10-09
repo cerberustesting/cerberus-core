@@ -21,8 +21,6 @@
 #   </activeProfiles>
 
 APP=`basename $0`
-MAVEN_BIN=mvn
-GIT_BIN=git
 MAVEN_SETTINGS_PATH=~/.m2/settings.xml
 
 nextReleaseVersion=""
@@ -55,7 +53,7 @@ function checkSettingsFile {
 
 # Check if there are not commited changes in the local repository
 function checkLocalChanges {
-    localChanges=`$GIT_BIN status --untracked-files=no --porcelain`
+    localChanges=`git status --untracked-files=no --porcelain`
     if [ ! -z "$localChanges" ]; then
         error "Your local repository contains local changes. Please clean it and try again."
         return 1
@@ -95,7 +93,7 @@ function updateDeployAppFiles {
 
 # Commits changes
 function commitChanges {
-    $GIT_BIN commit -a -m "Update deploy app files for the next release."
+    git commit -a -m "Update deploy app files for the next release."
 }
 
 # Prepare environment by:
@@ -113,11 +111,11 @@ function prepareEnvironment {
 # - Executing the Maven release:perform goal
 # - Optionally executing a git push
 function doRelease {
-    $MAVEN_BIN --batch-mode release:prepare \
+    mvn --batch-mode release:prepare \
         -Dtag=cerberus-testing-$nextReleaseVersion \
         -DreleaseVersion=$nextReleaseVersion \
         -DdevelopmentVersion=$nextDevelopmentVersion \
-    && $MAVEN_BIN release:perform && $GIT_BIN push    
+    && mvn release:perform && git push    
 }
 
 # Main entry point
