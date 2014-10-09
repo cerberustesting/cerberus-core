@@ -20,14 +20,58 @@
 #       <activeProfile>default</activeProfile>
 #   </activeProfiles>
 
-MAVENBIN=mvn
-GITBIN=git
+APP=`basename $0`
+MAVEN_BIN=mvn
+GIT_BIN=git
+MAVEN_SETTINGS_PATH=~/.m2/settings.xml
 
 nextReleaseVersion=""
 nextDevelopmentVersion=""
 
+# Log a message according to the log level given in parameters
+function log {
+    level=$1
+    shift
+    echo "$APP [$level] $*"
+}
+
+# Log an error message
+function error {
+    log ERROR $*
+}
+
+# Light check on the Maven user settings file if SourceForge variables have been set
+function checkSettingsFile {
+    grep "sourceforge.username" $MAVEN_SETTINGS_PATH >> /dev/null && \
+    grep "sourceforge.password" $MAVEN_SETTINGS_PATH >> /dev/null && \
+    grep "sourceforge.url" $MAVEN_SETTINGS_PATH >> /dev/null
+    
+    if [[ $? != 0 ]]; then
+        error "Your Maven user settings file is not set to be used with the SourceForge account. Please correctly set it and try again."
+        return 1
+    fi
+    return 0
+}
+
+# Check if there are not commited changes in the local repository
+function checkLocalChanges {
+    localChanges=`$GIT_BIN status --untracked-files=no --porcelain`
+    if [ ! -z "$localChanges" ]; then
+        error "Your local repository contains local changes. Please clean it and try again."
+        return 1
+    fi
+    return 0
+}
+
+# Check prerequisities before to do the release
+function checkPrerequisities {
+    checkLocalChanges && \
+    checkSettingsFile
+    return $?
+}
+
 # Initializes variables from user
-function initVariables {
+function initVersions {
     read -p "Next release version? " nextReleaseVersion
     read -p "Next development version? " nextDevelopmentVersion
 }
@@ -51,7 +95,7 @@ function updateDeployAppFiles {
 
 # Commits changes
 function commitChanges {
-    $GITBIN commit -a -m "Update deploy app files for the next release"
+    $GIT_BIN commit -a -m "Update deploy app files for the next release."
 }
 
 # Prepare environment by:
@@ -59,7 +103,7 @@ function commitChanges {
 # - Updating bin/02DeployApp files
 # - Commiting changes
 function prepareEnvironment {
-    initVariables
+    initVersions
     updateDeployAppFiles
     commitChanges    
 }
@@ -69,15 +113,20 @@ function prepareEnvironment {
 # - Executing the Maven release:perform goal
 # - Optionally executing a git push
 function doRelease {
-    $MAVENBIN --batch-mode release:prepare \
+    $MAVEN_BIN --batch-mode release:prepare \
         -Dtag=cerberus-testing-$nextReleaseVersion \
         -DreleaseVersion=$nextReleaseVersion \
         -DdevelopmentVersion=$nextDevelopmentVersion \
-    && $MAVENBIN release:perform && $GITBIN push    
+    && $MAVEN_BIN release:perform && $GIT_BIN push    
 }
 
 # Main entry point
 function main {
+    if ! checkPrerequisities; then
+        error "Release aborted."
+        exit 1
+    fi
+    
     prepareEnvironment
     doRelease
 }
