@@ -1778,7 +1778,7 @@
                     //var jinput = $(this);
                     if (this.value && this.value !== "" && isNaN(this.value) && $("input.property_name[value='" + this.value + "']").length === 0) {
                         this.style.width = '192px';
-                        $(this).before("<img class='property_ko' data-property-name='" + this.value + "' src='./images/ko.png' title='Property Missing' style='display:inline;' width='16px' height='16px' />");
+                        $(this).before("<img class='property_ko' data-property-name='" + this.value + "' src='./images/pen.png' title='Property Missing' style='display:inline;' width='16px' height='16px' />");
                     }
                 });
                 $("img.property_ko").on("click", function(event) {
