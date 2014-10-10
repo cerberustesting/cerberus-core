@@ -156,36 +156,15 @@ public class TestCaseStepService implements ITestCaseStepService {
         return testCaseStepDAO.getStepLibraryBySystem(system);
     }
 
-    public JSONArray obj(String system) throws CerberusException, JSONException {
-        List<TestCaseStep> tcsList = this.getStepLibraryBySystem(system);
-        System.out.print(tcsList.size());
-        JSONArray result = new JSONArray();
-        HashSet tList = new HashSet();
-        for (int a = 0; a < tcsList.size(); a++) {
-            tList.add(tcsList.get(a).getTest());
-        }
-        List<String> tl = new ArrayList(tList);
-        System.out.print(tl.size());
-        int b = 0;
-        for (String t : tl) {
-            b++;
-            JSONObject obj = new JSONObject();
-            obj.put("title", t);
-            obj.put("key", b);
-            obj.put("folder", false);
-            JSONArray childArray = new JSONArray();
-            for (int a = 0; a < tcsList.size(); a++) {
-                if (tcsList.get(a).getTest().equals(t)) {
-                    JSONObject childobj = new JSONObject();
-                    childobj.put("title", tcsList.get(a).getTestCase()  + tcsList.get(a).getStep());
-                    childobj.put("key", a);
-                    childArray.put(childobj);
-                }
-            }
-            obj.put("children", childArray);
-            result.put(obj);
-        }
-        return result;
+    @Override
+    public List<TestCaseStep> getStepLibraryBySystemTest(String system, String test) throws CerberusException {
+        return testCaseStepDAO.getStepLibraryBySystemTest(system, test);
     }
+    
+    @Override
+    public List<TestCaseStep> getStepLibraryBySystemTestTestCase(String system, String test, String testCase) throws CerberusException {
+        return testCaseStepDAO.getStepLibraryBySystemTestTestCase(system, test, testCase);
+    }
+
 
 }

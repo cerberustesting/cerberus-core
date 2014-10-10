@@ -581,6 +581,10 @@
         <servlet-name>RunManualTest</servlet-name>
         <servlet-class>org.cerberus.servlet.manualTestCase.RunManualTest</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>GetStepInLibrary</servlet-name>
+        <servlet-class>org.cerberus.servlet.testCase.GetStepInLibrary</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>RunTestCase</servlet-name>
         <url-pattern>/RunTestCase</url-pattern>
@@ -1124,6 +1128,10 @@
     <servlet-mapping>
         <servlet-name>RunManualTest</servlet-name>
         <url-pattern>/RunManualTest</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>GetStepInLibrary</servlet-name>
+        <url-pattern>/GetStepInLibrary</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>
