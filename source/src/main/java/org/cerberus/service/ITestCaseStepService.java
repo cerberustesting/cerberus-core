@@ -77,4 +77,6 @@ public interface ITestCaseStepService {
     
     List<TestCaseStep> getStepUsedAsLibraryInOtherTestCaseByApplication(String application) throws CerberusException;
 
+    List<TestCaseStep> getStepLibraryBySystem(String system) throws CerberusException;
+
 }

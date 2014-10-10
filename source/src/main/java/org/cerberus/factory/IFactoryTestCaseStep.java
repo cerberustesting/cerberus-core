@@ -26,5 +26,6 @@ import org.cerberus.entity.TestCaseStep;
  */
 public interface IFactoryTestCaseStep {
 
-   TestCaseStep create(String test, String testCase, int step, String description, String useStep, String useStepTest,String useStepTestCase,Integer useStepStep);
+   TestCaseStep create(String test, String testCase, int step, String description,
+           String useStep, String useStepTest,String useStepTestCase,Integer useStepStep, String inLibrary);
 }

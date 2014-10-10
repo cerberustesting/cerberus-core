@@ -86,7 +86,7 @@ public class UseTestCaseStep extends HttpServlet {
             importProperty = request.getParameter("ImportProperty");
         }
 
-        TestCaseStep tcs = testCaseStepFactory.create(test, testCase, step, description, "Y", fromTest, fromTestCase, fromStep);
+        TestCaseStep tcs = testCaseStepFactory.create(test, testCase, step, description, "Y", fromTest, fromTestCase, fromStep, null);
 
         /**
          * Import Step, properties

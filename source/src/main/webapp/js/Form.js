@@ -2142,6 +2142,11 @@ function addTCSCNew(rowID, obj) {
     var nextIncStep = parseInt(numberOfStep) + 1;
     
     /* Create the new div and insert it in the page*/
+    var mainDiv = document.createElement('div');
+    mainDiv.setAttribute('style', 'display:block; clear:both; margin-top:5px');
+    var referenceNode = document.getElementById(rowID);
+    referenceNode.parentNode.insertBefore(mainDiv, referenceNode.nextSibling);
+    
     var DIV = document.createElement('div');
     if (document.getElementById("StepTemplateDiv")) {
         DIV.innerHTML = (DIV.innerHTML + document
@@ -2150,9 +2155,23 @@ function addTCSCNew(rowID, obj) {
     DIV.setAttribute('id',  'StepFirstLineDiv'+nextIncStep);
     DIV.setAttribute('class' , 'StepHeaderDiv');
     DIV.setAttribute('style', 'display:block; height:70px');
-    var referenceNode = document.getElementById(rowID);
-    referenceNode.parentNode.insertBefore(DIV, referenceNode.nextSibling);
-
+    mainDiv.appendChild(DIV);
+    
+    var DIV2 = document.createElement('div');
+    if (document.getElementById("StepButtonTemplateDiv")) {
+        DIV2.innerHTML = (DIV2.innerHTML + document
+                .getElementById('StepButtonTemplateDiv').innerHTML);
+    }
+    DIV2.setAttribute('id',  'StepButtonDiv'+nextIncStep);
+    DIV2.setAttribute('style', 'display:block;clear:both;margin-top:5px');
+    DIV2.setAttribute('ondragover', 'insertTCS(event, \''+nextIncStep+'\')');
+    DIV2.setAttribute('ondrop', 'drop(event, \''+nextIncStep+'\')');
+    mainDiv.appendChild(DIV2);
+    
+    var DIV3 = document.createElement('div');
+    DIV3.setAttribute('id',  'StepsEndDiv'+nextIncStep);
+    DIV3.setAttribute('style', 'display:none');
+    mainDiv.appendChild(DIV3);
     /* Search fields and add*/
     
     $('#StepFirstLineDiv'+nextIncStep).find('input[data-id="stepAnchor_template"]')
@@ -2172,6 +2191,7 @@ function addTCSCNew(rowID, obj) {
             .attr('name', 'initial_step_number_' + nextIncStep).val(nextIncStep);
     $('#StepFirstLineDiv'+nextIncStep).find('input[data-id="step_useStep_template"]')
             .attr('name', 'step_useStep_' + nextIncStep).val("Y")
+            .attr('id', 'step_useStep_' + nextIncStep)
             .attr('onclick', 'showUseStep(this, '+ nextIncStep +')');
     $('#StepFirstLineDiv'+nextIncStep).find('div[data-id="useStepForNewStep"]')
             .attr('id', 'useStepForNewStep_'+ nextIncStep);
@@ -2185,6 +2205,11 @@ function addTCSCNew(rowID, obj) {
             .attr('name', 'step_useStepStep_' + nextIncStep).attr('id', 'step_useStepStep_' + nextIncStep);
     $('#StepFirstLineDiv'+nextIncStep).find('select[data-id="step_addActionButton_template"]')
             .attr('onclick' , 'addTCSANew(\'BeforeFirstAction'+nextIncStep+'\', \''+nextIncStep+'\', null)');
+    $('#StepButtonDiv'+nextIncStep).find('input[data-id="submitButtonActionTemplate"]')
+            .attr('onclick' , 'submitTestCaseModificationNew(\'stepAnchor_'+nextIncStep+'\')');
+    $('#StepButtonDiv'+nextIncStep).find('input[data-id="addStepButtonTemplate"]')
+            .attr('onclick' , 'addTCSCNew(\'StepsEndDiv'+nextIncStep+'\', this)')
+            .attr('id' , 'addStepButton'+nextIncStep);
     callEvent();
     
     

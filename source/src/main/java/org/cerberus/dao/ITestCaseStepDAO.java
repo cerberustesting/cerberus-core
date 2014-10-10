@@ -48,4 +48,6 @@ public interface ITestCaseStepDAO {
     List<TestCaseStep> getTestCaseStepUsingTestCaseInParamter(String test, String testCase) throws CerberusException;
     
     List<TestCaseStep> getStepUsedAsLibraryInOtherTestCaseByApplication(String application) throws CerberusException;
+
+    List<TestCaseStep> getStepLibraryBySystem(String system) throws CerberusException;
 }

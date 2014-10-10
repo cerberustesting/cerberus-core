@@ -146,7 +146,7 @@ public class LoadTestCaseService implements ILoadTestCaseService {
                     testCaseStep.setTestCaseStepAction(tcsa);
                 }
             } else {
-                List<TestCaseStepAction> tcsa = this.loadTestCaseStepAction(testCaseStep, factoryTCS.create(testCaseStep.getUseStepTest(), testCaseStep.getUseStepTestCase(), testCaseStep.getUseStepStep(), null, null, null, null, 0));
+                List<TestCaseStepAction> tcsa = this.loadTestCaseStepAction(testCaseStep, factoryTCS.create(testCaseStep.getUseStepTest(), testCaseStep.getUseStepTestCase(), testCaseStep.getUseStepStep(), null, null, null, null, 0, null));
                 if (tcsa != null) {
                     testCaseStep.setTestCaseStepAction(tcsa);
                 }

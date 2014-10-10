@@ -427,9 +427,10 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
                 String useStepTestCase = getParameterIfExists(request, "step_useStepTestCase_" + inc);
                 String stepValue = getParameterIfExists(request, "step_useStepStep_" + inc);
                 int useStepStep = Integer.valueOf(stepValue == null || stepValue.equals("") ? "-1" : getParameterIfExists(request, "step_useStepStep_" + inc));
+                String inLibrary = getParameterIfExists(request, "step_inLibrary_" + inc);
                 /* If delete, don't add it to the list of steps */
                 if (delete == null) {
-                    TestCaseStep tcStep = testCaseStepFactory.create(test, testCase, step, desc, useStep, useStepTest, useStepTestCase, useStepStep);
+                    TestCaseStep tcStep = testCaseStepFactory.create(test, testCase, step, desc, useStep, useStepTest, useStepTestCase, useStepStep, inLibrary);
                     /* Take action and control only if not use step*/
                     if (useStep == null) {
                         tcStep.setTestCaseStepAction(getTestCaseStepActionFromParameter(request, appContext, test, testCase, inc));

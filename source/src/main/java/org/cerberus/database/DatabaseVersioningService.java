@@ -3864,6 +3864,13 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("VALUES ('APPLITYPE', 'APK', '40', 'Android Application', '')");
         SQLInstruction.add(SQLS.toString());
 
+// Add column inlibrary in testcasestep table
+//-- ------------------------ 545
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestep` ");
+        SQLS.append("ADD COLUMN `inlibrary` VARCHAR(1) NULL DEFAULT 'N' AFTER `useStepStep`;");
+        SQLInstruction.add(SQLS.toString());
+        
         return SQLInstruction;
     }
 }

@@ -32,9 +32,18 @@ public class TestCaseStep {
     private String useStepTest; //  The test of the used step
     private String useStepTestCase;  // The testcase of the used step
     private Integer useStepStep;   //  the step used
+    private String inLibrary;
     private List<TestCaseStepAction> testCaseStepAction;
     private boolean isStepInUseByOtherTestCase;
     private int initialStep;
+
+    public String getInLibrary() {
+        return inLibrary;
+    }
+
+    public void setInLibrary(String inLibrary) {
+        this.inLibrary = inLibrary;
+    }
 
     public int getInitialStep() {
         return initialStep;

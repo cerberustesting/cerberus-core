@@ -17,6 +17,8 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
+<%@page import="org.json.JSONArray"%>
+<%@page import="org.cerberus.service.impl.TestCaseStepService"%>
 <%@page import="org.cerberus.service.IUserSystemService"%>
 <%@page import="org.cerberus.entity.SqlLibrary"%>
 <%@page import="org.cerberus.service.ISqlLibraryService"%>
@@ -296,7 +298,7 @@
                     ITestService testService = appContext.getBean(ITestService.class);
                     ITestCaseService testCaseService = appContext.getBean(ITestCaseService.class);
                     ITestCaseCountryService testCaseCountryService = appContext.getBean(ITestCaseCountryService.class);
-                    ITestCaseStepService tcsService = appContext.getBean(ITestCaseStepService.class);
+                    TestCaseStepService tcsService = appContext.getBean(TestCaseStepService.class);
                     ITestCaseStepActionService tcsaService = appContext.getBean(ITestCaseStepActionService.class);
                     ITestCaseStepActionControlService tcsacService = appContext.getBean(ITestCaseStepActionControlService.class);
                     ITestCaseCountryPropertiesService tccpService = appContext.getBean(ITestCaseCountryPropertiesService.class);
@@ -826,6 +828,7 @@
                         <div id="AutomationScriptTitle" style="float:left">
                             <h3>TestCase Detailed Description</h3>
                         </div>
+                        <div><input type="button" class="buttonSaveChanges" value="show/hide Lib" onclick="showLib()"</div>
                         <div id="AutomationScriptFunctionalButtonDiv" style="float:left;margin-left:30px">
                             <select id="selectView" style="float:left; height:20px; width:100px" onchange="javascript:customizeView(this.value);
                                     SetCookie('TestCasePageDefaultView', this.value)">
@@ -837,19 +840,34 @@
                             </select>
                         </div>
                     </div>
-
-
-                    <div id="StepsMainDiv" style="width:100%;clear:both">
-                        <div id="StepsDivUnderTitle" style="width:100%;clear:both">
-                            <div id="StepsRightDiv" style="width:97%;float:left; margin:2%;">
-                                <div id="ButtonDiv0" style="float:left; height:20px">
-                                    <input type="button" value="Add Step" title="Add Step" class="buttonSaveChanges"
-                                           onclick="addTCSCNew('StepNumberDiv0', null)">
+                    <div id="StepsMainDiv" style="width:100%;float:left">
+                        <div id="StepsDivUnderTitle" style="width:97%;clear:both">
+                            <div id="StepLibDiv" style="margin-top:10px; background-color:white; width:0%; float:left; display:none; ">
+                                <div style="width:18%;position:fixed;background-color:white;height:500px; overflow: auto">    
+                                    <%
+                                        List<TestCaseStep> tcsListOfUseStep = tcsService.getStepLibraryBySystem(MySystem);
+                                        for (TestCaseStep tcs : tcsListOfUseStep) {
+                                    %><div style="border-style: solid; border-width:thin ; border-color:#CCCCCC;" id="<%=tcs.getTest()%><%=tcs.getTestCase()%><%=tcs.getStep()%>" data-test="<%=tcs.getTest()%>"
+                                         data-testcase="<%=tcs.getTestCase()%>" data-step="<%=tcs.getStep()%>" onmousedown="showTargetDiv()" onmouseup="hideTargetDiv()" draggable="true"  ondragstart="drag(event, this)" >
+                                        <p style="font-size:10px"><%=tcs.getTest()%> / <%=tcs.getTestCase()%> / <%=tcs.getStep()%>
+                                        </p>
+                                        <p style="font-size:10px; font-style: italic;font-weight: bold; color:dodgerblue"><%=tcs.getDescription()%></p></div>
+                                        <%}%>
                                 </div>
-                                <div style="float:left;height:25px" id="wob">
-                                    <input value="Save Changes" onclick="submitTestCaseModificationNew('');"
-                                           id="submitButtonAction" name="submitChanges" class="buttonSaveChanges"
-                                           type="button" >
+                                
+                            </div>
+                            <div id="StepsRightDiv" style="width:100%;float:left; margin:1%;">
+                                <div class="saveButtonDiv" ondragover="insertTCS(event, '0')" ondrop="drop(event, null)" style="display:block;clear:both;">
+                                    <div style="float:left;height:25px" id="wob">
+                                        <input value="Save Changes" onclick="submitTestCaseModificationNew('');"
+                                               id="submitButtonAction" name="submitChanges" class="buttonSaveChanges"
+                                               type="button" >
+                                    </div>
+                                    <div id="ButtonDiv0" style="float:left; height:20px">
+                                        <input type="button" value="Add Step" title="Add Step" class="buttonSaveChanges"
+                                               onclick="addTCSCNew('StepNumberDiv0', null)">
+                                    </div>
+                                    <div id="StepsEndDiv0" style="display:none; width:800px;"></div>
                                 </div>
                                 <div id="StepNumberDiv0" style="float:left;">
                                 </div>
@@ -1007,7 +1025,16 @@
                                             <a href="TestCase.jsp?Test=<%=tcs.getUseStepTest()%>&TestCase=<%=tcs.getUseStepTestCase()%>#stepAnchor_step<%=tcs.getUseStepStep()%>">Edit Used Step</a>
                                         </div>
                                         <%}%>
-
+                                        <div style="float:right;">Library
+                                            <input type="checkbox" style="margin-top:15px;font-weight: bold; width:20px" name="step_inLibrary_<%=incrementStep%>" 
+                                                   <%if (tcs.getInLibrary().equals("Y")) {%>
+                                                   CHECKED
+                                                   <%}%>
+                                                   value="Y"
+                                                   <%if (stepusedByAnotherTest) {%>
+                                                   onclick="return false"
+                                                   <%}%>>
+                                        </div>
 
                                     </div>
                                     <div id="StepsBorderDiv<%=incrementStep%>" style="display:block;margin-top:0px;border-style: solid; border-width:thin ; border-color:#EEEEEE; clear:both;">
@@ -1225,10 +1252,10 @@
                                             <%}%>
                                         </div>
                                     </div>
-                                    <div style="display:block;clear:both;margin-top:5px">
+                                    <div class="saveButtonDiv" ondragover="insertTCS(event, '<%=incrementStep%>')" ondrop="drop(event, '<%=incrementStep%>')" style="display:block;clear:both;margin-top:5px">
                                         <input value="Save Changes" class="buttonSaveChanges" onclick="submitTestCaseModificationNew('stepAnchor_<%=incrementStep%>');" id="submitButtonAction" name="submitChanges"
                                                type="button" >
-                                        <input type="button" value="Add Step" title="Add Step" class="buttonSaveChanges"
+                                        <input id="addStepButton<%=incrementStep%>" type="button" value="Add Step" title="Add Step" class="buttonSaveChanges"
                                                onclick="addTCSCNew('StepsEndDiv<%=incrementStep%>', this)">
 
                                     </div>
@@ -1666,7 +1693,7 @@
                     <div style="margin-top:10px;width:3%;float:left;color:blue;font-weight:bold;font-size:10px ;font-family: Trebuchet MS; background-color: transparent">
                         <div style="width:100%;clear:both;color:blue;font-weight:bold;font-size:10px ;font-family: Trebuchet MS; background-color: transparent">
                             <div>
-                                
+
                             </div>
                         </div>
                     </div>
@@ -1707,6 +1734,13 @@
                         </select>
                     </div>
                 </div>
+            </div>
+            <div id="StepButtonTemplateDiv" ondragover="insertTCS(event, '<%=incrementStep%>')"
+                 ondrop="drop(event, '<%=incrementStep%>')" style="display:block;clear:both;margin-top:5px">
+                <input value="Save Changes" class="buttonSaveChanges" 
+                       data-id="submitButtonActionTemplate" name="submitChanges" type="button" >
+                <input data-id="addStepButtonTemplate" type="button" value="Add Step" title="Add Step"
+                       class="buttonSaveChanges">
             </div>
             <div id="PropertyTemplateDiv" style="display:none">
                 <div data-id="property_color_id" style="float:left;width: 8px; height:100%;position:relative; background-color: yellow; display:inline-block">
@@ -1971,7 +2005,80 @@
                 } else {
                     document.getElementById("useStepForNewStep_" + incStep).style.display = 'none';
                 }
-}</script>
+            }</script>
+        <script>function insertTCS(event, incStep) {
+                event.preventDefault();
+            }
+            function drag(ev, th) {
+                ev.dataTransfer.setData("text/html", ev.target.id);
+                console.log(th);
+            }
+
+            function drop(ev, incStep) {
+                ev.preventDefault();
+                var data = ev.dataTransfer.getData("text/html");
+                ev.target.appendChild(document.getElementById(data));
+                if (incStep === null) {
+                    addTCSCNew('StepNumberDiv0', null);
+                } else {
+                    addTCSCNew('StepsEndDiv' + incStep, document.getElementById('addStepButton' + incStep));
+                }
+                var newIncStep = document.getElementsByName('step_increment').length;
+                $("#step_useStep_" + newIncStep).prop('checked', true);
+                showUseStep(document.getElementById("step_useStep_" + newIncStep), newIncStep);
+                var test = $(document.getElementById(data)).attr("data-test");
+                $("#step_useStepTest_" + newIncStep).val(test);
+                var testc = $(document.getElementById(data)).attr("data-testcase");
+                $("#step_useStepTestCase_" + newIncStep).empty().append($("<option></option>")
+                        .attr('value', testc)
+                        .text(testc));
+                var step = $(document.getElementById(data)).attr("data-step");
+                $("#step_useStepStep_" + newIncStep).empty().append($("<option></option>")
+                        .attr('value', step)
+                        .text(step));
+                $("#UpdateTestCase").attr("action", $("#UpdateTestCase").attr("action") + "#stepAnchor_" + incStep).submit();
+                //loadNewTCS();
+
+            }</script>
+        <script>function showLib() {
+                if (document.getElementById("StepLibDiv").style.display === "none") {
+                    document.getElementById("StepLibDiv").style.display = "block";
+                    document.getElementById("StepLibDiv").style.width = "18%";
+                    document.getElementById("StepsRightDiv").style.width = "80%";
+                } else {
+                    document.getElementById("StepLibDiv").style.display = "none";
+                    document.getElementById("StepLibDiv").style.width = "0%";
+                    document.getElementById("StepsRightDiv").style.width = "100%";
+                }
+
+            }
+
+            function showTargetDiv() {
+                $("div[class='saveButtonDiv']").each(function(index, field) {
+                    $(field).attr('style', 'background-color:#C4FFEB');
+                });
+
+            }
+            function hideTargetDiv() {
+                $("div[class='saveButtonDiv']").each(function(index, field) {
+                    $(field).attr('style', 'background-color:transparent');
+                });
+
+            }</script>
+        <!--<script>
+        $(document).ready(function() {
+                       
+        var data = ;
+          console.log(data);
+        $("#StepLibDiv").fancytree({
+           minExpandLevel: 1,
+          source: data,
+          checkbox: false
+        });
+                    });
+        
+        </script>-->
+
         <div id="popin"></div>
         <br><% out.print(display_footer(DatePageStart));%>
     </body>
