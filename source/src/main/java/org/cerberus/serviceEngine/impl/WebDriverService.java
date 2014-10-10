@@ -1068,7 +1068,8 @@ public class WebDriverService implements IWebDriverService{
     @Override
     public MessageEvent doSeleniumActionUrlLogin(Session session, String host, String uri) {
         MessageEvent message;
-        String url = "http://" + host + uri;
+        
+        String url = "http://" + host + (host.endsWith("/") ? uri.replace("/","") : uri);
         try {
             session.getDriver().get(url);
             message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_URLLOGIN);

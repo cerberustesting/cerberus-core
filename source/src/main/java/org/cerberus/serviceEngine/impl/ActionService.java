@@ -347,7 +347,7 @@ public class ActionService implements IActionService {
     private MessageEvent doActionOpenURL(TestCaseExecution tCExecution, String value, String property) {
         MessageEvent message;
         if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")) {
-            return webdriverService.doSeleniumActionOpenURL(tCExecution.getSession(),tCExecution.getCountryEnvironmentApplication().getIp(), value, property, false);
+            return webdriverService.doSeleniumActionOpenURL(tCExecution.getSession(),tCExecution.getUrl(), value, property, false);
         }
         message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
         message.setDescription(message.getDescription().replaceAll("%ACTION%", "OpenURL"));
@@ -370,7 +370,7 @@ public class ActionService implements IActionService {
     private MessageEvent doActionUrlLogin(TestCaseExecution tCExecution) {
         MessageEvent message;
         if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")) {
-            return webdriverService.doSeleniumActionUrlLogin(tCExecution.getSession(),tCExecution.getCountryEnvironmentApplication().getIp(),tCExecution.getCountryEnvironmentApplication().getUrlLogin());
+            return webdriverService.doSeleniumActionUrlLogin(tCExecution.getSession(),tCExecution.getUrl(),tCExecution.getCountryEnvironmentApplication().getUrlLogin());
         }
         message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
         message.setDescription(message.getDescription().replaceAll("%ACTION%", "UrlLogin"));
