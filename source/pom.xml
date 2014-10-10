@@ -38,6 +38,19 @@
 		<xmlunit.version>1.5</xmlunit.version>
 		<elfinder-servlet.version>1.2.0</elfinder-servlet.version>
 
+    <!-- Maven plugin version -->
+    <maven-compiler-plugin.version>2.3.2</maven-compiler-plugin.version>
+    <maven-surefire-plugin.version>2.10</maven-surefire-plugin.version>
+    <maven-javadoc-plugin.version>2.5</maven-javadoc-plugin.version>
+    <maven-war-plugin.version>2.1.1</maven-war-plugin.version>
+    <maven-dependency-plugin.version>2.8</maven-dependency-plugin.version>
+    <maven-release-plugin.version>2.5</maven-release-plugin.version>
+    <maven-deploy-plugin.version>2.5</maven-deploy-plugin.version>
+    <maven-antrun-plugin.version>1.7</maven-antrun-plugin.version>
+    <javaee-endorsed-api.version>6.0</javaee-endorsed-api.version>
+    <jsch.version>0.1.42</jsch.version>
+    <ant-jsch.version>1.8.2</ant-jsch.version>
+
 		<!-- Additional properties -->
 		<endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -240,7 +253,7 @@
 		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>2.3.2</version>
+				<version>${maven-compiler-plugin.version}</version>
 				<configuration>
 					<source>1.6</source>
 					<target>1.6</target>
@@ -251,14 +264,14 @@
 			</plugin>
 			<plugin>
 				<artifactId>maven-war-plugin</artifactId>
-				<version>2.1.1</version>
+				<version>${maven-war-plugin.version}</version>
 				<configuration>
 					<failOnMissingWebXml>false</failOnMissingWebXml>
 				</configuration>
 			</plugin>
 			<plugin>
 				<artifactId>maven-dependency-plugin</artifactId>
-				<version>2.5</version>
+				<version>${maven-dependency-plugin.version}</version>
 				<executions>
 					<execution>
 						<phase>validate</phase>
@@ -272,7 +285,7 @@
 								<artifactItem>
 									<groupId>javax</groupId>
 									<artifactId>javaee-endorsed-api</artifactId>
-									<version>6.0</version>
+									<version>${javaee-endorsed-api.version}</version>
 									<type>jar</type>
 								</artifactItem>
 							</artifactItems>
@@ -282,7 +295,7 @@
 			</plugin>
 			<plugin>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<version>2.10</version>
+				<version>${maven-surefire-plugin.version}</version>
 				<configuration>
 					<includes>
 						<include>**/*Test.java</include>
@@ -291,10 +304,53 @@
 			</plugin>
 			<plugin>
 				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>2.5</version>
+				<version>${maven-javadoc-plugin.version}</version>
 				<configuration>
 				</configuration>
 			</plugin>
+      <plugin>
+        <artifactId>maven-release-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <artifactId>maven-deploy-plugin</artifactId>
+        <configuration>
+          <skip>true</skip>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <version>${maven-antrun-plugin.version}</version>
+        <executions>
+          <execution>
+            <phase>deploy</phase>
+            <configuration>
+              <target>
+                <scp todir="${sourceforge.username}:${sourceforge.password}@${sourceforge.url}">
+                  <fileset dir="${project.build.directory}">
+                    <include name="${project.build.finalName}*.*" />
+                  </fileset>
+                </scp>
+              </target>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+        </executions>
+        <dependencies>
+          <dependency>
+              <groupId>com.jcraft</groupId>
+              <artifactId>jsch</artifactId>
+              <version>${jsch.version}</version>
+          </dependency>
+          <dependency>
+              <groupId>org.apache.ant</groupId>
+              <artifactId>ant-jsch</artifactId>
+              <version>${ant-jsch.version}</version>
+          </dependency>
+        </dependencies>
+      </plugin>
 		</plugins>
 	</build>
 </project>
