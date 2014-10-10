@@ -20,13 +20,6 @@
 package org.cerberus.servlet.guiPages;
 
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
@@ -35,14 +28,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Level;
-import org.cerberus.database.DatabaseSpring;
-import org.cerberus.entity.Invariant;
 import org.cerberus.entity.TestCaseStep;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.log.MyLogger;
-import org.cerberus.service.IInvariantService;
 import org.cerberus.service.ITestCaseStepService;
-import org.cerberus.service.impl.InvariantService;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -82,7 +71,7 @@ public class GetStepUsedAsLibraryInOtherTestCasePerApplication extends HttpServl
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
 
         String echo = policy.sanitize(request.getParameter("sEcho"));
-        String application = policy.sanitize(request.getParameter("Application"));
+        String system = policy.sanitize(request.getParameter("System"));
         
         JSONObject jsonResponse = new JSONObject();
 
@@ -92,7 +81,7 @@ public class GetStepUsedAsLibraryInOtherTestCasePerApplication extends HttpServl
 
             ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
             ITestCaseStepService stepService = appContext.getBean(ITestCaseStepService.class);
-                for (TestCaseStep tcs : stepService.getStepUsedAsLibraryInOtherTestCaseByApplication(application)){
+                for (TestCaseStep tcs : stepService.getStepLibraryBySystem(system)){
                         JSONArray row = new JSONArray();
                         StringBuilder testLink = new StringBuilder();
                         testLink.append("<a href=\"Test.jsp?stestbox=");

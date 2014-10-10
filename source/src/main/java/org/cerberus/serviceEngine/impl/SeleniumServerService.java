@@ -83,14 +83,14 @@ public class SeleniumServerService implements ISeleniumServerService {
              */
             MyLogger.log(SeleniumServerService.class.getName(), Level.DEBUG, "Set Capabilities");
             DesiredCapabilities caps = this.setCapabilities(tCExecution);
-
+            
             /**
              * SetUp Driver
              */
             MyLogger.log(SeleniumServerService.class.getName(), Level.DEBUG, "Set Driver");
             WebDriver driver = new RemoteWebDriver(new URL("http://" + tCExecution.getSession().getHost() + ":" + tCExecution.getSession().getPort() + "/wd/hub"), caps);
             tCExecution.getSession().setDriver(driver);
-
+            
             /**
              * If Gui application, maximize window Get IP of Node in case of
              * remote Server

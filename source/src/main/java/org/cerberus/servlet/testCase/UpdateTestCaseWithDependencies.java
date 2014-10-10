@@ -443,6 +443,12 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
                                 tcStep.setUseStepTestCase(tcs.getUseStepTestCase());
                                 tcStep.setUseStepStep(tcs.getUseStepStep());
                             }
+                            /**
+                             * If description is empty, take the one from the use step
+                             */
+                            if (desc.equals("")){
+                            tcStep.setDescription(tcs.getDescription());
+                            }
                         }
                     }
                     if (stepInUse != null && stepInUse.equals("Y") && initialStep != step) {

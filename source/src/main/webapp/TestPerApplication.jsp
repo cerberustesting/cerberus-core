@@ -160,9 +160,9 @@
             </table>
         </div>
                     <br>
-<p class="dttTitle">Step Library</p>
+<p class="dttTitle">Step Library of the System <%=MySystem%></p>
 <br>
-<p class="dttTitle" style="font-size:12px"><%=applicationL.getApplication()%></p>
+
         <div style="width: 100%; font: 90% sans-serif">
             <table id="stepTable<%=applicationL.getApplication()%>" class="display">
                 <thead>
@@ -225,7 +225,7 @@
                 var oTable = $(tableName).dataTable({
                     "aaSorting": [[0, "asc"]],
                     "bServerSide": false,
-                    "sAjaxSource": "GetStepUsedAsLibraryInOtherTestCasePerApplication?Application="+myApp,
+                    "sAjaxSource": "GetStepUsedAsLibraryInOtherTestCasePerApplication?System="+mySys,
                     "bJQueryUI": true,
                     "bProcessing": true,
                     "bPaginate": true,
