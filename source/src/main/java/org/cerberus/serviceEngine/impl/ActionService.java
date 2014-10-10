@@ -370,7 +370,8 @@ public class ActionService implements IActionService {
     private MessageEvent doActionUrlLogin(TestCaseExecution tCExecution) {
         MessageEvent message;
         if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")) {
-            return webdriverService.doSeleniumActionUrlLogin(tCExecution.getSession(),tCExecution.getCountryEnvironmentApplication().getIp(),tCExecution.getCountryEnvironmentApplication().getUrlLogin());
+            String url = tCExecution.getCountryEnvironmentApplication().getUrl() + tCExecution.getCountryEnvironmentApplication().getUrlLogin();
+            return webdriverService.doSeleniumActionUrlLogin(tCExecution.getSession(),tCExecution.getCountryEnvironmentApplication().getIp(), url);
         }
         message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
         message.setDescription(message.getDescription().replaceAll("%ACTION%", "UrlLogin"));
