@@ -17,6 +17,7 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
+<%@page import="org.cerberus.service.IUserSystemService"%>
 <%@page import="org.apache.commons.lang3.StringUtils"%>
 <%@page import="org.cerberus.entity.TCase"%>
 <%@page import="org.cerberus.entity.Test"%>
@@ -112,9 +113,14 @@
                 /*
                  * Test & TestCase
                  */
+                IUserService userService = appContext.getBean(IUserService.class);
                 if (!testSelected.equals("")) {
+                    String mySystem = "";
+                    if (request.getUserPrincipal() != null){
+                    mySystem = userService.findUserByKey(request.getUserPrincipal().getName()).getDefaultSystem();
+                    }
                     Test testSelect = testService.findTestByKey(testSelected);
-                    List<TCase> testcaseList = testcaseService.findTestCaseByTest(testSelected);
+                    List<TCase> testcaseList = testcaseService.findTestCaseByTestSystem(testSelected, mySystem);
             %>
 
             <br><div class="backDiv" style="clear:both; width:100%">

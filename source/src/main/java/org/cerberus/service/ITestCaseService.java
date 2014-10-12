@@ -37,12 +37,15 @@ public interface ITestCaseService {
      * @param test
      * @param testCase
      * @return
+     * @throws org.cerberus.exception.CerberusException
      */
     TCase findTestCaseByKey(String test, String testCase) throws CerberusException;
     
     TCase findTestCaseByKeyWithDependency (String test, String testCase) throws CerberusException;
 
     List<TCase> findTestCaseByTest(String test);
+    
+    List<TCase> findTestCaseByTestSystem(String test, String system);
 
     List<TCase> findTestCaseActiveByCriteria(String test, String application, String country);
 

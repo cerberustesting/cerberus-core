@@ -117,6 +117,7 @@ public class TestCaseDAO implements ITestCaseDAO {
      * @param test     Name of test group.
      * @param testCase Name of test case.
      * @return TestCase object or null.
+     * @throws org.cerberus.exception.CerberusException
      * @see org.cerberus.entity.TestCase
      */
     @Override
@@ -124,7 +125,7 @@ public class TestCaseDAO implements ITestCaseDAO {
         boolean throwExcep = false;
         TCase result = null;
         final String query = "SELECT * FROM testcase WHERE test = ? AND testcase = ?";
-
+                       
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
@@ -134,7 +135,7 @@ public class TestCaseDAO implements ITestCaseDAO {
 
                 ResultSet resultSet = preStat.executeQuery();
                 try {
-                    if (resultSet.first()) {
+                    if (resultSet.next()) {
                         result = this.loadTestCaseFromResultSet(resultSet);
                     } else {
                         result = null;
@@ -1064,6 +1065,52 @@ public class TestCaseDAO implements ITestCaseDAO {
                 ResultSet resultSet = preStat.executeQuery();
                 list = new ArrayList<TCase>();
                 try {
+                    while (resultSet.next()) {
+                        list.add(this.loadTestCaseFromResultSet(resultSet));
+                    }
+                } catch (SQLException exception) {
+                    MyLogger.log(TestCaseDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                } finally {
+                    resultSet.close();
+                }
+            } catch (SQLException exception) {
+                MyLogger.log(TestCaseDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(TestCaseDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(TestCaseDAO.class.getName(), Level.WARN, e.toString());
+            }
+        }
+
+        return list;
+    }
+
+    @Override
+    public List<TCase> findTestCaseByTestSystem(String test, String system) {
+       List<TCase> list = null;
+       StringBuilder sb = new StringBuilder();
+       sb.append("SELECT * FROM testcase tc join application app on tc.application=app.application ");
+       sb.append(" WHERE tc.test = ? and app.system = ? ");
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(sb.toString());
+            try {
+                preStat.setString(1, test);
+                preStat.setString(2, system);
+
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+                    list = new ArrayList<TCase>();
+
                     while (resultSet.next()) {
                         list.add(this.loadTestCaseFromResultSet(resultSet));
                     }

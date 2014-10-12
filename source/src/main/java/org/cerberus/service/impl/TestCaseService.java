@@ -123,6 +123,11 @@ public class TestCaseService implements ITestCaseService {
     public List<TCase> findTestCaseByTest(String test) {
         return testCaseDao.findTestCaseByTest(test);
     }
+    
+    @Override
+    public List<TCase> findTestCaseByTestSystem(String test, String system) {
+        return testCaseDao.findTestCaseByTestSystem(test, system);
+    }
 
     @Override
     public boolean updateTestCaseInformation(TestCase testCase) {

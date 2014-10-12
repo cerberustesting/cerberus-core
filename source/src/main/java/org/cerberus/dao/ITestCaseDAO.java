@@ -103,4 +103,6 @@ public interface ITestCaseDAO {
     List<TCase> findTestCaseByTestSystems(String test, List<String> systems);
 
     String getMaxNumberTestCase(String test);
+
+    public List<TCase> findTestCaseByTestSystem(String test, String system);
 }

@@ -308,6 +308,7 @@
                     ITestCaseExecutionService testCaseExecutionService = appContext.getBean(ITestCaseExecutionService.class);
                     IInvariantService invariantService = appContext.getBean(IInvariantService.class);
                     IUserSystemService userSystemService = appContext.getBean(IUserSystemService.class);
+                    IUserService userService = appContext.getBean(IUserService.class);
 
                     /**
                      * Function
@@ -341,8 +342,8 @@
 
                     String group = getRequestParameterWildcardIfEmpty(request, "group");
                     String status = getRequestParameterWildcardIfEmpty(request, "status");
-                    String test = getRequestParameterWildcardIfEmpty(request, "Test");
-                    String testcase = getRequestParameterWildcardIfEmpty(request, "TestCase");
+                    String test = request.getParameter("Test");
+                    String testcase = request.getParameter("TestCase");
                     Boolean tinf = getBooleanParameterFalseIfEmpty(request, "Tinf");
             %>
             <input id="urlForListOffunction" value="<%=listOfFunction%>" style="display:none">
@@ -397,46 +398,81 @@
             <br>
             <%if (!test.equals("") && !testcase.equals("")) {
                     TCase tcase = testCaseService.findTestCaseByKey(test, testcase);
-                    Test testObject = testService.findTestByKey(test);
-                    List<Invariant> countryListInvariant = invariantService.findListOfInvariantById("COUNTRY");
-                    List<String> countryListTestcase = testCaseCountryService.findListOfCountryByTestTestCase(test, testcase);
-                    TestCaseExecution tce = testCaseExecutionService.findLastTestCaseExecutionNotPE(test, testcase);
-                    List<BuildRevisionInvariant> listBuildRev = buildRevisionInvariantService.findAllBuildRevisionInvariantBySystemLevel(MySystem, 1);
-                    List<TestCaseCountryProperties> tccpList = tccpService.findDistinctPropertiesOfTestCase(test, testcase);
-
-                    group = tcase.getGroup();
-                    status = tcase.getStatus();
-                    String dateCrea = tcase.getTcDateCrea() != null ? tcase.getTcDateCrea() : "-- unknown --";
-                    // Define the list of country available for this test
-                    String countries = "";
-                    for (String c : countryListTestcase) {
-                        countries += c + "-";
+                    
+                //First Check if testcase can be edited (good system selected)
+                    User MyUserobj = userService.findUserByKeyWithDependencies(request.getUserPrincipal().getName());
+                    List<UserSystem> systemList = userSystemService.findUserSystemByUser(request.getUserPrincipal().getName());
+                    List<String> usList = new ArrayList();
+                    for (UserSystem us : systemList) {
+                        usList.add(us.getSystem());
                     }
+                    String applicationSystem = myApplicationService.findApplicationByKey(tcase.getApplication()).getSystem();
+                    if (!MySystem.equals(applicationSystem)) {%>
+            <script>
+                <%
+                    //if system selected is not the one of the application but is one of the authorized system, propose to switch
+                if (usList.contains(applicationSystem)) {
+                %>
+                var sys = '<%=applicationSystem%>';
+                if (confirm('This Testcase is only accessible with another system selection\nSwitch to system ' + sys + '?')){
+                <%
+                MyUserobj.setDefaultSystem(applicationSystem);
+                userService.updateUser(MyUserobj);
+                %>
+                window.location = "./TestCase.jsp?Test=<%=test%>&TestCase=<%=testcase%>";
+                } else {
+                window.location = "./Homepage.jsp";
+                }
+                <%  
+                } else {%>
+                alert("You are not allowed tp access to this system\nPlease contact your Cerberus Administrator to modify your account");
+                window.location = "./Homepage.jsp";
+                <%}%>
+            </script>
+            <%
+                }
 
-                    Application myApplication = null;
-                    if (tcase.getApplication() != null) {
-                        myApplication = myApplicationService.findApplicationByKey(tcase.getApplication());
-                        appSystem = myApplication.getSystem();
-                        SitdmossBugtrackingURL = myApplication.getBugTrackerUrl();
-                    } else {
-                        appSystem = "";
-                        SitdmossBugtrackingURL = "";
-                    }
+                Test testObject = testService.findTestByKey(test);
+                List<Invariant> countryListInvariant = invariantService.findListOfInvariantById("COUNTRY");
+                List<String> countryListTestcase = testCaseCountryService.findListOfCountryByTestTestCase(test, testcase);
+                TestCaseExecution tce = testCaseExecutionService.findLastTestCaseExecutionNotPE(test, testcase);
+                List<BuildRevisionInvariant> listBuildRev = buildRevisionInvariantService.findAllBuildRevisionInvariantBySystemLevel(MySystem, 1);
+                List<TestCaseCountryProperties> tccpList = tccpService.findDistinctPropertiesOfTestCase(test, testcase);
 
-                    /**
-                     * We can edit the testcase only if User role is TestAdmin
-                     * or if role is Test and testcase is not WORKING
-                     */
-                    boolean canEdit = false;
-                    if (request.getUserPrincipal() != null
-                            && (request.isUserInRole("TestAdmin")) || ((request.isUserInRole("Test")) && !(status.equalsIgnoreCase("WORKING")))) {
-                        canEdit = true;
-                    }
+                group = tcase.getGroup();
+                status = tcase.getStatus();
+                String dateCrea = tcase.getTcDateCrea() != null ? tcase.getTcDateCrea() : "-- unknown --";
+                // Define the list of country available for this test
+                String countries = "";
+                for (String c : countryListTestcase) {
+                    countries += c + "-";
+                }
 
-                    boolean canDelete = false;
-                    if (request.getUserPrincipal() != null && request.isUserInRole("TestAdmin")) {
-                        canDelete = true;
-                    }
+                Application myApplication = null;
+                if (tcase.getApplication() != null) {
+                    myApplication = myApplicationService.findApplicationByKey(tcase.getApplication());
+                    appSystem = myApplication.getSystem();
+                    SitdmossBugtrackingURL = myApplication.getBugTrackerUrl();
+                } else {
+                    appSystem = "";
+                    SitdmossBugtrackingURL = "";
+                }
+
+                /**
+                 * We can edit the testcase only if User role is
+                 * TestAdmin or if role is Test and testcase is not
+                 * WORKING
+                 */
+                boolean canEdit = false;
+                if (request.getUserPrincipal() != null
+                        && (request.isUserInRole("TestAdmin")) || ((request.isUserInRole("Test")) && !(status.equalsIgnoreCase("WORKING")))) {
+                    canEdit = true;
+                }
+
+                boolean canDelete = false;
+                if (request.getUserPrincipal() != null && request.isUserInRole("TestAdmin")) {
+                    canDelete = true;
+                }
 
             %>
             <br>
@@ -1912,8 +1948,8 @@
                     }
                 });
             }
-            
-            function findStepBySystemTest(test, system, field){
+
+            function findStepBySystemTest(test, system, field) {
                 var url;
                 url = 'GetStepInLibrary?system=' + system + '&test=' + test;
                 $.get(url, function(data) {
@@ -1923,17 +1959,17 @@
                             .attr('style', 'width:300px;')
                             .text('Choose TestCase'));
                     for (var i = 0; i < data.testCaseStepList.length; i++) {
-                            $('#' + field).append($("<option></option>")
-                                    .attr('value', data.testCaseStepList[i].testCase)
-                                    .attr('style', 'width:300px;')
-                                    .text(data.testCaseStepList[i].testCase));
-                        }
+                        $('#' + field).append($("<option></option>")
+                                .attr('value', data.testCaseStepList[i].testCase)
+                                .attr('style', 'width:300px;')
+                                .text(data.testCaseStepList[i].testCase));
+                    }
                 });
             }
-            
-            function findStepBySystemTestTestCase(test,testCase, system, field){
+
+            function findStepBySystemTestTestCase(test, testCase, system, field) {
                 var url;
-                url = 'GetStepInLibrary?system=' + system + '&test=' + test+ '&testCase=' + testCase;
+                url = 'GetStepInLibrary?system=' + system + '&test=' + test + '&testCase=' + testCase;
                 $.get(url, function(data) {
                     $(document.getElementById(field)).empty();
                     $('#' + field).append($("<option></option>")
@@ -1941,15 +1977,15 @@
                             .attr('style', 'width:300px;')
                             .text('Choose TestCase'));
                     for (var i = 0; i < data.testCaseStepList.length; i++) {
-                            $('#' + field).append($("<option></option>")
-                                    .attr('value', data.testCaseStepList[i].step)
-                                    .attr('style', 'width:300px;')
-                                    .text(data.testCaseStepList[i].step+':'+data.testCaseStepList[i].description));
-                        }
+                        $('#' + field).append($("<option></option>")
+                                .attr('value', data.testCaseStepList[i].step)
+                                .attr('style', 'width:300px;')
+                                .text(data.testCaseStepList[i].step + ':' + data.testCaseStepList[i].description));
+                    }
                 });
             }
         </script>
-        
+
         <script type="text/javascript">
             function addOptionInSelect(newElementId, selectElementId) {
                 var option = document.createElement('option');
