@@ -1054,8 +1054,9 @@
                                                 <%  if (tcs.getUseStepTestCase().equals("")) { %>
                                                 <option style="width: 200px" value="">---</option>
                                                 <%  } else {
-                                                    for (String tc : tcList) {%>
-                                                <option style="width: 400px;" value="<%=tc%>" <%=tcs.getUseStepTestCase().compareTo(tc) == 0 ? " SELECTED " : ""%>><%=tc%>
+                                                    List<TCase> tcaseList = testCaseService.findTestCaseByTest(test);
+                                                    for (TCase tc : tcaseList) {%>
+                                                <option style="width: 400px;" class="font_weight_bold_<%=tc.getActive()%>" value="<%=tc.getTestCase()%>" <%=tcs.getUseStepTestCase().compareTo(tc.getTestCase()) == 0 ? " SELECTED " : ""%>><%=tc.getTestCase()%> [<%=tc.getApplication()%>] : <%=tc.getShortDescription()%>
                                                 </option>
                                                 <% }
                                                     }%>
