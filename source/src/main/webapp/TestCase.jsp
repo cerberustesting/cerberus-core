@@ -337,13 +337,13 @@
                     }
                     List<String> systems = new ArrayList();
                     systems.add(MySystem);
-
+                    
                     List<Test> tests = new ArrayList();
 
                     String group = getRequestParameterWildcardIfEmpty(request, "group");
                     String status = getRequestParameterWildcardIfEmpty(request, "status");
-                    String test = request.getParameter("Test");
-                    String testcase = request.getParameter("TestCase");
+                    String test = getRequestParameterWildcardIfEmpty(request, "Test");
+                    String testcase = getRequestParameterWildcardIfEmpty(request, "TestCase");
                     Boolean tinf = getBooleanParameterFalseIfEmpty(request, "Tinf");
             %>
             <input id="urlForListOffunction" value="<%=listOfFunction%>" style="display:none">
@@ -357,7 +357,7 @@
                     </div>
                     <div style="float:left">
                         <select id="filtertest" name="Test" style="width: 200px" OnChange="document.selectTestCase.submit()">
-                            <%  if (test.compareTo("") == 0) { %>
+                            <%  if (test!=null && test.compareTo("") == 0) { %>
                             <option style="width: 200px" value="All">-- Choose Test --
                             </option>
                             <%  }
@@ -365,8 +365,10 @@
                                 //            for (UserSystem us : userSystemService.findUserSystemByUser(request.getUserPrincipal().getName())){
                                 //systems.add(us.getSystem());
                                 //}
+                            
                                 tests = testService.findTestBySystems(systems);
-                                for (Test tst : tests) {%>
+                                for (Test tst : tests) {
+                            %>
                             <option style="width: 200px;" class="font_weight_bold_<%=tst.getActive()%>" value="<%=tst.getTest()%>" <%=test.compareTo(tst.getTest()) == 0 ? " SELECTED " : ""%>><%=tst.getTest()%>
                             </option>
                             <% }
