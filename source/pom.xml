@@ -2,8 +2,8 @@
 
 	<modelVersion>4.0.0</modelVersion>
  
-	<groupId>org.cerberus</groupId>
-	<artifactId>cerberus</artifactId>
+	<groupId>com.redcats</groupId>
+	<artifactId>Cerberus</artifactId>
 	<version>1.0.2-SNAPSHOT</version>
 	<packaging>war</packaging>
 
