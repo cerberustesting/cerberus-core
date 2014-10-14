@@ -78,7 +78,6 @@ function initVersions {
 function updateDeployAppFile {
     deployLineAndNumber=`grep -n " deploy " $1`
     deployLineNumber=`echo $deployLineAndNumber | cut -d: -f1`
-    deployLine=`echo $deployLineAndNumber | cut -d: -f2`
     undeployLine=`grep " undeploy " $1 | tail -1 | sed "s/Cerberus-[^ ]*/Cerberus-${nextReleaseVersion}/"`
 
     sed -i "${deployLineNumber}i $undeployLine" $1
