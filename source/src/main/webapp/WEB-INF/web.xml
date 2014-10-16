@@ -585,6 +585,16 @@
         <servlet-name>GetStepInLibrary</servlet-name>
         <servlet-class>org.cerberus.servlet.testCase.GetStepInLibrary</servlet-class>
     </servlet>
+    <servlet>
+        <description>Add a test case to the execution queue.</description>
+        <servlet-name>AddToExecutionQueue</servlet-name>
+        <servlet-class>org.cerberus.servlet.publi.AddToExecutionQueue</servlet-class>
+    </servlet>
+    <servlet>
+        <description>Execute the next record from the execution queue.</description>
+        <servlet-name>ExecuteNextInQueue</servlet-name>
+        <servlet-class>org.cerberus.servlet.publi.ExecuteNextInQueue</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>RunTestCase</servlet-name>
         <url-pattern>/RunTestCase</url-pattern>
@@ -1133,11 +1143,23 @@
         <servlet-name>GetStepInLibrary</servlet-name>
         <url-pattern>/GetStepInLibrary</url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>AddToExecutionQueue</servlet-name>
+        <url-pattern>/AddToExecutionQueue</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ExecuteNextInQueue</servlet-name>
+        <url-pattern>/ExecuteNextInQueue</url-pattern>
+    </servlet-mapping>
     <session-config>
         <session-timeout>
             60
         </session-timeout>
     </session-config>
+    <error-page>
+        <error-code>400</error-code>
+        <location>/ErrorPages/Error.jsp?error=400</location>
+    </error-page>
     <error-page>
         <error-code>403</error-code>
         <location>/ErrorPages/Error.jsp?error=403</location>

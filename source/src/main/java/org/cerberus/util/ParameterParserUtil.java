@@ -19,6 +19,20 @@
  */
 package org.cerberus.util;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.owasp.html.PolicyFactory;
+import org.owasp.html.Sanitizers;
+
 /**
  * Class used in jsp or servlet in order to centralize all the parameter
  * parsing.
@@ -27,8 +41,13 @@ package org.cerberus.util;
  */
 public final class ParameterParserUtil {
 
+	public static final String DEFAULT_BOOLEAN_TRUE_VALUE = "Y";
+	public static final String DEFAULT_BOOLEAN_FALSE_VALUE = "N";
+	
+	private static final PolicyFactory POLICY = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
     private static final String DEFAULT_SQL_STRING_VALUE = "";
-
+    private static final Pattern PARAMETER_PATTERN = Pattern.compile("&?([^=]+)=([^&]+)");
+    
     /**
      * To avoid instanciation of utility.
      */
@@ -88,6 +107,94 @@ public final class ParameterParserUtil {
     }
 
     /**
+     * Parses and decodes the given inParam
+     * 
+     * @see #parseStringParam(String, String)
+     * 
+     * @param inParam
+     * @param defaultVal
+     * @param charset
+     * @return
+     */
+    public static String parseStringParamAndDecode(String inParam, String defaultVal, String charset) {
+		if (inParam == null) {
+			return defaultVal;
+		}
+
+		try {
+			return parseStringParam(POLICY.sanitize(URLDecoder.decode(inParam, charset)), defaultVal);
+		} catch (UnsupportedEncodingException e) {
+			return defaultVal;
+		}
+	}
+    
+	/**
+	 * Parses and decodes a list of map which is contained into the given inParam.
+	 * 
+	 * <p>
+	 * In other words, transform a kind of array as: <br/>
+	 * [foo=bar&alice=bob, foo=baz&bobby=bobby] <br />
+	 * <br />
+	 * To a list containing the following maps:
+	 * <ul>
+	 * <li>[foo = bar, alice = bob]</li>
+	 * <li>[foo = baz, bobby = bobby]</li>
+	 * </ul>
+	 * </p>
+	 * 
+	 * @param inParam
+	 * @param defaultVal
+	 * @param charset
+	 * @return
+	 */
+    public static List<Map<String, String>> parseListMapParamAndDecode(String[] inParam, List<Map<String, String>> defaultVal, String charset) {
+    	if (inParam == null) {
+    		return defaultVal;
+    	}
+
+    	List<Map<String, String>> result = new ArrayList<Map<String,String>>();
+    	for (String param : inParam) {
+    		Map<String, String> properties = new HashMap<String, String>();
+    		Matcher matcher = PARAMETER_PATTERN.matcher(param);
+    		while (matcher.find()) {
+    			try {
+    				properties.put(POLICY.sanitize(URLDecoder.decode(matcher.group(1), charset)), POLICY.sanitize(URLDecoder.decode(matcher.group(2), charset)));
+    			} catch (UnsupportedEncodingException e) {
+    				return defaultVal;
+    			}
+    		}
+    		result.add(properties);
+    	}
+    	
+    	return result;
+    }
+    
+    /**
+     * Parses and decode a list from the given inParams one by decoding each of them
+     * 
+     * @param param
+     * @param defaultVal
+     * @param req
+     * @return
+     */
+    public static List<String> parseListParamAndDecode(String[] inParams, List<String> defaultVal, String charset) {
+		if (inParams == null) {
+			return defaultVal;
+		}
+		
+		List<String> result = new ArrayList<String>();
+		for (String item : inParams) {
+			try {
+				result.add(POLICY.sanitize(URLDecoder.decode(item, charset)));
+			} catch (UnsupportedEncodingException e) {
+				return defaultVal;
+			}
+		}
+		
+		return result;
+	}
+
+    /**
      * @param inParam
      * @return an empty string if the inParam is null. It returns inParam if OK.
      */
@@ -111,6 +218,30 @@ public final class ParameterParserUtil {
         }
         return defaultVal;
     }
+    
+    /**
+     * Parses and decodes the {@link Integer} contained into the given inParam.
+     * 
+     * @see #parseIntegerParam(String, int)
+     * 
+     * @param inParam
+     * @param defaultVal
+     * @param charset
+     * @return
+     */
+    public static int parseIntegerParamAndDecode(String inParam, int defaultVal, String charset) {
+		if (inParam == null) {
+			return defaultVal;
+		}
+
+		try {
+			return parseIntegerParam(POLICY.sanitize(URLDecoder.decode(inParam, charset)), defaultVal);
+		} catch (UnsupportedEncodingException e) {
+			return defaultVal;
+		} catch (NumberFormatException nfe) {
+			return defaultVal;
+		}
+	}
 
     /**
      * @param inParam
@@ -124,6 +255,30 @@ public final class ParameterParserUtil {
         }
         return defaultVal;
     }
+    
+    /**
+     * Parses and decodes the {@link Long} contained into the given inParam.
+     * 
+     * @see #parseLongParam(String, int)
+     * 
+     * @param inParam
+     * @param defaultVal
+     * @param charset
+     * @return
+     */
+    public static long parseLongParamAndDecode(String inParam, long defaultVal, String charset) {
+		if (inParam == null) {
+			return defaultVal;
+		}
+
+		try {
+			return parseLongParam(POLICY.sanitize(URLDecoder.decode(inParam, charset)), defaultVal);
+		} catch (UnsupportedEncodingException e) {
+			return defaultVal;
+		} catch (NumberFormatException nfe) {
+			return defaultVal;
+		}
+	}
 
     /**
      * @param inParam
@@ -134,14 +289,36 @@ public final class ParameterParserUtil {
         if (inParam == null) {
             return defaultVal;
         }
-        if ((inParam.equalsIgnoreCase("Y") || inParam.equalsIgnoreCase("yes") || inParam.equalsIgnoreCase("true"))) {
+        if ((inParam.equalsIgnoreCase(DEFAULT_BOOLEAN_TRUE_VALUE) || inParam.equalsIgnoreCase("yes") || inParam.equalsIgnoreCase("true"))) {
             return true;
         }
-        if ((inParam.equalsIgnoreCase("N") || inParam.equalsIgnoreCase("no") || inParam.equalsIgnoreCase("false"))) {
+        if ((inParam.equalsIgnoreCase(DEFAULT_BOOLEAN_FALSE_VALUE) || inParam.equalsIgnoreCase("no") || inParam.equalsIgnoreCase("false"))) {
             return false;
         }
         return defaultVal;
     }
+    
+    /**
+     * Parses and decodes the {@link Boolean} contained into the given inParam.
+     * 
+     * @see #parseBooleanParam(String, int)
+     *  
+     * @param inParam
+     * @param defaultVal
+     * @param charset
+     * @return
+     */
+    public static boolean parseBooleanParamAndDecode(String inParam, boolean defaultVal, String charset) {
+		if (inParam == null) {
+			return defaultVal;
+		}
+
+		try {
+			return parseBooleanParam(POLICY.sanitize(URLDecoder.decode(inParam, charset)), defaultVal);
+		} catch (UnsupportedEncodingException e) {
+			return defaultVal;
+		}
+	}
 
     /**
      * @param inParam
