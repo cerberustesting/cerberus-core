@@ -84,10 +84,6 @@ public class RunManualTest extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-        String test = req.getParameter("test");
-        String testCase = req.getParameter("testCase");
-        String env = req.getParameter("env");
-        String country = req.getParameter("country");
         String controlStatus = "OK";
         //req.getParameter("controlStatus");
         String controlMessage = req.getParameter("controlMessage");
@@ -97,7 +93,8 @@ public class RunManualTest extends HttpServlet {
         //req.getParameter("browser");
         String browserVersion = "23";
         //req.getParameter("browserVersion");
-
+        long executionId = Long.valueOf(req.getParameter("executionId"));
+        
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         ITestCaseService testService = appContext.getBean(ITestCaseService.class);
         IApplicationService applicationService = appContext.getBean(IApplicationService.class);
@@ -108,47 +105,13 @@ public class RunManualTest extends HttpServlet {
         ITestCaseStepActionExecutionService testCaseStepActionExecutionService = appContext.getBean(ITestCaseStepActionExecutionService.class);
         ITestCaseStepActionControlExecutionService testCaseStepActionControlExecutionService = appContext.getBean(ITestCaseStepActionControlExecutionService.class);
         IFactoryTestCaseExecution factoryTCExecution = appContext.getBean(IFactoryTestCaseExecution.class);
-        IFactoryTestCaseExecutionSysVer factoryTestCaseExecutionSysVer = appContext.getBean(IFactoryTestCaseExecutionSysVer.class);
+        
 
         
         try {
-            Application application = null;
-            TCase tCase = testService.findTestCaseByKey(test, testCase);
-            if (tCase != null) {
-                application = applicationService.findApplicationByKey(tCase.getApplication());
-            } else {
-                throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
-            }
-            CountryEnvParam countryEnvParam;
-            try {
-                countryEnvParam = countryEnvParamService.findCountryEnvParamByKey(application.getSystem(), country, env);
-            } catch (CerberusException e) {
-                CerberusException ex = new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
-                ex.getMessageError().setDescription("Combination Environment: '" + env + "' and Country: '" + country
-                        + "' not defined for System/Application: " + application.getSystem() + "/" + application.getApplication());
-                throw ex;
-            }
-            String build = countryEnvParam.getBuild();
-            String revision = countryEnvParam.getRevision();
-            long now = new Date().getTime();
-            String version = "Cerberus-" + Version.VERSION;
-
-            String myUser = "";
-            if (!(req.getUserPrincipal() == null)) {
-                myUser = ParameterParserUtil.parseStringParam(req.getUserPrincipal().getName(), "");
-            }
-
-            if (myUser == null || myUser.length() <= 0) {
-                myUser = "Manual";
-            }
-
-            TestCaseExecution execution = factoryTCExecution.create(0, test, testCase, build, revision, env, country, browser, "", "", browserVersion, now, now,
-                    controlStatus, controlMessage, application, "", "", "", tag, "Y", 0, 0, 0, 0, true, "", "", tCase.getStatus(), version,
-                    null, null, null, false, "", "", "", "", "", "", null, null, myUser);
-
-            long executionId = testCaseExecutionService.insertTCExecution(execution);
-            execution.setId(executionId);
-            
+            TestCaseExecution execution = testCaseExecutionService.findTCExecutionByKey(executionId);
+            String test = execution.getTest();
+            String testCase = execution.getTestCase();
             List<String> status = new ArrayList();
             /**
              * Get Step Execution and insert them into Database
@@ -176,12 +139,14 @@ public class RunManualTest extends HttpServlet {
             tcse.setReturnCode("KO");
             execution.setControlStatus("KO");
             testCaseStepExecutionService.updateTestCaseStepExecution(tcse);
-            }
-            if (status.contains("NA")){
+            } else if (status.contains("NA")){
             tcse.setReturnCode("KO");
             execution.setControlStatus("NA");
             testCaseStepExecutionService.updateTestCaseStepExecution(tcse);
+            } else {
+            execution.setControlStatus("OK");
             }
+            
             }
             testCaseExecutionService.updateTCExecution(execution);
             
@@ -194,8 +159,7 @@ public class RunManualTest extends HttpServlet {
 //            testCaseStepExecutionService.insertTestCaseStepExecution(null);
 //            }
 
-            TestCaseExecutionSysVer testCaseExecutionSysVer = factoryTestCaseExecutionSysVer.create(execution.getId(), application.getSystem(), build, revision);
-            testCaseExecutionSysVerService.insertTestCaseExecutionSysVer(testCaseExecutionSysVer);
+            
 
             resp.sendRedirect("ExecutionDetail.jsp?id_tc="+executionId);
 
@@ -280,7 +244,11 @@ public class RunManualTest extends HttpServlet {
                         ? "0" : getParameterIfExists(request, "action_sequence_" + stepId + "_" + inc));
                 String actionReturnCode = getParameterIfExists(request, "actionStatus_" + stepId + "_" + inc);
                 String actionReturnMessage = getParameterIfExists(request, "actionResultMessage_" + stepId + "_" + inc);
-                String actionScreenshotFileName = "toto";
+                String takeScreenshot = getParameterIfExists(request, "takeScreenshot_" + stepId + "_" + inc);
+                String actionScreenshotFileName = null;
+                if (takeScreenshot.equals("Y")){
+                actionScreenshotFileName = test+"-"+testCase+"-St"+stepId+"Sq"+inc+".jpg";
+                }
                 
                 result.add(testCaseStepActionExecutionFactory.create(executionId, test, testCase, step, sequence, actionReturnCode,
                         actionReturnMessage, "Manual Action", null, null,  now, now, now, now, 
@@ -307,7 +275,11 @@ public class RunManualTest extends HttpServlet {
                         ? "0" : getParameterIfExists(request, "control_control_" + stepId + "_" + sequenceId + "_" + inc));
                 String controlReturnCode = getParameterIfExists(request, "controlStatus_" + stepId + "_" + sequenceId + "_" + inc);
                 String controlReturnMessage = getParameterIfExists(request, "controlResultMessage_" + stepId + "_" + sequenceId + "_" + inc);
-                String controlScreenshot = "tiit";
+                String controlScreenshot = null;
+                String takeScreenshot = getParameterIfExists(request, "takeScreenshot_" + stepId + "_" + sequenceId + "_" + inc);
+                if (takeScreenshot.equals("Y")){
+                controlScreenshot = test+"-"+testCase+"-St"+stepId+"Sq"+sequenceId+"Ct"+inc+".jpg";
+                }
                 
                 result.add(testCaseStepActionExecutionFactory.create(executionId, test, testCase, step, sequence, control,
                         controlReturnCode, controlReturnMessage, null, null, null, null, now, now, 

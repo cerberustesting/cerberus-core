@@ -40,8 +40,8 @@ public class SaveManualExecutionPicture extends HttpServlet {
 
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         IParameterService parameterService = appContext.getBean(IParameterService.class);
-        ITestCaseStepExecutionService testCaseStepExecutionService = appContext.getBean(ITestCaseStepExecutionService.class);
-        ITestCaseStepActionExecutionService testCaseStepActionExecutionService = appContext.getBean(ITestCaseStepActionExecutionService.class);
+//        ITestCaseStepExecutionService testCaseStepExecutionService = appContext.getBean(ITestCaseStepExecutionService.class);
+//        ITestCaseStepActionExecutionService testCaseStepActionExecutionService = appContext.getBean(ITestCaseStepActionExecutionService.class);
 
         try {
             String imgPath = parameterService.findParameterByKey("cerberus_picture_path", "").getValue();
@@ -51,16 +51,16 @@ public class SaveManualExecutionPicture extends HttpServlet {
 
             int seq = 1;
             long runID = ParameterParserUtil.parseLongParam(runId, 0);
-            TestCaseStepActionExecution testCaseStepActionExecution = new TestCaseStepActionExecution();
+            //TestCaseStepActionExecution testCaseStepActionExecution = new TestCaseStepActionExecution();
             for (Part p : parts) {
                 if (p.getName().equalsIgnoreCase("files[]")) {
                     if (seq == 1) {
-                        TestCaseStepExecution tcse = new TestCaseStepExecution();
-                        tcse.setId(runID);
-                        tcse.setTest(test);
-                        tcse.setTestCase(testCase);
-                        tcse.setStep(1);
-                        testCaseStepExecutionService.insertTestCaseStepExecution(tcse);
+//                        TestCaseStepExecution tcse = new TestCaseStepExecution();
+//                        tcse.setId(runID);
+//                        tcse.setTest(test);
+//                        tcse.setTestCase(testCase);
+//                        tcse.setStep(1);
+//                        testCaseStepExecutionService.insertTestCaseStepExecution(tcse);
                     }
 
                     InputStream inputStream = p.getInputStream();
@@ -77,24 +77,24 @@ public class SaveManualExecutionPicture extends HttpServlet {
                     Date now = new Date();
 
                     //create action
-                    testCaseStepActionExecution.setId(runID);
-                    testCaseStepActionExecution.setTest(test);
-                    testCaseStepActionExecution.setTestCase(testCase);
-                    testCaseStepActionExecution.setStep(1);
-                    testCaseStepActionExecution.setSequence(seq);
-                    testCaseStepActionExecution.setReturnCode(returnCode);
-                    testCaseStepActionExecution.setReturnMessage("");
-                    testCaseStepActionExecution.setAction("screenshot");
-                    testCaseStepActionExecution.setObject("");
-                    testCaseStepActionExecution.setProperty("");
-                    testCaseStepActionExecution.setStart(now.getTime());
-                    testCaseStepActionExecution.setEnd(now.getTime());
-                    testCaseStepActionExecution.setStartLong(now.getTime());
-                    testCaseStepActionExecution.setEndLong(now.getTime());
-                    testCaseStepActionExecution.setScreenshotFilename(name);
-                    testCaseStepActionExecutionService.insertTestCaseStepActionExecution(testCaseStepActionExecution);
-
-                    seq++;
+//                    testCaseStepActionExecution.setId(runID);
+//                    testCaseStepActionExecution.setTest(test);
+//                    testCaseStepActionExecution.setTestCase(testCase);
+//                    testCaseStepActionExecution.setStep(1);
+//                    testCaseStepActionExecution.setSequence(seq);
+//                    testCaseStepActionExecution.setReturnCode(returnCode);
+//                    testCaseStepActionExecution.setReturnMessage("");
+//                    testCaseStepActionExecution.setAction("screenshot");
+//                    testCaseStepActionExecution.setObject("");
+//                    testCaseStepActionExecution.setProperty("");
+//                    testCaseStepActionExecution.setStart(now.getTime());
+//                    testCaseStepActionExecution.setEnd(now.getTime());
+//                    testCaseStepActionExecution.setStartLong(now.getTime());
+//                    testCaseStepActionExecution.setEndLong(now.getTime());
+//                    testCaseStepActionExecution.setScreenshotFilename(name);
+//                    testCaseStepActionExecutionService.insertTestCaseStepActionExecution(testCaseStepActionExecution);
+//
+//                    seq++;
                 }
             }
 

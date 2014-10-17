@@ -556,7 +556,7 @@
                 }
             %>
         </div>
-        <div id="popin"></div>
+        <div id="popin" title="Manual Execution"></div>
         <br><br><br>
         <div style="clear:both"><% out.print(display_footer(DatePageStart));%></div>
         <script type="text/javascript">

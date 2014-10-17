@@ -27,8 +27,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Level;
 import org.cerberus.entity.TestCaseExecution;
+import org.cerberus.entity.TestCaseExecutionInQueue;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.log.MyLogger;
+import org.cerberus.service.ITestCaseExecutionInQueueService;
 import org.cerberus.service.ITestCaseExecutionService;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -54,7 +56,7 @@ public class FindExecutionInQueue extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-        ITestCaseExecutionService executionService = appContext.getBean(ITestCaseExecutionService.class);
+        ITestCaseExecutionInQueueService executionService = appContext.getBean(ITestCaseExecutionInQueueService.class);
         String echo = request.getParameter("sEcho");
 
         JSONArray data = new JSONArray(); //data that will be shown in the table
@@ -62,7 +64,7 @@ public class FindExecutionInQueue extends HttpServlet {
         try {
             JSONObject jsonResponse = new JSONObject();
             try {
-                for (TestCaseExecution exec : executionService.findExecutionsByCampaignNameAndTag("MADIBA_RUN", "MADIBA_RUN_17")) {
+                for (TestCaseExecutionInQueue exec : executionService.getProceededByTag("toto")) {
                     JSONArray row = new JSONArray();
                     row.put(exec.getTest());
                     row.put(exec.getTestCase());

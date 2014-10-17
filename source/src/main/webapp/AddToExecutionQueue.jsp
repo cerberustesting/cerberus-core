@@ -26,7 +26,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 </head>
 
-<form name="AddToExecutionQueue" action="/Cerberus/AddToExecutionQueue"
+<form name="AddToExecutionQueue" action="AddToExecutionQueue"
 	method="POST">
 	<table>
 		<tr>

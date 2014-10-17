@@ -141,6 +141,7 @@ public class AddToExecutionQueue extends HttpServlet {
 	private void processRequest(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		// Part 1: Getting all test cases which have been sent to this servlet.
 		List<TestCaseExecutionInQueue> toInserts = null;
+                System.out.print("toto");
 		try {
 			toInserts = getTestCasesToInsert(req);
 		} catch (ParameterException pe) {
