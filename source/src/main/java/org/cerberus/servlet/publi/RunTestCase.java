@@ -28,11 +28,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.logging.Logger;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Level;
 import org.cerberus.entity.ExecutionSOAPResponse;
@@ -72,6 +74,32 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  */
 @WebServlet(name = "RunTestCase", urlPatterns = {"/RunTestCase"})
 public class RunTestCase extends HttpServlet {
+	
+	public static final String SERVLET_URL = "/RunTestCase";
+	
+	public static final String PARAMETER_TEST = "Test";
+	public static final String PARAMETER_TEST_CASE = "TestCase";
+	public static final String PARAMETER_COUNTRY = "Country";
+	public static final String PARAMETER_ENVIRONMENT = "Environment";
+	public static final String PARAMETER_ROBOT = "robot";
+	public static final String PARAMETER_ROBOT_IP = "ss_ip";
+	public static final String PARAMETER_ROBOT_PORT = "ss_p";
+	public static final String PARAMETER_BROWSER = "browser";
+	public static final String PARAMETER_BROWSER_VERSION = "version";
+	public static final String PARAMETER_PLATFORM = "platform";
+	public static final String PARAMETER_MANUAL_URL = "manualURL";
+	public static final String PARAMETER_MANUAL_HOST = "myhost";
+	public static final String PARAMETER_MANUAL_CONTEXT_ROOT = "mycontextroot";
+	public static final String PARAMETER_MANUAL_LOGIN_RELATIVE_URL = "myloginrelativeurl";
+	public static final String PARAMETER_MANUAL_ENV_DATA = "myenvdata";
+	public static final String PARAMETER_TAG = "Tag";
+	public static final String PARAMETER_OUTPUT_FORMAT = "outputformat";
+	public static final String PARAMETER_SCREENSHOT = "screenshot";
+	public static final String PARAMETER_VERBOSE = "verbose";
+	public static final String PARAMETER_TIMEOUT = "timeout";
+	public static final String PARAMETER_SYNCHRONEOUS = "synchroneous";
+	public static final String PARAMETER_PAGE_SOURCE = "pageSource";
+	public static final String PARAMETER_SELENIUM_LOG = "seleniumLog";
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

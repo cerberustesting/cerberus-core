@@ -3870,7 +3870,44 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("ALTER TABLE `testcasestep` ");
         SQLS.append("ADD COLUMN `inlibrary` VARCHAR(1) NULL DEFAULT 'N' AFTER `useStepStep`;");
         SQLInstruction.add(SQLS.toString());
-        
+
+// Add table testcaseexecutionqueue
+//-- ------------------------ 546
+		SQLS = new StringBuilder();
+		SQLS.append("CREATE TABLE `testcaseexecutionqueue` (");
+		SQLS.append("  `ID` bigint(20) unsigned NOT NULL AUTO_INCREMENT,");
+		SQLS.append("  `Test` varchar(45) NOT NULL,");
+		SQLS.append("  `TestCase` varchar(45) NOT NULL,");
+		SQLS.append("  `Country` varchar(2) NOT NULL,");
+		SQLS.append("  `Environment` varchar(45) NOT NULL,");
+		SQLS.append("  `Robot` varchar(45) DEFAULT NULL,");
+		SQLS.append("  `RobotIP` varchar(150) DEFAULT NULL,");
+		SQLS.append("  `RobotPort` varchar(20) DEFAULT NULL,");
+		SQLS.append("  `Browser` varchar(45) NOT NULL,");
+		SQLS.append("  `BrowserVersion` varchar(20) DEFAULT NULL,");
+		SQLS.append("  `Platform` varchar(45) DEFAULT NULL,");
+		SQLS.append("  `ManualURL` tinyint(1) NOT NULL DEFAULT '0',");
+		SQLS.append("  `ManualHost` varchar(255) DEFAULT NULL,");
+		SQLS.append("  `ManualContextRoot` varchar(255) DEFAULT NULL,");
+		SQLS.append("  `ManualLoginRelativeURL` varchar(255) DEFAULT NULL,");
+		SQLS.append("  `ManualEnvData` varchar(255) DEFAULT NULL,");
+		SQLS.append("  `Tag` varchar(255) NOT NULL,");
+		SQLS.append("  `OutputFormat` varchar(20) NOT NULL DEFAULT 'gui',");
+		SQLS.append("  `Screenshot` int(11) NOT NULL DEFAULT '0',");
+		SQLS.append("  `Verbose` int(11) NOT NULL DEFAULT '0',");
+		SQLS.append("  `Timeout` mediumtext,");
+		SQLS.append("  `Synchroneous` tinyint(1) NOT NULL DEFAULT '0',");
+		SQLS.append("  `PageSource` int(11) NOT NULL DEFAULT '1',");
+		SQLS.append("  `SeleniumLog` int(11) NOT NULL DEFAULT '1',");
+		SQLS.append("  `RequestDate` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,");
+		SQLS.append("  `Proceeded` tinyint(1) NOT NULL DEFAULT '0',");
+		SQLS.append("  PRIMARY KEY (`ID`),");
+		SQLS.append("  KEY `IX_testcaseexecution_01` (`Test`,`TestCase`,`Country`),");
+		SQLS.append("  KEY `IX_testcaseexecution_02` (`Tag`),");
+		SQLS.append("  CONSTRAINT `FK_testcaseexecutionqueue_01` FOREIGN KEY (`Test`, `TestCase`, `Country`) REFERENCES `testcasecountry` (`Test`, `TestCase`, `Country`) ON DELETE CASCADE ON UPDATE CASCADE");
+		SQLS.append(") ENGINE=InnoDB DEFAULT CHARSET=utf8;");
+		SQLInstruction.add(SQLS.toString());
+		
         return SQLInstruction;
     }
 }
