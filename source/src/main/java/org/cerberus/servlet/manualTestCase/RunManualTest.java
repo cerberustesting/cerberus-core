@@ -35,6 +35,7 @@ import org.cerberus.entity.MessageGeneral;
 import org.cerberus.entity.MessageGeneralEnum;
 import org.cerberus.entity.TCase;
 import org.cerberus.entity.TestCaseExecution;
+import org.cerberus.entity.TestCaseExecutionData;
 import org.cerberus.entity.TestCaseExecutionSysVer;
 import org.cerberus.entity.TestCaseStep;
 import org.cerberus.entity.TestCaseStepAction;
@@ -87,11 +88,15 @@ public class RunManualTest extends HttpServlet {
         String testCase = req.getParameter("testCase");
         String env = req.getParameter("env");
         String country = req.getParameter("country");
-        String controlStatus = req.getParameter("controlStatus");
+        String controlStatus = "OK";
+        //req.getParameter("controlStatus");
         String controlMessage = req.getParameter("controlMessage");
-        String tag = req.getParameter("tag");
-        String browser = req.getParameter("browser");
-        String browserVersion = req.getParameter("browserVersion");
+        String tag = "toto tutu";
+        //req.getParameter("tag");
+        String browser = "firefox";
+        //req.getParameter("browser");
+        String browserVersion = "23";
+        //req.getParameter("browserVersion");
 
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         ITestCaseService testService = appContext.getBean(ITestCaseService.class);
@@ -99,10 +104,13 @@ public class RunManualTest extends HttpServlet {
         ITestCaseExecutionService testCaseExecutionService = appContext.getBean(ITestCaseExecutionService.class);
         ITestCaseExecutionSysVerService testCaseExecutionSysVerService = appContext.getBean(ITestCaseExecutionSysVerService.class);
         ICountryEnvParamService countryEnvParamService = appContext.getBean(ICountryEnvParamService.class);
-
+        ITestCaseStepExecutionService testCaseStepExecutionService = appContext.getBean(ITestCaseStepExecutionService.class);
+        ITestCaseStepActionExecutionService testCaseStepActionExecutionService = appContext.getBean(ITestCaseStepActionExecutionService.class);
+        ITestCaseStepActionControlExecutionService testCaseStepActionControlExecutionService = appContext.getBean(ITestCaseStepActionControlExecutionService.class);
         IFactoryTestCaseExecution factoryTCExecution = appContext.getBean(IFactoryTestCaseExecution.class);
         IFactoryTestCaseExecutionSysVer factoryTestCaseExecutionSysVer = appContext.getBean(IFactoryTestCaseExecutionSysVer.class);
 
+        
         try {
             Application application = null;
             TCase tCase = testService.findTestCaseByKey(test, testCase);
@@ -138,12 +146,58 @@ public class RunManualTest extends HttpServlet {
                     controlStatus, controlMessage, application, "", "", "", tag, "Y", 0, 0, 0, 0, true, "", "", tCase.getStatus(), version,
                     null, null, null, false, "", "", "", "", "", "", null, null, myUser);
 
-            execution.setId(testCaseExecutionService.insertTCExecution(execution));
+            long executionId = testCaseExecutionService.insertTCExecution(execution);
+            execution.setId(executionId);
+            
+            List<String> status = new ArrayList();
+            /**
+             * Get Step Execution and insert them into Database
+             */
+            for (TestCaseStepExecution tcse : getTestCaseStepExecution(req, appContext, test, testCase, executionId)){
+            testCaseStepExecutionService.insertTestCaseStepExecution(tcse);
+            /**
+             * Get Step Action Execution and insert them into Database
+             */
+            List tcae = new ArrayList();
+            for (TestCaseStepActionExecution tcsae : getTestCaseStepActionExecution(req, appContext, test, testCase, executionId, tcse.getStep())){
+            testCaseStepActionExecutionService.insertTestCaseStepActionExecution(tcsae);
+            status.add(tcsae.getReturnCode());
+            
+            /**
+             * Get Step Action Control Execution and insert them into Database
+             */
+            for (TestCaseStepActionControlExecution tcsace : getTestCaseStepActionControlExecution(req, appContext, test, testCase, executionId,tcse.getStep(),tcsae.getSequence())){
+            testCaseStepActionControlExecutionService.insertTestCaseStepActionControlExecution(tcsace);
+            status.add(tcsace.getReturnCode());
+            }
+            }
+            
+            if (status.contains("KO")){
+            tcse.setReturnCode("KO");
+            execution.setControlStatus("KO");
+            testCaseStepExecutionService.updateTestCaseStepExecution(tcse);
+            }
+            if (status.contains("NA")){
+            tcse.setReturnCode("KO");
+            execution.setControlStatus("NA");
+            testCaseStepExecutionService.updateTestCaseStepExecution(tcse);
+            }
+            }
+            testCaseExecutionService.updateTCExecution(execution);
+            
+            
+            
+            /**
+             * Get Step Execution and insert them into Database
+             */
+//            for (TestCaseExecutionData tced : getTestCaseExecutionData(req, appContext, test, testCase, executionId)){
+//            testCaseStepExecutionService.insertTestCaseStepExecution(null);
+//            }
 
             TestCaseExecutionSysVer testCaseExecutionSysVer = factoryTestCaseExecutionSysVer.create(execution.getId(), application.getSystem(), build, revision);
             testCaseExecutionSysVerService.insertTestCaseExecutionSysVer(testCaseExecutionSysVer);
 
-            resp.getWriter().print(execution.getId());
+            resp.sendRedirect("ExecutionDetail.jsp?id_tc="+executionId);
 
         } catch (CerberusException e) {
             MyLogger.log(SaveManualExecution.class.getName(), Level.FATAL, "" + e.getMessageError().getDescription());
@@ -192,7 +246,7 @@ public class RunManualTest extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    private List<TestCaseStepExecution> createTestCaseStepExecution(HttpServletRequest request, ApplicationContext appContext, String test, String testCase, long executionId) {
+    private List<TestCaseStepExecution> getTestCaseStepExecution(HttpServletRequest request, ApplicationContext appContext, String test, String testCase, long executionId) {
         List<TestCaseStepExecution> result = new ArrayList();
         long now = new Date().getTime();
         ITestCaseStepExecutionService tcseService = appContext.getBean(ITestCaseStepExecutionService.class);
@@ -202,8 +256,8 @@ public class RunManualTest extends HttpServlet {
         if (testcase_step_increment != null) {
             for (String inc : testcase_step_increment) {
                 int step = Integer.valueOf(getParameterIfExists(request, "step_number_" + inc) == null ? "0" : getParameterIfExists(request, "step_number_" + inc));
-                String stepReturnCode = null;
-
+                String stepReturnCode = "OK";
+                
                 result.add(testCaseStepExecutionFactory.create(executionId, test, testCase, step, null, now, now, now, now,
                         0, stepReturnCode, null, null, null, null, null, null, 0));
             }
@@ -211,53 +265,53 @@ public class RunManualTest extends HttpServlet {
         return result;
     }
 
-    private List<TestCaseStepActionExecution> createTestCaseStepActionExecution(HttpServletRequest request, ApplicationContext appContext, String test, String testCase, long executionId) {
+    private List<TestCaseStepActionExecution> getTestCaseStepActionExecution(HttpServletRequest request, ApplicationContext appContext, String test, String testCase, long executionId, int stepId) {
         List<TestCaseStepActionExecution> result = new ArrayList();
         long now = new Date().getTime();
         ITestCaseStepActionExecutionService tcsaeService = appContext.getBean(ITestCaseStepActionExecutionService.class);
         IFactoryTestCaseStepActionExecution testCaseStepActionExecutionFactory = appContext.getBean(IFactoryTestCaseStepActionExecution.class);
 
-        String[] stepAction_increment = getParameterValuesIfExists(request, "action_increment");
+        String[] stepAction_increment = getParameterValuesIfExists(request, "action_increment_"+stepId);
         if (stepAction_increment != null) {
             for (String inc : stepAction_increment) {
-                int step = Integer.valueOf(getParameterIfExists(request, "action_step_"+ inc) == null 
-                        ? "0" : getParameterIfExists(request, "action_step_" + inc));
-                int sequence = Integer.valueOf(getParameterIfExists(request, "action_sequence_"+ inc) == null 
-                        ? "0" : getParameterIfExists(request, "action_sequence_" + inc));
-                String actionReturnCode = null;
-                String actionReturnMessage = null;
-                String actionScreenshotFileName = null;
+                int step = Integer.valueOf(getParameterIfExists(request, "action_step_" + stepId + "_" + inc) == null 
+                        ? "0" : getParameterIfExists(request, "action_step_" + stepId + "_" + inc));
+                int sequence = Integer.valueOf(getParameterIfExists(request, "action_sequence_" + stepId + "_" + inc) == null 
+                        ? "0" : getParameterIfExists(request, "action_sequence_" + stepId + "_" + inc));
+                String actionReturnCode = getParameterIfExists(request, "actionStatus_" + stepId + "_" + inc);
+                String actionReturnMessage = getParameterIfExists(request, "actionResultMessage_" + stepId + "_" + inc);
+                String actionScreenshotFileName = "toto";
                 
-                testCaseStepActionExecutionFactory.create(executionId, test, testCase, step, sequence, actionReturnCode,
-                        actionReturnMessage, null, null, null,  now, now, now, now, 
-                        actionScreenshotFileName, null, null, null, null);
+                result.add(testCaseStepActionExecutionFactory.create(executionId, test, testCase, step, sequence, actionReturnCode,
+                        actionReturnMessage, "Manual Action", null, null,  now, now, now, now, 
+                        actionScreenshotFileName, null, null, null, null));
             }
         }
         return result;
     }
 
-    private List<TestCaseStepActionControlExecution> createTestCaseStepActionControlExecution(HttpServletRequest request, ApplicationContext appContext, String test, String testCase, long executionId) {
+    private List<TestCaseStepActionControlExecution> getTestCaseStepActionControlExecution(HttpServletRequest request, ApplicationContext appContext, String test, String testCase, long executionId, int stepId, int sequenceId) {
         List<TestCaseStepActionControlExecution> result = new ArrayList();
         long now = new Date().getTime();
         ITestCaseStepActionControlExecutionService tcsaeService = appContext.getBean(ITestCaseStepActionControlExecutionService.class);
         IFactoryTestCaseStepActionControlExecution testCaseStepActionExecutionFactory = appContext.getBean(IFactoryTestCaseStepActionControlExecution.class);
 
-        String[] stepActionControl_increment = getParameterValuesIfExists(request, "control_increment");
+        String[] stepActionControl_increment = getParameterValuesIfExists(request, "control_increment_"+stepId+"_"+sequenceId);
         if (stepActionControl_increment != null) {
             for (String inc : stepActionControl_increment) {
-                int step = Integer.valueOf(getParameterIfExists(request, "control_step_" + inc) == null 
-                        ? "0" : getParameterIfExists(request, "control_step_"+ inc));
-                int sequence = Integer.valueOf(getParameterIfExists(request, "control_sequence_"+ inc) == null 
-                        ? "0" : getParameterIfExists(request, "control_sequence_" + inc));
-                int control = Integer.valueOf(getParameterIfExists(request, "control_control_" + inc) == null 
-                        ? "0" : getParameterIfExists(request, "control_control_" + inc));
-                String controlReturnCode = null;
-                String controlReturnMessage = null;
-                String controlScreenshot = null;
+                int step = Integer.valueOf(getParameterIfExists(request, "control_step_" + stepId + "_" + sequenceId + "_" + inc) == null 
+                        ? "0" : getParameterIfExists(request, "control_step_" + stepId + "_" + sequenceId + "_" + inc));
+                int sequence = Integer.valueOf(getParameterIfExists(request, "control_sequence_" + stepId + "_" + sequenceId + "_" + inc) == null 
+                        ? "0" : getParameterIfExists(request, "control_sequence_" + stepId + "_" + sequenceId + "_" + inc));
+                int control = Integer.valueOf(getParameterIfExists(request, "control_control_" + stepId + "_" + sequenceId + "_" + inc) == null 
+                        ? "0" : getParameterIfExists(request, "control_control_" + stepId + "_" + sequenceId + "_" + inc));
+                String controlReturnCode = getParameterIfExists(request, "controlStatus_" + stepId + "_" + sequenceId + "_" + inc);
+                String controlReturnMessage = getParameterIfExists(request, "controlResultMessage_" + stepId + "_" + sequenceId + "_" + inc);
+                String controlScreenshot = "tiit";
                 
-                testCaseStepActionExecutionFactory.create(executionId, test, testCase, step, sequence, control,
+                result.add(testCaseStepActionExecutionFactory.create(executionId, test, testCase, step, sequence, control,
                         controlReturnCode, controlReturnMessage, null, null, null, null, now, now, 
-                        now, now, controlScreenshot, null, null, null);
+                        now, now, controlScreenshot, null, null, null));
             }
         }
         return result;
@@ -277,6 +331,10 @@ public class RunManualTest extends HttpServlet {
             result = request.getParameterValues(parameter);
         }
         return result;
+    }
+
+    private List<TestCaseExecutionData> getTestCaseExecutionData(HttpServletRequest req, ApplicationContext appContext, String test, String testCase, long executionId) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }

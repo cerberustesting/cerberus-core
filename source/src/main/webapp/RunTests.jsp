@@ -39,8 +39,12 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Run Test Case</title>
         <link rel="stylesheet" type="text/css" href="css/crb_style.css">
+        <link rel="stylesheet" type="text/css" href="css/jquery.dataTables.css">
+        <link rel="stylesheet" type="text/css" href="css/jquery-ui.css">
         <link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico" />
         <script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>
+        <script type="text/javascript" src="js/jquery-ui-1.10.2.js"></script>
+        <script type="text/javascript" src="js/Form.js"></script>
     </head>
     <body>
         <%@ include file="include/function.jsp"%>
@@ -207,14 +211,14 @@
                         } else {
                             screenshot = new String("");
                         }
-                        
+
                         String pageSource;
                         if (request.getParameter("pageSource") != null && request.getParameter("pageSource").compareTo("") != 0) {
                             pageSource = request.getParameter("pageSource");
                         } else {
                             pageSource = new String("");
                         }
-                        
+
                         String seleniumLog;
                         if (request.getParameter("seleniumLog") != null && request.getParameter("seleniumLog").compareTo("") != 0) {
                             seleniumLog = request.getParameter("seleniumLog");
@@ -535,7 +539,10 @@
                     <br>
                 </div>
                 <div style="float:left">
-                    <input type="submit" class="buttonPlay" id="buttonRun" style="font-size: large;" name="statusPage" value="Run">
+                    <input type="button" style="background-image: url(images/play.png);background-size: 100%; width: 40px; height: 40px; border: 0 none; top: 0px" id="buttonRun" onclick="checkTestcaseGroupAndPerformTest()"
+                </div>
+                <div style="display:none; float:left">
+                    <input name="statusPage">
                 </div>
                 <br>
                 <% if (test.compareTo("%%") != 0 && testcase.compareTo("%%") != 0 && country.compareTo("%%") != 0) {  %>
@@ -549,7 +556,30 @@
                 }
             %>
         </div>
-        <br><% out.print(display_footer(DatePageStart));%>
+        <div id="popin"></div>
+        <br><br><br>
+        <div style="clear:both"><% out.print(display_footer(DatePageStart));%></div>
+        <script type="text/javascript">
+            function checkTestcaseGroupAndPerformTest() {
+                var test = $("#test option:selected").val();
+                var testcase = $("#testcase option:selected").val();
+                var env =$("#environment option:selected").val();
+                var country = $("#country option:selected").val();
+
+                $.getJSON('GetTestCase?test=' + test + "&testcase=" + testcase, function(data) {
+
+                    if (data.group === "AUTOMATED") {
+                        $("[name='statusPage']").val("Run");
+                        $("[name='RunTest']").submit();
+                    } else {
+                        openRunManualPopin(test, testcase, env, country);
+                    }
+
+                });
+
+
+            }
+        </script>
         <script type="text/javascript">
             function validateForm() {
                 if ($("#myloginrelativeurl").val()) {
@@ -584,7 +614,7 @@
                         getTestCaseList();
                     }
 
-                })
+                });
             });
 
 
@@ -671,10 +701,10 @@
                     for (var i = 0; i < data.length; i++) {
                         $("#environment").append($("<option></option>")
                                 .attr("value", data[i].environment)
-                                .text(data[i].environment + " [ "+data[i].ip+data[i].url+" ] with Build :" + data[i].build + " and Revision :" + data[i].revision));
+                                .text(data[i].environment + " [ " + data[i].ip + data[i].url + " ] with Build :" + data[i].build + " and Revision :" + data[i].revision));
                         $("#myenvdata").append($("<option></option>")
                                 .attr("value", data[i].environment)
-                                .text(data[i].environment + " [ "+data[i].ip+data[i].url+" ] with Build :" + data[i].build + " and Revision :" + data[i].revision));
+                                .text(data[i].environment + " [ " + data[i].ip + data[i].url + " ] with Build :" + data[i].build + " and Revision :" + data[i].revision));
                     }
                     $("#environment").find('option').each(function(i, opt) {
                         if (opt.value === env)
@@ -767,15 +797,15 @@
                     }
 
                     setCookie('ScreenshotPreference', 'screenshot');
-                    
+
                     var screenCookie = getCookie('ScreenshotPreference');
-                    
-                    if (screenCookie === "" && pl === ""){
-                        pl="1";
+
+                    if (screenCookie === "" && pl === "") {
+                        pl = "1";
                     }
-                    
-                    
-                    
+
+
+
                     $("#screenshot").find('option').each(function(i, opt) {
                         if (opt.value === pl) {
                             $(opt).attr('selected', 'selected');
@@ -800,15 +830,15 @@
                     }
 
                     setCookie('PageSourcePreference', 'pageSource');
-                    
+
                     var pageCookie = getCookie('PageSourcePreference');
-                    
-                    if (pageCookie === "" && pl === ""){
-                        pl="1";
+
+                    if (pageCookie === "" && pl === "") {
+                        pl = "1";
                     }
-                    
-                    
-                    
+
+
+
                     $("#pageSource").find('option').each(function(i, opt) {
                         if (opt.value === pl) {
                             $(opt).attr('selected', 'selected');
@@ -833,15 +863,15 @@
                     }
 
                     setCookie('SeleniumLogPreference', 'seleniumLog');
-                    
+
                     var seleniumLogCookie = getCookie('SeleniumLogPreference');
-                    
-                    if (seleniumLogCookie === "" && pl === ""){
-                        pl="1";
+
+                    if (seleniumLogCookie === "" && pl === "") {
+                        pl = "1";
                     }
-                    
-                    
-                    
+
+
+
                     $("#seleniumLog").find('option').each(function(i, opt) {
                         if (opt.value === pl) {
                             $(opt).attr('selected', 'selected');
@@ -949,7 +979,7 @@
             function recordExecutionParam() {
                 var expiration_date = new Date();
                 expiration_date.setFullYear(expiration_date.getFullYear() + 1);
-                
+
                 var prefTag = $("#tag").val();
                 var prefOf = $("#outputformat").val();
                 var prefVerb = $("#verbose").val();
@@ -970,7 +1000,7 @@
         </script>
         <script>
             function setCookie(cookieName, element) {
-                var name = cookieName+"=";
+                var name = cookieName + "=";
                 var ca = document.cookie.split(';');
                 for (var i = 0; i < ca.length; i++) {
                     var c = ca[i].trim();
@@ -984,12 +1014,13 @@
         <script>
             function getCookie(cname) {
                 var name = cname + "=";
-    var ca = document.cookie.split(';');
-    for(var i=0; i<ca.length; i++) {
-        var c = ca[i].trim();
-        if (c.indexOf(name) === 0) return c.substring(name.length,c.length);
-    }
-    return "";
+                var ca = document.cookie.split(';');
+                for (var i = 0; i < ca.length; i++) {
+                    var c = ca[i].trim();
+                    if (c.indexOf(name) === 0)
+                        return c.substring(name.length, c.length);
+                }
+                return "";
             }
         </script>
     </body>

@@ -2279,6 +2279,21 @@ function addPropertyNew(widthValue){
 }
 
 
+function openRunManualPopin(test, testcase, env, country) {
+    loadRunManualPopin(test, testcase, env, country);
+    $('#popin').dialog({hide: {duration: 300}, height: 600, width: 1200, buttons: [
+            {text: "Ok", click: function() {$("#RunManualTest").submit();}},
+            {text: "Cancel", click: function() {$(this).dialog("close");}}
+        ]});
+}
+
+function loadRunManualPopin(test, testcase, env, country) {
+//    $('#popin').hide().empty();
+console.log(test);
+    $('#popin').load('TestCaseManualRun.jsp?Test=' + test.replace(new RegExp(' '  , 'g'), '%20') + '&TestCase=' + testcase+'&Environment='+env+'&Country='+country);
+//    $('#popin').show();
+}
+
 
 
 

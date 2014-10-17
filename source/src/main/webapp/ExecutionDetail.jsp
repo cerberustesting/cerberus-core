@@ -316,7 +316,7 @@
             <div id="tablewwwsum">
                 <%
                     ITestCaseExecutionwwwSumService tcewwwsumService = appContext.getBean(ITestCaseExecutionwwwSumService.class);
-
+                        
                     List<TestCaseExecutionwwwSum> tcewwwsumdetails = tcewwwsumService.getAllDetailsFromTCEwwwSum(Integer.valueOf(id_filter));
                     if (tcewwwsumdetails != null) {
                         for (TestCaseExecutionwwwSum wwwsumdetails : tcewwwsumdetails) {
@@ -468,7 +468,7 @@
                                 <%
                                     ITestCaseStepActionExecutionService testCaseStepActionExecutionService = appContext.getBean(ITestCaseStepActionExecutionService.class);
                                     ITestCaseStepActionService testCaseStepActionService = appContext.getBean(ITestCaseStepActionService.class);
-
+         
                                     List<TestCaseStepActionExecution> actionList = testCaseStepActionExecutionService.findTestCaseStepActionExecutionByCriteria(iD, myStepData.getTest(), myStepData.getTestCase(), myStepData.getStep());%>
                                 <table id="actionTable<%=stepIdentifier%>"  style="border-collapse: collapse; display:<%=conditionalDisplay%>; width:100%">
                                     <%
@@ -476,7 +476,7 @@
                                         for (TestCaseStepActionExecution myActionData : actionList) {
                                             TestCaseStepAction myTCSA;
                                             String descAction = "";
-                                            
+                                             
                                             if(myTCS.getUseStep() != null && !"".equals(myTCS.getUseStep())
                                                     && myTCS.getUseStepStep() > 0) {
                                                 myTCSA = testCaseStepActionService.findTestCaseStepActionbyKey(myTCS.getUseStepTest(), myTCS.getUseStepTestCase(), myTCS.getUseStepStep(), myActionData.getSequence());
@@ -521,7 +521,7 @@
 
                                                 ITestCaseStepActionControlExecutionService testCaseStepActionControlExecutionService = appContext.getBean(ITestCaseStepActionControlExecutionService.class);
                                                 ITestCaseStepActionControlService testCaseStepActionControlService = appContext.getBean(ITestCaseStepActionControlService.class);
-
+               
                                                 List<TestCaseStepActionControlExecution> controlList = testCaseStepActionControlExecutionService.findTestCaseStepActionControlExecutionByCriteria(iD, myActionData.getTest(), myActionData.getTestCase(), myActionData.getStep(), myActionData.getSequence());%>
                                             <table id="controlTable"  style="border-collapse: collapse">
                                                 <%
