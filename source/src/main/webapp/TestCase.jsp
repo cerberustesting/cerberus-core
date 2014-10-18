@@ -708,7 +708,7 @@
                             LastExeMessage = LastExeMessage + " in "
                                     + tce.getEnvironment() + " in "
                                     + tce.getCountry() + " on "
-                                    + tce.getEnd()
+                                    + new Date(tce.getEnd())
                                     + "<a width : 390px ; href=\"RunTests.jsp?Test=" + test + "&TestCase=" + testcase + "&MySystem=" + appSystem
                                     + "&Country=" + tce.getCountry() + "&Environment=" + tce.getEnvironment() + "\"><i> (Run it again) </i></a>";
                         }

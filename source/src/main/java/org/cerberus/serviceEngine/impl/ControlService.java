@@ -644,7 +644,7 @@ public class ControlService implements IControlService {
         MyLogger.log(ControlService.class.getName(), Level.DEBUG, "Control : verifyUrl on : " + page);
         MessageEvent mes;
         try {
-            String url = this.webdriverService.getCurrentUrl(tCExecution.getSession(), tCExecution.getCountryEnvironmentApplication().getIp());
+            String url = this.webdriverService.getCurrentUrl(tCExecution.getSession(), tCExecution.getUrl());
 
             if (url.equalsIgnoreCase(page)) {
                 mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_URL);
