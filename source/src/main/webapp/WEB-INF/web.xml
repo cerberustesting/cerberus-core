@@ -1301,6 +1301,7 @@
             <url-pattern>/GetCountryForTestCase</url-pattern>
             <url-pattern>/GetTestCaseForTest</url-pattern>
             <url-pattern>/UseTestCaseStep</url-pattern>
+            <url-pattern>/UpdateTestCaseWithDependencies</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <description>Test</description>
