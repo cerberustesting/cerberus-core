@@ -232,6 +232,13 @@
                         } else {
                             synchroneous = new String("");
                         }
+                        
+                        String manualExecution;
+                        if (request.getParameter("manualExecution") != null && request.getParameter("manualExecution").compareTo("") != 0) {
+                            manualExecution = request.getParameter("manualExecution");
+                        } else {
+                            manualExecution = new String("");
+                        }
 
                         String timeout;
                         if (request.getParameter("timeout") != null && request.getParameter("timeout").compareTo("") != 0) {
@@ -289,6 +296,7 @@
                 <input hidden="hidden" id="defTimeout" value="<%=timeout%>">
                 <input hidden="hidden" id="defSeleniumLog" value="<%=seleniumLog%>">
                 <input hidden="hidden" id="defPageSource" value="<%=pageSource%>">
+                <input hidden="hidden" id="defManualExecution" value="<%=manualExecution%>">
                 <div class="filters" style="clear:both; width:100%">
                     <p style="float:left" class="dttTitle">Choose Test</p>
                     <div id="dropDownDownArrow" style="float:left">
@@ -535,7 +543,7 @@
                         <div style="float:left;width:150px; text-align:left"><% out.print(docService.findLabelHTML("page_runtests", "manualExecution", ""));%>
                         </div>
                         <div style="float:left">
-                            <input id="manualExecution" name="manualExecution" style="width: 200px">
+                            <select id="manualExecution" name="manualExecution" style="width: 200px"></select>
                         </div>
                     </div>
                     <div id="recordButtonDiv" style="clear:both">
@@ -572,14 +580,19 @@
                 var testcase = $("#testcase option:selected").val();
                 var env =$("#environment option:selected").val();
                 var country = $("#country option:selected").val();
-
+                var manualExec = $("#manualExecution option:selected").val();
                 $.getJSON('GetTestCase?test=' + test + "&testcase=" + testcase, function(data) {
 
-                    if (data.group === "AUTOMATED") {
+                    
+                    if (manualExec === "Y")  {
+                        openRunManualPopin(test, testcase, env, country);
+                    } else {
+                    if (data.group === "MANUAL") {
+                        alert("You cannot automatically execute manual testcase");
+                    } else {
                         $("[name='statusPage']").val("Run");
                         $("[name='RunTest']").submit();
-                    } else {
-                        openRunManualPopin(test, testcase, env, country);
+                    }    
                     }
 
                 });
@@ -793,9 +806,10 @@
         </script>
         <script type="text/javascript">
             $(document).ready(function() {
-                $.getJSON('FindInvariantByID?idName=synchroneous', function(data) {
+                $.getJSON('FindInvariantByID?idName=manualExecution', function(data) {
                     $("#manualExecution").empty();
-                    var pl = document.getElementById("defSynchroneous").value;
+                    
+                    var pl = document.getElementById("defManualExecution").value;
 
                     for (var i = 0; i < data.length; i++) {
                         $("#manualExecution").append($("<option></option>")
@@ -1021,6 +1035,7 @@
                 var prefTimeOut = $("#timeout").val();
                 var prefPS = $("#pageSource").val();
                 var prefSL = $("#seleniumLog").val();
+                var prefME = $("#manualExecution").val();
                 document.cookie = "TagPreference=" + prefTag + ";expires=" + expiration_date.toGMTString();
                 document.cookie = "OutputFormatPreference=" + prefOf + ";expires=" + expiration_date.toGMTString();
                 document.cookie = "VerbosePreference=" + prefVerb + ";expires=" + expiration_date.toGMTString();
@@ -1029,6 +1044,7 @@
                 document.cookie = "TimeoutPreference=" + prefTimeOut + ";expires=" + expiration_date.toGMTString();
                 document.cookie = "PageSourcePreference=" + prefPS + ";expires=" + expiration_date.toGMTString();
                 document.cookie = "SeleniumLogPreference=" + prefSL + ";expires=" + expiration_date.toGMTString();
+                document.cookie = "ManualExecutionPreference=" + prefME + ";expires=" + expiration_date.toGMTString();
             }
         </script>
         <script>

@@ -3907,7 +3907,24 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
 		SQLS.append("  CONSTRAINT `FK_testcaseexecutionqueue_01` FOREIGN KEY (`Test`, `TestCase`, `Country`) REFERENCES `testcasecountry` (`Test`, `TestCase`, `Country`) ON DELETE CASCADE ON UPDATE CASCADE");
 		SQLS.append(") ENGINE=InnoDB DEFAULT CHARSET=utf8;");
 		SQLInstruction.add(SQLS.toString());
-		
+                
+// Add documentation for ManualExecution parameter in run page
+//-- ------------------------ 547
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `DocLabel`, `DocDesc`) VALUES (");
+        SQLS.append("'page_runtests', 'manualExecution', '', 'ManualExecution', 'Manual Execution is the way to execute the <code class=\\'doc-crbvvoca\\'>test case</code>. It could be YES to manually execute all kind of <code class=\\'doc-crbvvoca\\'>test case</code>, or NO to execute if automatically.')");
+        SQLInstruction.add(SQLS.toString());
+ 
+// Add invariant ManualExecution
+//-- ------------------------ 548    	
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ");
+        SQLS.append("('INVARIANTPRIVATE', 'MANUALEXECUTION', '470', '', ''),");
+        SQLS.append("('MANUALEXECUTION', 'Y', '2', 'Manual Execution', ''),");
+        SQLS.append("('MANUALEXECUTION', 'N', '1', 'Automatic Execution', '');");
+        SQLInstruction.add(SQLS.toString());
+
+        
         return SQLInstruction;
     }
 }
