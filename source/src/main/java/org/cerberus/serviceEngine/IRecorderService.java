@@ -41,4 +41,6 @@ public interface IRecorderService {
     String recordSeleniumLogAndGetName(TestCaseExecution testCaseExecution);
 
     void recordExecutionInformation(TestCaseStepActionExecution testCaseStepActionExecution, TestCaseStepActionControlExecution testCaseStepActionControlExecution);
+    
+    String generateScreenshotFilename(String test, String testCase, String step, String sequence, String control, String pictureName, String extension);
 }

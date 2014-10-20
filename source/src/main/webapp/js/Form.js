@@ -2282,8 +2282,8 @@ function addPropertyNew(widthValue){
 function openRunManualPopin(test, testcase, env, country) {
     loadRunManualPopin(test, testcase, env, country);
     $('#popin').dialog({hide: {duration: 300}, height: $(window).height(), width: $(window).width()-20, buttons: [
-            {text: "Ok", click: function() {$("#RunManualTest").submit();}},
-            {text: "Cancel", click: function() {$(this).dialog("close");}}
+            {text: "Validate", click: function() {$("#RunManualTest").submit();}},
+            {text: "Cancel", click: function() {$("#isCancelExecution").val("Y");$("#RunManualTest").submit();}}
         ]});
 }
 

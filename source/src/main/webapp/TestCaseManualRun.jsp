@@ -17,6 +17,8 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
+<%@page import="org.cerberus.service.ICountryEnvironmentApplicationService"%>
+<%@page import="org.cerberus.entity.CountryEnvironmentApplication"%>
 <%@page import="org.cerberus.service.ITestCaseExecutionSysVerService"%>
 <%@page import="org.cerberus.entity.TestCaseExecutionSysVer"%>
 <%@page import="org.cerberus.factory.IFactoryTestCaseExecutionSysVer"%>
@@ -121,6 +123,7 @@
             IInvariantService invariantService = appContext.getBean(IInvariantService.class);
             IUserSystemService userSystemService = appContext.getBean(IUserSystemService.class);
             ICountryEnvParamService countryEnvParamService = appContext.getBean(ICountryEnvParamService.class);
+            ICountryEnvironmentApplicationService countryEnvironmentApplicationService = appContext.getBean(ICountryEnvironmentApplicationService.class);
             IFactoryTestCaseExecution factoryTestCaseExecution = appContext.getBean(IFactoryTestCaseExecution.class);
             IFactoryTestCaseExecutionSysVer factoryTestCaseExecutionSysVer = appContext.getBean(IFactoryTestCaseExecutionSysVer.class);
             ITestCaseExecutionSysVerService testCaseExecutionSysVerService = appContext.getBean(ITestCaseExecutionSysVerService.class);
@@ -172,6 +175,13 @@
                         + "' not defined for System/Application: " + myApp.getSystem() + "/" + myApp.getApplication());
                 throw ex;
             }
+            CountryEnvironmentApplication countryEnvironmentParameter;
+            try {
+                countryEnvironmentParameter = countryEnvironmentApplicationService.findCountryEnvironmentParameterByKey(myApp.getSystem(), country, environment, myApp.getApplication());
+            } catch (CerberusException e) {
+                CerberusException ex = new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
+                throw ex;
+            }
             String build = countryEnvParam.getBuild();
             String revision = countryEnvParam.getRevision();
             long now = new Date().getTime();
@@ -212,6 +222,7 @@
                 appSystem = "";
                 SitdmossBugtrackingURL = "";
             }
+            
 
     %>
     <br>
@@ -223,6 +234,7 @@
         <input class="wob" name="country" id="country" value="<%=country%>" disabled="true">
         <input class="wob" name="tag" id="tag" value="<%=tag%>" disabled="true">
         <input class="wob" name="browser" id="browser" value="<%=browser%>" disabled="true">
+        <a href="http://<%=countryEnvironmentParameter.getIp()+countryEnvironmentParameter.getUrl()%>">http://<%=countryEnvironmentParameter.getIp()+countryEnvironmentParameter.getUrl()%></a>
         <input class="wob" name="executionId" id="executionId" value="<%=executionId%>" style="display:none">
         <br>
         <div>
@@ -582,7 +594,7 @@
                 </div>
             </div>
         </div>
-        <input type="button" value="submit" onclick="submitExecution()">
+        <input name="isCancelExecution"  id="isCancelExecution" style="display:none">
     </form>
     <form id="formPictureSave" action="SaveManualExecutionPicture" method="post" enctype="multipart/form-data">
         <div id="formPictureSave" action="SaveManualExecutionPicture" method="post" enctype="multipart/form-data">

@@ -108,7 +108,8 @@ public class RecorderService implements IRecorderService {
      * @param extension
      * @return
      */
-    private String generateScreenshotFilename(String test, String testCase, String step, String sequence, String control, String pictureName, String extension) {
+    @Override
+    public String generateScreenshotFilename(String test, String testCase, String step, String sequence, String control, String pictureName, String extension) {
 
         StringBuilder sbScreenshotFilename = new StringBuilder();
         if (pictureName == null) {

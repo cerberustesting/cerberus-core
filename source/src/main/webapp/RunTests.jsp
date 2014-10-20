@@ -531,6 +531,13 @@
                             <input id="timeout" name="timeout" style="width: 200px">
                         </div>
                     </div>
+                        <div style="clear:both">
+                        <div style="float:left;width:150px; text-align:left"><% out.print(docService.findLabelHTML("page_runtests", "manualExecution", ""));%>
+                        </div>
+                        <div style="float:left">
+                            <input id="manualExecution" name="manualExecution" style="width: 200px">
+                        </div>
+                    </div>
                     <div id="recordButtonDiv" style="clear:both">
                         <input id="button" class="button" type="button" onclick="recordExecutionParam()" <%=enable%> name="execParam" value="Record my Execution Parameters" >
                     </div>
@@ -773,6 +780,32 @@
                     setCookie('SynchroneousPreference', 'synchroneous');
 
                     $("#synchroneous").find('option').each(function(i, opt) {
+                        if (opt.value === pl) {
+                            $(opt).attr('selected', 'selected');
+                        }
+
+
+                    });
+
+                })
+            });
+
+        </script>
+        <script type="text/javascript">
+            $(document).ready(function() {
+                $.getJSON('FindInvariantByID?idName=synchroneous', function(data) {
+                    $("#manualExecution").empty();
+                    var pl = document.getElementById("defSynchroneous").value;
+
+                    for (var i = 0; i < data.length; i++) {
+                        $("#manualExecution").append($("<option></option>")
+                                .attr("value", data[i].value)
+                                .text(data[i].value + " ( " + data[i].description + " )"));
+                    }
+
+                    setCookie('ManualExecutionPreference', 'manualExecution');
+
+                    $("#manualExecution").find('option').each(function(i, opt) {
                         if (opt.value === pl) {
                             $(opt).attr('selected', 'selected');
                         }
