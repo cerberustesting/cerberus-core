@@ -336,7 +336,7 @@ public class ActionService implements IActionService {
     private MessageEvent doActionOpenURLWithBase(TestCaseExecution tCExecution, String value, String property) {
         MessageEvent message;
         if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")) {
-            return webdriverService.doSeleniumActionOpenURL(tCExecution.getSession(),tCExecution.getCountryEnvironmentApplication().getIp(), value, property, true);
+            return webdriverService.doSeleniumActionOpenURL(tCExecution.getSession(),tCExecution.getUrl(), value, property, true);
         }
         message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
         message.setDescription(message.getDescription().replaceAll("%ACTION%", "OpenURLWithBase"));
