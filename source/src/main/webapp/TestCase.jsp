@@ -403,6 +403,24 @@
                     
                 //First Check if testcase can be edited (good system selected)
                     User MyUserobj = userService.findUserByKeyWithDependencies(request.getUserPrincipal().getName());
+                    
+                    // Change system if requested inURL
+                String setSystem = getRequestParameterWildcardIfEmpty(request, "SetSystem");
+                if (!setSystem.equals("")){
+                MyUserobj.setDefaultSystem(setSystem);
+                userService.updateUser(MyUserobj);
+                MySystem = setSystem;
+                %>
+                <script>
+                 $(document).ready(function() {
+                $("#MySystem option:selected").attr('selected',false);
+                $("#MySystem option[value='<%=setSystem%>']").attr("selected", true);
+            });   
+                </script>
+            <%
+                }
+                
+                
                     List<UserSystem> systemList = userSystemService.findUserSystemByUser(request.getUserPrincipal().getName());
                     List<String> usList = new ArrayList();
                     for (UserSystem us : systemList) {
@@ -417,11 +435,7 @@
                 %>
                 var sys = '<%=applicationSystem%>';
                 if (confirm('This Testcase is only accessible with another system selection\nSwitch to system ' + sys + '?')){
-                <%
-                MyUserobj.setDefaultSystem(applicationSystem);
-                userService.updateUser(MyUserobj);
-                %>
-                window.location = "./TestCase.jsp?Test=<%=test%>&TestCase=<%=testcase%>";
+                window.location = "./TestCase.jsp?Test=<%=test%>&TestCase=<%=testcase%>&SetSystem=<%=applicationSystem%>";
                 } else {
                 window.location = "./Homepage.jsp";
                 }
