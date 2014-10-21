@@ -196,6 +196,12 @@ public class PropertyService implements IPropertyService {
                     msg.setDescription(msg.getDescription().replaceAll("%PROP%", property));
                     testCaseExecutionData.setPropertyResultMessage(msg);
                     return testCaseExecutionData;
+                } else if (testCaseCountryPropertiesService.findCountryByPropertyNameAndTestCase(usedTest, usedTestCase, property) != null) {
+                    MessageEvent msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_NO_PROPERTY_DEFINITION);
+                    msg.setDescription(msg.getDescription().replaceAll("%COUNTRY%", country));
+                    msg.setDescription(msg.getDescription().replaceAll("%PROP%", property));
+                    testCaseExecutionData.setPropertyResultMessage(msg);
+                    return testCaseExecutionData;
                 } else {
                     MessageEvent msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_UNKNOWNPROPERTY);
                     msg.setDescription(msg.getDescription().replaceAll("%COUNTRY%", country));
