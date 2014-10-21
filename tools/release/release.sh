@@ -33,6 +33,11 @@ function log {
     echo "$APP [$level] $*"
 }
 
+# Log an informational message
+function info {
+    log INFO $*
+}
+
 # Log an error message
 function error {
     log ERROR $*
@@ -72,6 +77,11 @@ function checkPrerequisities {
 function initVersions {
     read -p "Next release version? " nextReleaseVersion
     read -p "Next development version? " nextDevelopmentVersion
+    read -p "Continue? (y/n) " versionAgreement
+    if [[ $versionAgreement != "y" ]]; then
+        return 1
+    fi
+    return 0
 }
 
 # Update a bin/02DeployApp file by adding a new undeploy line and setting the deploy line with the next release version
@@ -100,7 +110,11 @@ function commitChanges {
 # - Updating bin/02DeployApp files
 # - Commiting changes
 function prepareEnvironment {
-    initVersions
+    if ! initVersions; then
+        info "Release aborted."
+        exit 1
+    fi
+
     updateDeployAppFiles
     commitChanges    
 }
