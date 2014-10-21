@@ -78,75 +78,44 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
 	private static final String VALUE_PROCEEDED_FALSE = "0";
 	private static final String VALUE_PROCEEDED_TRUE = "1";
 
+	private static final String QUERY_INSERT = "INSERT INTO `" + TABLE + "` (`" + COLUMN_TEST + "`, `" + COLUMN_TEST_CASE + "`, `" + COLUMN_COUNTRY + "`, `" + COLUMN_ENVIRONMENT + "`, `" + COLUMN_ROBOT + "`, `" + COLUMN_ROBOT_IP + "`, `" + COLUMN_ROBOT_PORT + "`, `" + COLUMN_BROWSER + "`, `" + COLUMN_BROWSER_VERSION + "`, `" + COLUMN_PLATFORM + "`, `" + COLUMN_MANUAL_URL + "`, `" + COLUMN_MANUAL_HOST + "`, `" + COLUMN_MANUAL_CONTEXT_ROOT + "`, `" + COLUMN_MANUAL_LOGIN_RELATIVE_URL + "`, `" + COLUMN_MANUAL_ENV_DATA + "`, `" + COLUMN_TAG + "`, `" + COLUMN_OUTPUT_FORMAT + "`, `" + COLUMN_SCREENSHOT + "`, `" + COLUMN_VERBOSE + "`, `" + COLUMN_TIMEOUT + "`, `" + COLUMN_SYNCHRONEOUS + "`, `" + COLUMN_PAGE_SOURCE + "`, `" + COLUMN_SELENIUM_LOG + "`, `" + COLUMN_REQUEST_DATE + "`) " + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+	private static final String QUERY_SELECT_NEXT = "SELECT * FROM `" + TABLE + "` WHERE `" + COLUMN_PROCEEDED + "` = '" + VALUE_PROCEEDED_FALSE + "' ORDER BY `" + COLUMN_ID + "` ASC LIMIT 1";
+	private static final String QUERY_PROCEED = "UPDATE `" + TABLE + "` SET `" + COLUMN_PROCEEDED + "` = '" + VALUE_PROCEEDED_TRUE + "' WHERE `" + COLUMN_ID + "` = ?";
+	private static final String QUERY_GET_PROCEEDED = "SELECT * FROM `" + TABLE + "` WHERE `" + COLUMN_PROCEEDED + "` = '" + VALUE_PROCEEDED_TRUE + "' ORDER BY `" + COLUMN_ID + "` ASC";
+	private static final String QUERY_GET_PROCEEDED_BY_TAG = "SELECT * FROM `" + TABLE + "` WHERE `" + COLUMN_PROCEEDED + "` = '" + VALUE_PROCEEDED_TRUE + "' AND `" + COLUMN_TAG + "` = ? ORDER BY `" + COLUMN_ID + "` ASC";
+	private static final String QUERY_REMOVE = "DELETE FROM `" + TABLE + "` WHERE `" + COLUMN_ID + "` = ?";
+
 	@Autowired
 	private DatabaseSpring databaseSpring;
 
 	@Autowired
 	private IFactoryTestCaseExecutionInQueue factoryTestCaseExecutionInQueue;
 
-	private String queryInsert;
-	private String querySelectNext;
-	private String queryProceed;
-	private String queryGetProceeded;
-	private String queryGetProceededByTag;
-	private String queryRemove;
-
-	public String getQueryInsert() {
-		if (queryInsert == null) {
-			queryInsert = "INSERT INTO `" + TABLE + "` (`" + COLUMN_TEST + "`, `" + COLUMN_TEST_CASE + "`, `" + COLUMN_COUNTRY + "`, `" + COLUMN_ENVIRONMENT + "`, `"
-					+ COLUMN_ROBOT + "`, `" + COLUMN_ROBOT_IP + "`, `" + COLUMN_ROBOT_PORT + "`, `" + COLUMN_BROWSER + "`, `" + COLUMN_BROWSER_VERSION + "`, `" + COLUMN_PLATFORM
-					+ "`, `" + COLUMN_MANUAL_URL + "`, `" + COLUMN_MANUAL_HOST + "`, `" + COLUMN_MANUAL_CONTEXT_ROOT + "`, `" + COLUMN_MANUAL_LOGIN_RELATIVE_URL + "`, `"
-					+ COLUMN_MANUAL_ENV_DATA + "`, `" + COLUMN_TAG + "`, `" + COLUMN_OUTPUT_FORMAT + "`, `" + COLUMN_SCREENSHOT + "`, `" + COLUMN_VERBOSE + "`, `" + COLUMN_TIMEOUT
-					+ "`, `" + COLUMN_SYNCHRONEOUS + "`, `" + COLUMN_PAGE_SOURCE + "`, `" + COLUMN_SELENIUM_LOG + "`, `" + COLUMN_REQUEST_DATE + "`) "
-					+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
-		}
-		return queryInsert;
-	}
-
-	private String getQuerySelectNext() {
-		if (querySelectNext == null) {
-			querySelectNext = "SELECT * FROM `" + TABLE + "` WHERE `" + COLUMN_PROCEEDED + "` = '" + VALUE_PROCEEDED_FALSE + "' ORDER BY `" + COLUMN_ID + "` ASC LIMIT 1";
-		}
-		return querySelectNext;
-	}
-
-	private String getQueryProceed() {
-		if (queryProceed == null) {
-			queryProceed = "UPDATE `" + TABLE + "` SET `" + COLUMN_PROCEEDED + "` = '" + VALUE_PROCEEDED_TRUE + "' WHERE `" + COLUMN_ID + "` = ?";
-		}
-		return queryProceed;
-	}
-
-	private String getQueryGetProceeded() {
-		if (queryGetProceeded == null) {
-			queryGetProceeded = "SELECT * FROM `" + TABLE + "` WHERE `" + COLUMN_PROCEEDED + "` = '" + VALUE_PROCEEDED_TRUE + "' ORDER BY `" + COLUMN_ID + "` ASC";
-		}
-		return queryGetProceeded;
-	}
-
-	private String getQueryGetProceededByTag() {
-		if (queryGetProceededByTag == null) {
-			queryGetProceededByTag = "SELECT * FROM `" + TABLE + "` WHERE `" + COLUMN_PROCEEDED + "` = '" + VALUE_PROCEEDED_TRUE + "' AND `" + COLUMN_TAG + "` = ? ORDER BY `"
-					+ COLUMN_ID + "` ASC";
-		}
-		return queryGetProceededByTag;
-	}
-
-	private String getQueryRemove() {
-		if (queryRemove == null) {
-			queryRemove = "DELETE FROM `" + TABLE + "` WHERE `" + COLUMN_ID + "` = ?";
-		}
-		return queryRemove;
-	}
-
 	private TestCaseExecutionInQueue fromResultSet(ResultSet resultSet) throws FactoryCreationException, SQLException {
-		return factoryTestCaseExecutionInQueue.create(resultSet.getLong(COLUMN_ID), resultSet.getString(COLUMN_TEST), resultSet.getString(COLUMN_TEST_CASE),
-				resultSet.getString(COLUMN_COUNTRY), resultSet.getString(COLUMN_ENVIRONMENT), resultSet.getString(COLUMN_ROBOT), resultSet.getString(COLUMN_ROBOT_IP),
-				resultSet.getString(COLUMN_ROBOT_PORT), resultSet.getString(COLUMN_BROWSER), resultSet.getString(COLUMN_BROWSER_VERSION), resultSet.getString(COLUMN_PLATFORM),
-				resultSet.getBoolean(COLUMN_MANUAL_URL), resultSet.getString(COLUMN_MANUAL_HOST), resultSet.getString(COLUMN_MANUAL_CONTEXT_ROOT),
-				resultSet.getString(COLUMN_MANUAL_LOGIN_RELATIVE_URL), resultSet.getString(COLUMN_MANUAL_ENV_DATA), resultSet.getString(COLUMN_TAG),
-				resultSet.getString(COLUMN_OUTPUT_FORMAT), resultSet.getInt(COLUMN_SCREENSHOT), resultSet.getInt(COLUMN_VERBOSE), resultSet.getLong(COLUMN_TIMEOUT),
-				resultSet.getBoolean(COLUMN_SYNCHRONEOUS), resultSet.getInt(COLUMN_PAGE_SOURCE), resultSet.getInt(COLUMN_SELENIUM_LOG),
+		return factoryTestCaseExecutionInQueue.create(resultSet.getLong(COLUMN_ID),
+				resultSet.getString(COLUMN_TEST),
+				resultSet.getString(COLUMN_TEST_CASE),
+				resultSet.getString(COLUMN_COUNTRY),
+				resultSet.getString(COLUMN_ENVIRONMENT),
+				resultSet.getString(COLUMN_ROBOT),
+				resultSet.getString(COLUMN_ROBOT_IP),
+				resultSet.getString(COLUMN_ROBOT_PORT),
+				resultSet.getString(COLUMN_BROWSER),
+				resultSet.getString(COLUMN_BROWSER_VERSION),
+				resultSet.getString(COLUMN_PLATFORM),
+				resultSet.getBoolean(COLUMN_MANUAL_URL),
+				resultSet.getString(COLUMN_MANUAL_HOST),
+				resultSet.getString(COLUMN_MANUAL_CONTEXT_ROOT),
+				resultSet.getString(COLUMN_MANUAL_LOGIN_RELATIVE_URL),
+				resultSet.getString(COLUMN_MANUAL_ENV_DATA),
+				resultSet.getString(COLUMN_TAG),
+				resultSet.getString(COLUMN_OUTPUT_FORMAT),
+				resultSet.getInt(COLUMN_SCREENSHOT),
+				resultSet.getInt(COLUMN_VERBOSE),
+				resultSet.getLong(COLUMN_TIMEOUT),
+				resultSet.getBoolean(COLUMN_SYNCHRONEOUS),
+				resultSet.getInt(COLUMN_PAGE_SOURCE),
+				resultSet.getInt(COLUMN_SELENIUM_LOG),
 				new Date(resultSet.getTimestamp(COLUMN_REQUEST_DATE).getTime()));
 	}
 
@@ -160,7 +129,7 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
 		PreparedStatement statementInsert = null;
 
 		try {
-			statementInsert = connection.prepareStatement(getQueryInsert());
+			statementInsert = connection.prepareStatement(QUERY_INSERT);
 			statementInsert.setString(1, inQueue.getTest());
 			statementInsert.setString(2, inQueue.getTestCase());
 			statementInsert.setString(3, inQueue.getCountry());
@@ -225,7 +194,7 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
 			connection.setAutoCommit(false);
 
 			// Select the next record to be proceeded
-			statementSelectNext = connection.prepareStatement(getQuerySelectNext());
+			statementSelectNext = connection.prepareStatement(QUERY_SELECT_NEXT);
 			ResultSet resultSelect = statementSelectNext.executeQuery();
 
 			// If there is no record then return null
@@ -237,7 +206,7 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
 			result = fromResultSet(resultSelect);
 
 			// Make the actual record as proceeded
-			statementProceed = connection.prepareStatement(getQueryProceed());
+			statementProceed = connection.prepareStatement(QUERY_PROCEED);
 			statementProceed.setLong(1, resultSelect.getLong(COLUMN_ID));
 			statementProceed.executeUpdate();
 
@@ -304,9 +273,9 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
 
 		try {
 			if (tag == null) {
-				statement = connection.prepareStatement(getQueryGetProceeded());
+				statement = connection.prepareStatement(QUERY_GET_PROCEEDED);
 			} else {
-				statement = connection.prepareStatement(getQueryGetProceededByTag());
+				statement = connection.prepareStatement(QUERY_GET_PROCEEDED_BY_TAG);
 				statement.setString(1, tag);
 			}
 			ResultSet resultSet = statement.executeQuery();
@@ -359,7 +328,7 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
 		PreparedStatement statementRemove = null;
 
 		try {
-			statementRemove = connection.prepareStatement(getQueryRemove());
+			statementRemove = connection.prepareStatement(QUERY_REMOVE);
 			statementRemove.setLong(1, id);
 
 			statementRemove.executeUpdate();
