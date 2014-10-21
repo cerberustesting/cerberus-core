@@ -252,6 +252,7 @@
 	</dependencies>
 
 	<build>
+        <finalName>${project.name}-${project.version}</finalName>
 		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -328,11 +329,8 @@
 						<configuration>
 							<target>
 								<scp
-									todir="${sourceforge.username}:${sourceforge.password}@${sourceforge.url}">
-									<fileset dir="${project.build.directory}">
-										<include name="${project.build.finalName}*.*" />
-									</fileset>
-								</scp>
+                                    file="${project.build.directory}/${project.build.finalName}.zip"
+									todir="${sourceforge.username}:${sourceforge.password}@${sourceforge.url}"/>
 							</target>
 						</configuration>
 						<goals>
