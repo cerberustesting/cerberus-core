@@ -100,6 +100,7 @@ public class RunTestCase extends HttpServlet {
 	public static final String PARAMETER_SYNCHRONEOUS = "synchroneous";
 	public static final String PARAMETER_PAGE_SOURCE = "pageSource";
 	public static final String PARAMETER_SELENIUM_LOG = "seleniumLog";
+        public static final String PARAMETER_MANUAL_EXECUTION = "manualExecution";
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -127,6 +128,7 @@ public class RunTestCase extends HttpServlet {
         boolean synchroneous = true;
         int getPageSource = 0;
         int getSeleniumLog = 0;
+        String manualExecution = "";
 
         if (robot.equals("")) {
             robotHost = ParameterParserUtil.parseStringParam(policy.sanitize(request.getParameter("ss_ip")), "");
@@ -177,6 +179,7 @@ public class RunTestCase extends HttpServlet {
         synchroneous = ParameterParserUtil.parseBooleanParam(policy.sanitize(request.getParameter("synchroneous")), true);
         getPageSource = ParameterParserUtil.parseIntegerParam(policy.sanitize(request.getParameter("pageSource")), 1);
         getSeleniumLog = ParameterParserUtil.parseIntegerParam(policy.sanitize(request.getParameter("seleniumLog")), 1);
+        manualExecution = ParameterParserUtil.parseStringParam(policy.sanitize(request.getParameter("manualExecution")), "N");
 
         String helpMessage = "\nThis servlet is used to start the execution of a test case.\n"
                 + "Parameter list :\n"
@@ -202,7 +205,8 @@ public class RunTestCase extends HttpServlet {
                 + "- timeout : Timeout used for the action. If empty, the default value will be the one configured in parameter table. [" + timeout + "]\n"
                 + "- synchroneous : Synchroneous define if the servlet wait for the end of the execution to report its execution. [" + synchroneous + "\n"
                 + "- pageSource : Record Page Source during the execution. [" + getPageSource + "]\n"
-                + "- seleniumLog : Get the SeleniumLog at the end of the execution. [" + getSeleniumLog + "]\n";
+                + "- seleniumLog : Get the SeleniumLog at the end of the execution. [" + getSeleniumLog + "]\n"
+                + "- manualExecution : Execute testcase in manual mode. [" + manualExecution + "]\n";
 
         boolean error = false;
 

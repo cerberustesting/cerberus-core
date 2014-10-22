@@ -321,6 +321,8 @@ public class ExecutionStartService implements IExecutionStartService {
                 MyLogger.log(ExecutionStartService.class.getName(),Level.DEBUG, mes.getDescription());
                 throw new CerberusException(mes);
             }
+            
+//            if (!tCExecution.getManualExecution().equals("Y")){
 
             MyLogger.log(ExecutionStartService.class.getName(), Level.DEBUG, "Application is GUI. Trying to reach selenium server.");
 
@@ -337,8 +339,9 @@ public class ExecutionStartService implements IExecutionStartService {
                 MyLogger.log(ExecutionStartService.class.getName(),Level.DEBUG, ex.getMessageError().getDescription());
                 throw new CerberusException(ex.getMessageError());
             }
+            }
 
-        }
+//        }
 
         /**
          * Register RunID inside database.

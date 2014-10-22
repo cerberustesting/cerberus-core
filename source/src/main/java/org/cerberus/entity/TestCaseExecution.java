@@ -78,7 +78,16 @@ public class TestCaseExecution {
     private Integer pageSource;
     private Integer seleniumLog;
     private Session session;
+    private String manualExecution;
 
+    public String getManualExecution() {
+        return manualExecution;
+    }
+
+    public void setManualExecution(String manualExecution) {
+        this.manualExecution = manualExecution;
+    }
+    
     public Session getSession() {
         return session;
     }

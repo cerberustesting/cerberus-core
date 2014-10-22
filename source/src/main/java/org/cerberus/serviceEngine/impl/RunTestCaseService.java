@@ -73,15 +73,20 @@ public class RunTestCaseService implements IRunTestCaseService {
          * Execute TestCase in new thread if asynchroneous execution
          */
         if (tCExecution.getId() != 0) {
-        try {
-            if (!tCExecution.isSynchroneous()) {
-                executionRunService.executeAsynchroneouslyTestCase(tCExecution);
-            } else {
-                tCExecution = executionRunService.executeTestCase(tCExecution);
+            try {
+                // MyLogger.log(ExecutionStartService.class.getName(), Level.INFO, "to remove");
+//                if (!tCExecution.getManualExecution().equals("Y")) {
+                    if (!tCExecution.isSynchroneous()) {
+                        executionRunService.executeAsynchroneouslyTestCase(tCExecution);
+                    } else {
+                        tCExecution = executionRunService.executeTestCase(tCExecution);
+                    }
+//                } else {
+//                
+//                }
+            } catch (CerberusException ex) {
+                tCExecution.setResultMessage(ex.getMessageError());
             }
-        } catch (CerberusException ex) {
-            tCExecution.setResultMessage(ex.getMessageError());
-        }
         }
         /**
          * Return tcexecution object
