@@ -31,6 +31,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Logger;
 import org.cerberus.entity.TestCaseExecutionInQueue;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.exception.FactoryCreationException;
@@ -67,6 +68,8 @@ public class AddToExecutionQueue extends HttpServlet {
 	}
 
 	private static final long serialVersionUID = 1L;
+
+	private static final Logger LOG = Logger.getLogger(AddToExecutionQueue.class);
 
 	private static final String PARAMETER_SELECTED_TEST = "SelectedTest";
 	private static final String PARAMETER_SELECTED_TEST_TEST = "Test";
@@ -141,7 +144,6 @@ public class AddToExecutionQueue extends HttpServlet {
 	private void processRequest(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		// Part 1: Getting all test cases which have been sent to this servlet.
 		List<TestCaseExecutionInQueue> toInserts = null;
-                System.out.print("toto");
 		try {
 			toInserts = getTestCasesToInsert(req);
 		} catch (ParameterException pe) {
@@ -153,8 +155,11 @@ public class AddToExecutionQueue extends HttpServlet {
 		List<String> notInserted = new ArrayList<String>();
 		for (TestCaseExecutionInQueue toInsert : toInserts) {
 			try {
-				inQueueService.insert(toInsert);
+				if (inQueueService.canInsert(toInsert)) {
+					inQueueService.insert(toInsert);
+				}
 			} catch (CerberusException e) {
+				LOG.warn("Unable to insert " + toInsert.toString() + " due to " + e.getMessage());
 				notInserted.add(toInsert.toString());
 				continue;
 			}
@@ -227,9 +232,30 @@ public class AddToExecutionQueue extends HttpServlet {
 			String testCase = selectedTest.get(PARAMETER_SELECTED_TEST_TEST_CASE);
 			for (String country : countries) {
 				try {
-					inQueues.add(inQueueFactoryService.create(test, testCase, country, environment, robot, robotIP, robotPort, browser, browserVersion, platform, manualURL,
-							manualHost, manualContextRoot, manualLoginRelativeURL, manualEnvData, tag, outputFormat, screenshot, verbose, timeout, synchroneous, pageSource,
-							seleniumLog, requestDate));
+					inQueues.add(inQueueFactoryService.create(test,
+							testCase,
+							country,
+							environment,
+							robot,
+							robotIP,
+							robotPort,
+							browser,
+							browserVersion,
+							platform,
+							manualURL,
+							manualHost,
+							manualContextRoot,
+							manualLoginRelativeURL,
+							manualEnvData,
+							tag,
+							outputFormat,
+							screenshot,
+							verbose,
+							timeout,
+							synchroneous,
+							pageSource,
+							seleniumLog,
+							requestDate));
 				} catch (FactoryCreationException e) {
 					throw new ParameterException("Unable to insert record due to: " + e.getMessage(), e);
 				}

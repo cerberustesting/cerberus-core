@@ -21,7 +21,10 @@ package org.cerberus.service.impl;
 
 import java.util.List;
 
+import org.cerberus.dao.ITestCaseCountryDAO;
 import org.cerberus.dao.ITestCaseExecutionInQueueDAO;
+import org.cerberus.entity.MessageGeneral;
+import org.cerberus.entity.MessageGeneralEnum;
 import org.cerberus.entity.TestCaseExecutionInQueue;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.service.ITestCaseExecutionInQueueService;
@@ -38,6 +41,23 @@ public class TestCaseExecutionInQueueService implements ITestCaseExecutionInQueu
 
 	@Autowired
 	private ITestCaseExecutionInQueueDAO testCaseExecutionInQueueDAO;
+
+	@Autowired
+	private ITestCaseCountryDAO testCaseCountryDAO;
+
+	@Override
+	public boolean canInsert(TestCaseExecutionInQueue inQueue) throws CerberusException {
+		try {
+			testCaseCountryDAO.findTestCaseCountryByKey(inQueue.getTest(), inQueue.getTestCase(), inQueue.getCountry());
+			return true;
+		} catch (CerberusException ce) {
+			MessageGeneral messageGeneral = ce.getMessageError();
+			if (messageGeneral == null || messageGeneral.getCode() != MessageGeneralEnum.NO_DATA_FOUND.getCode()) {
+				throw ce;
+			}
+			return false;
+		}
+	}
 
 	@Override
 	public void insert(TestCaseExecutionInQueue inQueue) throws CerberusException {
