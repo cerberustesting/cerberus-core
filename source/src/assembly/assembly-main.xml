@@ -19,5 +19,13 @@
 			<source>${project.build.directory}/${project.build.finalName}.war</source>
 			<outputDirectory>/</outputDirectory>
 		</file>
+		<file>
+			<source>../INSTALL</source>
+			<outputDirectory>/</outputDirectory>
+		</file>
+		<file>
+			<source>../LICENSE</source>
+			<outputDirectory>/</outputDirectory>
+		</file>
 	</files>
 </assembly>
