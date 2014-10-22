@@ -20,18 +20,15 @@
 package org.cerberus.servlet.execution;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Level;
-import org.cerberus.entity.TestCaseExecution;
 import org.cerberus.entity.TestCaseExecutionInQueue;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.log.MyLogger;
 import org.cerberus.service.ITestCaseExecutionInQueueService;
-import org.cerberus.service.ITestCaseExecutionService;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -66,10 +63,12 @@ public class FindExecutionInQueue extends HttpServlet {
             try {
                 for (TestCaseExecutionInQueue exec : executionService.getProceededByTag("toto")) {
                     JSONArray row = new JSONArray();
+                    row.put(exec.getId());
                     row.put(exec.getTest());
                     row.put(exec.getTestCase());
                     row.put(exec.getCountry());
                     row.put(exec.getEnvironment());
+                    row.put(exec.getBrowser());
                     data.put(row);
                 }
             } catch (CerberusException ex) {

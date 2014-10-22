@@ -27,10 +27,11 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
 import org.apache.log4j.Logger;
+import org.cerberus.dao.ICampaignDAO;
 import org.cerberus.dao.ITestCaseExecutionInQueueDAO;
 import org.cerberus.database.DatabaseSpring;
+import org.cerberus.dto.TestCaseWithExecution;
 import org.cerberus.entity.MessageGeneral;
 import org.cerberus.entity.MessageGeneralEnum;
 import org.cerberus.entity.TestCaseExecutionInQueue;
@@ -84,12 +85,17 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
 	private static final String QUERY_GET_PROCEEDED = "SELECT * FROM `" + TABLE + "` WHERE `" + COLUMN_PROCEEDED + "` = '" + VALUE_PROCEEDED_TRUE + "' ORDER BY `" + COLUMN_ID + "` ASC";
 	private static final String QUERY_GET_PROCEEDED_BY_TAG = "SELECT * FROM `" + TABLE + "` WHERE `" + COLUMN_PROCEEDED + "` = '" + VALUE_PROCEEDED_TRUE + "' AND `" + COLUMN_TAG + "` = ? ORDER BY `" + COLUMN_ID + "` ASC";
 	private static final String QUERY_REMOVE = "DELETE FROM `" + TABLE + "` WHERE `" + COLUMN_ID + "` = ?";
+        private static final String QUERY_FIND_BY_KEY = "SELECT * FROM `" + TABLE + "` WHERE `" + COLUMN_ID + "` = ?";
+	
 
 	@Autowired
 	private DatabaseSpring databaseSpring;
 
 	@Autowired
 	private IFactoryTestCaseExecutionInQueue factoryTestCaseExecutionInQueue;
+        
+        @Autowired
+        private CampaignDAO campaignDAO;
 
 	private TestCaseExecutionInQueue fromResultSet(ResultSet resultSet) throws FactoryCreationException, SQLException {
 		return factoryTestCaseExecutionInQueue.create(resultSet.getLong(COLUMN_ID),
@@ -352,4 +358,160 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
 			}
 		}
 	}
+        
+    public List<TestCaseWithExecution> findTestCaseWithExecutionInQueuebyTag(String tag) throws CerberusException {
+        boolean throwEx = false;
+        final StringBuffer query = new StringBuffer("select * from ( select tc.*, RequestDate as Start, '' as End, tce.ID as statusExecutionID, 'NE' as ControlStatus, 'Not Executed' as ControlMessage, tce.Environment, tce.Country, tce.Browser ")
+                                    .append("from testcase tc ")
+                                    .append("left join testcaseexecutionqueue tce ")
+                                    .append("on tce.Test = tc.Test ")
+                                    .append("and tce.TestCase = tc.TestCase ")
+                                    .append("where tce.tag = ? ");
+        
+//        query.append("and tce.Browser in (");
+//        for (int i = 0; i < browser.length; i++) {
+//            query.append("?");
+//            if(i<browser.length-1) {
+//                query.append(", ");
+//            }
+//        }
+//        
+//        query.append(") and tce.Environment in (");
+//        for (int i = 0; i < env.length; i++) {
+//            query.append("?");
+//            if(i<env.length-1) {
+//                query.append(", ");
+//            }
+//        }
+//
+//        
+//        query.append(") and tce.Country in (");
+//        for (int i = 0; i < country.length; i++) {
+//            query.append("?");
+//            if(i<country.length-1) {
+//                query.append(", ");
+//            }
+//        }
+
+//        query.append(") order by test, testcase, ID desc) as tce, application app ")
+        query.append(" order by test, testcase, ID desc) as tce, application app ")
+          .append("where tce.application = app.application ")
+          .append("group by tce.test, tce.testcase ").toString();
+//          .append("group by tce.test, tce.testcase, tce.Environment, tce.Browser, tce.Country ").toString();
+
+        List<TestCaseWithExecution> testCaseWithExecutionList = new ArrayList<TestCaseWithExecution>();
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query.toString());
+            int index = 1;
+//            preStat.setString(index, campaignName);
+//            index++;
+
+            preStat.setString(index, tag);
+            index++;
+
+//            for (String b : browser) {
+//                preStat.setString(index, b);
+//                index++;
+//            }
+//            
+//            for (String e : env) {
+//                preStat.setString(index, e);
+//                index++;
+//            }
+//            
+//            for (String c : country) {
+//                preStat.setString(index, c);
+//                index++;
+//            }
+            
+            try {
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+                    while (resultSet.next()) {
+                        testCaseWithExecutionList.add(campaignDAO.loadTestCaseWithExecutionFromResultSet(resultSet));
+                    }
+                } catch (SQLException exception) {
+                    LOG.error("Unable to execute query : " + exception.toString());
+                    testCaseWithExecutionList = null;
+                } finally {
+                    resultSet.close();
+                }
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception.toString());
+                testCaseWithExecutionList = null;
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception.toString());
+            testCaseWithExecutionList = null;
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                LOG.warn(e.toString());
+            }
+        }
+        if (throwEx) {
+            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
+        }
+        return testCaseWithExecutionList;
+    }
+
+    @Override
+    public TestCaseExecutionInQueue findByKey(long id) throws CerberusException {
+        final Connection connection = this.databaseSpring.connect();
+		if (connection == null) {
+			throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
+		}
+
+		PreparedStatement statement = null;
+
+		TestCaseExecutionInQueue result = null;
+
+		try {
+				statement = connection.prepareStatement(QUERY_FIND_BY_KEY);
+				statement.setLong(1, id);
+			ResultSet resultSet = statement.executeQuery();
+
+			while (resultSet.next()) {
+				try {
+					result = (fromResultSet(resultSet));
+				} catch (FactoryCreationException fce) {
+					LOG.warn("Unable to get malformed record from database", fce);
+				}
+			}
+
+			return result;
+		} catch (SQLException sqle) {
+			LOG.warn("Unable to execute query : " + sqle.getMessage() + ". Trying to rollback");
+			if (connection != null) {
+				try {
+					connection.rollback();
+				} catch (SQLException e) {
+					LOG.error("Unable to rollback due to " + e.getMessage());
+				}
+				LOG.warn("Rollback done");
+			}
+			throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
+		} finally {
+			if (statement != null) {
+				try {
+					statement.close();
+				} catch (SQLException e) {
+					LOG.warn("Unable to close statement due to " + e.getMessage());
+				}
+			}
+			if (connection != null) {
+				try {
+					connection.close();
+				} catch (SQLException e) {
+					LOG.warn("Unable to close connection due to " + e.getMessage());
+				}
+			}
+		}
+    }
 }

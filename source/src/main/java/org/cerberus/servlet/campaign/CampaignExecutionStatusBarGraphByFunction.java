@@ -32,6 +32,7 @@ import org.apache.log4j.Logger;
 import org.cerberus.dto.TestCaseWithExecution;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.service.ICampaignService;
+import org.cerberus.service.ITestCaseExecutionInQueueService;
 import org.cerberus.service.ITestCaseService;
 import org.cerberus.util.GraphicHelper;
 import org.json.JSONObject;
@@ -72,6 +73,9 @@ public class CampaignExecutionStatusBarGraphByFunction extends HttpServlet {
 
             ITestCaseService testCaseService = appContext
                     .getBean(ITestCaseService.class);
+            
+            ITestCaseExecutionInQueueService testCaseExecutionInQueueService = appContext
+                    .getBean(ITestCaseExecutionInQueueService.class);
 
             PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
 
@@ -82,11 +86,21 @@ public class CampaignExecutionStatusBarGraphByFunction extends HttpServlet {
             String[] country = request.getParameterValues("Country");
             String[] browser = request.getParameterValues("Browser");
 
-            
+            /**
+             * Get list of execution by tag, env, country, browser
+             */
             List<TestCaseWithExecution> testCaseWithExecutions = campaignService.getCampaignTestCaseExecutionForEnvCountriesBrowserTag(campaignName, tag, env, country, browser);
             
-            HashMap<String, TestCaseWithExecution> testCaseWithExecutionsList = TestCaseWithExecution.generateEmptyResultOfExecutions(testCaseService.findTestCaseByCampaignNameAndCountries(campaignName, country), env, country, browser);
-
+            /**
+             * Get list of Execution in Queue by Tag
+             */
+            List<TestCaseWithExecution> testCaseWithExecutionsInQueue = testCaseExecutionInQueueService.findTestCaseWithExecutionInQueuebyTag(tag);
+            
+            /**
+             * Feed hash map with execution from the two list (to get only one by test,testcase,country,env,browser)
+             */
+            HashMap<String, TestCaseWithExecution> testCaseWithExecutionsList = new HashMap();
+            
             for (TestCaseWithExecution testCaseWithExecution : testCaseWithExecutions) {
                 String key = testCaseWithExecution.getBrowser() + "_" 
                         + testCaseWithExecution.getCountry() + "_" 
@@ -94,6 +108,14 @@ public class CampaignExecutionStatusBarGraphByFunction extends HttpServlet {
                         + testCaseWithExecution.getTest() + "_" 
                         + testCaseWithExecution.getTestCase();
                 testCaseWithExecutionsList.put(key, testCaseWithExecution);
+            }
+             for (TestCaseWithExecution testCaseWithExecutionInQueue : testCaseWithExecutionsInQueue) {
+                String key = testCaseWithExecutionInQueue.getBrowser() + "_" 
+                        + testCaseWithExecutionInQueue.getCountry() + "_" 
+                        + testCaseWithExecutionInQueue.getEnvironment() + "_" 
+                        + testCaseWithExecutionInQueue.getTest() + "_" 
+                        + testCaseWithExecutionInQueue.getTestCase();
+                testCaseWithExecutionsList.put(key, testCaseWithExecutionInQueue);
             }
 
             testCaseWithExecutions = new ArrayList<TestCaseWithExecution>(testCaseWithExecutionsList.values());

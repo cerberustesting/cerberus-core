@@ -364,75 +364,67 @@ public class CampaignDAO implements ICampaignDAO {
         boolean throwEx = false;
         final StringBuffer query = new StringBuffer("select * from ( select tc.*, tce.Start, tce.End, tce.ID as statusExecutionID, tce.ControlStatus, tce.ControlMessage, tce.Environment, tce.Country, tce.Browser ")
                                     .append("from testcase tc ")
-                                    .append("inner join testbatterycontent tbc ")
-                                    .append("on tbc.Test = tc.Test ")
-                                    .append("and tbc.TestCase = tc.TestCase ")
-                                    .append("inner join testcasecountry tcc ")
-                                    .append("on tc.test = tcc.test ")
-                                    .append("and tc.testcase = tcc.testcase ")
-                                    .append("inner join campaigncontent cc ")
-                                    .append("on cc.testbattery = tbc.testbattery ")
                                     .append("left join testcaseexecution tce ")
                                     .append("on tce.Test = tc.Test ")
                                     .append("and tce.TestCase = tc.TestCase ")
-                                    .append("and tce.Country = tcc.Country ")
-                                    .append("where cc.campaign = ? ")
-                                    .append("and tce.tag = ? ");
+                                    .append("where tce.tag = ? ");
         
-        query.append("and tce.Browser in (");
-        for (int i = 0; i < browser.length; i++) {
-            query.append("?");
-            if(i<browser.length-1) {
-                query.append(", ");
-            }
-        }
-        
-        query.append(") and tce.Environment in (");
-        for (int i = 0; i < env.length; i++) {
-            query.append("?");
-            if(i<env.length-1) {
-                query.append(", ");
-            }
-        }
+//        query.append("and tce.Browser in (");
+//        for (int i = 0; i < browser.length; i++) {
+//            query.append("?");
+//            if(i<browser.length-1) {
+//                query.append(", ");
+//            }
+//        }
+//        
+//        query.append(") and tce.Environment in (");
+//        for (int i = 0; i < env.length; i++) {
+//            query.append("?");
+//            if(i<env.length-1) {
+//                query.append(", ");
+//            }
+//        }
+//
+//        
+//        query.append(") and tce.Country in (");
+//        for (int i = 0; i < country.length; i++) {
+//            query.append("?");
+//            if(i<country.length-1) {
+//                query.append(", ");
+//            }
+//        }
 
-        
-        query.append(") and tcc.Country in (");
-        for (int i = 0; i < country.length; i++) {
-            query.append("?");
-            if(i<country.length-1) {
-                query.append(", ");
-            }
-        }
-
-        query.append(") order by test, testcase, ID desc) as tce, application app ")
+//        query.append(") order by test, testcase, ID desc) as tce, application app ")
+        query.append(" order by test, testcase, ID desc) as tce, application app ")
           .append("where tce.application = app.application ")
-          .append("group by tce.test, tce.testcase, tce.Environment, tce.Browser, tce.Country ").toString();
+          .append("group by tce.test, tce.testcase ").toString();
+//          .append("group by tce.test, tce.testcase, tce.Environment, tce.Browser, tce.Country ").toString();
 
         List<TestCaseWithExecution> testCaseWithExecutionList = new ArrayList<TestCaseWithExecution>();
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
             int index = 1;
-            preStat.setString(index, campaignName);
-            index++;
+//            preStat.setString(index, campaignName);
+//            index++;
 
             preStat.setString(index, tag);
             index++;
 
-            for (String b : browser) {
-                preStat.setString(index, b);
-                index++;
-            }
-            
-            for (String e : env) {
-                preStat.setString(index, e);
-                index++;
-            }
-            
-            for (String c : country) {
-                preStat.setString(index, c);
-                index++;
-            }
+//            for (String b : browser) {
+//                preStat.setString(index, b);
+//                index++;
+//            }
+//            
+//            for (String e : env) {
+//                preStat.setString(index, e);
+//                index++;
+//            }
+//            
+//            for (String c : country) {
+//                preStat.setString(index, c);
+//                index++;
+//            }
             
             try {
                 ResultSet resultSet = preStat.executeQuery();
@@ -470,7 +462,7 @@ public class CampaignDAO implements ICampaignDAO {
         return testCaseWithExecutionList;
     }
 
-    private TestCaseWithExecution loadTestCaseWithExecutionFromResultSet(ResultSet resultSet) throws SQLException {
+    public TestCaseWithExecution loadTestCaseWithExecutionFromResultSet(ResultSet resultSet) throws SQLException {
         TestCaseWithExecution testCaseWithExecution = new TestCaseWithExecution();
         
         testCaseWithExecution.setTest(resultSet.getString("Test"));

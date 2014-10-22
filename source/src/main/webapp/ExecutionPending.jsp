@@ -114,10 +114,12 @@
                 <table id="testCaseTable" class="display">
                     <thead>
                         <tr>
+                            <th>ID</th>
                             <th>Test</th>
                             <th>Test Case</th>
                             <th>Environment</th>
                             <th>Country</th>
+                            <th>Browser</th>
                             <th>Run</th>
                         </tr>
                     </thead>
@@ -153,15 +155,17 @@
                         "sAjaxSource": "FindExecutionInQueue",
                         "sServerMethod": "POST",
                         "aoColumns": [
-                            {"sName": "test", "bSortable": false, sWidth: "10%"},
+                            {"sName": "id", "bSortable": false, sWidth: "5%"},
+                            {"sName": "test", "bSortable": false, sWidth: "20%"},
                             {"sName": "testcase", "bSortable": false, sWidth: "10%"},
                             {"sName": "environment", "bSortable": false, sWidth: "10%"},
                             {"sName": "country", "bSortable": false, sWidth: "10%"},
+                            {"sName": "browser", "bSortable": false, sWidth: "10%"},
                             {"sDefaultContent": '', "bSortable": false, sWidth: "10%"}
                         ],
                         aoColumnDefs: [
                             {
-                                "aTargets": [4],
+                                "aTargets": [6],
                                 "mRender": function(data, type, full) {
                                     return "<p style='text-align: center'><input type='button' style='background-image: url(images/play.png);background-size: 100%; width: 20px; height: 20px; border: 0 none; top: 0px' onclick='openRunManualPopin(\""+full[0]+"\",\""+full[1]+"\",\""+full[3]+"\",\""+full[2]+"\")'/></p>"
                                 }
@@ -174,23 +178,6 @@
             
         </script>
         <br/>
-        <div id="divPictureSave">
-            <div style="text-align: center">
-                <span id="resultMessage" style="color: green; font-size: large; font-weight: 600;"></span>
-            </div>
-            <br/>
-            <div>
-                <span>
-                    You can upload screenshots of the execution <b>(only JPG files)</b>
-                </span>
-                <form id="formPictureSave" action="SaveManualExecutionPicture" method="post" enctype="multipart/form-data">
-                    <input id="fileupload" type="file" name="files[]" data-url="SaveManualExecutionPicture" multiple/>
-                    <input id="runId" name="runId" type="hidden" value="0"/>
-                    <input id="picTest" name="picTest" type="hidden" value=""/>
-                    <input id="picTestCase" name="picTestCase" type="hidden" value=""/>
-                </form>
-            </div>
-        </div>
         <div id="popin"></div>
         <div style="float: left">
             <%=display_footer(start)%>

@@ -176,6 +176,8 @@ public class AddToExecutionQueue extends HttpServlet {
 			}
 			resp.sendError(HttpServletResponse.SC_BAD_REQUEST, errorMessage.toString());
 		}
+                
+                resp.sendRedirect("ReportingExecutionByTag.jsp?Tag="+req.getParameter(PARAMETER_TAG));
 
 	}
 

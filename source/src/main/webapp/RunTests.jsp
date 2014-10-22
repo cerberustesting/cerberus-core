@@ -17,6 +17,18 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
+<%@page import="org.apache.http.client.ClientProtocolException"%>
+<%@page import="org.apache.http.client.methods.CloseableHttpResponse"%>
+<%@page import="java.net.URISyntaxException"%>
+<%@page import="org.apache.http.client.utils.URIBuilder"%>
+<%@page import="java.net.URI"%>
+<%@page import="org.apache.http.impl.client.HttpClients"%>
+<%@page import="org.apache.http.client.methods.HttpGet"%>
+<%@page import="org.apache.http.impl.client.CloseableHttpClient"%>
+<%@page import="org.cerberus.servlet.publi.RunTestCase"%>
+<%@page import="org.cerberus.util.ParamRequestMaker"%>
+<%@page import="org.cerberus.entity.TestCaseExecutionInQueue"%>
+<%@page import="org.cerberus.service.ITestCaseExecutionInQueueService"%>
 <%@page import="org.cerberus.entity.Robot"%>
 <%@page import="org.cerberus.service.IRobotService"%>
 <%@page import="java.util.Enumeration"%>
@@ -59,9 +71,47 @@
                     IRobotService robService = appContext.getBean(IRobotService.class);
                     IApplicationService applicationService = appContext.getBean(ApplicationService.class);
                     IParameterService myParameterService = appContext.getBean(IParameterService.class);
+                    ITestCaseExecutionInQueueService tceiqService = appContext.getBean(ITestCaseExecutionInQueueService.class);
 
                     try {
                         User usr = userService.findUserByKey(request.getUserPrincipal().getName());
+                        
+                        //If page is called with execution in queue id, redirect to this page with get parameters
+                        boolean fromQueue = false;
+                        TestCaseExecutionInQueue tceiq = null;
+                        if (request.getParameter("queuedExecution") != null){
+                        tceiq = tceiqService.findByKey(Long.valueOf(request.getParameter("queuedExecution")));
+                        ParamRequestMaker paramRequestMaker = new ParamRequestMaker();
+                        paramRequestMaker.addParam(RunTestCase.PARAMETER_TEST, tceiq.getTest());
+                        paramRequestMaker.addParam(RunTestCase.PARAMETER_TEST_CASE, tceiq.getTestCase());
+                        paramRequestMaker.addParam(RunTestCase.PARAMETER_COUNTRY, tceiq.getCountry());
+                        paramRequestMaker.addParam(RunTestCase.PARAMETER_ENVIRONMENT, tceiq.getEnvironment());
+                        paramRequestMaker.addParam(RunTestCase.PARAMETER_ROBOT, tceiq.getRobot());
+                        paramRequestMaker.addParam(RunTestCase.PARAMETER_ROBOT_IP, tceiq.getRobotIP());
+                        paramRequestMaker.addParam(RunTestCase.PARAMETER_ROBOT_PORT, tceiq.getRobotPort());
+                        paramRequestMaker.addParam(RunTestCase.PARAMETER_BROWSER, tceiq.getBrowser());
+                        paramRequestMaker.addParam(RunTestCase.PARAMETER_BROWSER_VERSION, tceiq.getBrowserVersion());
+                        paramRequestMaker.addParam(RunTestCase.PARAMETER_PLATFORM, tceiq.getPlatform());
+                        paramRequestMaker.addParam(RunTestCase.PARAMETER_MANUAL_URL, tceiq.isManualURL() ? ParameterParserUtil.DEFAULT_BOOLEAN_TRUE_VALUE : null);
+                        if (tceiq.isManualURL()) {
+                        paramRequestMaker.addParam(RunTestCase.PARAMETER_MANUAL_HOST, tceiq.getManualHost());
+                        paramRequestMaker.addParam(RunTestCase.PARAMETER_MANUAL_CONTEXT_ROOT, tceiq.getManualContextRoot());
+                        paramRequestMaker.addParam(RunTestCase.PARAMETER_MANUAL_LOGIN_RELATIVE_URL, tceiq.getManualLoginRelativeURL());
+                        paramRequestMaker.addParam(RunTestCase.PARAMETER_MANUAL_ENV_DATA, tceiq.getManualEnvData());
+                        }
+                        paramRequestMaker.addParam(RunTestCase.PARAMETER_TAG, tceiq.getTag());
+                        paramRequestMaker.addParam(RunTestCase.PARAMETER_OUTPUT_FORMAT, tceiq.getOutputFormat());
+                        paramRequestMaker.addParam(RunTestCase.PARAMETER_SCREENSHOT, Integer.toString(tceiq.getScreenshot()));
+                        paramRequestMaker.addParam(RunTestCase.PARAMETER_VERBOSE, Integer.toString(tceiq.getVerbose()));
+                        paramRequestMaker.addParam(RunTestCase.PARAMETER_TIMEOUT, Long.toString(tceiq.getTimeout()));
+                        paramRequestMaker.addParam(RunTestCase.PARAMETER_SYNCHRONEOUS, tceiq.isSynchroneous() ? ParameterParserUtil.DEFAULT_BOOLEAN_TRUE_VALUE
+                                        : ParameterParserUtil.DEFAULT_BOOLEAN_FALSE_VALUE);
+                        paramRequestMaker.addParam(RunTestCase.PARAMETER_PAGE_SOURCE, Integer.toString(tceiq.getPageSource()));
+                        paramRequestMaker.addParam(RunTestCase.PARAMETER_SELENIUM_LOG, Integer.toString(tceiq.getSeleniumLog()));
+
+                        String query = paramRequestMaker.mkString();
+                        response.sendRedirect("RunTests.jsp?"+query);
+                        }
 
                         //Update User Preferences
                         if (StringUtils.isNotBlank(request.getParameter("RobotHost"))) {
@@ -539,7 +589,7 @@
                             <input id="timeout" name="timeout" style="width: 200px">
                         </div>
                     </div>
-                        <div style="clear:both">
+                    <div style="clear:both">
                         <div style="float:left;width:150px; text-align:left"><% out.print(docService.findLabelHTML("page_runtests", "manualExecution", ""));%>
                         </div>
                         <div style="float:left">
@@ -578,21 +628,21 @@
             function checkTestcaseGroupAndPerformTest() {
                 var test = $("#test option:selected").val();
                 var testcase = $("#testcase option:selected").val();
-                var env =$("#environment option:selected").val();
+                var env = $("#environment option:selected").val();
                 var country = $("#country option:selected").val();
                 var manualExec = $("#manualExecution option:selected").val();
                 $.getJSON('GetTestCase?test=' + test + "&testcase=" + testcase, function(data) {
 
-                    
-                    if (manualExec === "Y")  {
+
+                    if (manualExec === "Y") {
                         openRunManualPopin(test, testcase, env, country);
                     } else {
-                    if (data.group === "MANUAL") {
-                        alert("You cannot automatically execute manual testcase");
-                    } else {
-                        $("[name='statusPage']").val("Run");
-                        $("[name='RunTest']").submit();
-                    }    
+                        if (data.group === "MANUAL") {
+                            alert("You cannot automatically execute manual testcase");
+                        } else {
+                            $("[name='statusPage']").val("Run");
+                            $("[name='RunTest']").submit();
+                        }
                     }
 
                 });
@@ -808,7 +858,7 @@
             $(document).ready(function() {
                 $.getJSON('FindInvariantByID?idName=manualExecution', function(data) {
                     $("#manualExecution").empty();
-                    
+
                     var pl = document.getElementById("defManualExecution").value;
 
                     for (var i = 0; i < data.length; i++) {

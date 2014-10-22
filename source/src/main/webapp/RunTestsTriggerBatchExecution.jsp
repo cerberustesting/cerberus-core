@@ -33,7 +33,7 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico">
-
+        <title>Trigger Batch Execution</title>
         <link rel="stylesheet" type="text/css" href="css/crb_style.css">
         <link rel="stylesheet" type="text/css" href="css/jquery.dataTables.css">
         <link rel="stylesheet" type="text/css" href="css/jquery-ui.css">

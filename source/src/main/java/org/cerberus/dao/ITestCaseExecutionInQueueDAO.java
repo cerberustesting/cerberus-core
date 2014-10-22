@@ -20,6 +20,7 @@
 package org.cerberus.dao;
 
 import java.util.List;
+import org.cerberus.dto.TestCaseWithExecution;
 
 import org.cerberus.entity.TestCaseExecutionInQueue;
 import org.cerberus.exception.CerberusException;
@@ -83,5 +84,21 @@ public interface ITestCaseExecutionInQueueDAO {
 	 *             if an exception occurs
 	 */
 	void remove(long id) throws CerberusException;
+        
+        /**
+         * Find a list of {@link TestCaseWithExecution} 
+         * @param tag
+         * @return list of object TestCaseWithExecution
+         * @throws CerberusException 
+         */
+        List<TestCaseWithExecution> findTestCaseWithExecutionInQueuebyTag(String tag) throws CerberusException;
+        
+        /**
+         * Fing a {@link TestCaseExecutionInQueue} record from the database knowing the key
+         * @param id
+         * @return
+         * @throws CerberusException 
+         */
+        TestCaseExecutionInQueue findByKey(long id) throws CerberusException;
 
 }

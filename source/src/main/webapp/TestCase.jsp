@@ -237,11 +237,31 @@
                 display:inline-block;
                 background-color: white;
             }
-            .RowActionDiv:hover{
-                background-color: #CCCCCC;
+            .RowActionDiv:hover {
+                background-color: #EEEEEE;
+                color:black;
+            }
+            .RowActionDiv:hover p{
+                color:black;
+            }
+            .RowActionDiv p{
+                color:white;
+            }
+            .RowActionDiv:hover input{
+                background-color:#DDDDDD;
+            }
+            .RowActionDiv input{
+                background-color:white;
+            }
+            .RowActionDiv:hover select{
+                background-color:#DDDDDD;
+            }
+            .RowActionDiv select{
+                background-color:white;
             }
             .RowActionDiv:focus{
-                background-color: #CCCCCC;
+                background-color: #EEEEEE;
+                color:black;
             }
             .generalPropertyDiv{
                 display:inline-block;
@@ -1163,9 +1183,9 @@
                                                             <div class="functional_description" style="height:20px;display:inline-block;clear:both;width:100%; background-color: transparent">
 
                                                                 <div style="float:left; width:80%">
-                                                                    <div style="float:left;width:80px; "><p style="float:right;font-weight:bold;color:white;" link="white" ><%out.print(docService.findLabelHTML("testcasestepaction", "description", "Description"));%></p>
+                                                                    <div style="float:left;width:80px; "><p style="float:right;font-weight:bold;" link="white" ><%out.print(docService.findLabelHTML("testcasestepaction", "description", "Description"));%></p>
                                                                     </div>
-                                                                    <input class="wob" class="functional_description" data-fieldtype="Description" style="border-style:groove;border-width:thin;border-color:white;border: 1px solid white; color:#333333; width: 80%; background-color: transparent; font-weight:bold;font-size:12px ;font-family: Trebuchet MS; "
+                                                                    <input class="wob" class="functional_description" data-fieldtype="Description" style="border-style:groove;border-width:thin;border-color:white;border: 1px solid white; color:#333333; width: 80%; font-weight:bold;font-size:12px ;font-family: Trebuchet MS; "
                                                                            value="<%=tcsa.getDescription()%>" placeholder="Description"
                                                                            name="action_description_<%=incrementStep%>_<%=incrementAction%>"
                                                                            id="action_description_<%=incrementStep%>_<%=incrementAction%>"<%=isReadonly%>
@@ -1176,21 +1196,21 @@
                                                             </div>
                                                             <div style="display:inline-block;clear:both; height:15px;width:100%;background-color:transparent">
                                                                 <div class="technical_part" style="width: 30%; float:left; background-color: transparent">
-                                                                    <div style="float:left;width:30%; "><p style="float:right;font-weight:bold;color:white;" link="white" ><%out.print(docService.findLabelHTML("testcasestepaction", "action", "Action"));%></p>
+                                                                    <div style="float:left;width:80px; "><p style="float:right;font-weight:bold;" link="white" ><%out.print(docService.findLabelHTML("testcasestepaction", "action", "Action"));%></p>
                                                                     </div>
-                                                                    <%=ComboInvariant(appContext, "action_action_" + incrementStep + "_" + incrementAction, "width: 70%;border: 1px solid white; background-color:transparent;color:" + actionFontColor, "action_action_" + incrementStep + "_" + incrementAction, "wob", "ACTION", tcsa.getAction(), "showChangedRow(this.parentNode.parentNode.parentNode.parentNode)", null)%>
+                                                                    <%=ComboInvariant(appContext, "action_action_" + incrementStep + "_" + incrementAction, "width: 70%;border: 1px solid white; color:" + actionFontColor, "action_action_" + incrementStep + "_" + incrementAction, "wob", "ACTION", tcsa.getAction(), "showChangedRow(this.parentNode.parentNode.parentNode.parentNode)", null)%>
                                                                 </div>
                                                                 <div class="technical_part" style="width: 40%; float:left; background-color: transparent">
-                                                                    <div style="float:left;width:19%; "><p style="float:right;font-weight:bold;color:white;" link="white" ><%out.print(docService.findLabelHTML("testcasestepaction", "object", "Object"));%></p>
+                                                                    <div style="float:left;width:19%; "><p style="float:right;font-weight:bold;" link="white" ><%out.print(docService.findLabelHTML("testcasestepaction", "object", "Object"));%></p>
                                                                     </div>
-                                                                    <input style="float:left;border-style:groove;border-width:thin;border-color:white;border: 1px solid white; height:100%;width:80%; background-color: transparent; color:<%=actionFontColor%>"
+                                                                    <input style="float:left;border-style:groove;border-width:thin;border-color:white;border: 1px solid white; height:100%;width:80%; color:<%=actionFontColor%>"
                                                                            value="<%=tcsa.getObject()%>"
                                                                            onchange="showChangedRow(this.parentNode.parentNode.parentNode.parentNode)" name="action_object_<%=incrementStep%>_<%=incrementAction%>" <%=isReadonly%>>
                                                                 </div>
                                                                 <div class="technical_part" style="width: 30%; float:left; background-color:transparent">
-                                                                    <div style="float:left;width:19%; "><p style="float:right;font-weight:bold;color:white;" link="white" ><%out.print(docService.findLabelHTML("testcasestepaction", "property", "Property"));%></p>
+                                                                    <div style="float:left;width:19%; "><p style="float:right;font-weight:bold;" link="white" ><%out.print(docService.findLabelHTML("testcasestepaction", "property", "Property"));%></p>
                                                                     </div>
-                                                                    <input  class="wob property_value" style="width:80%;border-style:groove;border-width:thin;border-color:white;border: 1px solid white; background-color: transparent; color:<%=actionFontColor%>"
+                                                                    <input  class="wob property_value" style="width:80%;border-style:groove;border-width:thin;border-color:white;border: 1px solid white; color:<%=actionFontColor%>"
                                                                             value="<%=tcsa.getProperty()%>"
                                                                             <%if (useStep) {%>
                                                                             data-usestep-test="<%=testForQuery%>"
@@ -1261,33 +1281,33 @@
                                                         <div style="height:100%;width:85%;float:left;display:inline-block">
                                                             <div class="functional_description" style="clear:both;width:100%;height:20px">
                                                                 <div style="float:left; width:80%">
-                                                                    <div style="float:left;width:80px; "><p style="float:right;font-weight:bold;color:white;" link="white" ><%out.print(docService.findLabelHTML("testcasestepaction", "description", "Description"));%></p>
+                                                                    <div style="float:left;width:80px; "><p style="float:right;font-weight:bold;" link="white" ><%out.print(docService.findLabelHTML("testcasestepaction", "description", "Description"));%></p>
                                                                     </div>
-                                                                    <input class="wob" placeholder="Description" class="functional_description" style="border-style:groove;border-width:thin;border-color:white;border: 2px solid white; color:#333333; width: 80%; background-color: transparent; font-weight:bold;font-size:12px ;font-family: Trebuchet MS; "
+                                                                    <input class="wob" placeholder="Description" class="functional_description" style="border-style:groove;border-width:thin;border-color:white;border: 2px solid white; color:#333333; width: 80%; font-weight:bold;font-size:12px ;font-family: Trebuchet MS; "
                                                                            data-fieldtype="Description" value="<%=tcsac.getDescription()%>" name="control_description_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>" maxlength="1000">
                                                                 </div>
                                                             </div>
                                                             <div style="clear:both; width:100%; height:15px">
                                                                 <div style="width:30%; float:left;">
-                                                                    <div style="float:left;width:30%; "><p style="float:right;font-weight:bold;color:white;" link="white" ><%out.print(docService.findLabelHTML("testcasestepactioncontrol", "control", "Control"));%></p>
+                                                                    <div style="float:left;width:80px; "><p style="float:right;font-weight:bold;" link="white" ><%out.print(docService.findLabelHTML("testcasestepactioncontrol", "type", "ControlType"));%></p>
                                                                     </div>
-                                                                    <%=ComboInvariant(appContext, "control_type_" + incrementStep + "_" + incrementAction + "_" + incrementControl, "width: 70%;font-size:10px ;border: 1px solid white; background-color:transparent;color:" + actionFontColor, "control_type_" + incrementStep + "_" + incrementAction + "_" + incrementControl, "technical_part", "CONTROL", tcsac.getType(), "", null)%>
+                                                                    <%=ComboInvariant(appContext, "control_type_" + incrementStep + "_" + incrementAction + "_" + incrementControl, "width: 70%;font-size:10px ;border: 1px solid white;color:" + actionFontColor, "control_type_" + incrementStep + "_" + incrementAction + "_" + incrementControl, "technical_part", "CONTROL", tcsac.getType(), "", null)%>
                                                                 </div>
                                                                 <div class="technical_part" style="width:30%;float:left;">
-                                                                    <div style="float:left;width:19%; "><p style="float:right;font-weight:bold;color:white;" link="white" ><%out.print(docService.findLabelHTML("testcasestepactioncontrol", "controleproperty", "controleproperty"));%></p>
+                                                                    <div style="float:left;width:19%; "><p style="float:right;font-weight:bold;" link="white" ><%out.print(docService.findLabelHTML("testcasestepactioncontrol", "controleproperty", "controleproperty"));%></p>
                                                                     </div>
-                                                                    <input class="wob" style="width: 80%;border: 1px solid white; background-color:transparent; color:<%=actionFontColor%>"
+                                                                    <input class="wob" style="width: 80%;border: 1px solid white;  color:<%=actionFontColor%>"
                                                                            value="<%=tcsac.getControlProperty()%>" name="control_property_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>">
                                                                 </div>
                                                                 <div class="technical_part" style="width:30%;float:left; ">
-                                                                    <div style="float:left;width:19%; "><p style="float:right;font-weight:bold;color:white;" link="white" ><%out.print(docService.findLabelHTML("testcasestepactioncontrol", "controlevalue", "controlevalue"));%></p>
-                                                                    </div><input class="wob" style="width: 70%;border: 1px solid white; background-color:transparent; color:<%=actionFontColor%>"
+                                                                    <div style="float:left;width:19%; "><p style="float:right;font-weight:bold;" link="white" ><%out.print(docService.findLabelHTML("testcasestepactioncontrol", "controlevalue", "controlevalue"));%></p>
+                                                                    </div><input class="wob" style="width: 70%;border: 1px solid white; color:<%=actionFontColor%>"
                                                                                  value="<%=tcsac.getControlValue()%>" name="control_value_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>">
                                                                 </div>
                                                                 <div class="technical_part" style="width:8%;float:left; ">
-                                                                    <div style="float:left;width:59%; "><p style="float:right;font-weight:bold;color:white;" link="white" ><%out.print(docService.findLabelHTML("testcasestepactioncontrol", "fatal", "fatal"));%></p>
+                                                                    <div style="float:left;width:59%; "><p style="float:right;font-weight:bold;" link="white" ><%out.print(docService.findLabelHTML("testcasestepactioncontrol", "fatal", "fatal"));%></p>
                                                                     </div>
-                                                                    <%=ComboInvariant(appContext, "control_fatal_" + incrementStep + "_" + incrementAction + "_" + incrementControl, "width: 40%;border: 1px solid white; background-color:transparent;color:" + actionFontColor, "control_fatal_" + incrementStep + "_" + incrementAction + "_" + incrementControl, "wob", "CTRLFATAL", tcsac.getFatal(), "trackChanges(this.value, '" + tcsac.getFatal() + "', 'submitButtonChanges')", null)%>
+                                                                    <%=ComboInvariant(appContext, "control_fatal_" + incrementStep + "_" + incrementAction + "_" + incrementControl, "width: 40%;border: 1px solid white;color:" + actionFontColor, "control_fatal_" + incrementStep + "_" + incrementAction + "_" + incrementControl, "wob", "CTRLFATAL", tcsac.getFatal(), "trackChanges(this.value, '" + tcsac.getFatal() + "', 'submitButtonChanges')", null)%>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -1669,7 +1689,7 @@
                     </div>
                     <div style="display:inline-block;clear:both; height:15px;width:99%;background-color:transparent">
                         <div class="technical_part" style="width: 30%; float:left; background-color: transparent">
-                            <div style="float:left;width:30%; "><p style="float:right;font-weight:bold;color:white;" link="white" ><%out.print(docService.findLabelHTML("testcasestepaction", "action", "Action"));%></p>
+                            <div style="float:left;width:80px; "><p style="float:right;font-weight:bold;color:white;" link="white" ><%out.print(docService.findLabelHTML("testcasestepaction", "action", "Action"));%></p>
                             </div>
                             <%=ComboInvariant(appContext, "", "width: 70%;border: 1px solid white; background-color:transparent;", "action_action_template", "wob", "ACTION", "", "", null)%>
                         </div>
@@ -1725,7 +1745,7 @@
                     </div>
                     <div style="clear:both; width:100%; height:15px">
                         <div style="width:30%; float:left;">
-                            <div style="float:left;width:80px; "><p style="float:right;font-weight:bold;color:white;" link="white" ><%out.print(docService.findLabelHTML("testcasestepactioncontrol", "control", "Control"));%></p>
+                            <div style="float:left;width:80px; "><p style="float:right;font-weight:bold;color:white;" link="white" ><%out.print(docService.findLabelHTML("testcasestepactioncontrol", "Type", "ControlType"));%></p>
                             </div>
                             <%=ComboInvariant(appContext, "", "width: 70%;border: 1px solid white; background-color:transparent;", "control_type_template", "wob", "CONTROL", "", "", null)%>
                         </div>

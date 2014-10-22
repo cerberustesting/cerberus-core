@@ -23,6 +23,7 @@ import java.util.List;
 
 import org.cerberus.dao.ITestCaseCountryDAO;
 import org.cerberus.dao.ITestCaseExecutionInQueueDAO;
+import org.cerberus.dto.TestCaseWithExecution;
 import org.cerberus.entity.MessageGeneral;
 import org.cerberus.entity.MessageGeneralEnum;
 import org.cerberus.entity.TestCaseExecutionInQueue;
@@ -33,50 +34,60 @@ import org.springframework.stereotype.Service;
 
 /**
  * Default {@link ITestCaseExecutionInQueueService} implementation
- * 
+ *
  * @author abourdon
  */
 @Service
 public class TestCaseExecutionInQueueService implements ITestCaseExecutionInQueueService {
 
-	@Autowired
-	private ITestCaseExecutionInQueueDAO testCaseExecutionInQueueDAO;
+    @Autowired
+    private ITestCaseExecutionInQueueDAO testCaseExecutionInQueueDAO;
 
-	@Autowired
-	private ITestCaseCountryDAO testCaseCountryDAO;
+    @Autowired
+    private ITestCaseCountryDAO testCaseCountryDAO;
 
-	@Override
-	public boolean canInsert(TestCaseExecutionInQueue inQueue) throws CerberusException {
-		try {
-			testCaseCountryDAO.findTestCaseCountryByKey(inQueue.getTest(), inQueue.getTestCase(), inQueue.getCountry());
-			return true;
-		} catch (CerberusException ce) {
-			MessageGeneral messageGeneral = ce.getMessageError();
-			if (messageGeneral == null || messageGeneral.getCode() != MessageGeneralEnum.NO_DATA_FOUND.getCode()) {
-				throw ce;
-			}
-			return false;
-		}
-	}
+    @Override
+    public boolean canInsert(TestCaseExecutionInQueue inQueue) throws CerberusException {
+        try {
+            testCaseCountryDAO.findTestCaseCountryByKey(inQueue.getTest(), inQueue.getTestCase(), inQueue.getCountry());
+            return true;
+        } catch (CerberusException ce) {
+            MessageGeneral messageGeneral = ce.getMessageError();
+            if (messageGeneral == null || messageGeneral.getCode() != MessageGeneralEnum.NO_DATA_FOUND.getCode()) {
+                throw ce;
+            }
+            return false;
+        }
+    }
 
-	@Override
-	public void insert(TestCaseExecutionInQueue inQueue) throws CerberusException {
-		testCaseExecutionInQueueDAO.insert(inQueue);
-	}
+    @Override
+    public void insert(TestCaseExecutionInQueue inQueue) throws CerberusException {
+        testCaseExecutionInQueueDAO.insert(inQueue);
+    }
 
-	@Override
-	public TestCaseExecutionInQueue getNextAndProceed() throws CerberusException {
-		return testCaseExecutionInQueueDAO.getNextAndProceed();
-	}
+    @Override
+    public TestCaseExecutionInQueue getNextAndProceed() throws CerberusException {
+        return testCaseExecutionInQueueDAO.getNextAndProceed();
+    }
 
-	@Override
-	public List<TestCaseExecutionInQueue> getProceededByTag(String tag) throws CerberusException {
-		return testCaseExecutionInQueueDAO.getProceededByTag(tag);
-	}
+    @Override
+    public List<TestCaseExecutionInQueue> getProceededByTag(String tag) throws CerberusException {
+        return testCaseExecutionInQueueDAO.getProceededByTag(tag);
+    }
 
-	@Override
-	public void remove(long id) throws CerberusException {
-		testCaseExecutionInQueueDAO.remove(id);
-	}
+    @Override
+    public void remove(long id) throws CerberusException {
+        testCaseExecutionInQueueDAO.remove(id);
+    }
+
+    @Override
+    public List<TestCaseWithExecution> findTestCaseWithExecutionInQueuebyTag(String tag) throws CerberusException {
+        return testCaseExecutionInQueueDAO.findTestCaseWithExecutionInQueuebyTag(tag);
+    }
+
+    @Override
+    public TestCaseExecutionInQueue findByKey(long id) throws CerberusException {
+        return testCaseExecutionInQueueDAO.findByKey(id);
+    }
 
 }

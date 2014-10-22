@@ -44,6 +44,7 @@ var testCaseStatusLine = $("<tr class='testcase'>" +
         "</tr>");
 
 var executionLink = $("<a target='executionFromReport' href='ExecutionDetail.jsp?id_tc='></a>");
+var runLink = $("<a target='executionFromReport' href='RunTests.jsp?queuedExecution='></a>");
 var testcaseLink = $("<a target='testcaseFromReport' href='TestCase.jsp?Load=Load&Test='></a>");
 
 function addTestCaseToStatusTabs(testcase) {
@@ -52,10 +53,17 @@ function addTestCaseToStatusTabs(testcase) {
     var statusTestCaseStatusLine = testCaseStatusLine.clone();
 
     if(testcase.ID > 0) {
+        if (testcase.ControlStatus!=="NE"){
         var statusExecutionLink = executionLink.clone();
         statusExecutionLink.attr('href', statusExecutionLink.attr('href') + testcase.ID);
         statusExecutionLink.text(testcase.ID);
         statusTestCaseStatusLine.find(".ID").append(statusExecutionLink);
+    } else {
+        var statusExecutionLink = runLink.clone();
+        statusExecutionLink.attr('href', statusExecutionLink.attr('href') + testcase.ID);
+        statusExecutionLink.text(testcase.ID);
+        statusTestCaseStatusLine.find(".ID").append(statusExecutionLink);
+    }
     }
 
     var statusTestcaseLink = testcaseLink.clone();

@@ -33,7 +33,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.cerberus.dto.TestCaseWithExecution;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.service.ICampaignService;
-import org.cerberus.service.ITestCaseService;
+import org.cerberus.service.ITestCaseExecutionInQueueService;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -71,8 +71,8 @@ public class CampaignExecutionReport extends HttpServlet {
             ICampaignService campaignService = appContext
                     .getBean(ICampaignService.class);
 
-            ITestCaseService testCaseService = appContext
-                    .getBean(ITestCaseService.class);
+            ITestCaseExecutionInQueueService testCaseExecutionInQueueService = appContext
+                    .getBean(ITestCaseExecutionInQueueService.class);
 
             PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
 
@@ -85,11 +85,21 @@ public class CampaignExecutionReport extends HttpServlet {
 
             JSONArray jSONResult = new JSONArray();
 
-
+/**
+             * Get list of execution by tag, env, country, browser
+             */
             List<TestCaseWithExecution> testCaseWithExecutions = campaignService.getCampaignTestCaseExecutionForEnvCountriesBrowserTag(campaignName, tag, env, country, browser);
             
-            HashMap<String, TestCaseWithExecution> testCaseWithExecutionsList = TestCaseWithExecution.generateEmptyResultOfExecutions(testCaseService.findTestCaseByCampaignNameAndCountries(campaignName,country), env, country, browser);
-
+            /**
+             * Get list of Execution in Queue by Tag
+             */
+            List<TestCaseWithExecution> testCaseWithExecutionsInQueue = testCaseExecutionInQueueService.findTestCaseWithExecutionInQueuebyTag(tag);
+            
+            /**
+             * Feed hash map with execution from the two list (to get only one by test,testcase,country,env,browser)
+             */
+            HashMap<String, TestCaseWithExecution> testCaseWithExecutionsList = new HashMap();
+            
             for (TestCaseWithExecution testCaseWithExecution : testCaseWithExecutions) {
                 String key = testCaseWithExecution.getBrowser() + "_" 
                         + testCaseWithExecution.getCountry() + "_" 
@@ -97,6 +107,14 @@ public class CampaignExecutionReport extends HttpServlet {
                         + testCaseWithExecution.getTest() + "_" 
                         + testCaseWithExecution.getTestCase();
                 testCaseWithExecutionsList.put(key, testCaseWithExecution);
+            }
+             for (TestCaseWithExecution testCaseWithExecutionInQueue : testCaseWithExecutionsInQueue) {
+                String key = testCaseWithExecutionInQueue.getBrowser() + "_" 
+                        + testCaseWithExecutionInQueue.getCountry() + "_" 
+                        + testCaseWithExecutionInQueue.getEnvironment() + "_" 
+                        + testCaseWithExecutionInQueue.getTest() + "_" 
+                        + testCaseWithExecutionInQueue.getTestCase();
+                testCaseWithExecutionsList.put(key, testCaseWithExecutionInQueue);
             }
 
             testCaseWithExecutions = new ArrayList<TestCaseWithExecution>(testCaseWithExecutionsList.values());
