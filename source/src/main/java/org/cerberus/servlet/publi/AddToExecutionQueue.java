@@ -105,6 +105,8 @@ public class AddToExecutionQueue extends HttpServlet {
 	private static final int DEFAULT_VALUE_PAGE_SOURCE = 1;
 	private static final int DEFAULT_VALUE_SELENIUM_LOG = 1;
 
+	private static final String LINE_SEPARATOR = "\n";
+
 	private ITestCaseExecutionInQueueService inQueueService;
 	private IFactoryTestCaseExecutionInQueue inQueueFactoryService;
 
@@ -152,23 +154,25 @@ public class AddToExecutionQueue extends HttpServlet {
 		}
 
 		// Part 2: Try to insert all these test cases to the execution queue.
-		List<String> notInserted = new ArrayList<String>();
+		List<String> errorMessages = new ArrayList<String>();
 		for (TestCaseExecutionInQueue toInsert : toInserts) {
 			try {
 				if (inQueueService.canInsert(toInsert)) {
 					inQueueService.insert(toInsert);
 				}
 			} catch (CerberusException e) {
-				LOG.warn("Unable to insert " + toInsert.toString() + " due to " + e.getMessage());
-				notInserted.add(toInsert.toString());
+				String errorMessage = "Unable to insert " + toInsert.toString() + " due to " + e.getMessage();
+				LOG.warn(errorMessage);
+				errorMessages.add(errorMessage);
 				continue;
 			}
 		}
 
-		if (!notInserted.isEmpty()) {
-			StringBuilder errorMessage = new StringBuilder("Unable to insert the following records:");
-			for (String item : notInserted) {
+		if (!errorMessages.isEmpty()) {
+			StringBuilder errorMessage = new StringBuilder();
+			for (String item : errorMessages) {
 				errorMessage.append(item);
+				errorMessage.append(LINE_SEPARATOR);
 			}
 			resp.sendError(HttpServletResponse.SC_BAD_REQUEST, errorMessage.toString());
 		}
