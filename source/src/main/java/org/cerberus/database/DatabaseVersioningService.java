@@ -3924,6 +3924,21 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("('MANUALEXECUTION', 'N', '1', 'Automatic Execution', '');");
         SQLInstruction.add(SQLS.toString());
 
+// Add Start index on execution table in order to speedup purge process.
+//-- ------------------------ 549 552    	
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepactioncontrolexecution` ADD INDEX `IX_testcasestepactioncontrolexecution_01` (`Start` ASC);");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepactionexecution` ADD INDEX `IX_testcasestepactionexecution_01` (`Start` ASC);");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepexecution` ADD INDEX `IX_testcasestepexecution_01` (`Start` ASC);");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcaseexecutionwwwdet` ADD INDEX `IX_testcaseexecutionwwwdet_01` (`Start` ASC);");
+        SQLInstruction.add(SQLS.toString());
+        
         
         return SQLInstruction;
     }
