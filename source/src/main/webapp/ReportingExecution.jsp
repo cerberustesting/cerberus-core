@@ -70,6 +70,8 @@
     <script type="text/javascript">
         var oTable;
         var oTableStatistic;
+        var oTableStatus;
+        var oTableGroup;
         var postData;
 
         var country = [];
@@ -143,10 +145,14 @@
                 }
             %>
                     ];
-
+            if (oTable != null) {
+                oTable.fnClearTable();
+                oTableStatistic.fnClearTable();
+                oTableStatus.fnClearTable();
+                oTableGroup.fnClearTable();
+            }
             $('.fixedHeader').remove();
             $('.jsAdded').remove();
-
 
             $.each(country, function (index, elem) {
                 $('.TCComment').before("<th class='jsAdded' colspan='" + (browser.length * 2) + "'>" + elem + "</th>");
@@ -277,7 +283,7 @@
                     });
 
                     $('#divStatus').show();
-                    $('#tableStatus').dataTable({
+                    oTableStatus = $('#tableStatus').dataTable({
                         "aaData": json.status.aaData,
                         "bJQueryUI": false,
                         "bFilter": false,
@@ -297,7 +303,7 @@
                     });
 
                     $('#divGroup').show();
-                    $('#tableGroup').dataTable({
+                    oTableGroup = $('#tableGroup').dataTable({
                         "aaData": json.groups.aaData,
                         "bJQueryUI": false,
                         "bFilter": false,
