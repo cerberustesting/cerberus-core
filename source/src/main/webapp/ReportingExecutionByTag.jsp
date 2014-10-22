@@ -316,6 +316,7 @@
                             <th>Application</th>
                             <th>BugID</th>
                             <th class="wrapAll">Comment</th>
+                            <th class="wrapAll">ControlMessage</th>
                             <th>Start</th>
                         </tr>
                     </thead>
@@ -336,6 +337,7 @@
                             <th>Application</th>
                             <th>BugID</th>
                             <th class="wrapAll">Comment</th>
+                            <th class="wrapAll">ControlMessage</th>
                             <th>Start</th>
                         </tr>
                     </thead>
@@ -356,6 +358,7 @@
                             <th>Application</th>
                             <th>BugID</th>
                             <th class="wrapAll">Comment</th>
+                            <th class="wrapAll">ControlMessage</th>
                             <th>Start</th>
                         </tr>
                     </thead>
@@ -376,6 +379,7 @@
                             <th>Application</th>
                             <th>BugID</th>
                             <th class="wrapAll">Comment</th>
+                            <th class="wrapAll">ControlMessage</th>
                             <th>Start</th>
                         </tr>
                     </thead>
@@ -396,6 +400,7 @@
                             <th>Application</th>
                             <th>BugID</th>
                             <th class="wrapAll">Comment</th>
+                            <th class="wrapAll">ControlMessage</th>
                             <th>Start</th>
                         </tr>
                     </thead>
@@ -416,6 +421,7 @@
                             <th>Application</th>
                             <th>BugID</th>
                             <th class="wrapAll">Comment</th>
+                            <th class="wrapAll">ControlMessage</th>
                             <th>Start</th>
                         </tr>
                     </thead>

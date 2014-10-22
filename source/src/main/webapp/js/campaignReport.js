@@ -40,6 +40,7 @@ var testCaseStatusLine = $("<tr class='testcase'>" +
         "<td class='Application'></td>" +
         "<td class='BugID'></td>" +
         "<td class='Comment'></td>" +
+        "<td class='ControlMessage'></td>" +
         "<td class='Start'></td>" +
         "</tr>");
 
@@ -82,6 +83,7 @@ function addTestCaseToStatusTabs(testcase) {
     statusTestCaseStatusLine.find(".BugID").append(testcase.BugID);
     statusTestCaseStatusLine.find(".Application").text(testcase.Application);
     statusTestCaseStatusLine.find(".Comment").text(testcase.Comment);
+    statusTestCaseStatusLine.find(".ControlMessage").text(testcase.ControlMessage);
     
     var date = new Date();
     date.setTime(testcase.Start);
