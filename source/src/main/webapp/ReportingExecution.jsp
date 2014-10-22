@@ -171,7 +171,6 @@
             $('#divReporting').show();
 
             oTable = $('#reporting').dataTable({
-                "autoWidth": false,
                 "bServerSide": true,
                 "sAjaxSource": "GetReport?"+postData,
                 "bJQueryUI": true,
@@ -323,7 +322,6 @@
                         }
                     });
 
-                    oTable.fnAdjustColumnSizing();
                     $('html, body').animate({scrollTop : 425},800);
                 }
             });
