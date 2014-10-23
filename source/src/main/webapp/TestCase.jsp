@@ -267,11 +267,17 @@
                 display:inline-block;
                 background-color: white;
             }
+            .generalPropertyDiv div{
+                background-color: white;
+            }
+            .generalPropertyDiv:hover div{
+                background-color: #EEEEEE;
+            }
             .generalPropertyDiv:hover{
-                background-color: #CCCCCC;
+                background-color: #EEEEEE;
             }
             .generalPropertyDiv:focus{
-                background-color: #CCCCCC;
+                background-color: #EEEEEE;
             }
             .StepHeaderDiv {
                 width:100%;
@@ -419,8 +425,14 @@
             <br>
             <br>
             <%if (!test.equals("") && !testcase.equals("")) {
-                    TCase tcase = testCaseService.findTestCaseByKey(test, testcase);
-                    
+                TCase tcase = null;
+                boolean isTestCaseExist = false;
+                tcase = testCaseService.findTestCaseByKey(test, testcase);
+                isTestCaseExist = (tcase == null) ? false : true;
+                  
+                if (isTestCaseExist){
+                
+                
                 //First Check if testcase can be edited (good system selected)
                     User MyUserobj = userService.findUserByKeyWithDependencies(request.getUserPrincipal().getName());
                     
@@ -1466,20 +1478,20 @@
                                                 i++;
 
                                         %>
-                                        <div id="propertyRow<%=incrementProperty%>" class="generalPropertyDiv" style="height:50px; clear:both; display:block;border-style: solid; border-width:thin ; border-color:#CCCCCC;">
-                                            <div style="float:left;width: 8px; height:100%;position:relative; background-color: yellow; display:inline-block">
+                                        <div id="propertyRow<%=incrementProperty%>" class="generalPropertyDiv" style="width:100%;height:100%; clear:both; display:inline-block;border-style: solid; border-width:thin ; border-color:#CCCCCC;">
+                                            <div style="float:left;width: 8px; height:50px;position:relative; background-color: yellow; display:inline-block">
                                             </div>
-                                            <div style="border-right-width:thin;border-right-style:solid;border-right-color:#CCCCCC;width:2%;float:left;display:inline-block;height:100%; text-align:center">
+                                            <div style="border-right-width:thin;border-right-style:solid;border-right-color:#CCCCCC;width:2%;float:left;display:inline-block;height:50px; text-align:center">
                                                 <%  if (canEdit) {%>
                                                 <input style="margin-top:20px;" name="properties_delete_<%=incrementProperty%>" type="checkbox" value="">
                                                 <%}%>
                                                 <input type="hidden" name="property_increment" value="<%=incrementProperty%>">
                                             </div>
-                                            <div style="border-right-width:thin;border-right-style:solid;border-right-color:#CCCCCC;width:10%;float:left;display:inline-block;height:100%">
+                                            <div style="border-right-width:thin;border-right-style:solid;border-right-color:#CCCCCC;width:10%;float:left;display:inline-block;height:50px">
                                                 <input class="wob properties_id_<%=rowNumber%> property_name" style="background-color:transparent;margin-top:20px;width:100%;font-weight: bold;"
                                                        name="properties_property_<%=incrementProperty%>" value="<%=tccp.getProperty()%>">
                                             </div>
-                                            <div style="border-right-width:thin;border-right-style:solid;border-right-color:#CCCCCC;float:left; font-size : x-small ;display:inline-block;height:100%; width: <%=1.5 * countryListTestcase.size()%>%;">
+                                            <div style="border-right-width:thin;border-right-style:solid;border-right-color:#CCCCCC;float:left; font-size : x-small ;display:inline-block;height:50px; width: <%=1.5 * countryListTestcase.size()%>%;">
                                                 <table>
                                                     <tr>
                                                         <%  for (String c : countryListTestcase) {%>
@@ -1499,9 +1511,9 @@
                                                     </tr>
                                                 </table>
                                             </div>
-                                            <div style="border-right-width:thin;border-right-style:solid;border-right-color:#CCCCCC;width:10%; float:left;display:inline-block;height:100%"><%=ComboInvariant(appContext, "properties_type_" + incrementProperty, "background-color:transparent;margin-top:20px;width: 99%; float:left", "properties_type_" + incrementProperty, "wob", "PROPERTYTYPE", tccp.getType(), "activateDatabaseBox(this.value, 'properties_nodtb_" + incrementProperty + "' ,'properties_dtb_" + incrementProperty + "' );newActivateValue2(this.value, 'divProperties_value1_" + incrementProperty + "', 'divProperties_value2_" + incrementProperty + "','" + widthValue + "')", null)%>
+                                            <div style="border-right-width:thin;border-right-style:solid;border-right-color:#CCCCCC;width:10%; float:left;display:inline-block;height:50px"><%=ComboInvariant(appContext, "properties_type_" + incrementProperty, "background-color:transparent;margin-top:20px;width: 99%; float:left", "properties_type_" + incrementProperty, "wob", "PROPERTYTYPE", tccp.getType(), "activateDatabaseBox(this.value, 'properties_nodtb_" + incrementProperty + "' ,'properties_dtb_" + incrementProperty + "' );newActivateValue2(this.value, 'divProperties_value1_" + incrementProperty + "', 'divProperties_value2_" + incrementProperty + "','" + widthValue + "')", null)%>
                                             </div>
-                                            <div style="border-right-width:thin;border-right-style:solid;border-right-color:#CCCCCC;float:left;width:5%;display:inline-block;height:100%">
+                                            <div style="border-right-width:thin;border-right-style:solid;border-right-color:#CCCCCC;float:left;width:5%;display:inline-block;height:50px">
                                                 <%
                                                     String displayDtbList = "";
                                                     String displayNoList = "";
@@ -1520,25 +1532,25 @@
                                                     <option value="">---</option>
                                                 </select>
                                             </div>
-                                            <div id="divProperties_value1_<%=incrementProperty%>" style="background-color:transparent;float:left;border-right-width:thin;border-right-style:solid;border-right-color:#CCCCCC;width:<%=widthValue1%>%;display:inline-block;height:100%">
-                                                <textarea id="properties_value1_<%=incrementProperty%>" rows="2" class="wob" style="background-color:transparent;width: 100%;" 
+                                            <div id="divProperties_value1_<%=incrementProperty%>" style="background-color:transparent;float:left;border-right-width:thin;border-right-style:solid;border-right-color:#CCCCCC;width:<%=widthValue1%>%;display:inline-block;">
+                                                <textarea id="properties_value1_<%=incrementProperty%>" rows="2" class="wob" style="background-color:transparent;width: 100%;height:50px" 
                                                           name="properties_value1_<%=incrementProperty%>" value="<%=tccp.getValue1()%>"><%=tccp.getValue1()%></textarea>
                                             </div>
-                                            <div id="divProperties_value2_<%=incrementProperty%>" style="float:left;border-right-width:thin;border-right-style:solid;border-right-color:#CCCCCC;display:<%=displayValue2%>;width:<%=widthValue2%>%;height:100%">
+                                            <div id="divProperties_value2_<%=incrementProperty%>" style="background-color:transparent;float:left;border-right-width:thin;border-right-style:solid;border-right-color:#CCCCCC;display:<%=displayValue2%>;width:<%=widthValue2%>%;height:50px">
                                                 <textarea id="properties_value2_<%=incrementProperty%>" rows="2" class="wob" style="background-color:transparent;width: 100%;"
                                                           name="properties_value2_<%=incrementProperty%>" value="<%=tccp.getValue2()%>"><%=tccp.getValue2()%></textarea>
                                             </div>
-                                            <div style="border-right-width:thin;border-right-style:solid;border-right-color:#CCCCCC;float:left;width:3%;display:inline-block;height:100%">
+                                            <div style="border-right-width:thin;border-right-style:solid;background-color:transparent;border-right-color:#CCCCCC;float:left;width:3%;display:inline-block;height:50px">
                                                 <input class="wob" style="background-color:transparent;width:  100%;margin-top:20px;" name="properties_length_<%=incrementProperty%>"
                                                        value="<%=tccp.getLength()%>">
                                             </div>
-                                            <div style="border-right-width:thin;border-right-style:solid;border-right-color:#CCCCCC;float:left;width:3%;display:inline-block;height:100%">
+                                            <div style="border-right-width:thin;border-right-style:solid;background-color:transparent;border-right-color:#CCCCCC;float:left;width:3%;display:inline-block;height:50px">
                                                 <input class="wob" style="background-color:transparent;width: 100%;margin-top:20px;" name="properties_rowlimit_<%=incrementProperty%>"
                                                        value="<%=tccp.getRowLimit()%>">
                                             </div>
-                                            <div style="float:left;width:8%;display:inline-block;height:100%"><%=ComboInvariant(appContext, "properties_nature_" + incrementProperty, "background-color:transparent;margin-top:20px;width: 100%;", "properties_nature_" + incrementProperty, "wob", "PROPERTYNATURE", tccp.getNature(), "trackChanges(0, this.selectedIndex, 'submitButtonChanges')", null)%>
+                                            <div style="float:left;width:8%;display:inline-block;height:50px"><%=ComboInvariant(appContext, "properties_nature_" + incrementProperty, "background-color:transparent;margin-top:20px;width: 100%;", "properties_nature_" + incrementProperty, "wob", "PROPERTYNATURE", tccp.getNature(), "trackChanges(0, this.selectedIndex, 'submitButtonChanges')", null)%>
                                             </div>
-                                            <div style="background-color:yellow; width:3px;height:100%;display:inline-block;float:right">
+                                            <div style="background-color:yellow; width:3px;height:50px;display:inline-block;float:right">
                                             </div>
                                             <div style="float:right ; width:2%">
                                                 <%
@@ -1900,8 +1912,8 @@
                 $("input.property_value").each(function() {
                     //var jinput = $(this);
                     if (this.value && this.value !== "" && isNaN(this.value) && $("input.property_name[value='" + this.value + "']").length === 0) {
-                        this.style.width = '192px';
-                        $(this).before("<img class='property_ko' data-property-name='" + this.value + "' src='./images/pen.png' title='Property Missing' style='display:inline;' width='16px' height='16px' />");
+                        this.style.width = '60%';
+                        $(this).before("<img class='property_ko' data-property-name='" + this.value + "' src='./images/pen.png' title='Property Missing' style='float:left;display:inline;' width='16px' height='16px' />");
                     }
                 });
                 $("img.property_ko").on("click", function(event) {
@@ -1927,6 +1939,7 @@
                     }
                 });</script>
                 <%
+            }
                         }
                     } catch (Exception e) {
                         out.println("<br> error message : " + e.getMessage() + " " + e.toString() + "<br>");
