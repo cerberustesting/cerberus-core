@@ -92,9 +92,11 @@
             <li id="active"><a id="menu-Run" name="menu" href="#" style="width:100px">Run
                     <img src="images/dropdown.gif"/></a>
                 <ul class="subnav" id="subnavlist">
-                    <li id="subactive"><a name="menu" id="menuRunTestCase" href="RunTests.jsp" style="width:130px">Run Tests</a></li>
-                        <%--                              <li><a name="menu" id="menuResumeTestCase" href="ResumeTests.jsp" style="width:130px">Resume Tests</a></li> --%>
-                    <li id="subactive"><a name="menu" id="menuRunManualTestCase" href="RunManualTestCase.jsp" style="width:130px">Run Manual Tests</a></li>
+                    <li id="subactive"><a name="menu" id="menuRunTestCase" href="RunTests.jsp" style="width:160px">Run Tests</a></li>
+                    <%--  <li><a name="menu" id="menuResumeTestCase" href="ResumeTests.jsp" style="width:130px">Resume Tests</a></li> --%>
+                    <li id="subactive"><a name="menu" id="menuRunManualTestCase" href="RunManualTestCase.jsp" style="width:160px">Run Manual Tests</a></li>
+                    <li id="subactive"><a name="menu" id="menuRunTestTriggerBatchExecution" href="RunTestsTriggerBatchExecution.jsp" style="width:160px">Run Multiple Tests</a></li>
+                    <li id="subactive"><a name="menu" id="menuRunTestSeePendingExecution" href="ExecutionPending.jsp" style="width:160px">See Execution In Queue</a></li>
                 </ul>
             </li>
             <% }%>
@@ -106,7 +108,7 @@
                     <li id="subactive"><a name="menu" id="menuReportingExecutionStatus" href="ReportingExecution.jsp" style="width:170px">Execution Status</a></li>
                     <li id="subactive"><a name="menu" id="menuReportingExecutionTime" href="ReportingExecutionTime.jsp" style="width:170px">Execution Time</a></li>
                     <li id="subactive"><a name="menu" id="menuReportingExecutionDetail" href="ExecutionDetailList.jsp" style="width:170px">Execution Detail</a></li>
-                    <li id="subactive"><a name="menu" id="menuReportingExecutionCampaign" href="CampaignReportByTag.jsp" style="width:170px">Execution For Campaign</a></li>
+                    <li id="subactive"><a name="menu" id="menuReportingExecutionByTag" href="ReportingExecutionByTag.jsp" style="width:170px">Execution Report By Tag</a></li>
                 </ul>
             </li>
             <% }%>
