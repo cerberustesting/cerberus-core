@@ -71,6 +71,10 @@ import org.springframework.stereotype.Service;
 public class WebDriverService implements IWebDriverService{
 
 
+    private static final int TIMEOUT_MILLIS = 30000;
+    private static final int TIMEOUT_WEBELEMENT = 300;
+
+    
     private By getIdentifier(String input) {
         String identifier;
         String locator;
@@ -828,7 +832,7 @@ public class WebDriverService implements IWebDriverService{
                     return message;
                 } else {
                     try {
-                        WebDriverWait wait = new WebDriverWait(session.getDriver(), session.getDefaultWait());
+                        WebDriverWait wait = new WebDriverWait(session.getDriver(), TIMEOUT_WEBELEMENT);
                         wait.until(ExpectedConditions.presenceOfElementLocated(this.getIdentifier(property)));
                         message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_WAIT_ELEMENT);
                         message.setDescription(message.getDescription().replaceAll("%ELEMENT%", property));
@@ -855,7 +859,7 @@ public class WebDriverService implements IWebDriverService{
                     return message;
                 } else {
                     try {
-                        WebDriverWait wait = new WebDriverWait(session.getDriver(), session.getDefaultWait());
+                        WebDriverWait wait = new WebDriverWait(session.getDriver(), TIMEOUT_WEBELEMENT);
                         wait.until(ExpectedConditions.presenceOfElementLocated(this.getIdentifier(object)));
                         message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_WAIT_ELEMENT);
                         message.setDescription(message.getDescription().replaceAll("%ELEMENT%", object));
@@ -869,15 +873,15 @@ public class WebDriverService implements IWebDriverService{
                 }
             } else {
                 try {
-                    Thread.sleep(session.getDefaultWait());
+                    Thread.sleep(TIMEOUT_MILLIS);
                 } catch (InterruptedException exception) {
                     MyLogger.log(WebDriverService.class.getName(), Level.INFO, exception.toString());
                     message = new MessageEvent(MessageEventEnum.ACTION_FAILED_WAIT);
-                    message.setDescription(message.getDescription().replaceAll("%TIME%", String.valueOf(session.getDefaultWait())));
+                    message.setDescription(message.getDescription().replaceAll("%TIME%", Integer.toString(TIMEOUT_MILLIS)));
                     return message;
                 }
                 message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_WAIT_TIME);
-                message.setDescription(message.getDescription().replaceAll("%TIME%", String.valueOf(session.getDefaultWait())));
+                message.setDescription(message.getDescription().replaceAll("%TIME%", Integer.toString(TIMEOUT_MILLIS)));
                 return message;
             }
         } catch (WebDriverException exception) {
