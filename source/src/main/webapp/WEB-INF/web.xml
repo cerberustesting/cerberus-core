@@ -1228,8 +1228,6 @@
             <url-pattern>/ExecutionPerBuildRevision.jsp</url-pattern>
             <url-pattern>/NetworkTraficDetail.jsp</url-pattern>
             <url-pattern>/ReportingExecution.jsp</url-pattern>
-            <url-pattern>/ReportingExecutionV2.jsp</url-pattern>
-            <url-pattern>/ReportingExecutionResult.jsp</url-pattern>
             <url-pattern>/ReportingExecutionTime.jsp</url-pattern>
             <url-pattern>/Test.jsp</url-pattern>
             <url-pattern>/TestCase.jsp</url-pattern>
