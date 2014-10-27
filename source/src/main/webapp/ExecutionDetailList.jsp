@@ -521,7 +521,7 @@
                                 + "SELECT tce.id, tce.environment  FROM testcaseexecution tce "
                                 + "WHERE 1=1 "
                                 + ExeclistWhereSQL
-                                + "ORDER BY tce.environment desc LIMIT " + execmax + " ) as toto "
+                                + " LIMIT " + execmax + " ) as toto "
                                 + " GROUP by environment; ";
                         ResultSet rs_ENVinf = stmt0.executeQuery(ExeclistSQL);
                         rs_ENVinf.first();
