@@ -477,7 +477,7 @@
                                             TestCaseStepAction myTCSA;
                                             String descAction = "";
                                              
-                                            if(myTCS.getUseStep() != null && !"".equals(myTCS.getUseStep())
+                                            if( myTCS != null && myTCS.getUseStep() != null && !"".equals(myTCS.getUseStep())
                                                     && myTCS.getUseStepStep() > 0) {
                                                 myTCSA = testCaseStepActionService.findTestCaseStepActionbyKey(myTCS.getUseStepTest(), myTCS.getUseStepTestCase(), myTCS.getUseStepStep(), myActionData.getSequence());
                                             } else {
@@ -530,7 +530,7 @@
                                                     for (TestCaseStepActionControlExecution myControlData : controlList) {
                                                         TestCaseStepActionControl myTCSAC;
                                                         
-                                                        if(myTCS.getUseStep() != null && !"".equals(myTCS.getUseStep())
+                                                        if(myTCS != null && myTCS.getUseStep() != null && !"".equals(myTCS.getUseStep())
                                                                 && myTCS.getUseStepStep() > 0) {
                                                             myTCSAC = testCaseStepActionControlService.findTestCaseStepActionControlByKey(myTCS.getUseStepTest(), myTCS.getUseStepTestCase(), myTCS.getUseStepStep(), myActionData.getSequence(), myControlData.getControl());
                                                         } else {
