@@ -367,6 +367,9 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
         return countries;
     }
 
+    /**
+     * FIXME this method do nothing more than return request.getParameter(parameter)!
+     */
     private String getParameterIfExists(HttpServletRequest request, String parameter) {
         String result = null;
         if (request.getParameter(parameter) != null) {
@@ -375,6 +378,9 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
         return result;
     }
 
+    /**
+     * FIXME this method do nothing more than return request.getParameterValues(parameter)!
+     */
     private String[] getParameterValuesIfExists(HttpServletRequest request, String parameter) {
         String[] result = null;
         if (request.getParameterValues(parameter) != null) {
