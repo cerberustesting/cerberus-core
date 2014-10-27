@@ -423,8 +423,8 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
                 int initialStep = Integer.valueOf(getParameterIfExists(request, "initial_step_number_" + inc) == null ? "0" : getParameterIfExists(request, "initial_step_number_" + inc));
                 String desc = HtmlUtils.htmlEscape(getParameterIfExists(request, "step_description_" + inc));
                 String useStep = getParameterIfExists(request, "step_useStep_" + inc);
-                String useStepTest = getParameterIfExists(request, "step_useStepTest_" + inc);
-                String useStepTestCase = getParameterIfExists(request, "step_useStepTestCase_" + inc);
+                String useStepTest = getParameterIfExists(request, "step_useStepTest_" + inc) == null ? "" : getParameterIfExists(request, "step_useStepTest_" + inc);
+                String useStepTestCase = getParameterIfExists(request, "step_useStepTestCase_" + inc) == null ? "" : getParameterIfExists(request, "step_useStepTestCase_" + inc);
                 String stepValue = getParameterIfExists(request, "step_useStepStep_" + inc);
                 int useStepStep = Integer.valueOf(stepValue == null || stepValue.equals("") ? "-1" : getParameterIfExists(request, "step_useStepStep_" + inc));
                 String inLibrary = getParameterIfExists(request, "step_inLibrary_" + inc);
