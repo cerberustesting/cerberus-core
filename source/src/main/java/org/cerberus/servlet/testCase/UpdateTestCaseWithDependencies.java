@@ -133,7 +133,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
          * For the list of testcase country verify it exists. If it does not
          * exists > create it If it exist, verify if it's the
          */
-        List<TestCaseCountry> tccFromPage = getTestCaseCountryFromParameter(request, appContext, test, testCase);
+        List<TestCaseCountry> tccFromPage = getTestCaseCountryFromParameter(request, appContext, initialTest, initialTestCase);
         List<TestCaseCountry> tccFromDtb = tccService.findTestCaseCountryByTestTestCase(initialTest, initialTestCase);
 
         /**
@@ -178,7 +178,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
          * For the list of testcase country verify it exists. If it does not
          * exists > create it If it exist, verify if it's the
          */
-        List<TestCaseCountryProperties> tccpFromPage = getTestCaseCountryPropertiesFromParameter(request, appContext, test, testCase);
+        List<TestCaseCountryProperties> tccpFromPage = getTestCaseCountryPropertiesFromParameter(request, appContext, initialTest, initialTestCase);
         List<TestCaseCountryProperties> tccpFromDtb = tccpService.findListOfPropertyPerTestTestCase(initialTest, initialTestCase);
 
         /**
@@ -225,7 +225,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
          * For the list of testcasestep verify it exists. If it does not exists
          * > create it If it exist, verify if it's the
          */
-        List<TestCaseStep> tcsFromPage = getTestCaseStepFromParameter(request, appContext, test, testCase);
+        List<TestCaseStep> tcsFromPage = getTestCaseStepFromParameter(request, appContext, initialTest, initialTestCase);
         List<TestCaseStepAction> tcsaFromPage = new ArrayList();
         List<TestCaseStepActionControl> tcsacFromPage = new ArrayList();
 
