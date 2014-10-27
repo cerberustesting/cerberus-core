@@ -587,9 +587,9 @@
                                                 <%  }
                                                     }%>
                                             </select>
-                                            <input id ="hiddenInformationTestCase" style="display:none" value="<%=testcase%>">
-                                            <input id="inputAddTestCaseInSelectTestCase" name="informationTestCase"  type="text" style="width: 250px;display:none" 
-                                                   placeholder="Define TestCase Identifiant different than these value" onchange="addOptionInSelect('inputAddTestCaseInSelectTestCase', 'informationTestCase')"/>
+                                            <input id ="hiddenInformationTestCase" style="display:none" name="informationTestCase" value="<%=testcase%>">
+                                            <input id="inputAddTestCaseInSelectTestCase" type="text" style="width: 250px;display:none" 
+                                                   placeholder="Define TestCase Identifiant different than these value" onblur="addOptionInSelect('inputAddTestCaseInSelectTestCase', 'informationTestCase')"/>
                                         </fieldset>
                                         <input id="informationInitialTestCase" type="hidden" name="informationInitialTestCase" value="<%=tcase.getTestCase()%>">
                                     </td>
