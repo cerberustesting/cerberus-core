@@ -18,6 +18,7 @@
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
 
+<%@page import="java.net.URLEncoder"%>
 <%@page import="org.cerberus.entity.Robot"%>
 <%@page import="org.cerberus.util.SqlUtil"%>
 <%@page import="org.cerberus.entity.Application"%>
@@ -337,14 +338,7 @@
                     <%} %>
                 </div>
             </div>
-                <div class="filters" style="float:right; display:block; width:48%">
-                    <p style="float:left" class="dttTitle">SelectedTest</p>
-                    <div style="clear:both">
-                                <div size="16" id="testSelected" name="testSelected"
-                                        style="width: 600px" onchange="getTestCaseList()">
-                                </div>
-                            </div>
-                </div>
+                
     </div>
             <br>
             <br>
@@ -650,11 +644,14 @@
         function addToSelectedTest(){
             
             $.each($("input[name='testcaseselected']:checked"), function(index, element){
-                console.log(element);
+                var tst = $(element).attr("data-test");
+                var tstcse = $(element).attr("data-testcase");
             $("#testSelected").append($("<input></input>")
                             .attr("name", "SelectedTest")
+                            .attr("style", "width:100%")
                             .attr("value", $(element).val())
                             .text($(element).val()));
+            $("#row_"+tst+"_"+tstcse).remove();
                 });
         }
     </script>

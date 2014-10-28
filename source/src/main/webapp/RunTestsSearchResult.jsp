@@ -33,11 +33,11 @@
 %>
     <br><br>
     <form id="AddTestBatteryContent"></form>
-    <button type="button" id="button" name="submit" onclick="addToSelectedTest()">Add to selected tests</button>
-    <div style="height:200px; overflow: auto">
+    <div>
     <table class="backDiv" style="width:100%;">
         <tr>
-            <td id="wob">
+            <td id="wob" style="width:40%;">
+                <div style="height:200px; overflow: auto">
                 <table id="reportingExec" class="arrondTable dataTable" style="text-align: left;border-collapse:collapse;display:table" border="1px" cellpadding="0" cellspacing="1">
                     <thead>
                     <tr id="headerFirst"  class="filters">
@@ -70,9 +70,9 @@
                             if(!tCase.getGroup().equalsIgnoreCase("PRIVATE")) {
                                 indexColor++;
                     %>
-                        <tr class="testCaseExecutionResult <%=(indexColor%2 == 1) ? "even" : "odd"%>">
-                        <td ><input class="selecttestcase" type="checkbox" name="testcaseselected" value="<%="Test="+URLEncoder.encode(tCase.getTest(), "UTF-8")+"&TestCase="+URLEncoder.encode(tCase.getTestCase(), "UTF-8") %>"></td>
-                        <td ><%=tCase.getTest()%></td>
+                        <tr class="testCaseExecutionResult <%=(indexColor%2 == 1) ? "even" : "odd"%>" name="resultLine" id="row_<%=tCase.getTest().replace(" ", "")%>_<%=tCase.getTestCase()%>">
+                        <td ><input class="selecttestcase" type="checkbox" name="testcaseselected" data-test="<%=tCase.getTest().replace(" ", "")%>" data-testcase="<%=tCase.getTestCase()%>" value="<%="Test="+URLEncoder.encode(tCase.getTest(), "UTF-8")+"&TestCase="+URLEncoder.encode(tCase.getTestCase(), "UTF-8") %>"></td>
+                        <td  onclick="addToSelectedTest()"><%=tCase.getTest()%></td>
                         <td ><a href="TestCase.jsp?Load=Load&Test=<%=tCase.getTest()%>&TestCase=<%=tCase.getTestCase()%>"> <%=tCase.getTestCase()%></a></td>
                         <td ><%=tCase.getApplication()%></td>
                         <td ><%=tCase.getDescription()%></td>
@@ -81,13 +81,26 @@
                             }
                         }
                     %>
-                    </tbody>
+                </tbody>
                 </table>
+                </div>
+            </td>
+            <td class="wob" style="width:1%;"><button type="button" id="button" name="submit" onclick="addToSelectedTest()">>></button></td>
+            <td id="wob" style="width:40%;">
+                <div class="filters" style="float:right; display:block; width:100%;height:200px; overflow:auto">
+                    <p style="float:left" class="dttTitle">SelectedTest</p>
+                    <div style="clear:both; background-color:white">
+                                <div size="16" id="testSelected" name="testSelected"
+                                        style="width: 600px">
+                                </div>
+                            </div>
+                </div>
+                
             </td>
         </tr>
     </table>
     </div>
-    <button type="button" id="button" name="submit" onclick="addToSelectedTest()">Add to selected tests</button>
+   
     <script>
         var isSelectedAll = false;
         function selectAll(){
