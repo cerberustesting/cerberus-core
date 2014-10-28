@@ -1085,8 +1085,13 @@
                                                         }
                                                         tcList.add(tcsUnit.getTestCase());
                                                     }
-                                                    for (String tst : tList) {%>
-                                                <option style="width: 200px;" value="<%=tst%>" <%=tcs.getUseStepTest().compareTo(tst) == 0 ? " SELECTED " : ""%>><%=tst%>
+                                                    String testCombo = test;
+                                                    for (String tst : tList) {
+                                                if (tcs.getUseStepTest().compareTo(tst) == 0){
+                                                testCombo=tst;
+                                                }
+                                                %>
+                                                <option style="width: 200px;" value="<%=tst%>" <%= tcs.getUseStepTest().compareTo(tst) == 0 ? " SELECTED " : ""%>><%=tst%>
                                                 </option>
                                                 <% }
                                                 %>
@@ -1100,7 +1105,7 @@
                                                 <%  if (tcs.getUseStepTestCase().equals("")) { %>
                                                 <option style="width: 200px" value="">---</option>
                                                 <%  } else {
-                                                    List<TCase> tcaseList = testCaseService.findTestCaseByTest(test);
+                                                    List<TCase> tcaseList = testCaseService.findTestCaseByTest(testCombo);
                                                     for (TCase tc : tcaseList) {%>
                                                 <option style="width: 400px;" class="font_weight_bold_<%=tc.getActive()%>" value="<%=tc.getTestCase()%>" <%=tcs.getUseStepTestCase().compareTo(tc.getTestCase()) == 0 ? " SELECTED " : ""%>><%=tc.getTestCase()%> [<%=tc.getApplication()%>] : <%=tc.getShortDescription()%>
                                                 </option>
@@ -2012,7 +2017,7 @@
                         $('#' + field).append($("<option></option>")
                                 .attr('value', data.testCaseStepList[i].testCase)
                                 .attr('style', 'width:300px;')
-                                .text(data.testCaseStepList[i].testCase));
+                                .text(data.testCaseStepList[i].testCase+" : "+data.testCaseStepList[i].description));
                     }
                 });
             }
