@@ -604,11 +604,12 @@ public class TestCaseDAO implements ITestCaseDAO {
         String runUAT = resultSet.getString("activeUAT");
         String runPROD = resultSet.getString("activePROD");
         String function = resultSet.getString("function");
+        String dateCrea = resultSet.getString("tcdatecrea");
 
         return factoryTestCase.create(test, testCase, origin, refOrigin, creator, implementer,
                 lastModifier, project, ticket, function, tcapplication, runQA, runUAT, runPROD, priority, group,
                 status, description, behavior, howTo, tcactive, fromSprint, fromRevision, toSprint,
-                toRevision, status, bugID, targetSprint, targetRevision, comment, null, null, null, null);
+                toRevision, status, bugID, targetSprint, targetRevision, comment,  dateCrea);
     }
 
     @Override
