@@ -200,6 +200,9 @@ public class TestCaseStep {
         if (this.useStepStep != other.useStepStep && (this.useStepStep == null || !this.useStepStep.equals(other.useStepStep))) {
             return false;
         }
+        if (this.inLibrary != other.inLibrary && (this.inLibrary == null || !this.inLibrary.equals(other.inLibrary))) {
+            return false;
+        }
         return true;
     }
 

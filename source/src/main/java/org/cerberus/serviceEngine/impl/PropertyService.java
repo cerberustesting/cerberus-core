@@ -173,43 +173,61 @@ public class PropertyService implements IPropertyService {
         long now = new Date().getTime();
         TestCaseExecutionData testCaseExecutionData = factoryTestCaseExecutionData.create(tCExecution.getId(), property, null, null, null, null, null, null, now, now, now, now, new MessageEvent(MessageEventEnum.PROPERTY_PENDING));
         TestCaseCountryProperties testCaseCountryProperty = null;
-        /*
-         * Check if property is defined for this testcase
-         */
-        try {
-            testCaseCountryProperty = testCaseCountryPropertiesService.findTestCaseCountryPropertiesByKey(test, testCase, country, property);
-        } catch (CerberusException cex) {
-            /*
-             * If property doesn't exists, check if it is defined in the used Step   
-             */
-            try {
-                testCaseCountryProperty = testCaseCountryPropertiesService.findTestCaseCountryPropertiesByKey(usedTest, usedTestCase, country, property);
-            } catch (CerberusException ce) {
-                /*
-                 * If property is not defined nor on testcase, nor on used testcase
-                 * then check if property is defined in the testcase at least for one country.
-                 * Report FA is not defined and NA if defined but not for this country.
-                 */
-                if (testCaseCountryPropertiesService.findCountryByPropertyNameAndTestCase(test, testCase, property) != null) {
-                    MessageEvent msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_NO_PROPERTY_DEFINITION);
-                    msg.setDescription(msg.getDescription().replaceAll("%COUNTRY%", country));
-                    msg.setDescription(msg.getDescription().replaceAll("%PROP%", property));
-                    testCaseExecutionData.setPropertyResultMessage(msg);
-                    return testCaseExecutionData;
-                } else if (testCaseCountryPropertiesService.findCountryByPropertyNameAndTestCase(usedTest, usedTestCase, property) != null) {
-                    MessageEvent msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_NO_PROPERTY_DEFINITION);
-                    msg.setDescription(msg.getDescription().replaceAll("%COUNTRY%", country));
-                    msg.setDescription(msg.getDescription().replaceAll("%PROP%", property));
-                    testCaseExecutionData.setPropertyResultMessage(msg);
-                    return testCaseExecutionData;
-                } else {
-                    MessageEvent msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_UNKNOWNPROPERTY);
-                    msg.setDescription(msg.getDescription().replaceAll("%COUNTRY%", country));
-                    msg.setDescription(msg.getDescription().replaceAll("%PROP%", property));
-                    testCaseExecutionData.setPropertyResultMessage(msg);
-                    return testCaseExecutionData;
-                }
-            }
+        
+        // Check if property is already defined into the actual datalist (could be previously filled with pre-test)
+        boolean alreadyCalculated = false;
+        for (TestCaseExecutionData data : testCaseStepActionExecution.getTestCaseExecutionDataList()) {
+        	if (data.getProperty() != null && data.getProperty().equals(property)) {
+        		// Maybe this property is linked to an another test than the current one. So we need to know this another test to be able to recalculate property if any
+        		if (data.getTestCaseCountryProperties() != null) {
+        			test = data.getTestCaseCountryProperties().getTest();
+        			testCase = data.getTestCaseCountryProperties().getTestCase();
+        		}
+        		alreadyCalculated = true;
+        		break;
+        	}
+        }
+        
+        // If not then try to get it from the database
+        if(!alreadyCalculated) {
+	        /*
+	         * Check if property is defined for this testcase
+	         */
+	        try {
+	            testCaseCountryProperty = testCaseCountryPropertiesService.findTestCaseCountryPropertiesByKey(test, testCase, country, property);
+	        } catch (CerberusException cex) {
+	            /*
+	             * If property doesn't exists, check if it is defined in the used Step   
+	             */
+	            try {
+	                testCaseCountryProperty = testCaseCountryPropertiesService.findTestCaseCountryPropertiesByKey(usedTest, usedTestCase, country, property);
+	            } catch (CerberusException ce) {
+	                /*
+	                 * If property is not defined nor on testcase, nor on used testcase
+	                 * then check if property is defined in the testcase at least for one country.
+	                 * Report FA is not defined and NA if defined but not for this country.
+	                 */
+	                if (testCaseCountryPropertiesService.findCountryByPropertyNameAndTestCase(test, testCase, property) != null) {
+	                    MessageEvent msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_NO_PROPERTY_DEFINITION);
+	                    msg.setDescription(msg.getDescription().replaceAll("%COUNTRY%", country));
+	                    msg.setDescription(msg.getDescription().replaceAll("%PROP%", property));
+	                    testCaseExecutionData.setPropertyResultMessage(msg);
+	                    return testCaseExecutionData;
+	                } else if (testCaseCountryPropertiesService.findCountryByPropertyNameAndTestCase(usedTest, usedTestCase, property) != null) {
+	                    MessageEvent msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_NO_PROPERTY_DEFINITION);
+	                    msg.setDescription(msg.getDescription().replaceAll("%COUNTRY%", country));
+	                    msg.setDescription(msg.getDescription().replaceAll("%PROP%", property));
+	                    testCaseExecutionData.setPropertyResultMessage(msg);
+	                    return testCaseExecutionData;
+	                } else {
+	                    MessageEvent msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_UNKNOWNPROPERTY);
+	                    msg.setDescription(msg.getDescription().replaceAll("%COUNTRY%", country));
+	                    msg.setDescription(msg.getDescription().replaceAll("%PROP%", property));
+	                    testCaseExecutionData.setPropertyResultMessage(msg);
+	                    return testCaseExecutionData;
+	                }
+	            }
+	        }
         }
 
         /*

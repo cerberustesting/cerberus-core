@@ -254,15 +254,15 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
         List<TestCaseStepAction> tcsaNewFromDtb = new ArrayList();
         List<TestCaseStepActionControl> tcsacNewFromDtb = new ArrayList();
 
-        tcsNewFromDtb = tcsService.getListOfSteps(initialTest, initialTestCase);
+        tcsNewFromDtb = tcsService.getListOfSteps(test, testCase);
         int incrementStep = 0;
         for (TestCaseStep tcsNew : tcsNewFromDtb) {
             incrementStep++;
-            tcsaNewFromDtb = tcsaService.getListOfAction(initialTest, initialTestCase, tcsNew.getStep());
+            tcsaNewFromDtb = tcsaService.getListOfAction(test, testCase, tcsNew.getStep());
             int incrementAction = 0;
             for (TestCaseStepAction tcsaNew : tcsaNewFromDtb) {
                 incrementAction++;
-                tcsacNewFromDtb = tcsacService.findControlByTestTestCaseStepSequence(initialTest, initialTestCase, tcsaNew.getStep(), tcsaNew.getSequence());
+                tcsacNewFromDtb = tcsacService.findControlByTestTestCaseStepSequence(test, testCase, tcsaNew.getStep(), tcsaNew.getSequence());
                 int incrementControl = 0;
                 for (TestCaseStepActionControl tcsacNew : tcsacNewFromDtb) {
                     incrementControl++;
@@ -279,13 +279,13 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
             tcsNewFromPage.add(tcsNew);
         }
 
-        List<TestCaseStep> tcsNewNewFromDtb = new ArrayList(tcsService.getListOfSteps(initialTest, initialTestCase));
+        List<TestCaseStep> tcsNewNewFromDtb = new ArrayList(tcsService.getListOfSteps(test, testCase));
         tcsService.compareListAndUpdateInsertDeleteElements(tcsNewFromPage, tcsNewNewFromDtb, duplicate);
 
-        List<TestCaseStepAction> tcsaNewNewFromDtb = new ArrayList(tcsaService.findTestCaseStepActionbyTestTestCase(initialTest, initialTestCase));
+        List<TestCaseStepAction> tcsaNewNewFromDtb = new ArrayList(tcsaService.findTestCaseStepActionbyTestTestCase(test, testCase));
         tcsaService.compareListAndUpdateInsertDeleteElements(tcsaNewFromPage, tcsaNewNewFromDtb, duplicate);
 
-        List<TestCaseStepActionControl> tcsacNewNewFromDtb = new ArrayList(tcsacService.findControlByTestTestCase(initialTest, initialTestCase));
+        List<TestCaseStepActionControl> tcsacNewNewFromDtb = new ArrayList(tcsacService.findControlByTestTestCase(test, testCase));
         tcsacService.compareListAndUpdateInsertDeleteElements(tcsacNewFromPage, tcsacNewNewFromDtb, duplicate);
 
         /*Update the testcasestep using the steps*/
