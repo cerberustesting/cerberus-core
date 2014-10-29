@@ -26,13 +26,10 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.cerberus.entity.ExecutionUUID;
-import org.cerberus.log.MyLogger;
 import org.cerberus.service.ITestCaseExecutionwwwDetService;
-import org.cerberus.service.ITestCaseExecutionwwwSumService;
 import org.cerberus.service.impl.TestCaseExecutionwwwDetService;
-import org.cerberus.service.impl.TestCaseExecutionwwwSumService;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -40,22 +37,24 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  * {Insert class description here}
  *
  * @author Tiago Bernardes
- * @version 1.0, 01/03/2013
- * @since 2.0.0
+ * @version 1.1, 29/10/2014
+ * @since 1.0.0
  */
 @WebServlet(name = "SaveStatistic", urlPatterns = {"/SaveStatistic"})
 public class SaveStatistic extends HttpServlet {
 
+    private static final Logger LOG = Logger.getLogger(SaveStatistic.class);
+
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-        MyLogger.log(SaveStatistic.class.getName(), Level.DEBUG, "Starting to save statistics Servlet.");
-        
-        int i = request.getParameter("logId").indexOf('?');
-        String runId = request.getParameter("logId");
-        String page = request.getParameter("logId").substring(i).split("=")[1];
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Starting to save statistics Servlet.");
+        }
 
-        MyLogger.log(SaveStatistic.class.getName(), Level.INFO, " --> save statistics servlet parameters : runid=" + runId + " page=" + page);
+        int i = request.getParameter("logId").indexOf('?');
+        String runId = request.getParameter("logId").substring(0, i);
+        String page = request.getParameter("logId").substring(i).split("=")[1];
 
         StringBuilder sb = new StringBuilder();
         BufferedReader br = request.getReader();
@@ -68,7 +67,8 @@ public class SaveStatistic extends HttpServlet {
         ITestCaseExecutionwwwDetService testCaseExecutionwwwDetService = appContext.getBean(TestCaseExecutionwwwDetService.class);
         ExecutionUUID executionUUID = appContext.getBean(ExecutionUUID.class);
         long executionId = executionUUID.getExecutionID(runId);
-        
+
+        LOG.info(" --> save statistics servlet parameters : runid=" + executionId + " page=" + page);
         testCaseExecutionwwwDetService.registerDetail(executionId, sb.toString(), page);
 
     }
