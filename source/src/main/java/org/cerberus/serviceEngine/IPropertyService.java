@@ -38,10 +38,10 @@ public interface IPropertyService {
 	
 	TestCaseExecutionData calculateProperty(String property, TestCaseStepActionExecution testCaseStepActionExecution);
         
-        TestCaseExecutionData getPropertiesAndPerformCalculation(String property, TestCaseStepActionExecution testCaseStepActionExecution);
+        TestCaseExecutionData getPropertiesAndPerformCalculation(String property, TestCaseStepActionExecution testCaseStepActionExecution, boolean isCalledFromCalculateProperty);
         
         List<TestCaseCountryProperties> getListOfPropertiesLinkedToProperty(String test, String testCase, String country, String property,String test2, String testCase2, List<String> crossedProperties) throws CerberusEventException;
 	
-    String decodeValue(String myString, TestCaseStepActionExecution testCaseStepActionExecution) throws CerberusEventException;
+        String decodeValue(String myString, TestCaseStepActionExecution testCaseStepActionExecution, boolean isCalledFromCalculateProperty) throws CerberusEventException;
     
 }
