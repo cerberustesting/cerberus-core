@@ -22,6 +22,7 @@ package org.cerberus.entity;
 
 public class BuildRevisionParameters {
 
+    private int id;
     private String build;
     private String revision;
     private String release;
@@ -37,6 +38,14 @@ public class BuildRevisionParameters {
     private String mavenGroupId;
     private String mavenArtifactId;
     private String mavenVersion;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public String getBuild() {
         return build;

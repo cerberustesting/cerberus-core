@@ -38,4 +38,39 @@ public class BuildRevisionParametersService implements IBuildRevisionParametersS
     public List<BuildRevisionParameters> findBuildRevisionParametersFromMaxRevision(String build, String revision, String lastBuild, String lastRevision) {
         return this.buildRevisionParametersDAO.findBuildRevisionParametersFromMaxRevision(build, revision, lastBuild, lastRevision);
     }
+
+    @Override
+    public List<BuildRevisionParameters> findBuildRevisionParametersByCriteria(String system, String build, String revision) {
+        return this.buildRevisionParametersDAO.findBuildRevisionParametersByCriteria(system, build, revision);
+    }
+
+    @Override
+    public String getMaxBuildBySystem(String system) {
+        return this.buildRevisionParametersDAO.getMaxBuildBySystem(system);
+    }
+
+    @Override
+    public String getMaxRevisionBySystemAndBuild(String system, String build) {
+        return this.buildRevisionParametersDAO.getMaxRevisionBySystemAndBuild(system, build);
+    }
+
+    @Override
+    public void insertBuildRevisionParameters(BuildRevisionParameters brp) {
+        this.buildRevisionParametersDAO.insertBuildRevisionParameters(brp);
+    }
+
+    @Override
+    public void deleteBuildRevisionParameters(int id) {
+        this.buildRevisionParametersDAO.deleteBuildRevisionParameters(id);
+    }
+
+    @Override
+    public void updateBuildRevisionParameters(BuildRevisionParameters brp) {
+        this.buildRevisionParametersDAO.updateBuildRevisionParameters(brp);
+    }
+
+    @Override
+    public BuildRevisionParameters findBuildRevisionParametersByKey(int id) {
+        return this.buildRevisionParametersDAO.findBuildRevisionParametersByKey(id);
+    }
 }

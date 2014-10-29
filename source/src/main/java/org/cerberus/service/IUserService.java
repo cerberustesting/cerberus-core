@@ -114,4 +114,6 @@ public interface IUserService {
      * @throws CerberusException
      */
     User findUserByKeyWithDependencies(String login) throws CerberusException;
+
+    List<User> findAllUserBySystem(String system);
 }

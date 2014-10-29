@@ -1362,6 +1362,7 @@
             <description>jsp</description>
             <url-pattern>/Application.jsp</url-pattern>
             <url-pattern>/BuildContent.jsp</url-pattern>
+            <url-pattern>/BuildContentV2.jsp</url-pattern>
             <url-pattern>/BuildRevDefinition.jsp</url-pattern>
             <url-pattern>/Environment.jsp</url-pattern>
             <url-pattern>/EnvironmentList.jsp</url-pattern>

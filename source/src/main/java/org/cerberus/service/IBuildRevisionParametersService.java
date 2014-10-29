@@ -27,4 +27,18 @@ import java.util.List;
 public interface IBuildRevisionParametersService {
 
     List<BuildRevisionParameters> findBuildRevisionParametersFromMaxRevision(String build, String revision, String lastBuild, String lastRevision);
+
+    public List<BuildRevisionParameters> findBuildRevisionParametersByCriteria(String application, String build, String revision);
+
+    String getMaxBuildBySystem(String system);
+
+    String getMaxRevisionBySystemAndBuild(String system, String build);
+
+    void insertBuildRevisionParameters(BuildRevisionParameters brp);
+
+    void deleteBuildRevisionParameters(int id);
+
+    void updateBuildRevisionParameters(BuildRevisionParameters brp);
+
+    BuildRevisionParameters findBuildRevisionParametersByKey(int id);
 }

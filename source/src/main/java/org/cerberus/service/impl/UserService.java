@@ -107,7 +107,7 @@ public class UserService implements IUserService {
     public boolean verifyPassword(User user, String password) {
         return userDAO.verifyPassword(user, password);
     }
-    
+
     @Override
     public boolean isUserExist(String user) {
         try {
@@ -122,7 +122,7 @@ public class UserService implements IUserService {
     public List<User> findUserListByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
         return userDAO.findTestDataListByCriteria(start, amount, column, dir, searchTerm, individualSearch);
     }
-    
+
     @Override
     public Integer getNumberOfUserPerCrtiteria(String searchTerm, String inds) {
         return userDAO.getNumberOfUserPerCriteria(searchTerm, inds);
@@ -135,5 +135,9 @@ public class UserService implements IUserService {
         result.setUserSystems(userSystemService.findUserSystemByUser(login));
         return result;
     }
-       
+
+    @Override
+    public List<User> findAllUserBySystem(String system) {
+        return this.userDAO.findAllUserBySystem(system);
+    }
 }

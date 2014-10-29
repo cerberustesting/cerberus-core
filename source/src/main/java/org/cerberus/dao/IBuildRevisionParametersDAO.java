@@ -27,4 +27,18 @@ import java.util.List;
 public interface IBuildRevisionParametersDAO {
 
     List<BuildRevisionParameters> findBuildRevisionParametersFromMaxRevision(String build, String revision, String lastBuild, String lastRevision);
+
+    public List<BuildRevisionParameters> findBuildRevisionParametersByCriteria(String system, String build, String revision);
+
+    String getMaxBuildBySystem(String system);
+
+    String getMaxRevisionBySystemAndBuild(String system, String build);
+
+    void insertBuildRevisionParameters(BuildRevisionParameters brp);
+
+    boolean deleteBuildRevisionParameters(int id);
+
+    boolean updateBuildRevisionParameters(BuildRevisionParameters brp);
+
+    BuildRevisionParameters findBuildRevisionParametersByKey(int id);
 }
