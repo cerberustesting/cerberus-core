@@ -105,4 +105,11 @@ public interface IUserDAO {
      * @return The number of records for these criterias
      */
     Integer getNumberOfUserPerCriteria(String searchTerm, String inds);
+
+    /**
+     *
+     * @param system
+     * @return
+     */
+    List<User> findAllUserBySystem(String system);
 }

@@ -25,6 +25,7 @@ import org.cerberus.dao.IBuildRevisionParametersDAO;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.entity.BuildRevisionParameters;
 import org.cerberus.util.ParameterParserUtil;
+import org.cerberus.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -98,9 +99,309 @@ public class BuildRevisionParametersDAO implements IBuildRevisionParametersDAO {
         return list;
     }
 
+    @Override
+    public List<BuildRevisionParameters> findBuildRevisionParametersByCriteria(String system, String build, String revision) {
+        List<BuildRevisionParameters> list = null;
+
+        String query = "SELECT * FROM buildrevisionparameters WHERE application " +
+                "IN (SELECT application FROM application WHERE system = ?) ";
+        if (!StringUtil.isNullOrEmpty(build)) {
+            query += " AND build = ? ";
+        }
+        if (!StringUtil.isNullOrEmpty(revision)) {
+            query += " AND revision = ? ";
+        }
+        query += "ORDER BY build DESC, revision DESC, application ASC, `release` ASC";
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            try {
+                preStat.setString(1, system);
+                int i = 2;
+                if (!StringUtil.isNullOrEmpty(build)) {
+                    preStat.setString(i, build);
+                    i++;
+                }
+                if (!StringUtil.isNullOrEmpty(revision)) {
+                    preStat.setString(i, revision);
+                }
+
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+                    list = new ArrayList<BuildRevisionParameters>();
+                    while (resultSet.next()) {
+                        list.add(this.loadBuildRevisionParametersFromResultSet(resultSet));
+                    }
+                } catch (SQLException exception) {
+                    LOG.error("Unable to execute query : " + exception);
+                } finally {
+                    resultSet.close();
+                }
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception);
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception);
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                LOG.warn(e.toString());
+            }
+        }
+        return list;
+    }
+
+    @Override
+    public String getMaxBuildBySystem(String system) {
+        String build = null;
+
+        String query = "SELECT max(build) FROM buildrevisionparameters WHERE application " +
+                "IN (SELECT application FROM application WHERE system = ?) " +
+                "AND build!='NONE' AND build IS NOT NULL";
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            try {
+                preStat.setString(1, system);
+
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+                    if (resultSet.next()) {
+                        build = resultSet.getString(1);
+                    }
+                } catch (SQLException exception) {
+                    LOG.error("Unable to execute query : " + exception);
+                } finally {
+                    resultSet.close();
+                }
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception);
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception);
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                LOG.warn(e.toString());
+            }
+        }
+        return build;
+    }
+
+    @Override
+    public String getMaxRevisionBySystemAndBuild(String system, String build) {
+        String revision = null;
+
+        String query = "SELECT max(revision) FROM buildrevisionparameters WHERE application " +
+                "IN (SELECT application FROM application WHERE system = ?) " +
+                "AND build = ?";
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            try {
+                preStat.setString(1, system);
+                preStat.setString(2, build);
+
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+                    if (resultSet.next()) {
+                        revision = resultSet.getString(1);
+                    }
+                } catch (SQLException exception) {
+                    LOG.error("Unable to execute query : " + exception);
+                } finally {
+                    resultSet.close();
+                }
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception);
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception);
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                LOG.warn(e.toString());
+            }
+        }
+        return revision;
+    }
+
+    @Override
+    public void insertBuildRevisionParameters(BuildRevisionParameters brp) {
+        String query = "INSERT INTO buildrevisionparameters (`Build`,`Revision`,`Release`,`Link` , `Application`, " +
+                "`releaseOwner`, `Project`, `BugIDFixed`, `TicketIDFixed` , `Subject`) VALUES (?,?,?,?,?,?,?,?,?,?)";
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            try {
+                preStat.setString(1, brp.getBuild());
+                preStat.setString(2, brp.getRevision());
+                preStat.setString(3, brp.getRelease());
+                preStat.setString(4, brp.getLink());
+                preStat.setString(5, brp.getApplication());
+                preStat.setString(6, brp.getReleaseOwner());
+                preStat.setString(7, brp.getProject());
+                preStat.setString(8, brp.getBudIdFixed());
+                preStat.setString(9, brp.getTicketIdFixed());
+                preStat.setString(10, brp.getSubject());
+
+                preStat.executeUpdate();
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception);
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception);
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                LOG.warn(e.toString());
+            }
+        }
+    }
+
+    @Override
+    public boolean deleteBuildRevisionParameters(int id) {
+        boolean bool = false;
+        final String query = "DELETE FROM buildrevisionparameters WHERE id = ?";
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            try {
+                preStat.setInt(1, id);
+
+                bool = preStat.executeUpdate() > 0;
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception);
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception);
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                LOG.warn(e.toString());
+            }
+        }
+        return bool;
+    }
+
+    @Override
+    public boolean updateBuildRevisionParameters(BuildRevisionParameters brp) {
+        boolean bool = false;
+        final String query = "UPDATE buildrevisionparameters SET build = ?, revision = ?, application = ?," +
+                "`release` = ?, project = ?, ticketidfixed = ?, bugidfixed = ?, `subject` = ?, releaseowner = ?," +
+                "link = ? WHERE id = ?";
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            try {
+                preStat.setString(1, brp.getBuild());
+                preStat.setString(2, brp.getRevision());
+                preStat.setString(3, brp.getApplication());
+                preStat.setString(4, brp.getRelease());
+                preStat.setString(5, brp.getProject());
+                preStat.setString(6, brp.getTicketIdFixed());
+                preStat.setString(7, brp.getBudIdFixed());
+                preStat.setString(8, brp.getSubject());
+                preStat.setString(9, brp.getReleaseOwner());
+                preStat.setString(10, brp.getLink());
+                preStat.setInt(11, brp.getId());
+
+                bool = preStat.executeUpdate() > 0;
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception);
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception);
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                LOG.warn(e.toString());
+            }
+        }
+        return bool;
+    }
+
+    @Override
+    public BuildRevisionParameters findBuildRevisionParametersByKey(int id) {
+        BuildRevisionParameters brp = null;
+
+        String query = "SELECT * FROM buildrevisionparameters WHERE id = ?";
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            try {
+                preStat.setInt(1, id);
+
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+                    if (resultSet.next()) {
+                        brp = this.loadBuildRevisionParametersFromResultSet(resultSet);
+                    }
+                } catch (SQLException exception) {
+                    LOG.error("Unable to execute query : " + exception);
+                } finally {
+                    resultSet.close();
+                }
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception);
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception);
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                LOG.warn(e.toString());
+            }
+        }
+        return brp;
+    }
+
     private BuildRevisionParameters loadBuildRevisionParametersFromResultSet(ResultSet rs) throws SQLException {
         BuildRevisionParameters brp = new BuildRevisionParameters();
 
+        brp.setId(ParameterParserUtil.parseIntegerParam(rs.getString("ID"), -1));
         brp.setBuild(ParameterParserUtil.parseStringParam(rs.getString("build"), ""));
         brp.setRevision(ParameterParserUtil.parseStringParam(rs.getString("revision"), ""));
         brp.setRelease(ParameterParserUtil.parseStringParam(rs.getString("release"), ""));

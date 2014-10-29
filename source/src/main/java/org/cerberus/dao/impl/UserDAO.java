@@ -530,4 +530,50 @@ public class UserDAO implements IUserDAO {
         return result;
 
     }
+
+    @Override
+    public List<User> findAllUserBySystem(String system) {
+        List<User> list = null;
+        final String query = "SELECT * " +
+                "FROM `user` u, usersystem us " +
+                "WHERE u.login = us.login " +
+                "AND us.system = ? " +
+                "ORDER BY u.login";
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            try {
+                preStat.setString(1, system);
+
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+                    list = new ArrayList<User>();
+                    while (resultSet.next()) {
+                        User user = this.loadUserFromResultSet(resultSet);
+                        list.add(user);
+                    }
+                } catch (SQLException exception) {
+                    MyLogger.log(UserDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                } finally {
+                    resultSet.close();
+                }
+            } catch (SQLException exception) {
+                MyLogger.log(UserDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(UserDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(UserDAO.class.getName(), Level.WARN, e.toString());
+            }
+        }
+        return list;
+    }
 }
