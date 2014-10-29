@@ -604,8 +604,13 @@ public class TestCaseDAO implements ITestCaseDAO {
         String runUAT = resultSet.getString("activeUAT");
         String runPROD = resultSet.getString("activePROD");
         String function = resultSet.getString("function");
-        String dateCrea = resultSet.getString("tcdatecrea");
-
+        String dateCrea = "";
+        try { // Managing the case where the date is 0000-00-00 00:00:00 inside MySQL
+                        dateCrea = resultSet.getString("tcdatecrea");
+                    } catch (SQLException e) {
+                        dateCrea = "-- unknown --";
+                    }
+        
         return factoryTestCase.create(test, testCase, origin, refOrigin, creator, implementer,
                 lastModifier, project, ticket, function, tcapplication, runQA, runUAT, runPROD, priority, group,
                 status, description, behavior, howTo, tcactive, fromSprint, fromRevision, toSprint,

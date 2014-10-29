@@ -1215,19 +1215,19 @@
                                                                 <div class="technical_part" style="width: 30%; float:left; background-color: transparent">
                                                                     <div style="float:left;width:80px; "><p style="float:right;font-weight:bold;" link="white" ><%out.print(docService.findLabelHTML("testcasestepaction", "action", "Action"));%></p>
                                                                     </div>
-                                                                    <%=ComboInvariant(appContext, "action_action_" + incrementStep + "_" + incrementAction, "width:50%;border: 1px solid white; color:" + actionFontColor, "action_action_" + incrementStep + "_" + incrementAction, "wob", "ACTION", tcsa.getAction(), "showChangedRow(this.parentNode.parentNode.parentNode.parentNode)", null)%>
+                                                                    <%=ComboInvariant(appContext, "action_action_" + incrementStep + "_" + incrementAction, "width:50%;border: 1px solid white; color:#888888" , "action_action_" + incrementStep + "_" + incrementAction, "wob", "ACTION", tcsa.getAction(), "showChangedRow(this.parentNode.parentNode.parentNode.parentNode)", null)%>
                                                                 </div>
                                                                 <div class="technical_part" style="width: 40%; float:left; background-color: transparent">
                                                                     <div style="float:left;"><p style="float:right;font-weight:bold;" link="white" ><%out.print(docService.findLabelHTML("testcasestepaction", "object", "Object"));%></p>
                                                                     </div>
-                                                                    <input style="float:left;border-style:groove;border-width:thin;border-color:white;border: 1px solid white; height:100%;width:75%; color:<%=actionFontColor%>"
+                                                                    <input style="float:left;border-style:groove;border-width:thin;border-color:white;border: 1px solid white; height:100%;width:75%; color:#999999"
                                                                            value="<%=tcsa.getObject()%>"
                                                                            onchange="showChangedRow(this.parentNode.parentNode.parentNode.parentNode)" name="action_object_<%=incrementStep%>_<%=incrementAction%>" <%=isReadonly%>>
                                                                 </div>
                                                                 <div class="technical_part" style="width: 30%; float:left; background-color:transparent">
                                                                     <div style="float:left;"><p style="float:right;font-weight:bold;" link="white" ><%out.print(docService.findLabelHTML("testcasestepaction", "property", "Property"));%></p>
                                                                     </div>
-                                                                    <input  class="wob property_value" style="width:75%;border-style:groove;border-width:thin;border-color:white;border: 1px solid white; color:<%=actionFontColor%>"
+                                                                    <input  class="wob property_value" style="width:75%;border-style:groove;border-width:thin;border-color:white;border: 1px solid white; color:#888888"
                                                                             value="<%=tcsa.getProperty()%>"
                                                                             <%if (useStep) {%>
                                                                             data-usestep-test="<%=testForQuery%>"
