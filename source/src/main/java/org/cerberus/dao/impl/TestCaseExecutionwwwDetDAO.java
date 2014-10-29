@@ -218,16 +218,16 @@ public class TestCaseExecutionwwwDetDAO implements ITestCaseExecutionwwwDetDAO {
 
     @Override
     public List<TestCaseExecutionwwwSumHistoric> getHistoricForParameter(TestCase testcase, String parameter) {
-        final String sql = "SELECT start, ? FROM testcaseexecutionwwwsum a JOIN testcaseexecution b ON a.id=b.id WHERE test = ? AND testcase = ? AND country = ? LIMIT 100";
+        final String sql = "SELECT start, "+parameter+" FROM testcaseexecutionwwwsum a JOIN testcaseexecution b " +
+                "ON a.id=b.id WHERE test = ? AND testcase = ? AND country = ? LIMIT 100";
         List<TestCaseExecutionwwwSumHistoric> historic = null;
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(sql);
             try {
-                preStat.setString(1, parameter);
-                preStat.setString(2, testcase.getTest());
-                preStat.setString(3, testcase.getTestCase());
-                preStat.setString(4, testcase.getCountryList().get(0));
+                preStat.setString(1, testcase.getTest());
+                preStat.setString(2, testcase.getTestCase());
+                preStat.setString(3, testcase.getCountryList().get(0));
                 ResultSet rs = preStat.executeQuery();
                 try {
                     historic = new ArrayList<TestCaseExecutionwwwSumHistoric>();
