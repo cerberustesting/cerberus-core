@@ -100,7 +100,7 @@
                 if ("TRUE" == GetCookie("displayOnlyFunctional")) {
                     showOnlyFunctional();
                 }
-                ;
+
                 elRTE.prototype.options.toolbars.cerberus = ['style', 'alignment', 'colors', 'images', 'format', 'indent', 'lists', 'links'];
                 var opts = {
                     lang: 'en',
@@ -135,6 +135,10 @@
                 if (!bool) {
                     $('#generalparameter').hide();
                 }
+                $("#UpdateTestCase").submit(function(){
+                    $('#howtoDetail').val($('#howto').elrte('val'));
+                    $('#valueDetail').val($('#value').elrte('val'));
+                });
             });</script>
         <script>
             function customizeView(value) {
@@ -871,8 +875,7 @@
                         <td class="wob">
                             <table>
                                 <tr>
-                                    <td class="wob"><input type="submit" name="submitInformation" value="Save TestCase Info" id="submitButtonInformation" onclick="$('#howtoDetail').val($('#howto').elrte('val'));
-                                            $('#valueDetail').val($('#value').elrte('val'));"></td>
+                                    <td class="wob"><input type="submit" name="submitInformation" value="Save TestCase Info" id="submitButtonInformation"></td>
                                 </tr>
                             </table>
                         </td>
