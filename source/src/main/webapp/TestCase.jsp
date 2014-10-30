@@ -729,12 +729,12 @@
                                             <tr>
                                                 <td class="wob" style="text-align: left; border-collapse: collapse">
 
-                                                    <textarea id="value" rows="9" style="width: 600px;" name="BehaviorOrValueExpected" value="<%=behavior.trim()%>"
+                                                    <textarea id="value" rows="9" style="width: 600px;" name="BehaviorOrValueExpected"
                                                               onchange="trackChanges(this.value, '<%=URLEncoder.encode(behavior, "UTF-8")%>', 'submitButtonChanges')" ><%=behavior%></textarea>
                                                     <input type="hidden" id="valueDetail" name="valueDetail" value="">
                                                 </td>
                                                 <td class="wob">
-                                                    <textarea id="howto" rows="9" style="width: 600px;" name="HowTo" value="<%=howTo.trim()%>"
+                                                    <textarea id="howto" rows="9" style="width: 600px;" name="HowTo"
                                                               onchange="trackChanges(this.value, '<%=URLEncoder.encode(howTo, "UTF-8")%>', 'submitButtonChanges')" ><%=howTo%></textarea>
                                                     <input id="howtoDetail" name="howtoDetail" type="hidden" value="" />
                                                 </td>
@@ -1542,11 +1542,11 @@
                                             </div>
                                             <div id="divProperties_value1_<%=incrementProperty%>" style="background-color:transparent;float:left;border-right-width:thin;border-right-style:solid;border-right-color:#CCCCCC;width:<%=widthValue1%>%;display:inline-block;">
                                                 <textarea id="properties_value1_<%=incrementProperty%>" rows="2" class="wob" style="background-color:transparent;width: 100%;height:50px" 
-                                                          name="properties_value1_<%=incrementProperty%>" value="<%=tccp.getValue1()%>"><%=tccp.getValue1()%></textarea>
+                                                          name="properties_value1_<%=incrementProperty%>"><%=tccp.getValue1()%></textarea>
                                             </div>
                                             <div id="divProperties_value2_<%=incrementProperty%>" style="background-color:transparent;float:left;border-right-width:thin;border-right-style:solid;border-right-color:#CCCCCC;display:<%=displayValue2%>;width:<%=widthValue2%>%;height:50px">
                                                 <textarea id="properties_value2_<%=incrementProperty%>" rows="2" class="wob" style="background-color:transparent;width: 100%;"
-                                                          name="properties_value2_<%=incrementProperty%>" value="<%=tccp.getValue2()%>"><%=tccp.getValue2()%></textarea>
+                                                          name="properties_value2_<%=incrementProperty%>"><%=tccp.getValue2()%></textarea>
                                             </div>
                                             <div style="border-right-width:thin;border-right-style:solid;background-color:transparent;border-right-color:#CCCCCC;float:left;width:3%;display:inline-block;height:50px">
                                                 <input class="wob" style="background-color:transparent;width:  100%;margin-top:20px;" name="properties_length_<%=incrementProperty%>"
