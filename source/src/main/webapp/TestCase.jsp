@@ -1446,7 +1446,8 @@
                                         </div>
                                         <div id="cache_properties">
                                             <%//ComboInvariant(appContext, "properties_dtb_type_ID", "display: none;", "properties_dtb_type_ID", "wob", "PROPERTYDATABASE", tccpList.get(0).getDatabase(), "", null)%>
-                                        </div><%
+                                        </div>
+                                        <div id="propertyRow0"></div><%
 
                                             int incrementProperty = 0;
                                             double widthValue = 55 - (1.5 * countryListTestcase.size());
