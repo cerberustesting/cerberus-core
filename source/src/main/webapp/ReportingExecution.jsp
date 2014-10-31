@@ -56,11 +56,13 @@
     <link rel="stylesheet" type="text/css" href="css/jquery-ui.css">
     <link rel="stylesheet" type="text/css" href="css/dataTables_jui.css">
     <link type="text/css" rel="stylesheet" href="css/jquery.multiselect.css">
+    <link type="text/css" rel="stylesheet" href="css/jquery.multiselect.filter.css">
     <script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>
     <script type="text/javascript" src="js/jquery-ui-1.10.2.js"></script>
     <script type="text/javascript" src="js/jquery.dataTables.min.js"></script>
     <script type="text/javascript" src="js/FixedHeader.js"></script>
     <script type="text/javascript" src="js/jquery.multiselect.js"></script>
+    <script type="text/javascript" src="js/jquery.multiselect.filter.js"></script>
     <script type="text/javascript" src="js/jquery.jeditable.mini.js"></script>
 
 <%
@@ -85,7 +87,7 @@
                     currentElement.multiselect({
                         multiple: true,
                         minWidth: 150,
-                        header: currentElement.data('header'),
+//                        header: currentElement.data('header'),
                         noneSelectedText: currentElement.data('none-selected-text'),
                         selectedText: currentElement.data('selected-text'),
                         selectedList: currentElement.data('selected-list'),
@@ -119,16 +121,16 @@
 
                             oldSystem = system;
                         }
-                    });
+                    }).multiselectfilter();
                 } else {
                     currentElement.multiselect({
                         multiple: true,
                         minWidth: 150,
-                        header: currentElement.data('header'),
+//                        header: currentElement.data('header'),
                         noneSelectedText: currentElement.data('none-selected-text'),
                         selectedText: currentElement.data('selected-text'),
                         selectedList: currentElement.data('selected-list')
-                    });
+                    }).multiselectfilter();
                 }
             });
 
