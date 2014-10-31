@@ -2197,7 +2197,7 @@ function addTCSCNew(rowID, obj) {
             .attr('id', 'useStepForNewStep_'+ nextIncStep);
     $('#StepFirstLineDiv'+nextIncStep).find('select[data-id="step_useStepTest_template"]')
             .attr('name', 'step_useStepTest_' + nextIncStep).attr('id', 'step_useStepTest_' + nextIncStep)
-            .attr('onchange', 'findTestcaseByTest(this.value, \''+mySystem+'\', \'step_useStepTestCase_'+nextIncStep+'\')');
+            .attr('onchange', 'findStepBySystemTest(this.value, \''+mySystem+'\', \'step_useStepTestCase_'+nextIncStep+'\')');
     $('#StepFirstLineDiv'+nextIncStep).find('select[data-id="step_useStepTestCase_template"]')
             .attr('name', 'step_useStepTestCase_' + nextIncStep).attr('id', 'step_useStepTestCase_' + nextIncStep)
             .attr('onchange', 'findStepByTestCase($(\'#step_useStepTest_'+nextIncStep+'\').val(), this.value, \'step_useStepStep_'+nextIncStep+'\')');

@@ -1822,9 +1822,25 @@
                     </div>
                     <div id="StepUseStepTestDiv" style="float:left">
                         <select data-id="step_useStepTest_template" style="width: 200px;margin-top:15px;font-weight: bold;">
-                            <% List<Test> tList = testService.findTestBySystems(systems);
-                                for (Test tst : tList) {%>
-                            <option style="width: 200px;" class="font_weight_bold_<%=tst.getActive()%>" value="<%=tst.getTest()%>"><%=tst.getTest()%>
+                            <% List<TestCaseStep> tcsLib = tcsService.getStepLibraryBySystem(MySystem);
+                                                    Set<String> tList = new HashSet();
+                                                    HashMap tcListByTc = new HashMap();
+                                                    List<String> tcList = new ArrayList();
+                                                    String previousTc = "";
+                                                    for (TestCaseStep tcsUnit : tcsLib) {
+                                                        tList.add(tcsUnit.getTest());
+                                                        if (!tcsUnit.getTest().equals(previousTc)) {
+                                                            if (!previousTc.equals("")) {
+                                                                tcListByTc.put(previousTc, tcList);
+                                                            }
+                                                            tcList = new ArrayList();
+                                                        }
+                                                        tcList.add(tcsUnit.getTestCase());
+                                                    }
+                                                    String testCombo = test;
+                                                    
+                                for (String tst : tList) {%>
+                            <option style="width: 200px;" value="<%=tst%>"><%=tst%>
                             </option>
                             <% }%>
                         </select>
@@ -2061,7 +2077,7 @@
                     for (var i = 0; i < data.list.length; i++) {
                         $('#' + field).append($("<option></option>")
                                 .attr('value', data.list[i].number)
-                                .attr('style', 'width:100px;')
+                                .attr('style', 'width:300px;')
                                 .text(data.list[i].number + ':' + data.list[i].name));
                     }
                 });
