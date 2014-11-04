@@ -249,11 +249,11 @@
                     currentElement.multiselect({
                         multiple: true,
                         minWidth: 150,
-                        header: currentElement.data('header'),
+//                        header: currentElement.data('header'),
                         noneSelectedText: currentElement.data('none-selected-text'),
                         selectedText: currentElement.data('selected-text'),
                         selectedList: currentElement.data('selected-list')
-                    });
+                    }).multiselectfilter();
                 });
 
                 // prepare all forms for ajax submission
