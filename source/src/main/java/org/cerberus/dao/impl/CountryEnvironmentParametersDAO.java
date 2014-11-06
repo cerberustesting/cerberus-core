@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.cerberus.dao.ICountryEnvironmentParametersDAO;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.entity.CountryEnvironmentApplication;
@@ -54,6 +55,7 @@ public class CountryEnvironmentParametersDAO implements ICountryEnvironmentParam
     private DatabaseSpring databaseSpring;
     @Autowired
     private IFactoryCountryEnvironmentApplication factoryCountryEnvironmentApplication;
+    private static final Logger LOG = Logger.getLogger(CountryEnvironmentParametersDAO.class);
 
     /**
      * Short one line description.
@@ -274,5 +276,167 @@ public class CountryEnvironmentParametersDAO implements ICountryEnvironmentParam
             throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
         }
         return result;
+    }
+    
+    private CountryEnvironmentApplication loadFromResultSet(ResultSet resultSet) throws SQLException {
+        String system = resultSet.getString("System");
+        String count = resultSet.getString("Country");
+        String env = resultSet.getString("Environment");
+        String application = resultSet.getString("application");
+        String ip = resultSet.getString("ip");
+        String url = resultSet.getString("url");
+        String urllogin = resultSet.getString("urllogin");
+        return factoryCountryEnvironmentApplication.create(system, count, env, application, ip, url, urllogin);
+    }
+
+    @Override
+    public List<CountryEnvironmentApplication> findAll(String system) throws CerberusException {
+        boolean throwEx = false;
+        final String query = "SELECT * FROM countryenvironmentparameters c where `system`=?";
+
+        List<CountryEnvironmentApplication> result = new ArrayList<CountryEnvironmentApplication>();
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            try {
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+                    while (resultSet.next()) {
+                        result.add(this.loadFromResultSet(resultSet));
+                    }
+                } catch (SQLException exception) {
+                    LOG.error("Unable to execute query : " + exception.toString());
+                    throwEx = true;
+                } finally {
+                    resultSet.close();
+                }
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception.toString());
+                throwEx = true;
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception.toString());
+            throwEx = true;
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                LOG.warn("Exception closing the connection :"+ e.toString());
+            }
+        }
+        if (throwEx) {
+            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
+        }
+        return result;
+    }
+
+    @Override
+    public void update(CountryEnvironmentApplication cea) throws CerberusException {
+        final StringBuffer query = new StringBuffer("UPDATE `countryenvironmentparameters` SET `IP`=?, ");
+        query.append("`URL`=?,`URLLOGIN`=? ");
+        query.append(" where `system`=? and `country`=? and `environment`=? and `application`=?");
+        
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query.toString());
+                preStat.setString(1, cea.getIp());
+                preStat.setString(2, cea.getUrl());
+                preStat.setString(3, cea.getUrlLogin());
+                preStat.setString(4, cea.getSystem());
+                preStat.setString(5, cea.getCountry());
+                preStat.setString(6, cea.getEnvironment());
+                preStat.setString(7, cea.getApplication());
+                
+            try {
+                preStat.executeUpdate();
+            } catch (SQLException exception) {
+                MyLogger.log(CampaignDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(CampaignDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                LOG.warn("Exception closing the connection :"+ e.toString());
+            }
+        }
+    }
+
+    @Override
+    public void delete(CountryEnvironmentApplication cea) throws CerberusException {
+        final StringBuffer query = new StringBuffer("DELETE FROM `countryenvironmentparameters` WHERE `system`=? and `country`=? and `environment`=? and `application`=?");
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query.toString());
+            preStat.setString(1, cea.getSystem());
+            preStat.setString(2, cea.getCountry());
+            preStat.setString(3, cea.getEnvironment());
+            preStat.setString(4, cea.getApplication());
+
+            try {
+                preStat.executeUpdate();
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception.toString());
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                LOG.warn("Exception closing the connection :"+ e.toString());
+            }
+        }
+    }
+
+    @Override
+    public void create(CountryEnvironmentApplication cea) throws CerberusException {
+        final StringBuffer query = new StringBuffer("INSERT INTO `countryenvironmentparameters` ");
+        query.append("(`system`, `country`, `environment`, `application`, `ip`,`url`, `urllogin`) VALUES ");
+        query.append("(?,?,?,?,?,?,?)");
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query.toString());
+                preStat.setString(1, cea.getSystem());
+                preStat.setString(2, cea.getCountry());
+                preStat.setString(3, cea.getEnvironment());
+                preStat.setString(4, cea.getApplication());
+                preStat.setString(5, cea.getIp());
+                preStat.setString(6, cea.getUrl());
+                preStat.setString(7, cea.getUrlLogin());
+            
+            try {
+                preStat.executeUpdate();
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception.toString());
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                LOG.warn("Exception closing the connection :"+ e.toString());
+            }
+        }
     }
 }

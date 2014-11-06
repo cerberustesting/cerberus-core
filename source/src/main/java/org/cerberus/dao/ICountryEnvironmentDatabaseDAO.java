@@ -17,6 +17,7 @@
  */
 package org.cerberus.dao;
 
+import java.util.List;
 import org.cerberus.entity.CountryEnvironmentDatabase;
 import org.cerberus.exception.CerberusException;
 
@@ -30,4 +31,33 @@ import org.cerberus.exception.CerberusException;
 public interface ICountryEnvironmentDatabaseDAO {
 
     CountryEnvironmentDatabase findCountryEnvironmentDatabaseByKey(String system, String country, String environment, String database) throws CerberusException;
+
+    /**
+     * Find all countryEnvironmentDatabase by System
+     * @param system
+     * @return
+     * @throws CerberusException 
+     */
+    List<CountryEnvironmentDatabase> findAll(String system) throws CerberusException;
+    
+    /**
+     * Update countryEnvironmentDatabase
+     * @param ced
+     * @throws CerberusException 
+     */
+    void update(CountryEnvironmentDatabase ced) throws CerberusException;
+    
+    /**
+     * Delete countryEnvironmentDatabase
+     * @param ced
+     * @throws CerberusException 
+     */
+    void delete(CountryEnvironmentDatabase ced) throws CerberusException;
+    
+    /**
+     * Create countryEnvironmentDatabase
+     * @param ced
+     * @throws CerberusException 
+     */
+    void create(CountryEnvironmentDatabase ced) throws CerberusException;
 }

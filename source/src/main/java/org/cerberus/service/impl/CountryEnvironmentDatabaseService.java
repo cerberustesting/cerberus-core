@@ -19,6 +19,7 @@
  */
 package org.cerberus.service.impl;
 
+import java.util.List;
 import org.cerberus.dao.ICountryEnvironmentDatabaseDAO;
 import org.cerberus.entity.CountryEnvironmentDatabase;
 import org.cerberus.exception.CerberusException;
@@ -40,4 +41,26 @@ public class CountryEnvironmentDatabaseService implements ICountryEnvironmentDat
     public CountryEnvironmentDatabase findCountryEnvironmentDatabaseByKey(String system, String country, String environment, String database) throws CerberusException {
         return countryEnvironmentDatabaseDao.findCountryEnvironmentDatabaseByKey(system, country, environment, database);
     }
+
+    @Override
+    public List<CountryEnvironmentDatabase> findAll(String system) throws CerberusException {
+        return countryEnvironmentDatabaseDao.findAll(system);
+    }
+
+    @Override
+    public void update(CountryEnvironmentDatabase ced) throws CerberusException {
+        countryEnvironmentDatabaseDao.update(ced);
+    }
+
+    @Override
+    public void delete(CountryEnvironmentDatabase ced) throws CerberusException {
+        countryEnvironmentDatabaseDao.delete(ced);
+    }
+
+    @Override
+    public void create(CountryEnvironmentDatabase ced) throws CerberusException {
+        countryEnvironmentDatabaseDao.create(ced);
+    }
+    
+    
 }

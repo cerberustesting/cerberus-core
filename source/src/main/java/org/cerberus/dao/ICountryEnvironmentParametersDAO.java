@@ -38,5 +38,34 @@ public interface ICountryEnvironmentParametersDAO {
     List<CountryEnvironmentApplication> findCountryEnvironmentApplicationByCriteria(CountryEnvironmentApplication countryEnvironmentParameter) throws CerberusException;
 
     List<String> getDistinctEnvironmentNames() throws CerberusException;
+    
+    /**
+     * Find all countryEnvironmentApplication by System
+     * @param system
+     * @return
+     * @throws CerberusException 
+     */
+    List<CountryEnvironmentApplication> findAll(String system) throws CerberusException;
+    
+    /**
+     * Update countryEnvironmentApplication
+     * @param cea
+     * @throws CerberusException 
+     */
+    void update(CountryEnvironmentApplication cea) throws CerberusException;
+    
+    /**
+     * Delete countryEnvironmentApplication
+     * @param cea
+     * @throws CerberusException 
+     */
+    void delete(CountryEnvironmentApplication cea) throws CerberusException;
+    
+    /**
+     * Create countryEnvironmentApplication
+     * @param cea
+     * @throws CerberusException 
+     */
+    void create(CountryEnvironmentApplication cea) throws CerberusException;
 
 }

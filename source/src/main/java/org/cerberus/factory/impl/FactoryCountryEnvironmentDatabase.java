@@ -39,4 +39,15 @@ public class FactoryCountryEnvironmentDatabase implements IFactoryCountryEnviron
         return ced;
     }
 
+    @Override
+    public CountryEnvironmentDatabase create(String system, String database, String environment, String country, String connectionPoolName) {
+        CountryEnvironmentDatabase ced = new CountryEnvironmentDatabase();
+        ced.setSystem(system);
+        ced.setCountry(country);
+        ced.setEnvironment(environment);
+        ced.setDatabase(database);
+        ced.setConnectionPoolName(connectionPoolName);
+        return ced;
+    }
+
 }

@@ -35,4 +35,33 @@ public interface ICountryEnvParamService {
     List<CountryEnvParam> findCountryEnvParamByCriteria(CountryEnvParam countryEnvParam) throws CerberusException;
     
     List<JSONObject> findActiveEnvironmentBySystemCountryApplication(String system, String country, String application) throws CerberusException;
+
+    /**
+     * Find all countryEnvParam by System
+     * @param system
+     * @return
+     * @throws CerberusException 
+     */
+    List<CountryEnvParam> findAll(String system) throws CerberusException;
+    
+    /**
+     * Update countryEnvParam
+     * @param cep
+     * @throws CerberusException 
+     */
+    void update(CountryEnvParam cep) throws CerberusException;
+    
+    /**
+     * Delete countryEnvParam
+     * @param cep
+     * @throws CerberusException 
+     */
+    void delete(CountryEnvParam cep) throws CerberusException;
+    
+    /**
+     * Create countryEnvParam
+     * @param cep
+     * @throws CerberusException 
+     */
+    void create(CountryEnvParam cep) throws CerberusException;
 }

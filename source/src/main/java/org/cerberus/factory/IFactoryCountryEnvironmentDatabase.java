@@ -29,4 +29,7 @@ public interface IFactoryCountryEnvironmentDatabase{
     
     CountryEnvironmentDatabase create(String database,String environment,String country,
             String connectionPoolName);
+    
+    CountryEnvironmentDatabase create(String system, String database,String environment,String country,
+            String connectionPoolName);
 }

@@ -58,4 +58,24 @@ public class CountryEnvironmentApplicationService implements ICountryEnvironment
         return countryEnvironmentParametersDao.getDistinctEnvironmentNames();
     }
 
+    @Override
+    public List<CountryEnvironmentApplication> findAll(String system) throws CerberusException {
+        return countryEnvironmentParametersDao.findAll(system);
+    }
+
+    @Override
+    public void update(CountryEnvironmentApplication cea) throws CerberusException {
+        countryEnvironmentParametersDao.update(cea);
+    }
+
+    @Override
+    public void delete(CountryEnvironmentApplication cea) throws CerberusException {
+        countryEnvironmentParametersDao.delete(cea);
+    }
+
+    @Override
+    public void create(CountryEnvironmentApplication cea) throws CerberusException {
+        countryEnvironmentParametersDao.create(cea);
+    }
+
 }

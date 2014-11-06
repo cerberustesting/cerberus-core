@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.cerberus.dao.ICountryEnvParamDAO;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.entity.CountryEnvParam;
@@ -48,6 +49,7 @@ public class CountryEnvParamDAO implements ICountryEnvParamDAO {
     private DatabaseSpring databaseSpring;
     @Autowired
     private IFactoryCountryEnvParam factoryCountryEnvParam;
+    private static final Logger LOG = Logger.getLogger(CountryEnvParamDAO.class);
 
     @Override
     public CountryEnvParam findCountryEnvParamByKey(String system, String country, String environment) throws CerberusException {
@@ -189,5 +191,190 @@ public class CountryEnvParamDAO implements ICountryEnvParamDAO {
             throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
         }
         return result;
+    }
+
+    @Override
+    public List<CountryEnvParam> findAll(String system) throws CerberusException {
+        boolean throwEx = false;
+        final String query = "SELECT * FROM countryenvparam c where `system`=?";
+
+        List<CountryEnvParam> result = new ArrayList<CountryEnvParam>();
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            try {
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+                    while (resultSet.next()) {
+                        result.add(this.loadCountryEnvParamFromResultSet(resultSet));
+                    }
+                } catch (SQLException exception) {
+                    LOG.error("Unable to execute query : " + exception.toString());
+                    throwEx = true;
+                } finally {
+                    resultSet.close();
+                }
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception.toString());
+                throwEx = true;
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception.toString());
+            throwEx = true;
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                LOG.warn("Exception closing the connection :"+ e.toString());
+            }
+        }
+        if (throwEx) {
+            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
+        }
+        return result;
+    }
+
+    @Override
+    public void update(CountryEnvParam cep) throws CerberusException {
+        final StringBuffer query = new StringBuffer("UPDATE `countryenvparam` SET `build`=?, ");
+        query.append("`revision`=?,`chain`=?, `distriblist`=?, `eMailBodyRevision`=?, `type`=?,`eMailBodyChain`=?,");
+        query.append("`eMailBodyDisableEnvironment`=?,  `active`=?, `maintenanceact`=?, `maintenancestr`=?, `maintenanceend`=? ");
+        query.append(" where `system`=? and `country`=? and `environment`=? ");
+        
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query.toString());
+                preStat.setString(1, cep.getBuild());
+                preStat.setString(2, cep.getRevision());
+                preStat.setString(3, cep.getChain());
+                preStat.setString(4, cep.getDistribList());
+                preStat.setString(5, cep.geteMailBodyRevision());
+                preStat.setString(6, cep.getType());
+                preStat.setString(7, cep.geteMailBodyChain());
+                preStat.setString(8, cep.geteMailBodyDisableEnvironment());
+                if (cep.isActive()){
+                preStat.setString(9, "Y");
+                }else{
+                preStat.setString(9, "N");
+                }
+                if (cep.isMaintenanceAct()){
+                preStat.setString(10, "Y");
+                }else{
+                preStat.setString(10, "N");
+                }
+                preStat.setString(11, cep.getMaintenanceStr());
+                preStat.setString(12, cep.getMaintenanceEnd());
+                preStat.setString(13, cep.getSystem());
+                preStat.setString(14, cep.getCountry());
+                preStat.setString(15, cep.getEnvironment());
+
+
+            try {
+                preStat.executeUpdate();
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception.toString());
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                LOG.warn("Exception closing the connection :"+ e.toString());
+            }
+        }
+    }
+
+    @Override
+    public void delete(CountryEnvParam cep) throws CerberusException {
+        final StringBuffer query = new StringBuffer("DELETE FROM `countryenvparam` WHERE `system`=? and `country`=? and `environment`=?");
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query.toString());
+            preStat.setString(1, cep.getSystem());
+            preStat.setString(2, cep.getCountry());
+            preStat.setString(3, cep.getEnvironment());
+
+            try {
+                preStat.executeUpdate();
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception.toString());
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                LOG.warn("Exception closing the connection :"+ e.toString());
+            }
+        }
+    }
+
+    @Override
+    public void create(CountryEnvParam cep) throws CerberusException {
+        final StringBuffer query = new StringBuffer("INSERT INTO `countryenvparam` ");
+        query.append("(`system`, `country`, `environment`, `build`, `revision`,`chain`, `distriblist`, `eMailBodyRevision`, `type`,`eMailBodyChain`,");
+        query.append("`eMailBodyDisableEnvironment`,  `active`, `maintenanceact`, `maintenancestr`, `maintenanceend`) VALUES ");
+        query.append("(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query.toString());
+                preStat.setString(1, cep.getSystem());
+                preStat.setString(2, cep.getCountry());
+                preStat.setString(3, cep.getEnvironment());
+                preStat.setString(4, cep.getBuild());
+                preStat.setString(5, cep.getRevision());
+                preStat.setString(6, cep.getChain());
+                preStat.setString(7, cep.getDistribList());
+                preStat.setString(8, cep.geteMailBodyRevision());
+                preStat.setString(9, cep.getType());
+                preStat.setString(10, cep.geteMailBodyChain());
+                preStat.setString(11, cep.geteMailBodyDisableEnvironment());
+                if (cep.isActive()){
+                preStat.setString(12, "Y");
+                }else{
+                preStat.setString(12, "N");
+                }
+                if (cep.isMaintenanceAct()){
+                preStat.setString(13, "Y");
+                }else{
+                preStat.setString(13, "N");
+                }
+                preStat.setString(14, cep.getMaintenanceStr());
+                preStat.setString(15, cep.getMaintenanceEnd());
+            
+            try {
+                preStat.executeUpdate();
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception.toString());
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                LOG.warn("Exception closing the connection :"+ e.toString());
+            }
+        }
     }
 }

@@ -21,8 +21,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.cerberus.dao.ICountryEnvironmentDatabaseDAO;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.entity.CountryEnvironmentDatabase;
@@ -51,6 +53,7 @@ public class CountryEnvironmentDatabaseDAO implements ICountryEnvironmentDatabas
     private DatabaseSpring databaseSpring;
     @Autowired
     private IFactoryCountryEnvironmentDatabase factoryCountryEnvironmentDatabase;
+    private static final Logger LOG = Logger.getLogger(CountryEnvironmentDatabaseDAO.class);
 
     /**
      * Short one line description.
@@ -110,5 +113,161 @@ public class CountryEnvironmentDatabaseDAO implements ICountryEnvironmentDatabas
             throw new CerberusException(new MessageGeneral(MessageGeneralEnum.EXECUTION_FA));
         }
         return result;
+    }
+    
+    private CountryEnvironmentDatabase loadFromResultSet(ResultSet resultSet) throws SQLException {
+        String system = resultSet.getString("System");
+        String count = resultSet.getString("Country");
+        String env = resultSet.getString("Environment");
+        String database = resultSet.getString("Database");
+        String connectionpoolname = resultSet.getString("ConnectionPoolName");
+        return factoryCountryEnvironmentDatabase.create(system, count, env, database, connectionpoolname);
+    }
+          
+
+    @Override
+    public List<CountryEnvironmentDatabase> findAll(String system) throws CerberusException {
+        boolean throwEx = false;
+        final String query = "SELECT * FROM countryenvironmentdatabase c where `system`=?";
+
+        List<CountryEnvironmentDatabase> result = new ArrayList<CountryEnvironmentDatabase>();
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            try {
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+                    while (resultSet.next()) {
+                        result.add(this.loadFromResultSet(resultSet));
+                    }
+                } catch (SQLException exception) {
+                    LOG.error("Unable to execute query : " + exception.toString());
+                    throwEx = true;
+                } finally {
+                    resultSet.close();
+                }
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception.toString());
+                throwEx = true;
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception.toString());
+            throwEx = true;
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                LOG.warn("Exception closing the connection :"+ e.toString());
+            }
+        }
+        if (throwEx) {
+            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
+        }
+        return result;
+    }
+
+    @Override
+    public void update(CountryEnvironmentDatabase ced) throws CerberusException {
+        final StringBuffer query = new StringBuffer("UPDATE `countryenvironmentdatabase` SET `connectionpoolname`=?, ");
+        query.append(" where `system`=? and `country`=? and `environment`=? and `database`=?");
+        
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query.toString());
+            preStat.setString(1, ced.getConnectionPoolName());
+            preStat.setString(2, ced.getSystem());
+            preStat.setString(3, ced.getCountry());
+            preStat.setString(4, ced.getEnvironment());
+            preStat.setString(5, ced.getDatabase());
+
+            try {
+                preStat.executeUpdate();
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception.toString());
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                LOG.warn("Exception closing the connection :"+ e.toString());
+            }
+        }
+    }
+
+    @Override
+    public void delete(CountryEnvironmentDatabase ced) throws CerberusException {
+        final StringBuffer query = new StringBuffer("DELETE FROM `countryenvironmentdatabase` WHERE `system`=? and `country`=? and `environment`=? and `database`=?");
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query.toString());
+            preStat.setString(1, ced.getSystem());
+            preStat.setString(2, ced.getCountry());
+            preStat.setString(3, ced.getEnvironment());
+            preStat.setString(4, ced.getDatabase());
+
+            try {
+                preStat.executeUpdate();
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception.toString());
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                LOG.warn("Exception closing the connection :"+ e.toString());
+            }
+        }
+    }
+
+    @Override
+    public void create(CountryEnvironmentDatabase ced) throws CerberusException {
+        final StringBuffer query = new StringBuffer("INSERT INTO `countryenvironmentdatabase` ");
+        query.append("(`system`, `country`, `environment`, `database`, `connectionpoolname`) VALUES ");
+        query.append("(?,?,?,?,?)");
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query.toString());
+                preStat.setString(1, ced.getSystem());
+                preStat.setString(2, ced.getCountry());
+                preStat.setString(3, ced.getEnvironment());
+                preStat.setString(4, ced.getDatabase());
+                preStat.setString(5, ced.getConnectionPoolName());
+                
+            try {
+                preStat.executeUpdate();
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception.toString());
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                LOG.warn("Exception closing the connection :"+ e.toString());
+            }
+        }
     }
 }

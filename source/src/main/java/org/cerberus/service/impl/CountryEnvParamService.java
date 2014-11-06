@@ -93,4 +93,24 @@ public class CountryEnvParamService implements ICountryEnvParamService {
         }
         return result;
     }
+
+    @Override
+    public List<CountryEnvParam> findAll(String system) throws CerberusException {
+        return countryEnvParamDao.findAll(system);
+    }
+
+    @Override
+    public void update(CountryEnvParam cep) throws CerberusException {
+        countryEnvParamDao.update(cep);
+    }
+
+    @Override
+    public void delete(CountryEnvParam cep) throws CerberusException {
+        countryEnvParamDao.delete(cep);
+    }
+
+    @Override
+    public void create(CountryEnvParam cep) throws CerberusException {
+        countryEnvParamDao.create(cep);
+    }
 }

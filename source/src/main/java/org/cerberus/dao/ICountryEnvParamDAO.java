@@ -29,4 +29,33 @@ public interface ICountryEnvParamDAO {
     CountryEnvParam findCountryEnvParamByKey(String system, String country, String environment) throws CerberusException;
     
     List<CountryEnvParam> findCountryEnvParamByCriteria(CountryEnvParam countryEnvParam) throws CerberusException;
+    
+    /**
+     * Find all countryEnvParam by System
+     * @param system
+     * @return
+     * @throws CerberusException 
+     */
+    List<CountryEnvParam> findAll(String system) throws CerberusException;
+    
+    /**
+     * Update countryEnvParam
+     * @param cep
+     * @throws CerberusException 
+     */
+    void update(CountryEnvParam cep) throws CerberusException;
+    
+    /**
+     * Delete countryEnvParam
+     * @param cep
+     * @throws CerberusException 
+     */
+    void delete(CountryEnvParam cep) throws CerberusException;
+    
+    /**
+     * Create countryEnvParam
+     * @param cep
+     * @throws CerberusException 
+     */
+    void create(CountryEnvParam cep) throws CerberusException;
 }
