@@ -220,7 +220,11 @@
                     "bSearchable": false,
                     "bVisible": false
                 }
-            ]
+            ],
+            fnInitComplete: function() {
+                $("#sprint").val($("#selectedBuild").val());
+                $("#revision").val($("#selectedRevision").val());
+            }
         }).makeEditable({
             sAddDeleteToolbarSelector: ".ui-corner-tl",
             sAddURL: "AddBuildContent",
