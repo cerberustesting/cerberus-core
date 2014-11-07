@@ -176,6 +176,8 @@
 
 <script type="text/javascript">
     var oTable;
+    var build = '<%=request.getParameter("build")%>';
+    var revision = '<%=request.getParameter("revision")%>';
 
     $(document).ready(function(){
         $("#pending").on("click", function(event){
@@ -192,7 +194,17 @@
             $("#search").click();
         });
 
-        $("#last").click();
+        if (build === 'null') {
+            $("#selectedBuild").val("<%=maxBuild%>");
+        } else {
+            $("#selectedBuild").val(build);
+        }
+        if (revision === 'null') {
+            $("#selectedRevision").val("<%=maxRevision%>");
+        } else {
+            $("#selectedRevision").val(revision);
+        }
+        $("#search").click();
 
         $("#formAddNewRow").dialog({width: 'auto'});
 
