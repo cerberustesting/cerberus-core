@@ -150,6 +150,16 @@ public class XmlUtilTest {
 		}
 	}
 
+	@Test(expected = XmlUtilException.class)
+	public void testEvaluateDocumentWithNullDocumentArgument() throws XmlUtilException {
+		XmlUtil.evaluate((Document) null, "/foo");
+	}
+
+	@Test(expected = XmlUtilException.class)
+	public void testEvaluateDocumentWithNullXPathArgument() throws XmlUtilException {
+		XmlUtil.evaluate(XmlUtil.newDocument(), null);
+	}
+
 	@Test
 	public void testEvaluateString() throws XmlUtilException, DifferencesException {
 		List<String> expected = Arrays.asList("<child><item1/></child>", "<child><item2/></child>");
@@ -160,5 +170,15 @@ public class XmlUtilTest {
 			String differences = xmlUnitService.getDifferencesFromXml(expected.get(i), actual.get(i));
 			Assert.assertTrue(Differences.fromString(differences).isEmpty());
 		}
+	}
+
+	@Test(expected = XmlUtilException.class)
+	public void testEvaluateStringWithNullDocumentArgument() throws XmlUtilException {
+		XmlUtil.evaluate((String) null, "/foo");
+	}
+
+	@Test(expected = XmlUtilException.class)
+	public void testEvaluateStringtWithNullXPathArgument() throws XmlUtilException {
+		XmlUtil.evaluate("<foo/>", null);
 	}
 }

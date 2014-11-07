@@ -171,6 +171,10 @@ public final class XmlUtil {
 	 *             if an error occurred
 	 */
 	public static List<Document> evaluate(Document document, String xpath) throws XmlUtilException {
+		if (document == null || xpath == null) {
+			throw new XmlUtilException("Unable to evaluate null document or xpath");
+		}
+		
 		XPathFactory xpathFactory = XPathFactory.newInstance();
 		XPath xpathObject = xpathFactory.newXPath();
 

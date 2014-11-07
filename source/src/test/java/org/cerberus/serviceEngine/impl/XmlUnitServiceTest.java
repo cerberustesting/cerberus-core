@@ -180,4 +180,19 @@ public class XmlUnitServiceTest {
 		Assert.assertFalse(xmlUnitService.isElementInElement(tce, "/root/a", "<a>3</a>"));
 	}
 
+	@Test
+	public void testIsElementInElementWithNullTCE() {
+		Assert.assertFalse(xmlUnitService.isElementInElement(null, "/foo", "<bar/>"));
+	}
+
+	@Test
+	public void testIsElementInElementWithNullXPath() {
+		Assert.assertFalse(xmlUnitService.isElementInElement(new TestCaseExecution(), null, "<bar/>"));
+	}
+
+	@Test
+	public void testIsElementInElementWithNullElement() {
+		Assert.assertFalse(xmlUnitService.isElementInElement(new TestCaseExecution(), "/foo", null));
+	}
+
 }

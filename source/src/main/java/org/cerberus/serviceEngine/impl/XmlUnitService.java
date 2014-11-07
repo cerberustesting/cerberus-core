@@ -413,6 +413,11 @@ public class XmlUnitService implements IXmlUnitService {
 
 	@Override
 	public boolean isElementInElement(TestCaseExecution tCExecution, String xpath, String element) {
+		if (tCExecution == null || xpath == null || element == null) {
+			LOG.warn("Unable to check if element is in element with null argument");
+			return false;
+		}
+		
 		try {
 			List<String> candidates = XmlUtil.evaluate(executionSOAPResponse.getExecutionSOAPResponse(tCExecution.getExecutionUUID()), xpath);
 			for (String candidate : candidates) {
