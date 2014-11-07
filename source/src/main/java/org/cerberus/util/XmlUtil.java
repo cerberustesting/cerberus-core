@@ -24,6 +24,8 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -36,9 +38,15 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
@@ -147,6 +155,58 @@ public final class XmlUtil {
 		} catch (IOException e) {
 			throw new XmlUtilException(e);
 		}
+	}
+	
+	/**
+	 * Evaluates the given xpath against the given document and produces new
+	 * document which satisfy the xpath expression.
+	 * 
+	 * @param document
+	 *            the document to search against the given xpath
+	 * @param xpath
+	 *            the xpath expression
+	 * @return a list of new document which gather all results which satisfy the
+	 *         xpath expression against the given document.
+	 * @throws XmlUtilException
+	 *             if an error occurred
+	 */
+	public static List<Document> evaluate(Document document, String xpath) throws XmlUtilException {
+		XPathFactory xpathFactory = XPathFactory.newInstance();
+		XPath xpathObject = xpathFactory.newXPath();
+
+		NodeList nodeList = null;
+		try {
+			XPathExpression expr = xpathObject.compile(xpath);
+			nodeList = (NodeList) expr.evaluate(document, XPathConstants.NODESET);
+		} catch (XPathExpressionException xpee) {
+			throw new XmlUtilException(xpee);
+		}
+
+		if (nodeList == null) {
+			throw new XmlUtilException("Evaluation caused a null result");
+		}
+		
+		List<Document> result = new ArrayList<Document>();
+		for (int i = 0; i < nodeList.getLength(); i++) {
+			Document resultItem = XmlUtil.newDocument();
+			resultItem.appendChild(resultItem.adoptNode(nodeList.item(i).cloneNode(true)));
+			result.add(resultItem);
+		}
+		return result;
+	}
+	
+	/**
+	 * {@link String} version of the {@link #evaluate(Document, String)} method
+	 * 
+	 * @see #evaluate(Document, String)
+	 */
+	public static List<String> evaluate(String xml, String xpath) throws XmlUtilException {
+		List<Document> resultDocuments = evaluate(XmlUtil.fromString(xml), xpath);
+		List<String> resultStrings = new ArrayList<String>();
+		for (Document resultDocument : resultDocuments) {
+			resultStrings.add(XmlUtil.toString(resultDocument));
+		}
+		return resultStrings;
 	}
 
 	/**

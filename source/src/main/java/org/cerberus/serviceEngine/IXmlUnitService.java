@@ -83,4 +83,21 @@ public interface IXmlUnitService {
 	 * @return a new filtered differences variable
 	 */
 	String removeDifference(String pattern, String differences);
+	
+	/**
+	 * Checks if the given element is contained into the given xpath from the
+	 * last SOAP call
+	 * 
+	 * @param tCExecution
+	 *            the associated {@link TestCaseExecution}
+	 * @param element
+	 *            the element to test if it is contained into the given xpath
+	 *            from the last SOAP call
+	 * @param element
+	 *            the element to test if it is contained into the given xpath
+	 *            from the last SOAP call
+	 * @return <code>true</code> if the given element is contained into the
+	 *         xpath from the last SOAP call, <code>false</code> otherwise
+	 */
+	boolean isElementInElement(TestCaseExecution tCExecution, String xpath, String element);
 }

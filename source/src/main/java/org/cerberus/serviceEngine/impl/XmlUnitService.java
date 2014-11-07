@@ -411,5 +411,22 @@ public class XmlUnitService implements IXmlUnitService {
 		return null;
 	}
 
+	@Override
+	public boolean isElementInElement(TestCaseExecution tCExecution, String xpath, String element) {
+		try {
+			List<String> candidates = XmlUtil.evaluate(executionSOAPResponse.getExecutionSOAPResponse(tCExecution.getExecutionUUID()), xpath);
+			for (String candidate : candidates) {
+				if (Differences.fromString(getDifferencesFromXml(candidate, element)).isEmpty()) {
+					return true;
+				}
+			}
+		} catch (XmlUtilException xue) {
+			LOG.warn("Unable to check if element is in element", xue);
+		} catch (DifferencesException de) {
+			LOG.warn("Unable to check if element is in element", de);
+		}
+
+		return false;
+	}
 
 }

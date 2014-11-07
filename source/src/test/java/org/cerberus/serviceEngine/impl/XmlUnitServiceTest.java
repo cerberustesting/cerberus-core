@@ -24,6 +24,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
 
+import org.cerberus.entity.ExecutionSOAPResponse;
+import org.cerberus.entity.TestCaseExecution;
 import org.cerberus.serviceEngine.impl.diff.Difference;
 import org.cerberus.serviceEngine.impl.diff.Differences;
 import org.cerberus.util.XmlUtilException;
@@ -33,8 +35,11 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
-import org.mockito.MockitoAnnotations;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.runners.MockitoJUnitRunner;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.xml.sax.SAXException;
@@ -44,12 +49,16 @@ import org.xml.sax.SAXException;
  * 
  * @author abourdon
  */
+@RunWith(MockitoJUnitRunner.class)
 @PrepareForTest({ XmlUnitService.class })
 @ContextConfiguration(locations = { "/applicationContextTest.xml" })
 public class XmlUnitServiceTest {
 
 	@InjectMocks
 	private XmlUnitService xmlUnitService;
+
+	@Mock
+	private ExecutionSOAPResponse executionSOAPResponse;
 
 	private Differences differences;
 
@@ -68,7 +77,6 @@ public class XmlUnitServiceTest {
 	public void before() throws XmlUtilException, SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException {
 		differences = new Differences();
 
-		MockitoAnnotations.initMocks(this);
 		Method init = xmlUnitService.getClass().getDeclaredMethod("init");
 		init.setAccessible(true);
 		init.invoke(xmlUnitService);
@@ -137,12 +145,39 @@ public class XmlUnitServiceTest {
 		DetailedDiff diff = new DetailedDiff(XMLUnit.compareXML(expected, actual));
 		Assert.assertTrue(diff.toString(), diff.similar());
 	}
-	
+
 	@Test
 	public void testRemoveDifferenceFromEmptyDifferences() throws XmlUtilException {
 		String expected = Differences.EMPTY_DIFFERENCES_STRING;
 		String actual = xmlUnitService.removeDifference("foo", Differences.EMPTY_DIFFERENCES_STRING);
 		Assert.assertEquals(expected, actual);
+	}
+
+	@Test
+	public void testIsElementInElementWithExistingElement() {
+		TestCaseExecution tce = new TestCaseExecution();
+		tce.setExecutionUUID("1234");
+		Mockito.when(executionSOAPResponse.getExecutionSOAPResponse(tce.getExecutionUUID())).thenReturn("<root><a>1</a><a>2</a></root>");
+
+		Assert.assertTrue(xmlUnitService.isElementInElement(tce, "/root/a", "<a>2</a>"));
+	}
+
+	@Test
+	public void testIsElementInElementWithNotFormatedExistingElement() {
+		TestCaseExecution tce = new TestCaseExecution();
+		tce.setExecutionUUID("1234");
+		Mockito.when(executionSOAPResponse.getExecutionSOAPResponse(tce.getExecutionUUID())).thenReturn("<root><a>1</a><a>2</a></root>");
+
+		Assert.assertTrue(xmlUnitService.isElementInElement(tce, "/root/a", "               <a>2</a>   "));
+	}
+
+	@Test
+	public void testIsElementInElementWithNotExistingElement() {
+		TestCaseExecution tce = new TestCaseExecution();
+		tce.setExecutionUUID("1234");
+		Mockito.when(executionSOAPResponse.getExecutionSOAPResponse(tce.getExecutionUUID())).thenReturn("<root><a>1</a><a>2</a></root>");
+
+		Assert.assertFalse(xmlUnitService.isElementInElement(tce, "/root/a", "<a>3</a>"));
 	}
 
 }
