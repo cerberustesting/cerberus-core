@@ -113,4 +113,14 @@ public class CountryEnvParamService implements ICountryEnvParamService {
     public void create(CountryEnvParam cep) throws CerberusException {
         countryEnvParamDao.create(cep);
     }
+
+    @Override
+    public List<CountryEnvParam> findListByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Integer count(String searchTerm) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }

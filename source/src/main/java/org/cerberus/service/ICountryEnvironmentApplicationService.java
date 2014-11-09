@@ -66,4 +66,23 @@ public interface ICountryEnvironmentApplicationService {
      * @throws CerberusException 
      */
     void create(CountryEnvironmentApplication cea) throws CerberusException;
+    
+    /**
+     * Find List of CountryEnvironmentApplication by Criteria
+     * @param start row number of the resulset where start the List (limit(start,amount)) 
+     * @param amount number of row returned
+     * @param column column used for the sort (sort by column dir >become> sort by country asc)
+     * @param dir asc or desc
+     * @param searchTerm 
+     * @param individualSearch
+     * @return 
+     */
+    public List<CountryEnvironmentApplication> findListByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch);
+
+    /**
+     * Find the number of CountryEnvironmentApplication found respecting the search criteria
+     * @param searchTerm
+     * @return 
+     */
+    public Integer count(String searchTerm);
 }

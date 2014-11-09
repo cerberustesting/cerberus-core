@@ -20,6 +20,7 @@
 package org.cerberus.service;
 
 import java.util.List;
+import org.cerberus.entity.CountryEnvironmentApplication;
 import org.cerberus.entity.CountryEnvironmentDatabase;
 import org.cerberus.exception.CerberusException;
 
@@ -59,4 +60,23 @@ public interface ICountryEnvironmentDatabaseService {
      * @throws CerberusException 
      */
     void create(CountryEnvironmentDatabase ced) throws CerberusException;
+    
+    /**
+     * Find List of CountryEnvironmentDatabase by Criteria
+     * @param start row number of the resulset where start the List (limit(start,amount)) 
+     * @param amount number of row returned
+     * @param column column used for the sort (sort by column dir >become> sort by country asc)
+     * @param dir asc or desc
+     * @param searchTerm 
+     * @param individualSearch
+     * @return 
+     */
+    public List<CountryEnvironmentDatabase> findListByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch);
+
+    /**
+     * Find the number of CountryEnvironmentDatabase found respecting the search criteria
+     * @param searchTerm
+     * @return 
+     */
+    public Integer count(String searchTerm);
 }

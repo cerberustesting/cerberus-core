@@ -64,4 +64,23 @@ public interface ICountryEnvParamService {
      * @throws CerberusException 
      */
     void create(CountryEnvParam cep) throws CerberusException;
+    
+    /**
+     * Find List of CountryEnvParam by Criteria
+     * @param start row number of the resulset where start the List (limit(start,amount)) 
+     * @param amount number of row returned
+     * @param column column used for the sort (sort by column dir >become> sort by country asc)
+     * @param dir asc or desc
+     * @param searchTerm 
+     * @param individualSearch
+     * @return 
+     */
+    public List<CountryEnvParam> findListByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch);
+
+    /**
+     * Find the number of CountryEnvParam found respecting the search criteria
+     * @param searchTerm
+     * @return 
+     */
+    public Integer count(String searchTerm);
 }

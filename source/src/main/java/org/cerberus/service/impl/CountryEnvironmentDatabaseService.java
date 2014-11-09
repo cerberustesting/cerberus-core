@@ -61,6 +61,16 @@ public class CountryEnvironmentDatabaseService implements ICountryEnvironmentDat
     public void create(CountryEnvironmentDatabase ced) throws CerberusException {
         countryEnvironmentDatabaseDao.create(ced);
     }
+
+    @Override
+    public List<CountryEnvironmentDatabase> findListByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Integer count(String searchTerm) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
     
     
 }
