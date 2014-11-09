@@ -1,3 +1,6 @@
+<%@ page import="org.cerberus.entity.*" %>
+<%@ page import="org.cerberus.service.*" %>
+<%@ page import="org.apache.log4j.Logger" %>
 <%--
   ~ Cerberus  Copyright (C) 2013  vertigo17
   ~ DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
@@ -16,316 +19,418 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
---%>
-<%@page import="java.sql.Connection"%>
-<%@page import="java.sql.ResultSet"%>
-<%@page import="java.sql.Statement"%>
-<%@page import="org.cerberus.util.StringUtil"%>
-<%@page import="org.cerberus.service.IDocumentationService"%>
-<%@page import="org.cerberus.util.SqlUtil"%>
-<%@page import="org.cerberus.entity.BuildRevisionInvariant"%>
-<%@page import="org.cerberus.service.impl.BuildRevisionInvariantService"%>
-<%@page import="org.cerberus.service.IBuildRevisionInvariantService"%>
-<%@page import="org.cerberus.service.impl.ApplicationService"%>
-<%@page import="org.cerberus.entity.Application"%>
-<%@page import="org.cerberus.service.IApplicationService"%>
-<% Date DatePageStart = new Date();%>
+  --%>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ include file="include/function.jsp" %>
 
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%
+    final Logger LOG = Logger.getLogger(this.getClass());
+    IUserService userService = appContext.getBean(IUserService.class);
+    IProjectService projectService = appContext.getBean(IProjectService.class);
+    IDocumentationService docService = appContext.getBean(IDocumentationService.class);
+    IApplicationService applicationService = appContext.getBean(IApplicationService.class);
+    IBuildRevisionInvariantService buildRevisionInvariantService = appContext.getBean(IBuildRevisionInvariantService.class);
+    IBuildRevisionParametersService buildRevisionParametersService = appContext.getBean(IBuildRevisionParametersService.class);
+%>
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Sprint Content</title>
-        <link rel="stylesheet" 
-              type="text/css" href="css/crb_style.css"
-              />
-        <link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico">
-    </head>
-    <body>
-        <%@ include file="include/function.jsp" %>
-        <%@ include file="include/header.jsp" %>
-        <%
-            Connection conn = db.connect();
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Sprint Content</title>
 
-            try {
+    <link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico"/>
+    <link rel="stylesheet" type="text/css" href="css/crb_style.css">
+    <link rel="stylesheet" type="text/css" href="css/jquery.dataTables.css">
+    <link rel="stylesheet" type="text/css" href="css/jquery-ui.css">
+    <link rel="stylesheet" type="text/css" href="css/dataTables_jui.css">
+    <script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>
+    <script type="text/javascript" src="js/jquery-ui-1.10.2.js"></script>
+    <script type="text/javascript" src="js/jquery.jeditable.mini.js"></script>
+    <script type="text/javascript" src="js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="js/jquery.dataTables.editable.js"></script>
+    <script type="text/javascript" src="js/jquery.validate.min.js"></script>
 
-                IApplicationService applicationService = appContext.getBean(ApplicationService.class);
-                IBuildRevisionInvariantService buildRevisionInvariantService = appContext.getBean(BuildRevisionInvariantService.class);
-                IDocumentationService docService = appContext.getBean(IDocumentationService.class);
-
-                String MySystem = request.getAttribute("MySystem").toString();
-                if (request.getParameter("system") != null && request.getParameter("system").compareTo("") != 0) {
-                    MySystem = request.getParameter("system");
-                }
-                List<Application> appliList = applicationService.findApplicationBySystem(MySystem);
-                String appliInSQL = SqlUtil.getInSQLClause(appliList);
-
-                Statement stmtBuild = conn.createStatement();
-                Statement stmtApp = conn.createStatement();
-
-                /* Parameter Setup */
-
-                String build = "NONE";
-                if (request.getParameter("build") != null && request.getParameter("build").compareTo("") != 0) {
-                    build = request.getParameter("build");
-                } else {
-                    ResultSet rsBR = stmtBuild.executeQuery("SELECT max(Build) mb FROM buildrevisionparameters where build!='NONE' and build is not null and application " + appliInSQL);
-                    if (rsBR.first() && rsBR.getString("mb") != null) {
-                        build = rsBR.getString("mb");
-                    }
-                }
-                String revision = "NONE";
-                if (request.getParameter("revision") != null && request.getParameter("revision").compareTo("") != 0) {
-                    revision = request.getParameter("revision");
-                } else {
-                    ResultSet rsREV = stmtBuild.executeQuery("SELECT max(Revision) mr FROM buildrevisionparameters "
-                            + " where build = '" + build + "' and application " + appliInSQL);
-                    if (rsREV.first() && rsREV.getString("mr") != null) {
-                        revision = rsREV.getString("mr");
-                    }
-                }
+    <style>
+        form label {
+            display: inline-block;
+            font-weight: 700;
+            padding-bottom: 7px;
+            width: 100px;
+        }
 
 
-                Statement stmtRev = conn.createStatement();
+    </style>
+</head>
+<body>
+<%@ include file="include/header.jsp" %>
 
-        %>                    <form method="GET" name="BuildContent" id="buildcontent">
-            <table class="tablef"> 
-                <tr>
-                    <td><a href="?build=NONE&revision=NONE">Pending Release</a></td>
-                    <td><a href="BuildContent.jsp">Latest Release</a></td>
-                    <td> 
-                <ftxt><%=docService.findLabelHTML("buildrevisioninvariant", "versionname01", "")%></ftxt> 
-                <select id="build" name="build" style="width: 100px" OnChange ="document.buildcontent.submit()">
-                    <option style="width: 100px" value="NONE" <%=build.compareTo("NONE") == 0 ? " SELECTED " : ""%>>-- NONE --</option>
-                    <%
-                        List<BuildRevisionInvariant> listBuildRev = buildRevisionInvariantService.findAllBuildRevisionInvariantBySystemLevel(MySystem, 1);
-                        for (BuildRevisionInvariant myBR : listBuildRev) {
-                    %><option style="width: 100px" value="<%= myBR.getVersionName()%>" <%=build.compareTo(myBR.getVersionName()) == 0 ? " SELECTED " : ""%>><%= myBR.getVersionName()%></option>
-                    <% }
-                    %></select>
-                <ftxt><%=docService.findLabelHTML("buildrevisioninvariant", "versionname02", "")%></ftxt> 
-                <select id="revision" name="revision" style="width: 100px" OnChange ="document.buildcontent.submit()">
-                    <option style="width: 100px" value="ALL" <%=revision.compareTo("ALL") == 0 ? " SELECTED " : ""%>>-- ALL --</option>
-                    <option style="width: 100px" value="NONE" <%=revision.compareTo("NONE") == 0 ? " SELECTED " : ""%>>-- NONE --</option>
-                    <%
-                        listBuildRev = buildRevisionInvariantService.findAllBuildRevisionInvariantBySystemLevel(MySystem, 2);
-                        for (BuildRevisionInvariant myBR : listBuildRev) {
-                    %><option style="width: 100px" value="<%= myBR.getVersionName()%>" <%=revision.compareTo(myBR.getVersionName()) == 0 ? " SELECTED " : ""%>><%= myBR.getVersionName()%></option>
-                    <% }
-                    %></select>
-                <input type="submit" name="FilterApply" value="Apply">
-                </td>
-                </tr>
-            </table>
-        </form><br>
-        <%
-            stmtBuild.close();
-            stmtRev.close();
+<%
+    try {
+        String MySystem = request.getAttribute("MySystem").toString();
+        String maxBuild = buildRevisionParametersService.getMaxBuildBySystem(MySystem);
+        String maxRevision = buildRevisionParametersService.getMaxRevisionBySystemAndBuild(MySystem, maxBuild);
 
-            Statement stmtBR = conn.createStatement();
-            String BR;
+        StringBuilder users = new StringBuilder("{");
+        StringBuilder userOptions = new StringBuilder();
+        userOptions.append("<option value=''></option>");
+        for (User user : userService.findAllUserBySystem(MySystem)) {
+            users.append("'");
+            users.append(user.getLogin());
+            users.append("':'");
+            users.append(user.getName());
+            users.append("',");
 
-
-            BR = "SELECT DISTINCT b.ID, b.Build, b.Revision, b.Application, b.Release, b.Link, b.ReleaseOwner, b.Project,b.TicketIDFixed, b.BugIDFixed,b.Subject "
-                    + "FROM `buildrevisionparameters` b "
-                    + "WHERE 1=1 "
-                    + " AND application " + appliInSQL;
-            if (!build.trim().equalsIgnoreCase("ALL")) {
-                BR += " and Build='" + build + "' ";
+            userOptions.append("<option value='");
+            userOptions.append(user.getLogin());
+            if (user.getLogin().equalsIgnoreCase(request.getUserPrincipal().getName())) {
+                userOptions.append("' selected='selected'>");
+            } else {
+                userOptions.append("'>");
             }
-            if (!revision.trim().equalsIgnoreCase("ALL")) {
-                BR += " and Revision='" + revision + "' ";
+            userOptions.append(user.getName());
+            userOptions.append("</option>\n");
+        }
+        users.append("}");
+
+        StringBuilder projects = new StringBuilder("{");
+        StringBuilder projectOptions = new StringBuilder();
+        for (Project project : projectService.findAllProject()) {
+            projects.append("'");
+            projects.append(project.getIdProject());
+            projects.append("':'");
+            projects.append(project.getIdProject());
+            projects.append(" [");
+            projects.append(project.getCode());
+            projects.append("] ");
+            projects.append(project.getDescription());
+            projects.append("',");
+
+            projectOptions.append("<option value='");
+            projectOptions.append(project.getIdProject());
+            projectOptions.append("'>");
+            projectOptions.append(project.getIdProject());
+            projectOptions.append(" [");
+            projectOptions.append(project.getCode());
+            projectOptions.append("] ");
+            projectOptions.append(project.getDescription());
+            projectOptions.append("</option>\n");
+        }
+        projects.append("}");
+
+        StringBuilder applications = new StringBuilder("{");
+        StringBuilder applicationOptions = new StringBuilder();
+        for (Application app : applicationService.findApplicationBySystem(MySystem)) {
+            applications.append("'");
+            applications.append(app.getApplication());
+            applications.append("':'");
+            applications.append(app.getApplication());
+            applications.append("',");
+
+            applicationOptions.append("<option value='");
+            applicationOptions.append(app.getApplication());
+            applicationOptions.append("'>");
+            applicationOptions.append(app.getApplication());
+            applicationOptions.append("</option>\n");
+        }
+        applications.append("}");
+
+        StringBuilder revisions = new StringBuilder("{");
+        StringBuilder revisionOptions = new StringBuilder();
+        revisions.append("'NONE':'-- NONE --',");
+        revisionOptions.append("<option value=''>-- ALL --</option>");
+        revisionOptions.append("<option value='NONE'>-- NONE --</option>");
+        for (BuildRevisionInvariant bri : buildRevisionInvariantService.findAllBuildRevisionInvariantBySystemLevel(MySystem, 2)) {
+            revisions.append("'");
+            revisions.append(bri.getVersionName());
+            revisions.append("':'");
+            revisions.append(bri.getVersionName());
+            revisions.append("',");
+
+            revisionOptions.append("<option value='");
+            revisionOptions.append(bri.getVersionName());
+            revisionOptions.append("'>");
+            revisionOptions.append(bri.getVersionName());
+            revisionOptions.append("</option>\n");
+        }
+        revisions.append("}");
+
+        StringBuilder builds = new StringBuilder("{");
+        StringBuilder buildOptions = new StringBuilder();
+        builds.append("'NONE':'-- NONE --',");
+        buildOptions.append("<option value='NONE'>-- NONE --</option>");
+        for (BuildRevisionInvariant bri : buildRevisionInvariantService.findAllBuildRevisionInvariantBySystemLevel(MySystem, 1)) {
+            builds.append("'");
+            builds.append(bri.getVersionName());
+            builds.append("':'");
+            builds.append(bri.getVersionName());
+            builds.append("',");
+
+            buildOptions.append("<option value='");
+            buildOptions.append(bri.getVersionName());
+            buildOptions.append("'>");
+            buildOptions.append(bri.getVersionName());
+            buildOptions.append("</option>\n");
+        }
+        builds.append("}");
+%>
+
+<script type="text/javascript">
+    var oTable;
+    var build = '<%=request.getParameter("build")%>';
+    var revision = '<%=request.getParameter("revision")%>';
+
+    $(document).ready(function(){
+        $("#pending").on("click", function(event){
+            event.preventDefault();
+            $("#selectedBuild").val("NONE");
+            $("#selectedRevision").val("NONE");
+            $("#search").click();
+        });
+
+        $("#last").on("click", function(event){
+            event.preventDefault();
+            $("#selectedBuild").val("<%=maxBuild%>");
+            $("#selectedRevision").val("<%=maxRevision%>");
+            $("#search").click();
+        });
+
+        if (build === 'null') {
+            $("#selectedBuild").val("<%=maxBuild%>");
+        } else {
+            $("#selectedBuild").val(build);
+        }
+        if (revision === 'null') {
+            $("#selectedRevision").val("<%=maxRevision%>");
+        } else {
+            $("#selectedRevision").val(revision);
+        }
+        $("#search").click();
+
+        $("#formAddNewRow").dialog({width: 'auto'});
+
+        $("#revision").find('option')[0].remove();
+    });
+
+    function searchContent() {
+        var params = "System=<%=MySystem%>&Build=";
+        params += $("#selectedBuild").val();
+        params += "&Revision=";
+        params += $("#selectedRevision").val();
+
+        $("#contentTable").dataTable({
+            "aaSorting": [[0, "asc"],[1, "asc"],[2, "asc"],[3, "asc"]],
+            "bDestroy": true,
+            "bInfo": false,
+            "bJQueryUI": true,
+            "bSort": false,
+            "bPaginate": false,
+//            "bProcessing": true,
+            "sAjaxSource": "FindBuildContent?"+params,
+            "aoColumnDefs": [
+                {
+                    "aTargets": [ 0 ],
+                    "bSearchable": false,
+                    "bVisible": false
+                }
+            ],
+            fnInitComplete: function() {
+                $("#sprint").val($("#selectedBuild").val());
+                $("#revision").val($("#selectedRevision").val());
             }
-            BR += " ORDER by Build desc, Revision desc, Application ASC, `Release` ASC";
-//                out.print(BR);
-            ResultSet rsBR = stmtBR.executeQuery(BR);
-        %>   
-        <form method="post" name="UpdateBuildContent" action="UpdateBuildRevisionParameter">
-            <input style="display:none" name="ubcBuildFilter" value="<%=build%>"></input>
-            <input style="display:none" name="ubcRevisionFilter" value="<%=revision%>"></input>
-            <table  id="buildcontenttable"  style="text-align: left; border-collapse:collapse ; border-color: gainsboro" border="1">
-                <tr id="header">
-                    <td><%=docService.findLabelHTML("page_buildcontent", "delete", "")%></td>
-                    <td><%=docService.findLabelHTML("buildrevisioninvariant", "versionname01", "")%></td>
-                    <td><%=docService.findLabelHTML("buildrevisioninvariant", "versionname02", "")%></td>
-                    <td><%=docService.findLabelHTML("application", "Application", "")%></td>
-                    <td><%=docService.findLabelHTML("buildrevisionparameters", "Release", "")%></td>
-                    <td></img>Project</td>
-                    <td></img>Ticket</td>
-                    <td></img>Bug</td>
-                    <td>Subject</td>
-                    <td><%=docService.findLabelHTML("buildrevisionparameters", "ReleaseOwner", "")%></td>
-                    <td colspan="2"><%=docService.findLabelHTML("buildrevisionparameters", "Link", "")%></td>
+        }).makeEditable({
+            sAddDeleteToolbarSelector: ".ui-corner-tl",
+            sAddURL: "AddBuildContent",
+            sAddHttpMethod: "POST",
+            oAddNewRowButtonOptions: {
+                label: "Add...",
+                icons: {primary: 'ui-icon-plus'}
+            },
+            sDeleteURL: "DeleteBuildContent",
+            sDeleteHttpMethod: "POST",
+            oDeleteRowButtonOptions: {
+                label: "Remove",
+                icons: {primary: 'ui-icon-trash'}
+            },
+            sUpdateURL: "UpdateBuildContent",
+            "aoColumns": [
+                {
+                    type: "select",
+                    data: <%=builds%>,
+                    placeholder: "",
+                    onblur: 'cancel',
+                    submit: 'Save'
+                },
+                {
+                    type: "select",
+                    data: <%=revisions%>,
+                    placeholder: "",
+                    onblur: 'cancel',
+                    submit: 'Save'
+                },
+                {
+                    type: "select",
+                    data: <%=applications%>,
+                    placeholder: "",
+                    onblur: 'cancel',
+                    submit: 'Save'
+                },
+                {
+                    placeholder: "",
+                    onblur: 'cancel',
+                    submit: 'Save'
+                },
+                {
+                    type: "select",
+                    data: <%=projects%>,
+                    placeholder: "",
+                    onblur: 'cancel',
+                    submit: 'Save'
+                },
+                {
+                    placeholder: "",
+                    onblur: 'cancel',
+                    submit: 'Save'
+                },
+                {
+                    placeholder: "",
+                    onblur: 'cancel',
+                    submit: 'Save'
+                },
+                {
+                    placeholder: "",
+                    onblur: 'cancel',
+                    submit: 'Save'
+                },
+                {
+                    type: "select",
+                    data: <%=users%>,
+                    placeholder: "",
+                    onblur: 'cancel',
+                    submit: 'Save'
+                },
+                {
+                    placeholder: "",
+                    onblur: 'cancel',
+                    submit: 'Save'
+                },
+                {
+                    placeholder: "",
+                    onblur: 'cancel',
+                    submit: 'Save'
+                }
+            ]
+        });
+    }
+</script>
 
+<div style="font-family: sans-serif">
+    <div style="float: left; padding-left: 10px">
+        <a id="pending" href="#">Pending Release</a>
+        <a id="last" href="#">Latest Release</a>
+    </div>
+    <div style="float: left; padding-left: 10px">
+        <%=docService.findLabelHTML("buildrevisioninvariant", "versionname01", "")%>
+        <select id="selectedBuild" name="selectedBuild">
+            <%=buildOptions%>
+        </select>
+    </div>
+    <div style="float: left; padding-left: 10px">
+        <%=docService.findLabelHTML("buildrevisioninvariant", "versionname02", "")%>
+        <select id="selectedRevision" name="selectedRevision">
+            <%=revisionOptions%>
+        </select>
+    </div>
+    <div style="float: left; padding-left: 10px">
+        <input id="search" type="button" value="Apply" onclick="searchContent()"/>
+    </div>
+</div>
 
-<!--                <td><%=docService.findLabelHTML("buildrevisionparameters", "Link", "")%></td>-->
-                </tr>
-                <%
-                    int a = 1;
-                    String backColor = "white";
-                    if (rsBR.first()) {
-                        do {
-                            //Background color Management
-                            a++;
-                            int b;
-                            b = a % 2;
-                            if (b == 1) {
-                                backColor = "#f3f6fa";
-                            } else {
-                                backColor = "White";
-                            }
-
-                            // 
-                            String[] ticketLinks = new String[0];
-                            String linkToTickets = "";
-                            if (!StringUtil.isNullOrEmpty(rsBR.getString("b.subject"))) {
-                                ticketLinks = rsBR.getString("b.subject").split(", ");
-                                for (int i = 0; i < ticketLinks.length; i++) {
-                                    linkToTickets = linkToTickets + "<a href=\"TestCaseSearch.jsp?ScTicket=" + ticketLinks[i] + "\">" + ticketLinks[i] + " </a>";
-                                }
-                            }
-                            String[] bugLinks = new String[0];
-                            String linkToBugs = "";
-                            if (!StringUtil.isNullOrEmpty(rsBR.getString("b.subject"))) {
-                                bugLinks = rsBR.getString("b.subject").split(", ");
-                                for (int i = 0; i < bugLinks.length; i++) {
-                                    linkToBugs = linkToBugs + "<a href=\"TestCaseSearch.jsp?ScBugID=" + bugLinks[i] + "\">" + bugLinks[i] + " </a>";
-                                }
-                            }
-                            Statement stmtProj = conn.createStatement();
-                %>
-                <tr>
-                    <td class="wob" style="background-color:<%=backColor%>"><input name="ubcDelete" type="checkbox" style="width:10px ; background-color:<%=backColor%>" 
-                                                                                   value="<%=rsBR.getString("b.ID")%>"></td>
-                    <td class="wob" style="background-color:<%=backColor%>">
-                        <select id="ubcBuild" name="ubcBuild" style="width:60px ; background-color:<%=backColor%>; font-size:x-small;border:0px">
-                            <option style="width: 100px" value="NONE" <%=revision.compareTo("NONE") == 0 ? " SELECTED " : ""%>>-- NONE --</option>
-                            <%
-                                listBuildRev = buildRevisionInvariantService.findAllBuildRevisionInvariantBySystemLevel(MySystem, 1);
-                                for (BuildRevisionInvariant myBR : listBuildRev) {
-                            %><option style="width: 100px" value="<%= myBR.getVersionName()%>" <%=rsBR.getString("b.build").compareTo(myBR.getVersionName()) == 0 ? " SELECTED " : ""%>><%= myBR.getVersionName()%></option>
-                            <% }
-                            %></select>
-                    </td>
-                    <td class="wob" style="background-color:<%=backColor%>">
-                        <select id="ubcRevision" name="ubcRevision" style="width:40px ; background-color:<%=backColor%>; font-size:x-small;border:0px">
-                            <option style="width: 100px" value="NONE" <%=revision.compareTo("NONE") == 0 ? " SELECTED " : ""%>>-- NONE --</option>
-                            <%
-                                listBuildRev = buildRevisionInvariantService.findAllBuildRevisionInvariantBySystemLevel(MySystem, 2);
-                                for (BuildRevisionInvariant myBR : listBuildRev) {
-                            %><option style="width: 100px" value="<%= myBR.getVersionName()%>" <%=rsBR.getString("b.revision").compareTo(myBR.getVersionName()) == 0 ? " SELECTED " : ""%>><%= myBR.getVersionName()%></option>
-                            <% }
-                            %></select>
-                    </td>
-                    <td class="wob" style="background-color:<%=backColor%>">
-                        <select id="ubcApplication" name="ubcApplication" class="wob" style="width:170px; font-size:x-small;background-color:<%=backColor%>"><%
-                            ResultSet rsApp = stmtProj.executeQuery(" SELECT distinct application from application where application != '' and application " + appliInSQL + " order by sort ");
-                            rsApp.first();
-                            do {
-                            %><option value="<%=rsApp.getString("application")%>" <%=rsApp.getString("application").compareTo(rsBR.getString("b.Application")) == 0 ? " SELECTED " : ""%>><%=rsApp.getString("application")%></option><%
-                                } while (rsApp.next());
-                            %></select>
-                        <input style="display:none" name="ubcReleaseID" value="<%=rsBR.getString("b.ID")%>"></td>
-                    <td class="wob" style="background-color:<%=backColor%>"><input class="wob" name="ubcRelease" style="width:100px ; background-color:<%=backColor%>; font-size:x-small" value="<%=rsBR.getString("b.Release")%>"></td>
-                    <td class="wob" style="background-color:<%=backColor%>">
-                        <select class="wob" name="ubcProject" value="<%=rsBR.getString("b.Project")%>" style="width: 50px; background-color:<%=backColor%>; font-size:x-small"><%
-                            ResultSet rsProj = stmtProj.executeQuery(" SELECT idproject, VCCode, Description from project order by idproject ");
-                            while (rsProj.next()) {
-                            %><option value="<%=rsProj.getString("idproject")%>"<%=rsBR.getString("b.Project").compareTo(rsProj.getString("idproject")) == 0 ? " SELECTED " : ""%>><%=rsProj.getString("idproject")%> [<%=rsProj.getString("VCCode")%>] <%=rsProj.getString("Description")%></option><%
-                                }
-                            %></select>
-                    </td>
-                    <td class="wob" style="background-color:<%=backColor%>"><input class="wob" name="ubcTicketIDFixed" value="<%=rsBR.getString("b.TicketIDFixed")%>" style="width: 50px; background-color:<%=backColor%>; font-size:x-small"></td>
-                    <td class="wob" style="background-color:<%=backColor%>"><input class="wob" name="ubcBugIDFixed" value="<%=rsBR.getString("b.BugIDFixed")%>" style="width: 50px; background-color:<%=backColor%>; font-size:x-small"></td>
-                    <td class="wob" style="background-color:<%=backColor%>"><textarea class="wob" name="ubcSubject" value="<%=rsBR.getString("b.Subject")%>" rows="1" style="width: 300px; background-color:<%=backColor%>; font-size:x-small"><%=rsBR.getString("b.Subject")%></textarea></td>
-                    <td class="wob" style="background-color:<%=backColor%>">
-                        <select class="wob" name="ubcReleaseOwner" style="width: 100px; background-color:<%=backColor%>; font-size:x-small">
-                            <option value="" ></option><%
-                                ResultSet rsOwner = stmtProj.executeQuery(" SELECT u.Login, u.Name FROM user u join userSystem us on u.login = us.login where us.`system` = '" + MySystem + "' group by us.login;");
-                                while (rsOwner.next()) {
-                            %><option value="<%=rsOwner.getString("Login")%>"<%=rsBR.getString("b.ReleaseOwner").compareTo(rsOwner.getString("Login")) == 0 ? " SELECTED " : ""%>><%=rsOwner.getString("Name")%></option><%
-                                }
-                            %>
-                        </select>
-                    </td>
-                    <td class="wob" style="width:22px; background-color:<%=backColor%>">
-                        <input style="display:inline; height:20px; width:20px; background-color: <%=backColor%>; color:blue; font-weight:bolder" title="Link" class="smallbutton" type="button" value="L" onclick="popup('<%=rsBR.getString("b.Link")%>')">
-                    </td>
-                    <td class="wob" style="background-color:<%=backColor%>"><textarea class="wob" name="ubcLink" value="<%=rsBR.getString("b.Link")%>" rows="1" style="width: 250px; background-color:<%=backColor%>; font-size:x-small" ><%=rsBR.getString("b.Link")%></textarea></td>
-                </tr><%
-                            stmtProj.close();
-                        } while (rsBR.next());
-                    }%></table>
-            <input type="button" value="New Line" onclick="addBuildContent('buildcontenttable' )"></td></tr>
-            <select id="buildcontent_build_" name="buildcontent_build_" style="width:60px ; visibility:hidden; font-size:x-small;border:0px">
-                <option style="width: 100px" value="NONE" <%=revision.compareTo("NONE") == 0 ? " SELECTED " : ""%>>-- NONE --</option>
-                <%
-                    listBuildRev = buildRevisionInvariantService.findAllBuildRevisionInvariantBySystemLevel(MySystem, 1);
-                    for (BuildRevisionInvariant myBR : listBuildRev) {
-                %><option style="width: 100px" value="<%= myBR.getVersionName()%>" <%=build.compareTo(myBR.getVersionName()) == 0 ? " SELECTED " : ""%>><%= myBR.getVersionName()%></option>
-                <% }
-                %></select>
-            <select id="buildcontent_revision_" name="buildcontent_revision_" style="width:40px ; visibility:hidden; font-size:x-small;border:0px">
-                <option style="width: 100px" value="NONE" <%=revision.compareTo("NONE") == 0 ? " SELECTED " : ""%>>-- NONE --</option>
-                <%
-                    listBuildRev = buildRevisionInvariantService.findAllBuildRevisionInvariantBySystemLevel(MySystem, 2);
-                    for (BuildRevisionInvariant myBR : listBuildRev) {
-                %><option style="width: 100px" value="<%= myBR.getVersionName()%>" <%=revision.compareTo(myBR.getVersionName()) == 0 ? " SELECTED " : ""%>><%= myBR.getVersionName()%></option>
-                <% }
-                %></select>
-            <select id="buildcontent_application_" name="buildcontent_application_" style="visibility:hidden"><%
-                ResultSet rsApp = stmtApp.executeQuery(" SELECT distinct application from application where application != '' and application " + appliInSQL + " order by sort ");
-                while (rsApp.next()) {
-                %><option value="<%=rsApp.getString("application")%>" <%=rsApp.getString("application").compareTo("AS400") == 0 ? " SELECTED " : ""%>><%=rsApp.getString("application")%></option><%
-                    }
-                %></select>
-            <select id="ubcReleaseOwner_" name="ubcReleaseOwner_" style="visibility:hidden">
-                <option value="" ></option><%
-                    Statement stmtProj = conn.createStatement();
-                    ResultSet rsOwner = stmtProj.executeQuery(" SELECT u.Login, u.Name FROM user u join userSystem us on u.login = us.login where us.`system` = '" + MySystem + "' group by us.login;");
-                    while (rsOwner.next()) {
-                %><option value="<%=rsOwner.getString("Login")%>"><%=rsOwner.getString("Name")%></option><%
-                    }%>
+<div style="font: 90% sans-serif">
+    <table id="contentTable" class="display">
+        <thead>
+        <tr>
+            <th></th>
+            <th>Sprint</th>
+            <th>Revision</th>
+            <th>Application</th>
+            <th>Release</th>
+            <th>Project</th>
+            <th>Ticket</th>
+            <th>Bug</th>
+            <th>Subject</th>
+            <th>Owner</th>
+            <th>Link</th>
+        </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</div>
+<div>
+    <form id="formAddNewRow" action="#" title="Add new Sprint content" method="post">
+        <input type="hidden" rel="0"/>
+        <div>
+            <label for="sprint">Sprint</label>
+            <select id="sprint" name="sprint" rel="1">
+                <%=buildOptions%>
             </select>
-            <select id="ubcProject_" name="ubcProject_" style="visibility:hidden"><%
-                ResultSet rsProj = stmtProj.executeQuery(" SELECT idproject, VCCode, Description from project order by idproject ");
-                while (rsProj.next()) {
-                %><option value="<%=rsProj.getString("idproject")%>"><%=rsProj.getString("idproject")%> [<%=rsProj.getString("VCCode")%>] <%=rsProj.getString("Description")%></option><%
-                    }
-                    stmtProj.close();%>
+        </div>
+        <div>
+            <label for="revision">Revision</label>
+            <select id="revision" name="revision" rel="2">
+                <%=revisionOptions%>
             </select>
-
-            <br><input type="submit" name="Save" value="Save">
-        </form>
-        <%
-                rsApp.close();
-                rsBR.close();
-                rsOwner.close();
-                rsProj.close();
-
-                stmtApp.close();
-                stmtBR.close();
-                stmtBuild.close();
-                stmtProj.close();
-                stmtRev.close();
-
-
-            } catch (Exception e) {
-                MyLogger.log("BuildContent.jsp", Level.FATAL, Version.PROJECT_NAME_VERSION + " - Exception catched." + e.toString());
-                out.println("<br> error message : " + e.getMessage() + " " + e.toString() + "<br>");
-            } finally {
-                try {
-                    conn.close();
-                } catch (Exception ex) {
-                    MyLogger.log("BuildContent.jsp", Level.FATAL, Version.PROJECT_NAME_VERSION + " - Exception catched." + ex.toString());
-                }
-            }
-
-
-
-        %>
-
-        <br><% out.print(display_footer(DatePageStart));%>
-    </body>
+        </div>
+        <div>
+            <label for="application">Application</label>
+            <select id="application" name="application" rel="3">
+                <%=applicationOptions%>
+            </select>
+        </div>
+        <div>
+            <label for="release">Release</label>
+            <input type="text" id="release" name="release" value="" class="required" rel="4"/>
+        </div>
+        <div>
+            <label for="project">Project</label>
+            <select id="project" name="project" rel="5">
+                <%=projectOptions%>
+            </select>
+        </div>
+        <div>
+            <label for="ticket">Ticket</label>
+            <input type="text" id="ticket" name="ticket" value="" rel="6"/>
+        </div>
+        <div>
+            <label for="bug">Bug</label>
+            <input type="text" id="bug" name="bug" value="" rel="7"/>
+        </div>
+        <div>
+            <label for="subject">Subject</label>
+            <input type="text" id="subject" name="subject" value="" rel="8"/>
+        </div>
+        <div>
+            <label for="owner">Owner</label>
+            <select id="owner" name="owner" rel="9">
+                <%=userOptions%>
+            </select>
+        </div>
+        <div>
+            <label for="link">Link</label>
+            <input type="text" id="link" name="link" value="" rel="10"/>
+        </div>
+        <div>
+            <button id="btnAddNewRowOk">Add</button>
+            <button id="btnAddNewRowCancel">Cancel</button>
+        </div>
+    </form>
+</div>
+</body>
+<%
+    } catch (CerberusException ex){
+        LOG.error("Unable to find Invariant, Application or User : " + ex.toString());
+        out.println("</script>");
+        out.print("<script type='text/javascript'>alert(\"Unfortunately an error as occurred, try reload the page.\\n");
+        out.print("Detail error: " + ex.getMessageError().getDescription() + "\");</script>");
+    }
+%>
 </html>

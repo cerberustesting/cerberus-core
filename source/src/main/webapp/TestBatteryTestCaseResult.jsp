@@ -24,6 +24,31 @@
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ include file="include/function.jsp" %>
+<%!
+    /**
+     * Convert list of values from request parameter to string.
+     *
+     * @param req       http request with all form input
+     * @param valueName name of the parameter to return
+     * @return string containing all values of parameter or null if parameter null
+     */
+    private String getValues(HttpServletRequest req, String valueName) {
+        StringBuilder whereClause = new StringBuilder();
+        String[] values = req.getParameterValues(valueName);
+
+        if (values != null) {
+            whereClause.append(" '").append(values[0]);
+            for (int i = 1; i < values.length; i++) {
+                if (!"All".equalsIgnoreCase(values[i]) && !"".equalsIgnoreCase(values[i].trim())) {
+                    whereClause.append("', '").append(values[i]);
+                }
+            }
+            whereClause.append("' ");
+            return whereClause.toString();
+        }
+        return null;
+    }
+%>
 <%
 
     IDocumentationService docService = appContext.getBean(IDocumentationService.class);
@@ -52,21 +77,22 @@
                     <%
 
                         TCase searchTCase = new TCase();
-                        searchTCase.setTest(request.getParameter("Test"));
-                        searchTCase.setProject(request.getParameter("Project"));
-                        String system = request.getParameter("System");
-                        searchTCase.setApplication(request.getParameter("Application"));
-                        searchTCase.setActive(request.getParameter("TcActive"));
+                        searchTCase.setTest(getValues(request, "Test"));
+                        searchTCase.setProject(getValues(request, "Project"));
+                        String system = getValues(request, "System");
+                        searchTCase.setApplication(getValues(request, "Application"));
+                        searchTCase.setActive(getValues(request, "TcActive"));
                         searchTCase.setPriority(ParameterParserUtil.parseIntegerParam(request.getParameter("Priority"), -1));
-                        searchTCase.setStatus(request.getParameter("Status"));
-                        searchTCase.setGroup(request.getParameter("Group"));
-                        searchTCase.setTargetSprint(request.getParameter("TargetBuild"));
-                        searchTCase.setTargetRevision(request.getParameter("TargetRev"));
-                        searchTCase.setCreator(request.getParameter("Creator"));
-                        searchTCase.setImplementer(request.getParameter("Implementer"));
+                        searchTCase.setStatus(getValues(request, "Status"));
+                        searchTCase.setGroup(getValues(request, "Group"));
+                        searchTCase.setTargetSprint(getValues(request, "TargetBuild"));
+                        searchTCase.setTargetRevision(getValues(request, "TargetRev"));
+                        searchTCase.setCreator(getValues(request, "Creator"));
+                        searchTCase.setImplementer(getValues(request, "Implementer"));
 
                         int indexColor = 0;
-                        for (TCase tCase : testCaseService.findTestCaseByAllCriteria(searchTCase, "", system)) {
+//                        for (TCase tCase : testCaseService.findTestCaseByAllCriteria(searchTCase, "", system)) {
+                        for (TCase tCase : testCaseService.findTestCaseByGroupInCriteria(searchTCase, system)) {
                             if(!tCase.getGroup().equalsIgnoreCase("PRIVATE")) {
                                 indexColor++;
                     %>

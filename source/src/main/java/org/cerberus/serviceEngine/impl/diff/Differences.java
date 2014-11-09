@@ -143,6 +143,15 @@ public class Differences {
 	}
 	
 	/**
+	 * Checks if there are no contained differences
+	 * 
+	 * @return <code>true</code> if no differences are contained, <code>false</code> otherwise
+	 */
+	public boolean isEmpty() {
+		return differences.isEmpty();
+	}
+	
+	/**
 	 * Returns a {@link String} representation of this {@link Differences} by following the {@link Differences} format.
 	 * 
 	 * <p>

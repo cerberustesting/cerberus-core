@@ -600,6 +600,22 @@
         <servlet-name>ExecuteNextInQueue</servlet-name>
         <servlet-class>org.cerberus.servlet.publi.ExecuteNextInQueue</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>FindBuildContent</servlet-name>
+        <servlet-class>org.cerberus.servlet.buildContent.FindBuildContent</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>AddBuildContent</servlet-name>
+        <servlet-class>org.cerberus.servlet.buildContent.AddBuildContent</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>DeleteBuildContent</servlet-name>
+        <servlet-class>org.cerberus.servlet.buildContent.DeleteBuildContent</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>UpdateBuildContent</servlet-name>
+        <servlet-class>org.cerberus.servlet.buildContent.UpdateBuildContent</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>RunTestCase</servlet-name>
         <url-pattern>/RunTestCase</url-pattern>
@@ -1160,6 +1176,22 @@
         <servlet-name>ExecuteNextInQueue</servlet-name>
         <url-pattern>/ExecuteNextInQueue</url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>FindBuildContent</servlet-name>
+        <url-pattern>/FindBuildContent</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>AddBuildContent</servlet-name>
+        <url-pattern>/AddBuildContent</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DeleteBuildContent</servlet-name>
+        <url-pattern>/DeleteBuildContent</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>UpdateBuildContent</servlet-name>
+        <url-pattern>/UpdateBuildContent</url-pattern>
+    </servlet-mapping>
     <session-config>
         <session-timeout>
             60
@@ -1362,7 +1394,7 @@
             <description>jsp</description>
             <url-pattern>/Application.jsp</url-pattern>
             <url-pattern>/BuildContent.jsp</url-pattern>
-            <url-pattern>/BuildContentV2.jsp</url-pattern>
+            <url-pattern>/BuildContent_old.jsp</url-pattern>
             <url-pattern>/BuildRevDefinition.jsp</url-pattern>
             <url-pattern>/Environment.jsp</url-pattern>
             <url-pattern>/EnvironmentList.jsp</url-pattern>
@@ -1382,6 +1414,7 @@
             <url-pattern>/GetDeployTypeList</url-pattern>
             <url-pattern>/GetBuildRevisionInvariant</url-pattern>
             <url-pattern>/GetProject</url-pattern>
+            <url-pattern>/FindBuildContent</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <description>IntegratorRO</description>
@@ -1408,6 +1441,9 @@
             <url-pattern>/DeleteRobot</url-pattern>
             <url-pattern>/UpdateRobot</url-pattern>
             <url-pattern>/FindAllRobot</url-pattern>
+            <url-pattern>/AddBuildContent</url-pattern>
+            <url-pattern>/DeleteBuildContent</url-pattern>
+            <url-pattern>/UpdateBuildContent</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <description>Integrator</description>

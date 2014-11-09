@@ -351,27 +351,34 @@ public class ControlService implements IControlService {
     }
 
     private MessageEvent verifyElementInElement(TestCaseExecution tCExecution, String element, String childElement) {
-        MyLogger.log(ControlService.class.getName(), Level.DEBUG, "Control : verifyElementInElement on : '" + element + "' is child of '" + childElement + "'");
-        MessageEvent mes;
-        if (!StringUtil.isNull(element) && !StringUtil.isNull(childElement)) {
-            try {
-                if (this.webdriverService.isElementInElement(tCExecution.getSession(), element, childElement)) {
-                    mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_ELEMENTINELEMENT);
-                    mes.setDescription(mes.getDescription().replaceAll("%STRING2%", element).replaceAll("%STRING1%", childElement));
-                    return mes;
-                } else {
-                    mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_ELEMENTINELEMENT);
-                    mes.setDescription(mes.getDescription().replaceAll("%STRING2%", element).replaceAll("%STRING1%", childElement));
-                    return mes;
-                }
-            } catch (WebDriverException exception) {
-                return parseWebDriverException(exception);
-            }
-        } else {
-            mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_ELEMENTINELEMENT);
-            mes.setDescription(mes.getDescription().replaceAll("%STRING2%", element).replaceAll("%STRING1%", childElement));
-            return mes;
-        }
+		MyLogger.log(ControlService.class.getName(), Level.DEBUG, "Control : verifyElementInElement on : '" + element + "' is child of '" + childElement + "'");
+		MessageEvent mes;
+		if (!StringUtil.isNull(element) && !StringUtil.isNull(childElement)) {
+			if (tCExecution.getApplication().getType().equalsIgnoreCase("WS")) {
+				mes = xmlUnitService.isElementInElement(tCExecution, element, childElement) ? new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_ELEMENTINELEMENT) : new MessageEvent(MessageEventEnum.CONTROL_FAILED_ELEMENTINELEMENT);
+				mes.setDescription(mes.getDescription().replaceAll("%STRING2%", element));
+				mes.setDescription(mes.getDescription().replaceAll("%STRING1%", childElement));
+				return mes;
+			} else {
+				try {
+					if (this.webdriverService.isElementInElement(tCExecution.getSession(), element, childElement)) {
+						mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_ELEMENTINELEMENT);
+						mes.setDescription(mes.getDescription().replaceAll("%STRING2%", element).replaceAll("%STRING1%", childElement));
+						return mes;
+					} else {
+						mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_ELEMENTINELEMENT);
+						mes.setDescription(mes.getDescription().replaceAll("%STRING2%", element).replaceAll("%STRING1%", childElement));
+						return mes;
+					}
+				} catch (WebDriverException exception) {
+					return parseWebDriverException(exception);
+				}
+			}
+		} else {
+			mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_ELEMENTINELEMENT);
+			mes.setDescription(mes.getDescription().replaceAll("%STRING2%", element).replaceAll("%STRING1%", childElement));
+			return mes;
+		}
     }
 
     private MessageEvent verifyElementNotPresent(TestCaseExecution tCExecution, String html) {

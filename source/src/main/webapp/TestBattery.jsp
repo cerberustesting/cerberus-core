@@ -32,6 +32,7 @@
         <link rel="stylesheet" type="text/css" href="css/jquery-ui.css">
         <link rel="stylesheet" type="text/css" href="css/dataTables_jui.css">
         <link type="text/css" rel="stylesheet" href="css/jquery.multiselect.css">
+        <link type="text/css" rel="stylesheet" href="css/jquery.multiselect.filter.css">
 
         <script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>
         <script type="text/javascript" src="js/jquery-ui-1.10.2.js"></script>
@@ -40,6 +41,7 @@
         <script type="text/javascript" src="js/jquery.dataTables.editable.js"></script>
         <script type="text/javascript" src="js/jquery.validate.min.js"></script>
         <script type="text/javascript" src="js/jquery.multiselect.js" charset="utf-8"></script>
+        <script type="text/javascript" src="js/jquery.multiselect.filter.js"></script>
         <script type="text/javascript" src="js/jquery.form.js"></script>
         
         <style>
