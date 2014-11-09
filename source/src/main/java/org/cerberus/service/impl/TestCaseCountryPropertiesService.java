@@ -19,15 +19,20 @@
  */
 package org.cerberus.service.impl;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import org.apache.log4j.Level;
-
 import org.cerberus.dao.ITestCaseCountryPropertiesDAO;
 import org.cerberus.dao.ITestCaseStepActionDAO;
+import org.cerberus.entity.TCase;
 import org.cerberus.entity.TestCaseCountryProperties;
+import org.cerberus.entity.TestCaseStep;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.log.MyLogger;
 import org.cerberus.service.ITestCaseCountryPropertiesService;
+import org.cerberus.service.ITestCaseService;
+import org.cerberus.service.ITestCaseStepService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -42,6 +47,8 @@ public class TestCaseCountryPropertiesService implements ITestCaseCountryPropert
     ITestCaseCountryPropertiesDAO testCaseCountryPropertiesDAO;
     @Autowired
     ITestCaseStepActionDAO testCaseStepActionDAO;
+    @Autowired
+    ITestCaseService testCaseService;
             
     @Override
     public List<TestCaseCountryProperties> findListOfPropertyPerTestTestCaseCountry(String test, String testCase, String country) {
@@ -106,6 +113,38 @@ public class TestCaseCountryPropertiesService implements ITestCaseCountryPropert
     @Override
     public void deleteTestCaseCountryProperties(TestCaseCountryProperties tccp) throws CerberusException {
         testCaseCountryPropertiesDAO.deleteTestCaseCountryProperties(tccp);
+    }
+    
+    @Override
+    public List<TestCaseCountryProperties> findAllWithDependencies(String test, String testcase, String country) throws CerberusException {
+        List<TestCaseCountryProperties> tccpList = new ArrayList();
+        TCase mainTC = testCaseService.findTestCaseByKey(test, testcase);
+        
+        //find all properties of preTests
+        List<TCase> tcptList = testCaseService.findTestCaseActiveByCriteria("Pre Testing", mainTC.getApplication(), country);
+        for (TCase tcase : tcptList){
+        tccpList.addAll(testCaseCountryPropertiesDAO.findListOfPropertyPerTestTestCase(tcase.getTest(), tcase.getTestCase()));
+        tccpList.addAll(testCaseCountryPropertiesDAO.findListOfPropertyPerTestTestCaseCountry(tcase.getTest(), tcase.getTestCase(), country));
+        }
+        
+        //find all properties of the used step
+        List<TCase> tcList = testCaseService.findUseTestCaseList(test, testcase);
+        for (TCase tcase : tcList){
+        tccpList.addAll(testCaseCountryPropertiesDAO.findListOfPropertyPerTestTestCase(tcase.getTest(), tcase.getTestCase()));
+        tccpList.addAll(testCaseCountryPropertiesDAO.findListOfPropertyPerTestTestCaseCountry(tcase.getTest(), tcase.getTestCase(), country));
+        }
+        
+        //find all properties of the testcase
+        tccpList.addAll(testCaseCountryPropertiesDAO.findListOfPropertyPerTestTestCase(test, testcase));
+        tccpList.addAll(testCaseCountryPropertiesDAO.findListOfPropertyPerTestTestCaseCountry(test, testcase, country));
+        
+        //Keep only one property by name
+        HashMap tccpMap = new HashMap();
+        for (TestCaseCountryProperties tccp : tccpList){
+        tccpMap.put(tccp.getProperty(), tccp);
+        }
+        List<TestCaseCountryProperties> result = new ArrayList<TestCaseCountryProperties>(tccpMap.values());
+        return result;
     }
 
 }

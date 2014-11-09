@@ -240,4 +240,16 @@ public class TestCaseService implements ITestCaseService {
     public List<TCase> findTestCaseByCampaignNameAndCountries(String campaign, String[] countries) {
         return this.testCaseDao.findTestCaseByCampaignNameAndCountries(campaign, countries);
     }
+
+    @Override
+    public List<TCase> findUseTestCaseList(String test, String testCase) throws CerberusException {
+        List<TCase> result = new ArrayList();
+        List<TestCaseStep> tcsList = testCaseStepService.getListOfSteps(test, testCase);
+        for (TestCaseStep tcs : tcsList){
+            if (("Y").equals(tcs.getUseStep())){
+            result.add(this.findTestCaseByKey(tcs.getUseStepTest(), tcs.getUseStepTestCase()));
+            }
+        }
+    return result;   
+    }
 }

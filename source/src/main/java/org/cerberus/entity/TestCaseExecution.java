@@ -79,7 +79,16 @@ public class TestCaseExecution {
     private Integer seleniumLog;
     private Session session;
     private String manualExecution;
+    private List<TestCaseCountryProperties> testCaseCountryPropertyList;
 
+    public List<TestCaseCountryProperties> getTestCaseCountryPropertyList() {
+        return testCaseCountryPropertyList;
+    }
+
+    public void setTestCaseCountryPropertyList(List<TestCaseCountryProperties> testCaseCountryPropertyList) {
+        this.testCaseCountryPropertyList = testCaseCountryPropertyList;
+    }
+    
     public String getManualExecution() {
         return manualExecution;
     }

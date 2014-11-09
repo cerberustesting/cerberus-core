@@ -130,4 +130,6 @@ public interface ITestCaseService {
      * @since 1.0.2
      */
     String getMaxNumberTestCase(String test);
+    
+    List<TCase> findUseTestCaseList(String test, String testCase) throws CerberusException ;
 }

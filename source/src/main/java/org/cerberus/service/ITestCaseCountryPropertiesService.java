@@ -50,4 +50,14 @@ public interface ITestCaseCountryPropertiesService {
     void deleteListTestCaseCountryProperties(List<TestCaseCountryProperties> tccpToDelete) throws CerberusException ;
     
     void deleteTestCaseCountryProperties(TestCaseCountryProperties tccp) throws CerberusException ;
+    
+    /**
+     * Find all the properties of a testcase including those of the pretests and the use steps
+     * @param test
+     * @param testcase
+     * @param country
+     * @return List of unique testcasecountryproperties (from tc first, use step if not found in tc and then, in pretest if not found)
+     * @throws CerberusException 
+     */
+    public List<TestCaseCountryProperties> findAllWithDependencies(String test, String testcase, String country) throws CerberusException;
 }

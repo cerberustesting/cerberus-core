@@ -75,7 +75,7 @@ public class ActionService implements IActionService {
                 isCalledFromCalculateProperty = true;
             }
             try {
-                testCaseStepActionExecution.setObject(propertyService.decodeValue(testCaseStepActionExecution.getObject(), testCaseStepActionExecution, isCalledFromCalculateProperty));
+                testCaseStepActionExecution.setObject(propertyService.decodePropertiesAndGetCalculationResult(testCaseStepActionExecution.getObject(), testCaseStepActionExecution, isCalledFromCalculateProperty));
             } catch (CerberusEventException cex) {
                 testCaseStepActionExecution.setActionResultMessage(cex.getMessageError());
                 testCaseStepActionExecution.setExecutionResultMessage(new MessageGeneral(cex.getMessageError().getMessage()));
@@ -169,7 +169,7 @@ public class ActionService implements IActionService {
 
         } else if (testCaseStepActionExecution.getAction().equals("calculateProperty")) {
             res = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_PROPERTYCALCULATED);
-            res.setDescription(res.getDescription().replaceAll("%PROP%", testCaseStepActionExecution.getPropertyName()));
+            res.setDescription(res.getDescription().replaceAll("%PROP%", propertyName));
         } else if (testCaseStepActionExecution.getAction().equals("takeScreenshot")) {
             res = this.doActionTakeScreenshot(testCaseStepActionExecution);
             //res = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_TAKESCREENSHOT);
@@ -422,7 +422,7 @@ public class ActionService implements IActionService {
             String decodedEnveloppe = soapLibrary.getEnvelope();
             if (soapLibrary.getEnvelope().contains("%")) {
                 try {
-                    decodedEnveloppe = propertyService.decodeValue(soapLibrary.getEnvelope(), testCaseStepActionExecution, false);
+                    decodedEnveloppe = propertyService.decodePropertiesAndGetCalculationResult(soapLibrary.getEnvelope(), testCaseStepActionExecution, false);
                 } catch (CerberusEventException cee) {
                     message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSOAP);
                     message.setDescription(message.getDescription().replaceAll("%SOAPNAME%", object));

@@ -65,7 +65,7 @@ public class SQLService implements ISQLService{
     
         @Override
         public TestCaseExecutionData calculateOnDatabase(TestCaseExecutionData testCaseExecutionData, TestCaseCountryProperties testCaseProperties, TestCaseExecution tCExecution) {
-        String sql = testCaseProperties.getValue1();
+        String sql = testCaseExecutionData.getValue1();
         String db = testCaseProperties.getDatabase();
 
         String connectionName;

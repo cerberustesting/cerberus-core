@@ -24,6 +24,7 @@ import java.util.List;
 import org.cerberus.entity.TestCaseCountryProperties;
 import org.cerberus.entity.TestCaseExecutionData;
 import org.cerberus.entity.TestCaseStepActionExecution;
+import org.cerberus.entity.TestCaseStepExecution;
 import org.cerberus.exception.CerberusEventException;
 import org.cerberus.exception.CerberusException;
 
@@ -36,12 +37,9 @@ import org.cerberus.exception.CerberusException;
  */
 public interface IPropertyService {
 	
-	TestCaseExecutionData calculateProperty(String property, TestCaseStepActionExecution testCaseStepActionExecution);
+	String decodePropertiesAndGetCalculationResult(String stringToDecode, TestCaseStepActionExecution testCaseStepActionExecution, boolean forceCalculation) throws CerberusEventException;
         
-        TestCaseExecutionData getPropertiesAndPerformCalculation(String property, TestCaseStepActionExecution testCaseStepActionExecution, boolean isCalledFromCalculateProperty);
+        List<TestCaseCountryProperties> getListOfPropertiesLinkedToProperty(String test, String testCase, String country, String property, String usedTest, String usedTestCase, List<String> crossedProperties, List<TestCaseCountryProperties> propertieOfTestcase) throws CerberusEventException ;
         
-        List<TestCaseCountryProperties> getListOfPropertiesLinkedToProperty(String test, String testCase, String country, String property,String test2, String testCase2, List<String> crossedProperties) throws CerberusEventException;
-	
-        String decodeValue(String myString, TestCaseStepActionExecution testCaseStepActionExecution, boolean isCalledFromCalculateProperty) throws CerberusEventException;
-    
+        
 }
