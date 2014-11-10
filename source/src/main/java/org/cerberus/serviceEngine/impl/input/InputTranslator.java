@@ -45,6 +45,10 @@ public interface InputTranslator<T> {
 	/**
 	 * If this {@link InputTranslator} can translate the given data input which follows a given format.
 	 * 
+	 * <p>
+	 * Note that a <code>null</code> prefixed {@link InputTranslator} can always translate an input.
+	 * </p>
+	 * 
 	 * @param input
 	 *            the data input to test.
 	 * @return <code>true</code> if this {@link InputTranslator} can translate the given data input, <code>false</code> otherwise.

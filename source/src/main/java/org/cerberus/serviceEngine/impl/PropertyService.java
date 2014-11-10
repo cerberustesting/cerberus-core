@@ -152,7 +152,7 @@ public class PropertyService implements IPropertyService {
     }
 
     @Override
-    public String decodePropertiesAndGetCalculationResult(String stringToDecode, TestCaseStepActionExecution testCaseStepActionExecution, boolean forceCalculation) throws CerberusEventException {
+    public String getValue(String stringToDecode, TestCaseStepActionExecution testCaseStepActionExecution, boolean forceCalculation) throws CerberusEventException {
         TestCaseExecution tCExecution = testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution();
         TestCaseStepExecution tCSExecution = testCaseStepActionExecution.getTestCaseStepExecution();
         String test = testCaseStepActionExecution.getTest();
@@ -220,22 +220,17 @@ public class PropertyService implements IPropertyService {
             /*  First check if property has already been calculated 
              *  if action is calculateProperty, then set isKnownData to false. 
              */
-            boolean isKnownData = false;
             List<TestCaseExecutionData> dataList = tCExecution.getTestCaseExecutionDataList();
             for (int iterator = 0; iterator < dataList.size(); iterator++) {
                 if (dataList.get(iterator).getProperty().equalsIgnoreCase(eachTccp.getProperty())) {
                     if (LOG.isDebugEnabled()) {
                         LOG.debug("Property " + eachTccp + " has already been calculated");
                     }
-                    isKnownData = true;
                     if (!forceCalculation) {
                         //If Calculation not forced , set tecd to the previous property already calculated.
                         tecd = dataList.get(iterator);
-                        dataList.remove(dataList.get(iterator));
-                    } else {
-                        //If Calculation forced , remove the executiondata object from the list.
-                        dataList.remove(dataList.get(iterator));
                     }
+                    dataList.remove(iterator);
                     break;
                 }
             }
@@ -256,7 +251,7 @@ public class PropertyService implements IPropertyService {
                     testCaseExecutionDataService.insertOrUpdateTestCaseExecutionData(tecd);
 
                 } catch (CerberusException cex) {
-                    LOG.error(null, cex);
+                    LOG.error(cex.getMessage(), cex);
                 }
             }
             /**

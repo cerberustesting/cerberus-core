@@ -20,20 +20,23 @@
 
 package org.cerberus.serviceEngine.impl;
 
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.when;
 import junit.framework.Assert;
-import org.cerberus.entity.Selenium;
+
+import org.cerberus.entity.Application;
+import org.cerberus.entity.MessageEventEnum;
 import org.cerberus.entity.Session;
 import org.cerberus.entity.TestCaseExecution;
 import org.cerberus.entity.TestCaseStepActionControlExecution;
 import org.cerberus.entity.TestCaseStepActionExecution;
 import org.cerberus.entity.TestCaseStepExecution;
+import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
-import static org.mockito.Matchers.anyString;
 import org.mockito.Mock;
-import static org.mockito.Mockito.when;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.openqa.selenium.WebDriverException;
 import org.springframework.test.context.ContextConfiguration;
@@ -51,16 +54,31 @@ public class ControlServiceTest {
 
     @Mock
     private Session session;
+    
     @Mock
     private WebDriverService webdriverService;
+    
     @Mock
     private TestCaseExecution tCExecution;
+    
+    @Mock
+    private Application application;
+    
     @Mock
     private PropertyService propertyService;
+    
     @InjectMocks
     private ControlService controlService;
     
-
+    @Mock
+    private XmlUnitService xmlUnitService;
+    
+    @Before
+    public void before() {
+    	 when(tCExecution.getApplication()).thenReturn(application);
+         when(application.getType()).thenReturn("GUI");
+    }
+    
     @Test
     public void testDoControlStringEqualWhenSuccess() {
         String property = "test";
@@ -687,7 +705,7 @@ public class ControlServiceTest {
         String property = "null";
         String value = "id=test";
         String msg = "Element '"+value+"' is not child of element '"+property+"'.";
-
+        
         TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
         tcsace.setControlType("verifyElementInElement");
         tcsace.setControlProperty(property);
@@ -758,5 +776,78 @@ public class ControlServiceTest {
         Assert.assertEquals(msg, tcsace.getControlResultMessage().getDescription());
         Assert.assertEquals("OK", tcsace.getReturnCode());
         Assert.assertEquals("Y", tcsace.getFatal());
+    }
+    
+    @Test
+    public void testVerifyElementEqualsWithNotCompatibleApplication() {
+    	String xpath = "/foo/bar";
+        String expectedElement = "<bar>baz</bar>";
+
+        TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
+        tcsace.setControlType("verifyElementEquals");
+        tcsace.setControlProperty(xpath);
+        tcsace.setControlValue(expectedElement);
+        tcsace.setFatal("Y");
+        TestCaseStepExecution tcse = new TestCaseStepExecution();
+        tcse.settCExecution(tCExecution);
+        TestCaseStepActionExecution tcsae = new TestCaseStepActionExecution();
+        tcsae.setTestCaseStepExecution(tcse);
+        tcsace.setTestCaseStepActionExecution(tcsae);
+
+        this.controlService.doControl(tcsace);
+
+        Assert.assertEquals(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION.getCode(), tcsace.getControlResultMessage().getCode());
+    }
+    
+    @Test
+    public void testVerifyElementEqualsWithElementPresent() {
+    	String xpath = "/foo/bar";
+        String expectedElement = "<bar>baz</bar>";
+        String msg = "Element in path '" + xpath + "' is equal to '" + expectedElement + "'.";
+        
+        TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
+        tcsace.setControlType("verifyElementEquals");
+        tcsace.setControlProperty(xpath);
+        tcsace.setControlValue(expectedElement);
+        tcsace.setFatal("Y");
+        TestCaseStepExecution tcse = new TestCaseStepExecution();
+        tcse.settCExecution(tCExecution);
+        TestCaseStepActionExecution tcsae = new TestCaseStepActionExecution();
+        tcsae.setTestCaseStepExecution(tcse);
+        tcsace.setTestCaseStepActionExecution(tcsae);
+        
+        when(application.getType()).thenReturn("WS");
+        when(xmlUnitService.isElementEquals(tCExecution, xpath, expectedElement)).thenReturn(Boolean.TRUE);
+
+        this.controlService.doControl(tcsace);
+
+        Assert.assertEquals(MessageEventEnum.CONTROL_SUCCESS_ELEMENTEQUALS.getCode(), tcsace.getControlResultMessage().getCode());
+        Assert.assertEquals(msg, tcsace.getControlResultMessage().getDescription());
+    }
+    
+    @Test
+    public void testVerifyElementEqualsWithElementAbsent() {
+    	String xpath = "/foo/bar";
+        String expectedElement = "<bar>baz</bar>";
+        String msg = "Element in path '" + xpath + "' is not equal to '" + expectedElement + "'.";
+        
+        TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
+        tcsace.setControlType("verifyElementEquals");
+        tcsace.setControlProperty(xpath);
+        tcsace.setControlValue(expectedElement);
+        tcsace.setFatal("Y");
+        TestCaseStepExecution tcse = new TestCaseStepExecution();
+        tcse.settCExecution(tCExecution);
+        TestCaseStepActionExecution tcsae = new TestCaseStepActionExecution();
+        tcsae.setTestCaseStepExecution(tcse);
+        tcsace.setTestCaseStepActionExecution(tcsae);
+        
+        when(application.getType()).thenReturn("WS");
+        when(xmlUnitService.isElementEquals(tCExecution, xpath, expectedElement)).thenReturn(Boolean.FALSE);
+
+        this.controlService.doControl(tcsace);
+
+        Assert.assertEquals(MessageEventEnum.CONTROL_FAILED_ELEMENTEQUALS.getCode(), tcsace.getControlResultMessage().getCode());
+        Assert.assertEquals(msg, tcsace.getControlResultMessage().getDescription());
     }
 }
