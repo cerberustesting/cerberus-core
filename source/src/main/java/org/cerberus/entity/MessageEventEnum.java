@@ -167,6 +167,7 @@ public enum MessageEventEnum {
     CONTROL_SUCCESS_SIMILARTREE(300, "OK", "Tree '%STRING1%' is equal to tree '%STRING2%'", false, false ,false , MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     CONTROL_SUCCESS_CLICKABLE(300, "OK", "Element '%ELEMENT%' is clickable", false, false ,false , MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     CONTROL_SUCCESS_NOTCLICKABLE(300, "OK", "Element '%ELEMENT%' is not clickable", false, false ,false , MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
+    CONTROL_SUCCESS_ELEMENTEQUALS(300, "OK", "Element in path '%XPATH%' is equal to '%EXPECTED_ELEMENT%'.", false, false ,false , MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     CONTROL_FAILED(350, "KO", "Control Failed", false, true ,false , MessageGeneralEnum.EXECUTION_KO),
     CONTROL_FAILED_UNKNOWNCONTROL(351, "KO", "Control function '%CONTROL%' does not exist or is not supported.", true, false ,false , MessageGeneralEnum.EXECUTION_FA),
     CONTROL_FAILED_FATAL(352, "KO", "Fatal Control Failed", true, true ,false , MessageGeneralEnum.EXECUTION_KO),
@@ -208,6 +209,7 @@ public enum MessageEventEnum {
     CONTROL_FAILED_NOTCLICKABLE(387, "KO", "Element '%ELEMENT%' is clickable but it shouldn't.", true, true ,true , MessageGeneralEnum.EXECUTION_KO),
     CONTROL_FAILED_CLICKABLE_NULL(362, "KO", "Object is 'null'. This is mandatory in order to perform the control verify element clickable", true, false ,true , MessageGeneralEnum.EXECUTION_KO),
     CONTROL_FAILED_NOTCLICKABLE_NULL(362, "KO", "Object is 'null'. This is mandatory in order to perform the control verify element not clickable", true, false ,true , MessageGeneralEnum.EXECUTION_KO),
+    CONTROL_FAILED_ELEMENTEQUALS(388, "KO", "Element in path '%XPATH%' is not equal to '%EXPECTED_ELEMENT%'.", true, true ,true , MessageGeneralEnum.EXECUTION_KO),
     CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION(384, "KO", "Not executed because Control '%CONTROL%' is not supported for application type '%APPLICATIONTYPE%'.", true, true ,false , MessageGeneralEnum.EXECUTION_FA),
     CONTROL_PENDING(399, "PE", "Control beeing performed...", false, false ,false , MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     STEP_SUCCESS(400, "OK", "", false, false ,false , MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
@@ -265,4 +267,5 @@ public enum MessageEventEnum {
     public String getCodeString() {
         return codeString;
     }
+    
 }

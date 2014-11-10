@@ -23,6 +23,7 @@ import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
+
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.cerberus.entity.MessageEvent;
@@ -162,6 +163,9 @@ public class ControlService implements IControlService {
                         testCaseStepActionControlExecution.getControlValue());
             } else if (testCaseStepActionControlExecution.getControlType().equals("verifyXmlTreeStructure")) {
                 res = this.verifyXmlTreeStructure(tCExecution, testCaseStepActionControlExecution.getControlProperty(),
+                        testCaseStepActionControlExecution.getControlValue());
+            } else if (testCaseStepActionControlExecution.getControlType().equals("verifyElementEquals")) {
+                res = this.verifyElementEquals(tCExecution, testCaseStepActionControlExecution.getControlProperty(),
                         testCaseStepActionControlExecution.getControlValue());
             } else {
                 res = new MessageEvent(MessageEventEnum.CONTROL_FAILED_UNKNOWNCONTROL);
@@ -340,7 +344,7 @@ public class ControlService implements IControlService {
                     return mes;
                 }
             } else {
-                mes = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
+                mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
                 mes.setDescription(mes.getDescription().replaceAll("%CONTROL%", "VerifyElementPresent"));
                 mes.setDescription(mes.getDescription().replaceAll("%APPLICATIONTYPE%", tCExecution.getApplication().getType()));
                 return mes;
@@ -351,15 +355,12 @@ public class ControlService implements IControlService {
     }
 
     private MessageEvent verifyElementInElement(TestCaseExecution tCExecution, String element, String childElement) {
-		MyLogger.log(ControlService.class.getName(), Level.DEBUG, "Control : verifyElementInElement on : '" + element + "' is child of '" + childElement + "'");
+    	if(LOG.isDebugEnabled()) {
+    		LOG.debug("Control : verifyElementInElement on : '" + element + "' is child of '" + childElement + "'");
+    	}
 		MessageEvent mes;
-		if (!StringUtil.isNull(element) && !StringUtil.isNull(childElement)) {
-			if (tCExecution.getApplication().getType().equalsIgnoreCase("WS")) {
-				mes = xmlUnitService.isElementInElement(tCExecution, element, childElement) ? new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_ELEMENTINELEMENT) : new MessageEvent(MessageEventEnum.CONTROL_FAILED_ELEMENTINELEMENT);
-				mes.setDescription(mes.getDescription().replaceAll("%STRING2%", element));
-				mes.setDescription(mes.getDescription().replaceAll("%STRING1%", childElement));
-				return mes;
-			} else {
+		if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")|| tCExecution.getApplication().getType().equalsIgnoreCase("APK")) {
+			if (!StringUtil.isNull(element) && !StringUtil.isNull(childElement)) {
 				try {
 					if (this.webdriverService.isElementInElement(tCExecution.getSession(), element, childElement)) {
 						mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_ELEMENTINELEMENT);
@@ -373,11 +374,16 @@ public class ControlService implements IControlService {
 				} catch (WebDriverException exception) {
 					return parseWebDriverException(exception);
 				}
+			} else {
+				mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_ELEMENTINELEMENT);
+				mes.setDescription(mes.getDescription().replaceAll("%STRING2%", element).replaceAll("%STRING1%", childElement));
+				return mes;
 			}
 		} else {
-			mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_ELEMENTINELEMENT);
-			mes.setDescription(mes.getDescription().replaceAll("%STRING2%", element).replaceAll("%STRING1%", childElement));
-			return mes;
+			mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
+            mes.setDescription(mes.getDescription().replaceAll("%CONTROL%", "verifyElementInElement"));
+            mes.setDescription(mes.getDescription().replaceAll("%APPLICATIONTYPE%", tCExecution.getApplication().getType()));
+            return mes;
 		}
     }
 
@@ -746,7 +752,7 @@ public class ControlService implements IControlService {
                     return parseWebDriverException(exception);
                 }
             } else {
-                mes = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
+                mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
                 mes.setDescription(mes.getDescription().replaceAll("%CONTROL%", "verifyElementClickable"));
                 mes.setDescription(mes.getDescription().replaceAll("%APPLICATIONTYPE%", tCExecution.getApplication().getType()));
                 return mes;
@@ -776,7 +782,7 @@ public class ControlService implements IControlService {
                     return parseWebDriverException(exception);
                 }
             } else {
-                mes = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
+                mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
                 mes.setDescription(mes.getDescription().replaceAll("%CONTROL%", "VerifyElementNotClickable"));
                 mes.setDescription(mes.getDescription().replaceAll("%APPLICATIONTYPE%", tCExecution.getApplication().getType()));
                 return mes;
@@ -784,5 +790,24 @@ public class ControlService implements IControlService {
         } else {
             return new MessageEvent(MessageEventEnum.CONTROL_FAILED_NOTCLICKABLE_NULL);
         }
+    }
+    
+    private MessageEvent verifyElementEquals(TestCaseExecution tCExecution, String xpath, String expectedElement) {
+    	MessageEvent mes = null;
+    	
+    	// If case of not compatible application then exit with error
+    	if (!tCExecution.getApplication().getType().equalsIgnoreCase("WS")) {
+    		mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
+            mes.setDescription(mes.getDescription().replaceAll("%CONTROL%", "verifyIsElementEquals"));
+            mes.setDescription(mes.getDescription().replaceAll("%APPLICATIONTYPE%", tCExecution.getApplication().getType()));
+            return mes;
+    	}
+    	
+    	// Check if element on the given xpath is equal to the given expected element
+    	mes = xmlUnitService.isElementEquals(tCExecution, xpath, expectedElement) ? new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_ELEMENTEQUALS) : new MessageEvent(MessageEventEnum.CONTROL_FAILED_ELEMENTEQUALS);
+		mes.setDescription(mes.getDescription().replaceAll("%XPATH%", xpath));
+		mes.setDescription(mes.getDescription().replaceAll("%EXPECTED_ELEMENT%", expectedElement));
+		// TODO Give the actual element found into the description.
+		return mes;
     }
 }

@@ -412,23 +412,23 @@ public class XmlUnitService implements IXmlUnitService {
 	}
 
 	@Override
-	public boolean isElementInElement(TestCaseExecution tCExecution, String xpath, String element) {
-		if (tCExecution == null || xpath == null || element == null) {
-			LOG.warn("Unable to check if element is in element with null argument");
+	public boolean isElementEquals(TestCaseExecution tCExecution, String xpath, String expectedElement) {
+		if (tCExecution == null || xpath == null || expectedElement == null) {
+			LOG.warn("Unable to check if element equality with null argument");
 			return false;
 		}
 		
 		try {
 			List<String> candidates = XmlUtil.evaluate(executionSOAPResponse.getExecutionSOAPResponse(tCExecution.getExecutionUUID()), xpath);
 			for (String candidate : candidates) {
-				if (Differences.fromString(getDifferencesFromXml(candidate, element)).isEmpty()) {
+				if (Differences.fromString(getDifferencesFromXml(candidate, expectedElement)).isEmpty()) {
 					return true;
 				}
 			}
 		} catch (XmlUtilException xue) {
-			LOG.warn("Unable to check if element is in element", xue);
+			LOG.warn("Unable to check if element equality", xue);
 		} catch (DifferencesException de) {
-			LOG.warn("Unable to check if element is in element", de);
+			LOG.warn("Unable to check if element equality", de);
 		}
 
 		return false;

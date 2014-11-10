@@ -159,7 +159,7 @@ public class XmlUnitServiceTest {
 		tce.setExecutionUUID("1234");
 		Mockito.when(executionSOAPResponse.getExecutionSOAPResponse(tce.getExecutionUUID())).thenReturn("<root><a>1</a><a>2</a></root>");
 
-		Assert.assertTrue(xmlUnitService.isElementInElement(tce, "/root/a", "<a>2</a>"));
+		Assert.assertTrue(xmlUnitService.isElementEquals(tce, "/root/a", "<a>2</a>"));
 	}
 
 	@Test
@@ -168,7 +168,7 @@ public class XmlUnitServiceTest {
 		tce.setExecutionUUID("1234");
 		Mockito.when(executionSOAPResponse.getExecutionSOAPResponse(tce.getExecutionUUID())).thenReturn("<root><a>1</a><a>2</a></root>");
 
-		Assert.assertTrue(xmlUnitService.isElementInElement(tce, "/root/a", "               <a>2</a>   "));
+		Assert.assertTrue(xmlUnitService.isElementEquals(tce, "/root/a", "               <a>2</a>   "));
 	}
 
 	@Test
@@ -177,22 +177,22 @@ public class XmlUnitServiceTest {
 		tce.setExecutionUUID("1234");
 		Mockito.when(executionSOAPResponse.getExecutionSOAPResponse(tce.getExecutionUUID())).thenReturn("<root><a>1</a><a>2</a></root>");
 
-		Assert.assertFalse(xmlUnitService.isElementInElement(tce, "/root/a", "<a>3</a>"));
+		Assert.assertFalse(xmlUnitService.isElementEquals(tce, "/root/a", "<a>3</a>"));
 	}
 
 	@Test
 	public void testIsElementInElementWithNullTCE() {
-		Assert.assertFalse(xmlUnitService.isElementInElement(null, "/foo", "<bar/>"));
+		Assert.assertFalse(xmlUnitService.isElementEquals(null, "/foo", "<bar/>"));
 	}
 
 	@Test
 	public void testIsElementInElementWithNullXPath() {
-		Assert.assertFalse(xmlUnitService.isElementInElement(new TestCaseExecution(), null, "<bar/>"));
+		Assert.assertFalse(xmlUnitService.isElementEquals(new TestCaseExecution(), null, "<bar/>"));
 	}
 
 	@Test
 	public void testIsElementInElementWithNullElement() {
-		Assert.assertFalse(xmlUnitService.isElementInElement(new TestCaseExecution(), "/foo", null));
+		Assert.assertFalse(xmlUnitService.isElementEquals(new TestCaseExecution(), "/foo", null));
 	}
 
 }

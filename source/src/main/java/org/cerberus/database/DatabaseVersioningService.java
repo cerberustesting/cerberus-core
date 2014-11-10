@@ -3938,8 +3938,15 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS = new StringBuilder();
         SQLS.append("ALTER TABLE `testcaseexecutionwwwdet` ADD INDEX `IX_testcaseexecutionwwwdet_01` (`Start` ASC);");
         SQLInstruction.add(SQLS.toString());
-        
+      
+//Add Invariant for new control verify element is equal to another.
+//-- ------------------------ 553
+		SQLS = new StringBuilder();
+		SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`) VALUES ");
+		SQLS.append("('CONTROL', 'verifyElementEquals', 44, 'verifyElementEquals');");
+		SQLInstruction.add(SQLS.toString());    
         
         return SQLInstruction;
     }
+    
 }
