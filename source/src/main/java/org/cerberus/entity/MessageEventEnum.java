@@ -69,7 +69,7 @@ public enum MessageEventEnum {
     PROPERTY_FAILED_HTML_ELEMENTDONOTEXIST(180, "FA", "Failed to calculate property because could not find element '%ELEMENT%'!", true, true ,true , MessageGeneralEnum.EXECUTION_FA),
     PROPERTY_FAILED_HTML_ATTRIBUTEDONOTEXIST(180, "FA", "Failed to calculate property because could not find attribute '%ATTRIBUTE%' for element '%ELEMENT%'!", true, true ,true , MessageGeneralEnum.EXECUTION_FA),
     PROPERTY_FAILED_HTMLVISIBLE_ELEMENTDONOTEXIST(181, "FA", "Failed to calculate visible html property because could not find element '%ELEMENT%'!", true, true ,true , MessageGeneralEnum.EXECUTION_FA),
-    PROPERTY_FAILED_UNKNOWNPROPERTY(182, "FA", "Property function '%PROPERTY%' does not exist or is not supported by the engine.", true, false ,false , MessageGeneralEnum.EXECUTION_FA),
+    PROPERTY_FAILED_UNKNOWNPROPERTY(182, "FA", "Property '%PROP%' does not exist or is not supported by the engine.", true, false ,false , MessageGeneralEnum.EXECUTION_FA),
     PROPERTY_FAILED_TEXTRANDOMLENGHT0(183, "FA", "RANDOM or RANDOMNEW text Property function cannot have a lenght at 0. Pick STATIC nature (if you want an empty string) or increase the lenght.", true, false ,false , MessageGeneralEnum.EXECUTION_FA),
     PROPERTY_FAILED_TESTDATA_PROPERTYDONOTEXIST(184, "NA", "TestData %PROPERTY% do not exist!", true, true ,false , MessageGeneralEnum.EXECUTION_NA),
     PROPERTY_FAILED_JS_EXCEPTION(185, "NA", "Failed to Execute script!\nException reached : %EXCEPTION%.", true, true ,false , MessageGeneralEnum.EXECUTION_NA),
