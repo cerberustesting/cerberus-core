@@ -3958,6 +3958,20 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
 		SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`) VALUES ");
 		SQLS.append("('CONTROL', 'verifyElementDifferent', 33, 'verifyElementDifferent');");
 		SQLInstruction.add(SQLS.toString());
+		
+//Add Documentation for new control verify element in element.
+//-- ------------------------ 556
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `DocLabel`, `DocDesc`) VALUES ");
+        SQLS.append("('testcasestepactioncontrol', 'Type', 'verifyElementEquals', 'True if the ControlProp contains the same element ControlValue.', '<b>verifyElementEquals</b><br><br>Verify if the element equals to another in an XML file.<br><br><i>Control Property :</i> XPath to the element<br><br><i>Control Value :</i> The expected element<br><br>');");
+        SQLInstruction.add(SQLS.toString());
+		        
+//Add Documentation for new control verify element in element.
+//-- ------------------------ 557
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `DocLabel`, `DocDesc`) VALUES ");
+        SQLS.append("('testcasestepactioncontrol', 'Type', 'verifyElementDifferent', 'True if the ControlProp does not contains the same element ControlValue.', '<b>verifyElementDifferent</b><br><br>Verify if the element is different from an another in an XML file.<br><br><i>Control Property :</i> XPath to the element<br><br><i>Control Value :</i> The element to be different<br><br>');");
+        SQLInstruction.add(SQLS.toString());
         
         return SQLInstruction;
     }
