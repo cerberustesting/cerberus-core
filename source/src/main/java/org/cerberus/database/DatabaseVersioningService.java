@@ -3959,6 +3959,20 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
 		SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`) VALUES ");
 		SQLS.append("('CONTROL', 'verifyIntegerDifferent', 19, 'verifyIntegerDifferent');");
 		SQLInstruction.add(SQLS.toString());
+		
+//Add Documentation for new control verify integer is equal to another.
+//-- ------------------------ 556
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `DocLabel`, `DocDesc`) VALUES ");
+        SQLS.append("('testcasestepactioncontrol', 'Type', 'verifyIntegerEquals', 'True if the ControlProp is equal to the integer ControlValue.', '<b>verifyIntegerEquals</b><br><br>Verify if two integers are equals.<br><br><i>Control Property :</i> The first integer<br><br><i>Control Value :</i> The second integer<br><br>');");
+        SQLInstruction.add(SQLS.toString());
+        
+//Add Documentation for new control verify integer is equal to another.
+//-- ------------------------ 557
+		SQLS = new StringBuilder();
+		SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `DocLabel`, `DocDesc`) VALUES ");
+		SQLS.append("('testcasestepactioncontrol', 'Type', 'verifyIntegerDifferent', 'True if the ControlProp is different than the integer ControlValue.', '<b>verifyIntegerDifferent</b><br><br>Verify if two integers are differents.<br><br><i>Control Property :</i> The first integer<br><br><i>Control Value :</i> The second integer<br><br>');");
+		SQLInstruction.add(SQLS.toString());
         
         return SQLInstruction;
     }
