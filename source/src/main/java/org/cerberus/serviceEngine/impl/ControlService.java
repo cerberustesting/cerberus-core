@@ -70,11 +70,11 @@ public class ControlService implements IControlService {
          */
     	try {
     		if (testCaseStepActionControlExecution.getControlProperty().contains("%")) {
-    			testCaseStepActionControlExecution.setControlProperty(propertyService.decodePropertiesAndGetCalculationResult(testCaseStepActionControlExecution.getControlProperty(), testCaseStepActionControlExecution.getTestCaseStepActionExecution(), false));
+    			testCaseStepActionControlExecution.setControlProperty(propertyService.getValue(testCaseStepActionControlExecution.getControlProperty(), testCaseStepActionControlExecution.getTestCaseStepActionExecution(), false));
     		}
     		
     		if (testCaseStepActionControlExecution.getControlValue().contains("%")) {
-    			testCaseStepActionControlExecution.setControlValue(propertyService.decodePropertiesAndGetCalculationResult(testCaseStepActionControlExecution.getControlValue(), testCaseStepActionControlExecution.getTestCaseStepActionExecution(),false));
+    			testCaseStepActionControlExecution.setControlValue(propertyService.getValue(testCaseStepActionControlExecution.getControlValue(), testCaseStepActionControlExecution.getTestCaseStepActionExecution(),false));
     		}
     			
     	} catch (CerberusEventException cex) {

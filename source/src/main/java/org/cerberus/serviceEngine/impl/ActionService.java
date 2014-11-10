@@ -75,7 +75,7 @@ public class ActionService implements IActionService {
                 isCalledFromCalculateProperty = true;
             }
             try {
-                testCaseStepActionExecution.setObject(propertyService.decodePropertiesAndGetCalculationResult(testCaseStepActionExecution.getObject(), testCaseStepActionExecution, isCalledFromCalculateProperty));
+                testCaseStepActionExecution.setObject(propertyService.getValue(testCaseStepActionExecution.getObject(), testCaseStepActionExecution, isCalledFromCalculateProperty));
             } catch (CerberusEventException cex) {
                 testCaseStepActionExecution.setActionResultMessage(cex.getMessageError());
                 testCaseStepActionExecution.setExecutionResultMessage(new MessageGeneral(cex.getMessageError().getMessage()));
@@ -422,7 +422,7 @@ public class ActionService implements IActionService {
             String decodedEnveloppe = soapLibrary.getEnvelope();
             if (soapLibrary.getEnvelope().contains("%")) {
                 try {
-                    decodedEnveloppe = propertyService.decodePropertiesAndGetCalculationResult(soapLibrary.getEnvelope(), testCaseStepActionExecution, false);
+                    decodedEnveloppe = propertyService.getValue(soapLibrary.getEnvelope(), testCaseStepActionExecution, false);
                 } catch (CerberusEventException cee) {
                     message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSOAP);
                     message.setDescription(message.getDescription().replaceAll("%SOAPNAME%", object));

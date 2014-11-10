@@ -37,7 +37,7 @@ import org.cerberus.exception.CerberusException;
  */
 public interface IPropertyService {
 	
-	String decodePropertiesAndGetCalculationResult(String stringToDecode, TestCaseStepActionExecution testCaseStepActionExecution, boolean forceCalculation) throws CerberusEventException;
+	String getValue(String stringToDecode, TestCaseStepActionExecution testCaseStepActionExecution, boolean forceCalculation) throws CerberusEventException;
         
         List<TestCaseCountryProperties> getListOfPropertiesLinkedToProperty(String test, String testCase, String country, String property, String usedTest, String usedTestCase, List<String> crossedProperties, List<TestCaseCountryProperties> propertieOfTestcase) ;
         

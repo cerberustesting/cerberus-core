@@ -461,7 +461,7 @@ public class ExecutionRunService implements IExecutionRunService {
                     if (testCaseStepActionExecution.getAction().equals("calculateProperty")) {
                         isCalledFromCalculateProperty = true;
                     }
-                    propertyService.decodePropertiesAndGetCalculationResult("%" + propertyToCalculate + "%", testCaseStepActionExecution, isCalledFromCalculateProperty);
+                    propertyService.getValue("%" + propertyToCalculate + "%", testCaseStepActionExecution, isCalledFromCalculateProperty);
                 } catch (CerberusEventException ex) {
                     Logger.getLogger(ExecutionRunService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
                 }
