@@ -3944,7 +3944,21 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
 		SQLS = new StringBuilder();
 		SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`) VALUES ");
 		SQLS.append("('CONTROL', 'verifyElementEquals', 44, 'verifyElementEquals');");
-		SQLInstruction.add(SQLS.toString());    
+		SQLInstruction.add(SQLS.toString());
+		
+//Add Invariant for new control verify integer is equal to another.
+//-- ------------------------ 554
+		SQLS = new StringBuilder();
+		SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`) VALUES ");
+		SQLS.append("('CONTROL', 'verifyIntegerEquals', 18, 'verifyIntegerEquals');");
+		SQLInstruction.add(SQLS.toString());
+		
+//Add Invariant for new control verify integer is equal to another.
+//-- ------------------------ 555
+		SQLS = new StringBuilder();
+		SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`) VALUES ");
+		SQLS.append("('CONTROL', 'verifyIntegerDifferent', 19, 'verifyIntegerDifferent');");
+		SQLInstruction.add(SQLS.toString());
         
         return SQLInstruction;
     }

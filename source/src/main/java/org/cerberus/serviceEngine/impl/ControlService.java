@@ -112,6 +112,12 @@ public class ControlService implements IControlService {
             } else if (testCaseStepActionControlExecution.getControlType().equals("verifyIntegerMinor")) {
                 res = this.verifyIntegerMinor(testCaseStepActionControlExecution.getControlProperty(), testCaseStepActionControlExecution.getControlValue());
 
+            } else if (testCaseStepActionControlExecution.getControlType().equals("verifyIntegerEquals")) {
+                res = this.verifyIntegerEquals(testCaseStepActionControlExecution.getControlProperty(), testCaseStepActionControlExecution.getControlValue());
+
+            } else if (testCaseStepActionControlExecution.getControlType().equals("verifyIntegerDifferent")) {
+                res = this.verifyIntegerDifferent(testCaseStepActionControlExecution.getControlProperty(), testCaseStepActionControlExecution.getControlValue());
+
             } else if (testCaseStepActionControlExecution.getControlType().equals("verifyElementPresent")) {
                 //TODO validate properties
                 res = this.verifyElementPresent(tCExecution, testCaseStepActionControlExecution.getControlProperty());
@@ -310,6 +316,26 @@ public class ControlService implements IControlService {
                 mes.setDescription(mes.getDescription().replaceAll("%STRING2%", value));
                 return mes;
             }
+        }
+        return new MessageEvent(MessageEventEnum.CONTROL_FAILED_PROPERTY_NOTNUMERIC);
+    }
+    
+    private MessageEvent verifyIntegerEquals(String property, String value) {
+        if (StringUtil.isNumeric(property) && StringUtil.isNumeric(value)) {
+        	MessageEvent mes = Integer.parseInt(property) == Integer.parseInt(value) ? new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_EQUAL) : new MessageEvent(MessageEventEnum.CONTROL_FAILED_EQUAL);
+            mes.setDescription(mes.getDescription().replaceAll("%STRING1%", property));
+            mes.setDescription(mes.getDescription().replaceAll("%STRING2%", value));
+            return mes;
+        }
+        return new MessageEvent(MessageEventEnum.CONTROL_FAILED_PROPERTY_NOTNUMERIC);
+    }
+    
+    private MessageEvent verifyIntegerDifferent(String property, String value) {
+        if (StringUtil.isNumeric(property) && StringUtil.isNumeric(value)) {
+        	MessageEvent mes = Integer.parseInt(property) != Integer.parseInt(value) ? new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_DIFFERENT) : new MessageEvent(MessageEventEnum.CONTROL_FAILED_DIFFERENT);
+            mes.setDescription(mes.getDescription().replaceAll("%STRING1%", property));
+            mes.setDescription(mes.getDescription().replaceAll("%STRING2%", value));
+            return mes;
         }
         return new MessageEvent(MessageEventEnum.CONTROL_FAILED_PROPERTY_NOTNUMERIC);
     }
@@ -810,4 +836,5 @@ public class ControlService implements IControlService {
 		// TODO Give the actual element found into the description.
 		return mes;
     }
+    
 }
