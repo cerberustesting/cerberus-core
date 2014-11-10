@@ -43,8 +43,7 @@ public abstract class AInputTranslator<T> implements InputTranslator<T> {
 
 	@Override
 	public boolean canTranslate(String input) {
-		String inputPrefix = InputTranslatorUtil.getPrefix(input);
-		return getPrefix() == null ? inputPrefix == null : getPrefix().equals(inputPrefix);
+		return getPrefix() == null || getPrefix().equals(InputTranslatorUtil.getPrefix(input));
 	}
 
 	@Override
