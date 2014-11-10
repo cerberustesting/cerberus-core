@@ -850,4 +850,77 @@ public class ControlServiceTest {
         Assert.assertEquals(MessageEventEnum.CONTROL_FAILED_ELEMENTEQUALS.getCode(), tcsace.getControlResultMessage().getCode());
         Assert.assertEquals(msg, tcsace.getControlResultMessage().getDescription());
     }
+    
+    @Test
+    public void testVerifyElementDifferentWithNotCompatibleApplication() {
+    	String xpath = "/foo/bar";
+        String expectedElement = "<bar>baz</bar>";
+
+        TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
+        tcsace.setControlType("verifyElementDifferent");
+        tcsace.setControlProperty(xpath);
+        tcsace.setControlValue(expectedElement);
+        tcsace.setFatal("Y");
+        TestCaseStepExecution tcse = new TestCaseStepExecution();
+        tcse.settCExecution(tCExecution);
+        TestCaseStepActionExecution tcsae = new TestCaseStepActionExecution();
+        tcsae.setTestCaseStepExecution(tcse);
+        tcsace.setTestCaseStepActionExecution(tcsae);
+
+        this.controlService.doControl(tcsace);
+
+        Assert.assertEquals(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION.getCode(), tcsace.getControlResultMessage().getCode());
+    }
+    
+    @Test
+    public void testVerifyElementDifferentWithElementDifferent() {
+    	String xpath = "/foo/bar";
+        String expectedElement = "<bar>baz</bar>";
+        String msg = "Element in path '" + xpath + "' is different from '" + expectedElement + "'.";
+        
+        TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
+        tcsace.setControlType("verifyElementDifferent");
+        tcsace.setControlProperty(xpath);
+        tcsace.setControlValue(expectedElement);
+        tcsace.setFatal("Y");
+        TestCaseStepExecution tcse = new TestCaseStepExecution();
+        tcse.settCExecution(tCExecution);
+        TestCaseStepActionExecution tcsae = new TestCaseStepActionExecution();
+        tcsae.setTestCaseStepExecution(tcse);
+        tcsace.setTestCaseStepActionExecution(tcsae);
+        
+        when(application.getType()).thenReturn("WS");
+        when(xmlUnitService.isElementEquals(tCExecution, xpath, expectedElement)).thenReturn(Boolean.FALSE);
+
+        this.controlService.doControl(tcsace);
+
+        Assert.assertEquals(MessageEventEnum.CONTROL_SUCCESS_ELEMENTDIFFERENT.getCode(), tcsace.getControlResultMessage().getCode());
+        Assert.assertEquals(msg, tcsace.getControlResultMessage().getDescription());
+    }
+    
+    @Test
+    public void testVerifyElementDifferentWithElementEquals() {
+    	String xpath = "/foo/bar";
+        String expectedElement = "<bar>baz</bar>";
+        String msg = "Element in path '" + xpath + "' is not different from '" + expectedElement + "'.";
+        
+        TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
+        tcsace.setControlType("verifyElementDifferent");
+        tcsace.setControlProperty(xpath);
+        tcsace.setControlValue(expectedElement);
+        tcsace.setFatal("Y");
+        TestCaseStepExecution tcse = new TestCaseStepExecution();
+        tcse.settCExecution(tCExecution);
+        TestCaseStepActionExecution tcsae = new TestCaseStepActionExecution();
+        tcsae.setTestCaseStepExecution(tcse);
+        tcsace.setTestCaseStepActionExecution(tcsae);
+        
+        when(application.getType()).thenReturn("WS");
+        when(xmlUnitService.isElementEquals(tCExecution, xpath, expectedElement)).thenReturn(Boolean.TRUE);
+
+        this.controlService.doControl(tcsace);
+
+        Assert.assertEquals(MessageEventEnum.CONTROL_FAILED_ELEMENTDIFFERENT.getCode(), tcsace.getControlResultMessage().getCode());
+        Assert.assertEquals(msg, tcsace.getControlResultMessage().getDescription());
+    }
 }
