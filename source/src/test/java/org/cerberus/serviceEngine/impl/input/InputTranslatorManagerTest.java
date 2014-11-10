@@ -21,7 +21,7 @@ package org.cerberus.serviceEngine.impl.input;
 
 import junit.framework.Assert;
 
-import org.junit.BeforeClass;
+import org.junit.Before;
 import org.junit.Test;
 
 /**
@@ -31,40 +31,43 @@ import org.junit.Test;
  */
 public class InputTranslatorManagerTest {
 
-	private static final InputTranslatorManager<String> TRANSLATOR = new InputTranslatorManager<String>();
-
-	@BeforeClass
-	public static void setUp() {
-		TRANSLATOR.addTranslator(new AInputTranslator<String>("prefix") {
-
-			@Override
-			public String translate(String input) throws InputTranslatorException {
-				return "translated value";
-			}
-
-		});
-		TRANSLATOR.addTranslator(new AInputTranslator<String>(null) {
-
-			@Override
-			public String translate(String input) throws InputTranslatorException {
-				return "null";
-			}
-
-		});
-	}
+	private InputTranslatorManager<String> translator;
 
 	public InputTranslatorManagerTest() {
+	}
+	
+	@Before
+	public void setUp() {
+		translator = new InputTranslatorManager<String>();
+		translator.addTranslator(new AInputTranslator<String>("prefix") {
+
+			@Override
+			public String translate(String input) throws InputTranslatorException {
+				return "main translator";
+			}
+
+		});
 	}
 
 	@Test
 	public void testTranslateWithHandledPrefix() throws InputTranslatorException {
-		Assert.assertEquals("translated value", TRANSLATOR.translate("prefix=value"));
-		Assert.assertEquals("null", TRANSLATOR.translate("wihtout prefix"));
+		translator.addTranslator(new AInputTranslator<String>(null) {
+
+			@Override
+			public String translate(String input) throws InputTranslatorException {
+				return "second translator";
+			}
+
+		});
+		
+		Assert.assertEquals("main translator", translator.translate("prefix=value"));
+		Assert.assertEquals("second translator", translator.translate("with_an_unknown_prefix=value"));
+		Assert.assertEquals("second translator", translator.translate("wihtout prefix"));
 	}
 
 	@Test(expected = InputTranslatorException.class)
 	public void testTranslateWithoutHandledPrefix() throws InputTranslatorException {
-		TRANSLATOR.translate("notHandledPrefix=value");
+		translator.translate("with_an_unknown_prefix=value");
 	}
 
 }
