@@ -1862,7 +1862,7 @@
                 </div>
             </div>
             <div id="StepButtonTemplateDiv" ondragover="insertTCS(event, '<%=incrementStep%>')"
-                 ondrop="drop(event, '<%=incrementStep%>')" style="display:block;clear:both;margin-top:5px">
+                 ondrop="drop(event, '<%=incrementStep%>')" style="display:none;clear:both;margin-top:5px">
                 <input value="Save Changes" class="buttonSaveChanges" 
                        data-id="submitButtonActionTemplate" name="submitChanges" type="button" >
                 <input data-id="addStepButtonTemplate" type="button" value="Add Step" title="Add Step"
