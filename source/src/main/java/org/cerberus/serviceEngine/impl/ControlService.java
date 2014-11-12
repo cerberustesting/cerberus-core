@@ -112,6 +112,12 @@ public class ControlService implements IControlService {
             } else if (testCaseStepActionControlExecution.getControlType().equals("verifyIntegerMinor")) {
                 res = this.verifyIntegerMinor(testCaseStepActionControlExecution.getControlProperty(), testCaseStepActionControlExecution.getControlValue());
 
+            } else if (testCaseStepActionControlExecution.getControlType().equals("verifyIntegerEquals")) {
+                res = this.verifyIntegerEquals(testCaseStepActionControlExecution.getControlProperty(), testCaseStepActionControlExecution.getControlValue());
+
+            } else if (testCaseStepActionControlExecution.getControlType().equals("verifyIntegerDifferent")) {
+                res = this.verifyIntegerDifferent(testCaseStepActionControlExecution.getControlProperty(), testCaseStepActionControlExecution.getControlValue());
+
             } else if (testCaseStepActionControlExecution.getControlType().equals("verifyElementPresent")) {
                 //TODO validate properties
                 res = this.verifyElementPresent(tCExecution, testCaseStepActionControlExecution.getControlProperty());
@@ -132,6 +138,12 @@ public class ControlService implements IControlService {
                 //TODO validate properties
                 res = this.verifyElementNotVisible(tCExecution, testCaseStepActionControlExecution.getControlProperty());
 
+            } else if (testCaseStepActionControlExecution.getControlType().equals("verifyElementEquals")) {
+                res = this.verifyElementEquals(tCExecution, testCaseStepActionControlExecution.getControlProperty(), testCaseStepActionControlExecution.getControlValue());
+            
+            } else if (testCaseStepActionControlExecution.getControlType().equals("verifyElementDifferent")) {
+                res = this.verifyElementDifferent(tCExecution, testCaseStepActionControlExecution.getControlProperty(), testCaseStepActionControlExecution.getControlValue());
+            
             } else if (testCaseStepActionControlExecution.getControlType().equals("verifyTextInElement")) {
                 res = this.VerifyTextInElement(tCExecution, testCaseStepActionControlExecution.getControlProperty(), testCaseStepActionControlExecution.getControlValue());
 
@@ -163,9 +175,6 @@ public class ControlService implements IControlService {
                         testCaseStepActionControlExecution.getControlValue());
             } else if (testCaseStepActionControlExecution.getControlType().equals("verifyXmlTreeStructure")) {
                 res = this.verifyXmlTreeStructure(tCExecution, testCaseStepActionControlExecution.getControlProperty(),
-                        testCaseStepActionControlExecution.getControlValue());
-            } else if (testCaseStepActionControlExecution.getControlType().equals("verifyElementEquals")) {
-                res = this.verifyElementEquals(tCExecution, testCaseStepActionControlExecution.getControlProperty(),
                         testCaseStepActionControlExecution.getControlValue());
             } else {
                 res = new MessageEvent(MessageEventEnum.CONTROL_FAILED_UNKNOWNCONTROL);
@@ -313,6 +322,26 @@ public class ControlService implements IControlService {
         }
         return new MessageEvent(MessageEventEnum.CONTROL_FAILED_PROPERTY_NOTNUMERIC);
     }
+    
+    private MessageEvent verifyIntegerEquals(String property, String value) {
+        if (StringUtil.isNumeric(property) && StringUtil.isNumeric(value)) {
+        	MessageEvent mes = Integer.parseInt(property) == Integer.parseInt(value) ? new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_EQUAL) : new MessageEvent(MessageEventEnum.CONTROL_FAILED_EQUAL);
+            mes.setDescription(mes.getDescription().replaceAll("%STRING1%", property));
+            mes.setDescription(mes.getDescription().replaceAll("%STRING2%", value));
+            return mes;
+        }
+        return new MessageEvent(MessageEventEnum.CONTROL_FAILED_PROPERTY_NOTNUMERIC);
+    }
+    
+    private MessageEvent verifyIntegerDifferent(String property, String value) {
+        if (StringUtil.isNumeric(property) && StringUtil.isNumeric(value)) {
+        	MessageEvent mes = Integer.parseInt(property) != Integer.parseInt(value) ? new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_DIFFERENT) : new MessageEvent(MessageEventEnum.CONTROL_FAILED_DIFFERENT);
+            mes.setDescription(mes.getDescription().replaceAll("%STRING1%", property));
+            mes.setDescription(mes.getDescription().replaceAll("%STRING2%", value));
+            return mes;
+        }
+        return new MessageEvent(MessageEventEnum.CONTROL_FAILED_PROPERTY_NOTNUMERIC);
+    }
 
     private MessageEvent verifyElementPresent(TestCaseExecution tCExecution, String html) {
         MyLogger.log(ControlService.class.getName(), Level.DEBUG, "Control : verifyElementPresent on : " + html);
@@ -457,6 +486,44 @@ public class ControlService implements IControlService {
         } else {
             return new MessageEvent(MessageEventEnum.CONTROL_FAILED_NOTVISIBLE_NULL);
         }
+    }
+    
+    private MessageEvent verifyElementEquals(TestCaseExecution tCExecution, String xpath, String expectedElement) {
+    	MessageEvent mes = null;
+    	
+    	// If case of not compatible application then exit with error
+    	if (!tCExecution.getApplication().getType().equalsIgnoreCase("WS")) {
+    		mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
+            mes.setDescription(mes.getDescription().replaceAll("%CONTROL%", "verifyElementEquals"));
+            mes.setDescription(mes.getDescription().replaceAll("%APPLICATIONTYPE%", tCExecution.getApplication().getType()));
+            return mes;
+    	}
+    	
+    	// Check if element on the given xpath is equal to the given expected element
+    	mes = xmlUnitService.isElementEquals(tCExecution, xpath, expectedElement) ? new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_ELEMENTEQUALS) : new MessageEvent(MessageEventEnum.CONTROL_FAILED_ELEMENTEQUALS);
+		mes.setDescription(mes.getDescription().replaceAll("%XPATH%", xpath));
+		mes.setDescription(mes.getDescription().replaceAll("%EXPECTED_ELEMENT%", expectedElement));
+		// TODO Give the actual element found into the description.
+		return mes;
+    }
+    
+    private MessageEvent verifyElementDifferent(TestCaseExecution tCExecution, String xpath, String differentElement) {
+    	MessageEvent mes = null;
+    	
+    	// If case of not compatible application then exit with error
+    	if (!tCExecution.getApplication().getType().equalsIgnoreCase("WS")) {
+    		mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
+            mes.setDescription(mes.getDescription().replaceAll("%CONTROL%", "verifyElementDifferent"));
+            mes.setDescription(mes.getDescription().replaceAll("%APPLICATIONTYPE%", tCExecution.getApplication().getType()));
+            return mes;
+    	}
+    	
+    	// Check if element on the given xpath is different from the given different element
+    	mes = xmlUnitService.isElementEquals(tCExecution, xpath, differentElement) ? new MessageEvent(MessageEventEnum.CONTROL_FAILED_ELEMENTDIFFERENT) : new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_ELEMENTDIFFERENT);
+		mes.setDescription(mes.getDescription().replaceAll("%XPATH%", xpath));
+		mes.setDescription(mes.getDescription().replaceAll("%DIFFERENT_ELEMENT%", differentElement));
+		// TODO Give the actual element found into the description.
+		return mes;
     }
 
     private MessageEvent VerifyTextInElement(TestCaseExecution tCExecution, String html, String value) {
@@ -792,22 +859,4 @@ public class ControlService implements IControlService {
         }
     }
     
-    private MessageEvent verifyElementEquals(TestCaseExecution tCExecution, String xpath, String expectedElement) {
-    	MessageEvent mes = null;
-    	
-    	// If case of not compatible application then exit with error
-    	if (!tCExecution.getApplication().getType().equalsIgnoreCase("WS")) {
-    		mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
-            mes.setDescription(mes.getDescription().replaceAll("%CONTROL%", "verifyIsElementEquals"));
-            mes.setDescription(mes.getDescription().replaceAll("%APPLICATIONTYPE%", tCExecution.getApplication().getType()));
-            return mes;
-    	}
-    	
-    	// Check if element on the given xpath is equal to the given expected element
-    	mes = xmlUnitService.isElementEquals(tCExecution, xpath, expectedElement) ? new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_ELEMENTEQUALS) : new MessageEvent(MessageEventEnum.CONTROL_FAILED_ELEMENTEQUALS);
-		mes.setDescription(mes.getDescription().replaceAll("%XPATH%", xpath));
-		mes.setDescription(mes.getDescription().replaceAll("%EXPECTED_ELEMENT%", expectedElement));
-		// TODO Give the actual element found into the description.
-		return mes;
-    }
 }
