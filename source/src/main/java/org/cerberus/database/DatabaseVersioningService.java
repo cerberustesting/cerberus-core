@@ -3952,25 +3952,23 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
 		SQLS.append("UPDATE `invariant` SET `sort`='32' WHERE `idname`='CONTROL' and`value`='verifyElementEquals';");
 		SQLInstruction.add(SQLS.toString());
 		
-// Add Invariant for new control verify element is equal to another.
+// Add invariant for new controls verifyElementDifferent, verifyIntegerEquals and verifyIntegerDifferent.
 //-- ------------------------ 555
 		SQLS = new StringBuilder();
 		SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`) VALUES ");
-		SQLS.append("('CONTROL', 'verifyElementDifferent', 33, 'verifyElementDifferent');");
+		SQLS.append("('CONTROL', 'verifyElementDifferent', 33, 'verifyElementDifferent'),");
+		SQLS.append("('CONTROL', 'verifyIntegerEquals', 18, 'verifyIntegerEquals'),");
+		SQLS.append("('CONTROL', 'verifyIntegerDifferent', 19, 'verifyIntegerDifferent');");
 		SQLInstruction.add(SQLS.toString());
 		
-//Add Documentation for new control verify element in element.
+//Add documentation for new previously added controls.
 //-- ------------------------ 556
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `DocLabel`, `DocDesc`) VALUES ");
-        SQLS.append("('testcasestepactioncontrol', 'Type', 'verifyElementEquals', 'True if the ControlProp contains the same element ControlValue.', '<b>verifyElementEquals</b><br><br>Verify if the element equals to another in an XML file.<br><br><i>Control Property :</i> XPath to the element<br><br><i>Control Value :</i> The expected element<br><br>');");
-        SQLInstruction.add(SQLS.toString());
-		        
-//Add Documentation for new control verify element in element.
-//-- ------------------------ 557
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `DocLabel`, `DocDesc`) VALUES ");
-        SQLS.append("('testcasestepactioncontrol', 'Type', 'verifyElementDifferent', 'True if the ControlProp does not contains the same element ControlValue.', '<b>verifyElementDifferent</b><br><br>Verify if the element is different from an another in an XML file.<br><br><i>Control Property :</i> XPath to the element<br><br><i>Control Value :</i> The element to be different<br><br>');");
+        SQLS.append("('testcasestepactioncontrol', 'Type', 'verifyElementEquals', 'True if the ControlProp contains the same element ControlValue.', '<b>verifyElementEquals</b><br><br>Verify if the element equals to another in an XML file.<br><br><i>Control Property :</i> XPath to the element<br><br><i>Control Value :</i> The expected element<br><br>'),");
+        SQLS.append("('testcasestepactioncontrol', 'Type', 'verifyElementDifferent', 'True if the ControlProp does not contains the same element ControlValue.', '<b>verifyElementDifferent</b><br><br>Verify if the element is different from an another in an XML file.<br><br><i>Control Property :</i> XPath to the element<br><br><i>Control Value :</i> The element to be different<br><br>'),");
+        SQLS.append("('testcasestepactioncontrol', 'Type', 'verifyIntegerEquals', 'True if the ControlProp is equal to the integer ControlValue.', '<b>verifyIntegerEquals</b><br><br>Verify if two integers are equals.<br><br><i>Control Property :</i> The first integer<br><br><i>Control Value :</i> The second integer<br><br>'),");
+        SQLS.append("('testcasestepactioncontrol', 'Type', 'verifyIntegerDifferent', 'True if the ControlProp is different than the integer ControlValue.', '<b>verifyIntegerDifferent</b><br><br>Verify if two integers are differents.<br><br><i>Control Property :</i> The first integer<br><br><i>Control Value :</i> The second integer<br><br>');");
         SQLInstruction.add(SQLS.toString());
         
         return SQLInstruction;
