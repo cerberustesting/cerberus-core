@@ -352,8 +352,8 @@ public class TestCaseDAO implements ITestCaseDAO {
                 preStat.setString(26, ParameterParserUtil.parseStringParam(testCase.getLastModifier(), ""));
                 preStat.setString(27, ParameterParserUtil.parseStringParam(testCase.getFunction(), ""));
                 preStat.setString(28, testCase.getRunQA() != null && !testCase.getRunQA().equals("Y") ? "N" : "Y");
-                preStat.setString(29, testCase.getRunQA() != null && !testCase.getRunQA().equals("Y") ? "N" : "Y");
-                preStat.setString(30, testCase.getRunQA() != null && !testCase.getRunQA().equals("N") ? "Y" : "N");
+                preStat.setString(29, testCase.getRunUAT() != null && !testCase.getRunQA().equals("Y") ? "N" : "Y");
+                preStat.setString(30, testCase.getRunPROD() != null && !testCase.getRunQA().equals("N") ? "Y" : "N");
 
                 res = preStat.executeUpdate() > 0;
             } catch (SQLException exception) {

@@ -48,6 +48,7 @@ import org.cerberus.factory.IFactoryTestCaseStep;
 import org.cerberus.factory.IFactoryTestCaseStepAction;
 import org.cerberus.factory.IFactoryTestCaseStepActionControl;
 import org.cerberus.factory.impl.FactoryLogEvent;
+import org.cerberus.service.IInvariantService;
 import org.cerberus.service.ILogEventService;
 import org.cerberus.service.ITestCaseCountryPropertiesService;
 import org.cerberus.service.ITestCaseCountryService;
@@ -95,6 +96,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
         ITestCaseStepService tcsService = appContext.getBean(ITestCaseStepService.class);
         ITestCaseStepActionService tcsaService = appContext.getBean(ITestCaseStepActionService.class);
         ITestCaseStepActionControlService tcsacService = appContext.getBean(ITestCaseStepActionControlService.class);
+        IInvariantService invariantService = appContext.getBean(IInvariantService.class);
 
         /**
          * Verify the Test is the same than initialTest If it is the same > Do
@@ -107,6 +109,18 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
                 newTest.setTest(tc.getTest());
                 tService.createTest(newTest);
             }
+        }
+
+        if (!tc.getTest().equals(initialTest) || !tc.getTestCase().equals(initialTestCase)) {
+            duplicate = true;
+        }
+        
+        /**
+         * If the testcase is a duplication, set the creator as the one which duplicate the testcase and the status in the initial one.
+         */
+        if (duplicate){
+        tc.setCreator(request.getUserPrincipal().getName());
+        tc.setStatus(invariantService.findListOfInvariantById("TCSTATUS").get(0).getValue());
         }
 
         /**
@@ -123,10 +137,6 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
             } else {
                 tcService.createTestCase(tc);
             }
-        }
-
-        if (!tc.getTest().equals(initialTest) || !tc.getTestCase().equals(initialTestCase)) {
-            duplicate = true;
         }
 
         /**
