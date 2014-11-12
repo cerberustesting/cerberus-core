@@ -1592,14 +1592,14 @@ function alertOnProperties() {
 
 function checkForm() {
     // Check all properties to be sure PK of each is OK
-    var numberOfProperties = $("input[name='properties_property']").length;
+    var numberOfProperties = $("input[name='property_increment']").length;
     for (var index = 1; index <= numberOfProperties; index++) {
 
         // Check if name of property is not empty
-        if ($("input.properties_id_" + index + "[name='properties_property']").val() == "") {
+        if ($("input[name='properties_property_" + index + "']").val() === "") {
             return alertOnProperties();
         } else {
-            if ($("input.properties_id_" + index + "[name='properties_country']:checked").length <= 0) {
+            if ($("input[name='properties_country_" + index + "']:checked").length <= 0) {
                 return alertOnProperties();
             }
         }
@@ -1909,11 +1909,12 @@ function addTestCasePropertiesNew(tableau, row_number, size, size2) {
 function submitTestCaseModificationNew(anchor) {
     var form = $("#UpdateTestCase");
     var allControlsToDelete = 0;
-
-    var actionsToDelete = $("input[name='action_delete']:checked");
+    
+    var actionsToDelete = $("input[data-action='delete_action']:checked");
     if (actionsToDelete.length > 0) {
         for (var i = 0; i < actionsToDelete.length; i++) {
-            allControlsToDelete = eval(allControlsToDelete + $("td.control_" + $(actionsToDelete[i]).val()).length);
+            console.log($(actionsToDelete[i]).attr('name'));
+            allControlsToDelete = eval(allControlsToDelete + $("input[data-associatedaction='" + $(actionsToDelete[i]).attr('name') + "']").size());
         }
     }
 
@@ -1922,6 +1923,10 @@ function submitTestCaseModificationNew(anchor) {
     if (allControlsToDelete > 0) {
         execute = confirm("Your action will delete " + actionsToDelete.length + " action(s) and " +
                 allControlsToDelete + " control(s).\nDo you want to continue ?");
+    }
+    
+    if (execute){
+    execute = checkForm();
     }
 
     if (execute) {

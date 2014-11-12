@@ -528,7 +528,7 @@
 
             %>
             <br>
-            <form method="post" name="UpdateTestCase"  id="UpdateTestCase" action="UpdateTestCaseWithDependencies">
+            <form method="post" name="UpdateTestCase"  id="UpdateTestCase"  action="UpdateTestCaseWithDependencies">
                 <table id="generalparameter" class="arrond"
                        <%if (tinf == false) {%> style="display : none" <%} else {%>style="display : table"<%}%> >
                     <tr>
@@ -1176,7 +1176,7 @@
                                                         </div>
                                                         <div style="display:inline-block;float:left;width:2%;height:100%;text-align:center">
                                                             <% if (!useStep) {%>
-                                                            <input  class="wob" type="checkbox" name="action_delete_<%=incrementStep%>_<%=incrementAction%>" style="margin-top:20px; background-color: transparent"
+                                                            <input  class="wob" type="checkbox" data-action="delete_action" name="action_delete_<%=incrementStep%>_<%=incrementAction%>" style="margin-top:20px; background-color: transparent"
                                                                     value="<%=tcsa.getStep() + "-" + tcsa.getSequence()%>" <%=isReadonly%>>
                                                             <%}%>
                                                             <input type="hidden" name="action_increment_<%=incrementStep%>" value="<%=incrementAction%>" >
@@ -1270,7 +1270,7 @@
                                                         </div>
                                                         <div style="height:100%;width: 2%;float:left; text-align: center;">
                                                             <%  if (!useStep) {%>
-                                                            <input style="margin-top:20px;" type="checkbox" name="control_delete_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>" 
+                                                            <input style="margin-top:20px;" type="checkbox" data-associatedaction="action_delete_<%=incrementStep%>_<%=incrementAction%>" name="control_delete_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>" 
                                                                    value="<%=tcsac.getStep() + '-' + tcsac.getSequence() + '-' + tcsac.getControl()%>">
                                                             <% }%>
                                                             <input type="hidden" value="<%=incrementControl%>" name="control_increment_<%=incrementStep%>_<%=incrementAction%>">

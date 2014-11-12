@@ -114,13 +114,14 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
         if (!tc.getTest().equals(initialTest) || !tc.getTestCase().equals(initialTestCase)) {
             duplicate = true;
         }
-        
+
         /**
-         * If the testcase is a duplication, set the creator as the one which duplicate the testcase and the status in the initial one.
+         * If the testcase is a duplication, set the creator as the one which
+         * duplicate the testcase and the status in the initial one.
          */
-        if (duplicate){
-        tc.setCreator(request.getUserPrincipal().getName());
-        tc.setStatus(invariantService.findListOfInvariantById("TCSTATUS").get(0).getValue());
+        if (duplicate) {
+            tc.setCreator(request.getUserPrincipal().getName());
+            tc.setStatus(invariantService.findListOfInvariantById("TCSTATUS").get(0).getValue());
         }
 
         /**
@@ -378,7 +379,8 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
     }
 
     /**
-     * FIXME this method do nothing more than return request.getParameter(parameter)!
+     * FIXME this method do nothing more than return
+     * request.getParameter(parameter)!
      */
     private String getParameterIfExists(HttpServletRequest request, String parameter) {
         String result = null;
@@ -389,7 +391,8 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
     }
 
     /**
-     * FIXME this method do nothing more than return request.getParameterValues(parameter)!
+     * FIXME this method do nothing more than return
+     * request.getParameterValues(parameter)!
      */
     private String[] getParameterValuesIfExists(HttpServletRequest request, String parameter) {
         String[] result = null;
@@ -415,12 +418,13 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
                 int rowLimit = Integer.valueOf(getParameterIfExists(request, "properties_rowlimit_" + inc).equals("") ? "0" : getParameterIfExists(request, "properties_rowlimit_" + inc));
                 String nature = getParameterIfExists(request, "properties_nature_" + inc);
                 String database = getParameterIfExists(request, "properties_dtb_" + inc);
-                for (String country : countries) {
-                    if (delete == null) {
-                        testCaseCountryProp.add(testCaseCountryPropertiesFactory.create(test, testCase, country, property, type, database, value, value2, length, rowLimit, nature));
+                if (countries != null) {
+                    for (String country : countries) {
+                        if (delete == null && property != null && !property.equals("")) {
+                            testCaseCountryProp.add(testCaseCountryPropertiesFactory.create(test, testCase, country, property, type, database, value, value2, length, rowLimit, nature));
+                        }
                     }
                 }
-
             }
         }
         return testCaseCountryProp;
@@ -451,7 +455,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
                     if (useStep == null) {
                         tcStep.setTestCaseStepAction(getTestCaseStepActionFromParameter(request, appContext, test, testCase, inc));
                     } else {
-                        if (useStepStep!=-1&&!useStepTest.equals("")&&!useStepTestCase.equals("")) {
+                        if (useStepStep != -1 && !useStepTest.equals("") && !useStepTestCase.equals("")) {
                             /* If use step, verify if used step alread use another one */
                             TestCaseStep tcs = tcsService.findTestCaseStep(useStepTest, useStepTestCase, useStepStep);
                             if (tcs != null && tcs.getUseStep().equals("Y")) {
@@ -460,10 +464,11 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
                                 tcStep.setUseStepStep(tcs.getUseStepStep());
                             }
                             /**
-                             * If description is empty, take the one from the use step
+                             * If description is empty, take the one from the
+                             * use step
                              */
-                            if (desc.equals("")){
-                            tcStep.setDescription(tcs.getDescription());
+                            if (desc.equals("")) {
+                                tcStep.setDescription(tcs.getDescription());
                             }
                         }
                     }
