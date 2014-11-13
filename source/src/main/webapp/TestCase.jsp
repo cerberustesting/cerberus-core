@@ -674,7 +674,7 @@
                                             </tr>
                                             <tr>
                                                 <td class="wob"><select id="editApplication" name="editApplication" style="width: 140px"><%
-                                                    for (Application app : myApplicationService.findAllApplication()) {
+                                                    for (Application app : myApplicationService.findApplicationBySystem(MySystem)) {
                                                         %><option value="<%=app.getApplication()%>"<%=tcase.getApplication().compareTo(app.getApplication()) == 0 ? " SELECTED " : ""%>><%=app.getApplication()%></option>
                                                         <% }%>
                                                     </select></td>
