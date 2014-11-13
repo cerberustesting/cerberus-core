@@ -892,6 +892,7 @@ public class TestCaseDAO implements ITestCaseDAO {
             query.append(testCase.getFunction());
             query.append(") ");
         }
+        query.append(" ORDER BY t2.test, t2.testcase");
 
         Connection connection = this.databaseSpring.connect();
         try {
