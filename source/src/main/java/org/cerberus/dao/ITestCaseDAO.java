@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.cerberus.dao;
 
 import java.util.List;
@@ -37,38 +36,38 @@ public interface ITestCaseDAO {
     List<TCase> findTestCaseByTest(String test);
 
     TCase findTestCaseByKey(String test, String testCase) throws CerberusException;
-    
+
     boolean updateTestCaseInformation(TestCase testCase);
-    
+
     boolean updateTestCaseInformationCountries(TestCase tc);
-    
+
     boolean createTestCase(TCase testCase);
-    
+
     List<TCase> findTestCaseByCriteria(String test, String application, String country, String active);
 
     /**
      * @param testCase
      * @param text
      * @param system
-     * @return 
+     * @return
      * @since 0.9.1
      */
     List<TCase> findTestCaseByCriteria(TCase testCase, String text, String system);
 
     List<String> findUniqueDataOfColumn(String column);
-    
+
     /**
-     * 
+     *
      * @param testCase
      * @return true if delete is OK
      */
     boolean deleteTestCase(TCase testCase);
-    
+
     /**
-     * 
+     *
      * @param tc
      * @param columnName Name of the column to update
-     * @param value New value of the field columnName for the key name 
+     * @param value New value of the field columnName for the key name
      */
     void updateTestCaseField(TCase tc, String columnName, String value);
 
@@ -88,7 +87,7 @@ public interface ITestCaseDAO {
      * @since 1.0.2
      */
     List<TCase> findTestCaseByCampaignName(String campaign);
-    
+
     /**
      *
      * @param campaign the campaign name
@@ -97,12 +96,14 @@ public interface ITestCaseDAO {
      * @since 1.0.2
      */
     List<TCase> findTestCaseByCampaignNameAndCountries(String campaign, String[] countries);
-    
+
     public void updateTestCase(TCase tc) throws CerberusException;
-    
+
     List<TCase> findTestCaseByTestSystems(String test, List<String> systems);
 
     String getMaxNumberTestCase(String test);
 
     public List<TCase> findTestCaseByTestSystem(String test, String system);
+
+    List<TCase> findTestCaseByCriteria(String testClause, String projectClause, String appClause, String activeClause, String priorityClause, String statusClause, String groupClause, String targetBuildClause, String targetRevClause, String creatorClause, String implementerClause, String functionClause, String campaignClause, String batteryClause);
 }

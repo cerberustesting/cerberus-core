@@ -46,7 +46,7 @@ public final class StringUtil {
 
     /** The property variable {@link Pattern} */
     public static final Pattern PROPERTY_VARIABLE_PATTERN = Pattern.compile("%[^%]+%");
-    
+
     /**
      * To avoid instanciation of utility class
      */
@@ -129,14 +129,14 @@ public final class StringUtil {
         }
         return str;
     }
-    
+
     /**
      * Gets all properties contained into the given {@link String}
-     * 
+     *
      * <p>
      * A property is defined by including its name between two '%' character.
      * </p>
-     * 
+     *
      * @see #PROPERTY_VARIABLE_PATTERN
      * @param str the {@link String} to get all properties
      * @return a list of properties contained into the given {@link String}
@@ -144,9 +144,9 @@ public final class StringUtil {
     public static List<String> getAllProperties(String str) {
         List<String> properties = new ArrayList<String>();
         if (str == null) {
-        	return properties;
+            return properties;
         }
-        
+
         Matcher propertyMatcher = PROPERTY_VARIABLE_PATTERN.matcher(str);
         while (propertyMatcher.find()) {
             String rawProperty = propertyMatcher.group();
@@ -206,9 +206,7 @@ public final class StringUtil {
     public static String getCleanCSVTextField(String textIn) {
         return textIn.replaceAll("\"", "\"\"");
     }
-    
-    
-    
+
     public static String sanitize(String inputString) {
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
         return policy.sanitize(inputString);

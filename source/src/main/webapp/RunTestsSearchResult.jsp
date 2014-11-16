@@ -28,6 +28,7 @@
 
     IDocumentationService docService = appContext.getBean(IDocumentationService.class);
     ITestCaseService testCaseService = appContext.getBean(ITestCaseService.class);
+    IManualTestCaseService manualTestCaseService = appContext.getBean(IManualTestCaseService.class);
 
     try {
 %>
@@ -64,9 +65,24 @@
                         searchTCase.setTargetRevision(request.getParameter("TargetRev"));
                         searchTCase.setCreator(request.getParameter("Creator"));
                         searchTCase.setImplementer(request.getParameter("Implementer"));
-
+                        searchTCase.setFunction(request.getParameter("Function"));
+                        String[] test = request.getParameter("Test")==null?null:request.getParameterValues("Test");
+                        String[] project = request.getParameter("Project")==null?null:request.getParameterValues("Project");
+                        String[] app = request.getParameter("Application")==null?null:request.getParameterValues("Application");
+                        String[] active = request.getParameter("TcActive")==null?null:request.getParameterValues("TcActive");
+                        String[] priority = request.getParameter("Priority")==null?null:request.getParameterValues("Priority");
+                        String[] status = request.getParameter("Status")==null?null:request.getParameterValues("Status");
+                        String[] group = request.getParameter("Group")==null?null:request.getParameterValues("Group");
+                        String[] targetBuild = request.getParameter("TargetBuild")==null?null:request.getParameterValues("TargetBuild");
+                        String[] targetRev = request.getParameter("TargetRev")==null?null:request.getParameterValues("TargetRev");
+                        String[] creator = request.getParameter("Creator")==null?null:request.getParameterValues("Creator");
+                        String[] implementer = request.getParameter("Implementer")==null?null:request.getParameterValues("Implementer");
+                        String[] function = request.getParameter("Function")==null?null:request.getParameterValues("Function");
+                        String[] campaign = request.getParameter("Campaign")==null?null:request.getParameterValues("Campaign");
+                        String[] battery = request.getParameter("Battery")==null?null:request.getParameterValues("Battery");
+                        
                         int indexColor = 0;
-                        for (TCase tCase : testCaseService.findTestCaseByAllCriteria(searchTCase, "", system)) {
+                        for (TCase tCase : testCaseService.findByCriteria(test, project, app, active, priority, status, group, targetBuild, targetRev, creator, implementer, function, campaign, battery)) {
                             if(!tCase.getGroup().equalsIgnoreCase("PRIVATE")) {
                                 indexColor++;
                     %>

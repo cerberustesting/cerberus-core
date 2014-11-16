@@ -75,42 +75,42 @@
 
                     try {
                         User usr = userService.findUserByKey(request.getUserPrincipal().getName());
-                        
+
                         //If page is called with execution in queue id, redirect to this page with get parameters
                         boolean fromQueue = false;
                         TestCaseExecutionInQueue tceiq = null;
-                        if (request.getParameter("queuedExecution") != null){
-                        tceiq = tceiqService.findByKey(Long.valueOf(request.getParameter("queuedExecution")));
-                        ParamRequestMaker paramRequestMaker = new ParamRequestMaker();
-                        paramRequestMaker.addParam(RunTestCase.PARAMETER_TEST, tceiq.getTest());
-                        paramRequestMaker.addParam(RunTestCase.PARAMETER_TEST_CASE, tceiq.getTestCase());
-                        paramRequestMaker.addParam(RunTestCase.PARAMETER_COUNTRY, tceiq.getCountry());
-                        paramRequestMaker.addParam(RunTestCase.PARAMETER_ENVIRONMENT, tceiq.getEnvironment());
-                        paramRequestMaker.addParam(RunTestCase.PARAMETER_ROBOT, tceiq.getRobot());
-                        paramRequestMaker.addParam(RunTestCase.PARAMETER_ROBOT_IP, tceiq.getRobotIP());
-                        paramRequestMaker.addParam(RunTestCase.PARAMETER_ROBOT_PORT, tceiq.getRobotPort());
-                        paramRequestMaker.addParam(RunTestCase.PARAMETER_BROWSER, tceiq.getBrowser());
-                        paramRequestMaker.addParam(RunTestCase.PARAMETER_BROWSER_VERSION, tceiq.getBrowserVersion());
-                        paramRequestMaker.addParam(RunTestCase.PARAMETER_PLATFORM, tceiq.getPlatform());
-                        paramRequestMaker.addParam(RunTestCase.PARAMETER_MANUAL_URL, tceiq.isManualURL() ? ParameterParserUtil.DEFAULT_BOOLEAN_TRUE_VALUE : null);
-                        if (tceiq.isManualURL()) {
-                        paramRequestMaker.addParam(RunTestCase.PARAMETER_MANUAL_HOST, tceiq.getManualHost());
-                        paramRequestMaker.addParam(RunTestCase.PARAMETER_MANUAL_CONTEXT_ROOT, tceiq.getManualContextRoot());
-                        paramRequestMaker.addParam(RunTestCase.PARAMETER_MANUAL_LOGIN_RELATIVE_URL, tceiq.getManualLoginRelativeURL());
-                        paramRequestMaker.addParam(RunTestCase.PARAMETER_MANUAL_ENV_DATA, tceiq.getManualEnvData());
-                        }
-                        paramRequestMaker.addParam(RunTestCase.PARAMETER_TAG, tceiq.getTag());
-                        paramRequestMaker.addParam(RunTestCase.PARAMETER_OUTPUT_FORMAT, tceiq.getOutputFormat());
-                        paramRequestMaker.addParam(RunTestCase.PARAMETER_SCREENSHOT, Integer.toString(tceiq.getScreenshot()));
-                        paramRequestMaker.addParam(RunTestCase.PARAMETER_VERBOSE, Integer.toString(tceiq.getVerbose()));
-                        paramRequestMaker.addParam(RunTestCase.PARAMETER_TIMEOUT, Long.toString(tceiq.getTimeout()));
-                        paramRequestMaker.addParam(RunTestCase.PARAMETER_SYNCHRONEOUS, tceiq.isSynchroneous() ? ParameterParserUtil.DEFAULT_BOOLEAN_TRUE_VALUE
-                                        : ParameterParserUtil.DEFAULT_BOOLEAN_FALSE_VALUE);
-                        paramRequestMaker.addParam(RunTestCase.PARAMETER_PAGE_SOURCE, Integer.toString(tceiq.getPageSource()));
-                        paramRequestMaker.addParam(RunTestCase.PARAMETER_SELENIUM_LOG, Integer.toString(tceiq.getSeleniumLog()));
+                        if (request.getParameter("queuedExecution") != null) {
+                            tceiq = tceiqService.findByKey(Long.valueOf(request.getParameter("queuedExecution")));
+                            ParamRequestMaker paramRequestMaker = new ParamRequestMaker();
+                            paramRequestMaker.addParam(RunTestCase.PARAMETER_TEST, tceiq.getTest());
+                            paramRequestMaker.addParam(RunTestCase.PARAMETER_TEST_CASE, tceiq.getTestCase());
+                            paramRequestMaker.addParam(RunTestCase.PARAMETER_COUNTRY, tceiq.getCountry());
+                            paramRequestMaker.addParam(RunTestCase.PARAMETER_ENVIRONMENT, tceiq.getEnvironment());
+                            paramRequestMaker.addParam(RunTestCase.PARAMETER_ROBOT, tceiq.getRobot());
+                            paramRequestMaker.addParam(RunTestCase.PARAMETER_ROBOT_IP, tceiq.getRobotIP());
+                            paramRequestMaker.addParam(RunTestCase.PARAMETER_ROBOT_PORT, tceiq.getRobotPort());
+                            paramRequestMaker.addParam(RunTestCase.PARAMETER_BROWSER, tceiq.getBrowser());
+                            paramRequestMaker.addParam(RunTestCase.PARAMETER_BROWSER_VERSION, tceiq.getBrowserVersion());
+                            paramRequestMaker.addParam(RunTestCase.PARAMETER_PLATFORM, tceiq.getPlatform());
+                            paramRequestMaker.addParam(RunTestCase.PARAMETER_MANUAL_URL, tceiq.isManualURL() ? ParameterParserUtil.DEFAULT_BOOLEAN_TRUE_VALUE : null);
+                            if (tceiq.isManualURL()) {
+                                paramRequestMaker.addParam(RunTestCase.PARAMETER_MANUAL_HOST, tceiq.getManualHost());
+                                paramRequestMaker.addParam(RunTestCase.PARAMETER_MANUAL_CONTEXT_ROOT, tceiq.getManualContextRoot());
+                                paramRequestMaker.addParam(RunTestCase.PARAMETER_MANUAL_LOGIN_RELATIVE_URL, tceiq.getManualLoginRelativeURL());
+                                paramRequestMaker.addParam(RunTestCase.PARAMETER_MANUAL_ENV_DATA, tceiq.getManualEnvData());
+                            }
+                            paramRequestMaker.addParam(RunTestCase.PARAMETER_TAG, tceiq.getTag());
+                            paramRequestMaker.addParam(RunTestCase.PARAMETER_OUTPUT_FORMAT, tceiq.getOutputFormat());
+                            paramRequestMaker.addParam(RunTestCase.PARAMETER_SCREENSHOT, Integer.toString(tceiq.getScreenshot()));
+                            paramRequestMaker.addParam(RunTestCase.PARAMETER_VERBOSE, Integer.toString(tceiq.getVerbose()));
+                            paramRequestMaker.addParam(RunTestCase.PARAMETER_TIMEOUT, Long.toString(tceiq.getTimeout()));
+                            paramRequestMaker.addParam(RunTestCase.PARAMETER_SYNCHRONEOUS, tceiq.isSynchroneous() ? ParameterParserUtil.DEFAULT_BOOLEAN_TRUE_VALUE
+                                    : ParameterParserUtil.DEFAULT_BOOLEAN_FALSE_VALUE);
+                            paramRequestMaker.addParam(RunTestCase.PARAMETER_PAGE_SOURCE, Integer.toString(tceiq.getPageSource()));
+                            paramRequestMaker.addParam(RunTestCase.PARAMETER_SELENIUM_LOG, Integer.toString(tceiq.getSeleniumLog()));
 
-                        String query = paramRequestMaker.mkString();
-                        response.sendRedirect("RunTests.jsp?"+query);
+                            String query = paramRequestMaker.mkString();
+                            response.sendRedirect("RunTests.jsp?" + query);
                         }
 
                         //Update User Preferences
@@ -282,7 +282,7 @@
                         } else {
                             synchroneous = new String("");
                         }
-                        
+
                         String manualExecution;
                         if (request.getParameter("manualExecution") != null && request.getParameter("manualExecution").compareTo("") != 0) {
                             manualExecution = request.getParameter("manualExecution");
@@ -347,6 +347,7 @@
                 <input hidden="hidden" id="defSeleniumLog" value="<%=seleniumLog%>">
                 <input hidden="hidden" id="defPageSource" value="<%=pageSource%>">
                 <input hidden="hidden" id="defManualExecution" value="<%=manualExecution%>">
+                <input hidden="hidden" id="defTag" value="<%=tag%>">
                 <div class="filters" style="clear:both; width:100%">
                     <p style="float:left" class="dttTitle">Choose Test</p>
                     <div id="dropDownDownArrow" style="float:left">
@@ -1032,7 +1033,12 @@
         <script type="text/javascript">
             $(document).ready(function() {
                 $("#tag").empty();
-                setCookie('TagPreference', 'tag');
+                var tag = document.getElementById("defTag").value;
+                if (tag !== "None") {
+                    document.getElementById("tag").value = tag;
+                } else {
+                    setCookie('TagPreference', 'tag');
+                }
             });
 
         </script>

@@ -18,6 +18,11 @@
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
 
+<%@page import="java.util.HashMap"%>
+<%@page import="org.cerberus.entity.CountryEnvParam"%>
+<%@page import="org.cerberus.service.ICountryEnvParamService"%>
+<%@page import="org.cerberus.entity.CountryEnvironmentApplication"%>
+<%@page import="org.cerberus.service.ICountryEnvironmentApplicationService"%>
 <%@page import="java.net.URLEncoder"%>
 <%@page import="org.cerberus.entity.Robot"%>
 <%@page import="org.cerberus.util.SqlUtil"%>
@@ -82,6 +87,7 @@
                 IApplicationService applicationService = appContext.getBean(IApplicationService.class);
                 IParameterService myParameterService = appContext.getBean(IParameterService.class);
                 IInvariantService invariantService = appContext.getBean(IInvariantService.class);
+                ICountryEnvParamService cepService = appContext.getBean(ICountryEnvParamService.class);
 
                 List<Invariant> countryListInvariant = invariantService.findListOfInvariantById("COUNTRY");
 
@@ -325,21 +331,21 @@
             <div style="display:block" class="filters"  id="testcasesearchdiv"></div>
             <br><br>
             <div style="display:inline-block; width:100%">
-            <div class="filters" style="float:left; width:48%">
-                <div style="clear:both; display:block">
-                    <% for (Invariant countryObj : countryListInvariant) {%>
-                    <div style="float:left; width:30px">
-                        <div class="wob" style="font-size : x-small ;"><%=countryObj.getValue()%>
+                <div class="filters" style="float:left; width:48%">
+                    <div style="clear:both; display:block">
+                        <% for (Invariant countryObj : countryListInvariant) {%>
+                        <div style="float:left; width:30px">
+                            <div class="wob" style="font-size : x-small ;"><%=countryObj.getValue()%>
+                            </div>
+                            <div class="wob" style="width:1px"><input value="<%=countryObj.getValue()%>" type="checkbox"
+                                                                      name="Country">
+                            </div>
                         </div>
-                        <div class="wob" style="width:1px"><input value="<%=countryObj.getValue()%>" type="checkbox"
-                                                                  name="Country">
-                        </div>
+                        <%} %>
                     </div>
-                    <%} %>
                 </div>
+
             </div>
-                
-    </div>
             <br>
             <br>
             <div class="filters" style="clear:both; width:100%">
@@ -364,7 +370,19 @@
                                 </div>
                                 <div style="float:left">
                                     <select id="environment" name="Environment" style="width: 400px">
-                                        <option value="QA">QA</option>
+                                        <%
+                                            CountryEnvParam countryEnvironmentParameter = new CountryEnvParam();
+                                            countryEnvironmentParameter.setActive(true);
+                                            countryEnvironmentParameter.setSystem(MySystem);
+                                            HashMap envs = new HashMap();
+                                            for (CountryEnvParam cep : cepService.findCountryEnvParamByCriteria(countryEnvironmentParameter)) {
+                                                envs.put(cep.getEnvironment(), cep.getEnvironment());
+                                            }
+                                            List<String> envList = new ArrayList(envs.values());
+                                            for (String env : envList) {
+                                        %>
+                                        <option value=<%=env%>><%=env%></option>
+                                        <% } %>
                                     </select>
                                 </div>
                             </div>
@@ -641,18 +659,18 @@
 
     </script>
     <script>
-        function addToSelectedTest(){
-            
-            $.each($("input[name='testcaseselected']:checked"), function(index, element){
+        function addToSelectedTest() {
+
+            $.each($("input[name='testcaseselected']:checked"), function(index, element) {
                 var tst = $(element).attr("data-test");
                 var tstcse = $(element).attr("data-testcase");
-            $("#testSelected").append($("<input></input>")
-                            .attr("name", "SelectedTest")
-                            .attr("style", "width:100%")
-                            .attr("value", $(element).val())
-                            .text($(element).val()));
-            $("#row_"+tst+"_"+tstcse).remove();
-                });
+                $("#testSelected").append($("<input></input>")
+                        .attr("name", "SelectedTest")
+                        .attr("style", "width:100%")
+                        .attr("value", $(element).val())
+                        .text($(element).val()));
+                $("#row_" + tst + "_" + tstcse).remove();
+            });
         }
     </script>
     <script type="text/javascript">

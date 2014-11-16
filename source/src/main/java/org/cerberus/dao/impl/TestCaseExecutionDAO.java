@@ -742,18 +742,18 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
     @Override
     public List<String> findDistinctTag(boolean withUUIDTag) throws CerberusException {
         List<String> list = null;
-        final String query = new StringBuilder("select tag from ( ")
-            .append("select distinct tag from testcaseexecution ")
-            .append(") tce ")
-            .append("where tag != '' or ")
-            .append("( ? and length(tag) != length('c3888898-c65a-11e3-9b3e-0000004047e0') ) ").toString();
+        StringBuilder query = new StringBuilder();
+            query.append("select distinct tag from testcaseexecution tce ")
+            .append("where tag != '' ");
+                if (!withUUIDTag){
+            query.append(" and length(tag) != length('c3888898-c65a-11e3-9b3e-0000004047e0')");
+                    }
+            query.append(" UNION select distinct tag from testcaseexecutionqueue where tag !='' ");
 
         Connection connection = this.databaseSpring.connect();
         try {
-            PreparedStatement preStat = connection.prepareStatement(query);
+            PreparedStatement preStat = connection.prepareStatement(query.toString());
             try {
-                preStat.setBoolean(1, withUUIDTag);
-
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     list = new ArrayList<String>();

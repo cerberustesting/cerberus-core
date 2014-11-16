@@ -132,4 +132,7 @@ public interface ITestCaseService {
     String getMaxNumberTestCase(String test);
     
     List<TCase> findUseTestCaseList(String test, String testCase) throws CerberusException ;
+    
+    List<TCase> findByCriteria(String[] test, String[] project, String[] app, String[] active, String[] priority,String[] status
+    ,String[] group,String[] targetBuild,String[] targetRev,String[] creator , String[] implementer,String[] function,String[] campaign,String[] battery);
 }

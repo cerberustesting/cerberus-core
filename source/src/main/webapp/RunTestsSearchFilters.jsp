@@ -17,6 +17,10 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
+<%@page import="org.cerberus.entity.TestBattery"%>
+<%@page import="org.cerberus.entity.Campaign"%>
+<%@page import="org.cerberus.service.ITestBatteryService"%>
+<%@page import="org.cerberus.service.ICampaignService"%>
 <%@page import="org.cerberus.entity.Invariant"%>
 <%@page import="org.cerberus.entity.Application"%>
 <%@page import="org.cerberus.entity.User"%>
@@ -49,6 +53,8 @@
                 IApplicationService applicationService = appContext.getBean(IApplicationService.class);
                 IUserService userService = appContext.getBean(IUserService.class);
                 IBuildRevisionInvariantService buildRevisionInvariantService = appContext.getBean(IBuildRevisionInvariantService.class);
+                ICampaignService campaignService = appContext.getBean(ICampaignService.class);
+                ITestBatteryService batteryService = appContext.getBean(ITestBatteryService.class);
 
                 try {
             %>
@@ -218,6 +224,38 @@
                                             "Select an Implementer", "Select Implementer", "# of # Implementer selected", 1, true)%> 
                                 </div>
                             </div>
+                                <div style="float:left">
+                        <div style="clear:both; width:150px; text-align: left">Campaign</div>
+                        <%
+                                        options.clear();
+                                        options.put("NC", "-- No Campaign --");
+                                        for (Campaign campaign : campaignService.findAll()) {
+                                            if (campaign.getCampaign() != null && !"".equals(campaign.getCampaign().trim())) {
+                                                options.put(campaign.getCampaign(), campaign.getCampaign());
+                                            }
+                                        }
+                                    %>
+                        <div style="clear:both">
+                            <%=generateMultiSelect("Campaign", request.getParameterValues("Campaign"), options,
+                                            "Select a Campaign", "Select a Campaign", "# of # Campaign selected", 1, true)%> 
+                        </div>
+                    </div>
+                    <div style="float:left">
+                        <div style="clear:both; width:150px; text-align: left">testBattery</div>
+                        <%
+                                        options.clear();
+                                        options.put("NC", "-- No Battery  --");
+                                        for (TestBattery testBattery : batteryService.findAll()) {
+                                            if (testBattery.getTestbattery() != null && !"".equals(testBattery.getTestbattery().trim())) {
+                                                options.put(testBattery.getTestbattery(), testBattery.getTestbattery());
+                                            }
+                                        }
+                                    %>
+                        <div style="clear:both">
+                            <%=generateMultiSelect("Battery", request.getParameterValues("Battery"), options,
+                                            "Select a Battery", "Select a Battery", "# of # Battery selected", 1, true)%> 
+                        </div>
+                    </div>
                         </div>
                                 <br><br>
                                 <button id="submit" name="submit" type="submit">Search</button>
