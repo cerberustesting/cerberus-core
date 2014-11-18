@@ -20,6 +20,7 @@
 package org.cerberus.serviceEngine.impl.diff;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.xml.xpath.XPath;
@@ -47,7 +48,7 @@ import org.w3c.dom.NodeList;
  * 
  * @author abourdon
  */
-public class Differences {
+public class Differences implements Iterable<Difference> {
 
 	/** {@link Differences} XML root */
 	public static final String DIFFERENCES_NODE = "differences";
@@ -212,6 +213,11 @@ public class Differences {
 	public String toString() {
 		String mkString = mkString();
 		return mkString == null ? EMPTY_DIFFERENCES_STRING : mkString;
+	}
+
+	@Override
+	public Iterator<Difference> iterator() {
+		return new ArrayList<Difference>(differences).iterator();
 	}
 
 }

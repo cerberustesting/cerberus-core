@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
+	<SOAP-ENV:Body>
+		<ns0:Response_1.0 xmlns:ns0="http://ns0">
+			<ResponseStatus xmlns="">
+				<StatusCode xmlns="">OK</StatusCode>
+				<Timestamp xmlns="">2014-11-17T17:08:10.219+01:00</Timestamp>
+				<RequestId xmlns="">6eYlM2bbS5bRYpvJal9cgGCYZp0=</RequestId>
+			</ResponseStatus>
+		</ns0:Response_1.0>
+	</SOAP-ENV:Body>
+</SOAP-ENV:Envelope>

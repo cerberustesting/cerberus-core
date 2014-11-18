@@ -22,6 +22,7 @@ package org.cerberus.util;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -141,8 +142,20 @@ public class XmlUtilTest {
 	@Test
 	public void testEvaluateDocument() throws XmlUtilException, DifferencesException {
 		List<Document> expected = Arrays.asList(XmlUtil.fromString("<child><item1/></child>"), XmlUtil.fromString("<child><item2/></child>"));
-		List<Document> actual = XmlUtil.evaluate(XmlUtil.fromString("<root><child><item1/></child><child><item2/></child></root>"), "/root/child");
+		List<Document> actual = XmlUtil.fromNodeList(XmlUtil.evaluate(XmlUtil.fromString("<root><child><item1/></child><child><item2/></child></root>"), "/root/child"));
 
+		Assert.assertEquals(expected.size(), actual.size());
+		for (int i = 0; i < expected.size(); i++) {
+			String differences = xmlUnitService.getDifferencesFromXml(XmlUtil.toString(expected.get(i)), XmlUtil.toString(actual.get(i)));
+			Assert.assertTrue(Differences.fromString(differences).isEmpty());
+		}
+	}
+	
+	@Test
+	public void testEvaluateDocumentWithNamespaces() throws XmlUtilException, DifferencesException {
+		List<Document> expected = Arrays.asList(XmlUtil.fromURL(getClass().getResource("part.xml"), true));
+		List<Document> actual = XmlUtil.fromNodeList(XmlUtil.evaluate(XmlUtil.fromURL(getClass().getResource("all.xml"), true), "//ns0:Response_1.0"));
+		
 		Assert.assertEquals(expected.size(), actual.size());
 		for (int i = 0; i < expected.size(); i++) {
 			String differences = xmlUnitService.getDifferencesFromXml(XmlUtil.toString(expected.get(i)), XmlUtil.toString(actual.get(i)));
@@ -163,7 +176,11 @@ public class XmlUtilTest {
 	@Test
 	public void testEvaluateString() throws XmlUtilException, DifferencesException {
 		List<String> expected = Arrays.asList("<child><item1/></child>", "<child><item2/></child>");
-		List<String> actual = XmlUtil.evaluate("<root><child><item1/></child><child><item2/></child></root>", "/root/child");
+		List<String> actual = new ArrayList<String>();
+		List<Document> actualDocuments = XmlUtil.fromNodeList(XmlUtil.evaluate("<root><child><item1/></child><child><item2/></child></root>", "/root/child"));
+		for (Document actualDocument : actualDocuments) {
+			actual.add(XmlUtil.toString(actualDocument));
+		}
 
 		Assert.assertEquals(expected.size(), actual.size());
 		for (int i = 0; i < expected.size(); i++) {

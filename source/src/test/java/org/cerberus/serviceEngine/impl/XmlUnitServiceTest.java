@@ -28,6 +28,7 @@ import org.cerberus.entity.ExecutionSOAPResponse;
 import org.cerberus.entity.TestCaseExecution;
 import org.cerberus.serviceEngine.impl.diff.Difference;
 import org.cerberus.serviceEngine.impl.diff.Differences;
+import org.cerberus.util.XmlUtil;
 import org.cerberus.util.XmlUtilException;
 import org.custommonkey.xmlunit.DetailedDiff;
 import org.custommonkey.xmlunit.XMLUnit;
@@ -83,6 +84,184 @@ public class XmlUnitServiceTest {
 	}
 
 	@Test
+	public void testIsElementPresentWithElementPresent() {
+		TestCaseExecution tce = new TestCaseExecution();
+		tce.setExecutionUUID("1234");
+		Mockito.when(executionSOAPResponse.getExecutionSOAPResponse(tce.getExecutionUUID())).thenReturn("<root><a>1</a><a>2</a></root>");
+
+		Assert.assertTrue(xmlUnitService.isElementPresent(tce, "/root/a"));
+	}
+
+	@Test
+	public void testIsElementPresentWithElementPresentWithNamespace() {
+		TestCaseExecution tce = new TestCaseExecution();
+		tce.setExecutionUUID("1234");
+		Mockito.when(executionSOAPResponse.getExecutionSOAPResponse(tce.getExecutionUUID()))
+				.thenReturn("<root xmlns:prefix=\"http://prefix\"><prefix:a>1</prefix:a><prefix:a>2</prefix:a></root>");
+
+		Assert.assertTrue(xmlUnitService.isElementPresent(tce, "/root/prefix:a"));
+	}
+
+	@Test
+	public void testIsElementPresentWithElementAbsent() {
+		TestCaseExecution tce = new TestCaseExecution();
+		tce.setExecutionUUID("1234");
+		Mockito.when(executionSOAPResponse.getExecutionSOAPResponse(tce.getExecutionUUID())).thenReturn("<root><a>1</a><a>2</a></root>");
+
+		Assert.assertFalse(xmlUnitService.isElementPresent(tce, "/root/b"));
+	}
+
+	@Test
+	public void testIsTextInElementWithExistingTextAndExistingElement() {
+		TestCaseExecution tce = new TestCaseExecution();
+		tce.setExecutionUUID("1234");
+		Mockito.when(executionSOAPResponse.getExecutionSOAPResponse(tce.getExecutionUUID())).thenReturn("<root><a>1</a><a>2</a></root>");
+
+		Assert.assertTrue(xmlUnitService.isTextInElement(tce, "/root/a", "1"));
+	}
+
+	@Test
+	public void testIsTextInElementWithExistingTextAndExistingElementWithNamespace() {
+		TestCaseExecution tce = new TestCaseExecution();
+		tce.setExecutionUUID("1234");
+		Mockito.when(executionSOAPResponse.getExecutionSOAPResponse(tce.getExecutionUUID()))
+				.thenReturn("<root xmlns:prefix=\"http://prefix\"><prefix:a>1</prefix:a><prefix:a>2</prefix:a></root>");
+
+		Assert.assertTrue(xmlUnitService.isTextInElement(tce, "/root/prefix:a", "1"));
+	}
+
+	@Test
+	public void testIsTextInElementWithNotExistingTextAndExistingElement() {
+		TestCaseExecution tce = new TestCaseExecution();
+		tce.setExecutionUUID("1234");
+		Mockito.when(executionSOAPResponse.getExecutionSOAPResponse(tce.getExecutionUUID())).thenReturn("<root><a>1</a><a>2</a></root>");
+
+		Assert.assertFalse(xmlUnitService.isTextInElement(tce, "/root/a", "3"));
+	}
+
+	@Test
+	public void testIsTextInElementWithExistingTextAndNotExistingElement() {
+		TestCaseExecution tce = new TestCaseExecution();
+		tce.setExecutionUUID("1234");
+		Mockito.when(executionSOAPResponse.getExecutionSOAPResponse(tce.getExecutionUUID())).thenReturn("<root><a>1</a><a>2</a></root>");
+
+		Assert.assertFalse(xmlUnitService.isTextInElement(tce, "/root/b", "1"));
+	}
+
+	@Test
+	public void testIsTextInElementWithNotExistingTextAndNotExistingElement() {
+		TestCaseExecution tce = new TestCaseExecution();
+		tce.setExecutionUUID("1234");
+		Mockito.when(executionSOAPResponse.getExecutionSOAPResponse(tce.getExecutionUUID())).thenReturn("<root><a>1</a><a>2</a></root>");
+
+		Assert.assertFalse(xmlUnitService.isTextInElement(tce, "/root/b", "3"));
+	}
+
+	@Test
+	public void testIsSimilarTreeWithExistingElementAndSimilarTree() {
+		TestCaseExecution tce = new TestCaseExecution();
+		tce.setExecutionUUID("1234");
+		Mockito.when(executionSOAPResponse.getExecutionSOAPResponse(tce.getExecutionUUID())).thenReturn("<root><a>1</a><a>2</a></root>");
+
+		Assert.assertTrue(xmlUnitService.isSimilarTree(tce, "/root", "<root><a>foo</a><a>bar</a></root>"));
+	}
+	
+	@Test
+	public void testIsSimilarTreeWithExistingElementAndIdenticalTree() {
+		TestCaseExecution tce = new TestCaseExecution();
+		tce.setExecutionUUID("1234");
+		Mockito.when(executionSOAPResponse.getExecutionSOAPResponse(tce.getExecutionUUID())).thenReturn("<root><a>1</a><a>2</a></root>");
+
+		Assert.assertTrue(xmlUnitService.isSimilarTree(tce, "/root", "<root><a>1</a><a>2</a></root>"));
+	}
+
+	@Test
+	public void testIsSimilarTreeWithExistingElementAndSimilarTreeWithNamespace() {
+		TestCaseExecution tce = new TestCaseExecution();
+		tce.setExecutionUUID("1234");
+		Mockito.when(executionSOAPResponse.getExecutionSOAPResponse(tce.getExecutionUUID()))
+				.thenReturn("<root xmlns:prefix=\"http://prefix\"><prefix:a>1</prefix:a><prefix:a>2</prefix:a></root>");
+
+		Assert.assertTrue(xmlUnitService.isSimilarTree(tce, "/root/prefix:a", "<prefix:a xmlns:prefix=\"http://prefix\">1</prefix:a>"));
+	}
+
+	@Test
+	public void testIsSimilarTreeWithExistingElementAndNotSimilarTree() {
+		TestCaseExecution tce = new TestCaseExecution();
+		tce.setExecutionUUID("1234");
+		Mockito.when(executionSOAPResponse.getExecutionSOAPResponse(tce.getExecutionUUID())).thenReturn("<root><a>1</a><a>2</a></root>");
+
+		Assert.assertFalse(xmlUnitService.isSimilarTree(tce, "/root", "<root><wrong>foo</wrong><a>bar</a></root>"));
+	}
+
+	@Test
+	public void testIsSimilarTreeWithNotExistingElementAndSimilarTree() {
+		TestCaseExecution tce = new TestCaseExecution();
+		tce.setExecutionUUID("1234");
+		Mockito.when(executionSOAPResponse.getExecutionSOAPResponse(tce.getExecutionUUID())).thenReturn("<root><a>1</a><a>2</a></root>");
+
+		Assert.assertFalse(xmlUnitService.isSimilarTree(tce, "/plop", "<root><a>foo</a><a>bar</a></root>"));
+	}
+
+	@Test
+	public void testIsSimilarTreeWithNotExistingElementAndNotSimilarTree() {
+		TestCaseExecution tce = new TestCaseExecution();
+		tce.setExecutionUUID("1234");
+		Mockito.when(executionSOAPResponse.getExecutionSOAPResponse(tce.getExecutionUUID())).thenReturn("<root><a>1</a><a>2</a></root>");
+
+		Assert.assertFalse(xmlUnitService.isSimilarTree(tce, "/plop", "<root><wrong>foo</wrong><a>bar</a></root>"));
+	}
+
+	@Test
+	public void testGetFromXmlWithValidURLAndExistingElement() {
+		Assert.assertEquals("2", xmlUnitService.getFromXml("1234", getClass().getResource("data.xml").toString(), "/root/a[2]"));
+	}
+
+	@Test
+	public void testGetFromXmlWithValidURLAndExistingElementJustTheFirstOne() {
+		Assert.assertEquals("1", xmlUnitService.getFromXml("1234", getClass().getResource("data.xml").toString(), "/root/a"));
+	}
+
+	@Test
+	public void testGetFromXmlWithValidURLAndExistingElementWithNamespace() {
+		Assert.assertEquals("2",
+				xmlUnitService.getFromXml("1234", getClass().getResource("data-namespaces.xml").toString(), "/" + XmlUtil.UniversalNamespaceCache.DEFAULT_NS + ":root/prefix:a[2]"));
+	}
+
+	@Test
+	public void testGetFromXmlWithValidURLAndNotExistingElement() {
+		Assert.assertEquals(XmlUnitService.DEFAULT_GET_FROM_XML_VALUE, xmlUnitService.getFromXml("1234", getClass().getResource("data.xml").toString(), "/root/b"));
+	}
+
+	@Test
+	public void testGetFromXmlWithNullURLAndExistingElement() {
+		Mockito.when(executionSOAPResponse.getExecutionSOAPResponse("1234")).thenReturn("<root><a>1</a><a>2</a></root>");
+
+		Assert.assertEquals("2", xmlUnitService.getFromXml("1234", null, "/root/a[2]"));
+	}
+
+	@Test
+	public void testGetFromXmlWithNullURLAndExistingElementJustTheFirstOne() {
+		Mockito.when(executionSOAPResponse.getExecutionSOAPResponse("1234")).thenReturn("<root><a>1</a><a>2</a></root>");
+
+		Assert.assertEquals("1", xmlUnitService.getFromXml("1234", null, "/root/a"));
+	}
+
+	@Test
+	public void testGetFromXmlWithNullURLAndExistingElementWithNamespace() {
+		Mockito.when(executionSOAPResponse.getExecutionSOAPResponse("1234")).thenReturn("<root xmlns:prefix=\"http://prefix\"><prefix:a>1</prefix:a><prefix:a>2</prefix:a></root>");
+
+		Assert.assertEquals("2", xmlUnitService.getFromXml("1234", null, "/root/prefix:a[2]"));
+	}
+
+	@Test
+	public void testGetFromXmlWithNullURLAndNotExistingElement() {
+		Mockito.when(executionSOAPResponse.getExecutionSOAPResponse("1234")).thenReturn("<root><a>1</a><a>2</a></root>");
+
+		Assert.assertEquals(XmlUnitService.DEFAULT_GET_FROM_XML_VALUE, xmlUnitService.getFromXml("1234", null, "/root/b"));
+	}
+
+	@Test
 	public void testGetDifferencesFromXmlWithNoDifference() throws XmlUtilException {
 		String expected = differences.mkString();
 		String actual = xmlUnitService.getDifferencesFromXml("<root><a>1</a></root>", "<root><a>1</a></root>");
@@ -133,6 +312,17 @@ public class XmlUnitServiceTest {
 		DetailedDiff diff = new DetailedDiff(XMLUnit.compareXML(expected, actual));
 		Assert.assertTrue(diff.toString(), diff.similar());
 	}
+	
+	@Test
+	public void testRemoveDifferenceWhenDifferenceMatchAll() throws XmlUtilException, SAXException, IOException {
+		differences.addDifference(new Difference("/root[1]/a[1]"));
+		differences.addDifference(new Difference("/root[1]/a[2]"));
+		differences.addDifference(new Difference("/root[1]/b[1]"));
+
+		String actual = xmlUnitService.removeDifference(".*root.*", differences.mkString());
+
+		Assert.assertEquals(Differences.EMPTY_DIFFERENCES_STRING, actual);
+	}
 
 	@Test
 	public void testRemoveDifferenceWhenNoDifferenceMatch() throws XmlUtilException, SAXException, IOException {
@@ -154,7 +344,7 @@ public class XmlUnitServiceTest {
 	}
 
 	@Test
-	public void testIsElementInElementWithExistingElement() {
+	public void testIsElementEqualsWithExistingElement() {
 		TestCaseExecution tce = new TestCaseExecution();
 		tce.setExecutionUUID("1234");
 		Mockito.when(executionSOAPResponse.getExecutionSOAPResponse(tce.getExecutionUUID())).thenReturn("<root><a>1</a><a>2</a></root>");
@@ -163,7 +353,7 @@ public class XmlUnitServiceTest {
 	}
 
 	@Test
-	public void testIsElementInElementWithNotFormatedExistingElement() {
+	public void testIsElementEqualsWithNotFormatedExistingElement() {
 		TestCaseExecution tce = new TestCaseExecution();
 		tce.setExecutionUUID("1234");
 		Mockito.when(executionSOAPResponse.getExecutionSOAPResponse(tce.getExecutionUUID())).thenReturn("<root><a>1</a><a>2</a></root>");
@@ -172,7 +362,17 @@ public class XmlUnitServiceTest {
 	}
 
 	@Test
-	public void testIsElementInElementWithNotExistingElement() {
+	public void testIsElementEqualsWithExistingElementWithNamespace() {
+		TestCaseExecution tce = new TestCaseExecution();
+		tce.setExecutionUUID("1234");
+		Mockito.when(executionSOAPResponse.getExecutionSOAPResponse(tce.getExecutionUUID()))
+				.thenReturn("<root xmlns:prefix=\"http://prefix\"><prefix:a>1</prefix:a><prefix:a>2</prefix:a></root>");
+
+		Assert.assertTrue(xmlUnitService.isElementEquals(tce, "/root/prefix:a", "<prefix:a xmlns:prefix=\"http://prefix\">2</prefix:a>"));
+	}
+
+	@Test
+	public void testIsElementEqualsWithNotExistingElement() {
 		TestCaseExecution tce = new TestCaseExecution();
 		tce.setExecutionUUID("1234");
 		Mockito.when(executionSOAPResponse.getExecutionSOAPResponse(tce.getExecutionUUID())).thenReturn("<root><a>1</a><a>2</a></root>");
@@ -181,17 +381,17 @@ public class XmlUnitServiceTest {
 	}
 
 	@Test
-	public void testIsElementInElementWithNullTCE() {
+	public void testIsElementEqualsWithNullTCE() {
 		Assert.assertFalse(xmlUnitService.isElementEquals(null, "/foo", "<bar/>"));
 	}
 
 	@Test
-	public void testIsElementInElementWithNullXPath() {
+	public void testIsElementEqualsWithNullXPath() {
 		Assert.assertFalse(xmlUnitService.isElementEquals(new TestCaseExecution(), null, "<bar/>"));
 	}
 
 	@Test
-	public void testIsElementInElementWithNullElement() {
+	public void testIsElementEqualsWithNullElement() {
 		Assert.assertFalse(xmlUnitService.isElementEquals(new TestCaseExecution(), "/foo", null));
 	}
 

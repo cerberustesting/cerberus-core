@@ -1,0 +1,5 @@
+<root xmlns="http://default" xmlns:prefix="http://prefix">
+	<prefix:a>1</prefix:a>
+	<prefix:a>2</prefix:a>
+	<other:b xmlns:other="http://other"></other:b>
+</root>
