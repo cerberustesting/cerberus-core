@@ -28,7 +28,6 @@ import org.cerberus.entity.ExecutionSOAPResponse;
 import org.cerberus.entity.TestCaseExecution;
 import org.cerberus.serviceEngine.impl.diff.Difference;
 import org.cerberus.serviceEngine.impl.diff.Differences;
-import org.cerberus.util.XmlUtil;
 import org.cerberus.util.XmlUtilException;
 import org.custommonkey.xmlunit.DetailedDiff;
 import org.custommonkey.xmlunit.XMLUnit;
@@ -165,7 +164,7 @@ public class XmlUnitServiceTest {
 
 		Assert.assertTrue(xmlUnitService.isSimilarTree(tce, "/root", "<root><a>foo</a><a>bar</a></root>"));
 	}
-	
+
 	@Test
 	public void testIsSimilarTreeWithExistingElementAndIdenticalTree() {
 		TestCaseExecution tce = new TestCaseExecution();
@@ -224,8 +223,7 @@ public class XmlUnitServiceTest {
 
 	@Test
 	public void testGetFromXmlWithValidURLAndExistingElementWithNamespace() {
-		Assert.assertEquals("2",
-				xmlUnitService.getFromXml("1234", getClass().getResource("data-namespaces.xml").toString(), "/" + XmlUtil.UniversalNamespaceCache.DEFAULT_NS + ":root/prefix:a[2]"));
+		Assert.assertEquals("2", xmlUnitService.getFromXml("1234", getClass().getResource("data-namespaces.xml").toString(), "/:root/prefix:a[2]"));
 	}
 
 	@Test
@@ -312,7 +310,7 @@ public class XmlUnitServiceTest {
 		DetailedDiff diff = new DetailedDiff(XMLUnit.compareXML(expected, actual));
 		Assert.assertTrue(diff.toString(), diff.similar());
 	}
-	
+
 	@Test
 	public void testRemoveDifferenceWhenDifferenceMatchAll() throws XmlUtilException, SAXException, IOException {
 		differences.addDifference(new Difference("/root[1]/a[1]"));

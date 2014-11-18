@@ -19,6 +19,8 @@
  */
 package org.cerberus.util;
 
+import javax.xml.XMLConstants;
+
 import junit.framework.Assert;
 
 import org.cerberus.util.XmlUtil.UniversalNamespaceCache;
@@ -34,7 +36,7 @@ public class XmlUtilUniversalNamespaceCacheTest {
 	@Test
 	public void testUniversalNamespaceCache() throws XmlUtilException {
 		UniversalNamespaceCache cache = new UniversalNamespaceCache(XmlUtil.fromURL(getClass().getResource("namespaces.xml")));
-		Assert.assertEquals("http://default", cache.getNamespaceURI(UniversalNamespaceCache.DEFAULT_NS));
+		Assert.assertEquals("http://default", cache.getNamespaceURI(XMLConstants.DEFAULT_NS_PREFIX));
 		Assert.assertEquals("http://prefix", cache.getNamespaceURI("prefix"));
 		Assert.assertEquals("http://other", cache.getNamespaceURI("other"));
 	}

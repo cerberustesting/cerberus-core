@@ -130,8 +130,6 @@ public final class XmlUtil {
 		/** The associated {@link Logger} to this class */
 		private static final Logger LOG = Logger.getLogger(UniversalNamespaceCache.class);
 
-		public static final String DEFAULT_NS = "__xmlns__";
-
 		public static final boolean DEFAULT_TOP_LEVEL_ONLY = false;
 
 		/** The associated maps between prefixes and URIs */
@@ -200,7 +198,7 @@ public final class XmlUtil {
 		 */
 		private void storeAttribute(Attr attribute) {
 			if (XMLConstants.XMLNS_ATTRIBUTE_NS_URI.equals(attribute.getNamespaceURI())) {
-				putInCache(XMLConstants.XMLNS_ATTRIBUTE.equals(attribute.getNodeName()) ? DEFAULT_NS : attribute.getLocalName(), attribute.getNodeValue());
+				putInCache(XMLConstants.XMLNS_ATTRIBUTE.equals(attribute.getNodeName()) ? XMLConstants.DEFAULT_NS_PREFIX : attribute.getLocalName(), attribute.getNodeValue());
 			}
 		}
 
@@ -218,8 +216,7 @@ public final class XmlUtil {
 		}
 
 		/**
-		 * This method is called by XPath. It returns the default namespace, if
-		 * the prefix is null or "".
+		 * This method is called by XPath. It returns the namespace URI associated to the given prefix.
 		 * 
 		 * @param prefix
 		 *            to search for
@@ -227,7 +224,7 @@ public final class XmlUtil {
 		 */
 		@Override
 		public String getNamespaceURI(String prefix) {
-			return prefix2Uri.get(XMLConstants.DEFAULT_NS_PREFIX.equals(prefix) ? DEFAULT_NS : prefix);
+			return prefix2Uri.get(prefix);
 		}
 
 		/**
