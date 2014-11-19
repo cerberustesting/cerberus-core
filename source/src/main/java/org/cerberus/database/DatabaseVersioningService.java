@@ -3971,6 +3971,12 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("('testcasestepactioncontrol', 'Type', 'verifyIntegerDifferent', 'True if the ControlProp is different than the integer ControlValue.', '<b>verifyIntegerDifferent</b><br><br>Verify if two integers are differents.<br><br><i>Control Property :</i> The first integer<br><br><i>Control Value :</i> The second integer<br><br>');");
         SQLInstruction.add(SQLS.toString());
         
+// Increase soaplibrary's Method column size to 255 characters.
+//-- ------------------------ 557
+		SQLS = new StringBuilder();
+		SQLS.append("ALTER TABLE `soaplibrary` CHANGE COLUMN `Method` `Method` VARCHAR(255) NULL DEFAULT NULL ;");
+		SQLInstruction.add(SQLS.toString());
+        
         return SQLInstruction;
     }
     

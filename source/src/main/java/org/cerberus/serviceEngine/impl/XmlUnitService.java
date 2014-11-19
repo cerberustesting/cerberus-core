@@ -19,29 +19,11 @@
  */
 package org.cerberus.serviceEngine.impl;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringReader;
-import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.List;
 import java.util.regex.Pattern;
 
 import javax.annotation.PostConstruct;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpression;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
 
 import org.apache.log4j.Logger;
 import org.cerberus.entity.ExecutionSOAPResponse;
@@ -56,9 +38,7 @@ import org.cerberus.serviceEngine.impl.input.InputTranslatorManager;
 import org.cerberus.serviceEngine.impl.input.InputTranslatorUtil;
 import org.cerberus.util.XmlUtil;
 import org.cerberus.util.XmlUtilException;
-import org.cerberus.util.xmlUnitUtil;
 import org.custommonkey.xmlunit.DetailedDiff;
-import org.custommonkey.xmlunit.Diff;
 import org.custommonkey.xmlunit.Difference;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,8 +46,6 @@ import org.springframework.stereotype.Service;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
 /**
  *
@@ -75,17 +53,20 @@ import org.xml.sax.SAXException;
  */
 @Service
 public class XmlUnitService implements IXmlUnitService {
-	
+
 	/** The associated {@link Logger} to this class */
 	private static final Logger LOG = Logger.getLogger(XmlUnitService.class);
-	
+
 	/** Difference value for null XPath */
 	public static final String NULL_XPATH = "null";
-	
-    @Autowired
-    ExecutionSOAPResponse executionSOAPResponse;
-    
-    /** Prefixed input handling */
+
+	/** The default value for the getFromXML action */
+	public static final String DEFAULT_GET_FROM_XML_VALUE = "";
+
+	@Autowired
+	private ExecutionSOAPResponse executionSOAPResponse;
+
+	/** Prefixed input handling */
 	private InputTranslatorManager<Document> inputTranslator;
 
 	@PostConstruct
@@ -93,7 +74,7 @@ public class XmlUnitService implements IXmlUnitService {
 		initInputTranslator();
 		initXMLUnitProperties();
 	}
-	
+
 	/**
 	 * Initializes {@link #inputTranslator} by two {@link InputTranslator}
 	 * <ul>
@@ -129,7 +110,7 @@ public class XmlUnitService implements IXmlUnitService {
 			}
 		});
 	}
-	
+
 	/**
 	 * Initializes {@link XMLUnit} properties
 	 */
@@ -139,222 +120,106 @@ public class XmlUnitService implements IXmlUnitService {
 		XMLUnit.setIgnoreDiffBetweenTextAndCDATA(true);
 		XMLUnit.setCompareUnmatched(false);
 	}
-	
-    @Override
-    public boolean isElementPresent(TestCaseExecution tCExecution, String element) {
 
-        try {
-            String xml = executionSOAPResponse.getExecutionSOAPResponse(tCExecution.getExecutionUUID());
-            InputSource source = new InputSource(new StringReader(xml));
+	@Override
+	public boolean isElementPresent(TestCaseExecution tCExecution, String element) {
+		if (element == null) {
+			LOG.warn("Null argument");
+			return false;
+		}
 
-            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-            DocumentBuilder db = dbf.newDocumentBuilder();
-            Document document = db.parse(source);
+		try {
+			return XmlUtil.evaluate(executionSOAPResponse.getExecutionSOAPResponse(tCExecution.getExecutionUUID()), element).getLength() != 0;
+		} catch (XmlUtilException e) {
+			LOG.warn("Unable to check if element is present", e);
+		}
 
-            XPathFactory xpathFactory = XPathFactory.newInstance();
-            XPath xpath = xpathFactory.newXPath();
+		return false;
+	}
 
-            xpath.evaluate(element, document);
-            Node node = (Node) xpath.evaluate(element, document, XPathConstants.NODE);
-            if (node != null) {
-                return true;
-            }
+	@Override
+	public boolean isTextInElement(TestCaseExecution tCExecution, String element, String text) {
+		if (element == null || text == null) {
+			LOG.warn("Null argument");
+			return false;
+		}
 
-        } catch (XPathExpressionException ex) {
-        	LOG.warn("Unable to test if element is present", ex);
-        } catch (ParserConfigurationException ex) {
-        	LOG.warn("Unable to test if element is present", ex);
-        } catch (SAXException ex) {
-        	LOG.warn("Unable to test if element is present", ex);
-        } catch (IOException ex) {
-        	LOG.warn("Unable to test if element is present", ex);
-        } catch (NullPointerException ex) {
-        	LOG.warn("Unable to test if element is present", ex);
-        }
+		try {
+			NodeList candidates = XmlUtil.evaluate(executionSOAPResponse.getExecutionSOAPResponse(tCExecution.getExecutionUUID()), element + "/text()");
+			for (Node candidate : new XmlUtil.IterableNodeList(candidates)) {
+				if (text.equals(candidate.getNodeValue())) {
+					return true;
+				}
+			}
+			return false;
+		} catch (XmlUtilException e) {
+			LOG.warn("There is an error during the xml parsing", e);
+		}
 
-        return false;
-    }
+		return false;
+	}
 
-    @Override
-    public boolean isTextInElement(TestCaseExecution tCExecution, String element, String text) {
-        try {
-            String xml = executionSOAPResponse.getExecutionSOAPResponse(tCExecution.getExecutionUUID());
-            InputSource source = new InputSource(new StringReader(xml));
+	@Override
+	public boolean isSimilarTree(TestCaseExecution tCExecution, String element, String text) {
+		if (element == null || text == null) {
+			LOG.warn("Null argument");
+			return false;
+		}
 
-            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-            DocumentBuilder db = dbf.newDocumentBuilder();
-            Document document = db.parse(source);
+		try {
+			NodeList candidates = XmlUtil.evaluate(executionSOAPResponse.getExecutionSOAPResponse(tCExecution.getExecutionUUID()), element);
+			for (Node candidate : new XmlUtil.IterableNodeList(candidates)) {
+				boolean found = true;
+				for (org.cerberus.serviceEngine.impl.diff.Difference difference : Differences.fromString(getDifferencesFromXml(XmlUtil.toString(candidate), text))) {
+					if (!difference.getDiff().endsWith("/text()[1]")) {
+						found = false;
+					}
+				}
 
-            XPathFactory xpathFactory = XPathFactory.newInstance();
-            XPath xpath = xpathFactory.newXPath();
+				if (found) {
+					return true;
+				}
+			}
+		} catch (XmlUtilException e) {
+			LOG.warn("Unable to check similar tree", e);
+		} catch (DifferencesException e) {
+			LOG.warn("Unable to check similar tree", e);
+		}
 
-            XPathExpression expr = xpath.compile(element + "/text()");
-            Object result = expr.evaluate(document, XPathConstants.NODESET);
-            NodeList nodes = (NodeList) result;
-            String res = "";
-            for (int i = 0; i < nodes.getLength(); i++) {
-                res = nodes.item(i).getNodeValue();
-                
-                if (LOG.isDebugEnabled()) {
-                	LOG.debug(nodes.item(i).getNodeValue());
-                	LOG.debug("" + nodes.getLength());
-                }
-            }
+		return false;
+	}
 
-            if (LOG.isDebugEnabled()) {
-            	LOG.debug(res + element + text);
-            	LOG.debug("" + nodes.getLength());
-            }
-            
-            if (res.equals(text)) {
-                return true;
-            }
+	@Override
+	public String getFromXml(String uuid, String url, String element) {
+		if (uuid == null || element == null) {
+			LOG.warn("Null argument");
+			return DEFAULT_GET_FROM_XML_VALUE;
+		}
 
-        } catch (XPathExpressionException ex) {
-        	LOG.warn("Unable to check text in element", ex);
-        } catch (ParserConfigurationException ex) {
-        	LOG.warn("Unable to check text in element", ex);
-        } catch (SAXException ex) {
-        	LOG.warn("Unable to check text in element", ex);
-        } catch (IOException ex) {
-        	LOG.warn("Unable to check text in element", ex);
-        } catch (NullPointerException ex) {
-        	LOG.warn("Unable to check text in element", ex);
-        }
+		try {
+			Document document = url == null ? XmlUtil.fromString(executionSOAPResponse.getExecutionSOAPResponse(uuid)) : XmlUtil.fromURL(new URL(url));
+			NodeList candidates = XmlUtil.evaluate(document, element + "/text()");
+			return candidates != null && candidates.getLength() > 0 ? candidates.item(0).getNodeValue() : DEFAULT_GET_FROM_XML_VALUE;
+		} catch (XmlUtilException e) {
+			LOG.warn("Unable to get from xml", e);
+		} catch (MalformedURLException e) {
+			LOG.warn("Unable to get from xml", e);
+		}
 
-        return false;
-    }
+		return DEFAULT_GET_FROM_XML_VALUE;
+	}
 
-    @Override
-    public boolean isSimilarTree(TestCaseExecution tCExecution, String element, String text) {
-        try {
-            String xml = executionSOAPResponse.getExecutionSOAPResponse(tCExecution.getExecutionUUID());
-            InputSource source = new InputSource(new StringReader(xml));
-
-            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-            DocumentBuilder db = dbf.newDocumentBuilder();
-            Document document = db.parse(source);
-
-            XPathFactory xpathFactory = XPathFactory.newInstance();
-            XPath xpath = xpathFactory.newXPath();
-
-            XPathExpression expr = xpath.compile(element);
-            Object result = expr.evaluate(document, XPathConstants.NODE);
-            Node nodes = (Node) result;
-
-            NodeList nl = nodes.getChildNodes();
-
-            int length = nl.getLength();
-            String[] copy = new String[length + 1];
-
-            if (nodes.hasChildNodes()) {
-                for (int n = 0; n < length; ++n) {
-                    copy[n] = nl.item(n).getNodeName();
-                }
-            }
-            copy[length] = nodes.getNodeName();
-
-            StreamResult xmlOutput = new StreamResult(new StringWriter());
-            Transformer transformer = TransformerFactory.newInstance().newTransformer();
-            transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
-            transformer.transform(new DOMSource(nodes), xmlOutput);
-            String nodeAsAString = xmlOutput.getWriter().toString();
-
-            XMLUnit.setIgnoreWhitespace(true);
-            XMLUnit.setIgnoreDiffBetweenTextAndCDATA(true);
-
-            //System.out.println("Compare "+nodeAsAString+" with "+text);
-            Diff diff = new Diff(nodeAsAString, text);
-
-            DetailedDiff detDiff = new DetailedDiff(diff);
-            List differences = detDiff.getAllDifferences();
-            xmlUnitUtil xuu = new xmlUnitUtil(copy);
-            for (Object object : differences) {
-                Difference difference = (Difference) object;
-//                System.out.println("***********************");
-//                System.out.println(difference);
-//                System.out.println("***********************");
-                xuu.differenceFound(difference);
-            }
-
-            diff.overrideDifferenceListener(xuu);
-
-            return diff.similar();
-
-        } catch (SAXException e) {
-        	LOG.warn("Unable to check similar tree", e);
-        } catch (IOException e) {
-        	LOG.warn("Unable to check similar tree", e);
-        } catch (ParserConfigurationException ex) {
-        	LOG.warn("Unable to check similar tree", ex);
-        } catch (XPathExpressionException ex) {
-        	LOG.warn("Unable to check similar tree", ex);
-        } catch (Exception ex) {
-        	LOG.warn("Unable to check similar tree", ex);
-        }
-
-        return false;
-    }
-
-    @Override
-    public String getFromXml(String uuid, String url, String element) {
-        try {
-            InputSource source = null;
-            if (url == null) {
-                String xml = executionSOAPResponse.getExecutionSOAPResponse(uuid);
-                source = new InputSource(new StringReader(xml));
-            } else {
-                URL u = new URL(url);
-                InputStream in = u.openConnection().getInputStream();
-                source = new InputSource(in);
-            }
-
-            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-            DocumentBuilder db = dbf.newDocumentBuilder();
-            Document document = db.parse(source);
-
-            XPathFactory xpathFactory = XPathFactory.newInstance();
-            XPath xpath = xpathFactory.newXPath();
-
-            XPathExpression expr = xpath.compile(element + "/text()");
-            Object result = expr.evaluate(document, XPathConstants.NODESET);
-            NodeList nodes = (NodeList) result;
-            String res = "";
-            for (int i = 0; i < nodes.getLength(); i++) {
-                res = nodes.item(i).getNodeValue();
-            }
-
-            if (LOG.isDebugEnabled()) {
-            	LOG.debug(res);
-            }
-            return res;
-
-        } catch (XPathExpressionException ex) {
-        	LOG.warn("Unable to get from XML", ex);
-        } catch (ParserConfigurationException ex) {
-        	LOG.warn("Unable to get from XML", ex);
-        } catch (SAXException ex) {
-        	LOG.warn("Unable to get from XML", ex);
-        } catch (IOException ex) {
-        	LOG.warn("Unable to get from XML", ex);
-        } catch (NullPointerException ex) {
-        	LOG.warn("Unable to get from XML", ex);
-        }
-
-        return null;
-    }
-    
-    @Override
+	@Override
 	public String getDifferencesFromXml(String left, String right) {
 		try {
 			// Gets the detailed diff between left and right argument
 			Document leftDocument = inputTranslator.translate(left);
 			Document rightDocument = inputTranslator.translate(right);
 			DetailedDiff diffs = new DetailedDiff(XMLUnit.compareXML(leftDocument, rightDocument));
-			
+
 			// Creates the result structure which will contain difference list
 			Differences resultDiff = new Differences();
-			
+
 			// Add each difference to our result structure
 			for (Object diff : diffs.getAllDifferences()) {
 				if (!(diff instanceof Difference)) {
@@ -363,12 +228,14 @@ public class XmlUnitService implements IXmlUnitService {
 				}
 				Difference wellTypedDiff = (Difference) diff;
 				String xPathLocation = wellTypedDiff.getControlNodeDetail().getXpathLocation();
-				// Null XPath location means additional data from the right structure.
+				// Null XPath location means additional data from the right
+				// structure.
 				// Then we retrieve XPath from the right structure.
 				if (xPathLocation == null) {
 					xPathLocation = wellTypedDiff.getTestNodeDetail().getXpathLocation();
 				}
-				// If location is still null, then both of left and right differences have been marked as null
+				// If location is still null, then both of left and right
+				// differences have been marked as null
 				// This case should never happen
 				if (xPathLocation == null) {
 					LOG.warn("Null left and right differences found");
@@ -376,23 +243,28 @@ public class XmlUnitService implements IXmlUnitService {
 				}
 				resultDiff.addDifference(new org.cerberus.serviceEngine.impl.diff.Difference(xPathLocation));
 			}
-			
+
 			// Finally returns the String representation of our result structure
 			return resultDiff.mkString();
 		} catch (InputTranslatorException e) {
 			LOG.warn("Unable to get differences from XML", e);
 		}
-		
+
 		return null;
 	}
 
 	@Override
 	public String removeDifference(String pattern, String differences) {
+		if (pattern == null || differences == null) {
+			LOG.warn("Null argument");
+			return null;
+		}
+
 		try {
 			// Gets the difference list from the differences
 			Differences current = Differences.fromString(differences);
 			Differences returned = new Differences();
-			
+
 			// Compiles the given pattern
 			Pattern compiledPattern = Pattern.compile(pattern);
 			for (org.cerberus.serviceEngine.impl.diff.Difference currentDiff : current.getDifferences()) {
@@ -401,27 +273,28 @@ public class XmlUnitService implements IXmlUnitService {
 				}
 				returned.addDifference(currentDiff);
 			}
-			
-			// Returns the empty String if there is no difference left, or the String XML representation
+
+			// Returns the empty String if there is no difference left, or the
+			// String XML representation
 			return returned.mkString();
 		} catch (DifferencesException e) {
 			LOG.warn("Unable to remove differences", e);
 		}
-		
+
 		return null;
 	}
 
 	@Override
 	public boolean isElementEquals(TestCaseExecution tCExecution, String xpath, String expectedElement) {
 		if (tCExecution == null || xpath == null || expectedElement == null) {
-			LOG.warn("Unable to check if element equality with null argument");
+			LOG.warn("Null argument");
 			return false;
 		}
-		
+
 		try {
-			List<String> candidates = XmlUtil.evaluate(executionSOAPResponse.getExecutionSOAPResponse(tCExecution.getExecutionUUID()), xpath);
-			for (String candidate : candidates) {
-				if (Differences.fromString(getDifferencesFromXml(candidate, expectedElement)).isEmpty()) {
+			NodeList candidates = XmlUtil.evaluate(executionSOAPResponse.getExecutionSOAPResponse(tCExecution.getExecutionUUID()), xpath);
+			for (Document candidate : XmlUtil.fromNodeList(candidates)) {
+				if (Differences.fromString(getDifferencesFromXml(XmlUtil.toString(candidate), expectedElement)).isEmpty()) {
 					return true;
 				}
 			}
