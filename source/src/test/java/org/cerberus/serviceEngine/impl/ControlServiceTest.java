@@ -1111,4 +1111,227 @@ public class ControlServiceTest {
         Assert.assertEquals(MessageEventEnum.CONTROL_FAILED_ELEMENTDIFFERENT.getCode(), tcsace.getControlResultMessage().getCode());
         Assert.assertEquals(msg, tcsace.getControlResultMessage().getDescription());
     }
+    
+    @Test
+    public void testVerifyTextInElementWhenElementExistsAndTextEquals() {
+		String xpath = "/foo/bar";
+		String actual = "foo";
+		String expected = "foo";
+		String msg = "Element '" + xpath + "' with value '" + actual + "' is equal to '" + expected + "'.";
+
+		TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
+		tcsace.setControlType("verifyTextInElement");
+		tcsace.setControlProperty(xpath);
+		tcsace.setControlValue(expected);
+		tcsace.setFatal("Y");
+		TestCaseStepExecution tcse = new TestCaseStepExecution();
+		tcse.settCExecution(tCExecution);
+		TestCaseStepActionExecution tcsae = new TestCaseStepActionExecution();
+		tcsae.setTestCaseStepExecution(tcse);
+		tcsace.setTestCaseStepActionExecution(tcsae);
+
+		when(application.getType()).thenReturn("WS");
+		when(tCExecution.getExecutionUUID()).thenReturn("uuid");
+		when(xmlUnitService.getFromXml("uuid", null, xpath)).thenReturn(actual);
+
+		this.controlService.doControl(tcsace);
+
+		Assert.assertEquals(MessageEventEnum.CONTROL_SUCCESS_TEXTINELEMENT.getCode(), tcsace.getControlResultMessage().getCode());
+		Assert.assertEquals(msg, tcsace.getControlResultMessage().getDescription());
+    }
+    
+    @Test
+    public void testVerifyTextInElementWhenElementExistsAndTextNotEquals() {
+		String xpath = "/foo/bar";
+		String actual = "foo";
+		String expected = "bar";
+		String msg = "Element '" + xpath + "' with value '" + actual + "' is not equal to '" + expected + "'.";
+
+		TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
+		tcsace.setControlType("verifyTextInElement");
+		tcsace.setControlProperty(xpath);
+		tcsace.setControlValue(expected);
+		tcsace.setFatal("Y");
+		TestCaseStepExecution tcse = new TestCaseStepExecution();
+		tcse.settCExecution(tCExecution);
+		TestCaseStepActionExecution tcsae = new TestCaseStepActionExecution();
+		tcsae.setTestCaseStepExecution(tcse);
+		tcsace.setTestCaseStepActionExecution(tcsae);
+
+		when(application.getType()).thenReturn("WS");
+		when(tCExecution.getExecutionUUID()).thenReturn("uuid");
+		when(xmlUnitService.getFromXml("uuid", null, xpath)).thenReturn(actual);
+
+		this.controlService.doControl(tcsace);
+
+		Assert.assertEquals(MessageEventEnum.CONTROL_FAILED_TEXTINELEMENT.getCode(), tcsace.getControlResultMessage().getCode());
+		Assert.assertEquals(msg, tcsace.getControlResultMessage().getDescription());
+    }
+    
+    @Test
+    public void testVerifyTextInElementWhenElementExistsAndTextIsNull() {
+		String xpath = "/foo/bar";
+		String actual = null;
+		String expected = "bar";
+		String msg = "Found Element '" + xpath + "' but can not find text or value.";
+
+		TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
+		tcsace.setControlType("verifyTextInElement");
+		tcsace.setControlProperty(xpath);
+		tcsace.setControlValue(expected);
+		tcsace.setFatal("Y");
+		TestCaseStepExecution tcse = new TestCaseStepExecution();
+		tcse.settCExecution(tCExecution);
+		TestCaseStepActionExecution tcsae = new TestCaseStepActionExecution();
+		tcsae.setTestCaseStepExecution(tcse);
+		tcsace.setTestCaseStepActionExecution(tcsae);
+
+		when(application.getType()).thenReturn("WS");
+		when(tCExecution.getExecutionUUID()).thenReturn("uuid");
+		when(xmlUnitService.getFromXml("uuid", null, xpath)).thenReturn(actual);
+
+		this.controlService.doControl(tcsace);
+
+		Assert.assertEquals(MessageEventEnum.CONTROL_FAILED_TEXTINELEMENT_NULL.getCode(), tcsace.getControlResultMessage().getCode());
+		Assert.assertEquals(msg, tcsace.getControlResultMessage().getDescription());
+    }
+    
+    public void testVerifyTextInElementWithNotSupportedApplication() {
+		String xpath = "/foo/bar";
+		String actual = "foo";
+		String expected = "bar";
+		String msg = "Not executed because Control 'verifyTextInElement' is not supported for application type 'UNKNOWN'.";
+
+		TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
+		tcsace.setControlType("verifyTextInElement");
+		tcsace.setControlProperty(xpath);
+		tcsace.setControlValue(expected);
+		tcsace.setFatal("Y");
+		TestCaseStepExecution tcse = new TestCaseStepExecution();
+		tcse.settCExecution(tCExecution);
+		TestCaseStepActionExecution tcsae = new TestCaseStepActionExecution();
+		tcsae.setTestCaseStepExecution(tcse);
+		tcsace.setTestCaseStepActionExecution(tcsae);
+
+		when(application.getType()).thenReturn("UNKNOWN");
+		when(tCExecution.getExecutionUUID()).thenReturn("uuid");
+		when(xmlUnitService.getFromXml("uuid", null, xpath)).thenReturn(actual);
+
+		this.controlService.doControl(tcsace);
+
+		Assert.assertEquals(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION.getCode(), tcsace.getControlResultMessage().getCode());
+		Assert.assertEquals(msg, tcsace.getControlResultMessage().getDescription());
+    }
+    
+    @Test
+    public void testVerifyTextNotInElementWhenElementExistsAndTextDifferent() {
+		String xpath = "/foo/bar";
+		String actual = "foo";
+		String expected = "bar";
+		String msg = "Element '" + xpath + "' with value '" + actual + "' is different than '" + expected + "'.";
+
+		TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
+		tcsace.setControlType("verifyTextNotInElement");
+		tcsace.setControlProperty(xpath);
+		tcsace.setControlValue(expected);
+		tcsace.setFatal("Y");
+		TestCaseStepExecution tcse = new TestCaseStepExecution();
+		tcse.settCExecution(tCExecution);
+		TestCaseStepActionExecution tcsae = new TestCaseStepActionExecution();
+		tcsae.setTestCaseStepExecution(tcse);
+		tcsace.setTestCaseStepActionExecution(tcsae);
+
+		when(application.getType()).thenReturn("WS");
+		when(tCExecution.getExecutionUUID()).thenReturn("uuid");
+		when(xmlUnitService.getFromXml("uuid", null, xpath)).thenReturn(actual);
+
+		this.controlService.doControl(tcsace);
+
+		Assert.assertEquals(MessageEventEnum.CONTROL_SUCCESS_TEXTNOTINELEMENT.getCode(), tcsace.getControlResultMessage().getCode());
+		Assert.assertEquals(msg, tcsace.getControlResultMessage().getDescription());
+    }
+    
+    @Test
+    public void testVerifyTextNotInElementWhenElementExistsAndTextNotDifferent() {
+		String xpath = "/foo/bar";
+		String actual = "foo";
+		String expected = "foo";
+		String msg = "Element '" + xpath + "' with value '" + actual + "' is not different than '" + expected + "'.";
+
+		TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
+		tcsace.setControlType("verifyTextNotInElement");
+		tcsace.setControlProperty(xpath);
+		tcsace.setControlValue(expected);
+		tcsace.setFatal("Y");
+		TestCaseStepExecution tcse = new TestCaseStepExecution();
+		tcse.settCExecution(tCExecution);
+		TestCaseStepActionExecution tcsae = new TestCaseStepActionExecution();
+		tcsae.setTestCaseStepExecution(tcse);
+		tcsace.setTestCaseStepActionExecution(tcsae);
+
+		when(application.getType()).thenReturn("WS");
+		when(tCExecution.getExecutionUUID()).thenReturn("uuid");
+		when(xmlUnitService.getFromXml("uuid", null, xpath)).thenReturn(actual);
+
+		this.controlService.doControl(tcsace);
+
+		Assert.assertEquals(MessageEventEnum.CONTROL_FAILED_TEXTNOTINELEMENT.getCode(), tcsace.getControlResultMessage().getCode());
+		Assert.assertEquals(msg, tcsace.getControlResultMessage().getDescription());
+    }
+    
+    @Test
+    public void testVerifyTextNotInElementWhenElementExistsAndTextIsNull() {
+		String xpath = "/foo/bar";
+		String actual = null;
+		String expected = "bar";
+		String msg = "Found Element '" + xpath + "' but can not find text or value.";
+
+		TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
+		tcsace.setControlType("verifyTextNotInElement");
+		tcsace.setControlProperty(xpath);
+		tcsace.setControlValue(expected);
+		tcsace.setFatal("Y");
+		TestCaseStepExecution tcse = new TestCaseStepExecution();
+		tcse.settCExecution(tCExecution);
+		TestCaseStepActionExecution tcsae = new TestCaseStepActionExecution();
+		tcsae.setTestCaseStepExecution(tcse);
+		tcsace.setTestCaseStepActionExecution(tcsae);
+
+		when(application.getType()).thenReturn("WS");
+		when(tCExecution.getExecutionUUID()).thenReturn("uuid");
+		when(xmlUnitService.getFromXml("uuid", null, xpath)).thenReturn(actual);
+
+		this.controlService.doControl(tcsace);
+
+		Assert.assertEquals(MessageEventEnum.CONTROL_FAILED_TEXTNOTINELEMENT_NULL.getCode(), tcsace.getControlResultMessage().getCode());
+		Assert.assertEquals(msg, tcsace.getControlResultMessage().getDescription());
+    }
+    
+    public void testVerifyTextNotInElementWithNotSupportedApplication() {
+		String xpath = "/foo/bar";
+		String actual = "foo";
+		String expected = "bar";
+		String msg = "Not executed because Control 'verifyTextNotInElement' is not supported for application type 'UNKNOWN'.";
+
+		TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
+		tcsace.setControlType("verifyTextNotInElement");
+		tcsace.setControlProperty(xpath);
+		tcsace.setControlValue(expected);
+		tcsace.setFatal("Y");
+		TestCaseStepExecution tcse = new TestCaseStepExecution();
+		tcse.settCExecution(tCExecution);
+		TestCaseStepActionExecution tcsae = new TestCaseStepActionExecution();
+		tcsae.setTestCaseStepExecution(tcse);
+		tcsace.setTestCaseStepActionExecution(tcsae);
+
+		when(application.getType()).thenReturn("UNKNOWN");
+		when(tCExecution.getExecutionUUID()).thenReturn("uuid");
+		when(xmlUnitService.getFromXml("uuid", null, xpath)).thenReturn(actual);
+
+		this.controlService.doControl(tcsace);
+
+		Assert.assertEquals(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION.getCode(), tcsace.getControlResultMessage().getCode());
+		Assert.assertEquals(msg, tcsace.getControlResultMessage().getDescription());
+    }
+    
 }

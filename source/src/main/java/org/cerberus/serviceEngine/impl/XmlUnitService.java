@@ -122,14 +122,14 @@ public class XmlUnitService implements IXmlUnitService {
 	}
 
 	@Override
-	public boolean isElementPresent(TestCaseExecution tCExecution, String element) {
-		if (element == null) {
+	public boolean isElementPresent(TestCaseExecution tCExecution, String xpath) {
+		if (xpath == null) {
 			LOG.warn("Null argument");
 			return false;
 		}
 
 		try {
-			return XmlUtil.evaluate(executionSOAPResponse.getExecutionSOAPResponse(tCExecution.getExecutionUUID()), element).getLength() != 0;
+			return XmlUtil.evaluate(executionSOAPResponse.getExecutionSOAPResponse(tCExecution.getExecutionUUID()), xpath).getLength() != 0;
 		} catch (XmlUtilException e) {
 			LOG.warn("Unable to check if element is present", e);
 		}
@@ -138,39 +138,17 @@ public class XmlUnitService implements IXmlUnitService {
 	}
 
 	@Override
-	public boolean isTextInElement(TestCaseExecution tCExecution, String element, String text) {
-		if (element == null || text == null) {
+	public boolean isSimilarTree(TestCaseExecution tCExecution, String xpath, String tree) {
+		if (xpath == null || tree == null) {
 			LOG.warn("Null argument");
 			return false;
 		}
 
 		try {
-			NodeList candidates = XmlUtil.evaluate(executionSOAPResponse.getExecutionSOAPResponse(tCExecution.getExecutionUUID()), element + "/text()");
-			for (Node candidate : new XmlUtil.IterableNodeList(candidates)) {
-				if (text.equals(candidate.getNodeValue())) {
-					return true;
-				}
-			}
-			return false;
-		} catch (XmlUtilException e) {
-			LOG.warn("There is an error during the xml parsing", e);
-		}
-
-		return false;
-	}
-
-	@Override
-	public boolean isSimilarTree(TestCaseExecution tCExecution, String element, String text) {
-		if (element == null || text == null) {
-			LOG.warn("Null argument");
-			return false;
-		}
-
-		try {
-			NodeList candidates = XmlUtil.evaluate(executionSOAPResponse.getExecutionSOAPResponse(tCExecution.getExecutionUUID()), element);
+			NodeList candidates = XmlUtil.evaluate(executionSOAPResponse.getExecutionSOAPResponse(tCExecution.getExecutionUUID()), xpath);
 			for (Node candidate : new XmlUtil.IterableNodeList(candidates)) {
 				boolean found = true;
-				for (org.cerberus.serviceEngine.impl.diff.Difference difference : Differences.fromString(getDifferencesFromXml(XmlUtil.toString(candidate), text))) {
+				for (org.cerberus.serviceEngine.impl.diff.Difference difference : Differences.fromString(getDifferencesFromXml(XmlUtil.toString(candidate), tree))) {
 					if (!difference.getDiff().endsWith("/text()[1]")) {
 						found = false;
 					}
@@ -190,15 +168,16 @@ public class XmlUnitService implements IXmlUnitService {
 	}
 
 	@Override
-	public String getFromXml(String uuid, String url, String element) {
-		if (uuid == null || element == null) {
+	public String getFromXml(String uuid, String url, String xpath) {
+		if (uuid == null || xpath == null) {
 			LOG.warn("Null argument");
 			return DEFAULT_GET_FROM_XML_VALUE;
 		}
 
 		try {
 			Document document = url == null ? XmlUtil.fromString(executionSOAPResponse.getExecutionSOAPResponse(uuid)) : XmlUtil.fromURL(new URL(url));
-			NodeList candidates = XmlUtil.evaluate(document, element + "/text()");
+			NodeList candidates = XmlUtil.evaluate(document, xpath + "/text()");
+			// Not that in case of multiple values then send the first one
 			return candidates != null && candidates.getLength() > 0 ? candidates.item(0).getNodeValue() : DEFAULT_GET_FROM_XML_VALUE;
 		} catch (XmlUtilException e) {
 			LOG.warn("Unable to get from xml", e);

@@ -111,52 +111,6 @@ public class XmlUnitServiceTest {
 	}
 
 	@Test
-	public void testIsTextInElementWithExistingTextAndExistingElement() {
-		TestCaseExecution tce = new TestCaseExecution();
-		tce.setExecutionUUID("1234");
-		Mockito.when(executionSOAPResponse.getExecutionSOAPResponse(tce.getExecutionUUID())).thenReturn("<root><a>1</a><a>2</a></root>");
-
-		Assert.assertTrue(xmlUnitService.isTextInElement(tce, "/root/a", "1"));
-	}
-
-	@Test
-	public void testIsTextInElementWithExistingTextAndExistingElementWithNamespace() {
-		TestCaseExecution tce = new TestCaseExecution();
-		tce.setExecutionUUID("1234");
-		Mockito.when(executionSOAPResponse.getExecutionSOAPResponse(tce.getExecutionUUID()))
-				.thenReturn("<root xmlns:prefix=\"http://prefix\"><prefix:a>1</prefix:a><prefix:a>2</prefix:a></root>");
-
-		Assert.assertTrue(xmlUnitService.isTextInElement(tce, "/root/prefix:a", "1"));
-	}
-
-	@Test
-	public void testIsTextInElementWithNotExistingTextAndExistingElement() {
-		TestCaseExecution tce = new TestCaseExecution();
-		tce.setExecutionUUID("1234");
-		Mockito.when(executionSOAPResponse.getExecutionSOAPResponse(tce.getExecutionUUID())).thenReturn("<root><a>1</a><a>2</a></root>");
-
-		Assert.assertFalse(xmlUnitService.isTextInElement(tce, "/root/a", "3"));
-	}
-
-	@Test
-	public void testIsTextInElementWithExistingTextAndNotExistingElement() {
-		TestCaseExecution tce = new TestCaseExecution();
-		tce.setExecutionUUID("1234");
-		Mockito.when(executionSOAPResponse.getExecutionSOAPResponse(tce.getExecutionUUID())).thenReturn("<root><a>1</a><a>2</a></root>");
-
-		Assert.assertFalse(xmlUnitService.isTextInElement(tce, "/root/b", "1"));
-	}
-
-	@Test
-	public void testIsTextInElementWithNotExistingTextAndNotExistingElement() {
-		TestCaseExecution tce = new TestCaseExecution();
-		tce.setExecutionUUID("1234");
-		Mockito.when(executionSOAPResponse.getExecutionSOAPResponse(tce.getExecutionUUID())).thenReturn("<root><a>1</a><a>2</a></root>");
-
-		Assert.assertFalse(xmlUnitService.isTextInElement(tce, "/root/b", "3"));
-	}
-
-	@Test
 	public void testIsSimilarTreeWithExistingElementAndSimilarTree() {
 		TestCaseExecution tce = new TestCaseExecution();
 		tce.setExecutionUUID("1234");

@@ -27,14 +27,53 @@ import org.cerberus.entity.TestCaseExecution;
  */
 public interface IXmlUnitService {
 
-    boolean isElementPresent(TestCaseExecution tCExecution, String element);
-    
-    boolean isTextInElement(TestCaseExecution tCExecution, String element, String text);
-    
-    boolean isSimilarTree(TestCaseExecution tCExecution, String element, String text);
-    
-    String getFromXml(String uuid, String url, String element);
-    
+	/**
+	 * If and element is present or not from the last SOAP call
+	 * 
+	 * @param tCExecution
+	 *            the associated {@link TestCaseExecution}
+	 * @param xpath
+	 *            to the element to find from the last SOAP call
+	 * @return <code>true</code> if element is present from the last SOAP call,
+	 *         <code>false</code> otherwise
+	 */
+	boolean isElementPresent(TestCaseExecution tCExecution, String xpath);
+
+	/**
+	 * If the given tree is similar to the element which is located to the xpath
+	 * from the last SOAP call.
+	 * 
+	 * <p>
+	 * Similar trees have the same structure but can have not same values
+	 * </p>
+	 * 
+	 * @param tCExecution
+	 *            the associated {@link TestCaseExecution}
+	 * @param xpath
+	 *            to the element to find from the last SOAP call
+	 * @param tree
+	 *            to test against what is located from the xpath from the last
+	 *            SOAP call
+	 * @return <code>true</code> if trees are similars, <code>false</code>
+	 *         otherwise
+	 */
+	boolean isSimilarTree(TestCaseExecution tCExecution, String xpath, String tree);
+
+	/**
+	 * Gets a text value contained from the given URL or last SOAP call
+	 * 
+	 * @param uuid
+	 *            the associated execution UUID
+	 * @param url
+	 *            if not <code>null</code> then use this URL to get the value.
+	 *            If <code>null</code> then use the last SOAP call
+	 * @param xpath
+	 *            to the element to get text value
+	 * @return the text value from the given URL or last SOAP call which is
+	 *         located to the given xpath
+	 */
+	String getFromXml(String uuid, String url, String xpath);
+
 	/**
 	 * Gets differences from XML representations given in argument.
 	 * 
@@ -42,17 +81,20 @@ public interface IXmlUnitService {
 	 * XML representation can be:
 	 * <ul>
 	 * <li>a raw XML from a {@link String}</li>
-	 * <li>an URL to a XML file. In this case, XML representation must be prefixed by <code>url=</code></li>
+	 * <li>an URL to a XML file. In this case, XML representation must be
+	 * prefixed by <code>url=</code></li>
 	 * </ul>
 	 * </p>
 	 * 
 	 * <p>
-	 * Differences are computed by using left as base. So, results are left relative. However, in case of non-existing path from the left part, then the right one is given, instead
-	 * of getting a null XPath.
+	 * Differences are computed by using left as base. So, results are left
+	 * relative. However, in case of non-existing path from the left part, then
+	 * the right one is given, instead of getting a null XPath.
 	 * </p>
 	 * 
 	 * <p>
-	 * Differences are represented by a list of XPath contained into the following XML structure:
+	 * Differences are represented by a list of XPath contained into the
+	 * following XML structure:
 	 * 
 	 * <pre>
 	 * {@code
@@ -72,7 +114,7 @@ public interface IXmlUnitService {
 	 * @return a list of XPath
 	 */
 	String getDifferencesFromXml(String left, String right);
-	
+
 	/**
 	 * Removes differences found by applying the given pattern.
 	 * 
@@ -83,7 +125,7 @@ public interface IXmlUnitService {
 	 * @return a new filtered differences variable
 	 */
 	String removeDifference(String pattern, String differences);
-	
+
 	/**
 	 * Checks if the element contained into the given xpath from the last SOAP
 	 * call is equal to the expected given one.
