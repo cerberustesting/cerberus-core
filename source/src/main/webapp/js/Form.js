@@ -2030,11 +2030,16 @@ function addTCSANew(rowID, step, obj) {
     $('#StepListOfActionDiv' + step + newNumberOfAction).find('input[data-id="action_color_id"]')
             .attr('style', 'background-color:blue; width:8px;height:100%;display:inline-block;float:left');
     $('#StepListOfActionDiv' + step + newNumberOfAction).find('input[data-id="action_delete_template"]')
-            .attr('name', 'action_delete_' + step + '_' + newNumberOfAction);
+            .attr('name', 'action_delete_' + step + '_' + newNumberOfAction)
+            .attr('id', 'action_delete_' + step + '_' + newNumberOfAction)
+            .attr('style', 'display:none');
     $('#StepListOfActionDiv' + step + newNumberOfAction).find('input[data-id="action_increment_template"]')
             .attr('name', 'action_increment_' + step).val(newNumberOfAction);
     $('#StepListOfActionDiv' + step + newNumberOfAction).find('input[data-id="action_step_template"]')
             .attr('name', 'action_step_' + step + '_' + newNumberOfAction).val(StepNum);
+    $('#StepListOfActionDiv' + step + newNumberOfAction).find('img[data-id="action_img_delete"]')
+            .attr('id', 'img_delete_'+step+'_'+newNumberOfAction)
+            .attr('onclick', 'checkDeleteBox(\'img_delete_'+step+'_'+newNumberOfAction+'\', \'action_delete_'+step+'_'+newNumberOfAction+'\',\'StepListOfActionDiv'+step+newNumberOfAction+'\')');
     $('#StepListOfActionDiv' + step + newNumberOfAction).find('img[data-id="actionAddActionButton_template"]')
             .attr('onclick', 'addTCSANew(\'DivActionEndOfAction' + step + newNumberOfAction + '\', \'' + step + '\', this)');
     $('#StepListOfActionDiv' + step + newNumberOfAction).find('img[data-id="actionAddControlButton_template"]')
@@ -2095,11 +2100,16 @@ function addTCSACNew(rowID, step, incrementAction, obj) {
     $('#StepListOfControlDiv' + step + incrementAction + nextIncControl).find('input[data-id="control_color_id"]')
             .attr('style', 'background-color:blue; width:8px;height:100%;display:inline-block;float:left');
     $('#StepListOfControlDiv' + step + incrementAction + nextIncControl).find('input[data-id="control_delete_template"]')
-            .attr('name', 'control_delete_' + step + '_' + incrementAction + '_' + nextIncControl);
+            .attr('name', 'control_delete_' + step + '_' + incrementAction + '_' + nextIncControl)
+            .attr('id', 'control_delete_' + step + '_' + incrementAction + '_' + nextIncControl)
+            .attr('style', 'display:none');
     $('#StepListOfControlDiv' + step + incrementAction + nextIncControl).find('input[data-id="control_increment_template"]')
             .attr('name', 'control_increment_' + step + '_' + incrementAction).val(nextIncControl);
     $('#StepListOfControlDiv' + step + incrementAction + nextIncControl).find('input[data-id="control_step_template"]')
             .attr('name', 'control_step_' + step + '_' + incrementAction + '_' + nextIncControl).val(StepNum);
+    $('#StepListOfControlDiv' + step + incrementAction + nextIncControl).find('img[data-id="control_img_delete"]')
+            .attr('id', 'img_delete_'+step+'_'+incrementAction+'_'+nextIncControl)
+            .attr('onclick', 'checkDeleteBox(\'img_delete_'+step+'_'+incrementAction+'_'+nextIncControl+'\', \'control_delete_'+step+'_'+incrementAction+'_'+nextIncControl+'\',\'StepListOfControlDiv'+step+incrementAction+nextIncControl+'\')');
     $('#StepListOfControlDiv' + step + incrementAction + nextIncControl).find('img[data-id="controlAddActionButton_template"]')
             .attr('onclick', 'addTCSANew(\'DivActionEndOfAction' + step + incrementAction + '\', \'' + step + '\', this)');
     $('#StepListOfControlDiv' + step + incrementAction + nextIncControl).find('img[data-id="controlAddControlButton_template"]')
