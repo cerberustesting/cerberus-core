@@ -3977,6 +3977,20 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
 		SQLS.append("ALTER TABLE `soaplibrary` CHANGE COLUMN `Method` `Method` VARCHAR(255) NULL DEFAULT NULL ;");
 		SQLInstruction.add(SQLS.toString());
         
+// Add Invariant for new control verify text not in element.
+// -- ------------------------ 558
+		SQLS = new StringBuilder();
+		SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`) VALUES ");
+		SQLS.append("('CONTROL', 'verifyTextNotInElement', 41, 'verifyTextNotInElement');");
+		SQLInstruction.add(SQLS.toString());
+		
+// Add documentation for new previously added controls.
+// -- ------------------------ 559
+		SQLS = new StringBuilder();
+		SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `DocLabel`, `DocDesc`) VALUES ");
+		SQLS.append("('testcasestepactioncontrol', 'Type', 'verifyTextNotInElement', 'True if a text is not inside a field.', '<b>verifyTextNotInElement</b><br><br>True if a text is not inside a field.<br><br><i>Control Property :</i> The field location<br><br><i>Control Value :</i> The text to test against the value from the field locatin<br><br>');");
+        SQLInstruction.add(SQLS.toString());
+        
         return SQLInstruction;
     }
     
