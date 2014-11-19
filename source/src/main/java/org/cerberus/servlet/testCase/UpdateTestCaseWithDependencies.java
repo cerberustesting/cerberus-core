@@ -23,14 +23,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.cerberus.entity.Group;
 import org.cerberus.entity.MessageGeneralEnum;
 import org.cerberus.entity.TCase;
 import org.cerberus.entity.Test;
@@ -39,6 +38,7 @@ import org.cerberus.entity.TestCaseCountryProperties;
 import org.cerberus.entity.TestCaseStep;
 import org.cerberus.entity.TestCaseStepAction;
 import org.cerberus.entity.TestCaseStepActionControl;
+import org.cerberus.entity.User;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.factory.IFactoryLogEvent;
 import org.cerberus.factory.IFactoryTCase;
@@ -48,6 +48,7 @@ import org.cerberus.factory.IFactoryTestCaseStep;
 import org.cerberus.factory.IFactoryTestCaseStepAction;
 import org.cerberus.factory.IFactoryTestCaseStepActionControl;
 import org.cerberus.factory.impl.FactoryLogEvent;
+import org.cerberus.service.IGroupService;
 import org.cerberus.service.IInvariantService;
 import org.cerberus.service.ILogEventService;
 import org.cerberus.service.ITestCaseCountryPropertiesService;
@@ -57,6 +58,7 @@ import org.cerberus.service.ITestCaseStepActionControlService;
 import org.cerberus.service.ITestCaseStepActionService;
 import org.cerberus.service.ITestCaseStepService;
 import org.cerberus.service.ITestService;
+import org.cerberus.service.IUserService;
 import org.cerberus.service.impl.LogEventService;
 import org.cerberus.service.impl.UserService;
 import org.springframework.context.ApplicationContext;
@@ -97,7 +99,19 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
         ITestCaseStepActionService tcsaService = appContext.getBean(ITestCaseStepActionService.class);
         ITestCaseStepActionControlService tcsacService = appContext.getBean(ITestCaseStepActionControlService.class);
         IInvariantService invariantService = appContext.getBean(IInvariantService.class);
+        IUserService userService = appContext.getBean(IUserService.class);
+        IGroupService groupService = appContext.getBean(IGroupService.class);
 
+        /**
+         * Get User and Groups of this user
+         */
+        User user = userService.findUserByKey(request.getUserPrincipal().getName());
+        List<Group> userGroupList = groupService.findGroupByUser(user);
+        List<String> groupList = new ArrayList();
+        for (Group group : userGroupList){
+        groupList.add(group.getGroup());
+        }
+        
         /**
          * Verify the Test is the same than initialTest If it is the same > Do
          * nothing If it is not the same > Verify if test already exists If not
@@ -120,10 +134,17 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
          * duplicate the testcase and the status in the initial one.
          */
         if (duplicate) {
-            tc.setCreator(request.getUserPrincipal().getName());
+            tc.setCreator(user.getLogin());
             tc.setStatus(invariantService.findListOfInvariantById("TCSTATUS").get(0).getValue());
         }
-
+        
+        /**
+         * If not duplicate and test in Working status and user with no admin right, raise an error
+         */
+        if (!duplicate && "WORKING".equals(tc.getStatus()) && groupList.contains("TestAdmin")){
+        response.sendError(403, MessageGeneralEnum.GUI_TESTCASE_NON_ADMIN_SAVE_WORKING_TESTCASE.getDescription());
+        }
+        
         /**
          * Verify testcase is the same than initialTestCase If it is the same >
          * update If it is not the same, > verify if testcase already exist If

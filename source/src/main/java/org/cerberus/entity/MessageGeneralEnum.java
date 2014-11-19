@@ -95,8 +95,10 @@ public enum MessageGeneralEnum {
     GUI_TEST_DUPLICATION_NOT_EXISTING_TEST(403, "", "Error : You're trying to duplicate a test which does not exist anymore."),
     GUI_ERROR_INSERTING_DATA(403, "", "Error : A problem has been found inserting data in database. Please try later or contact your Cerberus Administrator with the following details : %DETAILS%"),
     GUI_TESTCASE_DUPLICATION_ALREADY_EXISTS(403, "", "Error : You're trying to duplicate a testcase which already exists"),
-    GUI_TESTCASE_DELETE_USED_STEP(403, "", "Error : You're trying to delete a testcase which have some step used in other tests. Please remove the link before delete this testcase");
+    GUI_TESTCASE_DELETE_USED_STEP(403, "", "Error : You're trying to delete a testcase which have some step used in other tests. Please remove the link before delete this testcase"),
+    GUI_TESTCASE_NON_ADMIN_SAVE_WORKING_TESTCASE(403, "", "Error : You're trying to save a WORKING testcase without having the admin right to do");
 
+    
     private final int code;
     private final String codeString;
     private final String description;
