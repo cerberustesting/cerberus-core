@@ -614,12 +614,13 @@
                             <br>
                             <%  if (canDelete) {%>
                             <input type="button" id="deleteTC" name="deleteTC" value="delete" onclick="javascript:deleteTestCase('<%=test%>', '<%=testcase%>', 'TestCase.jsp')">
+                            <% }%>
                             <input type="button" id="exportTC" name="exportTC" value="exportTestCase" onclick="javascript:exportTestCase('<%=test%>', '<%=testcase%>', 'TestCase.jsp')">
                             <input type="button" id="saveAs" name="saveAs" value="Save As" onclick="javascript:enableDuplicateField()">
                             <input type="button" style="display:none" id="FirstSaveChanges" name="SaveChanges" value="Save Changes" onclick="$('#UpdateTestCase').submit();">
                             <div id="deleteTCDiv">
                             </div>
-                            <% }%>
+                            
                         </td>
                     </tr>
                     <tr>

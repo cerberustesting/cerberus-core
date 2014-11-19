@@ -141,8 +141,10 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
         /**
          * If not duplicate and test in Working status and user with no admin right, raise an error
          */
-        if (!duplicate && "WORKING".equals(tc.getStatus()) && groupList.contains("TestAdmin")){
+        System.out.print(duplicate+tc.getStatus()+groupList);
+        if (!duplicate && "WORKING".equals(tc.getStatus()) && !groupList.contains("TestAdmin")){
         response.sendError(403, MessageGeneralEnum.GUI_TESTCASE_NON_ADMIN_SAVE_WORKING_TESTCASE.getDescription());
+    return;
         }
         
         /**

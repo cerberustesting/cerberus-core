@@ -33,5 +33,7 @@ public interface IFactoryGroup {
      * @return
      */
     Group create(String group);
+    
+    Group create(String login, String group);
         
 }

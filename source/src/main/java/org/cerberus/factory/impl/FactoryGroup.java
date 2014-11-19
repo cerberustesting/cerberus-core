@@ -35,4 +35,12 @@ public class FactoryGroup implements IFactoryGroup {
         newGroup.setGroup(group);
         return newGroup;
     }
+
+    @Override
+    public Group create(String login, String group) {
+        Group newGroup = new Group();
+        newGroup.setGroup(group);
+        newGroup.setLogin(login);
+        return newGroup;
+    }
 }
