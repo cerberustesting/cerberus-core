@@ -51,8 +51,8 @@ public class AddBuildContent extends HttpServlet{
         IBuildRevisionParametersService buildRevisionParametersService = appContext.getBean(BuildRevisionParametersService.class);
 
         BuildRevisionParameters brp = new BuildRevisionParameters();
-        brp.setBuild(req.getParameter("sprint"));
-        brp.setRevision(req.getParameter("revision"));
+        brp.setBuild(req.getParameter("addSprint"));
+        brp.setRevision(req.getParameter("addRevision"));
         brp.setRelease(req.getParameter("release"));
         brp.setLink(req.getParameter("link"));
         brp.setApplication(req.getParameter("application"));
@@ -75,6 +75,6 @@ public class AddBuildContent extends HttpServlet{
             LOG.warn("Unable to register log : " + ex.getMessageError().getDescription(), ex);
         }
 
-        resp.getWriter().print(brp.getRelease());
+        resp.getWriter().print(brp.getId());
     }
 }
