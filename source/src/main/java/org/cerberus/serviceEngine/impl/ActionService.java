@@ -319,6 +319,34 @@ public class ActionService implements IActionService {
                 || tCExecution.getApplication().getType().equalsIgnoreCase("APK")) {
             return webdriverService.doSeleniumActionWait(tCExecution.getSession(), object, property);
         }
+        if (tCExecution.getApplication().getType().equalsIgnoreCase("CMP")) {
+            try {
+                if (!StringUtil.isNull(object) && StringUtil.isNumeric(object)) {
+                    Thread.sleep(Integer.parseInt(object));
+                    message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_WAIT_TIME);
+                    message.setDescription(message.getDescription().replaceAll("%TIME%", object));
+                    return message;
+                } else if (!StringUtil.isNull(property) && StringUtil.isNumeric(property)) {
+                    Thread.sleep(Integer.parseInt(property));
+                    message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_WAIT_TIME);
+                    message.setDescription(message.getDescription().replaceAll("%TIME%", property));
+                    return message;
+                } else if (StringUtil.isNull(object) && StringUtil.isNull(property)){
+                    Thread.sleep(1000*tCExecution.getSession().getDefaultWait());
+                    message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_WAIT_TIME);
+                    message.setDescription(message.getDescription().replaceAll("%TIME%", String.valueOf(1000*tCExecution.getSession().getDefaultWait())));
+                    return message;
+                } else {
+                message = new MessageEvent(MessageEventEnum.ACTION_FAILED_WAIT_INVALID_FORMAT);
+                return message;
+                }
+            } catch (InterruptedException exception) {
+                MyLogger.log(ActionService.class.getName(), Level.INFO, exception.toString());
+                message = new MessageEvent(MessageEventEnum.ACTION_FAILED_WAIT);
+                message.setDescription(message.getDescription().replaceAll("%TIME%", property));
+                return message;
+            }
+        }
         message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
         message.setDescription(message.getDescription().replaceAll("%ACTION%", "ClickAndWait"));
         message.setDescription(message.getDescription().replaceAll("%APPLICATIONTYPE%", tCExecution.getApplication().getType()));

@@ -24,6 +24,15 @@ package org.cerberus.entity;
 public class Group {
 
     private String groupName;
+    private String login;
+
+    public String getLogin() {
+        return login;
+    }
+
+    public void setLogin(String login) {
+        this.login = login;
+    }
 
     public String getGroup() {
         return groupName;

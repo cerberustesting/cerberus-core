@@ -17,30 +17,28 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.factory.impl;
+package org.cerberus.util;
 
-import org.cerberus.entity.Group;
-import org.cerberus.factory.IFactoryGroup;
-import org.springframework.stereotype.Service;
+import javax.xml.XMLConstants;
+
+import junit.framework.Assert;
+
+import org.cerberus.util.XmlUtil.UniversalNamespaceCache;
+import org.junit.Test;
 
 /**
- * @author vertigo
+ * {@link UniversalNamespaceCache} test suite
+ * 
+ * @author abourdon
  */
-@Service
-public class FactoryGroup implements IFactoryGroup {
+public class XmlUtilUniversalNamespaceCacheTest {
 
-    @Override
-    public Group create(String group) {
-        Group newGroup = new Group();
-        newGroup.setGroup(group);
-        return newGroup;
-    }
+	@Test
+	public void testUniversalNamespaceCache() throws XmlUtilException {
+		UniversalNamespaceCache cache = new UniversalNamespaceCache(XmlUtil.fromURL(getClass().getResource("namespaces.xml")));
+		Assert.assertEquals("http://default", cache.getNamespaceURI(XMLConstants.DEFAULT_NS_PREFIX));
+		Assert.assertEquals("http://prefix", cache.getNamespaceURI("prefix"));
+		Assert.assertEquals("http://other", cache.getNamespaceURI("other"));
+	}
 
-    @Override
-    public Group create(String login, String group) {
-        Group newGroup = new Group();
-        newGroup.setGroup(group);
-        newGroup.setLogin(login);
-        return newGroup;
-    }
 }

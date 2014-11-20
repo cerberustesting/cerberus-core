@@ -86,7 +86,9 @@ public class RecorderService implements IRecorderService {
                 Logger.getLogger(RecorderService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
             } catch (IOException ex) {
             Logger.getLogger(RecorderService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
+            } catch (IllegalArgumentException ex) {
+            Logger.getLogger(RecorderService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            }
         String screenshotPath = Long.toString(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getId()) + File.separator + screenshotFilename;
         MyLogger.log(RecorderService.class.getName(), Level.DEBUG, "Screenshot done in : " + screenshotPath);
 
