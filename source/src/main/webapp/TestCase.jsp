@@ -1019,12 +1019,13 @@
                                         }%>
                                 </div>
                                 <div style="display:block; clear:both; margin-top:5px">
-                                    <div id="StepFirstLineDiv<%=incrementStep%>" class="StepHeaderDiv">
+                                    <div id="StepFirstLineDiv<%=incrementStep%>" class="StepHeaderDiv" style="width:100%; height:40px">
                                         <div id="StepComboDeleteDiv" style="float:left; width: 30px; text-align: center; height:100%">
                                             <a name="stepAnchor_<%=incrementStep%>"></a>
                                             <a name="stepAnchor_step<%=tcs.getStep()%>"></a>
                                             <%if (!stepusedByAnotherTest) {%>
-                                            <input type="checkbox" name="step_delete_<%=incrementStep%>" style="margin-top:15px;font-weight: bold; width:20px"
+                                            <img style="margin-top:12px" src="images/bin.png" id="img_delete_step_<%=incrementStep%>" onclick="checkDeleteBox('img_delete_step_<%=incrementStep%>', 'step_delete_<%=incrementStep%>','StepFirstLineDiv<%=incrementStep%>', 'StepHeaderDiv')">
+                                            <input type="checkbox" name="step_delete_<%=incrementStep%>" id="step_delete_<%=incrementStep%>" style="display:none;margin-top:15px;font-weight: bold; width:20px"
                                                    value="<%=tcs.getStep()%>">
                                             <%}%>
                                             <%if (stepusedByAnotherTest) {%>
@@ -1186,7 +1187,7 @@
                                                         </div>
                                                         <div style="display:inline-block;float:left;width:2%;height:100%;text-align:center">
                                                             <% if (!useStep) {%>
-                                                            <img style="margin-top:12px" src="images/bin.png" id="img_delete_<%=incrementStep%>_<%=incrementAction%>" onclick="checkDeleteBox('img_delete_<%=incrementStep%>_<%=incrementAction%>', 'action_delete_<%=incrementStep%>_<%=incrementAction%>','StepListOfActionDiv<%=incrementStep%><%=incrementAction%>')">
+                                                            <img style="margin-top:12px" src="images/bin.png" id="img_delete_<%=incrementStep%>_<%=incrementAction%>" onclick="checkDeleteBox('img_delete_<%=incrementStep%>_<%=incrementAction%>', 'action_delete_<%=incrementStep%>_<%=incrementAction%>','StepListOfActionDiv<%=incrementStep%><%=incrementAction%>', 'RowActionDiv')">
                                                             <input  class="wob" type="checkbox" data-action="delete_action" name="action_delete_<%=incrementStep%>_<%=incrementAction%>" style="display:none; margin-top:20px; background-color: transparent"
                                                                     id="action_delete_<%=incrementStep%>_<%=incrementAction%>" value="<%=tcsa.getStep() + "-" + tcsa.getSequence()%>" <%=isReadonly%>>
                                                             <%}%>
@@ -1276,12 +1277,12 @@
                                                                 controlColor = "#DCDCDC";
                                                             }
                                                     %>
-                                                    <div id="StepListOfControlDiv<%=incrementStep%><%=incrementAction%><%=incrementControl%>" class="RowActionDiv <%=classStep%>" style="width:100%;height:40px;clear:both;display:block;border-style: solid; border-width:thin ; border-color:#CCCCCC;">
+                                                    <div id="StepListOfControlDiv<%=incrementStep%><%=incrementAction%><%=incrementControl%>" data-associatedaction="StepListOfActionDiv<%=incrementStep%><%=incrementAction%>" class="RowActionDiv <%=classStep%>" style="width:100%;height:40px;clear:both;display:block;border-style: solid; border-width:thin ; border-color:#CCCCCC;">
                                                         <div style="background-color:#33CC33; width:8px;height:100%;display:inline-block;float:left">
                                                         </div>
                                                         <div style="height:100%;width: 2%;float:left; text-align: center;">
                                                             <%  if (!useStep) {%>
-                                                            <img style="margin-top:12px" src="images/bin.png" id="img_delete_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>" onclick="checkDeleteBox('img_delete_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>', 'control_delete_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>','StepListOfControlDiv<%=incrementStep%><%=incrementAction%><%=incrementControl%>')">
+                                                            <img style="margin-top:12px" src="images/bin.png" id="img_delete_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>" onclick="checkDeleteBox('img_delete_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>', 'control_delete_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>','StepListOfControlDiv<%=incrementStep%><%=incrementAction%><%=incrementControl%>', 'RowActionDiv')">
                                                             <input  class="wob" type="checkbox" data-associatedaction="action_delete_<%=incrementStep%>_<%=incrementAction%>" name="control_delete_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>" style="display:none; margin-top:20px; background-color: transparent"
                                                                     id="control_delete_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>" value="<%=tcsac.getStep() + '-' + tcsac.getSequence() + '-' + tcsac.getControl()%>">
                                                             <% }%>
@@ -1504,7 +1505,8 @@
                                             </div>
                                             <div style="border-right-width:thin;border-right-style:solid;border-right-color:#CCCCCC;width:2%;float:left;display:inline-block;height:50px; text-align:center">
                                                 <%  if (canEdit) {%>
-                                                <input style="margin-top:20px;" name="properties_delete_<%=incrementProperty%>" type="checkbox" value="">
+                                                <img style="margin-top:20px" src="images/bin.png" id="img_delete_property_<%=incrementProperty%>" onclick="checkDeleteBox('img_delete_property_<%=incrementProperty%>', 'properties_delete_<%=incrementProperty%>','propertyRow<%=incrementProperty%>', 'generalPropertyDiv')">
+                                                <input style="display:none;margin-top:20px;" name="properties_delete_<%=incrementProperty%>" id="properties_delete_<%=incrementProperty%>" type="checkbox" value="">
                                                 <%}%>
                                                 <input type="hidden" name="property_increment" value="<%=incrementProperty%>">
                                             </div>
@@ -1811,6 +1813,7 @@
                     <div id="StepComboDeleteDiv" style="float:left; width: 30px; text-align: center; height:100%">
                         <a data-id="stepAnchor_template"></a>
                         <a data-id="stepAnchor_steptemplate"></a>
+                        <img style="margin-top:12px" src="images/bin.png" data-id="step_img_delete">
                         <input type="checkbox" data-id="step_delete_template" style="margin-top:15px;font-weight: bold; width:20px">
                         <input type="hidden" data-id="step_increment">
                     </div>
@@ -1887,6 +1890,7 @@
                 </div>
                 <div style="border-right-width:thin;border-right-style:solid;border-right-color:#CCCCCC;width:2%;float:left;display:inline-block;height:100%; text-align:center">
                     <input style="margin-top:20px;" data-id="properties_delete_template" type="checkbox" value="">
+                    <img style="margin-top:12px" src="images/bin.png" data-id="property_img_delete">
                     <input type="hidden" data-id="property_increment_template">
                 </div>
                 <div style="border-right-width:thin;border-right-style:solid;border-right-color:#CCCCCC;width:10%;float:left;display:inline-block;height:100%">
@@ -2244,17 +2248,26 @@
 
             }
                 
-        function checkDeleteBox(img, checkbox, row){
+        function checkDeleteBox(img, checkbox, row, initClassName){
             console.log(document.getElementById(checkbox).checked);
             if (document.getElementById(checkbox).checked===false){
                 document.getElementById(checkbox).checked=true;
                 document.getElementById(row).className ='RowToDelete';
                 document.getElementById(img).src='images/ko.png';
+                $("div[data-associatedaction='"+row+"']").each(function(index, field) {
+                    $(field).attr('class', 'RowToDelete');
+                    $(field).find("img[src='images/bin.png']").attr('src', 'images/ko.png');
+                });
+                
                 
             }else{
                 document.getElementById(checkbox).checked=false;
-                document.getElementById(row).className='RowActionDiv';
+                document.getElementById(row).className=initClassName;
                 document.getElementById(img).src='images/bin.png';
+                $("div[data-associatedaction='"+row+"']").each(function(index, field) {
+                    $(field).attr('class', initClassName);
+                    $(field).find("img[src='images/ko.png']").attr('src', 'images/bin.png');
+                });
             }
             
         }</script>

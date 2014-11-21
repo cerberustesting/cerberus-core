@@ -2039,7 +2039,7 @@ function addTCSANew(rowID, step, obj) {
             .attr('name', 'action_step_' + step + '_' + newNumberOfAction).val(StepNum);
     $('#StepListOfActionDiv' + step + newNumberOfAction).find('img[data-id="action_img_delete"]')
             .attr('id', 'img_delete_'+step+'_'+newNumberOfAction)
-            .attr('onclick', 'checkDeleteBox(\'img_delete_'+step+'_'+newNumberOfAction+'\', \'action_delete_'+step+'_'+newNumberOfAction+'\',\'StepListOfActionDiv'+step+newNumberOfAction+'\')');
+            .attr('onclick', 'checkDeleteBox(\'img_delete_'+step+'_'+newNumberOfAction+'\', \'action_delete_'+step+'_'+newNumberOfAction+'\',\'StepListOfActionDiv'+step+newNumberOfAction+'\',\'RowActionDiv\')');
     $('#StepListOfActionDiv' + step + newNumberOfAction).find('img[data-id="actionAddActionButton_template"]')
             .attr('onclick', 'addTCSANew(\'DivActionEndOfAction' + step + newNumberOfAction + '\', \'' + step + '\', this)');
     $('#StepListOfActionDiv' + step + newNumberOfAction).find('img[data-id="actionAddControlButton_template"]')
@@ -2109,7 +2109,7 @@ function addTCSACNew(rowID, step, incrementAction, obj) {
             .attr('name', 'control_step_' + step + '_' + incrementAction + '_' + nextIncControl).val(StepNum);
     $('#StepListOfControlDiv' + step + incrementAction + nextIncControl).find('img[data-id="control_img_delete"]')
             .attr('id', 'img_delete_'+step+'_'+incrementAction+'_'+nextIncControl)
-            .attr('onclick', 'checkDeleteBox(\'img_delete_'+step+'_'+incrementAction+'_'+nextIncControl+'\', \'control_delete_'+step+'_'+incrementAction+'_'+nextIncControl+'\',\'StepListOfControlDiv'+step+incrementAction+nextIncControl+'\')');
+            .attr('onclick', 'checkDeleteBox(\'img_delete_'+step+'_'+incrementAction+'_'+nextIncControl+'\', \'control_delete_'+step+'_'+incrementAction+'_'+nextIncControl+'\',\'StepListOfControlDiv'+step+incrementAction+nextIncControl+'\', \'RowActionDiv\')');
     $('#StepListOfControlDiv' + step + incrementAction + nextIncControl).find('img[data-id="controlAddActionButton_template"]')
             .attr('onclick', 'addTCSANew(\'DivActionEndOfAction' + step + incrementAction + '\', \'' + step + '\', this)');
     $('#StepListOfControlDiv' + step + incrementAction + nextIncControl).find('img[data-id="controlAddControlButton_template"]')
@@ -2194,7 +2194,11 @@ function addTCSCNew(rowID, obj) {
     $('#StepFirstLineDiv'+nextIncStep).find('input[data-id="stepAnchor_steptemplate"]')
             .attr('name', 'stepAnchor_step' + nextIncStep);
     $('#StepFirstLineDiv'+nextIncStep).find('input[data-id="step_delete_template"]')
-            .attr('name', 'step_delete_' + nextIncStep);
+            .attr('name', 'step_delete_' + nextIncStep)
+            .attr('id', 'step_delete_' + nextIncStep);
+    $('#StepFirstLineDiv'+nextIncStep).find('img[data-id="step_img_delete"]')
+            .attr('id', 'img_delete_step_'+nextIncStep)
+            .attr('onclick', 'checkDeleteBox(\'img_delete_step_'+nextIncStep+'\', \'step_delete_' + nextIncStep+'\',\'StepFirstLineDiv'+nextIncStep+'\', \'StepHeaderDiv\')');
     $('#StepFirstLineDiv'+nextIncStep).find('input[data-id="step_increment"]')
             .attr('name', 'step_increment').val(nextIncStep);
     $('#StepFirstLineDiv'+nextIncStep).find('input[data-id="step_number_template"]')
@@ -2258,7 +2262,12 @@ function addPropertyNew(widthValue){
     referenceNode.parentNode.insertBefore(DIV, referenceNode.nextSibling);
     
     $('#propertyRow'+nextIncrementValue).find('input[data-id="properties_delete_template"]')
-            .attr('name', 'properties_delete_' + nextIncrementValue);
+            .attr('name', 'properties_delete_' + nextIncrementValue)
+            .attr('id', 'properties_delete_' + nextIncrementValue)
+            .attr('style', 'display:none');
+    $('#propertyRow'+nextIncrementValue).find('img[data-id="property_img_delete"]')
+            .attr('id', 'img_delete_property_'+nextIncrementValue)
+            .attr('onclick', 'checkDeleteBox(\'img_delete_property_'+nextIncrementValue+'\', \'properties_delete_' + nextIncrementValue+'\',\'propertyRow'+nextIncrementValue+'\', \'generalPropertyDiv\')');
     $('#propertyRow'+nextIncrementValue).find('input[data-id="property_increment_template"]')
             .attr('name', 'property_increment').val(nextIncrementValue);
     $('#propertyRow'+nextIncrementValue).find('input[data-id="properties_property_template"]')
