@@ -490,7 +490,7 @@ public class ActionService implements IActionService {
             return message;
         }
         message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
-        message.setDescription(message.getDescription().replaceAll("%ACTION%", "Click"));
+        message.setDescription(message.getDescription().replaceAll("%ACTION%", "TakeScreenShot"));
         message.setDescription(message.getDescription().replaceAll("%APPLICATIONTYPE%", testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getApplication().getType()));
         return message;
     }

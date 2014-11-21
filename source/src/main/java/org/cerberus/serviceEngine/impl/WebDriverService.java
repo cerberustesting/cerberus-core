@@ -68,13 +68,11 @@ import org.springframework.stereotype.Service;
  * @author bcivel
  */
 @Service
-public class WebDriverService implements IWebDriverService{
-
+public class WebDriverService implements IWebDriverService {
 
     private static final int TIMEOUT_MILLIS = 30000;
     private static final int TIMEOUT_WEBELEMENT = 300;
 
-    
     private By getIdentifier(String input) {
         String identifier;
         String locator;
@@ -291,23 +289,30 @@ public class WebDriverService implements IWebDriverService{
         return strings[1];
     }
 
-    
     @Override
     public BufferedImage takeScreenShot(Session session) {
         BufferedImage newImage = null;
-        try {
-            WebDriver augmentedDriver = new Augmenter().augment(session.getDriver());
-            File image = ((TakesScreenshot) augmentedDriver).getScreenshotAs(OutputType.FILE);
-            BufferedImage bufferedImage = ImageIO.read(image);
+        boolean event = true;
+        long timeout = System.currentTimeMillis() + (1000 * session.getDefaultWait());
+        //Try to capture picture. Try again until timeout is WebDriverException is raised.
+        while (event) {
+            try {
+                WebDriver augmentedDriver = new Augmenter().augment(session.getDriver());
+                File image = ((TakesScreenshot) augmentedDriver).getScreenshotAs(OutputType.FILE);
+                BufferedImage bufferedImage = ImageIO.read(image);
 
-            newImage = new BufferedImage(bufferedImage.getWidth(), bufferedImage.getHeight(), BufferedImage.TYPE_INT_RGB);
-            newImage.createGraphics().drawImage(bufferedImage, 0, 0, Color.WHITE, null);
-        } catch (IOException exception) {
-            MyLogger.log(WebDriverService.class.getName(), Level.WARN, exception.toString());
-        } catch (WebDriverException exception) {
-            //TODO check why occur
-            //possible that the page still loading
-            MyLogger.log(WebDriverService.class.getName(), Level.WARN, exception.toString());
+                newImage = new BufferedImage(bufferedImage.getWidth(), bufferedImage.getHeight(), BufferedImage.TYPE_INT_RGB);
+                newImage.createGraphics().drawImage(bufferedImage, 0, 0, Color.WHITE, null);
+                return newImage;
+            } catch (IOException exception) {
+                MyLogger.log(WebDriverService.class.getName(), Level.WARN, exception.toString());
+                event=false;
+            } catch (WebDriverException exception) {
+                if (System.currentTimeMillis() >= timeout) {
+                    MyLogger.log(WebDriverService.class.getName(), Level.WARN, exception.toString());
+                    event=false;
+                }
+            }
         }
         return newImage;
     }
@@ -1068,8 +1073,8 @@ public class WebDriverService implements IWebDriverService{
     @Override
     public MessageEvent doSeleniumActionUrlLogin(Session session, String host, String uri) {
         MessageEvent message;
-        
-        String url = "http://" + host + (host.endsWith("/") ? uri.replace("/","") : uri);
+
+        String url = "http://" + host + (host.endsWith("/") ? uri.replace("/", "") : uri);
         try {
             session.getDriver().get(url);
             message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_URLLOGIN);
@@ -1227,4 +1232,3 @@ public class WebDriverService implements IWebDriverService{
     }
 
 }
-
