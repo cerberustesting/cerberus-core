@@ -186,13 +186,12 @@ public class CampaignExecutionReport extends HttpServlet {
     private JSONObject testCaseExecutionToJSONObject(
             TestCaseWithExecution testCaseWithExecution) throws JSONException {
         JSONObject result = new JSONObject();
-
         result.put("ID", String.valueOf(testCaseWithExecution.getStatusExecutionID()));
         result.put("Test", JavaScriptUtils.javaScriptEscape(testCaseWithExecution.getTest()));
         result.put("TestCase", JavaScriptUtils.javaScriptEscape(testCaseWithExecution.getTestCase()));
         result.put("Environment", JavaScriptUtils.javaScriptEscape(testCaseWithExecution.getEnvironment()));
-        result.put("Start", String.valueOf(testCaseWithExecution.getStart()));
-        result.put("End", String.valueOf(testCaseWithExecution.getEnd()));
+        result.put("Start", testCaseWithExecution.getStart());
+        result.put("End", testCaseWithExecution.getEnd());
         result.put("Country", JavaScriptUtils.javaScriptEscape(testCaseWithExecution.getCountry()));
         result.put("Browser", JavaScriptUtils.javaScriptEscape(testCaseWithExecution.getBrowser()));
         result.put("ControlStatus", JavaScriptUtils.javaScriptEscape(testCaseWithExecution.getControlStatus()));
