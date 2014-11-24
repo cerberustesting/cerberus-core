@@ -541,6 +541,9 @@ public class ControlService implements IControlService {
 			if ("GUI".equalsIgnoreCase(applicationType) || "APK".equalsIgnoreCase(applicationType)) {
 				actual = webdriverService.getValueFromHTML(tCExecution.getSession(), path);
 			} else if ("WS".equalsIgnoreCase(applicationType)) {
+				if (!xmlUnitService.isElementPresent(tCExecution, path)) {
+					throw new NoSuchElementException("Unable to find element " + path);
+				}
 				actual = xmlUnitService.getFromXml(tCExecution.getExecutionUUID(), null, path);
 			} else {
 				MessageEvent mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
@@ -583,6 +586,9 @@ public class ControlService implements IControlService {
 			if ("GUI".equalsIgnoreCase(applicationType) || "APK".equalsIgnoreCase(applicationType)) {
 				actual = webdriverService.getValueFromHTML(tCExecution.getSession(), path);
 			} else if ("WS".equalsIgnoreCase(applicationType)) {
+				if (!xmlUnitService.isElementPresent(tCExecution, path)) {
+					throw new NoSuchElementException("Unable to find element " + path);
+				}
 				actual = xmlUnitService.getFromXml(tCExecution.getExecutionUUID(), null, path);
 			} else {
 				MessageEvent mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
