@@ -44,7 +44,7 @@ import java.io.IOException;
 @WebServlet(name = "FindBuildContent", urlPatterns = {"/FindBuildContent"})
 public class FindBuildContent extends HttpServlet {
 
-    private static final Logger LOG = Logger.getLogger(UpdateBuildContent.class);
+    private static final Logger LOG = Logger.getLogger(FindBuildContent.class);
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

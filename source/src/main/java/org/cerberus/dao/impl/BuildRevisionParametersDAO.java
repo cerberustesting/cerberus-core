@@ -29,10 +29,7 @@ import org.cerberus.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -251,7 +248,7 @@ public class BuildRevisionParametersDAO implements IBuildRevisionParametersDAO {
 
         Connection connection = this.databaseSpring.connect();
         try {
-            PreparedStatement preStat = connection.prepareStatement(query);
+            PreparedStatement preStat = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
             try {
                 preStat.setString(1, brp.getBuild());
                 preStat.setString(2, brp.getRevision());
@@ -265,6 +262,16 @@ public class BuildRevisionParametersDAO implements IBuildRevisionParametersDAO {
                 preStat.setString(10, brp.getSubject());
 
                 preStat.executeUpdate();
+                ResultSet resultSet = preStat.getGeneratedKeys();
+                try {
+                    if (resultSet.first()) {
+                        brp.setId(resultSet.getInt(1));
+                    }
+                } catch (SQLException exception) {
+                    LOG.error("Unable to execute query : " + exception);
+                } finally {
+                    resultSet.close();
+                }
             } catch (SQLException exception) {
                 LOG.error("Unable to execute query : " + exception);
             } finally {

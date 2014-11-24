@@ -204,14 +204,11 @@
         } else {
             $("#selectedRevision").val(revision);
         }
-        $("#search").click();
 
-        $("#formAddNewRow").dialog({width: 'auto'});
+        $("#formAddNewRow").dialog({width: 'auto'}).dialog( "close" );
 
         $("#revision").find('option')[0].remove();
-    });
 
-    function searchContent() {
         var params = "System=<%=MySystem%>&Build=";
         params += $("#selectedBuild").val();
         params += "&Revision=";
@@ -219,12 +216,10 @@
 
         $("#contentTable").dataTable({
             "aaSorting": [[0, "asc"],[1, "asc"],[2, "asc"],[3, "asc"]],
-            "bDestroy": true,
             "bInfo": false,
             "bJQueryUI": true,
             "bSort": false,
             "bPaginate": false,
-//            "bProcessing": true,
             "sAjaxSource": "FindBuildContent?"+params,
             "aoColumnDefs": [
                 {
@@ -320,29 +315,32 @@
                 }
             ]
         });
-    }
+//    }
+    });
 </script>
 
 <div style="font-family: sans-serif">
-    <div style="float: left; padding-left: 10px">
-        <a id="pending" href="#">Pending Release</a>
-        <a id="last" href="#">Latest Release</a>
-    </div>
-    <div style="float: left; padding-left: 10px">
-        <%=docService.findLabelHTML("buildrevisioninvariant", "versionname01", "")%>
-        <select id="selectedBuild" name="selectedBuild">
-            <%=buildOptions%>
-        </select>
-    </div>
-    <div style="float: left; padding-left: 10px">
-        <%=docService.findLabelHTML("buildrevisioninvariant", "versionname02", "")%>
-        <select id="selectedRevision" name="selectedRevision">
-            <%=revisionOptions%>
-        </select>
-    </div>
-    <div style="float: left; padding-left: 10px">
-        <input id="search" type="button" value="Apply" onclick="searchContent()"/>
-    </div>
+    <form action="BuildContent.jsp" method="get">
+        <div style="float: left; padding-left: 10px">
+            <a id="pending" href="#">Pending Release</a>
+            <a id="last" href="#">Latest Release</a>
+        </div>
+        <div style="float: left; padding-left: 10px">
+            <%=docService.findLabelHTML("buildrevisioninvariant", "versionname01", "")%>
+            <select id="selectedBuild" name="build">
+                <%=buildOptions%>
+            </select>
+        </div>
+        <div style="float: left; padding-left: 10px">
+            <%=docService.findLabelHTML("buildrevisioninvariant", "versionname02", "")%>
+            <select id="selectedRevision" name="revision">
+                <%=revisionOptions%>
+            </select>
+        </div>
+        <div style="float: left; padding-left: 10px">
+            <input id="search" type="submit" value="Apply"/>
+        </div>
+    </form>
 </div>
 
 <div style="font: 90% sans-serif">
@@ -370,13 +368,13 @@
         <input type="hidden" rel="0"/>
         <div>
             <label for="sprint">Sprint</label>
-            <select id="sprint" name="sprint" rel="1">
+            <select id="sprint" name="addSprint" rel="1">
                 <%=buildOptions%>
             </select>
         </div>
         <div>
             <label for="revision">Revision</label>
-            <select id="revision" name="revision" rel="2">
+            <select id="revision" name="addRevision" rel="2">
                 <%=revisionOptions%>
             </select>
         </div>
@@ -424,7 +422,6 @@
         </div>
     </form>
 </div>
-</body>
 <%
     } catch (CerberusException ex){
         LOG.error("Unable to find Invariant, Application or User : " + ex.toString());
@@ -433,4 +430,5 @@
         out.print("Detail error: " + ex.getMessageError().getDescription() + "\");</script>");
     }
 %>
+</body>
 </html>
