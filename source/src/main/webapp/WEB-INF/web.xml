@@ -616,6 +616,38 @@
         <servlet-name>UpdateBuildContent</servlet-name>
         <servlet-class>org.cerberus.servlet.buildContent.UpdateBuildContent</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>GetCountryEnvParamList</servlet-name>
+        <servlet-class>org.cerberus.servlet.countryenvparam.GetCountryEnvParamList</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>UpdateCountryEnvParam</servlet-name>
+        <servlet-class>org.cerberus.servlet.countryenvparam.UpdateCountryEnvParam</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>CreateCountryEnvParam</servlet-name>
+        <servlet-class>org.cerberus.servlet.countryenvparam.CreateCountryEnvParam</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>DeleteCountryEnvParam</servlet-name>
+        <servlet-class>org.cerberus.servlet.countryenvparam.DeleteCountryEnvParam</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>CreateCountryEnvironmentParameter</servlet-name>
+        <servlet-class>org.cerberus.servlet.countryenvironmentparameters.CreateCountryEnvironmentParameter</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>DeleteCountryEnvironmentParameter</servlet-name>
+        <servlet-class>org.cerberus.servlet.countryenvironmentparameters.DeleteCountryEnvironmentParameter</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>GetCountryEnvironmentParameterList</servlet-name>
+        <servlet-class>org.cerberus.servlet.countryenvironmentparameters.GetCountryEnvironmentParameterList</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>UpdateCountryEnvironmentParameter</servlet-name>
+        <servlet-class>org.cerberus.servlet.countryenvironmentparameters.UpdateCountryEnvironmentParameter</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>RunTestCase</servlet-name>
         <url-pattern>/RunTestCase</url-pattern>
@@ -1192,6 +1224,38 @@
         <servlet-name>UpdateBuildContent</servlet-name>
         <url-pattern>/UpdateBuildContent</url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>GetCountryEnvParamList</servlet-name>
+        <url-pattern>/GetCountryEnvParamList</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>UpdateCountryEnvParam</servlet-name>
+        <url-pattern>/UpdateCountryEnvParam</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>CreateCountryEnvParam</servlet-name>
+        <url-pattern>/CreateCountryEnvParam</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DeleteCountryEnvParam</servlet-name>
+        <url-pattern>/DeleteCountryEnvParam</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>CreateCountryEnvironmentParameter</servlet-name>
+        <url-pattern>/CreateCountryEnvironmentParameter</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DeleteCountryEnvironmentParameter</servlet-name>
+        <url-pattern>/DeleteCountryEnvironmentParameter</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>GetCountryEnvironmentParameterList</servlet-name>
+        <url-pattern>/GetCountryEnvironmentParameterList</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>UpdateCountryEnvironmentParameter</servlet-name>
+        <url-pattern>/UpdateCountryEnvironmentParameter</url-pattern>
+    </servlet-mapping>
     <session-config>
         <session-timeout>
             60
@@ -1261,6 +1325,8 @@
             <url-pattern>/NetworkTraficDetail.jsp</url-pattern>
             <url-pattern>/ReportingExecution.jsp</url-pattern>
             <url-pattern>/ReportingExecutionTime.jsp</url-pattern>
+            <url-pattern>/ReportingExecutionByTag.jsp</url-pattern>
+            <url-pattern>/ExecutionPending.jsp</url-pattern>
             <url-pattern>/Test.jsp</url-pattern>
             <url-pattern>/TestCase.jsp</url-pattern>
             <url-pattern>/TestCaseSearch.jsp</url-pattern>
@@ -1374,6 +1440,7 @@
             <url-pattern>/RunTestsManually.jsp</url-pattern>
             <url-pattern>/V2_RunTests.jsp</url-pattern>
             <url-pattern>/TestCaseManualRun.jsp</url-pattern>
+            <url-pattern>/RunTestsTriggerBatchExecution.jsp</url-pattern>
         </web-resource-collection>
         <web-resource-collection>
             <web-resource-name>servlet</web-resource-name>
@@ -1402,6 +1469,7 @@
             <url-pattern>/Notification.jsp</url-pattern>
             <url-pattern>/Project.jsp</url-pattern>
             <url-pattern>/Robot.jsp</url-pattern>
+            <url-pattern>/EnvironmentManagement.jsp</url-pattern>
         </web-resource-collection>
         <web-resource-collection>
             <web-resource-name>servlet</web-resource-name>
@@ -1415,6 +1483,8 @@
             <url-pattern>/GetBuildRevisionInvariant</url-pattern>
             <url-pattern>/GetProject</url-pattern>
             <url-pattern>/FindBuildContent</url-pattern>
+            <url-pattern>/GetCountryEnvParamList</url-pattern>
+            <url-pattern>/GetCountryEnvironmentParameterList</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <description>IntegratorRO</description>
@@ -1444,6 +1514,12 @@
             <url-pattern>/AddBuildContent</url-pattern>
             <url-pattern>/DeleteBuildContent</url-pattern>
             <url-pattern>/UpdateBuildContent</url-pattern>
+            <url-pattern>/UpdateCountryEnvParam</url-pattern>
+            <url-pattern>/CreateCountryEnvParam</url-pattern>
+            <url-pattern>/DeleteCountryEnvParam</url-pattern>
+            <url-pattern>/CreateCountryEnvironmentParameter</url-pattern>
+            <url-pattern>/DeleteCountryEnvironmentParameter</url-pattern>
+            <url-pattern>/UpdateCountryEnvironmentParameter</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <description>Integrator</description>

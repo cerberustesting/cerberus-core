@@ -377,4 +377,257 @@ public class CountryEnvParamDAO implements ICountryEnvParamDAO {
             }
         }
     }
+
+    @Override
+    public List<CountryEnvParam> findListByCriteria(String system, int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
+        List<CountryEnvParam> result = new ArrayList<CountryEnvParam>();
+        StringBuilder gSearch = new StringBuilder();
+        StringBuilder searchSQL = new StringBuilder();
+
+        StringBuilder query = new StringBuilder();
+        query.append("SELECT * FROM countryenvparam where `system` = ? ");
+
+        gSearch.append(" and (`country` like '%");
+        gSearch.append(searchTerm);
+        gSearch.append("%'");
+        gSearch.append(" or `build` like '%");
+        gSearch.append(searchTerm);
+        gSearch.append("%'");
+        gSearch.append(" or `revision` like '%");
+        gSearch.append(searchTerm);
+        gSearch.append("%'");
+        gSearch.append(" or `chain` like '%");
+        gSearch.append(searchTerm);
+        gSearch.append("%'");
+        gSearch.append(" or `distriblist` like '%");
+        gSearch.append(searchTerm);
+        gSearch.append("%'");
+        gSearch.append(" or `eMailBodyRevision` like '%");
+        gSearch.append(searchTerm);
+        gSearch.append("%'");
+        gSearch.append(" or `type` like '%");
+        gSearch.append(searchTerm);
+        gSearch.append("%'");
+        gSearch.append(" or `eMailBodyChain` like '%");
+        gSearch.append(searchTerm);
+        gSearch.append("%'");
+        gSearch.append(" or `eMailBodyDisableEnvironment` like '%");
+        gSearch.append(searchTerm);
+        gSearch.append("%'");
+        gSearch.append(" or `active` like '%");
+        gSearch.append(searchTerm);
+        gSearch.append("%'");
+        gSearch.append(" or `maintenanceact` like '%");
+        gSearch.append(searchTerm);
+        gSearch.append("%'");
+        gSearch.append(" or `maintenancestr` like '%");
+        gSearch.append(searchTerm);
+        gSearch.append("%'");
+        gSearch.append(" or `maintenanceend` like '%");
+        gSearch.append(searchTerm);
+        gSearch.append("%')");
+        
+        if (!searchTerm.equals("") && !individualSearch.equals("")) {
+            searchSQL.append(gSearch.toString());
+            searchSQL.append(" and ");
+            searchSQL.append(individualSearch);
+        } else if (!individualSearch.equals("")) {
+            searchSQL.append(" and `");
+            searchSQL.append(individualSearch);
+            searchSQL.append("`");
+        } else if (!searchTerm.equals("")) {
+            searchSQL.append(gSearch.toString());
+        }
+
+        query.append(searchSQL);
+        query.append("order by `");
+        query.append(column);
+        query.append("` ");
+        query.append(dir);
+        query.append(" limit ");
+        query.append(start);
+        query.append(" , ");
+        query.append(amount);
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query.toString());
+            preStat.setString(1, system);
+            try {
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+
+                    while (resultSet.next()) {
+                        result.add(this.loadCountryEnvParamFromResultSet(resultSet));
+                    }
+
+                } catch (SQLException exception) {
+                    LOG.error("Unable to execute query : " + exception.toString());
+                } finally {
+                    resultSet.close();
+                }
+
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception.toString());
+            } finally {
+                preStat.close();
+            }
+
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                LOG.error(e.toString());
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public Integer count(String searchTerm, String inds) {
+        Integer result = 0;
+        StringBuilder query = new StringBuilder();
+        StringBuilder gSearch = new StringBuilder();
+        String searchSQL = "";
+
+        query.append("SELECT count(*) FROM countryenvparam");
+
+        gSearch.append(" where (`system` like '%");
+        gSearch.append(searchTerm);
+        gSearch.append("%'");
+        gSearch.append(" or `country` like '%");
+        gSearch.append(searchTerm);
+        gSearch.append("%'");
+        gSearch.append(" or `build` like '%");
+        gSearch.append(searchTerm);
+        gSearch.append("%'");
+        gSearch.append(" or `revision` like '%");
+        gSearch.append(searchTerm);
+        gSearch.append("%'");
+        gSearch.append(" or `chain` like '%");
+        gSearch.append(searchTerm);
+        gSearch.append("%'");
+        gSearch.append(" or `distriblist` like '%");
+        gSearch.append(searchTerm);
+        gSearch.append("%'");
+        gSearch.append(" or `eMailBodyRevision` like '%");
+        gSearch.append(searchTerm);
+        gSearch.append("%'");
+        gSearch.append(" or `type` like '%");
+        gSearch.append(searchTerm);
+        gSearch.append("%'");
+        gSearch.append(" or `eMailBodyChain` like '%");
+        gSearch.append(searchTerm);
+        gSearch.append("%'");
+        gSearch.append(" or `eMailBodyDisableEnvironment` like '%");
+        gSearch.append(searchTerm);
+        gSearch.append("%'");
+        gSearch.append(" or `active` like '%");
+        gSearch.append(searchTerm);
+        gSearch.append("%'");
+        gSearch.append(" or `maintenanceact` like '%");
+        gSearch.append(searchTerm);
+        gSearch.append("%'");
+        gSearch.append(" or `maintenancestr` like '%");
+        gSearch.append(searchTerm);
+        gSearch.append("%'");
+        gSearch.append(" or `maintenanceend` like '%");
+        gSearch.append(searchTerm);
+        gSearch.append("%')");
+
+        if (!searchTerm.equals("") && !inds.equals("")) {
+            searchSQL = gSearch.toString() + " and " + inds;
+        } else if (!inds.equals("")) {
+            searchSQL = " where " + inds;
+        } else if (!searchTerm.equals("")) {
+            searchSQL = gSearch.toString();
+        }
+
+        query.append(searchSQL);
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query.toString());
+            try {
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+
+                    if (resultSet.first()) {
+                        result = resultSet.getInt(1);
+                    }
+
+                } catch (SQLException exception) {
+                    LOG.error("Unable to execute query : " + exception.toString());
+                } finally {
+                    resultSet.close();
+                }
+
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception.toString());
+            } finally {
+                preStat.close();
+            }
+
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                LOG.error(e.toString());
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public List<CountryEnvParam> findListByCriteria(String system) {
+        List<CountryEnvParam> result = new ArrayList<CountryEnvParam>();
+        
+        StringBuilder query = new StringBuilder();
+        query.append("SELECT * FROM countryenvparam where `system` = ? ");
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query.toString());
+            preStat.setString(1, system);
+            try {
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+
+                    while (resultSet.next()) {
+                        result.add(this.loadCountryEnvParamFromResultSet(resultSet));
+                    }
+
+                } catch (SQLException exception) {
+                    LOG.error("Unable to execute query : " + exception.toString());
+                } finally {
+                    resultSet.close();
+                }
+
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception.toString());
+            } finally {
+                preStat.close();
+            }
+
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                LOG.error(e.toString());
+            }
+        }
+        return result;
+    }
 }

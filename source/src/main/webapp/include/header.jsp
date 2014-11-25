@@ -116,13 +116,14 @@
             <li id="active"><a id="menu-Integration" name="menu" href="#" style="width:100px">Integration
                     <img src="images/dropdown.gif"/></a>
                 <ul class="subnav" id="subnavlist">
-                    <li id="subactive"><a name="menu" id="menuIntegrationStatus" href="IntegrationStatus.jsp" style="width:150px">Integration Status</a></li>
-                    <li id="subactive"><a name="menu" id="menuApplications" href="Application.jsp" style="width:150px">Applications</a></li>
-                    <li id="subactive"><a name="menu" id="menuEnvironments" href="EnvironmentList.jsp" style="width:150px">Environments</a></li>
-                    <li id="subactive"><a name="menu" id="menuBuildRevision" href="BuildRevDefinition.jsp" style="width:150px">Build/Rev Definition</a></li>
-                    <li id="subactive"><a name="menu" id="menuBuildContent" href="BuildContent.jsp" style="width:150px">Build Content</a></li>
-                    <li id="subactive"><a name="menu" id="menuRobot" href="Robot.jsp" style="width:150px">Robot</a></li>
-                    <li id="subactive"><a name="menu" id="menuProject" href="Project.jsp" style="width:150px">Project</a></li>
+                    <li id="subactive"><a name="menu" id="menuIntegrationStatus" href="IntegrationStatus.jsp" style="width:170px">Integration Status</a></li>
+                    <li id="subactive"><a name="menu" id="menuApplications" href="Application.jsp" style="width:170px">Applications</a></li>
+                    <li id="subactive"><a name="menu" id="menuEnvironments" href="EnvironmentList.jsp" style="width:170px">Environments</a></li>
+                    <li id="subactive"><a name="menu" id="menuEnvironmentManagement" href="EnvironmentManagement.jsp" style="width:170px">Environment Management</a></li>
+                    <li id="subactive"><a name="menu" id="menuBuildRevision" href="BuildRevDefinition.jsp" style="width:170px">Build/Rev Definition</a></li>
+                    <li id="subactive"><a name="menu" id="menuBuildContent" href="BuildContent.jsp" style="width:170px">Build Content</a></li>
+                    <li id="subactive"><a name="menu" id="menuRobot" href="Robot.jsp" style="width:170px">Robot</a></li>
+                    <li id="subactive"><a name="menu" id="menuProject" href="Project.jsp" style="width:170px">Project</a></li>
                 </ul>
             </li>
             <% }%>
