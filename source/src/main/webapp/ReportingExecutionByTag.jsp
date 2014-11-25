@@ -88,10 +88,9 @@
             };
 
             $(document).ready(function() {
-
-                
-                jQuery.ajax('./GetTagExecutions?withUUID').done(function(data) {
+                jQuery.ajax({url:'./GetTagExecutions?withUUID',async:false}).done(function(data) {
                     var index;
+                    $('#selectTag').append($('<option></option>').attr("value","")).attr("placeholder", "Select a Tag");
                     for (index = 0; index < data.tags.length; index++) {
                         var option = $('<option></option>').attr("value", data.tags[index]).text(data.tags[index]);
 
@@ -102,8 +101,9 @@
                         $('#selectTag').append(option);
                     }
                 });
-
-               
+                
+            if($("#selectTag").val()!==null && $("#selectTag").val()!==""){
+                
                 createGraphFromAjaxToElement("./CampaignExecutionReportByFunction?<%=query.toString()%>", "#functionTest", null);
                 createGraphFromAjaxToElement("./CampaignExecutionStatusBarGraphByFunction?<%=query.toString()%>", "#functionBar", null);
 
@@ -163,7 +163,8 @@
                     });
 
                 });
-            });
+                }            
+});
         </script>
         <style>
 
