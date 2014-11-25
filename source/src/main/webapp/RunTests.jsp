@@ -647,7 +647,11 @@
 
 
                     if (manualExec === "Y") {
+                        if (typeof test==='undefined' ||typeof testcase==='undefined' ||typeof env==='undefined' ||typeof country==='undefined'){
+                            alert("Testcase cannot be executed : Mandatory parameter(s) is(are) missing\n\ntest : "+test+"\ntestcase : "+testcase+"\ncountry : "+country+"\nenvironment : "+env);
+                        }else{
                         openRunManualPopin(test, testcase, env, country, idFromQueue, tag);
+                    }
                     } else {
                         if (data.group === "MANUAL") {
                             alert("You cannot automatically execute manual testcase");
