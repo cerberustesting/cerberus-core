@@ -37,14 +37,16 @@
         <script type="text/javascript" src="js/jquery.validate.min.js"></script>
         <script type="text/javascript">
 
-            $(document).ready(function() {
+function refreshTable() {
+    $('#tableDiv').hide();
                 var oTable = $('#sqlLibraryList').dataTable({
                     "aaSorting": [[1, "asc"]],
                     "bServerSide": true,
                     "sAjaxSource": "FindAllSqlLibrary",
                     "bJQueryUI": true,
-                    "bProcessing": true,
+                    "bProcessing": false,
                     "bPaginate": true,
+                    "bDestroy":true,
                     "bAutoWidth": false,
                     "sPaginationType": "full_numbers",
                     "bSearchable": true,
@@ -82,7 +84,10 @@
                         title: 'Add SQL Data',
                         show: "blind",
                         hide: "explode",
-                        width: "900px"
+                        width: "900px",
+                        close: function() {
+                                refreshTable();
+                            }
                     },
                     "aoColumns": [
                         null,
@@ -102,6 +107,12 @@
 
                     ]
                 })
+                $('#tableDiv').show();
+            }
+            
+            $(document).ready(function(){
+                refreshTable();
+
             });
 
 
@@ -113,7 +124,7 @@
         <%@ include file="include/header.jsp" %>
 
         <p class="dttTitle">SQL Library</p>
-        <div style="width: 100%; font: 90% sans-serif">
+        <div id="tableDiv" style="width: 100%; font: 90% sans-serif">
             <table id="sqlLibraryList" class="display">
                 <thead>
                     <tr>
