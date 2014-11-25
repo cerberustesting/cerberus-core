@@ -25,6 +25,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.cerberus.entity.MessageGeneral;
+import org.cerberus.entity.MessageGeneralEnum;
 import org.cerberus.entity.TestData;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.factory.IFactoryLogEvent;
@@ -33,6 +35,8 @@ import org.cerberus.service.ILogEventService;
 import org.cerberus.service.ITestDataService;
 import org.cerberus.service.impl.LogEventService;
 import org.cerberus.service.impl.UserService;
+import org.owasp.html.PolicyFactory;
+import org.owasp.html.Sanitizers;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -55,65 +59,88 @@ public class UpdateTestData extends HttpServlet {
             throws ServletException, IOException, CerberusException {
         response.setContentType("text/html;charset=UTF-8");
         PrintWriter out = response.getWriter();
+        PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
         try {
-            String key = request.getParameter("id");
-            String application = request.getParameter("environment");
-            String environment = request.getParameter("application");
-            String country = request.getParameter("country");
-            int columnPosition = Integer.parseInt(request.getParameter("columnPosition"));
-            String value = request.getParameter("value").replaceAll("'", "");
-
-            ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-            ITestDataService testDataService = appContext.getBean(ITestDataService.class);
-
-            TestData testData = testDataService.findTestDataByKey(key, application, environment, country);
-
-            switch (columnPosition) {
-                case 0:
-                    break;
-                case 1:
-                    testData.setValue(value);
-                    break;
-                case 2:
-                    testData.setDescription(value);
-                    break;
-            }
-
-            testDataService.updateTestData(testData);
-
-            /**
-             * Adding Log entry.
-             */
-            ILogEventService logEventService = appContext.getBean(LogEventService.class);
-            IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
+            String id = policy.sanitize(request.getParameter("id"));
+            String key = id.split("Key&#61;")[1].split("&amp;")[0];
+            String application = "";
             try {
-                logEventService.insertLogEvent(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/UpdateTestData", "UPDATE", "Updated TestData : " + key, "", ""));
-            } catch (CerberusException ex) {
-                org.apache.log4j.Logger.getLogger(UserService.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex);
+                application = id.split("App&#61;")[1].split("&amp;")[0];
+            } catch (ArrayIndexOutOfBoundsException e) {
+                application = "";
             }
+            String environment = "";
+            try {
+                environment = id.split("Env&#61;")[1].split("&amp;")[0];
+            } catch (ArrayIndexOutOfBoundsException e) {
+                environment = "";
+            }
+            String country = "";
+            try {
+                country = id.split("Country&#61;")[1].split("&amp;")[0];
+            } catch (ArrayIndexOutOfBoundsException e) {
+                country = "";
+            }
+        
+        String name = policy.sanitize(request.getParameter("columnName"));
+        String value = policy.sanitize(request.getParameter("value").replaceAll("'", ""));
 
-            out.print(value);
-        } finally {
-            out.close();
+        System.out.print(key + application + environment + country);
+
+        ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+        ITestDataService testDataService = appContext.getBean(ITestDataService.class);
+
+        TestData testData = testDataService.findTestDataByKey(key, application, environment, country);
+        if (name != null && "Value".equalsIgnoreCase(name.trim())) {
+            testData.setValue(value);
+        } else if (name != null && "Description".equalsIgnoreCase(name.trim())) {
+            testData.setDescription(value);
+        } else {
+            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NOT_IMPLEMEMTED));
         }
+
+        testDataService.updateTestData(testData);
+
+        /**
+         * Adding Log entry.
+         */
+        ILogEventService logEventService = appContext.getBean(LogEventService.class);
+        IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
+        try {
+            logEventService.insertLogEvent(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/UpdateTestData", "UPDATE", "Updated TestData : " + key, "", ""));
+        } catch (CerberusException ex) {
+            org.apache.log4j.Logger.getLogger(UserService.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex);
+        }
+
+        out.print(value);
     }
 
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-    /**
-     * Handles the HTTP <code>GET</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+    
+        finally {
+            out.close();
+    }
+}
+
+// <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
+/**
+ * Handles the HTTP <code>GET</code> method.
+ *
+ * @param request servlet request
+ * @param response servlet response
+ * @throws ServletException if a servlet-specific error occurs
+ * @throws IOException if an I/O error occurs
+ */
+@Override
+        protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         try {
             processRequest(request, response);
-        } catch (CerberusException ex) {
-            Logger.getLogger(UpdateTestData.class.getName()).log(Level.SEVERE, null, ex);
+        
+
+} catch (CerberusException ex) {
+            Logger.getLogger(UpdateTestData.class  
+
+.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -126,12 +153,16 @@ public class UpdateTestData extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+        protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         try {
             processRequest(request, response);
-        } catch (CerberusException ex) {
-            Logger.getLogger(UpdateTestData.class.getName()).log(Level.SEVERE, null, ex);
+        
+
+} catch (CerberusException ex) {
+            Logger.getLogger(UpdateTestData.class  
+
+.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -141,7 +172,7 @@ public class UpdateTestData extends HttpServlet {
      * @return a String containing servlet description
      */
     @Override
-    public String getServletInfo() {
+        public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
 }

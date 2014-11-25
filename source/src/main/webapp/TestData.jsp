@@ -54,6 +54,7 @@
                     "aTargets": [0],
                     "iDisplayLength": 25,
                     "aoColumns": [
+                        {"sName": "Key", "sWidth": "20%", "bVisible":false},
                         {"sName": "Key", "sWidth": "20%"},
                         {"sName": "Value", "sWidth": "30%", "sClass": "center"},
                         {"sName": "Description", "sWidth": "40%", "sClass": "center"},
@@ -96,6 +97,7 @@
                         width: "950px"
                     },
                     "aoColumns": [
+                        null,
                         null,
                         {onblur: 'submit',
                             placeholder: ''},
@@ -150,6 +152,7 @@
             <table id="testDataList" class="display">
                 <thead>
                     <tr>
+                        <th>ID</th>
                         <th>Key</th>
                         <th>Value</th>
                         <th>Description</th>
@@ -164,34 +167,37 @@
         </div>
         <div>
             <form id="formAddNewRow" action="#" title="Add Data" style="width:350px" method="post">
+                <label for="idNew" style="display:none">ID</label>
+                <input id="idNew" name="idNew" style="display:none;" 
+                       class="ncdetailstext" rel="0" >
                 <label for="Key" style="font-weight:bold">Key</label>
                 <input id="Key" name="Key" style="width:300px;" 
-                       class="ncdetailstext" rel="0" >
+                       class="ncdetailstext" rel="1" >
                 <label for="Value" style="font-weight:bold">Value</label>
                 <input id="Value" name="Value" style="width:500px;" 
-                       class="ncdetailstext" rel="1" >
+                       class="ncdetailstext" rel="2" >
                 <br />
                 <br />
                 <label for="Description" style="font-weight:bold">Description</label>
                 <input id="Description" name="Description" style="width:800px;" 
-                       class="ncdetailstext" rel="2" >
+                       class="ncdetailstext" rel="3" >
                 <br />
                 <br />
                 <label for="Application" style="font-weight:bold">Application</label>
                 <select id="Application" name="Application" 
-                       class="ncdetailstext" rel="3" >
+                       class="ncdetailstext" rel="4" >
                 </select>
                 <br />
                 <br />
                 <label for="Environment" style="font-weight:bold">Environment</label>
                 <select id="Environment" name="Environment" 
-                       class="ncdetailstext" rel="4" >
+                       class="ncdetailstext" rel="5" >
                 </select>
                 <br />
                 <br />
                 <label for="Country" style="font-weight:bold">Country</label>
                 <select id="Country" name="Country"
-                       class="ncdetailstext" rel="5" >
+                       class="ncdetailstext" rel="6" >
                 </select>
                 <br />
                 <br />

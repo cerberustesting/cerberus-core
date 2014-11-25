@@ -36,6 +36,8 @@ import org.cerberus.service.impl.LogEventService;
 import org.cerberus.service.impl.UserService;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.owasp.html.PolicyFactory;
+import org.owasp.html.Sanitizers;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -58,25 +60,37 @@ public class DeleteTestData extends HttpServlet {
             throws ServletException, IOException, CerberusException {
         response.setContentType("text/html;charset=UTF-8");
         PrintWriter out = response.getWriter();
+        PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
+        ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         try {
-            ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-            String key = request.getParameter("id");
+            String id = policy.sanitize(request.getParameter("id"));
+            String key = id.split("Key&#61;")[1].split("&amp;")[0];
+            String application = "";
             try {
-                //String key = request.getParameter("Key");
-                JSONObject testDataKey = null;
-                testDataKey = new JSONObject(key);
-
+                application = id.split("App&#61;")[1].split("&amp;")[0];
+            } catch (ArrayIndexOutOfBoundsException e) {
+                application = "";
+            }
+            String environment = "";
+            try {
+                environment = id.split("Env&#61;")[1].split("&amp;")[0];
+            } catch (ArrayIndexOutOfBoundsException e) {
+                environment = "";
+            }
+            String country = "";
+            try {
+                country = id.split("Country&#61;")[1].split("&amp;")[0];
+            } catch (ArrayIndexOutOfBoundsException e) {
+                country = "";
+            }
+            
+                
                 ITestDataService testDataService = appContext.getBean(ITestDataService.class);
                 IFactoryTestData factoryTestData = appContext.getBean(IFactoryTestData.class);
 
-                TestData testData = factoryTestData.create(testDataKey.getString("id"), "", "",
-                        testDataKey.getString("Application"), testDataKey.getString("Environment"),
-                        testDataKey.getString("Country"));
+                TestData testData = factoryTestData.create(key, "", "", application, environment, country);
                 testDataService.deleteTestData(testData);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
+            
             /**
              * Adding Log entry.
              */
