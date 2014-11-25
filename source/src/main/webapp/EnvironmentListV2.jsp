@@ -71,6 +71,14 @@
                 env.find('thead th').css('padding', '0px');
                 env.find('td').css('padding', '0px');
                 env.css({'width': 'auto', 'margin': '0px', 'text-align': 'center'});
+            },
+            "fnCreatedRow": function(nRow, aData) {
+                if (aData[6] === "Y") {
+                    $(nRow).css("background-color", "#f3f6fa");
+                } else {
+                    $(nRow).css("background-color", "white");
+                }
+                return nRow;
             }
         });
         $("#environment2").dataTable({
@@ -177,7 +185,7 @@
 <div style="clear: both; float: left;padding-top: 25px; padding-left: 50px; padding-right: 100px">
     <table id="environment1">
         <thead>
-            <tr>
+            <tr id="header">
                 <th>System</th>
                 <th>Country</th>
                 <th>Environment</th>
