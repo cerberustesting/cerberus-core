@@ -17,6 +17,7 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
+<%@page import="org.cerberus.service.ITestCaseExecutionInQueueService"%>
 <%@page import="org.cerberus.service.ICountryEnvironmentApplicationService"%>
 <%@page import="org.cerberus.entity.CountryEnvironmentApplication"%>
 <%@page import="org.cerberus.service.ITestCaseExecutionSysVerService"%>
@@ -127,6 +128,7 @@
             IFactoryTestCaseExecution factoryTestCaseExecution = appContext.getBean(IFactoryTestCaseExecution.class);
             IFactoryTestCaseExecutionSysVer factoryTestCaseExecutionSysVer = appContext.getBean(IFactoryTestCaseExecutionSysVer.class);
             ITestCaseExecutionSysVerService testCaseExecutionSysVerService = appContext.getBean(ITestCaseExecutionSysVerService.class);
+            ITestCaseExecutionInQueueService testcaseExecutionQueueService = appContext.getBean(ITestCaseExecutionInQueueService.class);
 
             /**
              * String init
@@ -154,9 +156,10 @@
             String testcase = getRequestParameterWildcardIfEmpty(request, "TestCase");
             String country = getRequestParameterWildcardIfEmpty(request, "Country");
             String environment = getRequestParameterWildcardIfEmpty(request, "Environment");
+            String idFromQueue = getRequestParameterWildcardIfEmpty(request, "IdFromQueue");
             String browser = "firefox";
             String browserVersion = "";
-            String tag = "tag";
+            String tag = getRequestParameterWildcardIfEmpty(request, "Tag");
             Boolean tinf = getBooleanParameterFalseIfEmpty(request, "Tinf");
 
             Application myApp = null;
@@ -202,6 +205,10 @@
 
             long executionId = testCaseExecutionService.insertTCExecution(execution);
             execution.setId(executionId);
+            
+            if (idFromQueue!=null){
+            testcaseExecutionQueueService.remove(Long.valueOf(idFromQueue));
+            }
 
             TestCaseExecutionSysVer testCaseExecutionSysVer = factoryTestCaseExecutionSysVer.create(execution.getId(), myApp.getSystem(), build, revision);
             testCaseExecutionSysVerService.insertTestCaseExecutionSysVer(testCaseExecutionSysVer);
@@ -236,6 +243,7 @@
         <input class="wob" name="browser" id="browser" value="<%=browser%>" disabled="true">
         <a href="http://<%=countryEnvironmentParameter.getIp()+countryEnvironmentParameter.getUrl()%>">http://<%=countryEnvironmentParameter.getIp()+countryEnvironmentParameter.getUrl()%></a>
         <input class="wob" name="executionId" id="executionId" value="<%=executionId%>" style="display:none">
+        <input class="wob" name="IdFromQueue" id="IdFromQueue" value="<%=idFromQueue%>" style="display:none">
         <br>
         <div>
             <textarea name="controlMessage" placeholder="Comment execution"></textarea>

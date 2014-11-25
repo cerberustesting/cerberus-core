@@ -2303,18 +2303,18 @@ function addPropertyNew(widthValue){
 }
 
 
-function openRunManualPopin(test, testcase, env, country) {
-    loadRunManualPopin(test, testcase, env, country);
+function openRunManualPopin(test, testcase, env, country, idFromQueue, tag) {
+    loadRunManualPopin(test, testcase, env, country, idFromQueue, tag);
     $('#popin').dialog({hide: {duration: 300}, height: $(window).height(), width: $(window).width()-20, buttons: [
             {text: "Validate", click: function() {$("#RunManualTest").submit();}},
             {text: "Cancel", click: function() {$("#isCancelExecution").val("Y");$("#RunManualTest").submit();}}
         ]});
 }
 
-function loadRunManualPopin(test, testcase, env, country) {
+function loadRunManualPopin(test, testcase, env, country, idFromQueue, tag) {
 //    $('#popin').hide().empty();
 console.log(test);
-    $('#popin').load('TestCaseManualRun.jsp?Test=' + test.replace(new RegExp(' '  , 'g'), '%20') + '&TestCase=' + testcase+'&Environment='+env+'&Country='+country);
+    $('#popin').load('TestCaseManualRun.jsp?Test=' + test.replace(new RegExp(' '  , 'g'), '%20') + '&TestCase=' + testcase+'&Environment='+env+'&Country='+country+'&IdFromQueue='+idFromQueue+'&Tag='+tag);
 //    $('#popin').show();
 }
 
