@@ -206,7 +206,7 @@
             long executionId = testCaseExecutionService.insertTCExecution(execution);
             execution.setId(executionId);
             
-            if (idFromQueue!=null){
+            if (idFromQueue!=null && !"".equals(idFromQueue)){
             testcaseExecutionQueueService.remove(Long.valueOf(idFromQueue));
             }
 
