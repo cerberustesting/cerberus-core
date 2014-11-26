@@ -24,9 +24,9 @@ import java.util.List;
 import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;
+import org.springframework.web.util.HtmlUtils;
 
 /**
  * Utility class centralizing string utility methods
@@ -43,7 +43,7 @@ public final class StringUtil {
     public static final String NULL = "null";
 
     private static final Pattern urlMatch = Pattern.compile("(.*[<>' \"^]+)([a-zA-Z]+://[^<>[:space:]]+[[:alnum:]/]*)([$<> ' \"].*)");
-
+                                                    
     /** The property variable {@link Pattern} */
     public static final Pattern PROPERTY_VARIABLE_PATTERN = Pattern.compile("%[^%]+%");
 
@@ -221,4 +221,15 @@ public final class StringUtil {
         }
         return text;
     }
+    
+    public static String textToHtmlConvertingURLsToLinks(String text) {
+    if (text == null) {
+        return text;
+    }
+
+    String escapedText = HtmlUtils.htmlEscape(text);
+
+    return escapedText.replaceAll("(\\A|\\s)((http|https|ftp|mailto):\\S+)(\\s|\\z)",
+        "$1<a href=\"$2\">$2</a>$4");
+}
 }
