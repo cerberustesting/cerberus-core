@@ -1526,7 +1526,7 @@
                                             </div>
                                             <div style="border-right-width:thin;border-right-style:solid;border-right-color:#CCCCCC;width:10%;float:left;display:inline-block;height:50px">
                                                 <input class="wob properties_id_<%=rowNumber%> property_name" style="background-color:transparent;margin-top:20px;width:100%;font-weight: bold;"
-                                                       name="properties_property_<%=incrementProperty%>" value="<%=tccp.getProperty()%>">
+                                                       name="properties_property_<%=incrementProperty%>" id="properties_property_<%=incrementProperty%>" value="<%=tccp.getProperty()%>">
                                             </div>
                                             <div style="border-right-width:thin;border-right-style:solid;border-right-color:#CCCCCC;float:left; font-size : x-small ;display:inline-block;height:50px; width: <%=1.5 * countryListTestcase.size()%>%;">
                                                 <table>
@@ -1605,7 +1605,7 @@
                                                             || tccp.getType().equals("executeSoapFromLib")) {
                                                 %>
                                                 <div style="clear:both" class="wob">
-                                                    <input style="display:inline; height:18px; width:18px; color:green; font-weight:bolder" title="View property" class="smallbutton" type="button" value="V" name="openview-library"  onclick="openViewPropertyPopin('<%=valueID%>', '<%=test%>', '<%=testcase%>')">
+                                                    <input style="display:inline; height:18px; width:18px; color:green; font-weight:bolder" title="View property" class="smallbutton" type="button" value="V" name="openview-library"  onclick="openViewPropertyPopin('<%=incrementProperty%>', '<%=test%>', '<%=testcase%>')">
                                                 </div>
                                                 <%}%>
                                                 <% if (nbline > 3) {%>
