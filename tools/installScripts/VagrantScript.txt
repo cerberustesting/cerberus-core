@@ -1,0 +1,4 @@
+Below is a link where you'll find information and scripts allowing to install Cerberus in a Virtual Machine in several clicks :
+
+https://github.com/memiks/vagrant-Cerberus/
+
