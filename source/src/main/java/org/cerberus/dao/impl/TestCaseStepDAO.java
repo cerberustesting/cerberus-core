@@ -28,8 +28,10 @@ import org.cerberus.dao.ITestCaseStepDAO;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.entity.MessageGeneral;
 import org.cerberus.entity.MessageGeneralEnum;
+import org.cerberus.entity.TCase;
 import org.cerberus.entity.TestCaseStep;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.factory.IFactoryTCase;
 import org.cerberus.factory.IFactoryTestCaseStep;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -51,6 +53,8 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
     private DatabaseSpring databaseSpring;
     @Autowired
     private IFactoryTestCaseStep factoryTestCaseStep;
+    @Autowired
+    private IFactoryTCase factoryTestCase;
 
     private static final Logger LOG = Logger.getLogger(TestCaseStepDAO.class);
 
@@ -541,7 +545,7 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
     public List<TestCaseStep> getStepLibraryBySystemTest(String system, String test) throws CerberusException {
         List<TestCaseStep> list = null;
         StringBuilder query = new StringBuilder();
-        query.append("SELECT tcs.test, tcs.testcase,tcs.step, tcs.description FROM testcasestep tcs ");
+        query.append("SELECT tcs.test, tcs.testcase,tcs.step, tcs.description, tc.description as tcdesc FROM testcasestep tcs ");
         query.append("join testcase tc on tc.test=tcs.test and tc.testcase=tcs.testcase ");
         query.append("join application app  on tc.application=app.application ");
         query.append("where tcs.inlibrary = 'Y' and app.system = ? and tcs.test = ? ");
@@ -561,7 +565,11 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
                         String tc = resultSet.getString("testcase");
                         int s = resultSet.getInt("step");
                         String description = resultSet.getString("description");
-                        list.add(factoryTestCaseStep.create(t, tc, s, description, null, null, null, 0, null));
+                        String tcdesc = resultSet.getString("tcdesc");
+                        TCase tcToAdd = factoryTestCase.create(t, tc, tcdesc);
+                        TestCaseStep tcsToAdd = factoryTestCaseStep.create(t, tc, s, description, null, null, null, 0, null);
+                        tcsToAdd.setTestCaseObj(tcToAdd);
+                        list.add(tcsToAdd);
                     }
                 } catch (SQLException exception) {
                     LOG.error("Unable to execute query : " + exception.toString());

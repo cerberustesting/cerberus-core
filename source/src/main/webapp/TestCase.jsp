@@ -2065,11 +2065,15 @@
                             .attr('value', '')
                             .attr('style', 'width:300px;')
                             .text('Choose TestCase'));
+                    var testFromLib = "";
                     for (var i = 0; i < data.testCaseStepList.length; i++) {
+                        if (data.testCaseStepList[i].testCase !== testFromLib){
                         $('#' + field).append($("<option></option>")
                                 .attr('value', data.testCaseStepList[i].testCase)
                                 .attr('style', 'width:300px;')
-                                .text(data.testCaseStepList[i].testCase+" : "+data.testCaseStepList[i].description));
+                                .text(data.testCaseStepList[i].testCase+" : "+data.testCaseStepList[i].tcdesc));
+                        testFromLib = data.testCaseStepList[i].testCase;
+                    }
                     }
                 });
             }
