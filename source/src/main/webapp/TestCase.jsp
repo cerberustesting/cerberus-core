@@ -318,6 +318,13 @@
             .RowToDelete select{
                 background-color:#DD7777;
             }
+            
+            .libLineDiv{
+                display:block;
+            }
+            .libHideLineDiv{
+                display:none;
+            }
 
         </style>
 
@@ -946,12 +953,19 @@
                                 <div style="width:13%;position:fixed;background-color:white;height:500px; overflow: auto">    
                                     <%
                                         List<TestCaseStep> tcsListOfUseStep = tcsService.getStepLibraryBySystem(MySystem);
+                                        String testOfLib = "";
                                         for (TestCaseStep tcs : tcsListOfUseStep) {
-                                    %><div style="border-style: solid; border-width:thin ; border-color:#CCCCCC;" id="<%=tcs.getTest()%><%=tcs.getTestCase()%><%=tcs.getStep()%>" data-test="<%=tcs.getTest()%>"
-                                         data-testcase="<%=tcs.getTestCase()%>" data-step="<%=tcs.getStep()%>" onmousedown="showTargetDiv()" onmouseup="hideTargetDiv()" draggable="true"  ondragstart="drag(event, this)" >
-                                        <p style="font-size:10px"><%=tcs.getTest()%> / <%=tcs.getTestCase()%> / <%=tcs.getStep()%>
+                                            if (!tcs.getTest().equals(testOfLib)){
+                                                testOfLib = tcs.getTest();
+                                            %>
+                                        <p style="font-size:10px; font-weight:bold" onclick="$('.libLineDiv[data-testLib=\'<%=testOfLib%>\']').toggleClass('libHideLineDiv');"><%=tcs.getTest()%>
                                         </p>
-                                        <p style="font-size:10px; font-style: italic;font-weight: bold; color:dodgerblue"><%=tcs.getDescription()%></p></div>
+                                            <%
+                                            }
+                                            %>
+                                            <div class="libLineDiv" data-testLib="<%=testOfLib%>" style="border-style: solid; border-width:thin ; border-color:#CCCCCC;" id="<%=tcs.getTest()%><%=tcs.getTestCase()%><%=tcs.getStep()%>" data-test="<%=tcs.getTest()%>"
+                                         data-testcase="<%=tcs.getTestCase()%>" data-step="<%=tcs.getStep()%>" onmousedown="showTargetDiv()" onmouseup="hideTargetDiv()" draggable="true"  ondragstart="drag(event, this)" >
+                                        <p style="margin-left:20px; font-size:10px; font-style: italic;font-weight: bold; color:dodgerblue"><%=tcs.getDescription()%></p></div>
                                         <%}%>
                                 </div>
 
