@@ -80,6 +80,15 @@ public class TestCaseExecution {
     private Session session;
     private String manualExecution;
     private List<TestCaseCountryProperties> testCaseCountryPropertyList;
+    private long idFromQueue;
+
+    public long getIdFromQueue() {
+        return idFromQueue;
+    }
+
+    public void setIdFromQueue(long idFromQueue) {
+        this.idFromQueue = idFromQueue;
+    }
 
     public List<TestCaseCountryProperties> getTestCaseCountryPropertyList() {
         return testCaseCountryPropertyList;

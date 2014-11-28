@@ -64,6 +64,7 @@ import org.cerberus.service.ITestCaseStepService;
 import org.cerberus.serviceEngine.IRecorderService;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.version.Version;
+import org.cerberus.websocket.WebsocketTest;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.springframework.web.util.HtmlUtils;
@@ -152,6 +153,16 @@ public class RunManualTest extends HttpServlet {
 
             }
             testCaseExecutionService.updateTCExecution(execution);
+            
+            //Notify it's finnished
+        WebsocketTest wst = new WebsocketTest();
+        System.out.print("go :"+execution.getTag());
+        try {
+            wst.handleMessage(execution.getTag());
+        } catch (IOException ex) {
+            MyLogger.log(SaveManualExecution.class.getName(), Level.FATAL, "" + ex);
+        }
+               
 
             /**
              * Get Step Execution and insert them into Database

@@ -181,6 +181,7 @@ public class RunTestCase extends HttpServlet {
         getPageSource = ParameterParserUtil.parseIntegerParam(policy.sanitize(request.getParameter("pageSource")), 1);
         getSeleniumLog = ParameterParserUtil.parseIntegerParam(policy.sanitize(request.getParameter("seleniumLog")), 1);
         manualExecution = ParameterParserUtil.parseStringParam(policy.sanitize(request.getParameter("manualExecution")), "N");
+        long idFromQueue = ParameterParserUtil.parseIntegerParam(policy.sanitize(request.getParameter("IdFromQueue")), 0);
 
         String helpMessage = "\nThis servlet is used to start the execution of a test case.\n"
                 + "Parameter list :\n"
@@ -270,6 +271,11 @@ public class RunTestCase extends HttpServlet {
                 MyLogger.log(RunTestCase.class.getName(), Level.WARN, "Parameter (selenium_defaultWait) not in Parameter table, default wait set to 90 seconds");
                 defaultWait = 90;
             }
+            
+            /**
+             * Set IdFromQueue
+             */
+            tCExecution.setIdFromQueue(idFromQueue);
 
             List<SessionCapabilities> capabilities = new ArrayList();
             SessionCapabilities sc = new SessionCapabilities();
