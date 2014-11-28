@@ -20,7 +20,6 @@
 package org.cerberus.servlet.manualTestCase;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -29,45 +28,23 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Level;
-import org.cerberus.entity.Application;
-import org.cerberus.entity.CountryEnvParam;
-import org.cerberus.entity.MessageGeneral;
-import org.cerberus.entity.MessageGeneralEnum;
-import org.cerberus.entity.TCase;
 import org.cerberus.entity.TestCaseExecution;
 import org.cerberus.entity.TestCaseExecutionData;
-import org.cerberus.entity.TestCaseExecutionSysVer;
-import org.cerberus.entity.TestCaseStep;
-import org.cerberus.entity.TestCaseStepAction;
 import org.cerberus.entity.TestCaseStepActionControlExecution;
 import org.cerberus.entity.TestCaseStepActionExecution;
 import org.cerberus.entity.TestCaseStepExecution;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.factory.IFactoryTestCaseExecution;
-import org.cerberus.factory.IFactoryTestCaseExecutionSysVer;
-import org.cerberus.factory.IFactoryTestCaseStep;
-import org.cerberus.factory.IFactoryTestCaseStepAction;
-import org.cerberus.factory.IFactoryTestCaseStepActionControl;
 import org.cerberus.factory.IFactoryTestCaseStepActionControlExecution;
 import org.cerberus.factory.IFactoryTestCaseStepActionExecution;
 import org.cerberus.factory.IFactoryTestCaseStepExecution;
 import org.cerberus.log.MyLogger;
-import org.cerberus.service.IApplicationService;
-import org.cerberus.service.ICountryEnvParamService;
 import org.cerberus.service.ITestCaseExecutionService;
-import org.cerberus.service.ITestCaseExecutionSysVerService;
-import org.cerberus.service.ITestCaseService;
 import org.cerberus.service.ITestCaseStepActionControlExecutionService;
 import org.cerberus.service.ITestCaseStepActionExecutionService;
 import org.cerberus.service.ITestCaseStepExecutionService;
-import org.cerberus.service.ITestCaseStepService;
 import org.cerberus.serviceEngine.IRecorderService;
-import org.cerberus.util.ParameterParserUtil;
-import org.cerberus.version.Version;
-import org.cerberus.websocket.WebsocketTest;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
-import org.springframework.web.util.HtmlUtils;
 
 /**
  *
@@ -154,15 +131,7 @@ public class RunManualTest extends HttpServlet {
             }
             testCaseExecutionService.updateTCExecution(execution);
             
-            //Notify it's finnished
-        WebsocketTest wst = new WebsocketTest();
-        System.out.print("go :"+execution.getTag());
-        try {
-            wst.handleMessage(execution.getTag());
-        } catch (IOException ex) {
-            MyLogger.log(SaveManualExecution.class.getName(), Level.FATAL, "" + ex);
-        }
-               
+            
 
             /**
              * Get Step Execution and insert them into Database
