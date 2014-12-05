@@ -63,15 +63,8 @@ public class RunManualTest extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-        String controlStatus = "OK";
-        //req.getParameter("controlStatus");
+        String controlStatus = getParameterIfExists(req, "executionStatus");
         String controlMessage = req.getParameter("controlMessage");
-        String tag = "toto tutu";
-        //req.getParameter("tag");
-        String browser = "firefox";
-        //req.getParameter("browser");
-        String browserVersion = "23";
-        //req.getParameter("browserVersion");
         long executionId = Long.valueOf(req.getParameter("executionId"));
         String cancelExecution = req.getParameter("isCancelExecution")==null?"":req.getParameter("isCancelExecution");
 
@@ -83,6 +76,7 @@ public class RunManualTest extends HttpServlet {
         
         try {
             TestCaseExecution execution = testCaseExecutionService.findTCExecutionByKey(executionId);
+            execution.setControlMessage(controlMessage);
             String test = execution.getTest();
             String testCase = execution.getTestCase();
             List<String> status = new ArrayList();
@@ -120,8 +114,14 @@ public class RunManualTest extends HttpServlet {
                     tcse.setReturnCode("NA");
                     execution.setControlStatus("NA");
                     testCaseStepExecutionService.updateTestCaseStepExecution(tcse);
-                } else {
+                } else if (status.contains("OK")) {
+                    tcse.setReturnCode("OK");
                     execution.setControlStatus("OK");
+                    testCaseStepExecutionService.updateTestCaseStepExecution(tcse);
+                } else {
+                    tcse.setReturnCode("CA");
+                    execution.setControlStatus("CA");
+                    testCaseStepExecutionService.updateTestCaseStepExecution(tcse);
                 }
                 
                 if (cancelExecution.equals("Y")){
@@ -131,7 +131,14 @@ public class RunManualTest extends HttpServlet {
             }
             testCaseExecutionService.updateTCExecution(execution);
             
-            
+            //Notify it's finnished
+//        WebsocketTest wst = new WebsocketTest();
+//        try {
+//            wst.handleMessage(execution.getTag());
+//        } catch (IOException ex) {
+//            MyLogger.log(SaveManualExecution.class.getName(), Level.FATAL, "" + ex);
+//        }
+               
 
             /**
              * Get Step Execution and insert them into Database
@@ -192,17 +199,17 @@ public class RunManualTest extends HttpServlet {
     private List<TestCaseStepExecution> getTestCaseStepExecution(HttpServletRequest request, ApplicationContext appContext, String test, String testCase, long executionId) {
         List<TestCaseStepExecution> result = new ArrayList();
         long now = new Date().getTime();
-        ITestCaseStepExecutionService tcseService = appContext.getBean(ITestCaseStepExecutionService.class);
         IFactoryTestCaseStepExecution testCaseStepExecutionFactory = appContext.getBean(IFactoryTestCaseStepExecution.class);
 
         String[] testcase_step_increment = getParameterValuesIfExists(request, "step_increment");
         if (testcase_step_increment != null) {
             for (String inc : testcase_step_increment) {
                 int step = Integer.valueOf(getParameterIfExists(request, "step_number_" + inc) == null ? "0" : getParameterIfExists(request, "step_number_" + inc));
-                String stepReturnCode = "OK";
+                String stepResultMessage = getParameterIfExists(request, "stepResultMessage_"+inc);
+                String stepReturnCode = getParameterIfExists(request, "stepStatus_"+inc);
 
                 result.add(testCaseStepExecutionFactory.create(executionId, test, testCase, step, null, now, now, now, now,
-                        0, stepReturnCode, null, null, null, null, null, null, 0));
+                        0, stepReturnCode, stepResultMessage));
             }
         }
         return result;
@@ -211,7 +218,6 @@ public class RunManualTest extends HttpServlet {
     private List<TestCaseStepActionExecution> getTestCaseStepActionExecution(HttpServletRequest request, ApplicationContext appContext, String test, String testCase, long executionId, int stepId) {
         List<TestCaseStepActionExecution> result = new ArrayList();
         long now = new Date().getTime();
-        ITestCaseStepActionExecutionService tcsaeService = appContext.getBean(ITestCaseStepActionExecutionService.class);
         IFactoryTestCaseStepActionExecution testCaseStepActionExecutionFactory = appContext.getBean(IFactoryTestCaseStepActionExecution.class);
         IRecorderService recorderService = appContext.getBean(IRecorderService.class);
 
@@ -242,7 +248,6 @@ public class RunManualTest extends HttpServlet {
     private List<TestCaseStepActionControlExecution> getTestCaseStepActionControlExecution(HttpServletRequest request, ApplicationContext appContext, String test, String testCase, long executionId, int stepId, int sequenceId) {
         List<TestCaseStepActionControlExecution> result = new ArrayList();
         long now = new Date().getTime();
-        ITestCaseStepActionControlExecutionService tcsaeService = appContext.getBean(ITestCaseStepActionControlExecutionService.class);
         IFactoryTestCaseStepActionControlExecution testCaseStepActionExecutionFactory = appContext.getBean(IFactoryTestCaseStepActionControlExecution.class);
         IRecorderService recorderService = appContext.getBean(IRecorderService.class);
 
