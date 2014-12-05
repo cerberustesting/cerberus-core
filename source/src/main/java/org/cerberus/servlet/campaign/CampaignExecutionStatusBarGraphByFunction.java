@@ -141,6 +141,9 @@ public class CampaignExecutionStatusBarGraphByFunction extends HttpServlet {
 
             axis.add(GraphicHelper.generateAxisForMultiBar("FA", 
                     datas.get("FA").toArray(new String[1]),"#FDB45C","#FFC870","#FFE890"));
+            
+            axis.add(GraphicHelper.generateAxisForMultiBar("CA", 
+                    datas.get("CA").toArray(new String[1]),"#FDB45C","#FFC870","#FFE890"));
 
             JSONObject jSONResult = GraphicHelper.generateChart(
                     GraphicHelper.ChartType.MultiBar, 
@@ -206,6 +209,7 @@ public class CampaignExecutionStatusBarGraphByFunction extends HttpServlet {
         results.put("NE", new ArrayList<String>());
         results.put("PE", new ArrayList<String>());
         results.put("FA", new ArrayList<String>());
+        results.put("CA", new ArrayList<String>());
         
         int index;
         String key;
@@ -226,6 +230,7 @@ public class CampaignExecutionStatusBarGraphByFunction extends HttpServlet {
                 results.get("NE").add("0");
                 results.get("PE").add("0");
                 results.get("FA").add("0");
+                results.get("CA").add("0");
 
                 results.get("total").add("0");
             }
