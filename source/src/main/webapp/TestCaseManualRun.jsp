@@ -90,6 +90,21 @@
         text-align: center;
 
     }
+    
+    .ExecutionHeaderDiv {
+        width:100%;
+        clear:both;
+        display:block;
+        border-style: solid;
+        border-width:thin;
+        border-color:#CCCCCC;
+        background-image: -moz-linear-gradient(top, #ebebeb, #CCCCCC); 
+        background-image: -webkit-linear-gradient(top, #ebebeb, #CCCCCC); 
+        font-weight:bold;
+        font-family: Trebuchet MS;
+        color:#555555;
+
+    }
 
     .StepHeaderContent {
         margin-top:15px; 
@@ -234,6 +249,7 @@
     %>
     <br>
     <form method="post" name="RunManualTest"  id="RunManualTest" action="RunManualTest">
+        <div class="ExecutionHeaderDiv">
         <p style="font-size:14px; font-weight:bold; color:red">Execution <%=executionId%> Started</p>
         <input class="wob" name="test" id="test" value="<%=test%>" disabled="true">
         <input class="wob" name="testCase" id="testCase"  value="<%=testcase%>" disabled="true">
@@ -245,8 +261,27 @@
         <input class="wob" name="executionId" id="executionId" value="<%=executionId%>" style="display:none">
         <input class="wob" name="IdFromQueue" id="IdFromQueue" value="<%=idFromQueue%>" style="display:none">
         <br>
-        <div>
-            <textarea name="controlMessage" placeholder="Comment execution"></textarea>
+        
+        <div id="ExecutionGlobalStatusDiv" style="width:97%;display:inline-block">
+        <div  style="display:block; float:right;width:19%">
+            <textarea style="width:99%" name="controlMessage" placeholder="Comment execution"></textarea>
+        </div>
+        <div style="display:inline-block;float:right;">
+                                    <p style="font-weight:bold;color:yellow;margin-top:5px">NA</p>
+                                    <input type="radio" name="executionStatus" style="color:red;font-weight: bold; width:20px;"
+                                           onclick="checkAllAction(this, '', 'NA')" value="NA">
+                                </div>
+                                <div style="float:right;">
+                                    <p style="font-weight:bold;color:red;margin-top:5px">KO</p>
+                                    <input type="radio" name="executionStatus" style="color:red;font-weight: bold; width:20px"
+                                           onclick="checkAllAction(this, '', 'KO')" value="KO">
+                                </div>
+                                <div style="float:right;">
+                                    <p style="font-weight:bold;color:green;margin-top:5px">OK</p>
+                                    <input type="radio" name="executionStatus" style="color:green;font-weight: bold; width:20px"
+                                           onclick="checkAllAction(this, '', 'OK')" value="KO">
+                                </div>
+        </div>
         </div>
         <div id="AutomationScriptDiv" style="display : block">
             <div id="StepsMainDiv" style="width:100%;clear:both">
@@ -316,66 +351,6 @@
                                                      data-fieldtype="Description" name="step_description_<%=incrementStep%>" value="<%=tcs.getDescription()%>">
                                         </div></div></div>
 
-                                <% if (tcs.getUseStep().equals("Y")) {%>
-                                <div id="StepUseStepDiv" style="clear:both">UseStep
-                                    <input type="checkbox" name="step_useStep_<%=incrementStep%>" style="margin-top:15px;font-weight: bold; width:20px" onclick="confirmDeletingAction(this, '<%=incrementStep%>')"
-                                           <% if (tcs.getUseStep().equals("Y")) {%>
-                                           CHECKED
-                                           <%}%>
-                                           value="Y">
-                                </div>
-                                <div id="StepCopiedFromDiv" style="float:left">
-                                    <p style="margin-top:15px;"> Copied from : </p>
-                                </div>
-                                <div id="StepUseStepTestDiv" style="float:left">
-                                    <select id="step_useStepTest_<%=incrementStep%>" name="step_useStepTest_<%=incrementStep%>" style="width: 100px;margin-top:15px;font-weight: bold;" 
-                                            OnChange="findTestcaseByTest(this.value, '<%=MySystem%>', 'step_useStepTestCase_<%=incrementStep%>')">
-                                        <%  if (tcs.getUseStepTest().equals("")) { %>
-                                        <option style="width: 200px" value="All">-- Choose Test --
-                                        </option>
-                                        <%  }
-                                            List<Test> tList = testService.findTestBySystems(systems);
-                                            for (Test tst : tList) {%>
-                                        <option style="width: 200px;" class="font_weight_bold_<%=tst.getActive()%>" value="<%=tst.getTest()%>" <%=tcs.getUseStepTest().compareTo(tst.getTest()) == 0 ? " SELECTED " : ""%>><%=tst.getTest()%>
-                                        </option>
-                                        <% }
-                                        %>
-                                    </select>
-                                </div>
-
-                                <div id="StepUseStepTestCaseDiv" style="float:left;">
-                                    <select name="step_useStepTestCase_<%=incrementStep%>" style="width: 50px;margin-top:15px;font-weight: bold;" 
-                                            OnChange="findStepByTestCase($('#step_useStepTest_<%=incrementStep%>').val(), this.value, 'step_useStepStep_<%=incrementStep%>')"
-                                            id="step_useStepTestCase_<%=incrementStep%>">
-                                        <%  if (tcs.getUseStepTestCase().equals("")) { %>
-                                        <option style="width: 200px" value="All">---</option>
-                                        <%  } else {
-                                            List<TCase> tcList = testCaseService.findTestCaseByTest(test);
-                                            for (TCase tc : tcList) {%>
-                                        <option style="width: 200px;" class="font_weight_bold_<%=tc.getActive()%>" value="<%=tc.getTestCase()%>" <%=tcs.getUseStepTestCase().compareTo(tc.getTestCase()) == 0 ? " SELECTED " : ""%>><%=tc.getTestCase()%>
-                                        </option>
-                                        <% }
-                                            }%>
-                                    </select>
-                                </div>
-                                <div id="StepUseStepStepDiv" style="float:left">
-                                    <select name="step_useStepStep_<%=incrementStep%>" style="width: 50px;margin-top:15px;font-weight: bold;" 
-                                            id="step_useStepStep_<%=incrementStep%>" onchange="javascript:$('#UpdateTestCase').submit();">
-                                        <%  if (tcs.getUseStepTest().equals("") || tcs.getUseStepTestCase().equals("")) { %>
-                                        <option style="width: 200px" value="All">---</option>
-                                        <%  } else {
-                                            List<TestCaseStep> tcstepList = tcsService.getListOfSteps(tcs.getUseStepTest(), tcs.getUseStepTestCase());
-                                            for (TestCaseStep tcstep : tcstepList) {%>
-                                        <option style="width: 200px;" value="<%=tcstep.getStep()%>" <%=tcs.getUseStepStep().compareTo(tcstep.getStep()) == 0 ? " SELECTED " : ""%>><%=tcstep.getStep()%>
-                                        </option>
-                                        <% }
-                                            }%>
-                                    </select>
-                                </div>
-                                <div id="StepUseStepLinkDiv" style="float:left;margin-top:15px">
-                                    <a href="TestCase.jsp?Test=<%=tcs.getUseStepTest()%>&TestCase=<%=tcs.getUseStepTestCase()%>#stepAnchor_step<%=tcs.getUseStepStep()%>">Edit Used Step</a>
-                                </div>
-                                <%}%>
                                 <div style=" width:3px;height:100%;display:inline-block;float:right">
                                 </div>
                                 <div style="float:right; display:inline-block;width:15%">
@@ -387,17 +362,17 @@
                                 </div> 
                                 <div style="float:right;">
                                     <p style="font-weight:bold;color:yellow;margin-top:5px">NA</p>
-                                    <input type="radio" name="stepStatus_<%=incrementStep%>" style="color:red;font-weight: bold; width:20px;"
+                                    <input type="radio" name="stepStatus_<%=incrementStep%>" class="step_NA" data-stepId="<%=incrementStep%>" style="color:red;font-weight: bold; width:20px;"
                                            onclick="checkAllAction(this, '<%=incrementStep%>', 'NA')" value="NA">
                                 </div>
                                 <div style="float:right;">
                                     <p style="font-weight:bold;color:red;margin-top:5px">KO</p>
-                                    <input type="radio" name="stepStatus_<%=incrementStep%>" style="color:red;font-weight: bold; width:20px"
+                                    <input type="radio" name="stepStatus_<%=incrementStep%>" class="step_KO" data-stepId="<%=incrementStep%>" style="color:red;font-weight: bold; width:20px"
                                            onclick="checkAllAction(this, '<%=incrementStep%>', 'KO')" value="KO">
                                 </div>
                                 <div style="float:right;">
                                     <p style="font-weight:bold;color:green;margin-top:5px">OK</p>
-                                    <input type="radio" name="stepStatus_<%=incrementStep%>" style="color:green;font-weight: bold; width:20px"
+                                    <input type="radio" name="stepStatus_<%=incrementStep%>" class="step_OK" data-stepId="<%=incrementStep%>" style="color:green;font-weight: bold; width:20px"
                                            onclick="checkAllAction(this, '<%=incrementStep%>', 'OK')" value="KO">
                                 </div>
 
@@ -626,11 +601,21 @@
         } else {
             bool = false;
         }
+        if (stepId !== ''){
         $('#StepsBorderDiv' + stepId).find('input[class="actioncontrol_' + status + '_' + stepId + '"]')
                 .each(function() {
                     $(this).prop('checked', bool);
 
                 });
+            } else {
+              $('div[class="StepHeaderDiv"]').each(function() {
+                    $(this).find('input[class="step_' + status +'"]').each(function() {
+                        $(this).prop('checked', bool);
+                        checkAllAction(this, $(this).attr('data-stepId'), status);
+                    });
+            });  
+                
+            }
 
     }
 </script>

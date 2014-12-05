@@ -35,6 +35,7 @@ public class TestCaseStepExecution {
     private long fullEnd;
     private long timeElapsed;
     private String returnCode;
+    private String returnMessage;
     /**
      * From here are data outside database model.
      */
@@ -49,6 +50,14 @@ public class TestCaseStepExecution {
     private String useStepTestCase;
     private int useStepTestCaseStep;
 
+    public String getReturnMessage() {
+        return returnMessage;
+    }
+
+    public void setReturnMessage(String returnMessage) {
+        this.returnMessage = returnMessage;
+    }
+    
     public String getUseStep() {
         return useStep;
     }
