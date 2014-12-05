@@ -129,6 +129,7 @@ public class WebDriverService implements IWebDriverService {
                 wait.until(ExpectedConditions.presenceOfElementLocated(locator));
             }
         } catch (TimeoutException exception) {
+            MyLogger.log(RunTestCaseService.class.getName(), Level.FATAL, "Exception waiting for element :" +exception);
             throw new NoSuchElementException(input);
         }
         MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Finding Element : " + input);
@@ -347,7 +348,7 @@ public class WebDriverService implements IWebDriverService {
     }
 
     @Override
-    public MessageEvent doSeleniumActionClick(Session session, String string1, String string2) {
+    public MessageEvent doSeleniumActionClick(Session session, String string1, String string2, boolean waitForVisibility, boolean waitForClickability) {
         MessageEvent message;
         try {
             if (!StringUtil.isNull(string1)) {
@@ -355,7 +356,7 @@ public class WebDriverService implements IWebDriverService {
 //                    Actions actions = new Actions(selenium.getDriver());
 //                    actions.click(this.getSeleniumElement(selenium, string1, true, true));
 //                    actions.build().perform();
-                    this.getSeleniumElement(session, string1, true, true).click();
+                    this.getSeleniumElement(session, string1, waitForVisibility, waitForClickability).click();
                     message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CLICK);
                     message.setDescription(message.getDescription().replaceAll("%ELEMENT%", string1));
                     return message;

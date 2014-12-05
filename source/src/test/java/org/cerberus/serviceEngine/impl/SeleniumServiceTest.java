@@ -84,8 +84,10 @@ public class SeleniumServiceTest {
         String object = "null";
         String property = "null";
         String msg = "Object and Property are ‘null’. At least one is mandatory in order to perform the action click.";
+        boolean waitForVisibility = true;
+        boolean waitForClickability = true;
      
-        MessageEvent message = this.webdriverService.doSeleniumActionClick(session, object, property);
+        MessageEvent message = this.webdriverService.doSeleniumActionClick(session, object, property, waitForVisibility, waitForClickability);
 
         Assert.assertEquals(msg, message.getDescription());
     }
@@ -95,6 +97,8 @@ public class SeleniumServiceTest {
         String object = "id=test";
         String property = "null";
         String msg = "Element '" + object + "' clicked.";
+        boolean waitForVisibility = true;
+        boolean waitForClickability = true;
    
         PowerMockito.mockStatic(ExpectedConditions.class);
         PowerMockito.mockStatic(By.class);
@@ -106,7 +110,7 @@ public class SeleniumServiceTest {
         when(fluentWait.until(expectedCondition)).thenReturn(element);
         when(driver.findElement(by)).thenReturn(element);
 
-        MessageEvent message = this.webdriverService.doSeleniumActionClick(session, object, property);
+        MessageEvent message = this.webdriverService.doSeleniumActionClick(session, object, property, waitForVisibility, waitForClickability);
 
         Assert.assertEquals(msg, message.getDescription());
     }
@@ -116,12 +120,14 @@ public class SeleniumServiceTest {
         String object = "id=test";
         String property = "null";
         String msg = "Failed to click because could not find element '" + object + "'!";
+        boolean waitForVisibility = true;
+        boolean waitForClickability = true;
 
     
         when(session.getDriver()).thenReturn(driver);
         when(driver.findElement(By.id(anyString()))).thenThrow(new NoSuchElementException(""));
 
-        MessageEvent message = this.webdriverService.doSeleniumActionClick(session, object, property);
+        MessageEvent message = this.webdriverService.doSeleniumActionClick(session, object, property, waitForVisibility, waitForClickability);
 
         Assert.assertEquals(msg, message.getDescription());
     }
@@ -131,6 +137,8 @@ public class SeleniumServiceTest {
         String object = "null";
         String property = "id=test";
         String msg = "Element '" + property + "' clicked.";
+        boolean waitForVisibility = true;
+        boolean waitForClickability = true;
 
         PowerMockito.mockStatic(ExpectedConditions.class);
         PowerMockito.mockStatic(By.class);
@@ -142,7 +150,7 @@ public class SeleniumServiceTest {
         when(fluentWait.until(ExpectedConditions.visibilityOfElementLocated(by))).thenReturn(element);
         when(driver.findElement(by)).thenReturn(element);
 
-        MessageEvent message = this.webdriverService.doSeleniumActionClick(session, object, property);
+        MessageEvent message = this.webdriverService.doSeleniumActionClick(session, object, property, waitForVisibility, waitForClickability);
 
         Assert.assertEquals(msg, message.getDescription());
     }
@@ -152,11 +160,13 @@ public class SeleniumServiceTest {
         String object = "null";
         String property = "id=test";
         String msg = "Failed to click because could not find element '" + property + "'!";
+        boolean waitForVisibility = true;
+        boolean waitForClickability = true;
 
         when(session.getDriver()).thenReturn(driver);
         when(driver.findElement(By.id(anyString()))).thenThrow(new NoSuchElementException(""));
 
-        MessageEvent message = this.webdriverService.doSeleniumActionClick(session, object, property);
+        MessageEvent message = this.webdriverService.doSeleniumActionClick(session, object, property, waitForVisibility, waitForClickability);
 
         Assert.assertEquals(msg, message.getDescription());
     }
@@ -166,10 +176,12 @@ public class SeleniumServiceTest {
         String object = "id=test";
         String property = "null";
         String msg = "The test case is canceled due to lost connection to Selenium Server!";
+        boolean waitForVisibility = true;
+        boolean waitForClickability = true;
 
         when(session.getDriver()).thenThrow(new WebDriverException());
 
-        MessageEvent message = this.webdriverService.doSeleniumActionClick(session, object, property);
+        MessageEvent message = this.webdriverService.doSeleniumActionClick(session, object, property, waitForVisibility, waitForClickability);
 
         Assert.assertEquals(msg, message.getDescription());
     }
