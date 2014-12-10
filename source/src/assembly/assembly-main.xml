@@ -13,6 +13,18 @@
 				<include>**/**</include>
 			</includes>
 		</fileSet>
+		<fileSet>
+			<directory>../bin</directory>
+			<includes>
+				<include>**/**</include>
+			</includes>
+		</fileSet>
+		<fileSet>
+			<directory>../docs</directory>
+			<includes>
+				<include>**/**</include>
+			</includes>
+		</fileSet>
 	</fileSets>
 	<files>
 		<file>

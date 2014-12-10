@@ -69,19 +69,29 @@ public class FindBuildContent extends HttpServlet {
                 array.put(brp.getApplication());
                 array.put(brp.getRelease());
 
-                Project project = projectService.findProjectByKey(brp.getProject());
-                StringBuilder sb = new StringBuilder(project.getIdProject());
-                sb.append(" [");
-                sb.append(project.getCode());
-                sb.append("] ");
-                sb.append(project.getDescription());
-                array.put(sb.toString());
+                try {
+                    Project project = projectService.findProjectByKey(brp.getProject());
+                    StringBuilder sb = new StringBuilder(project.getIdProject());
+                    sb.append(" [");
+                    sb.append(project.getCode());
+                    sb.append("] ");
+                    sb.append(project.getDescription());
+                    array.put(sb.toString());
+                } catch (CerberusException e) {
+                    LOG.info("Unable to find Project : "+e.getMessageError().getDescription());
+                    array.put(" [] NONE");
+                }
 
                 array.put(brp.getTicketIdFixed());
                 array.put(brp.getBudIdFixed());
                 array.put(brp.getSubject());
-                User user = userService.findUserByKey(brp.getReleaseOwner());
-                array.put(user.getName());
+                try {
+                    User user = userService.findUserByKey(brp.getReleaseOwner());
+                    array.put(user.getName());
+                } catch (CerberusException e) {
+                    LOG.info("Unable to find User : "+e.getMessageError().getDescription());
+                    array.put("");
+                }
                 array.put(brp.getLink());
 
                 data.put(array);
@@ -95,10 +105,6 @@ public class FindBuildContent extends HttpServlet {
             resp.getWriter().print(jsonResponse.toString());
         } catch (JSONException e) {
             LOG.error("Unable to convert data to JSON : "+e.getMessage());
-            resp.setContentType("text/html");
-            resp.getWriter().print(e.getMessage());
-        }  catch (CerberusException e) {
-            LOG.error("Unable to find BuildRevisionParameters, Project or User : "+e.getMessageError().getDescription());
             resp.setContentType("text/html");
             resp.getWriter().print(e.getMessage());
         }
