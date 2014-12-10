@@ -72,6 +72,7 @@
 
         StringBuilder users = new StringBuilder("{");
         StringBuilder userOptions = new StringBuilder();
+        users.append("'':'',");
         userOptions.append("<option value=''></option>");
         for (User user : userService.findAllUserBySystem(MySystem)) {
             users.append("'");
