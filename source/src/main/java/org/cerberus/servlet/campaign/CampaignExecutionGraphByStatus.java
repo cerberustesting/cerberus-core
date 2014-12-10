@@ -21,10 +21,13 @@ package org.cerberus.servlet.campaign;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -98,6 +101,8 @@ public class CampaignExecutionGraphByStatus extends HttpServlet {
              * Feed hash map with execution from the two list (to get only one by test,testcase,country,env,browser)
              */
             HashMap<String, TestCaseWithExecution> testCaseWithExecutionsList = new HashMap();
+            SimpleDateFormat formater = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+            
             for (TestCaseWithExecution testCaseWithExecution : testCaseWithExecutions) {
                 String key = testCaseWithExecution.getBrowser() + "_" 
                         + testCaseWithExecution.getCountry() + "_" 
@@ -112,9 +117,12 @@ public class CampaignExecutionGraphByStatus extends HttpServlet {
                         + testCaseWithExecutionInQueue.getEnvironment() + "_" 
                         + testCaseWithExecutionInQueue.getTest() + "_" 
                         + testCaseWithExecutionInQueue.getTestCase();
+                if ((testCaseWithExecutionsList.containsKey(key) 
+                        && formater.parse(testCaseWithExecutionsList.get(key).getStart()).before(formater.parse(testCaseWithExecutionInQueue.getStart())))
+                        || !testCaseWithExecutionsList.containsKey(key)){
                 testCaseWithExecutionsList.put(key, testCaseWithExecutionInQueue);
             }
-
+            }
             testCaseWithExecutions = new ArrayList<TestCaseWithExecution>(testCaseWithExecutionsList.values());
             
             List<JSONObject> axis = new ArrayList<JSONObject>();
@@ -148,6 +156,8 @@ public class CampaignExecutionGraphByStatus extends HttpServlet {
         } catch (CerberusException ex) {
             LOGGER.error(ex);
 
+        } catch (ParseException ex) {
+            java.util.logging.Logger.getLogger(CampaignExecutionGraphByStatus.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
             out.close();
         }
