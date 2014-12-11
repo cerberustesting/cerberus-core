@@ -102,6 +102,7 @@ public class RunTestCase extends HttpServlet {
 	public static final String PARAMETER_SELENIUM_LOG = "seleniumLog";
         public static final String PARAMETER_MANUAL_EXECUTION = "manualExecution";
         public static final String PARAMETER_EXECUTION_QUEUE_ID = "IdFromQueue";
+        public static final String PARAMETER_SYSTEM = "MySystem";
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

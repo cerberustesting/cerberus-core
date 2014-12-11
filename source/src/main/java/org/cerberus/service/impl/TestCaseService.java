@@ -274,4 +274,9 @@ public class TestCaseService implements ITestCaseService {
         String batteryClause = SqlUtil.createWhereInClause(" AND tbc.testbattery", battery==null?null:Arrays.asList(battery), true);
         return testCaseDao.findTestCaseByCriteria(testClause, projectClause, appClause, activeClause, priorityClause, statusClause, groupClause, targetBuildClause, targetRevClause, creatorClause, implementerClause, functionClause, campaignClause, batteryClause);
     }
+
+    @Override
+    public String findSystemOfTestCase(String test, String testcase) throws CerberusException {
+        return testCaseDao.findSystemOfTestCase(test,testcase);
+    }
 }

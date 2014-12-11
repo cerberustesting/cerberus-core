@@ -257,7 +257,7 @@
         <input class="wob" name="country" id="country" value="<%=country%>" disabled="true">
         <input class="wob" name="tag" id="tag" value="<%=tag%>" disabled="true">
         <input class="wob" name="browser" id="browser" value="<%=browser%>" disabled="true">
-        <a href="http://<%=countryEnvironmentParameter.getIp()+countryEnvironmentParameter.getUrl()%>">http://<%=countryEnvironmentParameter.getIp()+countryEnvironmentParameter.getUrl()%></a>
+        <a href="http://<%=countryEnvironmentParameter.getIp()+countryEnvironmentParameter.getUrl()%>" target="_blank">http://<%=countryEnvironmentParameter.getIp()+countryEnvironmentParameter.getUrl()%></a>
         <input class="wob" name="executionId" id="executionId" value="<%=executionId%>" style="display:none">
         <input class="wob" name="IdFromQueue" id="IdFromQueue" value="<%=idFromQueue%>" style="display:none">
         <br>
@@ -279,7 +279,7 @@
                                 <div style="float:right;">
                                     <p style="font-weight:bold;color:green;margin-top:5px">OK</p>
                                     <input type="radio" name="executionStatus" style="color:green;font-weight: bold; width:20px"
-                                           onclick="checkAllAction(this, '', 'OK')" value="KO">
+                                           onclick="checkAllAction(this, '', 'OK')" value="OK">
                                 </div>
         </div>
         </div>
@@ -373,7 +373,7 @@
                                 <div style="float:right;">
                                     <p style="font-weight:bold;color:green;margin-top:5px">OK</p>
                                     <input type="radio" name="stepStatus_<%=incrementStep%>" class="step_OK" data-stepId="<%=incrementStep%>" style="color:green;font-weight: bold; width:20px"
-                                           onclick="checkAllAction(this, '<%=incrementStep%>', 'OK')" value="KO">
+                                           onclick="checkAllAction(this, '<%=incrementStep%>', 'OK')" value="OK">
                                 </div>
 
 

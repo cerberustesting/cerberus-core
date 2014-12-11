@@ -80,10 +80,30 @@ public class RunManualTest extends HttpServlet {
             String test = execution.getTest();
             String testCase = execution.getTestCase();
             List<String> status = new ArrayList();
+            List<String> stepStatus = new ArrayList();
+            
+            /**
+             * If cancel execution, Set execution to cancel
+             */
+            if (cancelExecution.equals("Y")){
+                execution.setControlStatus("CA");
+                testCaseExecutionService.updateTCExecution(execution);
+                return;
+            }
+            
             /**
              * Get Step Execution and insert them into Database
              */
-            for (TestCaseStepExecution tcse : getTestCaseStepExecution(req, appContext, test, testCase, executionId)) {
+            List<TestCaseStepExecution> tcseList = getTestCaseStepExecution(req, appContext, test, testCase, executionId);
+            
+            //If no step, set execution to controlStatus kept from the page 
+            if (tcseList.isEmpty()){
+            execution.setControlStatus(controlStatus==null?"OK":controlStatus);
+            testCaseExecutionService.updateTCExecution(execution);
+            return;
+            }
+            
+            for (TestCaseStepExecution tcse : tcseList) {
                 testCaseStepExecutionService.insertTestCaseStepExecution(tcse);
                 /**
                  * Get Step Action Execution and insert them into Database
@@ -104,31 +124,33 @@ public class RunManualTest extends HttpServlet {
                 }
 
                 /**
-                 * Update stepexecution and execution with status of action/control
+                 * Update stepexecution with status of action/control
                  */
                 if (status.contains("KO")) {
                     tcse.setReturnCode("KO");
-                    execution.setControlStatus("KO");
-                    testCaseStepExecutionService.updateTestCaseStepExecution(tcse);
+                    stepStatus.add("KO");
                 } else if (status.contains("NA")) {
                     tcse.setReturnCode("NA");
-                    execution.setControlStatus("NA");
-                    testCaseStepExecutionService.updateTestCaseStepExecution(tcse);
-                } else if (status.contains("OK")) {
-                    tcse.setReturnCode("OK");
-                    execution.setControlStatus("OK");
-                    testCaseStepExecutionService.updateTestCaseStepExecution(tcse);
+                    stepStatus.add("NA");
                 } else {
-                    tcse.setReturnCode("CA");
-                    execution.setControlStatus("CA");
-                    testCaseStepExecutionService.updateTestCaseStepExecution(tcse);
-                }
+                    tcse.setReturnCode(tcse.getReturnCode()!=null?tcse.getReturnCode():"OK");
+                    stepStatus.add(tcse.getReturnCode()!=null?tcse.getReturnCode():"OK");
+                } 
+                testCaseStepExecutionService.updateTestCaseStepExecution(tcse);
                 
-                if (cancelExecution.equals("Y")){
-                execution.setControlStatus("CA");
-                }
-
             }
+            
+                /**
+                 * Update execution with status of action/control
+                 */
+                if (stepStatus.contains("KO")) {
+                    execution.setControlStatus("KO");
+                } else if (status.contains("NA")) {
+                    execution.setControlStatus("NA");
+                } else {
+                    execution.setControlStatus("OK");
+                } 
+            
             testCaseExecutionService.updateTCExecution(execution);
             
             //Notify it's finnished

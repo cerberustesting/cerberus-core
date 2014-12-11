@@ -17,6 +17,7 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
+<%@page import="org.cerberus.service.ITestCaseService"%>
 <%@page import="org.apache.http.client.ClientProtocolException"%>
 <%@page import="org.apache.http.client.methods.CloseableHttpResponse"%>
 <%@page import="java.net.URISyntaxException"%>
@@ -72,7 +73,7 @@
                     IApplicationService applicationService = appContext.getBean(ApplicationService.class);
                     IParameterService myParameterService = appContext.getBean(IParameterService.class);
                     ITestCaseExecutionInQueueService tceiqService = appContext.getBean(ITestCaseExecutionInQueueService.class);
-
+                    ITestCaseService tcService = appContext.getBean(ITestCaseService.class);
                     try {
                         User usr = userService.findUserByKey(request.getUserPrincipal().getName());
 
@@ -109,6 +110,8 @@
                             paramRequestMaker.addParam(RunTestCase.PARAMETER_PAGE_SOURCE, Integer.toString(tceiq.getPageSource()));
                             paramRequestMaker.addParam(RunTestCase.PARAMETER_SELENIUM_LOG, Integer.toString(tceiq.getSeleniumLog()));
                             paramRequestMaker.addParam(RunTestCase.PARAMETER_EXECUTION_QUEUE_ID, request.getParameter("queuedExecution"));
+                            paramRequestMaker.addParam(RunTestCase.PARAMETER_SYSTEM, tcService.findSystemOfTestCase(tceiq.getTest(), tceiq.getTestCase()));
+                            
 
                             String query = paramRequestMaker.mkString();
                             response.sendRedirect("RunTests.jsp?" + query);
