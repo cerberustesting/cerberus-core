@@ -1148,10 +1148,10 @@ public class TestCaseDAO implements ITestCaseDAO {
         List<TCase> list = null;
         StringBuilder sb = new StringBuilder();
         sb.append("SELECT * FROM testcase tc join application app on tc.application=app.application ")
-           .append(" join testbatterycontent tbc ")
+           .append("left join testbatterycontent tbc ")
            .append("on tbc.Test = tc.Test ")
            .append("and tbc.TestCase = tc.TestCase ")
-           .append(" join campaigncontent cc ")
+           .append("left join campaigncontent cc ")
            .append("on cc.testbattery = tbc.testbattery ");
         sb.append(" WHERE 1=1 ");
         sb.append(testClause);
@@ -1171,7 +1171,6 @@ public class TestCaseDAO implements ITestCaseDAO {
         sb.append(" GROUP BY tc.test, tc.testcase ");
         Connection connection = this.databaseSpring.connect();
         try {
-            System.out.print(sb);
             PreparedStatement preStat = connection.prepareStatement(sb.toString());
             try {
                 ResultSet resultSet = preStat.executeQuery();
