@@ -98,7 +98,6 @@
                     },
                     "aoColumns": [
                         null,
-                        null,
                         {onblur: 'submit',
                             placeholder: ''},
                         {onblur: 'submit',
