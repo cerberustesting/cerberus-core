@@ -66,14 +66,14 @@ public class RunManualTest extends HttpServlet {
         String controlStatus = getParameterIfExists(req, "executionStatus");
         String controlMessage = req.getParameter("controlMessage");
         long executionId = Long.valueOf(req.getParameter("executionId"));
-        String cancelExecution = req.getParameter("isCancelExecution")==null?"":req.getParameter("isCancelExecution");
+        String cancelExecution = req.getParameter("isCancelExecution") == null ? "" : req.getParameter("isCancelExecution");
 
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         ITestCaseExecutionService testCaseExecutionService = appContext.getBean(ITestCaseExecutionService.class);
         ITestCaseStepExecutionService testCaseStepExecutionService = appContext.getBean(ITestCaseStepExecutionService.class);
         ITestCaseStepActionExecutionService testCaseStepActionExecutionService = appContext.getBean(ITestCaseStepActionExecutionService.class);
         ITestCaseStepActionControlExecutionService testCaseStepActionControlExecutionService = appContext.getBean(ITestCaseStepActionControlExecutionService.class);
-        
+
         try {
             TestCaseExecution execution = testCaseExecutionService.findTCExecutionByKey(executionId);
             execution.setControlMessage(controlMessage);
@@ -81,78 +81,78 @@ public class RunManualTest extends HttpServlet {
             String testCase = execution.getTestCase();
             List<String> status = new ArrayList();
             List<String> stepStatus = new ArrayList();
-            
+
             /**
              * If cancel execution, Set execution to cancel
              */
-            if (cancelExecution.equals("Y")){
+            if (cancelExecution.equals("Y")) {
                 execution.setControlStatus("CA");
                 testCaseExecutionService.updateTCExecution(execution);
-                return;
-            }
-            
-            /**
-             * Get Step Execution and insert them into Database
-             */
-            List<TestCaseStepExecution> tcseList = getTestCaseStepExecution(req, appContext, test, testCase, executionId);
-            
-            //If no step, set execution to controlStatus kept from the page 
-            if (tcseList.isEmpty()){
-            execution.setControlStatus(controlStatus==null?"OK":controlStatus);
-            testCaseExecutionService.updateTCExecution(execution);
-            return;
-            }
-            
-            for (TestCaseStepExecution tcse : tcseList) {
-                testCaseStepExecutionService.insertTestCaseStepExecution(tcse);
+            } else {
+
                 /**
-                 * Get Step Action Execution and insert them into Database
+                 * Get Step Execution and insert them into Database
                  */
-                List tcae = new ArrayList();
-                for (TestCaseStepActionExecution tcsae : getTestCaseStepActionExecution(req, appContext, test, testCase, executionId, tcse.getStep())) {
-                    testCaseStepActionExecutionService.insertTestCaseStepActionExecution(tcsae);
-                    status.add(tcsae.getReturnCode());
+                List<TestCaseStepExecution> tcseList = getTestCaseStepExecution(req, appContext, test, testCase, executionId);
+
+                //If no step, set execution to controlStatus kept from the page 
+                if (tcseList.isEmpty()) {
+                    execution.setControlStatus(controlStatus == null ? "OK" : controlStatus);
+                    testCaseExecutionService.updateTCExecution(execution);
+                } else {
+                    for (TestCaseStepExecution tcse : tcseList) {
+                        testCaseStepExecutionService.insertTestCaseStepExecution(tcse);
+                        /**
+                         * Get Step Action Execution and insert them into
+                         * Database
+                         */
+                        List tcae = new ArrayList();
+                        for (TestCaseStepActionExecution tcsae : getTestCaseStepActionExecution(req, appContext, test, testCase, executionId, tcse.getStep())) {
+                            testCaseStepActionExecutionService.insertTestCaseStepActionExecution(tcsae);
+                            status.add(tcsae.getReturnCode());
+
+                            /**
+                             * Get Step Action Control Execution and insert them
+                             * into Database
+                             */
+                            for (TestCaseStepActionControlExecution tcsace : getTestCaseStepActionControlExecution(req, appContext, test, testCase, executionId, tcse.getStep(), tcsae.getSequence())) {
+                                testCaseStepActionControlExecutionService.insertTestCaseStepActionControlExecution(tcsace);
+                                status.add(tcsace.getReturnCode());
+                            }
+                        }
+
+                        /**
+                         * Update stepexecution with status of action/control
+                         */
+                        if (status.contains("KO")) {
+                            tcse.setReturnCode("KO");
+                            stepStatus.add("KO");
+                        } else if (status.contains("NA")) {
+                            tcse.setReturnCode("NA");
+                            stepStatus.add("NA");
+                        } else {
+                            tcse.setReturnCode(tcse.getReturnCode() != null ? tcse.getReturnCode() : "OK");
+                            stepStatus.add(tcse.getReturnCode() != null ? tcse.getReturnCode() : "OK");
+                        }
+                        testCaseStepExecutionService.updateTestCaseStepExecution(tcse);
+
+                    }
 
                     /**
-                     * Get Step Action Control Execution and insert them into
-                     * Database
+                     * Update execution with status of action/control
                      */
-                    for (TestCaseStepActionControlExecution tcsace : getTestCaseStepActionControlExecution(req, appContext, test, testCase, executionId, tcse.getStep(), tcsae.getSequence())) {
-                        testCaseStepActionControlExecutionService.insertTestCaseStepActionControlExecution(tcsace);
-                        status.add(tcsace.getReturnCode());
+                    if (stepStatus.contains("KO")) {
+                        execution.setControlStatus("KO");
+                    } else if (stepStatus.contains("NA")) {
+                        execution.setControlStatus("NA");
+                    } else {
+                        execution.setControlStatus("OK");
                     }
+
+                    testCaseExecutionService.updateTCExecution(execution);
+
                 }
 
-                /**
-                 * Update stepexecution with status of action/control
-                 */
-                if (status.contains("KO")) {
-                    tcse.setReturnCode("KO");
-                    stepStatus.add("KO");
-                } else if (status.contains("NA")) {
-                    tcse.setReturnCode("NA");
-                    stepStatus.add("NA");
-                } else {
-                    tcse.setReturnCode(tcse.getReturnCode()!=null?tcse.getReturnCode():"OK");
-                    stepStatus.add(tcse.getReturnCode()!=null?tcse.getReturnCode():"OK");
-                } 
-                testCaseStepExecutionService.updateTestCaseStepExecution(tcse);
-                
-            }
-            
-                /**
-                 * Update execution with status of action/control
-                 */
-                if (stepStatus.contains("KO")) {
-                    execution.setControlStatus("KO");
-                } else if (status.contains("NA")) {
-                    execution.setControlStatus("NA");
-                } else {
-                    execution.setControlStatus("OK");
-                } 
-            
-            testCaseExecutionService.updateTCExecution(execution);
-            
             //Notify it's finnished
 //        WebsocketTest wst = new WebsocketTest();
 //        try {
@@ -160,15 +160,14 @@ public class RunManualTest extends HttpServlet {
 //        } catch (IOException ex) {
 //            MyLogger.log(SaveManualExecution.class.getName(), Level.FATAL, "" + ex);
 //        }
-               
-
-            /**
-             * Get Step Execution and insert them into Database
-             */
+                /**
+                 * Get Step Execution and insert them into Database
+                 */
 //            for (TestCaseExecutionData tced : getTestCaseExecutionData(req, appContext, test, testCase, executionId)){
 //            testCaseStepExecutionService.insertTestCaseStepExecution(null);
 //            }
-            
+            }
+
             resp.sendRedirect("ExecutionDetail.jsp?id_tc=" + executionId);
 
         } catch (CerberusException e) {
@@ -227,8 +226,8 @@ public class RunManualTest extends HttpServlet {
         if (testcase_step_increment != null) {
             for (String inc : testcase_step_increment) {
                 int step = Integer.valueOf(getParameterIfExists(request, "step_number_" + inc) == null ? "0" : getParameterIfExists(request, "step_number_" + inc));
-                String stepResultMessage = getParameterIfExists(request, "stepResultMessage_"+inc);
-                String stepReturnCode = getParameterIfExists(request, "stepStatus_"+inc);
+                String stepResultMessage = getParameterIfExists(request, "stepResultMessage_" + inc);
+                String stepReturnCode = getParameterIfExists(request, "stepStatus_" + inc);
 
                 result.add(testCaseStepExecutionFactory.create(executionId, test, testCase, step, null, now, now, now, now,
                         0, stepReturnCode, stepResultMessage));
@@ -242,7 +241,6 @@ public class RunManualTest extends HttpServlet {
         long now = new Date().getTime();
         IFactoryTestCaseStepActionExecution testCaseStepActionExecutionFactory = appContext.getBean(IFactoryTestCaseStepActionExecution.class);
         IRecorderService recorderService = appContext.getBean(IRecorderService.class);
-
 
         String[] stepAction_increment = getParameterValuesIfExists(request, "action_increment_" + stepId);
         if (stepAction_increment != null) {
