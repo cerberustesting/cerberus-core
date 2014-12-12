@@ -60,4 +60,6 @@ public interface ICountryEnvironmentDatabaseDAO {
      * @throws CerberusException 
      */
     void create(CountryEnvironmentDatabase ced) throws CerberusException;
+
+    public List<CountryEnvironmentDatabase> findListByCriteria(String system, String country, String environment) throws CerberusException;
 }

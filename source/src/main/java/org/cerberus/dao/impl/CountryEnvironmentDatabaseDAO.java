@@ -135,6 +135,7 @@ public class CountryEnvironmentDatabaseDAO implements ICountryEnvironmentDatabas
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
             try {
+                preStat.setString(1, system);
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     while (resultSet.next()) {
@@ -269,5 +270,53 @@ public class CountryEnvironmentDatabaseDAO implements ICountryEnvironmentDatabas
                 LOG.warn("Exception closing the connection :"+ e.toString());
             }
         }
+    }
+
+    @Override
+    public List<CountryEnvironmentDatabase> findListByCriteria(String system, String country, String environment) throws CerberusException {
+        boolean throwEx = false;
+        final String query = "SELECT * FROM countryenvironmentdatabase c where `system` = ? and `country` = ? and `environment` = ?";
+
+        List<CountryEnvironmentDatabase> result = new ArrayList<CountryEnvironmentDatabase>();
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            try {
+                preStat.setString(1, system);
+                preStat.setString(2, country);
+                preStat.setString(3, environment);
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+                    while (resultSet.next()) {
+                        result.add(this.loadFromResultSet(resultSet));
+                    }
+                } catch (SQLException exception) {
+                    LOG.error("Unable to execute query : " + exception.toString());
+                    throwEx = true;
+                } finally {
+                    resultSet.close();
+                }
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception.toString());
+                throwEx = true;
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception.toString());
+            throwEx = true;
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                LOG.warn("Exception closing the connection :"+ e.toString());
+            }
+        }
+        if (throwEx) {
+            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
+        }
+        return result;
     }
 }

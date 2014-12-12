@@ -79,4 +79,6 @@ public interface ICountryEnvironmentDatabaseService {
      * @return 
      */
     public Integer count(String searchTerm);
+
+    public List<CountryEnvironmentDatabase> findListByCriteria(String system, String country, String environment)  throws CerberusException;
 }

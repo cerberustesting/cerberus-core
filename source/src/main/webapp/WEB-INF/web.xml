@@ -648,6 +648,22 @@
         <servlet-name>UpdateCountryEnvironmentParameter</servlet-name>
         <servlet-class>org.cerberus.servlet.countryenvironmentparameters.UpdateCountryEnvironmentParameter</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>CreateCountryEnvironmentDatabase</servlet-name>
+        <servlet-class>org.cerberus.servlet.countryenvironmentdatabase.CreateCountryEnvironmentDatabase</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>DeleteCountryEnvironmentDatabase</servlet-name>
+        <servlet-class>org.cerberus.servlet.countryenvironmentdatabase.DeleteCountryEnvironmentDatabase</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>FindCountryEnvironmentDatabase</servlet-name>
+        <servlet-class>org.cerberus.servlet.countryenvironmentdatabase.FindCountryEnvironmentDatabase</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>UpdateCountryEnvironmentDatabase</servlet-name>
+        <servlet-class>org.cerberus.servlet.countryenvironmentdatabase.UpdateCountryEnvironmentDatabase</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>RunTestCase</servlet-name>
         <url-pattern>/RunTestCase</url-pattern>
@@ -1255,6 +1271,22 @@
     <servlet-mapping>
         <servlet-name>UpdateCountryEnvironmentParameter</servlet-name>
         <url-pattern>/UpdateCountryEnvironmentParameter</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>CreateCountryEnvironmentDatabase</servlet-name>
+        <url-pattern>/CreateCountryEnvironmentDatabase</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DeleteCountryEnvironmentDatabase</servlet-name>
+        <url-pattern>/DeleteCountryEnvironmentDatabase</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>FindCountryEnvironmentDatabase</servlet-name>
+        <url-pattern>/FindCountryEnvironmentDatabase</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>UpdateCountryEnvironmentDatabase</servlet-name>
+        <url-pattern>/UpdateCountryEnvironmentDatabase</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>
