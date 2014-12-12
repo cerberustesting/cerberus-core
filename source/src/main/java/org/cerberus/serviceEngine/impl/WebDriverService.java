@@ -159,7 +159,7 @@ public class WebDriverService implements IWebDriverService {
 
         if (webElement.getTagName().equalsIgnoreCase("select")) {
             if (webElement.getAttribute("disabled") == null || webElement.getAttribute("disabled").isEmpty()) {
-                Select select = (Select) webElement;
+                Select select = new Select(webElement);
                 result = select.getFirstSelectedOption().getText();
             } else {
                 result = webElement.getText();

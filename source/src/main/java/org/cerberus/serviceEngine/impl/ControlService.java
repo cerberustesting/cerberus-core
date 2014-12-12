@@ -531,7 +531,7 @@ public class ControlService implements IControlService {
 
     private MessageEvent verifyTextInElement(TestCaseExecution tCExecution, String path, String expected) {
     	if (LOG.isDebugEnabled()) {
-			LOG.debug("Control: verifyTextNotInElement on " + path + " element against value: " + expected);
+			LOG.debug("Control: verifyTextInElement on " + path + " element against value: " + expected);
 		}
 
 		// Get value from the path element according to the application type
@@ -557,7 +557,7 @@ public class ControlService implements IControlService {
 			return mes;
 		} catch (WebDriverException exception) {
 			return parseWebDriverException(exception);
-		}
+                }
 		
 		// In case of null actual value then we alert user
 		if (actual == null) {
@@ -567,7 +567,7 @@ public class ControlService implements IControlService {
 		}
 
 		// Construct the message from the actual response
-		MessageEvent mes = expected != null && expected.equalsIgnoreCase(actual) ? new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_TEXTINELEMENT) : new MessageEvent(MessageEventEnum.CONTROL_FAILED_TEXTINELEMENT);
+		MessageEvent mes = actual.equalsIgnoreCase(expected) ? new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_TEXTINELEMENT) : new MessageEvent(MessageEventEnum.CONTROL_FAILED_TEXTINELEMENT);
 		mes.setDescription(mes.getDescription().replaceAll("%STRING1%", path));
 		mes.setDescription(mes.getDescription().replaceAll("%STRING2%", actual));
 		mes.setDescription(mes.getDescription().replaceAll("%STRING3%", expected));
@@ -612,7 +612,7 @@ public class ControlService implements IControlService {
 		}
 
 		// Construct the message from the actual response
-		MessageEvent mes = expected == null || expected.equalsIgnoreCase(actual) ? new MessageEvent(MessageEventEnum.CONTROL_FAILED_TEXTNOTINELEMENT) : new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_TEXTNOTINELEMENT);
+		MessageEvent mes = actual.equalsIgnoreCase(expected) ? new MessageEvent(MessageEventEnum.CONTROL_FAILED_TEXTNOTINELEMENT) : new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_TEXTNOTINELEMENT);
 		mes.setDescription(mes.getDescription().replaceAll("%STRING1%", path));
 		mes.setDescription(mes.getDescription().replaceAll("%STRING2%", actual));
 		mes.setDescription(mes.getDescription().replaceAll("%STRING3%", expected));
