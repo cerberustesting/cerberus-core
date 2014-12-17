@@ -1131,7 +1131,7 @@
                                                     OnChange="findStepBySystemTestTestCase($('#step_useStepTest_<%=incrementStep%>').val(), this.value, '<%=MySystem%>', 'step_useStepStep_<%=incrementStep%>')"
                                                     id="step_useStepTestCase_<%=incrementStep%>">
                                                 <%  if (tcs.getUseStepTestCase().equals("")) { %>
-                                                <option style="width: 200px" value="">---</option>
+                                                <option style="width: 400px" value="">---</option>
                                                 <%  } else {
                                                     List<TCase> tcaseList = testCaseService.findTestCaseByTest(testCombo);
                                                     for (TCase tc : tcaseList) {%>
@@ -1145,11 +1145,11 @@
                                             <select name="step_useStepStep_<%=incrementStep%>" style="width: 100%;margin-top:15px;font-weight: bold;" 
                                                     id="step_useStepStep_<%=incrementStep%>" onchange="javascript:$('#UpdateTestCase').attr('action', $('#UpdateTestCase').attr('action') + '#stepAnchor_<%=incrementStep%>').submit();">
                                                 <%  if (tcs.getUseStepTest().equals("") || tcs.getUseStepTestCase().equals("")) { %>
-                                                <option style="width: 200px" value="">---</option>
+                                                <option style="width: 400px" value="">---</option>
                                                 <%  } else {
                                                     List<TestCaseStep> tcstepList = tcsService.getListOfSteps(tcs.getUseStepTest(), tcs.getUseStepTestCase());
                                                     for (TestCaseStep tcstep : tcstepList) {%>
-                                                <option style="width: 200px;" value="<%=tcstep.getStep()%>" <%=tcs.getUseStepStep().compareTo(tcstep.getStep()) == 0 ? " SELECTED " : ""%>><%=tcstep.getStep()%> : <%=tcstep.getDescription()%>
+                                                <option style="width: 400px;" value="<%=tcstep.getStep()%>" <%=tcs.getUseStepStep().compareTo(tcstep.getStep()) == 0 ? " SELECTED " : ""%>><%=tcstep.getStep()%> : <%=tcstep.getDescription()%>
                                                 </option>
                                                 <% }
                                                     }%>
