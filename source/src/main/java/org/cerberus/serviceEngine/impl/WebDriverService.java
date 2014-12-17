@@ -652,7 +652,9 @@ public class WebDriverService implements IWebDriverService {
             Actions actions = new Actions(session.getDriver());
             if (!StringUtil.isNull(property)) {
                 try {
-                    actions.doubleClick(this.getSeleniumElement(session, property, true, true));
+                    WebElement element = this.getSeleniumElement(session, property, true, true);
+                    actions.doubleClick(element);
+                    actions.build().perform();
                     message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_DOUBLECLICK);
                     message.setDescription(message.getDescription().replaceAll("%ELEMENT%", property));
                     return message;
@@ -664,13 +666,15 @@ public class WebDriverService implements IWebDriverService {
                 }
             } else if (!StringUtil.isNull(html)) {
                 try {
-                    actions.doubleClick(this.getSeleniumElement(session, html, true, true));
+                    WebElement element = this.getSeleniumElement(session, html, true, true);
+                    actions.doubleClick(element);
+                    actions.build().perform();
                     message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_DOUBLECLICK);
                     message.setDescription(message.getDescription().replaceAll("%ELEMENT%", html));
                     return message;
                 } catch (NoSuchElementException exception) {
                     message = new MessageEvent(MessageEventEnum.ACTION_FAILED_DOUBLECLICK_NO_SUCH_ELEMENT);
-                    message.setDescription(message.getDescription().replaceAll("%ELEMENT%", property));
+                    message.setDescription(message.getDescription().replaceAll("%ELEMENT%", html));
                     MyLogger.log(WebDriverService.class.getName(), Level.DEBUG, exception.toString());
                     return message;
                 }
