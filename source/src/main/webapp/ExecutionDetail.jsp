@@ -669,7 +669,7 @@
                             if (refresh !== 'Stop') {
                                 location.href = './ExecutionDetail.jsp?id_tc=' + idtc
                             }
-                        }, 1000);
+                        }, 5000);
 
                     }
 
