@@ -90,7 +90,7 @@
         text-align: center;
 
     }
-    
+
     .ExecutionHeaderDiv {
         width:100%;
         clear:both;
@@ -220,9 +220,9 @@
 
             long executionId = testCaseExecutionService.insertTCExecution(execution);
             execution.setId(executionId);
-            
-            if (idFromQueue!=null && !"".equals(idFromQueue)){
-            testcaseExecutionQueueService.remove(Long.valueOf(idFromQueue));
+
+            if (idFromQueue != null && !"".equals(idFromQueue)) {
+                testcaseExecutionQueueService.remove(Long.valueOf(idFromQueue));
             }
 
             TestCaseExecutionSysVer testCaseExecutionSysVer = factoryTestCaseExecutionSysVer.create(execution.getId(), myApp.getSystem(), build, revision);
@@ -244,44 +244,44 @@
                 appSystem = "";
                 SitdmossBugtrackingURL = "";
             }
-            
+
 
     %>
     <br>
     <form method="post" name="RunManualTest"  id="RunManualTest" action="RunManualTest">
         <div class="ExecutionHeaderDiv">
-        <p style="font-size:14px; font-weight:bold; color:red">Execution <%=executionId%> Started</p>
-        <input class="wob" name="test" id="test" value="<%=test%>" disabled="true">
-        <input class="wob" name="testCase" id="testCase"  value="<%=testcase%>" disabled="true">
-        <input class="wob" name="env" id="env" value="<%=environment%>" disabled="true">
-        <input class="wob" name="country" id="country" value="<%=country%>" disabled="true">
-        <input class="wob" name="tag" id="tag" value="<%=tag%>" disabled="true">
-        <input class="wob" name="browser" id="browser" value="<%=browser%>" disabled="true">
-        <a href="http://<%=countryEnvironmentParameter.getIp()+countryEnvironmentParameter.getUrl()%>" target="_blank">http://<%=countryEnvironmentParameter.getIp()+countryEnvironmentParameter.getUrl()%></a>
-        <input class="wob" name="executionId" id="executionId" value="<%=executionId%>" style="display:none">
-        <input class="wob" name="IdFromQueue" id="IdFromQueue" value="<%=idFromQueue%>" style="display:none">
-        <br>
-        
-        <div id="ExecutionGlobalStatusDiv" style="width:97%;display:inline-block">
-        <div  style="display:block; float:right;width:19%">
-            <textarea style="width:99%" name="controlMessage" placeholder="Comment execution"></textarea>
-        </div>
-        <div style="display:inline-block;float:right;">
-                                    <p style="font-weight:bold;color:yellow;margin-top:5px">NA</p>
-                                    <input type="radio" name="executionStatus" style="color:red;font-weight: bold; width:20px;"
-                                           onclick="checkAllAction(this, '', 'NA')" value="NA">
-                                </div>
-                                <div style="float:right;">
-                                    <p style="font-weight:bold;color:red;margin-top:5px">KO</p>
-                                    <input type="radio" name="executionStatus" style="color:red;font-weight: bold; width:20px"
-                                           onclick="checkAllAction(this, '', 'KO')" value="KO">
-                                </div>
-                                <div style="float:right;">
-                                    <p style="font-weight:bold;color:green;margin-top:5px">OK</p>
-                                    <input type="radio" name="executionStatus" style="color:green;font-weight: bold; width:20px"
-                                           onclick="checkAllAction(this, '', 'OK')" value="OK">
-                                </div>
-        </div>
+            <p style="font-size:14px; font-weight:bold; color:red">Execution <%=executionId%> Started</p>
+            <input class="wob" name="test" id="test" value="<%=test%>" disabled="true">
+            <input class="wob" name="testCase" id="testCase"  value="<%=testcase%>" disabled="true">
+            <input class="wob" name="env" id="env" value="<%=environment%>" disabled="true">
+            <input class="wob" name="country" id="country" value="<%=country%>" disabled="true">
+            <input class="wob" name="tag" id="tag" value="<%=tag%>" disabled="true">
+            <input class="wob" name="browser" id="browser" value="<%=browser%>" disabled="true">
+            <a href="http://<%=countryEnvironmentParameter.getIp() + countryEnvironmentParameter.getUrl()%>" target="_blank">http://<%=countryEnvironmentParameter.getIp() + countryEnvironmentParameter.getUrl()%></a>
+            <input class="wob" name="executionId" id="executionId" value="<%=executionId%>" style="display:none">
+            <input class="wob" name="IdFromQueue" id="IdFromQueue" value="<%=idFromQueue%>" style="display:none">
+            <br>
+
+            <div id="ExecutionGlobalStatusDiv" style="width:97%;display:inline-block">
+                <div  style="display:block; float:right;width:19%">
+                    <textarea style="width:99%" name="controlMessage" placeholder="Comment execution"></textarea>
+                </div>
+                <div style="display:inline-block;float:right;">
+                    <p style="font-weight:bold;color:yellow;margin-top:5px">NA</p>
+                    <input type="radio" name="executionStatus" style="color:red;font-weight: bold; width:20px;"
+                           onclick="checkAllAction(this, '', 'NA')" value="NA">
+                </div>
+                <div style="float:right;">
+                    <p style="font-weight:bold;color:red;margin-top:5px">KO</p>
+                    <input type="radio" name="executionStatus" style="color:red;font-weight: bold; width:20px"
+                           onclick="checkAllAction(this, '', 'KO')" value="KO">
+                </div>
+                <div style="float:right;">
+                    <p style="font-weight:bold;color:green;margin-top:5px">OK</p>
+                    <input type="radio" name="executionStatus" style="color:green;font-weight: bold; width:20px"
+                           onclick="checkAllAction(this, '', 'OK')" value="OK">
+                </div>
+            </div>
         </div>
         <div id="AutomationScriptDiv" style="display : block">
             <div id="StepsMainDiv" style="width:100%;clear:both">
@@ -453,7 +453,7 @@
                                                 </div>
                                                 <div style="float:right; width:5%">
                                                     <input type="button" style="margin-left:15px ;width:10px;background-image: url(images/photo.png);background-size: 100%; width: 19px; height: 12px;border: 0 none; bottom: 0px" 
-                                                           onclick="showActionScreenshotDiv('<%=incrementStep%>','<%=incrementAction%>')">
+                                                           onclick="showActionScreenshotDiv('<%=incrementStep%>', '<%=incrementAction%>')">
                                                 </div> 
 
                                                 <div style="float:right">
@@ -476,8 +476,13 @@
                                                 </span>
                                                 <div id="formPictureSave_<%=incrementStep%>_<%=incrementAction%>" data-type="picture">
                                                     <input id="fileupload_<%=incrementStep%>_<%=incrementAction%>" type="file" name="files[]" data-url="SaveManualExecutionPicture" multiple/>
+                                                    <input name="pictStep" value="<%=incrementStep%>" style="display:none">
+                                                    <input name="pictAction" value="<%=incrementAction%>" style="display:none">
+                                                    <input id="runId" name="runId" type="hidden" value="<%=executionId%>"/>
+                                                    <input id="picTest" name="picTest" type="hidden" value="<%=test%>"/>
+                                                    <input id="picTestCase" name="picTestCase" type="hidden" value="<%=testcase%>"/>
                                                 </div>
-                                                <input name="takeScreenshot_<%=incrementStep%>_<%=incrementAction%>" value="N">
+                                                <input id="takeScreenshot_<%=incrementStep%>_<%=incrementAction%>" name="takeScreenshot_<%=incrementStep%>_<%=incrementAction%>" style="display:none" value="N">
                                             </div>
 
                                             <%
@@ -531,7 +536,7 @@
                                                 </div>
                                                 <div style="float:right; width:5%">
                                                     <input type="button" title="Take ScreenShot" style="margin-left:15px ;width:10px;background-image: url(images/photo.png);background-size: 100%; width: 19px; height: 12px;border: 0 none; bottom: 0px" 
-                                                           onclick="showControlScreenshotDiv('<%=incrementStep%>','<%=incrementAction%>','<%=incrementControl%>')">
+                                                           onclick="showControlScreenshotDiv('<%=incrementStep%>', '<%=incrementAction%>', '<%=incrementControl%>')">
                                                 </div> 
 
                                                 <div style="float:right">
@@ -556,8 +561,14 @@
                                                 </span>
                                                 <div id="formPictureSave_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>" data-type="picture">
                                                     <input id="fileupload_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>" type="file" name="files[]" data-url="SaveManualExecutionPicture" multiple/>
+                                                    <input name="pictStep" value="<%=incrementStep%>" style="display:none">
+                                                    <input name="pictAction" value="<%=incrementAction%>" style="display:none">
+                                                    <input name="pictControl" value="<%=incrementControl%>" style="display:none">
+                                                    <input id="runId" name="runId" type="hidden" value="<%=executionId%>"/>
+                                                    <input id="picTest" name="picTest" type="hidden" value="<%=test%>"/>
+                                                    <input id="picTestCase" name="picTestCase" type="hidden" value="<%=testcase%>"/>
                                                 </div>
-                                                <input name="takeScreenshot_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>" value="N">
+                                                <input id="takeScreenshot_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>" name="takeScreenshot_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>" style="display:none" value="N">
                                             </div>
                                             <%   }%>
                                             <div id="DivActionEndOfAction<%=incrementStep%><%=incrementAction%>" class="endOfAction"></div>
@@ -581,9 +592,7 @@
     </form>
     <form id="formPictureSave" action="SaveManualExecutionPicture" method="post" enctype="multipart/form-data">
         <div id="formPictureSave" action="SaveManualExecutionPicture" method="post" enctype="multipart/form-data">
-            <input id="runId" name="runId" type="hidden" value="<%=executionId%>"/>
-            <input id="picTest" name="picTest" type="hidden" value="<%=test%>"/>
-            <input id="picTestCase" name="picTestCase" type="hidden" value="<%=testcase%>"/>
+            
         </div>    
     </form>
     <%
@@ -601,33 +610,33 @@
         } else {
             bool = false;
         }
-        if (stepId !== ''){
-        $('#StepsBorderDiv' + stepId).find('input[class="actioncontrol_' + status + '_' + stepId + '"]')
-                .each(function() {
-                    $(this).prop('checked', bool);
-
-                });
-            } else {
-              $('div[class="StepHeaderDiv"]').each(function() {
-                    $(this).find('input[class="step_' + status +'"]').each(function() {
+        if (stepId !== '') {
+            $('#StepsBorderDiv' + stepId).find('input[class="actioncontrol_' + status + '_' + stepId + '"]')
+                    .each(function() {
                         $(this).prop('checked', bool);
-                        checkAllAction(this, $(this).attr('data-stepId'), status);
+
                     });
-            });  
-                
-            }
+        } else {
+            $('div[class="StepHeaderDiv"]').each(function() {
+                $(this).find('input[class="step_' + status + '"]').each(function() {
+                    $(this).prop('checked', bool);
+                    checkAllAction(this, $(this).attr('data-stepId'), status);
+                });
+            });
+
+        }
 
     }
 </script>
 <script>
-    function showActionScreenshotDiv(step, action){
-        $('#screenshotDiv_'+step+'_'+action).attr('style', 'display:block');
-        $('#takeScreenshot_'+step+'_'+action).val('Y');
+    function showActionScreenshotDiv(step, action) {
+        $('#screenshotDiv_' + step + '_' + action).attr('style', 'display:block');
+        $('#takeScreenshot_' + step + '_' + action).val('Y');
     }
-    
-    function showControlScreenshotDiv(step, action, control){
-        $('#screenshotDiv_'+step+'_'+action+'_'+control).attr('style', 'display:block');
-        $('#takeScreenshot_'+step+'_'+action+'_'+control).val('Y');
+
+    function showControlScreenshotDiv(step, action, control) {
+        $('#screenshotDiv_' + step + '_' + action + '_' + control).attr('style', 'display:block');
+        $('#takeScreenshot_' + step + '_' + action + '_' + control).val('Y');
     }
 </script>
 <script>
@@ -658,29 +667,29 @@
 
     function submitExecution() {
         $("[data-type='picture']").each(function(index, element) {
-            if ($(element).parent().attr('style') !== 'display:none')
-                $("#formPictureSave").append(element);
+            if ($(element).parent().attr('style') !== 'display:none') {
+                $("#formPictureSave").empty().append(element);
 
 
 
 
-            var formObj = $("#formPictureSave");
-            var formURL = formObj.attr("action");
-            var formData = new FormData(formObj[0]);
-            $.ajax({
-                url: formURL,
-                type: 'POST',
-                data: formData,
-                mimeType: "multipart/form-data",
-                async: false,
-                cache: false,
-                contentType: false,
-                processData: false,
-                error: function(jqXHR, textStatus, errorThrown) {
-                    alert(errorThrown);
-                }
-            });
-
+                var formObj = $("#formPictureSave");
+                var formURL = formObj.attr("action");
+                var formData = new FormData(formObj[0]);
+                $.ajax({
+                    url: formURL,
+                    type: 'POST',
+                    data: formData,
+                    mimeType: "multipart/form-data",
+                    async: false,
+                    cache: false,
+                    contentType: false,
+                    processData: false,
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        alert(errorThrown);
+                    }
+                });
+            }
         });
 
         $("#RunManualTest").submit();
