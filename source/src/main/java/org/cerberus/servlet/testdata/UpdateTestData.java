@@ -61,23 +61,23 @@ public class UpdateTestData extends HttpServlet {
         PrintWriter out = response.getWriter();
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
         try {
-            String id = policy.sanitize(request.getParameter("id"));
-            String key = id.split("Key&#61;")[1].split("&amp;")[0];
+            String id = request.getParameter("id");
+            String key = id.split("Key=")[1].split("&")[0];
             String application = "";
             try {
-                application = id.split("App&#61;")[1].split("&amp;")[0];
+                application = id.split("App=")[1].split("&")[0];
             } catch (ArrayIndexOutOfBoundsException e) {
                 application = "";
             }
             String environment = "";
             try {
-                environment = id.split("Env&#61;")[1].split("&amp;")[0];
+                environment = id.split("Env=")[1].split("&")[0];
             } catch (ArrayIndexOutOfBoundsException e) {
                 environment = "";
             }
             String country = "";
             try {
-                country = id.split("Country&#61;")[1].split("&amp;")[0];
+                country = id.split("Country=")[1].split("&")[0];
             } catch (ArrayIndexOutOfBoundsException e) {
                 country = "";
             }
@@ -120,29 +120,6 @@ public class UpdateTestData extends HttpServlet {
             out.close();
     }
 }
-
-// <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-/**
- * Handles the HTTP <code>GET</code> method.
- *
- * @param request servlet request
- * @param response servlet response
- * @throws ServletException if a servlet-specific error occurs
- * @throws IOException if an I/O error occurs
- */
-@Override
-        protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        try {
-            processRequest(request, response);
-        
-
-} catch (CerberusException ex) {
-            Logger.getLogger(UpdateTestData.class  
-
-.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
 
     /**
      * Handles the HTTP <code>POST</code> method.
