@@ -262,7 +262,8 @@
                             %><td class="<%=controlStatus%>"><a class="<%=controlStatus%>F"><span id="res_status"><%=controlStatus%></span></a></td>
                     </tr>
                     <tr style="font-style: italic">
-                        <td style="font-weight: bold;" colspan=3><%out.print(docService.findLabelHTML("testcaseexecution", "tag", "Tag"));%></td>
+                        <td style="font-weight: bold;" colspan=2><%out.print(docService.findLabelHTML("testcaseexecution", "tag", "Tag"));%></td>
+                        <td style="font-weight: bold;">Link to ExecutionPerTag</td>
                         <td style="font-weight: bold;" colspan=7><%out.print(docService.findLabelHTML("testcaseexecution", "controlmessage", "Message"));%></td>
                         <td style="font-weight: bold;"><%out.print(docService.findLabelHTML("testcaseexecution", "Executor", "Executor"));%></td>
                         <td style="font-weight: bold;"><%out.print(docService.findLabelHTML("testcaseexecution", "verbose", "Verbose"));%></td>
@@ -270,7 +271,8 @@
                         <td style="font-weight: bold;"><%out.print(docService.findLabelHTML("testcaseexecution", "crbversion", "Engine Version"));%></td>
                     </tr>
                     <tr>
-                        <td colspan=3><span id="exetag"><%= testCaseExecution.getTag() == null ? "" : testCaseExecution.getTag()%></span></td>
+                        <td colspan=2><span id="exetag"><%= testCaseExecution.getTag() == null ? "" : testCaseExecution.getTag()%></span></td>
+                        <td><span id="exetaglink"><%= testCaseExecution.getTag() == null ? "" : "<a href='ReportingExecutionByTag.jsp?Tag=" + testCaseExecution.getTag() + "'>link</a>"%></span></td>
                         <td colspan=7><span id="exemsg"><%= testCaseExecution.getControlMessage() == null ? "" : testCaseExecution.getControlMessage() %></span></td>
                         <td><span id="exemsg"><%=executor%></span></td>
                         <td><span id="exeverbose"><%= String.valueOf(testCaseExecution.getVerbose()) %></span></td>
