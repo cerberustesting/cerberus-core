@@ -46,57 +46,100 @@
 <%@ include file="include/header.jsp" %>
 
 <script type="text/javascript">
-    $().ready(function() {
-        var data = [
-            ["VCCRM","UA","QA","2014S1","R67","","N","COMPARISON","<a href='/Environment.jsp?system=VCCRM&country=UA&env=QA' target='_blank'>select</a>"],
-            ["VCCRM","UA","UAT","2014S2","R24","","N","COMPARISON","<a href='/Environment.jsp?system=VCCRM&country=UA&env=UAT' target='_blank'>select</a>"],
-            ["VCCRM","UA","PROD","2014S1","R72","","N","COMPARISON","<a href='/Environment.jsp?system=VCCRM&country=UA&env=PROD' target='_blank'>select</a>"],
-            ["VCCRM","BE","DEV","2013S2","R27","","Y","STD","<a href='/Environment.jsp?system=VCCRM&country=BE&env=DEV' target='_blank'>select</a>"],
-            ["VCCRM","BE","QA","VCCRM14","R09","","Y","STD","<a href='/Environment.jsp?system=VCCRM&country=BE&env=QA' target='_blank'>select</a>"]
-        ];
-        var half_length = Math.ceil(data.length / 2);
-        var data1 = data.splice(0,half_length);
+    var data;
 
-        $("#environment1").dataTable({
-            "aaData": data1,
-            "bJQueryUI": false,
-            "bFilter": false,
-            "bInfo": false,
-            "bSort": false,
-            "bPaginate": false,
-            "bDestroy": true,
-            "bAutoWidth": false,
-            "fnInitComplete": function () {
-                var env = $('#environment1');
-                env.find('thead th').css('padding', '0px');
-                env.find('td').css('padding', '0px');
-                env.css({'width': 'auto', 'margin': '0px', 'text-align': 'center'});
-            },
-            "fnCreatedRow": function(nRow, aData) {
-                if (aData[6] === "Y") {
-                    $(nRow).css("background-color", "#f3f6fa");
-                } else {
-                    $(nRow).css("background-color", "white");
-                }
-                return nRow;
-            }
+    $().ready(function() {
+
+        $('#formEnvironment').submit(function(e){
+            e.preventDefault();
+
+            $("#system").val($("#MySystem").val());
+
+            var postData = $(this).serialize();
+
+            $.post("FindEnvironments?"+postData, function(resp){
+                data = resp.aaData;
+
+                var half_length = Math.ceil(data.length / 2);
+                var data1 = data.splice(0,half_length);
+
+                $("#environment1").dataTable({
+                    "aaData": data1,
+                    "bJQueryUI": false,
+                    "bFilter": false,
+                    "bInfo": false,
+                    "bSort": false,
+                    "bPaginate": false,
+                    "bDestroy": true,
+                    "bAutoWidth": false,
+                    "sAjaxSource": "",
+                    "fnInitComplete": function () {
+                        var env = $('#environment1');
+                        env.find('thead th').css('padding', '0px');
+                        env.find('td').css('padding', '0px');
+                        env.css({'width': 'auto', 'margin': '0px', 'text-align': 'center'});
+                    },
+                    "fnCreatedRow": function(nRow, aData) {
+                        if (aData[6] === "Y") {
+                            $(nRow).css("background-color", "#f3f6fa");
+                        } else {
+                            $(nRow).css("background-color", "white");
+                        }
+                        return nRow;
+                    },"aoColumnDefs": [
+                        {
+                            "aTargets": [ 0 ],
+                            "bSearchable": false,
+                            "bVisible": false
+                        },
+                        {
+                            "aTargets": [8],
+                            "mRender": function (data) {
+                                return "<a href='"+data+"' target='_blank'>select</a>";
+                            }
+                        }
+                    ]
+                });
+                $("#environment2").dataTable({
+                    "aaData": data,
+                    "bJQueryUI": false,
+                    "bFilter": false,
+                    "bInfo": false,
+                    "bSort": false,
+                    "bPaginate": false,
+                    "bDestroy": true,
+                    "bAutoWidth": false,
+                    "fnInitComplete": function () {
+                        var env = $('#environment2');
+                        env.find('thead th').css('padding', '0px');
+                        env.find('td').css('padding', '0px');
+                        env.css({'width': 'auto', 'margin': '0px', 'text-align': 'center'});
+                    },
+                    "fnCreatedRow": function(nRow, aData) {
+                        if (aData[6] === "Y") {
+                            $(nRow).css("background-color", "#f3f6fa");
+                        } else {
+                            $(nRow).css("background-color", "white");
+                        }
+                        return nRow;
+                    },"aoColumnDefs": [
+                        {
+                            "aTargets": [ 0 ],
+                            "bSearchable": false,
+                            "bVisible": false
+                        },
+                        {
+                            "aTargets": [8],
+                            "mRender": function (data) {
+                                return "<a href='"+data+"' target='_blank'>select</a>";
+                            }
+                        }
+                    ]
+                });
+            });
         });
-        $("#environment2").dataTable({
-            "aaData": data,
-            "bJQueryUI": false,
-            "bFilter": false,
-            "bInfo": false,
-            "bSort": false,
-            "bPaginate": false,
-            "bDestroy": true,
-            "bAutoWidth": false,
-            "fnInitComplete": function () {
-                var env = $('#environment2');
-                env.find('thead th').css('padding', '0px');
-                env.find('td').css('padding', '0px');
-                env.css({'width': 'auto', 'margin': '0px', 'text-align': 'center'});
-            }
-        });
+
+        $('#submit').click();
     });
 </script>
 
@@ -105,81 +148,84 @@
 %>
 
 <div>
-    <div style="float: left; padding-left: 5px">
-        <%=docService.findLabelHTML("invariant", "Country", "country")%>
-        <%=ComboInvariant(appContext, "Countries", "", "Countries", "", "COUNTRY", "", "", "ALL")%>
-    </div>
-    <div style="float: left; padding-left: 5px">
-        <%=docService.findLabelHTML("invariant", "Environment", "environment")%>
-        <select>
-            <option value="ALL">-- ALL --</option>
-        <%
-            List<String> envGroupList = new ArrayList<String>();
-            for (Invariant inv : invariantService.findListOfInvariantById("ENVIRONMENT")) {
-        %>
-            <option value="<%=inv.getValue()%>"><%=inv.getValue()%></option>
-        <%
-                if (!envGroupList.contains(inv.getGp1())) {
-                    envGroupList.add(inv.getGp1());
+    <form id="formEnvironment">
+        <div style="float: left; padding-left: 5px">
+            <%=docService.findLabelHTML("invariant", "Country", "country")%>
+            <%=ComboInvariant(appContext, "Country", "", "Country", "", "COUNTRY", "", "", "ALL")%>
+        </div>
+        <div style="float: left; padding-left: 5px">
+            <%=docService.findLabelHTML("invariant", "Environment", "environment")%>
+            <select id="environment" name="environment">
+                <option value="ALL">-- ALL --</option>
+            <%
+                List<String> envGroupList = new ArrayList<String>();
+                for (Invariant inv : invariantService.findListOfInvariantById("ENVIRONMENT")) {
+            %>
+                <option value="<%=inv.getValue()%>"><%=inv.getValue()%></option>
+            <%
+                    if (!envGroupList.contains(inv.getGp1())) {
+                        envGroupList.add(inv.getGp1());
+                    }
                 }
-            }
-        %>
-        </select>
-    </div>
-    <div style="float: left; padding-left: 5px">
-        <%=docService.findLabelHTML("invariant", "environmentgp", "envgp")%>
-        <select>
-            <option value="ALL">-- ALL --</option>
-        <%
-            for (String envGroup : envGroupList) {
-        %>
-            <option value="<%=envGroup%>"><%=envGroup%></option>
-        <%
-            }
-        %>
-        </select>
-    </div>
-    <div style="float: left; padding-left: 5px">
-        <%=docService.findLabelHTML("testcaseexecution", "Build", "build")%>
-        <select>
-            <option value="ALL">-- ALL --</option>
-        <%
-            for (BuildRevisionInvariant bri : buildRevisionInvariantService.findAllBuildRevisionInvariantBySystemLevel("VCCRM", 1)) {
-        %>
-            <option value="<%=bri.getSeq()%>"><%=bri.getVersionName()%></option>
-        <%
-            }
-        %>
-        </select>
-    </div>
-    <div style="float: left; padding-left: 5px">
-        <%=docService.findLabelHTML("testcaseexecution", "Revision", "revision")%>
-        <select>
-            <option value="ALL">-- ALL --</option>
-        <%
-            for (BuildRevisionInvariant bri : buildRevisionInvariantService.findAllBuildRevisionInvariantBySystemLevel("VCCRM", 2)) {
-        %>
-            <option value="<%=bri.getSeq()%>"><%=bri.getVersionName()%></option>
-        <%
-            }
-        %>
-        </select>
-    </div>
-    <div style="float: left; padding-left: 5px">
-        <%=docService.findLabelHTML("countryenvparam", "chain", "chain")%>
-        <input type="text" value="ALL" size="10"/>
-    </div>
-    <div style="float: left; padding-left: 5px">
-        <%=docService.findLabelHTML("countryenvparam", "active", "active")%>
-        <%=ComboInvariant(appContext, "EnvActive", "", "EnvActive", "", "ENVACTIVE", "", "", "ALL")%>
-    </div>
-    <div style="float: left; padding-left: 5px">
-        <%=docService.findLabelHTML("countryenvparam", "Type", "type")%>
-        <%=ComboInvariant(appContext, "EnvType", "", "EnvType", "", "ENVTYPE", "", "", "ALL")%>
-    </div>
-    <div style="float: left; padding-left: 5px">
-        <input type="button" value="Apply"/>
-    </div>
+            %>
+            </select>
+        </div>
+        <div style="float: left; padding-left: 5px">
+            <%=docService.findLabelHTML("invariant", "environmentgp", "envgp")%>
+            <select id="envGroup" name="envGroup">
+                <option value="ALL">-- ALL --</option>
+            <%
+                for (String envGroup : envGroupList) {
+            %>
+                <option value="<%=envGroup%>"><%=envGroup%></option>
+            <%
+                }
+            %>
+            </select>
+        </div>
+        <div style="float: left; padding-left: 5px">
+            <%=docService.findLabelHTML("testcaseexecution", "Build", "build")%>
+            <select id="build" name="build">
+                <option value="ALL">-- ALL --</option>
+            <%
+                for (BuildRevisionInvariant bri : buildRevisionInvariantService.findAllBuildRevisionInvariantBySystemLevel("VCCRM", 1)) {
+            %>
+                <option value="<%=bri.getVersionName()%>"><%=bri.getVersionName()%></option>
+            <%
+                }
+            %>
+            </select>
+        </div>
+        <div style="float: left; padding-left: 5px">
+            <%=docService.findLabelHTML("testcaseexecution", "Revision", "revision")%>
+            <select id="revision" name="revision">
+                <option value="ALL">-- ALL --</option>
+            <%
+                for (BuildRevisionInvariant bri : buildRevisionInvariantService.findAllBuildRevisionInvariantBySystemLevel("VCCRM", 2)) {
+            %>
+                <option value="<%=bri.getVersionName()%>"><%=bri.getVersionName()%></option>
+            <%
+                }
+            %>
+            </select>
+        </div>
+        <div style="float: left; padding-left: 5px">
+            <%=docService.findLabelHTML("countryenvparam", "chain", "chain")%>
+            <input id="chain" name="chain" type="text" value="ALL" size="10"/>
+        </div>
+        <div style="float: left; padding-left: 5px">
+            <%=docService.findLabelHTML("countryenvparam", "active", "active")%>
+            <%=ComboInvariant(appContext, "EnvActive", "", "EnvActive", "", "ENVACTIVE", "", "", "ALL")%>
+        </div>
+        <div style="float: left; padding-left: 5px">
+            <%=docService.findLabelHTML("countryenvparam", "Type", "type")%>
+            <%=ComboInvariant(appContext, "EnvType", "", "EnvType", "", "ENVTYPE", "", "", "ALL")%>
+        </div>
+        <div style="float: left; padding-left: 5px">
+            <input id="system" name="system" type="hidden" value="" />
+            <input id="submit" type="submit" value="Apply"/>
+        </div>
+    </form>
 </div>
 
 <div style="clear: both; float: left;padding-top: 25px; padding-left: 50px; padding-right: 100px">
