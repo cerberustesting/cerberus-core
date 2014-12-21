@@ -494,9 +494,17 @@ public class CampaignDAO implements ICampaignDAO {
         testCaseWithExecution.setRunUAT(resultSet.getString("activeUAT"));
         testCaseWithExecution.setRunPROD(resultSet.getString("activePROD"));
         testCaseWithExecution.setFunction(resultSet.getString("function"));
-
-        testCaseWithExecution.setStart(resultSet.getLong("Start"));
-        testCaseWithExecution.setEnd(resultSet.getLong("End"));
+        String start = resultSet.getString("Start");
+        if (start.endsWith(".0")){
+        testCaseWithExecution.setStart(start.replace(".0", ""));
+        } else {
+        testCaseWithExecution.setStart(start);
+        }
+        try { // Managing the case where the date is 0000-00-00 00:00:00 inside MySQL
+            testCaseWithExecution.setEnd(resultSet.getString("End"));
+        } catch (SQLException e) {
+            testCaseWithExecution.setEnd("0000-00-00 00:00:00");
+        }
         testCaseWithExecution.setStatusExecutionID(resultSet.getLong("statusExecutionID"));
         testCaseWithExecution.setControlStatus(resultSet.getString("ControlStatus"));
         testCaseWithExecution.setControlMessage(resultSet.getString("ControlMessage"));

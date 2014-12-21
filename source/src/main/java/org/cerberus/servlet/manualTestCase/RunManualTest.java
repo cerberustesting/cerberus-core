@@ -20,7 +20,6 @@
 package org.cerberus.servlet.manualTestCase;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -29,44 +28,23 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Level;
-import org.cerberus.entity.Application;
-import org.cerberus.entity.CountryEnvParam;
-import org.cerberus.entity.MessageGeneral;
-import org.cerberus.entity.MessageGeneralEnum;
-import org.cerberus.entity.TCase;
 import org.cerberus.entity.TestCaseExecution;
 import org.cerberus.entity.TestCaseExecutionData;
-import org.cerberus.entity.TestCaseExecutionSysVer;
-import org.cerberus.entity.TestCaseStep;
-import org.cerberus.entity.TestCaseStepAction;
 import org.cerberus.entity.TestCaseStepActionControlExecution;
 import org.cerberus.entity.TestCaseStepActionExecution;
 import org.cerberus.entity.TestCaseStepExecution;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.factory.IFactoryTestCaseExecution;
-import org.cerberus.factory.IFactoryTestCaseExecutionSysVer;
-import org.cerberus.factory.IFactoryTestCaseStep;
-import org.cerberus.factory.IFactoryTestCaseStepAction;
-import org.cerberus.factory.IFactoryTestCaseStepActionControl;
 import org.cerberus.factory.IFactoryTestCaseStepActionControlExecution;
 import org.cerberus.factory.IFactoryTestCaseStepActionExecution;
 import org.cerberus.factory.IFactoryTestCaseStepExecution;
 import org.cerberus.log.MyLogger;
-import org.cerberus.service.IApplicationService;
-import org.cerberus.service.ICountryEnvParamService;
 import org.cerberus.service.ITestCaseExecutionService;
-import org.cerberus.service.ITestCaseExecutionSysVerService;
-import org.cerberus.service.ITestCaseService;
 import org.cerberus.service.ITestCaseStepActionControlExecutionService;
 import org.cerberus.service.ITestCaseStepActionExecutionService;
 import org.cerberus.service.ITestCaseStepExecutionService;
-import org.cerberus.service.ITestCaseStepService;
 import org.cerberus.serviceEngine.IRecorderService;
-import org.cerberus.util.ParameterParserUtil;
-import org.cerberus.version.Version;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
-import org.springframework.web.util.HtmlUtils;
 
 /**
  *
@@ -85,81 +63,111 @@ public class RunManualTest extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-        String controlStatus = "OK";
-        //req.getParameter("controlStatus");
+        String controlStatus = getParameterIfExists(req, "executionStatus");
         String controlMessage = req.getParameter("controlMessage");
-        String tag = "toto tutu";
-        //req.getParameter("tag");
-        String browser = "firefox";
-        //req.getParameter("browser");
-        String browserVersion = "23";
-        //req.getParameter("browserVersion");
         long executionId = Long.valueOf(req.getParameter("executionId"));
-        String cancelExecution = req.getParameter("isCancelExecution")==null?"":req.getParameter("isCancelExecution");
+        String cancelExecution = req.getParameter("isCancelExecution") == null ? "" : req.getParameter("isCancelExecution");
 
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         ITestCaseExecutionService testCaseExecutionService = appContext.getBean(ITestCaseExecutionService.class);
         ITestCaseStepExecutionService testCaseStepExecutionService = appContext.getBean(ITestCaseStepExecutionService.class);
         ITestCaseStepActionExecutionService testCaseStepActionExecutionService = appContext.getBean(ITestCaseStepActionExecutionService.class);
         ITestCaseStepActionControlExecutionService testCaseStepActionControlExecutionService = appContext.getBean(ITestCaseStepActionControlExecutionService.class);
-        
+
         try {
             TestCaseExecution execution = testCaseExecutionService.findTCExecutionByKey(executionId);
+            execution.setControlMessage(controlMessage);
             String test = execution.getTest();
             String testCase = execution.getTestCase();
             List<String> status = new ArrayList();
+            List<String> stepStatus = new ArrayList();
+
             /**
-             * Get Step Execution and insert them into Database
+             * If cancel execution, Set execution to cancel
              */
-            for (TestCaseStepExecution tcse : getTestCaseStepExecution(req, appContext, test, testCase, executionId)) {
-                testCaseStepExecutionService.insertTestCaseStepExecution(tcse);
+            if (cancelExecution.equals("Y")) {
+                execution.setControlStatus("CA");
+                testCaseExecutionService.updateTCExecution(execution);
+            } else {
+
                 /**
-                 * Get Step Action Execution and insert them into Database
+                 * Get Step Execution and insert them into Database
                  */
-                List tcae = new ArrayList();
-                for (TestCaseStepActionExecution tcsae : getTestCaseStepActionExecution(req, appContext, test, testCase, executionId, tcse.getStep())) {
-                    testCaseStepActionExecutionService.insertTestCaseStepActionExecution(tcsae);
-                    status.add(tcsae.getReturnCode());
+                List<TestCaseStepExecution> tcseList = getTestCaseStepExecution(req, appContext, test, testCase, executionId);
+
+                //If no step, set execution to controlStatus kept from the page 
+                if (tcseList.isEmpty()) {
+                    execution.setControlStatus(controlStatus == null ? "OK" : controlStatus);
+                    testCaseExecutionService.updateTCExecution(execution);
+                } else {
+                    for (TestCaseStepExecution tcse : tcseList) {
+                        testCaseStepExecutionService.insertTestCaseStepExecution(tcse);
+                        /**
+                         * Get Step Action Execution and insert them into
+                         * Database
+                         */
+                        List tcae = new ArrayList();
+                        for (TestCaseStepActionExecution tcsae : getTestCaseStepActionExecution(req, appContext, test, testCase, executionId, tcse.getStep())) {
+                            testCaseStepActionExecutionService.insertTestCaseStepActionExecution(tcsae);
+                            status.add(tcsae.getReturnCode());
+
+                            /**
+                             * Get Step Action Control Execution and insert them
+                             * into Database
+                             */
+                            for (TestCaseStepActionControlExecution tcsace : getTestCaseStepActionControlExecution(req, appContext, test, testCase, executionId, tcse.getStep(), tcsae.getSequence())) {
+                                testCaseStepActionControlExecutionService.insertTestCaseStepActionControlExecution(tcsace);
+                                status.add(tcsace.getReturnCode());
+                            }
+                        }
+
+                        /**
+                         * Update stepexecution with status of action/control
+                         */
+                        if (status.contains("KO")) {
+                            tcse.setReturnCode("KO");
+                            stepStatus.add("KO");
+                        } else if (status.contains("NA")) {
+                            tcse.setReturnCode("NA");
+                            stepStatus.add("NA");
+                        } else {
+                            tcse.setReturnCode(tcse.getReturnCode() != null ? tcse.getReturnCode() : "OK");
+                            stepStatus.add(tcse.getReturnCode() != null ? tcse.getReturnCode() : "OK");
+                        }
+                        testCaseStepExecutionService.updateTestCaseStepExecution(tcse);
+
+                    }
 
                     /**
-                     * Get Step Action Control Execution and insert them into
-                     * Database
+                     * Update execution with status of action/control
                      */
-                    for (TestCaseStepActionControlExecution tcsace : getTestCaseStepActionControlExecution(req, appContext, test, testCase, executionId, tcse.getStep(), tcsae.getSequence())) {
-                        testCaseStepActionControlExecutionService.insertTestCaseStepActionControlExecution(tcsace);
-                        status.add(tcsace.getReturnCode());
+                    if (stepStatus.contains("KO")) {
+                        execution.setControlStatus("KO");
+                    } else if (stepStatus.contains("NA")) {
+                        execution.setControlStatus("NA");
+                    } else {
+                        execution.setControlStatus("OK");
                     }
+
+                    testCaseExecutionService.updateTCExecution(execution);
+
                 }
 
+            //Notify it's finnished
+//        WebsocketTest wst = new WebsocketTest();
+//        try {
+//            wst.handleMessage(execution.getTag());
+//        } catch (IOException ex) {
+//            MyLogger.log(SaveManualExecution.class.getName(), Level.FATAL, "" + ex);
+//        }
                 /**
-                 * Update stepexecution and execution with status of action/control
+                 * Get Step Execution and insert them into Database
                  */
-                if (status.contains("KO")) {
-                    tcse.setReturnCode("KO");
-                    execution.setControlStatus("KO");
-                    testCaseStepExecutionService.updateTestCaseStepExecution(tcse);
-                } else if (status.contains("NA")) {
-                    tcse.setReturnCode("NA");
-                    execution.setControlStatus("NA");
-                    testCaseStepExecutionService.updateTestCaseStepExecution(tcse);
-                } else {
-                    execution.setControlStatus("OK");
-                }
-                
-                if (cancelExecution.equals("Y")){
-                execution.setControlStatus("CA");
-                }
-
-            }
-            testCaseExecutionService.updateTCExecution(execution);
-
-            /**
-             * Get Step Execution and insert them into Database
-             */
 //            for (TestCaseExecutionData tced : getTestCaseExecutionData(req, appContext, test, testCase, executionId)){
 //            testCaseStepExecutionService.insertTestCaseStepExecution(null);
 //            }
-            
+            }
+
             resp.sendRedirect("ExecutionDetail.jsp?id_tc=" + executionId);
 
         } catch (CerberusException e) {
@@ -212,17 +220,17 @@ public class RunManualTest extends HttpServlet {
     private List<TestCaseStepExecution> getTestCaseStepExecution(HttpServletRequest request, ApplicationContext appContext, String test, String testCase, long executionId) {
         List<TestCaseStepExecution> result = new ArrayList();
         long now = new Date().getTime();
-        ITestCaseStepExecutionService tcseService = appContext.getBean(ITestCaseStepExecutionService.class);
         IFactoryTestCaseStepExecution testCaseStepExecutionFactory = appContext.getBean(IFactoryTestCaseStepExecution.class);
 
         String[] testcase_step_increment = getParameterValuesIfExists(request, "step_increment");
         if (testcase_step_increment != null) {
             for (String inc : testcase_step_increment) {
                 int step = Integer.valueOf(getParameterIfExists(request, "step_number_" + inc) == null ? "0" : getParameterIfExists(request, "step_number_" + inc));
-                String stepReturnCode = "OK";
+                String stepResultMessage = getParameterIfExists(request, "stepResultMessage_" + inc);
+                String stepReturnCode = getParameterIfExists(request, "stepStatus_" + inc);
 
                 result.add(testCaseStepExecutionFactory.create(executionId, test, testCase, step, null, now, now, now, now,
-                        0, stepReturnCode, null, null, null, null, null, null, 0));
+                        0, stepReturnCode, stepResultMessage));
             }
         }
         return result;
@@ -231,10 +239,8 @@ public class RunManualTest extends HttpServlet {
     private List<TestCaseStepActionExecution> getTestCaseStepActionExecution(HttpServletRequest request, ApplicationContext appContext, String test, String testCase, long executionId, int stepId) {
         List<TestCaseStepActionExecution> result = new ArrayList();
         long now = new Date().getTime();
-        ITestCaseStepActionExecutionService tcsaeService = appContext.getBean(ITestCaseStepActionExecutionService.class);
         IFactoryTestCaseStepActionExecution testCaseStepActionExecutionFactory = appContext.getBean(IFactoryTestCaseStepActionExecution.class);
         IRecorderService recorderService = appContext.getBean(IRecorderService.class);
-
 
         String[] stepAction_increment = getParameterValuesIfExists(request, "action_increment_" + stepId);
         if (stepAction_increment != null) {
@@ -262,7 +268,6 @@ public class RunManualTest extends HttpServlet {
     private List<TestCaseStepActionControlExecution> getTestCaseStepActionControlExecution(HttpServletRequest request, ApplicationContext appContext, String test, String testCase, long executionId, int stepId, int sequenceId) {
         List<TestCaseStepActionControlExecution> result = new ArrayList();
         long now = new Date().getTime();
-        ITestCaseStepActionControlExecutionService tcsaeService = appContext.getBean(ITestCaseStepActionControlExecutionService.class);
         IFactoryTestCaseStepActionControlExecution testCaseStepActionExecutionFactory = appContext.getBean(IFactoryTestCaseStepActionControlExecution.class);
         IRecorderService recorderService = appContext.getBean(IRecorderService.class);
 

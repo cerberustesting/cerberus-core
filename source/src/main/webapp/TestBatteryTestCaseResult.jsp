@@ -101,7 +101,7 @@
                         <td ><%=tCase.getTest()%></td>
                         <td ><a href="TestCase.jsp?Load=Load&Test=<%=tCase.getTest()%>&TestCase=<%=tCase.getTestCase()%>"> <%=tCase.getTestCase()%></a></td>
                         <td ><%=tCase.getApplication()%></td>
-                        <td ><%=tCase.getDescription()%></td>
+                        <td ><%=tCase.getShortDescription()%></td>
                         <td ><%=tCase.getDescription()%></td>
                     <%
                             }

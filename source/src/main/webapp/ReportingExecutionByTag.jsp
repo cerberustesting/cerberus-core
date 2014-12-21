@@ -88,10 +88,9 @@
             };
 
             $(document).ready(function() {
-
-                
-                jQuery.ajax('./GetTagExecutions?withUUID').done(function(data) {
+                jQuery.ajax({url: './GetTagExecutions?withUUID', async: false}).done(function(data) {
                     var index;
+                    $('#selectTag').append($('<option></option>').attr("value", "")).attr("placeholder", "Select a Tag");
                     for (index = 0; index < data.tags.length; index++) {
                         var option = $('<option></option>').attr("value", data.tags[index]).text(data.tags[index]);
 
@@ -103,7 +102,14 @@
                     }
                 });
 
-               
+                if ($("#selectTag").val() !== null && $("#selectTag").val() !== "") {
+                    loadData();
+
+                }
+            });
+
+            function loadData() {
+
                 createGraphFromAjaxToElement("./CampaignExecutionReportByFunction?<%=query.toString()%>", "#functionTest", null);
                 createGraphFromAjaxToElement("./CampaignExecutionStatusBarGraphByFunction?<%=query.toString()%>", "#functionBar", null);
 
@@ -147,6 +153,8 @@
                 $.get("./CampaignExecutionReport", "<%=query.toString()%>", function(report) {
                     // Get context with jQuery - using jQuery's .get() method.
 
+            $("table.needToBeSort").find("tbody").empty();
+
                     for (var index = 0; index < report.length; index++) {
             <%
                 if (!onlyFunction) {
@@ -163,7 +171,14 @@
                     });
 
                 });
-            });
+            }
+            
+//            var websocket = new WebSocket("ws://localhost:8080/Cerberus-1.0.2-SNAPSHOT/WebsocketTest");
+//        websocket.onmessage = function processMessage(message){
+//        console.log(message.data);
+//            loadData();
+//        }
+
         </script>
         <style>
 
@@ -221,6 +236,10 @@
 
             a.StatusOK {
                 color: #00EE00;
+            }
+            
+            a.StatusCA {
+                color: mistyrose;
             }
 
             a.StatusKO {
@@ -388,6 +407,27 @@
                 </table>
                 <h1><a name="StatusPE" class="StatusPE">Status PE</a></h1>
                 <table id="StatusPE" class="arrondTable fullSize needToBeSort">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Function</th>
+                            <th>Test</th>
+                            <th>TestCase</th>
+                            <th>Description</th>
+                            <th>Control</th>
+                            <th>Status</th>
+                            <th>Application</th>
+                            <th>BugID</th>
+                            <th class="wrapAll">Comment</th>
+                            <th class="wrapAll">ControlMessage</th>
+                            <th>Start</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+                <h1><a name="StatusCA" class="StatusCA">Status CA</a></h1>
+                <table id="StatusCA" class="arrondTable fullSize needToBeSort">
                     <thead>
                         <tr>
                             <th>ID</th>

@@ -106,4 +106,6 @@ public interface ITestCaseDAO {
     public List<TCase> findTestCaseByTestSystem(String test, String system);
 
     List<TCase> findTestCaseByCriteria(String testClause, String projectClause, String appClause, String activeClause, String priorityClause, String statusClause, String groupClause, String targetBuildClause, String targetRevClause, String creatorClause, String implementerClause, String functionClause, String campaignClause, String batteryClause);
+
+    public String findSystemOfTestCase(String test, String testcase) throws CerberusException;
 }

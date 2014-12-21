@@ -115,12 +115,17 @@ public class CountryEnvParamService implements ICountryEnvParamService {
     }
 
     @Override
-    public List<CountryEnvParam> findListByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public List<CountryEnvParam> findListByCriteria(String system, int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
+        return countryEnvParamDao.findListByCriteria(system, start,amount,column,dir,searchTerm,individualSearch);
     }
 
     @Override
-    public Integer count(String searchTerm) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public Integer count(String searchTerm, String inds) {
+        return countryEnvParamDao.count(searchTerm, inds);
+    }
+
+    @Override
+    public List<CountryEnvParam> findListByCriteria(String system) {
+        return countryEnvParamDao.findListByCriteria(system);
     }
 }

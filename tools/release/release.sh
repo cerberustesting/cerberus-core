@@ -2,9 +2,19 @@
 #
 # Cerberus Release Process.
 #
-# This script prepare release environment and do the release.
+# This script prepare and do the release.
 #
-# Do not forget to fill your ~.m2/settings.xml file with the following information:
+# How to use it
+# -------------
+#
+# Simply run the release.sh from the Cerberus root directory without any arguments:
+# $ cd $CERBERUS_ROOT
+# $ tools/release/release.sh
+#
+# How to configure it
+# -------------------
+#
+# Fill your Maven settings file with the following information:
 #   <profiles>
 #       <profile>
 #          <id>default</id>
@@ -19,10 +29,15 @@
 #   <activeProfiles>
 #       <activeProfile>default</activeProfile>
 #   </activeProfiles>
+#
+# Note that your Maven settings file is commonly located at ~/.m2/settings.xml.
+# Change the MAVEN_SETTINGS_PATH variable below if this location is not yours.
 
-APP=`basename $0`
+# Tunable variables
 MAVEN_SETTINGS_PATH=~/.m2/settings.xml
 
+# Internal variables
+APP=`basename $0`
 nextReleaseVersion=""
 nextDevelopmentVersion=""
 

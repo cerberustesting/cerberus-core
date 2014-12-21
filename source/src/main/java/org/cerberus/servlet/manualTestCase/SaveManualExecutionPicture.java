@@ -36,6 +36,9 @@ public class SaveManualExecutionPicture extends HttpServlet {
         String runId = req.getParameter("runId");
         String test = req.getParameter("picTest");
         String testCase = req.getParameter("picTestCase");
+        String step = req.getParameter("pictStep");
+        String action = req.getParameter("pictAction");
+        String control = req.getParameter("pictControl") == null ? "" : req.getParameter("pictControl");
         String returnCode = req.getParameter("returnCode");
 
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
@@ -64,7 +67,8 @@ public class SaveManualExecutionPicture extends HttpServlet {
                     }
 
                     InputStream inputStream = p.getInputStream();
-                    String name = test + "-" + testCase + "-St1Sq" + seq + ".jpg";
+                    String controlName = control.equals("") ? "" : "Ct"+control;
+                    String name = test + "-" + testCase + "-St"+step+"Sq" + action + controlName + ".jpg";
                     OutputStream outputStream = new FileOutputStream(new File(this.buildScreenshotPath(imgPath, runId, name)));
 
                     int read;

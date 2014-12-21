@@ -17,6 +17,7 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
+<%@page import="org.cerberus.service.ITestCaseExecutionInQueueService"%>
 <%@page import="org.cerberus.service.ICountryEnvironmentApplicationService"%>
 <%@page import="org.cerberus.entity.CountryEnvironmentApplication"%>
 <%@page import="org.cerberus.service.ITestCaseExecutionSysVerService"%>
@@ -90,6 +91,21 @@
 
     }
 
+    .ExecutionHeaderDiv {
+        width:100%;
+        clear:both;
+        display:block;
+        border-style: solid;
+        border-width:thin;
+        border-color:#CCCCCC;
+        background-image: -moz-linear-gradient(top, #ebebeb, #CCCCCC); 
+        background-image: -webkit-linear-gradient(top, #ebebeb, #CCCCCC); 
+        font-weight:bold;
+        font-family: Trebuchet MS;
+        color:#555555;
+
+    }
+
     .StepHeaderContent {
         margin-top:15px; 
     }
@@ -127,6 +143,7 @@
             IFactoryTestCaseExecution factoryTestCaseExecution = appContext.getBean(IFactoryTestCaseExecution.class);
             IFactoryTestCaseExecutionSysVer factoryTestCaseExecutionSysVer = appContext.getBean(IFactoryTestCaseExecutionSysVer.class);
             ITestCaseExecutionSysVerService testCaseExecutionSysVerService = appContext.getBean(ITestCaseExecutionSysVerService.class);
+            ITestCaseExecutionInQueueService testcaseExecutionQueueService = appContext.getBean(ITestCaseExecutionInQueueService.class);
 
             /**
              * String init
@@ -154,9 +171,10 @@
             String testcase = getRequestParameterWildcardIfEmpty(request, "TestCase");
             String country = getRequestParameterWildcardIfEmpty(request, "Country");
             String environment = getRequestParameterWildcardIfEmpty(request, "Environment");
+            String idFromQueue = getRequestParameterWildcardIfEmpty(request, "IdFromQueue");
             String browser = "firefox";
             String browserVersion = "";
-            String tag = "tag";
+            String tag = getRequestParameterWildcardIfEmpty(request, "Tag");
             Boolean tinf = getBooleanParameterFalseIfEmpty(request, "Tinf");
 
             Application myApp = null;
@@ -203,6 +221,10 @@
             long executionId = testCaseExecutionService.insertTCExecution(execution);
             execution.setId(executionId);
 
+            if (idFromQueue != null && !"".equals(idFromQueue)) {
+                testcaseExecutionQueueService.remove(Long.valueOf(idFromQueue));
+            }
+
             TestCaseExecutionSysVer testCaseExecutionSysVer = factoryTestCaseExecutionSysVer.create(execution.getId(), myApp.getSystem(), build, revision);
             testCaseExecutionSysVerService.insertTestCaseExecutionSysVer(testCaseExecutionSysVer);
 
@@ -222,23 +244,44 @@
                 appSystem = "";
                 SitdmossBugtrackingURL = "";
             }
-            
+
 
     %>
     <br>
     <form method="post" name="RunManualTest"  id="RunManualTest" action="RunManualTest">
-        <p style="font-size:14px; font-weight:bold; color:red">Execution <%=executionId%> Started</p>
-        <input class="wob" name="test" id="test" value="<%=test%>" disabled="true">
-        <input class="wob" name="testCase" id="testCase"  value="<%=testcase%>" disabled="true">
-        <input class="wob" name="env" id="env" value="<%=environment%>" disabled="true">
-        <input class="wob" name="country" id="country" value="<%=country%>" disabled="true">
-        <input class="wob" name="tag" id="tag" value="<%=tag%>" disabled="true">
-        <input class="wob" name="browser" id="browser" value="<%=browser%>" disabled="true">
-        <a href="http://<%=countryEnvironmentParameter.getIp()+countryEnvironmentParameter.getUrl()%>">http://<%=countryEnvironmentParameter.getIp()+countryEnvironmentParameter.getUrl()%></a>
-        <input class="wob" name="executionId" id="executionId" value="<%=executionId%>" style="display:none">
-        <br>
-        <div>
-            <textarea name="controlMessage" placeholder="Comment execution"></textarea>
+        <div class="ExecutionHeaderDiv">
+            <p style="font-size:14px; font-weight:bold; color:red">Execution <%=executionId%> Started</p>
+            <input class="wob" name="test" id="test" value="<%=test%>" disabled="true">
+            <input class="wob" name="testCase" id="testCase"  value="<%=testcase%>" disabled="true">
+            <input class="wob" name="env" id="env" value="<%=environment%>" disabled="true">
+            <input class="wob" name="country" id="country" value="<%=country%>" disabled="true">
+            <input class="wob" name="tag" id="tag" value="<%=tag%>" disabled="true">
+            <input class="wob" name="browser" id="browser" value="<%=browser%>" disabled="true">
+            <a href="http://<%=countryEnvironmentParameter.getIp() + countryEnvironmentParameter.getUrl()%>" target="_blank">http://<%=countryEnvironmentParameter.getIp() + countryEnvironmentParameter.getUrl()%></a>
+            <input class="wob" name="executionId" id="executionId" value="<%=executionId%>" style="display:none">
+            <input class="wob" name="IdFromQueue" id="IdFromQueue" value="<%=idFromQueue%>" style="display:none">
+            <br>
+
+            <div id="ExecutionGlobalStatusDiv" style="width:97%;display:inline-block">
+                <div  style="display:block; float:right;width:19%">
+                    <textarea style="width:99%" name="controlMessage" placeholder="Comment execution"></textarea>
+                </div>
+                <div style="display:inline-block;float:right;">
+                    <p style="font-weight:bold;color:yellow;margin-top:5px">NA</p>
+                    <input type="radio" name="executionStatus" style="color:red;font-weight: bold; width:20px;"
+                           onclick="checkAllAction(this, '', 'NA')" value="NA">
+                </div>
+                <div style="float:right;">
+                    <p style="font-weight:bold;color:red;margin-top:5px">KO</p>
+                    <input type="radio" name="executionStatus" style="color:red;font-weight: bold; width:20px"
+                           onclick="checkAllAction(this, '', 'KO')" value="KO">
+                </div>
+                <div style="float:right;">
+                    <p style="font-weight:bold;color:green;margin-top:5px">OK</p>
+                    <input type="radio" name="executionStatus" style="color:green;font-weight: bold; width:20px"
+                           onclick="checkAllAction(this, '', 'OK')" value="OK">
+                </div>
+            </div>
         </div>
         <div id="AutomationScriptDiv" style="display : block">
             <div id="StepsMainDiv" style="width:100%;clear:both">
@@ -308,66 +351,6 @@
                                                      data-fieldtype="Description" name="step_description_<%=incrementStep%>" value="<%=tcs.getDescription()%>">
                                         </div></div></div>
 
-                                <% if (tcs.getUseStep().equals("Y")) {%>
-                                <div id="StepUseStepDiv" style="clear:both">UseStep
-                                    <input type="checkbox" name="step_useStep_<%=incrementStep%>" style="margin-top:15px;font-weight: bold; width:20px" onclick="confirmDeletingAction(this, '<%=incrementStep%>')"
-                                           <% if (tcs.getUseStep().equals("Y")) {%>
-                                           CHECKED
-                                           <%}%>
-                                           value="Y">
-                                </div>
-                                <div id="StepCopiedFromDiv" style="float:left">
-                                    <p style="margin-top:15px;"> Copied from : </p>
-                                </div>
-                                <div id="StepUseStepTestDiv" style="float:left">
-                                    <select id="step_useStepTest_<%=incrementStep%>" name="step_useStepTest_<%=incrementStep%>" style="width: 100px;margin-top:15px;font-weight: bold;" 
-                                            OnChange="findTestcaseByTest(this.value, '<%=MySystem%>', 'step_useStepTestCase_<%=incrementStep%>')">
-                                        <%  if (tcs.getUseStepTest().equals("")) { %>
-                                        <option style="width: 200px" value="All">-- Choose Test --
-                                        </option>
-                                        <%  }
-                                            List<Test> tList = testService.findTestBySystems(systems);
-                                            for (Test tst : tList) {%>
-                                        <option style="width: 200px;" class="font_weight_bold_<%=tst.getActive()%>" value="<%=tst.getTest()%>" <%=tcs.getUseStepTest().compareTo(tst.getTest()) == 0 ? " SELECTED " : ""%>><%=tst.getTest()%>
-                                        </option>
-                                        <% }
-                                        %>
-                                    </select>
-                                </div>
-
-                                <div id="StepUseStepTestCaseDiv" style="float:left;">
-                                    <select name="step_useStepTestCase_<%=incrementStep%>" style="width: 50px;margin-top:15px;font-weight: bold;" 
-                                            OnChange="findStepByTestCase($('#step_useStepTest_<%=incrementStep%>').val(), this.value, 'step_useStepStep_<%=incrementStep%>')"
-                                            id="step_useStepTestCase_<%=incrementStep%>">
-                                        <%  if (tcs.getUseStepTestCase().equals("")) { %>
-                                        <option style="width: 200px" value="All">---</option>
-                                        <%  } else {
-                                            List<TCase> tcList = testCaseService.findTestCaseByTest(test);
-                                            for (TCase tc : tcList) {%>
-                                        <option style="width: 200px;" class="font_weight_bold_<%=tc.getActive()%>" value="<%=tc.getTestCase()%>" <%=tcs.getUseStepTestCase().compareTo(tc.getTestCase()) == 0 ? " SELECTED " : ""%>><%=tc.getTestCase()%>
-                                        </option>
-                                        <% }
-                                            }%>
-                                    </select>
-                                </div>
-                                <div id="StepUseStepStepDiv" style="float:left">
-                                    <select name="step_useStepStep_<%=incrementStep%>" style="width: 50px;margin-top:15px;font-weight: bold;" 
-                                            id="step_useStepStep_<%=incrementStep%>" onchange="javascript:$('#UpdateTestCase').submit();">
-                                        <%  if (tcs.getUseStepTest().equals("") || tcs.getUseStepTestCase().equals("")) { %>
-                                        <option style="width: 200px" value="All">---</option>
-                                        <%  } else {
-                                            List<TestCaseStep> tcstepList = tcsService.getListOfSteps(tcs.getUseStepTest(), tcs.getUseStepTestCase());
-                                            for (TestCaseStep tcstep : tcstepList) {%>
-                                        <option style="width: 200px;" value="<%=tcstep.getStep()%>" <%=tcs.getUseStepStep().compareTo(tcstep.getStep()) == 0 ? " SELECTED " : ""%>><%=tcstep.getStep()%>
-                                        </option>
-                                        <% }
-                                            }%>
-                                    </select>
-                                </div>
-                                <div id="StepUseStepLinkDiv" style="float:left;margin-top:15px">
-                                    <a href="TestCase.jsp?Test=<%=tcs.getUseStepTest()%>&TestCase=<%=tcs.getUseStepTestCase()%>#stepAnchor_step<%=tcs.getUseStepStep()%>">Edit Used Step</a>
-                                </div>
-                                <%}%>
                                 <div style=" width:3px;height:100%;display:inline-block;float:right">
                                 </div>
                                 <div style="float:right; display:inline-block;width:15%">
@@ -379,18 +362,18 @@
                                 </div> 
                                 <div style="float:right;">
                                     <p style="font-weight:bold;color:yellow;margin-top:5px">NA</p>
-                                    <input type="radio" name="stepStatus_<%=incrementStep%>" style="color:red;font-weight: bold; width:20px;"
+                                    <input type="radio" name="stepStatus_<%=incrementStep%>" class="step_NA" data-stepId="<%=incrementStep%>" style="color:red;font-weight: bold; width:20px;"
                                            onclick="checkAllAction(this, '<%=incrementStep%>', 'NA')" value="NA">
                                 </div>
                                 <div style="float:right;">
                                     <p style="font-weight:bold;color:red;margin-top:5px">KO</p>
-                                    <input type="radio" name="stepStatus_<%=incrementStep%>" style="color:red;font-weight: bold; width:20px"
+                                    <input type="radio" name="stepStatus_<%=incrementStep%>" class="step_KO" data-stepId="<%=incrementStep%>" style="color:red;font-weight: bold; width:20px"
                                            onclick="checkAllAction(this, '<%=incrementStep%>', 'KO')" value="KO">
                                 </div>
                                 <div style="float:right;">
                                     <p style="font-weight:bold;color:green;margin-top:5px">OK</p>
-                                    <input type="radio" name="stepStatus_<%=incrementStep%>" style="color:green;font-weight: bold; width:20px"
-                                           onclick="checkAllAction(this, '<%=incrementStep%>', 'OK')" value="KO">
+                                    <input type="radio" name="stepStatus_<%=incrementStep%>" class="step_OK" data-stepId="<%=incrementStep%>" style="color:green;font-weight: bold; width:20px"
+                                           onclick="checkAllAction(this, '<%=incrementStep%>', 'OK')" value="OK">
                                 </div>
 
 
@@ -470,7 +453,7 @@
                                                 </div>
                                                 <div style="float:right; width:5%">
                                                     <input type="button" style="margin-left:15px ;width:10px;background-image: url(images/photo.png);background-size: 100%; width: 19px; height: 12px;border: 0 none; bottom: 0px" 
-                                                           onclick="showActionScreenshotDiv('<%=incrementStep%>','<%=incrementAction%>')">
+                                                           onclick="showActionScreenshotDiv('<%=incrementStep%>', '<%=incrementAction%>')">
                                                 </div> 
 
                                                 <div style="float:right">
@@ -493,8 +476,13 @@
                                                 </span>
                                                 <div id="formPictureSave_<%=incrementStep%>_<%=incrementAction%>" data-type="picture">
                                                     <input id="fileupload_<%=incrementStep%>_<%=incrementAction%>" type="file" name="files[]" data-url="SaveManualExecutionPicture" multiple/>
+                                                    <input name="pictStep" value="<%=incrementStep%>" style="display:none">
+                                                    <input name="pictAction" value="<%=incrementAction%>" style="display:none">
+                                                    <input id="runId" name="runId" type="hidden" value="<%=executionId%>"/>
+                                                    <input id="picTest" name="picTest" type="hidden" value="<%=test%>"/>
+                                                    <input id="picTestCase" name="picTestCase" type="hidden" value="<%=testcase%>"/>
                                                 </div>
-                                                <input name="takeScreenshot_<%=incrementStep%>_<%=incrementAction%>" value="N">
+                                                <input id="takeScreenshot_<%=incrementStep%>_<%=incrementAction%>" name="takeScreenshot_<%=incrementStep%>_<%=incrementAction%>" style="display:none" value="N">
                                             </div>
 
                                             <%
@@ -548,7 +536,7 @@
                                                 </div>
                                                 <div style="float:right; width:5%">
                                                     <input type="button" title="Take ScreenShot" style="margin-left:15px ;width:10px;background-image: url(images/photo.png);background-size: 100%; width: 19px; height: 12px;border: 0 none; bottom: 0px" 
-                                                           onclick="showControlScreenshotDiv('<%=incrementStep%>','<%=incrementAction%>','<%=incrementControl%>')">
+                                                           onclick="showControlScreenshotDiv('<%=incrementStep%>', '<%=incrementAction%>', '<%=incrementControl%>')">
                                                 </div> 
 
                                                 <div style="float:right">
@@ -573,8 +561,14 @@
                                                 </span>
                                                 <div id="formPictureSave_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>" data-type="picture">
                                                     <input id="fileupload_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>" type="file" name="files[]" data-url="SaveManualExecutionPicture" multiple/>
+                                                    <input name="pictStep" value="<%=incrementStep%>" style="display:none">
+                                                    <input name="pictAction" value="<%=incrementAction%>" style="display:none">
+                                                    <input name="pictControl" value="<%=incrementControl%>" style="display:none">
+                                                    <input id="runId" name="runId" type="hidden" value="<%=executionId%>"/>
+                                                    <input id="picTest" name="picTest" type="hidden" value="<%=test%>"/>
+                                                    <input id="picTestCase" name="picTestCase" type="hidden" value="<%=testcase%>"/>
                                                 </div>
-                                                <input name="takeScreenshot_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>" value="N">
+                                                <input id="takeScreenshot_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>" name="takeScreenshot_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>" style="display:none" value="N">
                                             </div>
                                             <%   }%>
                                             <div id="DivActionEndOfAction<%=incrementStep%><%=incrementAction%>" class="endOfAction"></div>
@@ -598,9 +592,7 @@
     </form>
     <form id="formPictureSave" action="SaveManualExecutionPicture" method="post" enctype="multipart/form-data">
         <div id="formPictureSave" action="SaveManualExecutionPicture" method="post" enctype="multipart/form-data">
-            <input id="runId" name="runId" type="hidden" value="<%=executionId%>"/>
-            <input id="picTest" name="picTest" type="hidden" value="<%=test%>"/>
-            <input id="picTestCase" name="picTestCase" type="hidden" value="<%=testcase%>"/>
+            
         </div>    
     </form>
     <%
@@ -618,23 +610,33 @@
         } else {
             bool = false;
         }
-        $('#StepsBorderDiv' + stepId).find('input[class="actioncontrol_' + status + '_' + stepId + '"]')
-                .each(function() {
-                    $(this).prop('checked', bool);
+        if (stepId !== '') {
+            $('#StepsBorderDiv' + stepId).find('input[class="actioncontrol_' + status + '_' + stepId + '"]')
+                    .each(function() {
+                        $(this).prop('checked', bool);
 
+                    });
+        } else {
+            $('div[class="StepHeaderDiv"]').each(function() {
+                $(this).find('input[class="step_' + status + '"]').each(function() {
+                    $(this).prop('checked', bool);
+                    checkAllAction(this, $(this).attr('data-stepId'), status);
                 });
+            });
+
+        }
 
     }
 </script>
 <script>
-    function showActionScreenshotDiv(step, action){
-        $('#screenshotDiv_'+step+'_'+action).attr('style', 'display:block');
-        $('#takeScreenshot_'+step+'_'+action).val('Y');
+    function showActionScreenshotDiv(step, action) {
+        $('#screenshotDiv_' + step + '_' + action).attr('style', 'display:block');
+        $('#takeScreenshot_' + step + '_' + action).val('Y');
     }
-    
-    function showControlScreenshotDiv(step, action, control){
-        $('#screenshotDiv_'+step+'_'+action+'_'+control).attr('style', 'display:block');
-        $('#takeScreenshot_'+step+'_'+action+'_'+control).val('Y');
+
+    function showControlScreenshotDiv(step, action, control) {
+        $('#screenshotDiv_' + step + '_' + action + '_' + control).attr('style', 'display:block');
+        $('#takeScreenshot_' + step + '_' + action + '_' + control).val('Y');
     }
 </script>
 <script>
@@ -665,29 +667,29 @@
 
     function submitExecution() {
         $("[data-type='picture']").each(function(index, element) {
-            if ($(element).parent().attr('style') !== 'display:none')
-                $("#formPictureSave").append(element);
+            if ($(element).parent().attr('style') !== 'display:none') {
+                $("#formPictureSave").empty().append(element);
 
 
 
 
-            var formObj = $("#formPictureSave");
-            var formURL = formObj.attr("action");
-            var formData = new FormData(formObj[0]);
-            $.ajax({
-                url: formURL,
-                type: 'POST',
-                data: formData,
-                mimeType: "multipart/form-data",
-                async: false,
-                cache: false,
-                contentType: false,
-                processData: false,
-                error: function(jqXHR, textStatus, errorThrown) {
-                    alert(errorThrown);
-                }
-            });
-
+                var formObj = $("#formPictureSave");
+                var formURL = formObj.attr("action");
+                var formData = new FormData(formObj[0]);
+                $.ajax({
+                    url: formURL,
+                    type: 'POST',
+                    data: formData,
+                    mimeType: "multipart/form-data",
+                    async: false,
+                    cache: false,
+                    contentType: false,
+                    processData: false,
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        alert(errorThrown);
+                    }
+                });
+            }
         });
 
         $("#RunManualTest").submit();

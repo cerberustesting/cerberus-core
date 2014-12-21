@@ -36,6 +36,15 @@ public class TestCaseStep {
     private List<TestCaseStepAction> testCaseStepAction;
     private boolean isStepInUseByOtherTestCase;
     private int initialStep;
+    private TCase testCaseObj;
+
+    public TCase getTestCaseObj() {
+        return testCaseObj;
+    }
+
+    public void setTestCaseObj(TCase testCaseObj) {
+        this.testCaseObj = testCaseObj;
+    }
 
     public String getInLibrary() {
         return inLibrary;

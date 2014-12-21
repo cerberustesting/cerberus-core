@@ -130,4 +130,12 @@ public class FactoryTCase implements IFactoryTCase {
         return newTestCase;
     }
 
+    @Override
+    public TCase create(String test, String testCase, String description) {
+        newTestCase = new TCase();
+        newTestCase.setTest(test);
+        newTestCase.setTestCase(testCase);
+        newTestCase.setDescription(description);
+        return newTestCase;
+    }
 }

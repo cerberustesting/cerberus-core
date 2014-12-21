@@ -21,6 +21,8 @@ package org.cerberus.servlet.campaign;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -99,6 +101,7 @@ public class CampaignExecutionReport extends HttpServlet {
              * Feed hash map with execution from the two list (to get only one by test,testcase,country,env,browser)
              */
             HashMap<String, TestCaseWithExecution> testCaseWithExecutionsList = new HashMap();
+            SimpleDateFormat formater = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
             
             for (TestCaseWithExecution testCaseWithExecution : testCaseWithExecutions) {
                 String key = testCaseWithExecution.getBrowser() + "_" 
@@ -114,9 +117,12 @@ public class CampaignExecutionReport extends HttpServlet {
                         + testCaseWithExecutionInQueue.getEnvironment() + "_" 
                         + testCaseWithExecutionInQueue.getTest() + "_" 
                         + testCaseWithExecutionInQueue.getTestCase();
+                if ((testCaseWithExecutionsList.containsKey(key) 
+                        && formater.parse(testCaseWithExecutionsList.get(key).getStart()).before(formater.parse(testCaseWithExecutionInQueue.getStart())))
+                        || !testCaseWithExecutionsList.containsKey(key)){
                 testCaseWithExecutionsList.put(key, testCaseWithExecutionInQueue);
+                }
             }
-
             testCaseWithExecutions = new ArrayList<TestCaseWithExecution>(testCaseWithExecutionsList.values());
             
             for (TestCaseWithExecution testCaseWithExecution : testCaseWithExecutions) {
@@ -133,6 +139,8 @@ public class CampaignExecutionReport extends HttpServlet {
             Logger.getLogger(CampaignExecutionReport.class.getName()).log(
                     Level.WARNING, null, ex);
 
+        } catch (ParseException ex) {
+            Logger.getLogger(CampaignExecutionReport.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
             out.close();
         }
@@ -186,13 +194,12 @@ public class CampaignExecutionReport extends HttpServlet {
     private JSONObject testCaseExecutionToJSONObject(
             TestCaseWithExecution testCaseWithExecution) throws JSONException {
         JSONObject result = new JSONObject();
-
         result.put("ID", String.valueOf(testCaseWithExecution.getStatusExecutionID()));
         result.put("Test", JavaScriptUtils.javaScriptEscape(testCaseWithExecution.getTest()));
         result.put("TestCase", JavaScriptUtils.javaScriptEscape(testCaseWithExecution.getTestCase()));
         result.put("Environment", JavaScriptUtils.javaScriptEscape(testCaseWithExecution.getEnvironment()));
-        result.put("Start", String.valueOf(testCaseWithExecution.getStart()));
-        result.put("End", String.valueOf(testCaseWithExecution.getEnd()));
+        result.put("Start", testCaseWithExecution.getStart());
+        result.put("End", testCaseWithExecution.getEnd());
         result.put("Country", JavaScriptUtils.javaScriptEscape(testCaseWithExecution.getCountry()));
         result.put("Browser", JavaScriptUtils.javaScriptEscape(testCaseWithExecution.getBrowser()));
         result.put("ControlStatus", JavaScriptUtils.javaScriptEscape(testCaseWithExecution.getControlStatus()));

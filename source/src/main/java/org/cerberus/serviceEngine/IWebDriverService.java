@@ -75,7 +75,7 @@ public interface IWebDriverService {
     
     List<String> getSeleniumLog(Session session);
     
-    MessageEvent doSeleniumActionClick(Session session, String string1, String string2);
+    MessageEvent doSeleniumActionClick(Session session, String string1, String string2, boolean waitForVisibility, boolean waitForClickability);
     
     MessageEvent doSeleniumActionMouseDown(Session session, String string1, String string2);
 

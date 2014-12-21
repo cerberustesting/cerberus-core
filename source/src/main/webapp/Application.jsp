@@ -18,7 +18,7 @@
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
 <%@page import="org.cerberus.service.IDocumentationService"%>
-<% Date DatePageStart = new Date();%>
+<%  Date DatePageStart = new Date();%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>

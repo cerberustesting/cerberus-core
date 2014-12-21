@@ -3991,6 +3991,14 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
 		SQLS.append("('testcasestepactioncontrol', 'Type', 'verifyTextNotInElement', 'True if a text is not inside a field.', '<b>verifyTextNotInElement</b><br><br>True if a text is not inside a field.<br><br><i>Control Property :</i> The field location<br><br><i>Control Value :</i> The text to test against the value from the field locatin<br><br>');");
         SQLInstruction.add(SQLS.toString());
         
+// Add ReturnMessage on stepExecution table.
+// -- ------------------------ 560
+		SQLS = new StringBuilder();
+		SQLS.append("ALTER TABLE `testcasestepexecution` ");
+                SQLS.append(" ADD COLUMN `ReturnMessage` VARCHAR(500) NULL DEFAULT NULL AFTER `ReturnCode`;");
+                SQLInstruction.add(SQLS.toString());
+
+        
         return SQLInstruction;
     }
     

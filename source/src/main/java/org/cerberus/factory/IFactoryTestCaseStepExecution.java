@@ -33,4 +33,8 @@ public interface IFactoryTestCaseStepExecution {
                                  long start, long end, long fullStart, long fullEnd, long timeElapsed, String returnCode,
                                  MessageEvent stepResultMessage, TestCaseStep testCaseStep, TestCaseExecution tCExecution, String useStep, String useStepTest, 
                                  String useStepTestCase, int useStepTestCaseStep);
+    
+    TestCaseStepExecution create(long id, String test, String testCase, int step, String batNumExe,
+                                 long start, long end, long fullStart, long fullEnd, long timeElapsed, String returnCode,
+                                 String returnMessage);
 }

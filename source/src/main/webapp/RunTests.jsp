@@ -17,6 +17,7 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
+<%@page import="org.cerberus.service.ITestCaseService"%>
 <%@page import="org.apache.http.client.ClientProtocolException"%>
 <%@page import="org.apache.http.client.methods.CloseableHttpResponse"%>
 <%@page import="java.net.URISyntaxException"%>
@@ -72,7 +73,7 @@
                     IApplicationService applicationService = appContext.getBean(ApplicationService.class);
                     IParameterService myParameterService = appContext.getBean(IParameterService.class);
                     ITestCaseExecutionInQueueService tceiqService = appContext.getBean(ITestCaseExecutionInQueueService.class);
-
+                    ITestCaseService tcService = appContext.getBean(ITestCaseService.class);
                     try {
                         User usr = userService.findUserByKey(request.getUserPrincipal().getName());
 
@@ -108,6 +109,9 @@
                                     : ParameterParserUtil.DEFAULT_BOOLEAN_FALSE_VALUE);
                             paramRequestMaker.addParam(RunTestCase.PARAMETER_PAGE_SOURCE, Integer.toString(tceiq.getPageSource()));
                             paramRequestMaker.addParam(RunTestCase.PARAMETER_SELENIUM_LOG, Integer.toString(tceiq.getSeleniumLog()));
+                            paramRequestMaker.addParam(RunTestCase.PARAMETER_EXECUTION_QUEUE_ID, request.getParameter("queuedExecution"));
+                            paramRequestMaker.addParam(RunTestCase.PARAMETER_SYSTEM, tcService.findSystemOfTestCase(tceiq.getTest(), tceiq.getTestCase()));
+                            
 
                             String query = paramRequestMaker.mkString();
                             response.sendRedirect("RunTests.jsp?" + query);
@@ -142,7 +146,7 @@
                                         || sName.compareTo("synchroneous") == 0 || sName.compareTo("timeout") == 0
                                         || sName.compareTo("seleniumLog") == 0 || sName.compareTo("pageSource") == 0
                                         || sName.compareTo("platform") == 0 || sName.compareTo("os") == 0
-                                        || sName.compareTo("robot") == 0) {
+                                        || sName.compareTo("robot") == 0 || sName.compareTo("IdFromQueue")==0) {
                                     String[] sMultiple = request.getParameterValues(sName);
 
                                     for (int i = 0; i < sMultiple.length; i++) {
@@ -289,6 +293,13 @@
                         } else {
                             manualExecution = new String("");
                         }
+                        
+                        String idFromQueue;
+                        if (request.getParameter("IdFromQueue") != null && request.getParameter("IdFromQueue").compareTo("") != 0) {
+                            idFromQueue = request.getParameter("IdFromQueue");
+                        } else {
+                            idFromQueue = new String("");
+                        }
 
                         String timeout;
                         if (request.getParameter("timeout") != null && request.getParameter("timeout").compareTo("") != 0) {
@@ -348,6 +359,7 @@
                 <input hidden="hidden" id="defPageSource" value="<%=pageSource%>">
                 <input hidden="hidden" id="defManualExecution" value="<%=manualExecution%>">
                 <input hidden="hidden" id="defTag" value="<%=tag%>">
+                <input hidden="hidden" id="IdFromQueue" name="IdFromQueue" value="<%=idFromQueue%>">
                 <div class="filters" style="clear:both; width:100%">
                     <p style="float:left" class="dttTitle">Choose Test</p>
                     <div id="dropDownDownArrow" style="float:left">
@@ -631,12 +643,18 @@
                 var testcase = $("#testcase option:selected").val();
                 var env = $("#environment option:selected").val();
                 var country = $("#country option:selected").val();
+                var idFromQueue = $("#IdFromQueue").val();
+                var tag = $("#tag").val();
                 var manualExec = $("#manualExecution option:selected").val();
                 $.getJSON('GetTestCase?test=' + test + "&testcase=" + testcase, function(data) {
 
 
                     if (manualExec === "Y") {
-                        openRunManualPopin(test, testcase, env, country);
+                        if (typeof test==='undefined' ||typeof testcase==='undefined' ||typeof env==='undefined' ||typeof country==='undefined'){
+                            alert("Testcase cannot be executed : Mandatory parameter(s) is(are) missing\n\ntest : "+test+"\ntestcase : "+testcase+"\ncountry : "+country+"\nenvironment : "+env);
+                        }else{
+                        openRunManualPopin(test, testcase, env, country, idFromQueue, tag);
+                    }
                     } else {
                         if (data.group === "MANUAL") {
                             alert("You cannot automatically execute manual testcase");

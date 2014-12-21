@@ -67,8 +67,8 @@ public class TestCaseStepExecutionDAO implements ITestCaseStepExecutionDAO {
      */
     @Override
     public void insertTestCaseStepExecution(TestCaseStepExecution testCaseStepExecution) {
-        final String query = "INSERT INTO testcasestepexecution(id, test, testcase, step, batnumexe, returncode, start, END, fullstart, fullend) "
-                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        final String query = "INSERT INTO testcasestepexecution(id, test, testcase, step, batnumexe, returncode, start, END, fullstart, fullend, returnMessage) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -93,6 +93,7 @@ public class TestCaseStepExecutionDAO implements ITestCaseStepExecutionDAO {
                 DateFormat df = new SimpleDateFormat(DateUtil.DATE_FORMAT_TIMESTAMP);
                 preStat.setString(9, df.format(testCaseStepExecution.getStart()));
                 preStat.setString(10, df.format(testCaseStepExecution.getEnd()));
+                preStat.setString(11, testCaseStepExecution.getReturnMessage());
                 MyLogger.log(TestCaseStepExecutionDAO.class.getName(), Level.DEBUG, "Insert testcasestepexecution " + testCaseStepExecution.getId() + "-"
                         + testCaseStepExecution.getTest() + "-" + testCaseStepExecution.getTestCase() + "-" + testCaseStepExecution.getStep());
 
@@ -118,7 +119,7 @@ public class TestCaseStepExecutionDAO implements ITestCaseStepExecutionDAO {
 
     @Override
     public void updateTestCaseStepExecution(TestCaseStepExecution testCaseStepExecution) {
-        final String query = "UPDATE testcasestepexecution SET returncode = ?, start = ?, fullstart = ?, end = ?, fullend = ?, timeelapsed = ? WHERE id = ? AND step = ? AND test = ? AND testcase = ?";
+        final String query = "UPDATE testcasestepexecution SET returncode = ?, start = ?, fullstart = ?, end = ?, fullend = ?, timeelapsed = ?, returnmessage = ? WHERE id = ? AND step = ? AND test = ? AND testcase = ?";
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -134,10 +135,11 @@ public class TestCaseStepExecutionDAO implements ITestCaseStepExecutionDAO {
                 preStat.setTimestamp(4, timeEnd);
                 preStat.setString(5, df.format(timeEnd));
                 preStat.setFloat(6, (timeEnd.getTime() - timeStart.getTime()) / (float) 1000);
-                preStat.setLong(7, testCaseStepExecution.getId());
-                preStat.setInt(8, testCaseStepExecution.getStep());
-                preStat.setString(9, testCaseStepExecution.getTest());
-                preStat.setString(10, testCaseStepExecution.getTestCase());
+                preStat.setString(7, testCaseStepExecution.getReturnMessage());
+                preStat.setLong(8, testCaseStepExecution.getId());
+                preStat.setInt(9, testCaseStepExecution.getStep());
+                preStat.setString(10, testCaseStepExecution.getTest());
+                preStat.setString(11, testCaseStepExecution.getTestCase());
                 MyLogger.log(TestCaseStepExecutionDAO.class.getName(), Level.DEBUG, "Update testcasestepexecution " + testCaseStepExecution.getId() + "-"
                         + testCaseStepExecution.getTest() + "-" + testCaseStepExecution.getTestCase() + "-" + testCaseStepExecution.getStep());
 
@@ -188,7 +190,8 @@ public class TestCaseStepExecutionDAO implements ITestCaseStepExecutionDAO {
                         long fullend = resultSet.getLong("Fullend");
                         long timeelapsed = resultSet.getLong("timeelapsed");
                         String returnCode = resultSet.getString("returncode");
-                        resultData = factoryTestCaseStepExecution.create(id, test, testcase, step, batNumExe, start, end, fullstart, fullend, timeelapsed, returnCode, null, null, null,null,null,null,0);
+                        String returnMessage  = resultSet.getString("returnMessage");
+                        resultData = factoryTestCaseStepExecution.create(id, test, testcase, step, batNumExe, start, end, fullstart, fullend, timeelapsed, returnCode, returnMessage);
                         result.add(resultData);
                     }
                 } catch (SQLException exception) {

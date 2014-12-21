@@ -77,12 +77,15 @@ public interface ICountryEnvironmentApplicationService {
      * @param individualSearch
      * @return 
      */
-    public List<CountryEnvironmentApplication> findListByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch);
+    public List<CountryEnvironmentApplication> findListByCriteria(String system, String country, String env, int start, int amount, String column, String dir, String searchTerm, String individualSearch);
 
     /**
      * Find the number of CountryEnvironmentApplication found respecting the search criteria
      * @param searchTerm
+     * @param inds
      * @return 
      */
-    public Integer count(String searchTerm);
+    public Integer countPerCriteria(String searchTerm, String inds);
+
+    public List<CountryEnvironmentApplication> findListByCriteria(String system, String country, String environment);
 }

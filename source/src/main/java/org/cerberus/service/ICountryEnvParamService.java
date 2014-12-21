@@ -75,12 +75,14 @@ public interface ICountryEnvParamService {
      * @param individualSearch
      * @return 
      */
-    public List<CountryEnvParam> findListByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch);
+    public List<CountryEnvParam> findListByCriteria(String system, int start, int amount, String column, String dir, String searchTerm, String individualSearch);
 
     /**
      * Find the number of CountryEnvParam found respecting the search criteria
      * @param searchTerm
      * @return 
      */
-    public Integer count(String searchTerm);
+    public Integer count(String searchTerm, String inds);
+
+    public List<CountryEnvParam> findListByCriteria(String system);
 }

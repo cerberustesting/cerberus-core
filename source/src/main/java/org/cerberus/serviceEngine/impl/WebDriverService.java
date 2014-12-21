@@ -68,13 +68,11 @@ import org.springframework.stereotype.Service;
  * @author bcivel
  */
 @Service
-public class WebDriverService implements IWebDriverService{
-
+public class WebDriverService implements IWebDriverService {
 
     private static final int TIMEOUT_MILLIS = 30000;
     private static final int TIMEOUT_WEBELEMENT = 300;
 
-    
     private By getIdentifier(String input) {
         String identifier;
         String locator;
@@ -131,6 +129,7 @@ public class WebDriverService implements IWebDriverService{
                 wait.until(ExpectedConditions.presenceOfElementLocated(locator));
             }
         } catch (TimeoutException exception) {
+            MyLogger.log(RunTestCaseService.class.getName(), Level.FATAL, "Exception waiting for element :" +exception);
             throw new NoSuchElementException(input);
         }
         MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Finding Element : " + input);
@@ -160,7 +159,7 @@ public class WebDriverService implements IWebDriverService{
 
         if (webElement.getTagName().equalsIgnoreCase("select")) {
             if (webElement.getAttribute("disabled") == null || webElement.getAttribute("disabled").isEmpty()) {
-                Select select = (Select) webElement;
+                Select select = new Select(webElement);
                 result = select.getFirstSelectedOption().getText();
             } else {
                 result = webElement.getText();
@@ -291,23 +290,30 @@ public class WebDriverService implements IWebDriverService{
         return strings[1];
     }
 
-    
     @Override
     public BufferedImage takeScreenShot(Session session) {
         BufferedImage newImage = null;
-        try {
-            WebDriver augmentedDriver = new Augmenter().augment(session.getDriver());
-            File image = ((TakesScreenshot) augmentedDriver).getScreenshotAs(OutputType.FILE);
-            BufferedImage bufferedImage = ImageIO.read(image);
+        boolean event = true;
+        long timeout = System.currentTimeMillis() + (1000 * session.getDefaultWait());
+        //Try to capture picture. Try again until timeout is WebDriverException is raised.
+        while (event) {
+            try {
+                WebDriver augmentedDriver = new Augmenter().augment(session.getDriver());
+                File image = ((TakesScreenshot) augmentedDriver).getScreenshotAs(OutputType.FILE);
+                BufferedImage bufferedImage = ImageIO.read(image);
 
-            newImage = new BufferedImage(bufferedImage.getWidth(), bufferedImage.getHeight(), BufferedImage.TYPE_INT_RGB);
-            newImage.createGraphics().drawImage(bufferedImage, 0, 0, Color.WHITE, null);
-        } catch (IOException exception) {
-            MyLogger.log(WebDriverService.class.getName(), Level.WARN, exception.toString());
-        } catch (WebDriverException exception) {
-            //TODO check why occur
-            //possible that the page still loading
-            MyLogger.log(WebDriverService.class.getName(), Level.WARN, exception.toString());
+                newImage = new BufferedImage(bufferedImage.getWidth(), bufferedImage.getHeight(), BufferedImage.TYPE_INT_RGB);
+                newImage.createGraphics().drawImage(bufferedImage, 0, 0, Color.WHITE, null);
+                return newImage;
+            } catch (IOException exception) {
+                MyLogger.log(WebDriverService.class.getName(), Level.WARN, exception.toString());
+                event=false;
+            } catch (WebDriverException exception) {
+                if (System.currentTimeMillis() >= timeout) {
+                    MyLogger.log(WebDriverService.class.getName(), Level.WARN, exception.toString());
+                    event=false;
+                }
+            }
         }
         return newImage;
     }
@@ -342,7 +348,7 @@ public class WebDriverService implements IWebDriverService{
     }
 
     @Override
-    public MessageEvent doSeleniumActionClick(Session session, String string1, String string2) {
+    public MessageEvent doSeleniumActionClick(Session session, String string1, String string2, boolean waitForVisibility, boolean waitForClickability) {
         MessageEvent message;
         try {
             if (!StringUtil.isNull(string1)) {
@@ -350,7 +356,7 @@ public class WebDriverService implements IWebDriverService{
 //                    Actions actions = new Actions(selenium.getDriver());
 //                    actions.click(this.getSeleniumElement(selenium, string1, true, true));
 //                    actions.build().perform();
-                    this.getSeleniumElement(session, string1, true, true).click();
+                    this.getSeleniumElement(session, string1, waitForVisibility, waitForClickability).click();
                     message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CLICK);
                     message.setDescription(message.getDescription().replaceAll("%ELEMENT%", string1));
                     return message;
@@ -646,7 +652,9 @@ public class WebDriverService implements IWebDriverService{
             Actions actions = new Actions(session.getDriver());
             if (!StringUtil.isNull(property)) {
                 try {
-                    actions.doubleClick(this.getSeleniumElement(session, property, true, true));
+                    WebElement element = this.getSeleniumElement(session, property, true, true);
+                    actions.doubleClick(element);
+                    actions.build().perform();
                     message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_DOUBLECLICK);
                     message.setDescription(message.getDescription().replaceAll("%ELEMENT%", property));
                     return message;
@@ -658,13 +666,15 @@ public class WebDriverService implements IWebDriverService{
                 }
             } else if (!StringUtil.isNull(html)) {
                 try {
-                    actions.doubleClick(this.getSeleniumElement(session, html, true, true));
+                    WebElement element = this.getSeleniumElement(session, html, true, true);
+                    actions.doubleClick(element);
+                    actions.build().perform();
                     message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_DOUBLECLICK);
                     message.setDescription(message.getDescription().replaceAll("%ELEMENT%", html));
                     return message;
                 } catch (NoSuchElementException exception) {
                     message = new MessageEvent(MessageEventEnum.ACTION_FAILED_DOUBLECLICK_NO_SUCH_ELEMENT);
-                    message.setDescription(message.getDescription().replaceAll("%ELEMENT%", property));
+                    message.setDescription(message.getDescription().replaceAll("%ELEMENT%", html));
                     MyLogger.log(WebDriverService.class.getName(), Level.DEBUG, exception.toString());
                     return message;
                 }
@@ -1068,8 +1078,8 @@ public class WebDriverService implements IWebDriverService{
     @Override
     public MessageEvent doSeleniumActionUrlLogin(Session session, String host, String uri) {
         MessageEvent message;
-        
-        String url = "http://" + host + (host.endsWith("/") ? uri.replace("/","") : uri);
+
+        String url = "http://" + host + (host.endsWith("/") ? uri.replace("/", "") : uri);
         try {
             session.getDriver().get(url);
             message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_URLLOGIN);
@@ -1227,4 +1237,3 @@ public class WebDriverService implements IWebDriverService{
     }
 
 }
-

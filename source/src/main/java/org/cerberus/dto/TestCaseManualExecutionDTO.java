@@ -40,7 +40,7 @@ public class TestCaseManualExecutionDTO implements ITestCaseManualExecutionDTO {
     public List<TestCaseManualExecution> findTestCaseManualExecution(TCase testCase, String text, String system, String country, String env, String campaign, String battery) {
         List<TestCaseManualExecution> list = null;
         final String query = "SELECT tc.test, tc.testcase, tc.behaviororvalueexpected, tc.howto, tcc.country, a.application, a.system, a.type, CONCAT( CONCAT( cep.ip , cep.url ), cep.urllogin ) AS url, cenvp.build, cenvp.revision, tce.controlstatus, tce.end, tce.id, tce.build as lastbuild, tce.revision as lastrevision " +
-                "FROM testcase tc " +
+                ", tce.start FROM testcase tc " +
                 "  JOIN testcasecountry tcc " +
                 "    ON (tc.test = tcc.test AND tc.testcase=tcc.testcase) " +
                 "  JOIN testbatterycontent tbc " +

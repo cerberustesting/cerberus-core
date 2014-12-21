@@ -49,5 +49,7 @@ public interface IFactoryTCase {
                  String targetSprint, String targetRevision, String comment,  String dateCrea);
 
     TCase create(String test, String testCase);
+    
+    TCase create(String test, String testCase, String description);
 
 }

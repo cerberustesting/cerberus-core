@@ -32,4 +32,6 @@ public interface IFactoryCountryEnvParam {
             String eMailBodyDisableEnvironment, boolean active, boolean maintenanceAct, String maintenanceStr, String maintenanceEnd);
     
     CountryEnvParam create(String system, String country, boolean active);
+
+    public CountryEnvParam create(String system, String country, String env);
 }

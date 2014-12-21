@@ -71,6 +71,11 @@ public class CountryEnvironmentDatabaseService implements ICountryEnvironmentDat
     public Integer count(String searchTerm) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
+
+    @Override
+    public List<CountryEnvironmentDatabase> findListByCriteria(String system, String country, String environment) throws CerberusException {
+        return countryEnvironmentDatabaseDao.findListByCriteria(system, country, environment);
+    }
     
     
 }

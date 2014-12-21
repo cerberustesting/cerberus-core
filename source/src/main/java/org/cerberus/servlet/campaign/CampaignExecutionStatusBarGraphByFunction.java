@@ -21,9 +21,12 @@ package org.cerberus.servlet.campaign;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Level;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -100,6 +103,7 @@ public class CampaignExecutionStatusBarGraphByFunction extends HttpServlet {
              * Feed hash map with execution from the two list (to get only one by test,testcase,country,env,browser)
              */
             HashMap<String, TestCaseWithExecution> testCaseWithExecutionsList = new HashMap();
+            SimpleDateFormat formater = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
             
             for (TestCaseWithExecution testCaseWithExecution : testCaseWithExecutions) {
                 String key = testCaseWithExecution.getBrowser() + "_" 
@@ -115,9 +119,12 @@ public class CampaignExecutionStatusBarGraphByFunction extends HttpServlet {
                         + testCaseWithExecutionInQueue.getEnvironment() + "_" 
                         + testCaseWithExecutionInQueue.getTest() + "_" 
                         + testCaseWithExecutionInQueue.getTestCase();
+                if ((testCaseWithExecutionsList.containsKey(key) 
+                        && formater.parse(testCaseWithExecutionsList.get(key).getStart()).before(formater.parse(testCaseWithExecutionInQueue.getStart())))
+                        || !testCaseWithExecutionsList.containsKey(key)){
                 testCaseWithExecutionsList.put(key, testCaseWithExecutionInQueue);
             }
-
+             }
             testCaseWithExecutions = new ArrayList<TestCaseWithExecution>(testCaseWithExecutionsList.values());
             
             HashMap<String, List<String>> datas = generateMultiBarAxisFromStatus(testCaseWithExecutions);
@@ -141,6 +148,9 @@ public class CampaignExecutionStatusBarGraphByFunction extends HttpServlet {
 
             axis.add(GraphicHelper.generateAxisForMultiBar("FA", 
                     datas.get("FA").toArray(new String[1]),"#FDB45C","#FFC870","#FFE890"));
+            
+            axis.add(GraphicHelper.generateAxisForMultiBar("CA", 
+                    datas.get("CA").toArray(new String[1]),"#FDB45C","#FFC870","#FFE890"));
 
             JSONObject jSONResult = GraphicHelper.generateChart(
                     GraphicHelper.ChartType.MultiBar, 
@@ -152,6 +162,8 @@ public class CampaignExecutionStatusBarGraphByFunction extends HttpServlet {
         } catch (CerberusException ex) {
             LOGGER.error(ex);
 
+        } catch (ParseException ex) {
+            java.util.logging.Logger.getLogger(CampaignExecutionStatusBarGraphByFunction.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
             out.close();
         }
@@ -193,7 +205,7 @@ public class CampaignExecutionStatusBarGraphByFunction extends HttpServlet {
     @Override
     public String getServletInfo() {
         return "Short description";
-    }// </editor-fold>
+    }// </editor-fold>// </editor-fold>
 
     private HashMap<String, List<String>> generateMultiBarAxisFromStatus(List<TestCaseWithExecution> testCaseWithExecutions) {
         HashMap<String, List<String>> results = new HashMap<String, List<String>>();
@@ -206,6 +218,7 @@ public class CampaignExecutionStatusBarGraphByFunction extends HttpServlet {
         results.put("NE", new ArrayList<String>());
         results.put("PE", new ArrayList<String>());
         results.put("FA", new ArrayList<String>());
+        results.put("CA", new ArrayList<String>());
         
         int index;
         String key;
@@ -226,6 +239,7 @@ public class CampaignExecutionStatusBarGraphByFunction extends HttpServlet {
                 results.get("NE").add("0");
                 results.get("PE").add("0");
                 results.get("FA").add("0");
+                results.get("CA").add("0");
 
                 results.get("total").add("0");
             }

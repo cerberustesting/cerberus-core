@@ -37,6 +37,7 @@ import org.cerberus.service.IApplicationService;
 import org.cerberus.service.ICountryEnvParamService;
 import org.cerberus.service.ICountryEnvironmentApplicationService;
 import org.cerberus.service.IInvariantService;
+import org.cerberus.service.ITestCaseExecutionInQueueService;
 import org.cerberus.service.ITestCaseExecutionService;
 import org.cerberus.service.ITestCaseService;
 import org.cerberus.serviceEngine.IExecutionCheckService;
@@ -74,6 +75,8 @@ public class ExecutionStartService implements IExecutionStartService {
     ExecutionUUID executionUUIDObject;
     @Autowired
     private ISeleniumServerService serverService;
+    @Autowired
+    private ITestCaseExecutionInQueueService testCaseExecutionInQueueService;
 
     @Override
     public TestCaseExecution startExecution(TestCaseExecution tCExecution) throws CerberusException {
@@ -369,8 +372,18 @@ public class ExecutionStartService implements IExecutionStartService {
         }
 
         MyLogger.log(ExecutionStartService.class.getName(), Level.DEBUG, tCExecution.getId() + " - RunID Registered on database.");
+        
+        /**
+         * If execution from queue, remove it from the queue
+         */
+        try{
+        if (tCExecution.getIdFromQueue()!=0){
+            testCaseExecutionInQueueService.remove(tCExecution.getIdFromQueue());
+            }
+        }catch (CerberusException ex){
+        MyLogger.log(ExecutionStartService.class.getName(), Level.WARN, ex.getMessageError().getDescription());
+        }
 
-//        tCExecution.setResultMessage(new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_APPLICATION_NOT_FOUND));
         return tCExecution;
     }
 

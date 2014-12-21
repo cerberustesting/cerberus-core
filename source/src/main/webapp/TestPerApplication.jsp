@@ -157,6 +157,20 @@
                 </thead>
                 <tbody>
                 </tbody>
+                <tfoot>
+                    <tr>
+                        <th>GRAND TOTAL</th>
+                        <th>Total</th>
+                            <%
+                                for (Invariant i : myInvariants) {
+
+                            %>
+                        <th><%=i.getValue()%></th>
+                            <%
+                                }
+                            %>
+                    </tr> 
+                </tfoot>
             </table>
         </div>
                     <br>
@@ -180,6 +194,12 @@
                     <script type="text/javascript">
 
             $(document).ready(function() {
+                    var numberOfCol = [];
+            <%
+                for (int i = 0; i < myInvariants.size(); i++) {
+            %>
+                numberOfCol.push("<%=i%>");
+            <% }%>
                 var mySys = getSys();
                 var myApp = '<%=applicationL.getApplication()%>';
                 var tableName = '#testTable'+myApp.replace('.','\\.');
@@ -195,6 +215,19 @@
                     "bSearchable": true,
                     "aTargets": [0],
                     "iDisplayLength": 10,
+                    "fnFooterCallback": function(nRow, aaData, iStart, iEnd, aiDisplay) {
+                            var nCells = nRow.getElementsByTagName('th');
+                            for (var j = 0; j < numberOfCol.length+1; j++) {
+                                var iTotalDebit = 0;
+                                for (var i = 0; i < aaData.length; i++) {
+                                    iTotalDebit += parseInt(aaData[i][j + 1] === null ? 0 : aaData[i][j + 1]);
+                                }
+                                nCells[j + 1].innerHTML = iTotalDebit;
+                            }
+                            $('#testTable<%=applicationL.getApplication()%> tfoot th').css('text-align', 'center');
+                            $('#testTable<%=applicationL.getApplication()%> tfoot th').css('padding', '3px 5px');
+                            $('#testTable<%=applicationL.getApplication()%> tfoot th').css('font-weight', 'bold');
+                        },
                     "aoColumns": [
                         {"sName": "Test", "sWidth": "40%"},
                         {"sName": "Total", "sWidth": "10%"}

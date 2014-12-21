@@ -16,7 +16,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus. If not, see <http://www.gnu.org/licenses/>.
- --%>
+--%>
 <%@page import="org.cerberus.service.IDatabaseVersioningService"%>
 <% Date DatePageStart = new Date();%>
 
@@ -69,56 +69,72 @@
         <%@ include file="include/function.jsp"%>
         <%@ include file="include/header.jsp"%>
 
-<%
+        <%
             IInvariantService invariantService = appContext.getBean(IInvariantService.class);
             String MySystem = request.getAttribute("MySystem").toString();
-%>
+        %>
         <script type="text/javascript">
 
             $(document).ready(function() {
+                var numberOfCol = [];
+            <%
+                List<Invariant> myInvariants = invariantService.findInvariantByIdGp1("TCSTATUS", "Y");
+                for (int i = 0; i < myInvariants.size(); i++) {
+            %>
+                numberOfCol.push("<%=i%>");
+            <% }%>
                 var mySys = getSys();
                 var oTable = $('#testTable').dataTable({
-                    "aaSorting": [[0, "asc"]],
-                    "bServerSide": false,
-                    "sAjaxSource": "Homepage?MySystem=<%=MySystem%>",
-                    "bJQueryUI": true,
-                    "bProcessing": true,
-                    "bPaginate": true,
-                    "bAutoWidth": false,
-                    "sPaginationType": "full_numbers",
-                    "bSearchable": true,
-                    "aTargets": [0],
-                    "iDisplayLength": 25,
-                    "aoColumns": [
+                "aaSorting": [[0, "asc"]],
+                        "bServerSide": false,
+                        "sAjaxSource": "Homepage?MySystem=<%=MySystem%>",
+                        "bJQueryUI": true,
+                        "bProcessing": true,
+                        "bPaginate": true,
+                        "bAutoWidth": false,
+                        "sPaginationType": "full_numbers",
+                        "bSearchable": true,
+                        "aTargets": [0],
+                        "iDisplayLength": 25,
+                        "fnFooterCallback": function(nRow, aaData, iStart, iEnd, aiDisplay) {
+                            var nCells = nRow.getElementsByTagName('th');
+                            for (var j = 0; j < numberOfCol.length+1; j++) {
+                                var iTotalDebit = 0;
+                                for (var i = 0; i < aaData.length; i++) {
+                                    iTotalDebit += parseInt(aaData[i][j + 1] === null ? 0 : aaData[i][j + 1]);
+                                }
+                                nCells[j + 1].innerHTML = iTotalDebit;
+                            }
+                            $('#testTable tfoot th').css('text-align', 'center');
+                            $('#testTable tfoot th').css('padding', '3px 5px');
+                            $('#testTable tfoot th').css('font-weight', 'bold');
+                        },
+                        "aoColumns": [
                         {"sName": "Application", "sWidth": "40%"},
                         {"sName": "Total", "sWidth": "10%"}
-                        <%
-                                    List<Invariant> myInvariants = invariantService.findInvariantByIdGp1("TCSTATUS", "Y");
-            for (Invariant i : myInvariants) {
+            <%
+                //List<Invariant> myInvariants = invariantService.findInvariantByIdGp1("TCSTATUS", "Y");
+                for (Invariant i : myInvariants) {
 
-                        %>
-                        ,{"sName": "<%=i.getValue()%>"}
-                                            <%
-                                                                                       }
-                                            %>
+            %>
+                        , {"sName": "<%=i.getValue()%>"}
+            <% } %>
 
-                    ]
-                    
-                }
+                        ]
+
+
+            }
             );
-            });
+            });</script>
+            <%
 
-
-        </script>
-        <%
-
-            IDatabaseVersioningService DatabaseVersioningService = appContext.getBean(IDatabaseVersioningService.class);
+                IDatabaseVersioningService DatabaseVersioningService = appContext.getBean(IDatabaseVersioningService.class);
                 if (!(DatabaseVersioningService.isDatabaseUptodate()) && request.isUserInRole("Administrator")) {%>
         <script>
-            var r=confirm("WARNING : Database Not Uptodate >> Redirect to the DatabaseMaintenance page ?");
-            if (r==true)
+                    var r = confirm("WARNING : Database Not Uptodate >> Redirect to the DatabaseMaintenance page ?");
+            if (r == true)
             {
-                location.href='./DatabaseMaintenance.jsp';
+                location.href = './DatabaseMaintenance.jsp';
             }
         </script>
 
@@ -132,18 +148,32 @@
                     <tr>
                         <th>Application</th>
                         <th>Total</th>
-                        <%
-            for (Invariant i : myInvariants) {
+                            <%
+                                for (Invariant i : myInvariants) {
 
-                        %>
+                            %>
                         <th><%=i.getValue()%></th>
-                                            <%
-                                                                                       }
-                                            %>
+                            <%
+                                }
+                            %>
                     </tr>
                 </thead>
                 <tbody>
                 </tbody>
+                <tfoot>
+                    <tr>
+                        <th>GRAND TOTAL</th>
+                        <th>Total</th>
+                            <%
+                                for (Invariant i : myInvariants) {
+
+                            %>
+                        <th><%=i.getValue()%></th>
+                            <%
+                                }
+                            %>
+                    </tr> 
+                </tfoot>
             </table>
         </div>
         <br><% out.print(display_footer(DatePageStart));%>

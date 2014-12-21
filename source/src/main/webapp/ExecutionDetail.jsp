@@ -262,7 +262,8 @@
                             %><td class="<%=controlStatus%>"><a class="<%=controlStatus%>F"><span id="res_status"><%=controlStatus%></span></a></td>
                     </tr>
                     <tr style="font-style: italic">
-                        <td style="font-weight: bold;" colspan=3><%out.print(docService.findLabelHTML("testcaseexecution", "tag", "Tag"));%></td>
+                        <td style="font-weight: bold;" colspan=2><%out.print(docService.findLabelHTML("testcaseexecution", "tag", "Tag"));%></td>
+                        <td style="font-weight: bold;">Link to ExecutionPerTag</td>
                         <td style="font-weight: bold;" colspan=7><%out.print(docService.findLabelHTML("testcaseexecution", "controlmessage", "Message"));%></td>
                         <td style="font-weight: bold;"><%out.print(docService.findLabelHTML("testcaseexecution", "Executor", "Executor"));%></td>
                         <td style="font-weight: bold;"><%out.print(docService.findLabelHTML("testcaseexecution", "verbose", "Verbose"));%></td>
@@ -270,7 +271,8 @@
                         <td style="font-weight: bold;"><%out.print(docService.findLabelHTML("testcaseexecution", "crbversion", "Engine Version"));%></td>
                     </tr>
                     <tr>
-                        <td colspan=3><span id="exetag"><%= testCaseExecution.getTag() == null ? "" : testCaseExecution.getTag()%></span></td>
+                        <td colspan=2><span id="exetag"><%= testCaseExecution.getTag() == null ? "" : testCaseExecution.getTag()%></span></td>
+                        <td><span id="exetaglink"><%= testCaseExecution.getTag() == null ? "" : "<a href='ReportingExecutionByTag.jsp?Tag=" + testCaseExecution.getTag() + "'>link</a>"%></span></td>
                         <td colspan=7><span id="exemsg"><%= testCaseExecution.getControlMessage() == null ? "" : testCaseExecution.getControlMessage() %></span></td>
                         <td><span id="exemsg"><%=executor%></span></td>
                         <td><span id="exeverbose"><%= String.valueOf(testCaseExecution.getVerbose()) %></span></td>
@@ -498,8 +500,8 @@
                                         <td style="width:5%"><%=myActionData.getSequence()%></td>
                                         <td style="width:20%"<%=actionDesc%>><%=descAction%></td>
                                         <td style="width:20%"<%=actionDesc%>><b><%=myActionData.getAction()%></b></td>
-                                        <td style="width:20%"><%=StringUtil.replaceUrlByLinkInString(myActionData.getObject())%></td>
-                                        <td style="width:20%"><%=StringUtil.replaceUrlByLinkInString(myActionData.getProperty())%></td>
+                                        <td style="width:20%"><%=StringUtil.textToHtmlConvertingURLsToLinks(myActionData.getObject())%></td>
+                                        <td style="width:20%"><%=StringUtil.textToHtmlConvertingURLsToLinks(myActionData.getProperty())%></td>
                                         <td style="width:2%"><%if (myActionData.getScreenshotFilename() != null) {%>
                                             <a href="<%=PictureURL%><%=myActionData.getScreenshotFilename().replaceAll("\\\\", "/")%>" id="ACTIMG-<%=myStep + "-" + myActionData.getSequence()%>" class="zoombox  zgallery1">img</a>
                                             <%}%>
@@ -555,8 +557,8 @@
                                                     <td data-id="<%=myAction + "-" + myControlData.getControl()%>" class="control <%=myControlData.getControl()%>"><%=myControlData.getControl()%></td>
                                                     <td<%=controlDesc%>><%=descControl%></td>
                                                     <td<%=controlDesc%>><b><%=myControlData.getControlType()%></b></td>
-                                                    <td id="CTLPRP-<%=myAction + "-" + myControlData.getControl()%>"><%=StringUtil.replaceUrlByLinkInString(myControlData.getControlProperty())%></td>
-                                                    <td id="CTLVAL-<%=myAction + "-" + myControlData.getControl()%>"><%=StringUtil.replaceUrlByLinkInString(myControlData.getControlValue())%></td>
+                                                    <td id="CTLPRP-<%=myAction + "-" + myControlData.getControl()%>"><%=StringUtil.textToHtmlConvertingURLsToLinks(myControlData.getControlProperty())%></td>
+                                                    <td id="CTLVAL-<%=myAction + "-" + myControlData.getControl()%>"><%=StringUtil.textToHtmlConvertingURLsToLinks(myControlData.getControlValue())%></td>
                                                     <td><%=myControlData.getFatal()%></td>
                                                     <td><%if (myControlData.getScreenshotFilename() != null) {%>
                                                         <a href="<%=PictureURL%><%=myControlData.getScreenshotFilename().replaceAll("\\\\", "/")%>" class="zoombox  zgallery1">img</a>
@@ -602,10 +604,10 @@
                             <td><%=DateUtil.getFormatedDate(myData.getStartLong())%></td>
                             <td><%=DateUtil.getFormatedElapsed(myData.getStartLong(), myData.getEndLong())%></td>
                             <td><b><span id="PROP-<%=myData.getProperty()%>"><%=myData.getProperty()%></span></b></td>
-                            <td><b><i><span id="PROPVAL-<%=myData.getProperty()%>"><%=myData.getValue()%></span></i></b></td>
+                            <td><b><i><span id="PROPVAL-<%=myData.getProperty()%>"><%=StringUtil.textToHtmlConvertingURLsToLinks(myData.getValue())%></span></i></b></td>
                             <td style="font-size: x-small"><%=myData.getType()%></td>
-                            <td style="font-size: x-small"><%=myData.getValue1()%> / <%=myData.getValue2()%></td>
-                            <td><span id="PROPMES-<%=myData.getProperty()%>"><%=myData.getrMessage()%></span></td>
+                            <td style="font-size: x-small"><%=StringUtil.textToHtmlConvertingURLsToLinks(myData.getValue1())%> / <%=myData.getValue2()%></td>
+                            <td><span id="PROPMES-<%=myData.getProperty()%>"><%=StringUtil.textToHtmlConvertingURLsToLinks(myData.getrMessage())%></span></td>
                         </tr>
                         <%
                             }
@@ -669,7 +671,7 @@
                             if (refresh !== 'Stop') {
                                 location.href = './ExecutionDetail.jsp?id_tc=' + idtc
                             }
-                        }, 1000);
+                        }, 5000);
 
                     }
 

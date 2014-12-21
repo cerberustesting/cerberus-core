@@ -79,13 +79,18 @@ public class CountryEnvironmentApplicationService implements ICountryEnvironment
     }
 
     @Override
-    public List<CountryEnvironmentApplication> findListByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public List<CountryEnvironmentApplication> findListByCriteria(String system, String country, String env, int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
+        return countryEnvironmentParametersDao.findListByCriteria(system, country, env, start, amount,column, dir, searchTerm, individualSearch);
     }
 
     @Override
-    public Integer count(String searchTerm) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public Integer countPerCriteria(String searchTerm, String inds) {
+        return countryEnvironmentParametersDao.count(searchTerm, inds);
     }
 
-}
+    @Override
+    public List<CountryEnvironmentApplication> findListByCriteria(String system, String country, String environment) {
+        return countryEnvironmentParametersDao.findListByCriteria(system, country, environment);
+    }
+
+    }

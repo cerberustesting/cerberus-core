@@ -156,6 +156,7 @@ public class ExecuteNextInQueue extends HttpServlet {
 				: ParameterParserUtil.DEFAULT_BOOLEAN_FALSE_VALUE);
 		paramRequestMaker.addParam(RunTestCase.PARAMETER_PAGE_SOURCE, Integer.toString(lastInQueue.getPageSource()));
 		paramRequestMaker.addParam(RunTestCase.PARAMETER_SELENIUM_LOG, Integer.toString(lastInQueue.getSeleniumLog()));
+                paramRequestMaker.addParam(RunTestCase.PARAMETER_EXECUTION_QUEUE_ID, Long.toString(lastInQueue.getId()));
 		return paramRequestMaker;
 	}
 

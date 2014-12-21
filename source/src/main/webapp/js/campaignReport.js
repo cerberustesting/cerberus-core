@@ -85,9 +85,7 @@ function addTestCaseToStatusTabs(testcase) {
     statusTestCaseStatusLine.find(".Comment").text(testcase.Comment);
     statusTestCaseStatusLine.find(".ControlMessage").text(testcase.ControlMessage);
     
-    var date = new Date();
-    date.setTime(testcase.Start);
-    statusTestCaseStatusLine.find(".Start").text(date.toLocaleString());
+    statusTestCaseStatusLine.find(".Start").text(testcase.Start);
 
     statusTestCaseStatusLine.find(".ShortDescription").append(testcase.ShortDescription);
 

@@ -7,3 +7,6 @@
 *~
 *.bak
 /source/target/
+/target
+/.project
+/.settings

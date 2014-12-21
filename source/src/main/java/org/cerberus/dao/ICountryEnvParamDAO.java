@@ -58,4 +58,26 @@ public interface ICountryEnvParamDAO {
      * @throws CerberusException 
      */
     void create(CountryEnvParam cep) throws CerberusException;
+
+    /**
+     * 
+     * @param start
+     * @param amount
+     * @param column
+     * @param dir
+     * @param searchTerm
+     * @param individualSearch
+     * @return 
+     */
+    public List<CountryEnvParam> findListByCriteria(String system, int start, int amount, String column, String dir, String searchTerm, String individualSearch);
+
+    /**
+     * 
+     * @param searchTerm
+     * @param inds
+     * @return 
+     */
+    public Integer count(String searchTerm, String inds);
+
+    public List<CountryEnvParam> findListByCriteria(String system);
 }

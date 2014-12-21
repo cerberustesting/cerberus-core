@@ -77,8 +77,8 @@ public class AddToExecutionQueue extends HttpServlet {
 	private static final String PARAMETER_COUNTRY = "Country";
 	private static final String PARAMETER_ENVIRONMENT = "Environment";
 	private static final String PARAMETER_ROBOT = "Robot";
-	private static final String PARAMETER_ROBOT_IP = "RobotIP";
-	private static final String PARAMETER_ROBOT_PORT = "RobotPort";
+	private static final String PARAMETER_ROBOT_IP = "ss_ip";
+	private static final String PARAMETER_ROBOT_PORT = "ss_p";
 	private static final String PARAMETER_BROWSER = "Browser";
 	private static final String PARAMETER_BROWSER_VERSION = "BrowserVersion";
 	private static final String PARAMETER_PLATFORM = "Platform";

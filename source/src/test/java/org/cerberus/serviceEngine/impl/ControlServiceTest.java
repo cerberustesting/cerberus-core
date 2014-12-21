@@ -1132,6 +1132,7 @@ public class ControlServiceTest {
 
 		when(application.getType()).thenReturn("WS");
 		when(tCExecution.getExecutionUUID()).thenReturn("uuid");
+		when(xmlUnitService.isElementPresent(tCExecution, xpath)).thenReturn(true);
 		when(xmlUnitService.getFromXml("uuid", null, xpath)).thenReturn(actual);
 
 		this.controlService.doControl(tcsace);
@@ -1160,6 +1161,7 @@ public class ControlServiceTest {
 
 		when(application.getType()).thenReturn("WS");
 		when(tCExecution.getExecutionUUID()).thenReturn("uuid");
+		when(xmlUnitService.isElementPresent(tCExecution, xpath)).thenReturn(true);
 		when(xmlUnitService.getFromXml("uuid", null, xpath)).thenReturn(actual);
 
 		this.controlService.doControl(tcsace);
@@ -1188,11 +1190,39 @@ public class ControlServiceTest {
 
 		when(application.getType()).thenReturn("WS");
 		when(tCExecution.getExecutionUUID()).thenReturn("uuid");
+		when(xmlUnitService.isElementPresent(tCExecution, xpath)).thenReturn(true);
 		when(xmlUnitService.getFromXml("uuid", null, xpath)).thenReturn(actual);
 
 		this.controlService.doControl(tcsace);
 
 		Assert.assertEquals(MessageEventEnum.CONTROL_FAILED_TEXTINELEMENT_NULL.getCode(), tcsace.getControlResultMessage().getCode());
+		Assert.assertEquals(msg, tcsace.getControlResultMessage().getDescription());
+    }
+    
+    @Test
+    public void testVerifyTextInElementWhenElementNotExists() {
+		String xpath = "/foo/bar";
+		String expected = "bar";
+		String msg = "Failed to verifyTextInElement because could not find element '" + xpath + "'";
+
+		TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
+		tcsace.setControlType("verifyTextInElement");
+		tcsace.setControlProperty(xpath);
+		tcsace.setControlValue(expected);
+		tcsace.setFatal("Y");
+		TestCaseStepExecution tcse = new TestCaseStepExecution();
+		tcse.settCExecution(tCExecution);
+		TestCaseStepActionExecution tcsae = new TestCaseStepActionExecution();
+		tcsae.setTestCaseStepExecution(tcse);
+		tcsace.setTestCaseStepActionExecution(tcsae);
+
+		when(application.getType()).thenReturn("WS");
+		when(tCExecution.getExecutionUUID()).thenReturn("uuid");
+		when(xmlUnitService.isElementPresent(tCExecution, xpath)).thenReturn(false);
+
+		this.controlService.doControl(tcsace);
+
+		Assert.assertEquals(MessageEventEnum.CONTROL_FAILED_TEXTINELEMENT_NO_SUCH_ELEMENT.getCode(), tcsace.getControlResultMessage().getCode());
 		Assert.assertEquals(msg, tcsace.getControlResultMessage().getDescription());
     }
     
@@ -1215,6 +1245,7 @@ public class ControlServiceTest {
 
 		when(application.getType()).thenReturn("UNKNOWN");
 		when(tCExecution.getExecutionUUID()).thenReturn("uuid");
+		when(xmlUnitService.isElementPresent(tCExecution, xpath)).thenReturn(true);
 		when(xmlUnitService.getFromXml("uuid", null, xpath)).thenReturn(actual);
 
 		this.controlService.doControl(tcsace);
@@ -1243,6 +1274,7 @@ public class ControlServiceTest {
 
 		when(application.getType()).thenReturn("WS");
 		when(tCExecution.getExecutionUUID()).thenReturn("uuid");
+		when(xmlUnitService.isElementPresent(tCExecution, xpath)).thenReturn(true);
 		when(xmlUnitService.getFromXml("uuid", null, xpath)).thenReturn(actual);
 
 		this.controlService.doControl(tcsace);
@@ -1271,6 +1303,7 @@ public class ControlServiceTest {
 
 		when(application.getType()).thenReturn("WS");
 		when(tCExecution.getExecutionUUID()).thenReturn("uuid");
+		when(xmlUnitService.isElementPresent(tCExecution, xpath)).thenReturn(true);
 		when(xmlUnitService.getFromXml("uuid", null, xpath)).thenReturn(actual);
 
 		this.controlService.doControl(tcsace);
@@ -1299,11 +1332,39 @@ public class ControlServiceTest {
 
 		when(application.getType()).thenReturn("WS");
 		when(tCExecution.getExecutionUUID()).thenReturn("uuid");
+		when(xmlUnitService.isElementPresent(tCExecution, xpath)).thenReturn(true);
 		when(xmlUnitService.getFromXml("uuid", null, xpath)).thenReturn(actual);
 
 		this.controlService.doControl(tcsace);
 
 		Assert.assertEquals(MessageEventEnum.CONTROL_FAILED_TEXTNOTINELEMENT_NULL.getCode(), tcsace.getControlResultMessage().getCode());
+		Assert.assertEquals(msg, tcsace.getControlResultMessage().getDescription());
+    }
+    
+    @Test
+    public void testVerifyTextNotInElementWhenElementNotExists() {
+		String xpath = "/foo/bar";
+		String expected = "bar";
+		String msg = "Failed to verifyTextNotInElement because could not find element '" + xpath + "'";
+
+		TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
+		tcsace.setControlType("verifyTextNotInElement");
+		tcsace.setControlProperty(xpath);
+		tcsace.setControlValue(expected);
+		tcsace.setFatal("Y");
+		TestCaseStepExecution tcse = new TestCaseStepExecution();
+		tcse.settCExecution(tCExecution);
+		TestCaseStepActionExecution tcsae = new TestCaseStepActionExecution();
+		tcsae.setTestCaseStepExecution(tcse);
+		tcsace.setTestCaseStepActionExecution(tcsae);
+
+		when(application.getType()).thenReturn("WS");
+		when(tCExecution.getExecutionUUID()).thenReturn("uuid");
+		when(xmlUnitService.isElementPresent(tCExecution, xpath)).thenReturn(false);
+
+		this.controlService.doControl(tcsace);
+
+		Assert.assertEquals(MessageEventEnum.CONTROL_FAILED_TEXTNOTINELEMENT_NO_SUCH_ELEMENT.getCode(), tcsace.getControlResultMessage().getCode());
 		Assert.assertEquals(msg, tcsace.getControlResultMessage().getDescription());
     }
     
@@ -1326,6 +1387,7 @@ public class ControlServiceTest {
 
 		when(application.getType()).thenReturn("UNKNOWN");
 		when(tCExecution.getExecutionUUID()).thenReturn("uuid");
+		when(xmlUnitService.isElementPresent(tCExecution, xpath)).thenReturn(true);
 		when(xmlUnitService.getFromXml("uuid", null, xpath)).thenReturn(actual);
 
 		this.controlService.doControl(tcsace);

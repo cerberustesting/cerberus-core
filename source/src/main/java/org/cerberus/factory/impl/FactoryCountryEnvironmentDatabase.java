@@ -40,7 +40,7 @@ public class FactoryCountryEnvironmentDatabase implements IFactoryCountryEnviron
     }
 
     @Override
-    public CountryEnvironmentDatabase create(String system, String database, String environment, String country, String connectionPoolName) {
+    public CountryEnvironmentDatabase create(String system, String country, String environment, String database, String connectionPoolName) {
         CountryEnvironmentDatabase ced = new CountryEnvironmentDatabase();
         ced.setSystem(system);
         ced.setCountry(country);

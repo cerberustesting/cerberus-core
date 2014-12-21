@@ -168,7 +168,8 @@ public class FindAllTestData extends HttpServlet {
 
             for (TestData testData : testList) {
                 JSONArray row = new JSONArray();
-                row.put(testData.getKey())
+                row.put("Key="+testData.getKey()+"&App="+testData.getApplication()+"&Env="+testData.getEnvironment()+"&Country="+testData.getCountry()+"&")
+                        .put(testData.getKey())
                         .put(testData.getValue())
                         .put(testData.getDescription())
                         .put(testData.getApplication())
