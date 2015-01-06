@@ -345,16 +345,22 @@
                 <artifactId>maven-antrun-plugin</artifactId>
                 <version>${maven-antrun-plugin.version}</version>
                 <executions>
+                    <!-- Upload built artifacts into our SourceForge account during the deploy phase -->
                     <execution>
                         <phase>deploy</phase>
-                        <configuration>
-                            <target>
-                                <scp file="${project.build.directory}/${project.build.finalName}.zip" todir="${sourceforge.username}:${sourceforge.password}@${sourceforge.url}" />
-                            </target>
-                        </configuration>
                         <goals>
                             <goal>run</goal>
                         </goals>
+                        <configuration>
+                            <target>
+                                <scp todir="${sourceforge.username}:${sourceforge.password}@${sourceforge.url}" verbose="true">
+                                    <fileset dir="${project.build.directory}" includes="${project.build.finalName}.*">
+                                        <!-- Select only zip and tar.gz files -->
+                                        <filename regex="(zip|tar\.gz)$"/>
+                                    </fileset>
+                                </scp>
+                            </target>
+                        </configuration>
                     </execution>
                 </executions>
                 <dependencies>
