@@ -340,7 +340,7 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
 
     @Override
     public List<TestCaseStep> getTestCaseStepUsingStepInParamter(String test, String testCase, int step) throws CerberusException {
-        List<TestCaseStep> list = null;
+        List<TestCaseStep> list = new ArrayList<TestCaseStep>();
         final String query = "SELECT * FROM testcasestep WHERE usestep='Y' AND usesteptest = ? AND usesteptestcase = ? AND usestepstep = ?";
 
         Connection connection = this.databaseSpring.connect();
@@ -352,7 +352,6 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
                 preStat.setInt(3, step);
 
                 ResultSet resultSet = preStat.executeQuery();
-                list = new ArrayList<TestCaseStep>();
                 try {
                     while (resultSet.next()) {
                         String t = resultSet.getString("Test");

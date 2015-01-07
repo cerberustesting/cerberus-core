@@ -115,10 +115,14 @@ public class TestCaseStepService implements ITestCaseStepService {
                 if (tcsDifference.hasSameKey(tcsInDatabase)) {
                     this.updateTestCaseStep(tcsDifference);
                     tcsToUpdateOrInsert.remove(tcsDifference);
+                    List<TestCaseStep> tcsDependencyToUpd = new ArrayList<TestCaseStep>();
+                    tcsDependencyToUpd.add(tcsDifference);
+                    updateTestCaseStepUsingTestCaseStepInList(tcsDependencyToUpd);
                 }
             }
         }
         this.insertListTestCaseStep(tcsToUpdateOrInsert);
+        updateTestCaseStepUsingTestCaseStepInList(tcsToUpdateOrInsert);
 
         /**
          * Iterate on (TestCaseStep From Database - TestCaseStep From Page). If
@@ -137,7 +141,21 @@ public class TestCaseStepService implements ITestCaseStepService {
                     }
                 }
             }
+            updateTestCaseStepUsingTestCaseStepInList(tcsToDelete);
             this.deleteListTestCaseStep(tcsToDelete);
+            
+        }
+    }
+    
+    private void updateTestCaseStepUsingTestCaseStepInList(List<TestCaseStep> testCaseStepList) throws CerberusException {
+        for (TestCaseStep tcsDifference : testCaseStepList) {
+            if (tcsDifference.isIsStepInUseByOtherTestCase()) {
+                List<TestCaseStep> tcsUsingStep = this.getTestCaseStepUsingStepInParamter(tcsDifference.getTest(), tcsDifference.getTestCase(), tcsDifference.getInitialStep());
+                for (TestCaseStep tcsUS : tcsUsingStep) {
+                    tcsUS.setUseStepStep(tcsDifference.getStep());
+                    this.updateTestCaseStep(tcsUS);
+                }
+            }
         }
     }
 
@@ -160,11 +178,10 @@ public class TestCaseStepService implements ITestCaseStepService {
     public List<TestCaseStep> getStepLibraryBySystemTest(String system, String test) throws CerberusException {
         return testCaseStepDAO.getStepLibraryBySystemTest(system, test);
     }
-    
+
     @Override
     public List<TestCaseStep> getStepLibraryBySystemTestTestCase(String system, String test, String testCase) throws CerberusException {
         return testCaseStepDAO.getStepLibraryBySystemTestTestCase(system, test, testCase);
     }
-
 
 }

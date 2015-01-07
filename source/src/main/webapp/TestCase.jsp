@@ -1094,7 +1094,7 @@
                                         <div id="StepUseStepTestDiv" style="float:left; width:10%">
                                             <select id="step_useStepTest_<%=incrementStep%>" name="step_useStepTest_<%=incrementStep%>" style="width: 100%;margin-top:15px;font-weight: bold;" 
                                                     OnChange="findStepBySystemTest(this.value, '<%=MySystem%>', 'step_useStepTestCase_<%=incrementStep%>')">
-                                                <%  if (tcs.getUseStepTest().equals("")) { %>
+                                                <%  if (tcs.getUseStepTest() == null || tcs.getUseStepTest().equals("")) { %>
                                                 <option style="width: 200px" value="">-- Choose Test --
                                                 </option>
                                                 <%  }
@@ -1115,11 +1115,13 @@
                                                     }
                                                     String testCombo = test;
                                                     for (String tst : tList) {
-                                                if (tcs.getUseStepTest().compareTo(tst) == 0){
+                                                String selected = "";
+                                                if (tcs.getUseStepTest() != null && tcs.getUseStepTest().compareTo(tst) == 0){
                                                 testCombo=tst;
+                                                selected = " SELECTED ";
                                                 }
                                                 %>
-                                                <option style="width: 200px;" value="<%=tst%>" <%= tcs.getUseStepTest().compareTo(tst) == 0 ? " SELECTED " : ""%>><%=tst%>
+                                                <option style="width: 200px;" value="<%=tst%>" <%=selected%>><%=tst%>
                                                 </option>
                                                 <% }
                                                 %>

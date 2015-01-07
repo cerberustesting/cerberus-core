@@ -279,7 +279,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
 
         List<TestCaseStepActionControl> tcsacFromDtb = new ArrayList(tcsacService.findControlByTestTestCase(initialTest, initialTestCase));
         tcsacService.compareListAndUpdateInsertDeleteElements(tcsacFromPage, tcsacFromDtb, duplicate);
-
+        
         List<TestCaseStep> tcsNewFromPage = new ArrayList();
         List<TestCaseStepAction> tcsaNewFromPage = new ArrayList();
         List<TestCaseStepActionControl> tcsacNewFromPage = new ArrayList();
@@ -290,6 +290,11 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
         tcsNewFromDtb = tcsService.getListOfSteps(test, testCase);
         int incrementStep = 0;
         for (TestCaseStep tcsNew : tcsNewFromDtb) {
+            if (tcsService.getTestCaseStepUsingStepInParamter(test, testCase, tcsNew.getStep()).isEmpty()){
+                tcsNew.setIsStepInUseByOtherTestCase(false);
+            }else{
+                tcsNew.setIsStepInUseByOtherTestCase(true);
+            }
             incrementStep++;
             tcsaNewFromDtb = tcsaService.getListOfAction(test, testCase, tcsNew.getStep());
             int incrementAction = 0;
@@ -308,6 +313,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
                 tcsaNew.setStep(incrementStep);
                 tcsaNewFromPage.add(tcsaNew);
             }
+            tcsNew.setInitialStep(tcsNew.getStep());
             tcsNew.setStep(incrementStep);
             tcsNewFromPage.add(tcsNew);
         }
@@ -321,17 +327,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
         List<TestCaseStepActionControl> tcsacNewNewFromDtb = new ArrayList(tcsacService.findControlByTestTestCase(test, testCase));
         tcsacService.compareListAndUpdateInsertDeleteElements(tcsacNewFromPage, tcsacNewNewFromDtb, duplicate);
 
-        /*Update the testcasestep using the steps*/
-        for (TestCaseStep tcsL : tcsFromPage) {
-            if (tcsL.isIsStepInUseByOtherTestCase()) {
-                List<TestCaseStep> tcsUsingStep = tcsService.getTestCaseStepUsingStepInParamter(tcsL.getTest(), tcsL.getTestCase(), tcsL.getInitialStep());
-                for (TestCaseStep tcsUS : tcsUsingStep) {
-                    tcsUS.setUseStepStep(tcsL.getStep());
-                    tcsService.updateTestCaseStep(tcsUS);
-                }
-            }
-        }
-
+        
         /**
          * Adding Log entry.
          */
@@ -472,7 +468,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
                 String inLibrary = getParameterIfExists(request, "step_inLibrary_" + inc);
                 /* If delete, don't add it to the list of steps */
                 if (delete == null) {
-                    TestCaseStep tcStep = testCaseStepFactory.create(test, testCase, step, desc, useStep, useStepTest, useStepTestCase, useStepStep, inLibrary);
+                    TestCaseStep tcStep = testCaseStepFactory.create(test, testCase, step, desc, useStep==null?"N":useStep, useStepTest, useStepTestCase, useStepStep, inLibrary==null?"N":inLibrary);
                     /* Take action and control only if not use step*/
                     if (useStep == null) {
                         tcStep.setTestCaseStepAction(getTestCaseStepActionFromParameter(request, appContext, test, testCase, inc));
@@ -494,7 +490,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
                             }
                         }
                     }
-                    if (stepInUse != null && stepInUse.equals("Y") && initialStep != step) {
+                    if (stepInUse != null && stepInUse.equals("Y")) {
                         tcStep.setIsStepInUseByOtherTestCase(true);
                         tcStep.setInitialStep(initialStep);
                     } else {
