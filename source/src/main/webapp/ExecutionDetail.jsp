@@ -500,8 +500,8 @@
                                         <td style="width:5%"><%=myActionData.getSequence()%></td>
                                         <td style="width:20%"<%=actionDesc%>><%=descAction%></td>
                                         <td style="width:20%"<%=actionDesc%>><b><%=myActionData.getAction()%></b></td>
-                                        <td style="width:20%"><%=StringUtil.textToHtmlConvertingURLsToLinks(myActionData.getObject())%></td>
-                                        <td style="width:20%"><%=StringUtil.textToHtmlConvertingURLsToLinks(myActionData.getProperty())%></td>
+                                        <td style="width:20%"><code><pre><%=StringUtil.textToHtmlConvertingURLsToLinks(myActionData.getObject())%></pre></code></td>
+                                        <td style="width:20%"><code><pre><%=StringUtil.textToHtmlConvertingURLsToLinks(myActionData.getProperty())%></pre></code></td>
                                         <td style="width:2%"><%if (myActionData.getScreenshotFilename() != null) {%>
                                             <a href="<%=PictureURL%><%=myActionData.getScreenshotFilename().replaceAll("\\\\", "/")%>" id="ACTIMG-<%=myStep + "-" + myActionData.getSequence()%>" class="zoombox  zgallery1">img</a>
                                             <%}%>
@@ -514,7 +514,8 @@
                                     <tr class="tableContent">
                                         <td style="width:1%">&nbsp;&nbsp;&nbsp;&nbsp;</td>
                                         <td style="width:1%" class="<%=myActionData.getReturnCode()%>">>></td>
-                                        <td colspan="9" class="<%=myActionData.getReturnCode()%>F"><i><span id="ACTMES-<%=myStep + "-" + myActionData.getSequence()%>"><%=StringUtil.replaceUrlByLinkInString(myActionData.getReturnMessage())%></span></i></td>
+                                        <td colspan="9" class="<%=myActionData.getReturnCode()%>F">
+<code><pre><i><span id="ACTMES-<%=myStep + "-" + myActionData.getSequence()%>"><%=StringUtil.replaceUrlByLinkInString(myActionData.getReturnMessage())%></span></i></pre></code></td>
                                     </tr>
                                     
                                     <tr>
@@ -558,7 +559,7 @@
                                                     <td<%=controlDesc%>><%=descControl%></td>
                                                     <td<%=controlDesc%>><b><%=myControlData.getControlType()%></b></td>
                                                     <td id="CTLPRP-<%=myAction + "-" + myControlData.getControl()%>"><%=StringUtil.textToHtmlConvertingURLsToLinks(myControlData.getControlProperty())%></td>
-                                                    <td id="CTLVAL-<%=myAction + "-" + myControlData.getControl()%>"><%=StringUtil.textToHtmlConvertingURLsToLinks(myControlData.getControlValue())%></td>
+                                                    <td><code><pre id="CTLVAL-<%=myAction + "-" + myControlData.getControl()%>"><%=StringUtil.textToHtmlConvertingURLsToLinks(myControlData.getControlValue())%></pre></code></td>
                                                     <td><%=myControlData.getFatal()%></td>
                                                     <td><%if (myControlData.getScreenshotFilename() != null) {%>
                                                         <a href="<%=PictureURL%><%=myControlData.getScreenshotFilename().replaceAll("\\\\", "/")%>" class="zoombox  zgallery1">img</a>
@@ -573,7 +574,9 @@
                                         <td style="width:10px">&nbsp;&nbsp;&nbsp;&nbsp;</td>
                                         <td>&nbsp;&nbsp;&nbsp;&nbsp;</td>
                                         <td style="width:20px" class="<%=myControlData.getReturnCode()%>">>></td>
-                                        <td colspan="10" class="<%=myControlData.getReturnCode()%>F"><i><span id="CTLMES-<%=myAction + "-" + myControlData.getControl()%>"><%=StringUtil.replaceUrlByLinkInString(myControlData.getReturnMessage())%></span></i></td>
+                                        <td colspan="10" class="<%=myControlData.getReturnCode()%>F">
+                                            <code><pre><i><span id="CTLMES-<%=myAction + "-" + myControlData.getControl()%>"><%=StringUtil.replaceUrlByLinkInString(myControlData.getReturnMessage())%>
+                                                </span></i></pre></code></td>
                                     </tr>
                                     <tr></tr>
                                                 <%
@@ -604,10 +607,10 @@
                             <td><%=DateUtil.getFormatedDate(myData.getStartLong())%></td>
                             <td><%=DateUtil.getFormatedElapsed(myData.getStartLong(), myData.getEndLong())%></td>
                             <td><b><span id="PROP-<%=myData.getProperty()%>"><%=myData.getProperty()%></span></b></td>
-                            <td><b><i><span id="PROPVAL-<%=myData.getProperty()%>"><%=StringUtil.textToHtmlConvertingURLsToLinks(myData.getValue())%></span></i></b></td>
+                            <td><code><pre><b><i><span id="PROPVAL-<%=myData.getProperty()%>"><%=StringUtil.textToHtmlConvertingURLsToLinks(myData.getValue())%></span></i></b></pre></code></td>
                             <td style="font-size: x-small"><%=myData.getType()%></td>
-                            <td style="font-size: x-small"><%=StringUtil.textToHtmlConvertingURLsToLinks(myData.getValue1())%> / <%=myData.getValue2()%></td>
-                            <td><span id="PROPMES-<%=myData.getProperty()%>"><%=StringUtil.textToHtmlConvertingURLsToLinks(myData.getrMessage())%></span></td>
+                            <td style="font-size: x-small"><code><pre><%=StringUtil.textToHtmlConvertingURLsToLinks(myData.getValue1())%> / <%=myData.getValue2()%></pre></code></td>
+                            <td><code><pre><span id="PROPMES-<%=myData.getProperty()%>"><%=StringUtil.textToHtmlConvertingURLsToLinks(myData.getrMessage())%></span></pre></code></td>
                         </tr>
                         <%
                             }

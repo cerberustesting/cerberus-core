@@ -19,6 +19,10 @@ body {
 input{
     font-size:80%;
 }
+pre{
+    font-size:110%;
+    font-family: helvetica;
+}
 .buttonAddStep{
     height:20px;
     font-weight:bold;
