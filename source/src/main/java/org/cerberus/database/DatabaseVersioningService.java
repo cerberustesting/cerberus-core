@@ -3997,8 +3997,38 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
 		SQLS.append("ALTER TABLE `testcasestepexecution` ");
                 SQLS.append(" ADD COLUMN `ReturnMessage` VARCHAR(500) NULL DEFAULT NULL AFTER `ReturnCode`;");
                 SQLInstruction.add(SQLS.toString());
-
-        
+                
+// Add last_updaed column.
+// -- ------------------------ 561 >> 567                
+                SQLS = new StringBuilder();
+		SQLS.append("ALTER TABLE `test` ");
+                SQLS.append("ADD COLUMN `last_modified` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;");
+                SQLInstruction.add(SQLS.toString());
+                SQLS = new StringBuilder();
+		SQLS.append("ALTER TABLE `testcase` ");
+                SQLS.append("ADD COLUMN `last_modified` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;");
+                SQLInstruction.add(SQLS.toString());
+                SQLS = new StringBuilder();
+		SQLS.append("ALTER TABLE `testcasecountry` ");
+                SQLS.append("ADD COLUMN `last_modified` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;");
+                SQLInstruction.add(SQLS.toString());
+                SQLS = new StringBuilder();
+		SQLS.append("ALTER TABLE `testcasecountryproperties` ");
+                SQLS.append("ADD COLUMN `last_modified` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;");
+                SQLInstruction.add(SQLS.toString());
+                SQLS = new StringBuilder();
+		SQLS.append("ALTER TABLE `testcasestep` ");
+                SQLS.append("ADD COLUMN `last_modified` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;");
+                SQLInstruction.add(SQLS.toString());
+                SQLS = new StringBuilder();
+		SQLS.append("ALTER TABLE `testcasestepaction` ");
+                SQLS.append("ADD COLUMN `last_modified` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;");
+                SQLInstruction.add(SQLS.toString());
+                SQLS = new StringBuilder();
+		SQLS.append("ALTER TABLE `testcasestepactioncontrol` ");
+                SQLS.append("ADD COLUMN `last_modified` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;");
+                SQLInstruction.add(SQLS.toString());
+                
         return SQLInstruction;
     }
     
