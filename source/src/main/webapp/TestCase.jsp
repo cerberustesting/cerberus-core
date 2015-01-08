@@ -1600,6 +1600,13 @@
                                                     <input style="display:inline; height:18px; width:18px; color:blue; font-weight:bolder" title="Open SQL Library" class="smallbutton" type="button" value="L" name="opensql-library"  onclick="openSqlLibraryPopin('<%=valueID%>')">
                                                 </div>
                                                 <% }%>
+                                                 <%
+                                                    if (tccp.getType().equals("getFromTestData")) {
+                                                %>
+                                                <div style="clear:both" class="wob">
+                                                    <input style="display:inline; height:18px; width:18px; color:blue; font-weight:bolder" title="Open TestData" class="smallbutton" type="button" value="L" name="open-testdata"  onclick="openTestData('<%=tccp.getValue1()%>')">
+                                                </div>
+                                                <% }%>
                                                 <%
                                                     if (tccp.getType().equals("executeSqlFromLib")
                                                             || tccp.getType().equals("executeSql")

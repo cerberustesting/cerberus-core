@@ -50,11 +50,10 @@
                     "bPaginate": true,
                     "bAutoWidth": false,
                     "sPaginationType": "full_numbers",
-                    "bSearchable": true,
-                    "aTargets": [0],
+                    "bSearchable": false,
                     "iDisplayLength": 25,
                     "aoColumns": [
-                        {"sName": "Key", "sWidth": "20%", "bVisible":false},
+                        {"sName": "Key", "sWidth": "20%", "bVisible": false},
                         {"sName": "Key", "sWidth": "20%"},
                         {"sName": "Value", "sWidth": "30%", "sClass": "center"},
                         {"sName": "Description", "sWidth": "40%", "sClass": "center"},
@@ -63,7 +62,7 @@
                         {"sName": "Country", "sWidth": "2%", "sClass": "center"}
                     ]
                 }
-            ).makeEditable({
+                ).makeEditable({
                     sAddURL: "CreateTestData",
                     sAddHttpMethod: "POST",
                     oAddNewRowButtonOptions: {
@@ -79,12 +78,12 @@
                         icons: {primary: 'ui-icon-trash'}
                     },
                     sUpdateURL: "UpdateTestData",
-                    fnOnDeleting: function (tr, id, fnDeleteRow) {
-                        var param = "{ id: '"+id+"',"
-                            +"Application: '"+$(tr).children()[3].innerHTML+"',"
-                            +"Environment: '"+$(tr).children()[4].innerHTML+"',"
-                            +"Country: '"+$(tr).children()[5].innerHTML+"' }";
-                        fnDeleteRow( param );
+                    fnOnDeleting: function(tr, id, fnDeleteRow) {
+                        var param = "{ id: '" + id + "',"
+                                + "Application: '" + $(tr).children()[3].innerHTML + "',"
+                                + "Environment: '" + $(tr).children()[4].innerHTML + "',"
+                                + "Country: '" + $(tr).children()[5].innerHTML + "' }";
+                        fnDeleteRow(param);
                         return false;
                     },
                     fnOnEdited: function(status) {
@@ -105,37 +104,46 @@
 
                     ]
                 });
-
-                $.get('./GetApplicationList','',function(data){
+                
+                
+                $.get('./GetApplicationList', '', function(data) {
                     $("#Application").empty();
-                    for(index=0;index<data.parameterList.length;index++) {
-                        $("#Application").append("<option value=\""+data.parameterList[index]+"\">"+data.parameterList[index]+"</option>");
+                    for (index = 0; index < data.parameterList.length; index++) {
+                        $("#Application").append("<option value=\"" + data.parameterList[index] + "\">" + data.parameterList[index] + "</option>");
                     }
                 });
 
-                $.get('./GetApplicationList','',function(data){
+                $.get('./GetApplicationList', '', function(data) {
                     $("#Application").empty();
                     $("#Application").append("<option value=\"\"> </option>");
-                    for(index=0;index<data.parameterList.length;index++) {
-                        $("#Application").append("<option value=\""+data.parameterList[index]+"\">"+data.parameterList[index]+"</option>");
+                    for (index = 0; index < data.parameterList.length; index++) {
+                        $("#Application").append("<option value=\"" + data.parameterList[index] + "\">" + data.parameterList[index] + "</option>");
                     }
                 });
 
-                $.get('./FindInvariantByID','idName=ENVIRONMENT',function(data){
+                $.get('./FindInvariantByID', 'idName=ENVIRONMENT', function(data) {
                     $("#Environment").empty();
                     $("#Environment").append("<option value=\"\"> </option>");
-                    for(index=0;index<data.length;index++) {
-                        $("#Environment").append("<option value=\""+data[index].value+"\">"+data[index].value+" - "+data[index].description+"</option>");
+                    for (index = 0; index < data.length; index++) {
+                        $("#Environment").append("<option value=\"" + data[index].value + "\">" + data[index].value + " - " + data[index].description + "</option>");
                     }
                 });
 
-                $.get('./FindInvariantByID','idName=COUNTRY',function(data){
+                $.get('./FindInvariantByID', 'idName=COUNTRY', function(data) {
                     $("#Country").empty();
                     $("#Country").append("<option value=\"\"> </option>");
-                    for(index=0;index<data.length;index++) {
-                        $("#Country").append("<option value=\""+data[index].value+"\">"+data[index].value+" - "+data[index].description+"</option>");
+                    for (index = 0; index < data.length; index++) {
+                        $("#Country").append("<option value=\"" + data[index].value + "\">" + data[index].value + " - " + data[index].description + "</option>");
                     }
                 });
+                
+                <%
+                if(request.getParameter("Search") != null) {
+                    String search = request.getParameter("Search");
+                    %>$("#testDataList_filter input[type='search']").delay(1000).val("<%=search%>").trigger( "change" );<%
+                }
+                %>
+
             });
 
 
@@ -184,19 +192,19 @@
                 <br />
                 <label for="Application" style="font-weight:bold">Application</label>
                 <select id="Application" name="Application" 
-                       class="ncdetailstext" rel="4" >
+                        class="ncdetailstext" rel="4" >
                 </select>
                 <br />
                 <br />
                 <label for="Environment" style="font-weight:bold">Environment</label>
                 <select id="Environment" name="Environment" 
-                       class="ncdetailstext" rel="5" >
+                        class="ncdetailstext" rel="5" >
                 </select>
                 <br />
                 <br />
                 <label for="Country" style="font-weight:bold">Country</label>
                 <select id="Country" name="Country"
-                       class="ncdetailstext" rel="6" >
+                        class="ncdetailstext" rel="6" >
                 </select>
                 <br />
                 <br />

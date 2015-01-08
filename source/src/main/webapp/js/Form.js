@@ -1506,6 +1506,15 @@ function loadPropertyPopin(propertyID, test, testcase) {
 //    $('#popin').show();
 }
 
+function openTestData(value) {
+    var win = window.open('TestData.jsp?Search=' + value, '_blank');
+    if(win){
+        win.focus();
+    }else{
+        alert('Please allow popups for Cerberus');
+    }
+}
+
 function openSqlLibraryPopin(value) {
     loadSqlLibraryPopin(value);
     $('#popin').dialog({hide: {duration: 300}, height: 600, width: 800, buttons: [{text: "Ok", click: function() {
