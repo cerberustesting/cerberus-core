@@ -4029,6 +4029,18 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
                 SQLS.append("ADD COLUMN `last_modified` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;");
                 SQLInstruction.add(SQLS.toString());
                 
+                
+// Add ScreenshotFilename column on testcasestepaction and testcasestepactioncontrol tables.
+// -- ------------------------ 568 >> 569                
+                SQLS = new StringBuilder();
+		SQLS.append("ALTER TABLE `testcasestepaction` ");
+                SQLS.append("ADD COLUMN `ScreenshotFileName` VARCHAR(150) NULL DEFAULT NULL AFTER `Description`;");
+                SQLInstruction.add(SQLS.toString());
+                SQLS = new StringBuilder();
+		SQLS.append("ALTER TABLE `testcasestepactioncontrol` ");
+                SQLS.append("ADD COLUMN `ScreenshotFileName` VARCHAR(150) NULL DEFAULT NULL AFTER `Fatal`;");
+                SQLInstruction.add(SQLS.toString());
+                
         return SQLInstruction;
     }
     
