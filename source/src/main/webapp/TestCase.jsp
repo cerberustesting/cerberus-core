@@ -135,7 +135,7 @@
                 if (!bool) {
                     $('#generalparameter').hide();
                 }
-                $("#UpdateTestCase").submit(function(){
+                $("#UpdateTestCase").submit(function() {
                     $('#howtoDetail').val($('#howto').elrte('val'));
                     $('#valueDetail').val($('#value').elrte('val'));
                 });
@@ -324,7 +324,7 @@
             .RowToDelete select{
                 background-color:#DD7777;
             }
-            
+
             .libLineDiv{
                 display:block;
             }
@@ -389,7 +389,7 @@
                     }
                     List<String> systems = new ArrayList();
                     systems.add(MySystem);
-                    
+
                     List<Test> tests = new ArrayList();
 
                     String group = getRequestParameterWildcardIfEmpty(request, "group");
@@ -409,7 +409,7 @@
                     </div>
                     <div style="float:left">
                         <select id="filtertest" name="Test" style="width: 200px" OnChange="document.selectTestCase.submit()">
-                            <%  if (test!=null && test.compareTo("") == 0) { %>
+                            <%  if (test != null && test.compareTo("") == 0) { %>
                             <option style="width: 200px" value="All">-- Choose Test --
                             </option>
                             <%  }
@@ -417,7 +417,6 @@
                                 //            for (UserSystem us : userSystemService.findUserSystemByUser(request.getUserPrincipal().getName())){
                                 //systems.add(us.getSystem());
                                 //}
-                            
                                 tests = testService.findTestBySystems(systems);
                                 for (Test tst : tests) {
                             %>
@@ -451,53 +450,51 @@
             <br>
             <br>
             <%if (!test.equals("") && !testcase.equals("")) {
-                TCase tcase = null;
-                boolean isTestCaseExist = false;
-                tcase = testCaseService.findTestCaseByKey(test, testcase);
-                isTestCaseExist = (tcase == null) ? false : true;
-                  
-                if (isTestCaseExist){
-                
-                
-                //First Check if testcase can be edited (good system selected)
-                    User MyUserobj = userService.findUserByKeyWithDependencies(request.getUserPrincipal().getName());
-                    
-                    // Change system if requested inURL
-                String setSystem = getRequestParameterWildcardIfEmpty(request, "SetSystem");
-                if (!setSystem.equals("")){
-                MyUserobj.setDefaultSystem(setSystem);
-                userService.updateUser(MyUserobj);
-                MySystem = setSystem;
-                %>
-                <script>
-                 $(document).ready(function() {
-                $("#MySystem option:selected").attr('selected',false);
-                $("#MySystem option[value='<%=setSystem%>']").attr("selected", true);
-            });   
-                </script>
+                    TCase tcase = null;
+                    boolean isTestCaseExist = false;
+                    tcase = testCaseService.findTestCaseByKey(test, testcase);
+                    isTestCaseExist = (tcase == null) ? false : true;
+
+                    if (isTestCaseExist) {
+
+                        //First Check if testcase can be edited (good system selected)
+                        User MyUserobj = userService.findUserByKeyWithDependencies(request.getUserPrincipal().getName());
+
+                        // Change system if requested inURL
+                        String setSystem = getRequestParameterWildcardIfEmpty(request, "SetSystem");
+                        if (!setSystem.equals("")) {
+                            MyUserobj.setDefaultSystem(setSystem);
+                            userService.updateUser(MyUserobj);
+                            MySystem = setSystem;
+            %>
+            <script>
+                $(document).ready(function() {
+                    $("#MySystem option:selected").attr('selected', false);
+                    $("#MySystem option[value='<%=setSystem%>']").attr("selected", true);
+                });
+            </script>
             <%
                 }
-                
-                
-                    List<UserSystem> systemList = userSystemService.findUserSystemByUser(request.getUserPrincipal().getName());
-                    List<String> usList = new ArrayList();
-                    for (UserSystem us : systemList) {
-                        usList.add(us.getSystem());
-                    }
-                    String applicationSystem = myApplicationService.findApplicationByKey(tcase.getApplication()).getSystem();
-                    if (!MySystem.equals(applicationSystem)) {%>
+
+                List<UserSystem> systemList = userSystemService.findUserSystemByUser(request.getUserPrincipal().getName());
+                List<String> usList = new ArrayList();
+                for (UserSystem us : systemList) {
+                    usList.add(us.getSystem());
+                }
+                String applicationSystem = myApplicationService.findApplicationByKey(tcase.getApplication()).getSystem();
+                if (!MySystem.equals(applicationSystem)) {%>
             <script>
                 <%
                     //if system selected is not the one of the application but is one of the authorized system, propose to switch
-                if (usList.contains(applicationSystem)) {
+                    if (usList.contains(applicationSystem)) {
                 %>
                 var sys = '<%=applicationSystem%>';
-                if (confirm('This Testcase is only accessible with another system selection\nSwitch to system ' + sys + '?')){
-                window.location = "./TestCase.jsp?Test=<%=test%>&TestCase=<%=testcase%>&SetSystem=<%=applicationSystem%>";
+                if (confirm('This Testcase is only accessible with another system selection\nSwitch to system ' + sys + '?')) {
+                    window.location = "./TestCase.jsp?Test=<%=test%>&TestCase=<%=testcase%>&SetSystem=<%=applicationSystem%>";
                 } else {
-                window.location = "./Homepage.jsp";
+                    window.location = "./Homepage.jsp";
                 }
-                <%  
+                <%
                 } else {%>
                 alert("You are not allowed tp access to this system\nPlease contact your Cerberus Administrator to modify your account");
                 window.location = "./Homepage.jsp";
@@ -533,9 +530,8 @@
                 }
 
                 /**
-                 * We can edit the testcase only if User role is
-                 * TestAdmin or if role is Test and testcase is not
-                 * WORKING
+                 * We can edit the testcase only if User role is TestAdmin or if
+                 * role is Test and testcase is not WORKING
                  */
                 boolean canEdit = false;
                 if (request.getUserPrincipal() != null
@@ -633,7 +629,7 @@
                             <input type="button" style="display:none" id="FirstSaveChanges" name="SaveChanges" value="Save Changes" onclick="$('#UpdateTestCase').submit();">
                             <div id="deleteTCDiv">
                             </div>
-                            
+
                         </td>
                     </tr>
                     <tr>
@@ -961,15 +957,15 @@
                                         List<TestCaseStep> tcsListOfUseStep = tcsService.getStepLibraryBySystem(MySystem);
                                         String testOfLib = "";
                                         for (TestCaseStep tcs : tcsListOfUseStep) {
-                                            if (!tcs.getTest().equals(testOfLib)){
+                                            if (!tcs.getTest().equals(testOfLib)) {
                                                 testOfLib = tcs.getTest();
-                                            %>
-                                        <p style="font-size:10px; font-weight:bold" onclick="$('.libLineDiv[data-testLib=\'<%=testOfLib%>\']').toggleClass('libHideLineDiv');"><%=tcs.getTest()%>
-                                        </p>
-                                            <%
-                                            }
-                                            %>
-                                            <div class="libLineDiv" data-testLib="<%=testOfLib%>" style="border-style: solid; border-width:thin ; border-color:#CCCCCC;" id="<%=tcs.getTest()%><%=tcs.getTestCase()%><%=tcs.getStep()%>" data-test="<%=tcs.getTest()%>"
+                                    %>
+                                    <p style="font-size:10px; font-weight:bold" onclick="$('.libLineDiv[data-testLib=\'<%=testOfLib%>\']').toggleClass('libHideLineDiv');"><%=tcs.getTest()%>
+                                    </p>
+                                    <%
+                                        }
+                                    %>
+                                    <div class="libLineDiv" data-testLib="<%=testOfLib%>" style="border-style: solid; border-width:thin ; border-color:#CCCCCC;" id="<%=tcs.getTest()%><%=tcs.getTestCase()%><%=tcs.getStep()%>" data-test="<%=tcs.getTest()%>"
                                          data-testcase="<%=tcs.getTestCase()%>" data-step="<%=tcs.getStep()%>" onmousedown="showTargetDiv()" onmouseup="hideTargetDiv()" draggable="true"  ondragstart="drag(event, this)" >
                                         <p style="margin-left:20px; font-size:10px; font-style: italic;font-weight: bold; color:dodgerblue"><%=tcs.getDescription()%></p></div>
                                         <%}%>
@@ -1044,7 +1040,7 @@
                                             <a name="stepAnchor_<%=incrementStep%>"></a>
                                             <a name="stepAnchor_step<%=tcs.getStep()%>"></a>
                                             <%if (!stepusedByAnotherTest) {%>
-                                            <img style="margin-top:12px" src="images/bin.png" id="img_delete_step_<%=incrementStep%>" onclick="checkDeleteBox('img_delete_step_<%=incrementStep%>', 'step_delete_<%=incrementStep%>','StepFirstLineDiv<%=incrementStep%>', 'StepHeaderDiv')">
+                                            <img style="margin-top:12px" src="images/bin.png" id="img_delete_step_<%=incrementStep%>" onclick="checkDeleteBox('img_delete_step_<%=incrementStep%>', 'step_delete_<%=incrementStep%>', 'StepFirstLineDiv<%=incrementStep%>', 'StepHeaderDiv')">
                                             <input type="checkbox" name="step_delete_<%=incrementStep%>" id="step_delete_<%=incrementStep%>" style="display:none;margin-top:15px;font-weight: bold; width:20px"
                                                    value="<%=tcs.getStep()%>">
                                             <%}%>
@@ -1121,11 +1117,11 @@
                                                     }
                                                     String testCombo = test;
                                                     for (String tst : tList) {
-                                                String selected = "";
-                                                if (tcs.getUseStepTest() != null && tcs.getUseStepTest().compareTo(tst) == 0){
-                                                testCombo=tst;
-                                                selected = " SELECTED ";
-                                                }
+                                                        String selected = "";
+                                                        if (tcs.getUseStepTest() != null && tcs.getUseStepTest().compareTo(tst) == 0) {
+                                                            testCombo = tst;
+                                                            selected = " SELECTED ";
+                                                        }
                                                 %>
                                                 <option style="width: 200px;" value="<%=tst%>" <%=selected%>><%=tst%>
                                                 </option>
@@ -1209,7 +1205,7 @@
                                                         </div>
                                                         <div style="display:inline-block;float:left;width:2%;height:100%;text-align:center">
                                                             <% if (!useStep) {%>
-                                                            <img style="margin-top:12px" src="images/bin.png" id="img_delete_<%=incrementStep%>_<%=incrementAction%>" onclick="checkDeleteBox('img_delete_<%=incrementStep%>_<%=incrementAction%>', 'action_delete_<%=incrementStep%>_<%=incrementAction%>','StepListOfActionDiv<%=incrementStep%><%=incrementAction%>', 'RowActionDiv')">
+                                                            <img style="margin-top:12px" src="images/bin.png" id="img_delete_<%=incrementStep%>_<%=incrementAction%>" onclick="checkDeleteBox('img_delete_<%=incrementStep%>_<%=incrementAction%>', 'action_delete_<%=incrementStep%>_<%=incrementAction%>', 'StepListOfActionDiv<%=incrementStep%><%=incrementAction%>', 'RowActionDiv')">
                                                             <input  class="wob" type="checkbox" data-action="delete_action" name="action_delete_<%=incrementStep%>_<%=incrementAction%>" style="display:none; margin-top:20px; background-color: transparent"
                                                                     id="action_delete_<%=incrementStep%>_<%=incrementAction%>" value="<%=tcsa.getStep() + "-" + tcsa.getSequence()%>" <%=isReadonly%>>
                                                             <%}%>
@@ -1252,7 +1248,7 @@
                                                                 <div class="technical_part" style="width: 30%; float:left; background-color: transparent">
                                                                     <div style="float:left;width:80px; "><p style="float:right;font-weight:bold;" link="white" ><%out.print(docService.findLabelHTML("testcasestepaction", "action", "Action"));%></p>
                                                                     </div>
-                                                                    <%=ComboInvariant(appContext, "action_action_" + incrementStep + "_" + incrementAction, "width:50%;border: 1px solid white; color:#888888" , "action_action_" + incrementStep + "_" + incrementAction, "wob", "ACTION", tcsa.getAction(), "showChangedRow(this.parentNode.parentNode.parentNode.parentNode)", null)%>
+                                                                    <%=ComboInvariant(appContext, "action_action_" + incrementStep + "_" + incrementAction, "width:50%;border: 1px solid white; color:#888888", "action_action_" + incrementStep + "_" + incrementAction, "wob", "ACTION", tcsa.getAction(), "showChangedRow(this.parentNode.parentNode.parentNode.parentNode)", null)%>
                                                                 </div>
                                                                 <div class="technical_part" style="width: 40%; float:left; background-color: transparent">
                                                                     <div style="float:left;"><p style="float:right;font-weight:bold;" link="white" ><%out.print(docService.findLabelHTML("testcasestepaction", "object", "Object"));%></p>
@@ -1278,18 +1274,20 @@
                                                         <div style="background-color:blue; width:3px;height:100%;display:inline-block;float:right">
                                                         </div>
                                                         <div style="height:100%;width:5%;display:inline-block;float:right">
-                                                            <% if (tcsa.getScreenshotFilename()!=null && !"".equals(tcsa.getScreenshotFilename())){%>
-                                                        <img class="wob" width="45" height="35" src="<%=tcsa.getScreenshotFilename()%>" 
-                                                             onclick="showPicture('<%=tcsa.getScreenshotFilename()%>', 'action_screenshot_<%=incrementStep%>_<%=incrementAction%>')">
-                                                        <%} else {%>
-                                                        <div id="AttachPictureDiv_<%=incrementStep%>_<%=incrementAction%>"><img class="AttachPictureClass"  style="margin-top:15px; margin-left:15px" width="15" height="15" src="./images/th.jpg" 
-                                                            onclick="attachPicture('action_screenshot_<%=incrementStep%>_<%=incrementAction%>', 'AttachPictureDiv_<%=incrementStep%>_<%=incrementAction%>')">
+                                                            <div id="AttachPictureDiv_<%=incrementStep%>_<%=incrementAction%>">
+                                                                <% if (tcsa.getScreenshotFilename() != null && !"".equals(tcsa.getScreenshotFilename())) {%>
+                                                                <img class="wob" width="45" height="35" src="<%=tcsa.getScreenshotFilename()%>" 
+                                                                     onclick="showPicture('<%=tcsa.getScreenshotFilename()%>', 'action_screenshot_<%=incrementStep%>_<%=incrementAction%>', 'AttachPictureDiv_<%=incrementStep%>_<%=incrementAction%>')">
+                                                                <%} else {%>
+                                                                <img class="AttachPictureClass"  style="margin-top:15px; margin-left:15px" width="15" height="15" src="./images/th.jpg" 
+                                                                     onclick="attachPicture('action_screenshot_<%=incrementStep%>_<%=incrementAction%>', 'AttachPictureDiv_<%=incrementStep%>_<%=incrementAction%>')">
+
+                                                                <%}%>
+                                                            </div>
+                                                            <input style="display:none" name="action_screenshot_<%=incrementStep%>_<%=incrementAction%>" onchange="showChangedRow(this.parentNode.parentNode)" 
+                                                                   id="action_screenshot_<%=incrementStep%>_<%=incrementAction%>" value="<%=tcsa.getScreenshotFilename() != null ? tcsa.getScreenshotFilename() : ""%>">
                                                         </div>
-                                                            <%}%>
-                                                        <input style="display:none" name="action_screenshot_<%=incrementStep%>_<%=incrementAction%>" onchange="showChangedRow(this.parentNode.parentNode)" 
-                                                            id="action_screenshot_<%=incrementStep%>_<%=incrementAction%>" value="<%=tcsa.getScreenshotFilename()!=null?tcsa.getScreenshotFilename():""%>">
-                                                        </div>
-                                                        
+
                                                     </div>
 
                                                     <%
@@ -1317,7 +1315,7 @@
                                                         </div>
                                                         <div style="height:100%;width: 2%;float:left; text-align: center;">
                                                             <%  if (!useStep) {%>
-                                                            <img style="margin-top:12px" src="images/bin.png" id="img_delete_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>" onclick="checkDeleteBox('img_delete_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>', 'control_delete_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>','StepListOfControlDiv<%=incrementStep%><%=incrementAction%><%=incrementControl%>', 'RowActionDiv')">
+                                                            <img style="margin-top:12px" src="images/bin.png" id="img_delete_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>" onclick="checkDeleteBox('img_delete_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>', 'control_delete_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>', 'StepListOfControlDiv<%=incrementStep%><%=incrementAction%><%=incrementControl%>', 'RowActionDiv')">
                                                             <input  class="wob" type="checkbox" data-associatedaction="action_delete_<%=incrementStep%>_<%=incrementAction%>" name="control_delete_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>" style="display:none; margin-top:20px; background-color: transparent"
                                                                     id="control_delete_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>" value="<%=tcsac.getStep() + '-' + tcsac.getSequence() + '-' + tcsac.getControl()%>">
                                                             <% }%>
@@ -1381,13 +1379,20 @@
                                                         </div>
                                                         <div style="background-color:#33CC33; width:3px;height:100%;display:inline-block;float:right">
                                                         </div>
-                                                                <div style="height:100%;width:5%;display:inline-block;float:right">
-                                                                    <% if (tcsac.getScreenshotFilename()!=null){ %>
-                                                            <img class="wob" width="45" height="35" src="<%=tcsac.getScreenshotFilename()%>" onclick="showPicture('tc.PNG')">
-                                                        <% } else {%>
-                                                        <img class="wob" style="margin-top:15px; margin-left:15px" width="15" height="15" src="./images/th.jpg" onclick="showPicture('tc.PNG')">
-                                                        <%}%>
-                                                                </div>
+                                                        <div style="height:100%;width:5%;display:inline-block;float:right">
+                                                            <div id="AttachPictureDiv_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>">
+                                                                <% if (tcsac.getScreenshotFilename() != null && !"".equals(tcsac.getScreenshotFilename())) {%>
+                                                                <img class="wob" width="45" height="35" src="<%=tcsac.getScreenshotFilename()%>" 
+                                                                     onclick="showPicture('<%=tcsac.getScreenshotFilename()%>', 'control_screenshot_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>', 'AttachPictureDiv_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>')">
+                                                                <%} else {%>
+                                                                <img class="AttachPictureClass"  style="margin-top:15px; margin-left:15px" width="15" height="15" src="./images/th.jpg" 
+                                                                     onclick="attachPicture('control_screenshot_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>', 'AttachPictureDiv_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>')">
+
+                                                                <%}%>
+                                                            </div>
+                                                            <input style="display:none" name="control_screenshot_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>" onchange="showChangedRow(this.parentNode.parentNode)" 
+                                                                   id="control_screenshot_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>" value="<%=tcsac.getScreenshotFilename() != null ? tcsac.getScreenshotFilename() : ""%>">
+                                                        </div>
 
                                                     </div>    
                                                     <%   }%>
@@ -1547,7 +1552,7 @@
                                             </div>
                                             <div style="border-right-width:thin;border-right-style:solid;border-right-color:#CCCCCC;width:2%;float:left;display:inline-block;height:50px; text-align:center">
                                                 <%  if (canEdit) {%>
-                                                <img style="margin-top:20px" src="images/bin.png" id="img_delete_property_<%=incrementProperty%>" onclick="checkDeleteBox('img_delete_property_<%=incrementProperty%>', 'properties_delete_<%=incrementProperty%>','propertyRow<%=incrementProperty%>', 'generalPropertyDiv')">
+                                                <img style="margin-top:20px" src="images/bin.png" id="img_delete_property_<%=incrementProperty%>" onclick="checkDeleteBox('img_delete_property_<%=incrementProperty%>', 'properties_delete_<%=incrementProperty%>', 'propertyRow<%=incrementProperty%>', 'generalPropertyDiv')">
                                                 <input style="display:none;margin-top:20px;" name="properties_delete_<%=incrementProperty%>" id="properties_delete_<%=incrementProperty%>" type="checkbox" value="">
                                                 <%}%>
                                                 <input type="hidden" name="property_increment" value="<%=incrementProperty%>">
@@ -1626,7 +1631,7 @@
                                                     <input style="display:inline; height:18px; width:18px; color:blue; font-weight:bolder" title="Open SQL Library" class="smallbutton" type="button" value="L" name="opensql-library"  onclick="openSqlLibraryPopin('<%=valueID%>')">
                                                 </div>
                                                 <% }%>
-                                                 <%
+                                                <%
                                                     if (tccp.getType().equals("getFromTestData")) {
                                                 %>
                                                 <div style="clear:both" class="wob">
@@ -1893,22 +1898,22 @@
                     <div id="StepUseStepTestDiv" style="float:left">
                         <select data-id="step_useStepTest_template" style="width: 200px;margin-top:15px;font-weight: bold;">
                             <% List<TestCaseStep> tcsLib = tcsService.getStepLibraryBySystem(MySystem);
-                                                    Set<String> tList = new HashSet();
-                                                    HashMap tcListByTc = new HashMap();
-                                                    List<String> tcList = new ArrayList();
-                                                    String previousTc = "";
-                                                    for (TestCaseStep tcsUnit : tcsLib) {
-                                                        tList.add(tcsUnit.getTest());
-                                                        if (!tcsUnit.getTest().equals(previousTc)) {
-                                                            if (!previousTc.equals("")) {
-                                                                tcListByTc.put(previousTc, tcList);
-                                                            }
-                                                            tcList = new ArrayList();
-                                                        }
-                                                        tcList.add(tcsUnit.getTestCase());
-                                                    }
-                                                    String testCombo = test;
-                                                    
+                                Set<String> tList = new HashSet();
+                                HashMap tcListByTc = new HashMap();
+                                List<String> tcList = new ArrayList();
+                                String previousTc = "";
+                                for (TestCaseStep tcsUnit : tcsLib) {
+                                    tList.add(tcsUnit.getTest());
+                                    if (!tcsUnit.getTest().equals(previousTc)) {
+                                        if (!previousTc.equals("")) {
+                                            tcListByTc.put(previousTc, tcList);
+                                        }
+                                        tcList = new ArrayList();
+                                    }
+                                    tcList.add(tcsUnit.getTestCase());
+                                }
+                                String testCombo = test;
+
                                 for (String tst : tList) {%>
                             <option style="width: 200px;" value="<%=tst%>"><%=tst%>
                             </option>
@@ -2031,7 +2036,7 @@
                     }
                 });</script>
                 <%
-            }
+                            }
                         }
                     } catch (Exception e) {
                         out.println("<br> error message : " + e.getMessage() + " " + e.toString() + "<br>");
@@ -2102,13 +2107,13 @@
                             .text('Choose TestCase'));
                     var testFromLib = "";
                     for (var i = 0; i < data.testCaseStepList.length; i++) {
-                        if (data.testCaseStepList[i].testCase !== testFromLib){
-                        $('#' + field).append($("<option></option>")
-                                .attr('value', data.testCaseStepList[i].testCase)
-                                .attr('style', 'width:300px;')
-                                .text(data.testCaseStepList[i].testCase+" : "+data.testCaseStepList[i].tcdesc));
-                        testFromLib = data.testCaseStepList[i].testCase;
-                    }
+                        if (data.testCaseStepList[i].testCase !== testFromLib) {
+                            $('#' + field).append($("<option></option>")
+                                    .attr('value', data.testCaseStepList[i].testCase)
+                                    .attr('style', 'width:300px;')
+                                    .text(data.testCaseStepList[i].testCase + " : " + data.testCaseStepList[i].tcdesc));
+                            testFromLib = data.testCaseStepList[i].testCase;
+                        }
                     }
                 });
             }
@@ -2300,30 +2305,30 @@
                 });
 
             }
-                
-        function checkDeleteBox(img, checkbox, row, initClassName){
-            console.log(document.getElementById(checkbox).checked);
-            if (document.getElementById(checkbox).checked===false){
-                document.getElementById(checkbox).checked=true;
-                document.getElementById(row).className ='RowToDelete';
-                document.getElementById(img).src='images/ko.png';
-                $("div[data-associatedaction='"+row+"']").each(function(index, field) {
-                    $(field).attr('class', 'RowToDelete');
-                    $(field).find("img[src='images/bin.png']").attr('src', 'images/ko.png');
-                });
-                
-                
-            }else{
-                document.getElementById(checkbox).checked=false;
-                document.getElementById(row).className=initClassName;
-                document.getElementById(img).src='images/bin.png';
-                $("div[data-associatedaction='"+row+"']").each(function(index, field) {
-                    $(field).attr('class', initClassName);
-                    $(field).find("img[src='images/ko.png']").attr('src', 'images/bin.png');
-                });
-            }
-            
-        }</script>
+
+            function checkDeleteBox(img, checkbox, row, initClassName) {
+                console.log(document.getElementById(checkbox).checked);
+                if (document.getElementById(checkbox).checked === false) {
+                    document.getElementById(checkbox).checked = true;
+                    document.getElementById(row).className = 'RowToDelete';
+                    document.getElementById(img).src = 'images/ko.png';
+                    $("div[data-associatedaction='" + row + "']").each(function(index, field) {
+                        $(field).attr('class', 'RowToDelete');
+                        $(field).find("img[src='images/bin.png']").attr('src', 'images/ko.png');
+                    });
+
+
+                } else {
+                    document.getElementById(checkbox).checked = false;
+                    document.getElementById(row).className = initClassName;
+                    document.getElementById(img).src = 'images/bin.png';
+                    $("div[data-associatedaction='" + row + "']").each(function(index, field) {
+                        $(field).attr('class', initClassName);
+                        $(field).find("img[src='images/ko.png']").attr('src', 'images/bin.png');
+                    });
+                }
+
+            }</script>
         <!--<script>
         $(document).ready(function() {
                        

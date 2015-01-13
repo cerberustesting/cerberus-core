@@ -1515,12 +1515,13 @@ function openTestData(value) {
     }
 }
 
-function showPicture(url, id) {
+function showPicture(url, id, div) {
     $('#popin').empty();
     $('#popin').prepend("<img src='"+url+"'/>");
     $('#popin').dialog({hide: {duration: 300}, height: 600, width: 800, buttons: [{text: "Ok", click: function() {
                     $(this).dialog("close");
                 }},{text: "Remove", click: function() {
+                    $("#"+div).empty();
                     $("#"+id).val("").trigger( "change" );
                     $(this).dialog("close");
                 }}]});
@@ -1528,8 +1529,8 @@ function showPicture(url, id) {
 
 function attachPicture(id, pictureToRemove) {
     $('#popin').empty();
-    $('#popin').append("<p>Feed Picture URL</p><input id='attachNewScreenshot'></input>");
-    $('#popin').dialog({hide: {duration: 300}, height: 600, width: 800, buttons: [{text: "Ok", click: function() {
+    $('#popin').append("<p>Feed Picture URL</p><input style='width:600px' id='attachNewScreenshot'></input>");
+    $('#popin').dialog({hide: {duration: 300}, height: 200, width: 700, buttons: [{text: "Ok", click: function() {
                     var newUrl = $("#attachNewScreenshot").val();
                     $("#"+id).val(newUrl).trigger( "change" );
                     $("#"+pictureToRemove).empty().prepend("<img width='45' height='35' src='"+newUrl+"'/>");;

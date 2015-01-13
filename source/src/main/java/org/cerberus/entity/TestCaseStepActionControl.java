@@ -260,6 +260,9 @@ public class TestCaseStepActionControl {
         if ((this.description == null) ? (other.description != null) : !this.description.equals(other.description)) {
             return false;
         }
+        if ((this.screenshotFilename == null) ? (other.screenshotFilename != null) : !this.screenshotFilename.equals(other.screenshotFilename)) {
+            return false;
+        }
         return true;
     }
 
