@@ -40,7 +40,7 @@ import org.cerberus.service.impl.ParameterService;
 import org.cerberus.serviceEmail.IEmailGeneration;
 import org.cerberus.serviceEmail.impl.EmailGeneration;
 import org.cerberus.serviceEmail.impl.sendMail;
-import org.cerberus.version.Version;
+import org.cerberus.version.Infos;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -135,7 +135,7 @@ public class DisableEnvironment extends HttpServlet {
             response.sendRedirect("Environment.jsp?system=" + system + "&country=" + country + "&env=" + env);
 
         } catch (Exception e) {
-            Logger.getLogger(DisableEnvironment.class.getName()).log(Level.SEVERE, Version.PROJECT_NAME_VERSION + " - Exception catched.", e);
+            Logger.getLogger(DisableEnvironment.class.getName()).log(Level.SEVERE, Infos.getInstance().getProjectNameAndVersion() + " - Exception catched.", e);
             out.println(e.getMessage());
         } finally {
             out.close();

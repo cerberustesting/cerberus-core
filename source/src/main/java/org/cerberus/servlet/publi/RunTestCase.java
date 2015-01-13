@@ -59,7 +59,7 @@ import org.cerberus.serviceEngine.IRunTestCaseService;
 import org.cerberus.serviceEngine.impl.RunTestCaseService;
 import org.cerberus.util.DateUtil;
 import org.cerberus.util.ParameterParserUtil;
-import org.cerberus.version.Version;
+import org.cerberus.version.Infos;
 import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;
 import org.springframework.context.ApplicationContext;
@@ -245,7 +245,7 @@ public class RunTestCase extends HttpServlet {
 
             TestCaseExecution tCExecution = factoryTCExecution.create(0, test, testCase, null, null, environment, country, browser, version, platform, "",
                     0, 0, "", "", null, robotHost, null, robotPort, tag, "N", verbose, screenshot, getPageSource, getSeleniumLog, synchroneous, timeout, outputFormat, null,
-                    Version.PROJECT_NAME_VERSION, tCase, null, null, manualURL, myHost, myContextRoot, myLoginRelativeURL, myEnvData, robotHost, robotPort, null, new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_TESTSTARTED), "Selenium");
+                    Infos.getInstance().getProjectNameAndVersion(), tCase, null, null, manualURL, myHost, myContextRoot, myLoginRelativeURL, myEnvData, robotHost, robotPort, null, new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_TESTSTARTED), "Selenium");
 
             /**
              * Set UUID

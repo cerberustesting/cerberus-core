@@ -39,12 +39,11 @@
 <%@page import="java.util.Date"%>
 <%@page import="java.text.DateFormat"%>
 <%@page import="java.text.SimpleDateFormat"%>
-<%@page import="org.cerberus.version.Version"%>
+<%@page import="org.cerberus.version.Infos"%>
 <%@page import="org.cerberus.database.DatabaseSpring" %>
 <%@ page import="org.cerberus.service.IDeployTypeService" %>
 <%@ page import="org.cerberus.entity.DeployType" %>
-<%!
-    String ComboInvariant(ApplicationContext appContext, String HTMLComboName, String HTMLComboStyle, String HTMLId, String HTMLClass, String combonumber, String value, String HTMLOnChange, String firstOption) {
+<%!String ComboInvariant(ApplicationContext appContext, String HTMLComboName, String HTMLComboStyle, String HTMLId, String HTMLClass, String combonumber, String value, String HTMLOnChange, String firstOption) {
         try {
             IInvariantService invFunctionService = appContext.getBean(IInvariantService.class);
             List<Invariant> invFunctionList = invFunctionService.findListOfInvariantById(combonumber);
@@ -215,11 +214,11 @@
         Date mydate = new Date();
         long Duration = mydate.getTime() - DatePageStart.getTime();
         String footer = "Page started generating on <b><span id=\"foot-loaddatetime\">" + DatePageStart.toString() + "</span></b>"
-                + " by <b><span id=\"foot-projectname\">" + Version.PROJECT_NAME + "</span></b>"
-                + " <b><span id=\"foot-version\">" + Version.VERSION + "</span></b>"
+                + " by <b><span id=\"foot-projectname\">" + Infos.getInstance().getProjectName() + "</span></b>"
+                + " <b><span id=\"foot-version\">" + Infos.getInstance().getProjectVersion() + "</span></b>"
                 + " in <b><span id=\"foot-env\">" + System.getProperty("org.cerberus.environment") + "</span></b>"
                 + " and took <b><span id=\"foot-duration\">" + Duration + "</span>ms</b>"
-                + " - Open a bug or ask for any new feature <a target=\"_blank\"  href=\"https://github.com/vertigo17/Cerberus/issues/new?body=Cerberus%20Version%20:%20" + Version.VERSION + "\">here</a>.";
+                + " - Open a bug or ask for any new feature <a target=\"_blank\"  href=\"https://github.com/vertigo17/Cerberus/issues/new?body=Cerberus%20Version%20:%20" + Infos.getInstance().getProjectVersion() + "\">here</a>.";
         return footer;
     }
 
@@ -287,8 +286,7 @@
     boolean getBooleanParameterFalseIfEmpty(HttpServletRequest request, String parameter) {
         return request.getParameter(parameter) != null
                 && request.getParameter(parameter).compareTo("Y") == 0;
-    }
-%>
+    }%>
 <% if (session.getAttribute("flashMessage") != null) {
         out.println("alert(" + session.getAttribute("flashMessage") + ")");
         session.removeAttribute("flashMessage");

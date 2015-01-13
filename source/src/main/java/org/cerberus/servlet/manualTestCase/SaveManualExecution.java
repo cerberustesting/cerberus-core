@@ -44,7 +44,7 @@ import org.cerberus.service.ITestCaseExecutionService;
 import org.cerberus.service.ITestCaseExecutionSysVerService;
 import org.cerberus.service.ITestCaseService;
 import org.cerberus.util.ParameterParserUtil;
-import org.cerberus.version.Version;
+import org.cerberus.version.Infos;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -100,7 +100,7 @@ public class SaveManualExecution extends HttpServlet {
             String build = countryEnvParam.getBuild();
             String revision = countryEnvParam.getRevision();
             long now = new Date().getTime();
-            String version = "Cerberus-" + Version.VERSION;
+            String version = Infos.getInstance().getProjectNameAndVersion();
 
             String myUser = "";
             if (!(req.getUserPrincipal() == null)) {

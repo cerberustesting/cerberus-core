@@ -43,7 +43,7 @@ import org.cerberus.service.impl.LogEventService;
 import org.cerberus.service.impl.TestCaseExecutionService;
 import org.cerberus.util.DateUtil;
 import org.cerberus.util.ParameterParserUtil;
-import org.cerberus.version.Version;
+import org.cerberus.version.Infos;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -162,7 +162,7 @@ public class GetNumberOfExecutions extends HttpServlet {
 
 
         } catch (Exception e) {
-            Logger.getLogger(GetNumberOfExecutions.class.getName()).log(Level.SEVERE, Version.PROJECT_NAME_VERSION + " - Exception catched.", e);
+            Logger.getLogger(GetNumberOfExecutions.class.getName()).log(Level.SEVERE, Infos.getInstance().getProjectNameAndVersion() + " - Exception catched.", e);
             out.print("Error while Getting number of executions : ");
             out.println(e.getMessage());
         } finally {

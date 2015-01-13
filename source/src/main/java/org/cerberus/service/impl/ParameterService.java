@@ -28,7 +28,7 @@ import org.cerberus.entity.Parameter;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.log.MyLogger;
 import org.cerberus.service.IParameterService;
-import org.cerberus.version.Version;
+import org.cerberus.version.Infos;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -51,13 +51,13 @@ public class ParameterService implements IParameterService {
          * global Cerberus Parameter.
          */
         try {
-            Logger.getLogger(ParameterService.class.getName()).log(Level.DEBUG, Version.PROJECT_NAME_VERSION + " - Trying to retrieve parameter : " + key + " - [" + system + "]");
+            Logger.getLogger(ParameterService.class.getName()).log(Level.DEBUG, Infos.getInstance().getProjectNameAndVersion() + " - Trying to retrieve parameter : " + key + " - [" + system + "]");
             myParameter = parameterDao.findParameterByKey(system, key);
             if (myParameter.getValue().equalsIgnoreCase("")) {
                 myParameter = parameterDao.findParameterByKey("", key);
             }
         } catch (CerberusException ex) {
-            Logger.getLogger(ParameterService.class.getName()).log(Level.DEBUG, Version.PROJECT_NAME_VERSION + " - Trying to retrieve parameter : " + key + " - []");
+            Logger.getLogger(ParameterService.class.getName()).log(Level.DEBUG, Infos.getInstance().getProjectNameAndVersion() + " - Trying to retrieve parameter : " + key + " - []");
             myParameter = parameterDao.findParameterByKey("", key);
             return myParameter;
         }
