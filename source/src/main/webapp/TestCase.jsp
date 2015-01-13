@@ -1279,12 +1279,15 @@
                                                         </div>
                                                         <div style="height:100%;width:5%;display:inline-block;float:right">
                                                             <% if (tcsa.getScreenshotFilename()!=null && !"".equals(tcsa.getScreenshotFilename())){%>
-                                                        <img class="wob" width="45" height="35" src="<%=tcsa.getScreenshotFilename()%>" onclick="showPicture('<%=tcsa.getScreenshotFilename()%>')">
+                                                        <img class="wob" width="45" height="35" src="<%=tcsa.getScreenshotFilename()%>" 
+                                                             onclick="showPicture('<%=tcsa.getScreenshotFilename()%>', 'action_screenshot_<%=incrementStep%>_<%=incrementAction%>')">
                                                         <%} else {%>
-                                                        <div class="AttachPictureClass"><img style="margin-top:15px; margin-left:15px" width="15" height="15" src="./images/th.jpg" onclick="attachPicture('action_screenshot_<%=incrementStep%>_<%=incrementAction%>')">
+                                                        <div id="AttachPictureDiv_<%=incrementStep%>_<%=incrementAction%>"><img class="AttachPictureClass"  style="margin-top:15px; margin-left:15px" width="15" height="15" src="./images/th.jpg" 
+                                                            onclick="attachPicture('action_screenshot_<%=incrementStep%>_<%=incrementAction%>', 'AttachPictureDiv_<%=incrementStep%>_<%=incrementAction%>')">
                                                         </div>
                                                             <%}%>
-                                                        <input style="display:none" name="action_screenshot_<%=incrementStep%>_<%=incrementAction%>" onchange="showChangedRow(this.parentNode.parentNode)" id="action_screenshot_<%=incrementStep%>_<%=incrementAction%>" value="<%=tcsa.getScreenshotFilename()!=null?tcsa.getScreenshotFilename():""%>">
+                                                        <input style="display:none" name="action_screenshot_<%=incrementStep%>_<%=incrementAction%>" onchange="showChangedRow(this.parentNode.parentNode)" 
+                                                            id="action_screenshot_<%=incrementStep%>_<%=incrementAction%>" value="<%=tcsa.getScreenshotFilename()!=null?tcsa.getScreenshotFilename():""%>">
                                                         </div>
                                                         
                                                     </div>
