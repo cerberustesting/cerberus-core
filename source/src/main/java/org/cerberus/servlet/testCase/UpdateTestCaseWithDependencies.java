@@ -517,8 +517,9 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
                 String object = getParameterIfExists(request, "action_object_" + stepInc + "_" + inc);
                 String property = getParameterIfExists(request, "action_property_" + stepInc + "_" + inc);
                 String description = HtmlUtils.htmlEscape(getParameterIfExists(request, "action_description_" + stepInc + "_" + inc));
+                String screenshot = getParameterIfExists(request, "action_screenshot_" + stepInc + "_" + inc);
                 if (delete == null) {
-                    TestCaseStepAction tcsa = testCaseStepActionFactory.create(test, testCase, step, sequence, action, object, property, description);
+                    TestCaseStepAction tcsa = testCaseStepActionFactory.create(test, testCase, step, sequence, action, object, property, description, screenshot);
                     tcsa.setTestCaseStepActionControl(getTestCaseStepActionControlFromParameter(request, appContext, test, testCase, stepInc, inc));
                     testCaseStepAction.add(tcsa);
                     //System.out.print("FromPage"+tcsa.toString());

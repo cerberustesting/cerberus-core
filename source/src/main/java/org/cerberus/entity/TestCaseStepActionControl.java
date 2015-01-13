@@ -32,6 +32,15 @@ public class TestCaseStepActionControl {
     private String controlProperty;
     private String fatal;
     private String description;
+    private String screenshotFilename;
+
+    public String getScreenshotFilename() {
+        return screenshotFilename;
+    }
+
+    public void setScreenshotFilename(String screenshotFilename) {
+        this.screenshotFilename = screenshotFilename;
+    }
 
     public String getDescription() {
         return description;

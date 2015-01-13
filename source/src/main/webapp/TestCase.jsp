@@ -245,6 +245,12 @@
                 background-color: #EEEEEE;
                 color:black;
             }
+            .RowActionDiv:hover .AttachPictureClass{
+                display: inline-block;
+            }
+            .AttachPictureClass{
+                display: none;
+            }
             .RowActionDiv:hover p{
                 color:black;
             }
@@ -1227,7 +1233,7 @@
                                                                    value="<%=incrementAction%>" data-fieldtype="action_<%=incrementStep%>" data-field="sequence"
                                                                    name="action_sequence_<%=incrementStep%>_<%=incrementAction%>" id="action_sequence_<%=incrementStep%>_<%=incrementAction%>">
                                                         </div>
-                                                        <div style="height:100%;width:85%;float:left; display:inline-block">
+                                                        <div style="height:100%;width:80%;float:left; display:inline-block">
                                                             <div class="functional_description" style="height:20px;display:inline-block;clear:both;width:100%; background-color: transparent">
 
                                                                 <div style="float:left; width:80%">
@@ -1271,6 +1277,16 @@
                                                         </div>
                                                         <div style="background-color:blue; width:3px;height:100%;display:inline-block;float:right">
                                                         </div>
+                                                        <div style="height:100%;width:5%;display:inline-block;float:right">
+                                                            <% if (tcsa.getScreenshotFilename()!=null && !"".equals(tcsa.getScreenshotFilename())){%>
+                                                        <img class="wob" width="45" height="35" src="<%=tcsa.getScreenshotFilename()%>" onclick="showPicture('<%=tcsa.getScreenshotFilename()%>')">
+                                                        <%} else {%>
+                                                        <div class="AttachPictureClass"><img style="margin-top:15px; margin-left:15px" width="15" height="15" src="./images/th.jpg" onclick="attachPicture('action_screenshot_<%=incrementStep%>_<%=incrementAction%>')">
+                                                        </div>
+                                                            <%}%>
+                                                        <input style="display:none" name="action_screenshot_<%=incrementStep%>_<%=incrementAction%>" onchange="showChangedRow(this.parentNode.parentNode)" id="action_screenshot_<%=incrementStep%>_<%=incrementAction%>" value="<%=tcsa.getScreenshotFilename()!=null?tcsa.getScreenshotFilename():""%>">
+                                                        </div>
+                                                        
                                                     </div>
 
                                                     <%
@@ -1327,7 +1343,7 @@
                                                             <input class="wob" style="margin-top:20px;width: 20px; font-weight: bold; color:<%=actionFontColor%>"
                                                                    data-fieldtype="control_<%=incrementStep%>_<%=incrementAction%>" value="<%=incrementControl%>" name="control_control_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>">
                                                         </div>
-                                                        <div style="height:100%;width:85%;float:left;display:inline-block">
+                                                        <div style="height:100%;width:80%;float:left;display:inline-block">
                                                             <div class="functional_description" style="clear:both;width:100%;height:20px">
                                                                 <div style="float:left; width:80%">
                                                                     <div style="float:left;width:80px; "><p style="float:right;font-weight:bold;" link="white" ><%out.print(docService.findLabelHTML("testcasestepaction", "description", "Description"));%></p>
@@ -1362,6 +1378,13 @@
                                                         </div>
                                                         <div style="background-color:#33CC33; width:3px;height:100%;display:inline-block;float:right">
                                                         </div>
+                                                                <div style="height:100%;width:5%;display:inline-block;float:right">
+                                                                    <% if (tcsac.getScreenshotFilename()!=null){ %>
+                                                            <img class="wob" width="45" height="35" src="<%=tcsac.getScreenshotFilename()%>" onclick="showPicture('tc.PNG')">
+                                                        <% } else {%>
+                                                        <img class="wob" style="margin-top:15px; margin-left:15px" width="15" height="15" src="./images/th.jpg" onclick="showPicture('tc.PNG')">
+                                                        <%}%>
+                                                                </div>
 
                                                     </div>    
                                                     <%   }%>
