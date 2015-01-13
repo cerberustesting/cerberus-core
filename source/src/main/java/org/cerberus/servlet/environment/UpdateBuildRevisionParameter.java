@@ -37,7 +37,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.log.MyLogger;
-import org.cerberus.version.Version;
+import org.cerberus.version.Infos;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -324,16 +324,16 @@ public class UpdateBuildRevisionParameter extends HttpServlet {
 
         } catch (SQLException ex) {
             Logger.getLogger(UpdateBuildRevisionParameter.class.getName()).log(Level.SEVERE,
-                    Version.PROJECT_NAME_VERSION + " - Exception catched.", ex);
+                    Infos.getInstance().getProjectNameAndVersion() + " - Exception catched.", ex);
         } catch (NullPointerException ex) {
             Logger.getLogger(UpdateBuildRevisionParameter.class.getName()).log(Level.SEVERE,
-                    Version.PROJECT_NAME_VERSION + " - Exception catched.", ex);
+                    Infos.getInstance().getProjectNameAndVersion() + " - Exception catched.", ex);
         } catch (ArrayIndexOutOfBoundsException ex) {
             Logger.getLogger(UpdateBuildRevisionParameter.class.getName()).log(Level.SEVERE,
-                    Version.PROJECT_NAME_VERSION + " - Exception catched.", ex);
+                    Infos.getInstance().getProjectNameAndVersion() + " - Exception catched.", ex);
         } catch (Exception ex) {
             Logger.getLogger(UpdateBuildRevisionParameter.class.getName()).log(Level.SEVERE,
-                    Version.PROJECT_NAME_VERSION + " - Exception catched.", ex);
+                    Infos.getInstance().getProjectNameAndVersion() + " - Exception catched.", ex);
         } finally {
             try {
                 if (connection != null) {

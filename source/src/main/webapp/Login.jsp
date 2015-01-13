@@ -19,7 +19,7 @@
 --%>
 <%@page import="org.cerberus.service.impl.LogEventService"%>
 <%@page import="org.cerberus.service.ILogEventService"%>
-<%@page import="org.cerberus.version.Version"%>
+<%@page import="org.cerberus.version.Infos"%>
 <%@page import="org.cerberus.log.MyLogger"%>
 <%@page import="org.cerberus.service.IParameterService"%>
 <%@page import="org.apache.log4j.Level"%>
@@ -38,7 +38,7 @@
     <body>
 
 <%
-    ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+	ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
     IParameterService myParameterService = appContext.getBean(IParameterService.class);
     try {
         String CerberusSupportEmail = myParameterService.findParameterByKey("cerberus_support_email", "").getValue();
@@ -59,7 +59,7 @@
 
         <div style="padding-top: 7%; padding-left: 30%">
             <div id="login-box">
-                <H2>Cerberus Login</H2><br>V<%=Version.VERSION%><br><br>
+                <H2>Cerberus Login</H2><br>V<%=Infos.getInstance().getProjectVersion()%><br><br>
                 Please login in order to change TestCases and run Tests.<br>
                 If you don't have login, please contact <%= CerberusSupportEmail%>
                 <br>

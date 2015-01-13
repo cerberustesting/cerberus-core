@@ -36,7 +36,7 @@ import org.cerberus.service.IParameterService;
 import org.cerberus.serviceEmail.IEmailBodyGeneration;
 import org.cerberus.serviceEmail.IEmailGeneration;
 import org.cerberus.util.StringUtil;
-import org.cerberus.version.Version;
+import org.cerberus.version.Infos;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -112,7 +112,7 @@ public class EmailGeneration implements IEmailGeneration {
             result = to + "///" + cc + "///" + subject + "///" + body + "///" + build + "///" + revision;
 
         } catch (CerberusException e) {
-            Logger.getLogger(EmailGeneration.class.getName()).log(Level.SEVERE, Version.PROJECT_NAME_VERSION + " - Exception catched.", e);
+            Logger.getLogger(EmailGeneration.class.getName()).log(Level.SEVERE, Infos.getInstance().getProjectNameAndVersion() + " - Exception catched.", e);
         } finally {
             try {
                 if (conn != null) {
@@ -162,7 +162,7 @@ public class EmailGeneration implements IEmailGeneration {
             result = to + "///" + cc + "///" + subject + "///" + body;
 
         } catch (CerberusException e) {
-            Logger.getLogger(EmailGeneration.class.getName()).log(Level.SEVERE, Version.PROJECT_NAME_VERSION + " - Exception catched.", e);
+            Logger.getLogger(EmailGeneration.class.getName()).log(Level.SEVERE, Infos.getInstance().getProjectNameAndVersion() + " - Exception catched.", e);
         }
         return result;
     }
@@ -211,7 +211,7 @@ public class EmailGeneration implements IEmailGeneration {
             result = to + "///" + cc + "///" + subject + "///" + body + "///" + build + "///" + revision + "///" + chain;
 
         } catch (Exception e) {
-            Logger.getLogger(EmailGeneration.class.getName()).log(Level.SEVERE, Version.PROJECT_NAME_VERSION + " - Exception catched.", e);
+            Logger.getLogger(EmailGeneration.class.getName()).log(Level.SEVERE, Infos.getInstance().getProjectNameAndVersion() + " - Exception catched.", e);
         }
         return result;
 

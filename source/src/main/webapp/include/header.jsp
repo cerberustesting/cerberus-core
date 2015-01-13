@@ -41,7 +41,7 @@
 <%@page import="java.util.Date"%>
 <%@page import="java.text.DateFormat"%>
 <%@page import="java.text.SimpleDateFormat"%>
-<%@page import="org.cerberus.version.Version"%>
+<%@page import="org.cerberus.version.Infos"%>
 <script type='text/javascript' src='js/Form.js'></script>
 
 

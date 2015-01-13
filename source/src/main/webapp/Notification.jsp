@@ -28,7 +28,9 @@
 <%@ page import="org.cerberus.entity.CountryEnvParam" %>
 <%@ page import="org.cerberus.entity.BuildRevisionParameters" %>
 <%@ page import="org.cerberus.entity.Application" %>
-<% Date DatePageStart = new Date();%>
+<%
+	Date DatePageStart = new Date();
+%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
@@ -47,95 +49,93 @@
         <%@ include file="include/header.jsp" %>
 
         <%
-            IDocumentationService docService = appContext.getBean(IDocumentationService.class);
-            ICountryEnvParamService countryEnvParamService = appContext.getBean(ICountryEnvParamService.class);
-            ICountryEnvDeployTypeService countryEnvDeployTypeService = appContext.getBean(ICountryEnvDeployTypeService.class);
-            IBuildRevisionParametersService buildRevisionParametersService = appContext.getBean(IBuildRevisionParametersService.class);
-            IApplicationService applicationService = appContext.getBean(IApplicationService.class);
+        	IDocumentationService docService = appContext.getBean(IDocumentationService.class);
+                    ICountryEnvParamService countryEnvParamService = appContext.getBean(ICountryEnvParamService.class);
+                    ICountryEnvDeployTypeService countryEnvDeployTypeService = appContext.getBean(ICountryEnvDeployTypeService.class);
+                    IBuildRevisionParametersService buildRevisionParametersService = appContext.getBean(IBuildRevisionParametersService.class);
+                    IApplicationService applicationService = appContext.getBean(IApplicationService.class);
 
-            try {
+                    try {
 
-                /* Parameter Setup */
+                        /* Parameter Setup */
 
-                String system = "";
-                if (request.getParameter("system") != null && request.getParameter("system").compareTo("") != 0) {
-                    system = request.getParameter("system");
-                }
+                        String system = "";
+                        if (request.getParameter("system") != null && request.getParameter("system").compareTo("") != 0) {
+                            system = request.getParameter("system");
+                        }
 
-                String country;
-                if (request.getParameter("country") != null && request.getParameter("country").compareTo("") != 0) {
-                    country = request.getParameter("country");
-                } else {
-                    country = "ALL";
-                }
+                        String country;
+                        if (request.getParameter("country") != null && request.getParameter("country").compareTo("") != 0) {
+                            country = request.getParameter("country");
+                        } else {
+                            country = "ALL";
+                        }
 
-                String env;
-                if (request.getParameter("env") != null && request.getParameter("env").compareTo("") != 0) {
-                    env = request.getParameter("env");
-                } else {
-                    env = "ALL";
-                }
+                        String env;
+                        if (request.getParameter("env") != null && request.getParameter("env").compareTo("") != 0) {
+                            env = request.getParameter("env");
+                        } else {
+                            env = "ALL";
+                        }
 
-                String event;
-                if (request.getParameter("event") != null && request.getParameter("event").compareTo("") != 0) {
-                    event = request.getParameter("event");
+                        String event;
+                        if (request.getParameter("event") != null && request.getParameter("event").compareTo("") != 0) {
+                            event = request.getParameter("event");
 
-                } else {
-                    event = "NONE";
-                }
+                        } else {
+                            event = "NONE";
+                        }
 
-                String build;
-                if (request.getParameter("build") != null && request.getParameter("build").compareTo("ALL") != 0) {
-                    build = request.getParameter("build");
-                } else {
-                    build = "NONE";
-                }
+                        String build;
+                        if (request.getParameter("build") != null && request.getParameter("build").compareTo("ALL") != 0) {
+                            build = request.getParameter("build");
+                        } else {
+                            build = "NONE";
+                        }
 
-                String revision;
-                if (request.getParameter("revision") != null && request.getParameter("revision").compareTo("ALL") != 0) {
-                    revision = request.getParameter("revision");
-                } else {
-                    revision = "NONE";
-                }
+                        String revision;
+                        if (request.getParameter("revision") != null && request.getParameter("revision").compareTo("ALL") != 0) {
+                            revision = request.getParameter("revision");
+                        } else {
+                            revision = "NONE";
+                        }
 
-                String chain;
-                if (request.getParameter("chain") != null && request.getParameter("chain").compareTo("") != 0) {
-                    chain = request.getParameter("chain");
-                } else {
-                    chain = "NONE";
-                }
-
-
-                // Generate the content of the email
-                IEmailGeneration myEmailGeneration = appContext.getBean(IEmailGeneration.class);
-                String eMailContent = "";
-                String formAction = "";
-
-                if (!StringUtil.isNullOrEmpty(event)) {
-
-                    if (event.equals("newbuildrevision")) {
-                        eMailContent = myEmailGeneration.EmailGenerationRevisionChange(system, country, env, build, revision);
-                        formAction = "NewBuildRev";
-                    }
-                    if (event.equals("disableenvironment")) {
-                        eMailContent = myEmailGeneration.EmailGenerationDisableEnv(system, country, env);
-                        formAction = "DisableEnvironment";
-                    }
-                    if (event.equals("newchain")) {
-                        eMailContent = myEmailGeneration.EmailGenerationNewChain(system, country, env, build, revision, chain);
-                        formAction = "NewChain";
-                    }
-                }
-
-                // Split the result to extract all the data
-                String[] eMailContentTable = eMailContent.split("///");
-
-                String to = eMailContentTable[0];
-                String cc = eMailContentTable[1];
-                String subject = eMailContentTable[2];
-                String body = eMailContentTable[3];
+                        String chain;
+                        if (request.getParameter("chain") != null && request.getParameter("chain").compareTo("") != 0) {
+                            chain = request.getParameter("chain");
+                        } else {
+                            chain = "NONE";
+                        }
 
 
+                        // Generate the content of the email
+                        IEmailGeneration myEmailGeneration = appContext.getBean(IEmailGeneration.class);
+                        String eMailContent = "";
+                        String formAction = "";
+
+                        if (!StringUtil.isNullOrEmpty(event)) {
+
+                            if (event.equals("newbuildrevision")) {
+                                eMailContent = myEmailGeneration.EmailGenerationRevisionChange(system, country, env, build, revision);
+                                formAction = "NewBuildRev";
+                            }
+                            if (event.equals("disableenvironment")) {
+                                eMailContent = myEmailGeneration.EmailGenerationDisableEnv(system, country, env);
+                                formAction = "DisableEnvironment";
+                            }
+                            if (event.equals("newchain")) {
+                                eMailContent = myEmailGeneration.EmailGenerationNewChain(system, country, env, build, revision, chain);
+                                formAction = "NewChain";
+                            }
+                        }
+
+                        // Split the result to extract all the data
+                        String[] eMailContentTable = eMailContent.split("///");
+
+                        String to = eMailContentTable[0];
+                        String cc = eMailContentTable[1];
+                        String subject = eMailContentTable[2];
+                        String body = eMailContentTable[3];
         %>
 
         <table border>
@@ -166,42 +166,44 @@
             </tr>
             <tr><td>Application</td><td>Release</td><td>Deploy with Jenkins</td><td>View the Jenkins Pipe</td></tr>
             <%
-                String lastBuild;
-                String lastRev;
+            	String lastBuild;
+                            String lastRev;
 
-                try{
-                    CountryEnvParam countryEnvParam = countryEnvParamService.findCountryEnvParamByKey(system, country, env);
-                    lastBuild = countryEnvParam.getBuild();
-                    lastRev = countryEnvParam.getRevision();
-                } catch (CerberusException ex) {
-                    lastBuild = "NONE";
-                    lastRev = "NONE";
-                }
+                            try{
+                                CountryEnvParam countryEnvParam = countryEnvParamService.findCountryEnvParamByKey(system, country, env);
+                                lastBuild = countryEnvParam.getBuild();
+                                lastRev = countryEnvParam.getRevision();
+                            } catch (CerberusException ex) {
+                                lastBuild = "NONE";
+                                lastRev = "NONE";
+                            }
 
-                IParameterService myParameterService = appContext.getBean(IParameterService.class);
+                            IParameterService myParameterService = appContext.getBean(IParameterService.class);
 
-                String JenkinsURL = myParameterService.findParameterByKey("jenkins_deploy_pipeline_url", "").getValue();
+                            String JenkinsURL = myParameterService.findParameterByKey("jenkins_deploy_pipeline_url", "").getValue();
 
-                for (BuildRevisionParameters brp : buildRevisionParametersService.findBuildRevisionParametersFromMaxRevision(build, revision, lastBuild, lastRev)) {
+                            for (BuildRevisionParameters brp : buildRevisionParametersService.findBuildRevisionParametersFromMaxRevision(build, revision, lastBuild, lastRev)) {
 
-                    String final_JenkinsURL = JenkinsURL.replaceAll("%APPLI%", brp.getApplication());
+                                String final_JenkinsURL = JenkinsURL.replaceAll("%APPLI%", brp.getApplication());
             %>
             <tr>
                 <td><%=brp.getApplication()%></td>
                 <td><%=brp.getRelease()%></td>
                 <td><%
-                    // Looping on all Jenkins Agent for the country environment and deploytype values.
-                    Application app = applicationService.findApplicationByKey(brp.getApplication());
-                    for (String JenkinsAgent : countryEnvDeployTypeService.findJenkinsAgentByKey(system, country, env, app.getDeploytype())) {
-                        String DeployURL = "JenkinsDeploy?application=" + brp.getApplication() + "&jenkinsagent=" + JenkinsAgent + "&country=" + country + "&deploytype=" + app.getDeploytype() + "&release=" + brp.getRelease() + "&jenkinsbuildid=" + brp.getJenkinsBuildId();
-                    %>
+                	// Looping on all Jenkins Agent for the country environment and deploytype values.
+                                    Application app = applicationService.findApplicationByKey(brp.getApplication());
+                                    for (String JenkinsAgent : countryEnvDeployTypeService.findJenkinsAgentByKey(system, country, env, app.getDeploytype())) {
+                                        String DeployURL = "JenkinsDeploy?application=" + brp.getApplication() + "&jenkinsagent=" + JenkinsAgent + "&country=" + country + "&deploytype=" + app.getDeploytype() + "&release=" + brp.getRelease() + "&jenkinsbuildid=" + brp.getJenkinsBuildId();
+                %>
                         <a href='<%=DeployURL%>' target='_blank'><%=JenkinsAgent%></a>
-                    <% }%>
+                    <%
+                    	}
+                    %>
                 </td>
                 <td><a href='<%=final_JenkinsURL%>' target='_blank'>VIEW</a></td>
             </tr>
             <%
-                }
+            	}
             %>
         </table>
         <br>
@@ -211,11 +213,15 @@
                 <tr>
                     <td><input id="cancel" type="button" value="Cancel" onclick="window.location.href='Environment.jsp?system=<%=system%>&country=<%=country%>&env=<%=env%>'"></td>
                     <td><input id="validate" type="submit" value="Validate and Send Notification"></td>
-                        <% if (!event.equals("disableenvironment")) {%>
+                        <%
+                        	if (!event.equals("disableenvironment")) {
+                        %>
                     <td><input type="hidden" name="build" value="<%=build%>"></td>
                     <td><input type="hidden" name="revision" value="<%=revision%>"></td>
                     <td><input type="hidden" name="chain" value="<%=chain%>"></td>
-                        <%}%>
+                        <%
+                        	}
+                        %>
                     <td><input type="hidden" name="system" value="<%=system%>"></td>
                     <td><input type="hidden" name="country" value="<%=country%>"></td>
                     <td><input type="hidden" name="env" value="<%=env%>"></td>
@@ -227,11 +233,11 @@
         <a href="Environment.jsp?system=<%=system%>&country=<%=country%>&env=<%=env%>">Continue to Current Environment</a>
 
         <%
-            } catch (Exception e) {
-                MyLogger.log("Notification.jsp", Level.FATAL, Version.PROJECT_NAME_VERSION + " - Exception catched." + e.toString());
-                out.println("<br> error message : " + e.getMessage() + " " + e.toString() + "<br>");
+        	} catch (Exception e) {
+                                MyLogger.log("Notification.jsp", Level.FATAL, Infos.getInstance().getProjectNameAndVersion() + " - Exception catched." + e.toString());
+                                out.println("<br> error message : " + e.getMessage() + " " + e.toString() + "<br>");
 
-            }
+                            }
         %>
         <br><% out.print(display_footer(DatePageStart));%>
     </body>

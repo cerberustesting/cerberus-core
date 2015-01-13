@@ -31,7 +31,7 @@ import org.cerberus.service.IApplicationService;
 import org.cerberus.service.IParameterService;
 import org.cerberus.serviceEmail.IEmailBodyGeneration;
 import org.cerberus.util.SqlUtil;
-import org.cerberus.version.Version;
+import org.cerberus.version.Infos;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -80,7 +80,7 @@ public class EmailBodyGeneration implements IEmailBodyGeneration {
                     .append(" order by b.Build, b.Revision, b.Application, b.Project,")
                     .append(" b.TicketIDFixed, b.BugIDFixed, b.Release").toString();
 
-            Logger.getLogger(EmailBodyGeneration.class.getName()).log(Level.DEBUG, Version.PROJECT_NAME_VERSION + " - SQL : " + contentSQL);
+            Logger.getLogger(EmailBodyGeneration.class.getName()).log(Level.DEBUG, Infos.getInstance().getProjectNameAndVersion() + " - SQL : " + contentSQL);
 
             ResultSet rsBC = stmtBuildContent.executeQuery(contentSQL);
 
@@ -166,7 +166,7 @@ public class EmailBodyGeneration implements IEmailBodyGeneration {
             buildContentTemplate = buildContentTable;
 
         } catch (Exception e) {
-            Logger.getLogger(EmailBodyGeneration.class.getName()).log(Level.FATAL, Version.PROJECT_NAME_VERSION + " - Exception catched.", e);
+            Logger.getLogger(EmailBodyGeneration.class.getName()).log(Level.FATAL, Infos.getInstance().getProjectNameAndVersion() + " - Exception catched.", e);
         }
 
         return buildContentTemplate;
@@ -245,7 +245,7 @@ public class EmailBodyGeneration implements IEmailBodyGeneration {
                     + " and (status='WORKING' or status is null) "
                     + " group by i.gp1 order by i.sort;";
 
-            Logger.getLogger(EmailBodyGeneration.class.getName()).log(Level.DEBUG, Version.PROJECT_NAME_VERSION + " - SQL : " + contentSQL);
+            Logger.getLogger(EmailBodyGeneration.class.getName()).log(Level.DEBUG, Infos.getInstance().getProjectNameAndVersion() + " - SQL : " + contentSQL);
 
             ResultSet rsBC = stmtBuildContent.executeQuery(contentSQL);
             String Cerberus_URL = parameterService.findParameterByKey("cerberus_reporting_url", "").getValue();;
@@ -337,7 +337,7 @@ public class EmailBodyGeneration implements IEmailBodyGeneration {
             stmtCountryList.close();
 
         } catch (Exception e) {
-            Logger.getLogger(EmailBodyGeneration.class.getName()).log(Level.FATAL, Version.PROJECT_NAME_VERSION + " - Exception catched.", e);
+            Logger.getLogger(EmailBodyGeneration.class.getName()).log(Level.FATAL, Infos.getInstance().getProjectNameAndVersion() + " - Exception catched.", e);
             TestRecapTable = e.getMessage();
         }
 
