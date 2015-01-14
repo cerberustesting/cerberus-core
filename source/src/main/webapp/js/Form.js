@@ -1098,7 +1098,7 @@ function activateDatabaseBox(value, fieldOneId, fieldTwoId) {
 }
 
 function activateValue2(value, fieldOneId, fieldTwoId, fieldThreeId, size2) {
-    if (value === "getAttributeFromHtml" || value === "getFromXml" || value === "getFromCookie" || value === "getDifferencesFromXml") {
+    if (value === "getAttributeFromHtml" || value === "getFromXml" || value === "getFromCookie" || value === "getFromJson" || value === "getDifferencesFromXml") {
         var size3 = 1 * size2 / 3;
         var size4 = (2 * size2 / 3) - 5;
         document.getElementById(fieldOneId).style.display = "inline";
@@ -2267,7 +2267,7 @@ function addTCSCNew(rowID, obj) {
 }
 
 function newActivateValue2(value, fieldValue1Id, fieldValue2Id, size) {
-    if (value === "getAttributeFromHtml" || value === "getFromXml" || value === "getFromCookie" || value === "getDifferencesFromXml") {
+    if (value === "getAttributeFromHtml" || value === "getFromXml" || value === "getFromCookie" || value === "getFromJson" || value === "getDifferencesFromXml") {
         document.getElementById(fieldValue2Id).style.display = "inline-block";
         document.getElementById(fieldValue2Id).style.width = size/2 + "%";
         document.getElementById(fieldValue1Id).style.width = size/2 + "%";

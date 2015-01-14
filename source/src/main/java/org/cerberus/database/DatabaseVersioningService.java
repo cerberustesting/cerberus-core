@@ -4041,6 +4041,20 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
                 SQLS.append("ADD COLUMN `ScreenshotFileName` VARCHAR(150) NULL DEFAULT NULL AFTER `Fatal`;");
                 SQLInstruction.add(SQLS.toString());
                 
+// Add propertytype getFromJson in Invariant table.
+// -- ------------------------ 570 
+                SQLS = new StringBuilder();
+		SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) ");
+                SQLS.append(" VALUES ('PROPERTYTYPE', 'getFromJson', '70', 'Getting value from a Json file', '');");
+                SQLInstruction.add(SQLS.toString());
+                
+// Add documentation for getFromJson property.
+// -- ------------------------ 571 
+                SQLS = new StringBuilder();
+		SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `DocLabel`, `DocDesc`) ");
+                SQLS.append("VALUES ('testcasecountryproperties', 'Type', 'getFromJson', 'Get a value from a Json File', '<code class=\\'doc-fixed\\'>getFromJson</code> will allow you to take an element value from a Json File.</br>Cerberus will download the Json File (Calling the URL in the Value1 field) and parse it to return the element value expected (Specified in the Value2 field).<br><br>Usage :<br><doc class=\"usage\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Field</th><th class=\\'ex\\'>Usage</th><tr><td class=\\'ex\\'>DTB</td><td class=\\'ex\\'>Not used.</td></tr><tr><td class=\\'ex\\'>Value</td><td class=\\'ex\\'>URL of the Json File</td></tr><tr><td class=\\'ex\\'>Value2</td><td class=\\'ex\\'>Element to Find</td></tr><tr><td class=\\'ex\\'>Length</td><td class=\\'ex\\'>Not used</td></tr><tr><td class=\\'ex\\'>RowLimit</td><td class=\\'ex\\'>Not used.</td></tr><tr><td class=\\'ex\\'>Nature</td><td class=\\'ex\\'>Not used.</td></tr></table></doc><br><br>Examples :<br><doc class=\"examples\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Json File</th><th class=\\'ex\\'>Value</th><th class=\\'ex\\'>Value2</th><th class=\\'ex\\'>Result</th><tr><td class=\\'ex\\'><textarea rows=\"3\" style=\"width: 245px;\" readonly>{\"text1\": \"yes\",\"text2\": 1234, \"array\":[\"first\", \"second\", \"third\"]}</textarea></td><td class=\\'ex\\'>http://url_of_the_json/file.json</td><td class=\\'ex\\'>text2</td><td class=\\'ex\\'>1234</td></tr><tr><td class=\\'ex\\'><textarea rows=\"3\" style=\"width: 245px;\" readonly>{\"text1\": \"yes\",\"text2\": 1234, \"array\":[\"first\", \"second\", \"third\"]}</textarea></td><td class=\\'ex\\'>http://url_of_the_json/file.json</td><td class=\\'ex\\'>array[1]</td><td class=\\'ex\\'>second</td></tr></table></doc>');");
+                SQLInstruction.add(SQLS.toString());
+                
         return SQLInstruction;
     }
     

@@ -54,6 +54,7 @@ public enum MessageEventEnum {
     PROPERTY_SUCCESS_RANDOM_NEW(100, "OK", "Random New property calculated with '%VALUE%'.", false, false ,false , MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     PROPERTY_SUCCESS_GETATTRIBUTEFROMHTML(100, "OK", "Attribute '%ATTRIBUTE%' has returned '%VALUE%' for element '%ELEMENT%'.", false, false ,false , MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     PROPERTY_SUCCESS_GETFROMCOOKIE(100, "OK", "Parameter '%PARAM%' from cookie '%COOKIE%' has been found and returned '%VALUE%'.", false, false ,false , MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
+    PROPERTY_SUCCESS_GETFROMJSON(100, "OK", "Value '%PARAM%' from Json '%URL%' has been found and returned '%VALUE%'.", false, false ,false , MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     PROPERTY_SUCCESS_TESTDATA(100, "OK", "TestData %PROPERTY% correctly returned '%VALUE%'.", false, false ,false , MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     PROPERTY_SUCCESS_SOAP(100, "OK", "SOAP Request executed", false, false ,false , MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     PROPERTY_FAILED(150, "NA", "PROPERTY_ERROR Generic error on getting the property.", true, false, false, MessageGeneralEnum.EXECUTION_NA),
@@ -78,6 +79,7 @@ public enum MessageEventEnum {
     PROPERTY_FAILED_GETFROMCOOKIE_PARAMETERNOTFOUND(187, "FA", "Cannot find Parameter '%PARAM%' form Cookie '%COOKIE%'. Parameter do not exist or is not supported!", true, true ,true , MessageGeneralEnum.EXECUTION_FA),
     PROPERTY_FAILED_GETDIFFERENCESFROMXML(188, "FA", "Failed to compute differences from '%VALUE1%' and '%VALUE2%'", true, true ,false , MessageGeneralEnum.EXECUTION_FA),
     PROPERTY_FAILED_CYCLICDEFINITION(189, "FA", "Property %PROP% is cyclically defined", true, false ,false , MessageGeneralEnum.EXECUTION_FA),
+    PROPERTY_FAILED_GETFROMJSON_PARAMETERNOTFOUND(190, "FA", "Value %PARAM% not found in Json file from %URL%", true, true ,true , MessageGeneralEnum.EXECUTION_FA),
     PROPERTY_PENDING(199, "PE", "Calculating property...", false, false ,false , MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     ACTION_SUCCESS(200, "OK", "", false, false ,false , MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     ACTION_SUCCESS_CLICK(200, "OK", "Element '%ELEMENT%' clicked.", false, false ,false , MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
@@ -226,7 +228,8 @@ public enum MessageEventEnum {
     APPLICATION_NOT_FOUND(501, "FA", "Application of the testcase does not exist.", true, true ,false , MessageGeneralEnum.EXECUTION_FA),
     TESTCASEEXECUTION_CANNOTFINDTESTCASEEXECUTIONBYCRITERIA(502, "CA", "An error occur when trying to find execution by criteria", true, true ,false , MessageGeneralEnum.EXECUTION_FA),
     TESTCASEEXECUTION_CANNOTINSERTTESTCASEEXECUTION(503, "CA", "An error occur when trying to insert a testcaseexecution", true, true ,false , MessageGeneralEnum.EXECUTION_FA),
-    NOT_IMPLEMEMTED(900, "", "Not Implememted.", true, true ,false , MessageGeneralEnum.EXECUTION_FA) //TODO add env property => configure com.cerberus.environment and JNDI
+    NOT_IMPLEMEMTED(900, "", "Not Implememted.", true, true ,false , MessageGeneralEnum.EXECUTION_FA) 
+    //TODO add env property => configure com.cerberus.environment and JNDI
     ;
     
     private final int code;

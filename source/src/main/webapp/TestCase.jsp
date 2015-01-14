@@ -1529,6 +1529,7 @@
                                                 if (tccp.getType().equals("getAttributeFromHtml")
                                                         || tccp.getType().equals("getFromXml")
                                                         || tccp.getType().equals("getFromCookie")
+                                                        || tccp.getType().equals("getFromJson")
                                                         || tccp.getType().equals("getDifferencesFromXml")) {
                                                     widthValue1 = widthValue / 2;
                                                     widthValue2 = widthValue / 2;

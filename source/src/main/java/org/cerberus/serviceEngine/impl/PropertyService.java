@@ -41,6 +41,7 @@ import org.cerberus.service.ISoapLibraryService;
 import org.cerberus.service.ISqlLibraryService;
 import org.cerberus.service.ITestCaseExecutionDataService;
 import org.cerberus.service.ITestDataService;
+import org.cerberus.serviceEngine.IJsonService;
 import org.cerberus.serviceEngine.IPropertyService;
 import org.cerberus.serviceEngine.ISQLService;
 import org.cerberus.serviceEngine.ISoapService;
@@ -82,6 +83,8 @@ public class PropertyService implements IPropertyService {
     private IFactoryTestCaseExecutionData factoryTestCaseExecutionData;
     @Autowired
     private ITestCaseExecutionDataService testCaseExecutionDataService;
+    @Autowired
+    private IJsonService jsonService;
 
     private String replaceWithCalculatedProperty(String stringToReplace, TestCaseExecution tCExecution) {
         for (TestCaseExecutionData tced : tCExecution.getTestCaseExecutionDataList()) {
@@ -135,6 +138,8 @@ public class PropertyService implements IPropertyService {
             testCaseExecutionData = this.getFromCookie(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceRecalculation);
         } else if (testCaseCountryProperty.getType().equals("getFromXml")) {
             testCaseExecutionData = this.getFromXml(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceRecalculation);
+        } else if (testCaseCountryProperty.getType().equals("getFromJson")) {
+            testCaseExecutionData = this.getFromJson(testCaseExecutionData, forceRecalculation);
         } else if ("executeSoapFromLib".equals(testCaseCountryProperty.getType())) {
             testCaseExecutionData = this.executeSoapFromLib(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceRecalculation);
         } else if ("getDifferencesFromXml".equals(testCaseCountryProperty.getType())) {
@@ -674,6 +679,43 @@ public class PropertyService implements IPropertyService {
 
             res.setDescription(res.getDescription().replaceAll("%VALUE1%", testCaseExecutionData.getValue1()));
             res.setDescription(res.getDescription().replaceAll("%VALUE2%", testCaseExecutionData.getValue2()));
+            testCaseExecutionData.setPropertyResultMessage(res);
+        }
+        return testCaseExecutionData;
+    }
+
+    private TestCaseExecutionData getFromJson(TestCaseExecutionData testCaseExecutionData, boolean forceRecalculation) {
+        try {
+            String valueFromJson = this.jsonService.getFromJson(testCaseExecutionData.getValue1(), testCaseExecutionData.getValue2());
+            if (valueFromJson != null) {
+                if (!"".equals(valueFromJson)) {
+                    testCaseExecutionData.setValue(valueFromJson);
+                    MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMJSON);
+                    res.setDescription(res.getDescription().replaceAll("%URL%", testCaseExecutionData.getValue1()));
+                    res.setDescription(res.getDescription().replaceAll("%PARAM%", testCaseExecutionData.getValue2()));
+                    res.setDescription(res.getDescription().replaceAll("%VALUE%", valueFromJson));
+                    testCaseExecutionData.setPropertyResultMessage(res);
+                } else {
+                    MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMJSON_PARAMETERNOTFOUND);
+                    res.setDescription(res.getDescription().replaceAll("%URL%", testCaseExecutionData.getValue1()));
+                    res.setDescription(res.getDescription().replaceAll("%PARAM%", testCaseExecutionData.getValue2()));
+                    testCaseExecutionData.setPropertyResultMessage(res);
+                }
+            } else {
+                MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMJSON_PARAMETERNOTFOUND);
+                res.setDescription(res.getDescription().replaceAll("%URL%", testCaseExecutionData.getValue1()));
+                res.setDescription(res.getDescription().replaceAll("%PARAM%", testCaseExecutionData.getValue2()));
+                testCaseExecutionData.setPropertyResultMessage(res);
+
+            }
+        } catch (Exception exception) {
+            if (LOG.isDebugEnabled()){
+                LOG.error(exception.toString());
+            }
+            MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMJSON_PARAMETERNOTFOUND);
+
+            res.setDescription(res.getDescription().replaceAll("%URL%", testCaseExecutionData.getValue1()));
+            res.setDescription(res.getDescription().replaceAll("%PARAM%", testCaseExecutionData.getValue2()));
             testCaseExecutionData.setPropertyResultMessage(res);
         }
         return testCaseExecutionData;
