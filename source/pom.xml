@@ -303,17 +303,6 @@
                 <version>${maven-war-plugin.version}</version>
                 <configuration>
                     <failOnMissingWebXml>false</failOnMissingWebXml>
-                    <webResources>
-                    	<!-- Filter the GlassFish configuration files -->
-						<resource>
-			        		<directory>src/main/webapp</directory>
-			        		<includes>
-			          			<include>WEB-INF/glassfish-web.xml</include>
-			          			<include>WEB-INF/sun-web.xml</include>
-			        		</includes>
-			        		<filtering>true</filtering>
-						</resource>
-                    </webResources>
                 </configuration>
             </plugin>
             <plugin>
