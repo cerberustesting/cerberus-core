@@ -46,4 +46,21 @@ public class FactoryTestCaseStepActionControl implements IFactoryTestCaseStepAct
         return testCaseStepActionControl;
     }
 
+    @Override
+    public TestCaseStepActionControl create(String test, String testCase, int step, int sequence, int control, String type, String controlValue, String controlProperty, String fatal, String description, String screenshotFilename) {
+        TestCaseStepActionControl testCaseStepActionControl = new TestCaseStepActionControl();
+        testCaseStepActionControl.setTest(test);
+        testCaseStepActionControl.setTestCase(testCase);
+        testCaseStepActionControl.setType(type);
+        testCaseStepActionControl.setStep(step);
+        testCaseStepActionControl.setSequence(sequence);
+        testCaseStepActionControl.setControl(control);
+        testCaseStepActionControl.setControlValue(controlValue);
+        testCaseStepActionControl.setControlProperty(controlProperty);
+        testCaseStepActionControl.setFatal(fatal);
+        testCaseStepActionControl.setDescription(description);
+        testCaseStepActionControl.setScreenshotFilename(screenshotFilename);
+        return testCaseStepActionControl;
+    }
+
 }

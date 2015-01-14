@@ -32,7 +32,16 @@ public class TestCaseStepAction {
     private String object;
     private String property;
     private String description;
+    private String screenshotFilename;
 
+    public String getScreenshotFilename() {
+        return screenshotFilename;
+    }
+
+    public void setScreenshotFilename(String screenshotFilename) {
+        this.screenshotFilename = screenshotFilename;
+    }
+    
     List<TestCaseStepActionControl> testCaseStepActionControl;
 
     public List<TestCaseStepActionControl> getTestCaseStepActionControl() {
@@ -254,6 +263,9 @@ public class TestCaseStepAction {
             return false;
         }
         if ((this.description == null) ? (other.description != null) : !this.description.equals(other.description)) {
+            return false;
+        }
+        if ((this.screenshotFilename == null) ? (other.screenshotFilename != null) : !this.screenshotFilename.equals(other.screenshotFilename)) {
             return false;
         }
         return true;
