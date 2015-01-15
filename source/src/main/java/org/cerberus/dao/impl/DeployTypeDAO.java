@@ -94,7 +94,7 @@ public class DeployTypeDAO implements IDeployTypeDAO {
     @Override
     public List<DeployType> findAllDeployType() {
         List<DeployType> list = null;
-        final String query = "SELECT * FROM deployType";
+        final String query = "SELECT * FROM deploytype";
 
         Connection connection = this.databaseSpring.connect();
         try {
