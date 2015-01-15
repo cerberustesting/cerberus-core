@@ -88,7 +88,8 @@ public class TestCaseStepActionControlDAO implements ITestCaseStepActionControlD
                         String property = resultSet.getString("ControlProperty");
                         String fatal = resultSet.getString("Fatal");
                         String description = resultSet.getString("ControlDescription");
-                        actionControl = factoryTestCaseStepActionControl.create(test, testcase, stepNumber, sequence, control, type, object, property, fatal, description);
+                        String screenshotFilename = resultSet.getString("screenshotFilename");
+                        actionControl = factoryTestCaseStepActionControl.create(test, testcase, stepNumber, sequence, control, type, object, property, fatal, description,screenshotFilename);
                     }
                 } catch (SQLException exception) {
                     MyLogger.log(TestCaseStepActionControlDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
@@ -150,7 +151,8 @@ public class TestCaseStepActionControlDAO implements ITestCaseStepActionControlD
                         String property = resultSet.getString("ControlProperty");
                         String fatal = resultSet.getString("Fatal");
                         String description = resultSet.getString("ControlDescription");
-                        list.add(factoryTestCaseStepActionControl.create(test, testcase, step, sequence, control, type, object, property, fatal, description));
+                        String screenshotFilename = resultSet.getString("screenshotFilename");
+                        list.add(factoryTestCaseStepActionControl.create(test, testcase, step, sequence, control, type, object, property, fatal, description,screenshotFilename));
                     }
                 } catch (SQLException exception) {
                     MyLogger.log(TestCaseStepActionControlDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
@@ -180,8 +182,8 @@ public class TestCaseStepActionControlDAO implements ITestCaseStepActionControlD
     public void insertTestCaseStepActionControl(TestCaseStepActionControl testCaseStepActionControl) throws CerberusException {
         boolean throwExcep = false;
         StringBuilder query = new StringBuilder();
-        query.append("INSERT INTO testcasestepactioncontrol (`test`, `testCase`, `step`, `sequence`, `control`, `type`, `controlvalue`, `controlproperty`, `fatal`, `ControlDescription`) ");
-        query.append("VALUES (?,?,?,?,?,?,?,?,?,?)");
+        query.append("INSERT INTO testcasestepactioncontrol (`test`, `testCase`, `step`, `sequence`, `control`, `type`, `controlvalue`, `controlproperty`, `fatal`, `ControlDescription`, `screenshotfilename`) ");
+        query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?)");
         
         Connection connection = this.databaseSpring.connect();
         try {
@@ -197,6 +199,7 @@ public class TestCaseStepActionControlDAO implements ITestCaseStepActionControlD
                 preStat.setString(8, testCaseStepActionControl.getControlProperty());
                 preStat.setString(9, testCaseStepActionControl.getFatal());
                 preStat.setString(10, testCaseStepActionControl.getDescription());
+                preStat.setString(11, testCaseStepActionControl.getScreenshotFilename());
 
                 preStat.executeUpdate();
                 throwExcep = false;
@@ -246,7 +249,8 @@ public class TestCaseStepActionControlDAO implements ITestCaseStepActionControlD
                         String property = resultSet.getString("ControlProperty");
                         String fatal = resultSet.getString("Fatal");
                         String description = resultSet.getString("ControlDescription");
-                        list.add(factoryTestCaseStepActionControl.create(test, testcase, step, sequence, control, type, object, property, fatal, description));
+                        String screenshotFilename = resultSet.getString("screenshotFilename");
+                        list.add(factoryTestCaseStepActionControl.create(test, testcase, step, sequence, control, type, object, property, fatal, description,screenshotFilename));
                     }
                 } catch (SQLException exception) {
                     MyLogger.log(TestCaseStepActionControlDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
@@ -286,7 +290,8 @@ public class TestCaseStepActionControlDAO implements ITestCaseStepActionControlD
                 .append("`ControlValue` = ?, ")
                 .append("`ControlProperty` = ?, ")
                 .append("`ControlDescription` = ?, ")
-                .append("`Fatal` = ? ")
+                .append("`Fatal` = ?, ")
+                .append("`screenshotFilename` = ? ")
                 .append("WHERE `Test` = ? AND `TestCase` = ? AND `Step` = ? AND `Sequence` = ? AND `Control` = ? ")
                 .toString();
 
@@ -304,12 +309,13 @@ public class TestCaseStepActionControlDAO implements ITestCaseStepActionControlD
                 preStat.setString(8, testCaseStepActionControl.getControlProperty());
                 preStat.setString(10, testCaseStepActionControl.getFatal());
                 preStat.setString(9, testCaseStepActionControl.getDescription());
+                preStat.setString(11, testCaseStepActionControl.getScreenshotFilename());
 
-                preStat.setString(11, testCaseStepActionControl.getTest());
-                preStat.setString(12, testCaseStepActionControl.getTestCase());
-                preStat.setInt(13, testCaseStepActionControl.getStep());
-                preStat.setInt(14, testCaseStepActionControl.getSequence());
-                preStat.setInt(15, testCaseStepActionControl.getControl());
+                preStat.setString(12, testCaseStepActionControl.getTest());
+                preStat.setString(13, testCaseStepActionControl.getTestCase());
+                preStat.setInt(14, testCaseStepActionControl.getStep());
+                preStat.setInt(15, testCaseStepActionControl.getSequence());
+                preStat.setInt(16, testCaseStepActionControl.getControl());
 
                 preStat.executeUpdate();
                 throwExcep = false;
@@ -397,7 +403,8 @@ public class TestCaseStepActionControlDAO implements ITestCaseStepActionControlD
                         String property = resultSet.getString("ControlProperty");
                         String fatal = resultSet.getString("Fatal");
                         String description = resultSet.getString("ControlDescription");
-                        list.add(factoryTestCaseStepActionControl.create(test, testCase, step, sequence, control, type, object, property, fatal, description));
+                        String screenshotFilename = resultSet.getString("screenshotFilename");
+                        list.add(factoryTestCaseStepActionControl.create(test, testCase, step, sequence, control, type, object, property, fatal, description,screenshotFilename));
                     }
                 } catch (SQLException exception) {
                     MyLogger.log(TestCaseStepActionControlDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());

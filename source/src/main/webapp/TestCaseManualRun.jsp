@@ -51,7 +51,9 @@
 <%@page import="org.cerberus.service.IApplicationService"%>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<% Date DatePageStart = new Date();%>
+<%
+	Date DatePageStart = new Date();
+%>
 <%@ include file="include/function.jsp" %>
 <style>
     .RowActionDiv{
@@ -119,115 +121,114 @@
 </style>
 <div id="ManualRun">
     <%
-        boolean booleanFunction = false;
-        try {
-            /*
-             * Services
-             */
-            IApplicationService myApplicationService = appContext.getBean(IApplicationService.class);
-            IParameterService parameterService = appContext.getBean(IParameterService.class);
-            IBuildRevisionInvariantService buildRevisionInvariantService = appContext.getBean(IBuildRevisionInvariantService.class);
-            ITestService testService = appContext.getBean(ITestService.class);
-            ITestCaseService testCaseService = appContext.getBean(ITestCaseService.class);
-            ITestCaseCountryService testCaseCountryService = appContext.getBean(ITestCaseCountryService.class);
-            ITestCaseStepService tcsService = appContext.getBean(ITestCaseStepService.class);
-            ITestCaseStepActionService tcsaService = appContext.getBean(ITestCaseStepActionService.class);
-            ITestCaseStepActionControlService tcsacService = appContext.getBean(ITestCaseStepActionControlService.class);
-            ITestCaseCountryPropertiesService tccpService = appContext.getBean(ITestCaseCountryPropertiesService.class);
-            ISqlLibraryService libService = appContext.getBean(ISqlLibraryService.class);
-            ITestCaseExecutionService testCaseExecutionService = appContext.getBean(ITestCaseExecutionService.class);
-            IInvariantService invariantService = appContext.getBean(IInvariantService.class);
-            IUserSystemService userSystemService = appContext.getBean(IUserSystemService.class);
-            ICountryEnvParamService countryEnvParamService = appContext.getBean(ICountryEnvParamService.class);
-            ICountryEnvironmentApplicationService countryEnvironmentApplicationService = appContext.getBean(ICountryEnvironmentApplicationService.class);
-            IFactoryTestCaseExecution factoryTestCaseExecution = appContext.getBean(IFactoryTestCaseExecution.class);
-            IFactoryTestCaseExecutionSysVer factoryTestCaseExecutionSysVer = appContext.getBean(IFactoryTestCaseExecutionSysVer.class);
-            ITestCaseExecutionSysVerService testCaseExecutionSysVerService = appContext.getBean(ITestCaseExecutionSysVerService.class);
-            ITestCaseExecutionInQueueService testcaseExecutionQueueService = appContext.getBean(ITestCaseExecutionInQueueService.class);
-
-            /**
-             * String init
-             */
-            String SitdmossBugtrackingURL;
-            SitdmossBugtrackingURL = "";
-            String appSystem = "";
-            String proplist = "";
-
-            /*
-             * Get Parameters
-             */
-            String MySystem = "";//request.getAttribute("MySystem").toString();
-            if (request.getParameter("system") != null && request.getParameter("system").compareTo("") != 0) {
-                MySystem = request.getParameter("system");
-            }
-            List<String> systems = new ArrayList();
-            systems.add(MySystem);
-
-            List<Test> tests = new ArrayList();
-
-            String group = getRequestParameterWildcardIfEmpty(request, "group");
-            String status = getRequestParameterWildcardIfEmpty(request, "status");
-            String test = getRequestParameterWildcardIfEmpty(request, "Test");
-            String testcase = getRequestParameterWildcardIfEmpty(request, "TestCase");
-            String country = getRequestParameterWildcardIfEmpty(request, "Country");
-            String environment = getRequestParameterWildcardIfEmpty(request, "Environment");
-            String idFromQueue = getRequestParameterWildcardIfEmpty(request, "IdFromQueue");
-            String browser = "firefox";
-            String browserVersion = "";
-            String tag = getRequestParameterWildcardIfEmpty(request, "Tag");
-            Boolean tinf = getBooleanParameterFalseIfEmpty(request, "Tinf");
-
-            Application myApp = null;
-            TCase tCase = testCaseService.findTestCaseByKey(test, testcase);
-            if (tCase != null) {
-                myApp = myApplicationService.findApplicationByKey(tCase.getApplication());
-            } else {
-                throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
-            }
-            CountryEnvParam countryEnvParam;
+    	boolean booleanFunction = false;
             try {
-                countryEnvParam = countryEnvParamService.findCountryEnvParamByKey(myApp.getSystem(), country, environment);
-            } catch (CerberusException e) {
-                CerberusException ex = new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
-                ex.getMessageError().setDescription("Combination Environment: '" + environment + "' and Country: '" + country
-                        + "' not defined for System/Application: " + myApp.getSystem() + "/" + myApp.getApplication());
-                throw ex;
-            }
-            CountryEnvironmentApplication countryEnvironmentParameter;
-            try {
-                countryEnvironmentParameter = countryEnvironmentApplicationService.findCountryEnvironmentParameterByKey(myApp.getSystem(), country, environment, myApp.getApplication());
-            } catch (CerberusException e) {
-                CerberusException ex = new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
-                throw ex;
-            }
-            String build = countryEnvParam.getBuild();
-            String revision = countryEnvParam.getRevision();
-            long now = new Date().getTime();
-            String version = "Cerberus-" + Version.VERSION;
+                /*
+                 * Services
+                 */
+                IApplicationService myApplicationService = appContext.getBean(IApplicationService.class);
+                IParameterService parameterService = appContext.getBean(IParameterService.class);
+                IBuildRevisionInvariantService buildRevisionInvariantService = appContext.getBean(IBuildRevisionInvariantService.class);
+                ITestService testService = appContext.getBean(ITestService.class);
+                ITestCaseService testCaseService = appContext.getBean(ITestCaseService.class);
+                ITestCaseCountryService testCaseCountryService = appContext.getBean(ITestCaseCountryService.class);
+                ITestCaseStepService tcsService = appContext.getBean(ITestCaseStepService.class);
+                ITestCaseStepActionService tcsaService = appContext.getBean(ITestCaseStepActionService.class);
+                ITestCaseStepActionControlService tcsacService = appContext.getBean(ITestCaseStepActionControlService.class);
+                ITestCaseCountryPropertiesService tccpService = appContext.getBean(ITestCaseCountryPropertiesService.class);
+                ISqlLibraryService libService = appContext.getBean(ISqlLibraryService.class);
+                ITestCaseExecutionService testCaseExecutionService = appContext.getBean(ITestCaseExecutionService.class);
+                IInvariantService invariantService = appContext.getBean(IInvariantService.class);
+                IUserSystemService userSystemService = appContext.getBean(IUserSystemService.class);
+                ICountryEnvParamService countryEnvParamService = appContext.getBean(ICountryEnvParamService.class);
+                ICountryEnvironmentApplicationService countryEnvironmentApplicationService = appContext.getBean(ICountryEnvironmentApplicationService.class);
+                IFactoryTestCaseExecution factoryTestCaseExecution = appContext.getBean(IFactoryTestCaseExecution.class);
+                IFactoryTestCaseExecutionSysVer factoryTestCaseExecutionSysVer = appContext.getBean(IFactoryTestCaseExecutionSysVer.class);
+                ITestCaseExecutionSysVerService testCaseExecutionSysVerService = appContext.getBean(ITestCaseExecutionSysVerService.class);
+                ITestCaseExecutionInQueueService testcaseExecutionQueueService = appContext.getBean(ITestCaseExecutionInQueueService.class);
 
-            String myUser = "";
-            if (!(request.getUserPrincipal() == null)) {
-                myUser = ParameterParserUtil.parseStringParam(request.getUserPrincipal().getName(), "");
-            }
+                /**
+                 * String init
+                 */
+                String SitdmossBugtrackingURL;
+                SitdmossBugtrackingURL = "";
+                String appSystem = "";
+                String proplist = "";
 
-            if (myUser == null || myUser.length() <= 0) {
-                myUser = "Manual";
-            }
+                /*
+                 * Get Parameters
+                 */
+                String MySystem = "";//request.getAttribute("MySystem").toString();
+                if (request.getParameter("system") != null && request.getParameter("system").compareTo("") != 0) {
+                    MySystem = request.getParameter("system");
+                }
+                List<String> systems = new ArrayList();
+                systems.add(MySystem);
 
-            TestCaseExecution execution = factoryTestCaseExecution.create(0, test, testcase, build, revision, environment, country, browser, "", "", browserVersion, now, now,
-                    "PE", "Execution Started", myApp, "", "", "", tag, "Y", 0, 0, 0, 0, true, "", "", tCase.getStatus(), version,
-                    null, null, null, false, "", "", "", "", "", "", null, null, myUser);
+                List<Test> tests = new ArrayList();
 
-            long executionId = testCaseExecutionService.insertTCExecution(execution);
-            execution.setId(executionId);
+                String group = getRequestParameterWildcardIfEmpty(request, "group");
+                String status = getRequestParameterWildcardIfEmpty(request, "status");
+                String test = getRequestParameterWildcardIfEmpty(request, "Test");
+                String testcase = getRequestParameterWildcardIfEmpty(request, "TestCase");
+                String country = getRequestParameterWildcardIfEmpty(request, "Country");
+                String environment = getRequestParameterWildcardIfEmpty(request, "Environment");
+                String idFromQueue = getRequestParameterWildcardIfEmpty(request, "IdFromQueue");
+                String browser = "firefox";
+                String browserVersion = "";
+                String tag = getRequestParameterWildcardIfEmpty(request, "Tag");
+                Boolean tinf = getBooleanParameterFalseIfEmpty(request, "Tinf");
 
-            if (idFromQueue != null && !"".equals(idFromQueue)) {
-                testcaseExecutionQueueService.remove(Long.valueOf(idFromQueue));
-            }
+                Application myApp = null;
+                TCase tCase = testCaseService.findTestCaseByKey(test, testcase);
+                if (tCase != null) {
+                    myApp = myApplicationService.findApplicationByKey(tCase.getApplication());
+                } else {
+                    throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
+                }
+                CountryEnvParam countryEnvParam;
+                try {
+                    countryEnvParam = countryEnvParamService.findCountryEnvParamByKey(myApp.getSystem(), country, environment);
+                } catch (CerberusException e) {
+                    CerberusException ex = new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
+                    ex.getMessageError().setDescription("Combination Environment: '" + environment + "' and Country: '" + country
+                            + "' not defined for System/Application: " + myApp.getSystem() + "/" + myApp.getApplication());
+                    throw ex;
+                }
+                CountryEnvironmentApplication countryEnvironmentParameter;
+                try {
+                    countryEnvironmentParameter = countryEnvironmentApplicationService.findCountryEnvironmentParameterByKey(myApp.getSystem(), country, environment, myApp.getApplication());
+                } catch (CerberusException e) {
+                    CerberusException ex = new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
+                    throw ex;
+                }
+                String build = countryEnvParam.getBuild();
+                String revision = countryEnvParam.getRevision();
+                long now = new Date().getTime();
+                String version = Infos.getInstance().getProjectNameAndVersion();
 
-            TestCaseExecutionSysVer testCaseExecutionSysVer = factoryTestCaseExecutionSysVer.create(execution.getId(), myApp.getSystem(), build, revision);
-            testCaseExecutionSysVerService.insertTestCaseExecutionSysVer(testCaseExecutionSysVer);
+                String myUser = "";
+                if (!(request.getUserPrincipal() == null)) {
+                    myUser = ParameterParserUtil.parseStringParam(request.getUserPrincipal().getName(), "");
+                }
 
+                if (myUser == null || myUser.length() <= 0) {
+                    myUser = "Manual";
+                }
+
+                TestCaseExecution execution = factoryTestCaseExecution.create(0, test, testcase, build, revision, environment, country, browser, "", "", browserVersion, now, now,
+                        "PE", "Execution Started", myApp, "", "", "", tag, "Y", 0, 0, 0, 0, true, "", "", tCase.getStatus(), version,
+                        null, null, null, false, "", "", "", "", "", "", null, null, myUser);
+
+                long executionId = testCaseExecutionService.insertTCExecution(execution);
+                execution.setId(executionId);
+
+                if (idFromQueue != null && !"".equals(idFromQueue)) {
+                    testcaseExecutionQueueService.remove(Long.valueOf(idFromQueue));
+                }
+
+                TestCaseExecutionSysVer testCaseExecutionSysVer = factoryTestCaseExecutionSysVer.create(execution.getId(), myApp.getSystem(), build, revision);
+                testCaseExecutionSysVerService.insertTestCaseExecutionSysVer(testCaseExecutionSysVer);
     %>
     <%if (!test.equals("") && !testcase.equals("")) {
             TCase tcase = testCaseService.findTestCaseByKey(test, testcase);

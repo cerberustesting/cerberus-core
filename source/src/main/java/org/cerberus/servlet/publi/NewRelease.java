@@ -43,7 +43,7 @@ import org.cerberus.service.impl.LogEventService;
 import org.cerberus.service.impl.ProjectService;
 import org.cerberus.service.impl.UserService;
 import org.cerberus.util.ParameterParserUtil;
-import org.cerberus.version.Version;
+import org.cerberus.version.Infos;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -203,7 +203,7 @@ public class NewRelease extends HttpServlet {
             }
 
         } catch (Exception e) {
-            Logger.getLogger(NewRelease.class.getName()).log(Level.SEVERE, Version.PROJECT_NAME_VERSION + " - Exception catched.", e);
+            Logger.getLogger(NewRelease.class.getName()).log(Level.SEVERE, Infos.getInstance().getProjectNameAndVersion() + " - Exception catched.", e);
             out.print("Error while inserting the release : ");
             out.println(e.getMessage());
         } finally {

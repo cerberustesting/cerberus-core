@@ -33,7 +33,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.cerberus.service.IParameterService;
 import org.cerberus.service.impl.ParameterService;
 import org.cerberus.util.HTTPSession;
-import org.cerberus.version.Version;
+import org.cerberus.version.Infos;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -107,7 +107,7 @@ public class JenkinsDeploy extends HttpServlet {
 
         } catch (Exception ex) {
             Logger.getLogger(JenkinsDeploy.class.getName()).log(Level.SEVERE,
-                    Version.PROJECT_NAME_VERSION + " - Exception catched.", ex);
+                    Infos.getInstance().getProjectNameAndVersion() + " - Exception catched.", ex);
         }
 
     }

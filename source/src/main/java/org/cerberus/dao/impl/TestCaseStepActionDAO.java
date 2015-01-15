@@ -85,7 +85,8 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
                         String object = resultSet.getString("Object");
                         String property = resultSet.getString("Property");
                         String description = resultSet.getString("Description");
-                        testCaseStepAction = factoryTestCaseStepAction.create(test, testCase, step, sequence, action, object, property, description);
+                        String screenshotFilename = resultSet.getString("screenshotFilename");
+                        testCaseStepAction = factoryTestCaseStepAction.create(test, testCase, step, sequence, action, object, property, description, screenshotFilename);
                     }
                 } catch (SQLException exception) {
                     MyLogger.log(TestCaseStepActionDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
@@ -144,7 +145,8 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
                         String object = resultSet.getString("Object");
                         String property = resultSet.getString("Property");
                         String description = resultSet.getString("Description");
-                        list.add(factoryTestCaseStepAction.create(test, testcase, step, sequence, action, object, property, description));
+                        String screenshotFilename = resultSet.getString("screenshotFilename");
+                        list.add(factoryTestCaseStepAction.create(test, testcase, step, sequence, action, object, property, description, screenshotFilename));
                     }
                 } catch (SQLException exception) {
                     MyLogger.log(TestCaseStepActionDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
@@ -174,8 +176,8 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
     public void insertTestCaseStepAction(TestCaseStepAction testCaseStepAction) throws CerberusException {
         boolean throwExcep = false;
         StringBuilder query = new StringBuilder();
-        query.append("INSERT INTO testcasestepaction (`test`, `testCase`, `step`, `sequence`, `action`, `object`, `property`, `description`) ");
-        query.append("VALUES (?,?,?,?,?,?,?,?)");
+        query.append("INSERT INTO testcasestepaction (`test`, `testCase`, `step`, `sequence`, `action`, `object`, `property`, `description`, `screenshotfilename`) ");
+        query.append("VALUES (?,?,?,?,?,?,?,?,?)");
         
         Connection connection = this.databaseSpring.connect();
         try {
@@ -189,6 +191,7 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
                 preStat.setString(6, testCaseStepAction.getObject());
                 preStat.setString(7, testCaseStepAction.getProperty());
                 preStat.setString(8, testCaseStepAction.getDescription());
+                preStat.setString(9, testCaseStepAction.getScreenshotFilename());
 
                 preStat.executeUpdate();
                 throwExcep = false;
@@ -223,8 +226,9 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
         String object = resultSet.getString("Object");
         String property = resultSet.getString("Property");
         String description = resultSet.getString("description");
+        String screenshotFilename = resultSet.getString("screenshotFilename");
         
-        return factoryTestCaseStepAction.create(test, testCase, step, sequence, action, object, property, description);
+        return factoryTestCaseStepAction.create(test, testCase, step, sequence, action, object, property, description, screenshotFilename);
     }
     
     
@@ -286,7 +290,8 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
                 .append("`Action` = ?, ")
                 .append("`Object` = ?, ")
                 .append("`Property` = ?, ")
-                .append("`Description` = ? ")
+                .append("`Description` = ?, ")
+                .append("`ScreenshotFilename` = ? ")
                 .append("WHERE `Test` = ? AND `TestCase` = ? AND `Step` = ? AND `Sequence` = ? ")
                 .toString();
 
@@ -302,11 +307,12 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
                 preStat.setString(6, testCaseStepAction.getObject());
                 preStat.setString(7, testCaseStepAction.getProperty());
                 preStat.setString(8, testCaseStepAction.getDescription());
+                preStat.setString(9, testCaseStepAction.getScreenshotFilename());
 
-                preStat.setString(9, testCaseStepAction.getTest());
-                preStat.setString(10, testCaseStepAction.getTestCase());
-                preStat.setInt(11, testCaseStepAction.getStep());
-                preStat.setInt(12, testCaseStepAction.getSequence());
+                preStat.setString(10, testCaseStepAction.getTest());
+                preStat.setString(11, testCaseStepAction.getTestCase());
+                preStat.setInt(12, testCaseStepAction.getStep());
+                preStat.setInt(13, testCaseStepAction.getSequence());
 
                 preStat.executeUpdate();
                 throwExcep = false;
@@ -390,7 +396,8 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
                         String object = resultSet.getString("Object");
                         String property = resultSet.getString("Property");
                         String description = resultSet.getString("Description");
-                        list.add(factoryTestCaseStepAction.create(test, testCase, step, sequence, action, object, property, description));
+                        String screenshotFilename = resultSet.getString("screenshotFilename");
+                        list.add(factoryTestCaseStepAction.create(test, testCase, step, sequence, action, object, property, description, screenshotFilename));
                     }
                 } catch (SQLException exception) {
                     MyLogger.log(TestCaseStepActionDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());

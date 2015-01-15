@@ -40,7 +40,7 @@ import org.cerberus.service.impl.ParameterService;
 import org.cerberus.serviceEmail.IEmailGeneration;
 import org.cerberus.serviceEmail.impl.EmailGeneration;
 import org.cerberus.serviceEmail.impl.sendMail;
-import org.cerberus.version.Version;
+import org.cerberus.version.Infos;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -143,7 +143,7 @@ public class NewBuildRev extends HttpServlet {
 
 
         } catch (Exception e) {
-            Logger.getLogger(NewBuildRev.class.getName()).log(Level.SEVERE, Version.PROJECT_NAME_VERSION + " - Exception catched.", e);
+            Logger.getLogger(NewBuildRev.class.getName()).log(Level.SEVERE, Infos.getInstance().getProjectNameAndVersion() + " - Exception catched.", e);
             out.println(e.getMessage());
         } finally {
             out.close();

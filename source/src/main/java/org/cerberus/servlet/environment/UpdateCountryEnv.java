@@ -35,7 +35,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.log.MyLogger;
-import org.cerberus.version.Version;
+import org.cerberus.version.Infos;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -113,7 +113,7 @@ public class UpdateCountryEnv extends HttpServlet {
             response.sendRedirect("Environment.jsp?system=" + system + "&country=" + country + "&env=" + env);
 
         } catch (Exception e) {
-            Logger.getLogger(UpdateCountryEnv.class.getName()).log(Level.SEVERE, Version.PROJECT_NAME_VERSION + " - Exception catched.", e);
+            Logger.getLogger(UpdateCountryEnv.class.getName()).log(Level.SEVERE, Infos.getInstance().getProjectNameAndVersion() + " - Exception catched.", e);
             out.println(e.getMessage());
         } finally {
             out.close();
