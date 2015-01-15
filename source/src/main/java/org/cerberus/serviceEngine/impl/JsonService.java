@@ -19,25 +19,13 @@
  */
 package org.cerberus.serviceEngine.impl;
 
+import com.jayway.jsonpath.Configuration;
+import com.jayway.jsonpath.JsonPath;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.cerberus.entity.MessageEvent;
-import org.cerberus.entity.MessageEventEnum;
-import org.cerberus.entity.MessageGeneral;
-import org.cerberus.entity.MessageGeneralEnum;
-import org.cerberus.exception.CerberusException;
 import org.cerberus.serviceEngine.IJsonService;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 
 /**
@@ -56,9 +44,8 @@ public class JsonService implements IJsonService {
      * @return JsonObject downloaded.
      */
     @Override
-    public JSONObject callUrlAndGetJsonResponse(String url) {
+    public String callUrlAndGetJsonResponse(String url) {
         String str = "";
-        JSONObject obj = new JSONObject();
         StringBuilder sb = new StringBuilder();
         try {
             URL urlToCall = new URL(url);
@@ -66,14 +53,10 @@ public class JsonService implements IJsonService {
             while (null != (str = br.readLine())) {
                 sb.append(str);
             }
-            obj = new JSONObject(sb.toString());
-
         } catch (IOException ex) {
             LOG.warn("Error Getting Json File " + ex);
-        } catch (JSONException ex) {
-            LOG.warn(ex);
         }
-        return obj;
+        return sb.toString();
     }
 
     /**
@@ -85,103 +68,21 @@ public class JsonService implements IJsonService {
      */
     @Override
     public String getFromJson(String url, String attributeToFind) {
-        /**
-         * Get the Json File and convert it in JSONObject format
-         */
-        JSONObject obj = this.callUrlAndGetJsonResponse(url);
 
-        /**
-         * Decode the attribute
-         */
-        ArrayList<ArrayList<String>> splittedAttribute = new ArrayList<ArrayList<String>>();
-        List<String> items = Arrays.asList(attributeToFind.split("\\."));
-        for (String unit : items){
-            ArrayList<String> attributeList = new ArrayList<String>();
-            String[] splitted = unit.split("\\[");
-            attributeList.add(splitted[0]);
-            attributeList.add(splitted.length>1?splitted[1].split("\\]")[0]:"0");
-            splittedAttribute.add(attributeList);
-            }
-        ArrayList<String> attribute = splittedAttribute.get(0);
-        splittedAttribute.remove(attribute);
-       
-        /**
-         * Parse the JSONObject and get the value
-         */
         String result = "";
-        try {
-            result = this.getFromJsonObject(obj, splittedAttribute, attribute);
-        } catch (JSONException ex) {
-            LOG.fatal(ex);
-            return "";
-        } catch (CerberusException ex) {
-            Logger.getLogger(JsonService.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return result;
-    }
+        System.out.print("toto");
+        /**
+         * Get the Json File in string format
+         */
+        String json = this.callUrlAndGetJsonResponse(url);
+        System.out.print(json);
+        /**
+         * Get the value
+         */
+        Object document = Configuration.defaultConfiguration().jsonProvider().parse(json);
+        result = JsonPath.read(document, "$."+attributeToFind);
+        System.out.print(result);
 
-    private String getFromJsonObject(JSONObject obj, ArrayList<ArrayList<String>> splittedAttribute, ArrayList<String> attribute) throws JSONException, CerberusException {
-        String result = "";
-        Iterator iter = obj.keys();
-        while (iter.hasNext()) {
-            String item = (String) iter.next();
-            if (item.equals(attribute.get(0))) {
-                return this.getValueFromJsonElement(obj.get(item), obj, splittedAttribute, attribute);
-            }
-        }
-        //todo the case where we don't start from the base
         return result;
-    }
-
-    private String getValueFromJsonElement(Object element, JSONObject obj, ArrayList<ArrayList<String>> splittedAttribute, ArrayList<String> attribute) throws JSONException, CerberusException {
-        String result = "";
-        if (element instanceof JSONObject) {
-            result = getFromJsonObject((JSONObject) element, splittedAttribute, attribute);
-        }
-        if (element instanceof JSONArray) {
-            result = getFromJsonArray((JSONArray) element, splittedAttribute, attribute);
-        }
-        if (element instanceof String) {
-            result = obj.getString(attribute.get(0));
-        }
-        if (element instanceof Boolean) {
-            result = String.valueOf(obj.getBoolean(attribute.get(0)));
-        }
-        if (element instanceof Long) {
-            result = String.valueOf(obj.getLong(attribute.get(0)));
-        }
-        if (element instanceof Double) {
-            result = String.valueOf(obj.getDouble(attribute.get(0)));
-        }
-        if (element instanceof Integer) {
-            result = String.valueOf(obj.getInt(attribute.get(0)));
-        }
-        return result;
-    }
-
-    private String getFromJsonArray(JSONArray array, ArrayList<ArrayList<String>> splittedAttribute, ArrayList<String> attribute) throws JSONException, CerberusException {
-        //Get element in the array
-        Object object = array.get(Integer.valueOf(attribute.get(1)));
-        
-        if (object instanceof JSONObject){
-            if(!splittedAttribute.isEmpty()){
-                attribute = splittedAttribute.get(0);
-                splittedAttribute.remove(attribute);
-                return getFromJsonObject((JSONObject) object , splittedAttribute, attribute);
-            } else {
-                throw new CerberusException(new MessageGeneral(MessageGeneralEnum.EXECUTION_NA));
-            }
-        } 
-        if (object instanceof JSONArray) {
-            if(!splittedAttribute.isEmpty()){
-                attribute = splittedAttribute.get(0);
-                splittedAttribute.remove(attribute);
-                return getFromJsonArray((JSONArray) object, splittedAttribute, attribute);
-            } else {
-                throw new CerberusException(new MessageGeneral(MessageGeneralEnum.EXECUTION_NA));
-            }
-        } 
-        return object.toString();    
-        
     }
 }

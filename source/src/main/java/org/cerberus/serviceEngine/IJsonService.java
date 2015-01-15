@@ -27,7 +27,7 @@ import org.json.JSONObject;
  */
 public interface IJsonService {
     
-    JSONObject callUrlAndGetJsonResponse (String url);
+    String callUrlAndGetJsonResponse (String url);
     
     String getFromJson (String url, String attribute);
 }
