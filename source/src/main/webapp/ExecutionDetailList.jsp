@@ -421,7 +421,7 @@
                         title += " " + rs_inf.getString("description");
                         title += " - " + rs_inf.getString("country");
                         title += " - " + rs_inf.getString("environment");
-                        if (!(rs_inf.getString("ControlStatus").equalsIgnoreCase("PE"))) {
+                        if (!("PE".equalsIgnoreCase(rs_inf.getString("ControlStatus")))) {
                             title += " - " + rs_inf.getString("time_elapsed") + "s";
                         } else {
                             title += " - Pending...";
