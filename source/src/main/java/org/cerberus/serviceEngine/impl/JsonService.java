@@ -70,19 +70,16 @@ public class JsonService implements IJsonService {
     public String getFromJson(String url, String attributeToFind) {
 
         String result = "";
-        System.out.print("toto");
         /**
          * Get the Json File in string format
          */
         String json = this.callUrlAndGetJsonResponse(url);
-        System.out.print(json);
         /**
          * Get the value
          */
         Object document = Configuration.defaultConfiguration().jsonProvider().parse(json);
         result = JsonPath.read(document, "$."+attributeToFind);
-        System.out.print(result);
-
+        
         return result;
     }
 }
