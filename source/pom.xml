@@ -4,7 +4,7 @@
 
     <groupId>org.cerberus</groupId>
     <artifactId>cerberus</artifactId>
-    <version>1.1.1</version>
+    <version>1.1.1-SNAPSHOT</version>
     <packaging>war</packaging>
 
     <name>Cerberus</name>
@@ -375,7 +375,7 @@
                                 <scp trust="yes" todir="${sourceforge.username}:${sourceforge.password}@${sourceforge.url}" verbose="true">
                                     <fileset dir="${project.build.directory}" includes="${project.build.finalName}.*">
                                         <!-- Select only zip and tar.gz files -->
-                                        <filename regex="(zip|tar\.gz)$" />
+                                        <filename regex="(zip|tar\.gz)$"/>
                                     </fileset>
                                 </scp>
                             </target>
