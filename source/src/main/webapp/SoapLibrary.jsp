@@ -57,7 +57,7 @@
                     "bServerSide": true,
                     "sAjaxSource": "FindAllSoapLibrary",
                     "bJQueryUI": true,
-                    "bProcessing": true,
+                    "bProcessing": false,
                     "bPaginate": true,
                     "bAutoWidth": false,
                     "sPaginationType": "full_numbers",

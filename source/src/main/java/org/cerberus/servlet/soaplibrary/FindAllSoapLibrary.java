@@ -29,6 +29,7 @@ import org.apache.log4j.Level;
 import org.cerberus.entity.SoapLibrary;
 import org.cerberus.log.MyLogger;
 import org.cerberus.service.ISoapLibraryService;
+import org.cerberus.util.StringUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -101,7 +102,7 @@ public class FindAllSoapLibrary extends HttpServlet {
                 String sName = " `name` like '%" + name + "%'";
                 sArray.add(sName);
             }
-            if (!envelope.equals("")) {
+            if (!StringUtil.isNullOrEmpty(envelope)) {
                 String sScript = " `envelope` like '%" + envelope + "%'";
                 sArray.add(sScript);
             }
@@ -133,26 +134,26 @@ public class FindAllSoapLibrary extends HttpServlet {
                 individualSearch.append(sArray.get(sArray.size() - 1));
             }
 
-            if (sStart != null) {
+            if (!StringUtil.isNullOrEmpty(sStart)) {
                 start = Integer.parseInt(sStart);
                 if (start < 0) {
                     start = 0;
                 }
             }
-            if (sAmount != null) {
+            if (!StringUtil.isNullOrEmpty(sAmount)) {
                 amount = Integer.parseInt(sAmount);
                 if (amount < 10 || amount > 100) {
                     amount = 10;
                 }
             }
 
-            if (sCol != null) {
+            if (!StringUtil.isNullOrEmpty(sCol)) {
                 col = Integer.parseInt(sCol);
                 if (col < 0 || col > 5) {
                     col = 0;
                 }
             }
-            if (sdir != null) {
+            if (!StringUtil.isNullOrEmpty(sdir)) {
                 if (!sdir.equals(ASC)) {
                     dir = "desc";
                 }
@@ -160,7 +161,7 @@ public class FindAllSoapLibrary extends HttpServlet {
             String colName = cols[col];
 
             String searchTerm = "";
-            if (!request.getParameter("sSearch").equals("")) {
+            if (!!StringUtil.isNullOrEmpty(request.getParameter("sSearch"))) {
                 searchTerm = request.getParameter("sSearch");
             }
 
