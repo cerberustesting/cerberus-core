@@ -56,7 +56,7 @@
                     "bServerSide": true,
                     "sAjaxSource": "GetApplication?System=<%=request.getAttribute("MySystem")%>",
                     "bJQueryUI": true,
-                    "bProcessing": true,
+                    "bProcessing": false,
                     "sPaginationType": "full_numbers",
                     "bSearchable": false, 
                     "aTargets": [ 0 ],

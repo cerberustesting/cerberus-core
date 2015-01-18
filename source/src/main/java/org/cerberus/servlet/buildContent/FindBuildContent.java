@@ -101,8 +101,10 @@ public class FindBuildContent extends HttpServlet {
             jsonResponse.put("sEcho", echo);
             jsonResponse.put("iTotalRecords", data.length());
             jsonResponse.put("iTotalDisplayRecords", data.length());
+            
             resp.setContentType("application/json");
             resp.getWriter().print(jsonResponse.toString());
+            
         } catch (JSONException e) {
             LOG.error("Unable to convert data to JSON : "+e.getMessage());
             resp.setContentType("text/html");

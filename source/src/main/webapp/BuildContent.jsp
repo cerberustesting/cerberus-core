@@ -31,12 +31,13 @@
     IApplicationService applicationService = appContext.getBean(IApplicationService.class);
     IBuildRevisionInvariantService buildRevisionInvariantService = appContext.getBean(IBuildRevisionInvariantService.class);
     IBuildRevisionParametersService buildRevisionParametersService = appContext.getBean(IBuildRevisionParametersService.class);
+    Date DatePageStart = new Date();
 %>
 <!DOCTYPE html>
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>Sprint Content</title>
+    <title>Build Content</title>
 
     <link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico"/>
     <link rel="stylesheet" type="text/css" href="css/crb_style.css">
@@ -221,6 +222,8 @@
             "bJQueryUI": true,
             "bSort": false,
             "bPaginate": false,
+            "bServerSide": false,
+            "bProcessing": false,
             "sAjaxSource": "FindBuildContent?"+params,
             "aoColumnDefs": [
                 {
@@ -423,6 +426,9 @@
         </div>
     </form>
 </div>
+         <br><%
+            out.print(display_footer(DatePageStart));
+        %>
 <%
     } catch (CerberusException ex){
         LOG.error("Unable to find Invariant, Application or User : " + ex.toString());

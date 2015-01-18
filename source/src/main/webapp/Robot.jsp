@@ -40,11 +40,13 @@
             $(document).ready(function() {
                 var oTable = $('#robotList').dataTable({
                     "aaSorting": [[1, "asc"]],
+                    "bInfo": false,
+                    "bJQueryUI": true,
+                    "bSort": false,
+                    "bPaginate": true,
                     "bServerSide": true,
                     "sAjaxSource": "FindAllRobot",
-                    "bJQueryUI": true,
-                    "bProcessing": true,
-                    "bPaginate": true,
+                    "bProcessing": false,
                     "bAutoWidth": false,
                     "sPaginationType": "full_numbers",
                     "bSearchable": true,

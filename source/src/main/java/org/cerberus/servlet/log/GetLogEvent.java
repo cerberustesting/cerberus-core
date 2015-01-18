@@ -36,6 +36,7 @@ import org.cerberus.service.ILogEventService;
 import org.cerberus.service.impl.LogEventService;
 import org.cerberus.servlet.user.GetUsers;
 import org.cerberus.util.ParameterParserUtil;
+import org.cerberus.util.StringUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -50,9 +51,8 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 public class GetLogEvent extends HttpServlet {
 
     /**
-     * Processes requests for both HTTP
-     * <code>GET</code> and
-     * <code>POST</code> methods.
+     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
+     * methods.
      *
      * @param request servlet request
      * @param response servlet response
@@ -73,25 +73,25 @@ public class GetLogEvent extends HttpServlet {
         int amount = 0;
         int col = 0;
 
-        if (sStart != null) {
+        if (!StringUtil.isNullOrEmpty(sStart)) {
             start = Integer.parseInt(sStart);
             if (start < 0) {
                 start = 0;
             }
         }
-        if (sAmount != null) {
+        if (!StringUtil.isNullOrEmpty(sAmount)) {
             amount = Integer.parseInt(sAmount);
             if (amount < 10 || amount > 100) {
                 amount = 10;
             }
         }
-        if (sCol != null) {
+        if (!StringUtil.isNullOrEmpty(sCol)) {
             col = Integer.parseInt(sCol);
             if (col < 0 || col > 5) {
                 col = 0;
             }
         }
-        if (sdir != null) {
+        if (!StringUtil.isNullOrEmpty(sdir)) {
             if (!sdir.equals("asc")) {
                 dir = "desc";
             }
@@ -107,23 +107,30 @@ public class GetLogEvent extends HttpServlet {
         ILogEventService logEventService = appContext.getBean(LogEventService.class);
         try {
 
-
-            List<LogEvent> logEventList = logEventService.findAllLogEvent(start, amount, colName, dir, searchTerm);
-
             JSONObject jsonResponse = new JSONObject();
+            Integer iTotalRecords = 0;
+            Integer iTotalDisplayRecords = 0;
 
-            for (LogEvent myLogEvent : logEventList) {
-                JSONObject u = new JSONObject();
-                u.put("login", myLogEvent.getLogin());
-                u.put("time", myLogEvent.getTime());
-                u.put("page", myLogEvent.getPage());
-                u.put("action", myLogEvent.getAction());
-                u.put("log", myLogEvent.getLog());
-                data.put(u);
+            try {
+                List<LogEvent> logEventList = logEventService.findAllLogEvent(start, amount, colName, dir, searchTerm);
+
+                for (LogEvent myLogEvent : logEventList) {
+                    JSONObject u = new JSONObject();
+                    u.put("login", myLogEvent.getLogin());
+                    u.put("time", myLogEvent.getTime());
+                    u.put("page", myLogEvent.getPage());
+                    u.put("action", myLogEvent.getAction());
+                    u.put("log", myLogEvent.getLog());
+                    data.put(u);
+                }
+
+                iTotalRecords = logEventService.getNumberOfLogEvent("");
+                iTotalDisplayRecords = logEventService.getNumberOfLogEvent(searchTerm);
+
+            } catch (CerberusException ex) {
+                MyLogger.log(GetUsers.class.getName(), Level.FATAL, "" + ex);
             }
 
-            Integer iTotalRecords = logEventService.getNumberOfLogEvent("");
-            Integer iTotalDisplayRecords = logEventService.getNumberOfLogEvent(searchTerm);
             jsonResponse.put("aaData", data);
             jsonResponse.put("sEcho", echo);
             jsonResponse.put("iTotalRecords", iTotalRecords);
@@ -132,21 +139,17 @@ public class GetLogEvent extends HttpServlet {
             response.setContentType("application/json");
             response.getWriter().print(jsonResponse.toString());
 
-        } catch (CerberusException ex) {
-            response.setContentType("application/json");
-            response.getWriter().print("");
         } catch (JSONException e) {
             MyLogger.log(GetUsers.class.getName(), Level.FATAL, "" + e);
             response.setContentType("application/json");
             response.getWriter().print(e.getMessage());
         }
-        
+
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
-     * Handles the HTTP
-     * <code>GET</code> method.
+     * Handles the HTTP <code>GET</code> method.
      *
      * @param request servlet request
      * @param response servlet response
@@ -160,8 +163,7 @@ public class GetLogEvent extends HttpServlet {
     }
 
     /**
-     * Handles the HTTP
-     * <code>POST</code> method.
+     * Handles the HTTP <code>POST</code> method.
      *
      * @param request servlet request
      * @param response servlet response
