@@ -150,10 +150,25 @@
                             );
                 });
 
-                $.get("./CampaignExecutionReport", "<%=query.toString()%>", function(report) {
+                $.get("./CampaignExecutionReport", "<%=query.toString()%>", function(dataList) {
                     // Get context with jQuery - using jQuery's .get() method.
 
-            $("table.needToBeSort").find("tbody").empty();
+
+                    displayFilter2();
+
+
+                    //First load header
+                    $("#detailedTableDiv").empty().append(buildDetailedTableHeader(dataList.Columns));
+                    $("#detailedTableContentDiv").empty().append(buildDetailedTableLines(dataList.Lines, dataList.Columns));
+                    feedDetailedTableWithExecutionInformation(dataList.Values);
+
+                    loadCookieValues();
+                    
+                    getStatistics(dataList.Columns);
+
+
+                    var report = dataList.Values;
+                    $("table.needToBeSort").find("tbody").empty();
 
                     for (var index = 0; index < report.length; index++) {
             <%
@@ -172,7 +187,7 @@
 
                 });
             }
-            
+
 //            var websocket = new WebSocket("ws://localhost:8080/Cerberus-1.0.2-SNAPSHOT/WebsocketTest");
 //        websocket.onmessage = function processMessage(message){
 //        console.log(message.data);
@@ -191,39 +206,87 @@
 
             .ID {
                 width: 5%;
+                float:left;
+                min-height: 1px;
+                display : inline;
+            }
+            .TestPart{
+                width: 50%;
+                float : left;
+                min-height: 1px;
+            }
+            .StatusPart{
+                width: 50%;
+                float : left;
+                min-height: 1px;
             }
             .Test {
-                width: 10%;
+                font-weight: bold;
+                float:left;
+                min-height: 1px;
+                background-color: #EEE;
             }
             .TestCase {
-                width: 5%;
+                font-weight: bold;
+                float:left;
+                min-height: 1px;
+                background-color: #EEE;
             }
             .ShortDescription {
-                width: 32%;
+                width: 99%;
+                clear:both;
+                min-height: 1px;
             }
             .Function {
-                width: 10%;
+                width: 99%;
+                clear:both;
+                display:block;
+                min-height: 1px;
             }
             .Control {
-                width: 3%;
+                width: 99%;
+                clear:both;
+                min-height: 1px;
             }
             .Status {
-                width: 5%;
+                width: 99%;
+                clear:both;
+                min-height: 1px;
             }
             .Application {
-                width: 5%;
+                width: 99%;
+                clear:both;
+                min-height: 1px;
+            }
+            .Country {
+                width: 100%;
+                float:left;
+                min-height: 1px;
             }
             .BugID {
                 width: 5%;
+                float:left;
+                min-height: 1px;
             }
             .Comment {
-                width: 10%;
+                width: 99%;
+                float:left;
+                min-height: 1px;
+            }
+            .ControlMessage {
+                width: 99%;
+                float:left;
+                min-height: 1px;
             }
             .Start {
-                width: 10%;
+                width: 99%;
+                float:left;
+                min-height: 1px;
             }
             .End {
                 width: 10%;
+                float:left;
+                min-height: 1px;
             }
 
             table.noBorder td {
@@ -237,7 +300,11 @@
             a.StatusOK {
                 color: #00EE00;
             }
-            
+
+            .StatusOK {
+                background-color: #00EE00;
+            }
+
             a.StatusCA {
                 color: mistyrose;
             }
@@ -260,6 +327,31 @@
 
             a.StatusPE {
                 color: #2222FF;
+            }
+            .TableLine{
+                background-color: white;
+                border-width: thin;
+                border-color: gray; 
+                border-style:solid;
+                width : 100%;
+                clear:both; 
+            }
+            .TableLine:hover{
+                background-color: #EEEEEE;
+                
+            }
+
+            .indFilter{
+                float:left;
+                width : 100px;
+                height : 30px;
+                background-color: lightgray;
+
+            }
+            .indFilter input{
+                margin-left: auto;
+                margin-right: auto;
+
             }
 
             table.needToBeSort th:not(.sorttable_sorted):not(.sorttable_sorted_reverse):not(.sorttable_nosort):after { 
@@ -306,169 +398,88 @@
                 </div>
             </div>
             <div style="margin-left:3%; margin-top:20px;clear:both;display:block;height:400px;" class="title addborder">
-                <div class="arrondTable fullSize" style="width: 46%; float:left;height:400px;">
+                <div class="arrondTable fullSize" style="width: 94%; float:left;height:400px;">
                     <div style="width: 99%;float:left">
                         <h1 style="width: 99%; text-align: center">Report by Function</h1>
                     </div>
-                    <canvas style="height:380px;" id="functionBar"></canvas>
-                </div>
-                <div class="arrondTable fullSize" style="width: 46%; float:left;height:400px;margin-left:2%">
-                    <div style="width: 99%;float:left">
-                        <h1 style="width: 99%; text-align: center">Radar by function</h1>
-                    </div>
-                    <canvas style="height:400px;" id="functionTest"></canvas>
+                    <canvas height="280px" width="1200px" id="functionBar"></canvas>
                 </div>
             </div>
             <br>
-            <div style="clear:both; width:92%; margin-left:3%">
-                <h1><a name="StatusNE" class="StatusNE">Not Executed</a></h1>
-                <table id="StatusNE" class="arrondTable fullSize needToBeSort">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Function</th>
-                            <th>Test</th>
-                            <th>TestCase</th>
-                            <th>Description</th>
-                            <th>Control</th>
-                            <th>Status</th>
-                            <th>Application</th>
-                            <th>BugID</th>
-                            <th class="wrapAll">Comment</th>
-                            <th class="wrapAll">ControlMessage</th>
-                            <th>Start</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    </tbody>
-                </table>            
-                <h1><a name="StatusKO" class="StatusKO">Status KO</a></h1>
-                <table id="StatusKO" class="arrondTable fullSize needToBeSort">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Function</th>
-                            <th>Test</th>
-                            <th>TestCase</th>
-                            <th>Description</th>
-                            <th>Control</th>
-                            <th>Status</th>
-                            <th>Application</th>
-                            <th>BugID</th>
-                            <th class="wrapAll">Comment</th>
-                            <th class="wrapAll">ControlMessage</th>
-                            <th>Start</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    </tbody>
-                </table>
-                <h1><a name="StatusFA" class="StatusFA">Status FA</a></h1>
-                <table id="StatusFA" class="arrondTable fullSize needToBeSort">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Function</th>
-                            <th>Test</th>
-                            <th>TestCase</th>
-                            <th>Description</th>
-                            <th>Control</th>
-                            <th>Status</th>
-                            <th>Application</th>
-                            <th>BugID</th>
-                            <th class="wrapAll">Comment</th>
-                            <th class="wrapAll">ControlMessage</th>
-                            <th>Start</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    </tbody>
-                </table>
-                <h1><a name="StatusNA" class="StatusNA">Status NA</a></h1>
-                <table id="StatusNA" class="arrondTable fullSize needToBeSort">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Function</th>
-                            <th>Test</th>
-                            <th>TestCase</th>
-                            <th>Description</th>
-                            <th>Control</th>
-                            <th>Status</th>
-                            <th>Application</th>
-                            <th>BugID</th>
-                            <th class="wrapAll">Comment</th>
-                            <th class="wrapAll">ControlMessage</th>
-                            <th>Start</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    </tbody>
-                </table>
-                <h1><a name="StatusPE" class="StatusPE">Status PE</a></h1>
-                <table id="StatusPE" class="arrondTable fullSize needToBeSort">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Function</th>
-                            <th>Test</th>
-                            <th>TestCase</th>
-                            <th>Description</th>
-                            <th>Control</th>
-                            <th>Status</th>
-                            <th>Application</th>
-                            <th>BugID</th>
-                            <th class="wrapAll">Comment</th>
-                            <th class="wrapAll">ControlMessage</th>
-                            <th>Start</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    </tbody>
-                </table>
-                <h1><a name="StatusCA" class="StatusCA">Status CA</a></h1>
-                <table id="StatusCA" class="arrondTable fullSize needToBeSort">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Function</th>
-                            <th>Test</th>
-                            <th>TestCase</th>
-                            <th>Description</th>
-                            <th>Control</th>
-                            <th>Status</th>
-                            <th>Application</th>
-                            <th>BugID</th>
-                            <th class="wrapAll">Comment</th>
-                            <th class="wrapAll">ControlMessage</th>
-                            <th>Start</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    </tbody>
-                </table>
-                <h1><a name="StatusOK" class="StatusOK">Status OK</a></h1>
-                <table id="StatusOK" class="arrondTable fullSize needToBeSort">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Function</th>
-                            <th>Test</th>
-                            <th>TestCase</th>
-                            <th>Description</th>
-                            <th>Control</th>
-                            <th>Status</th>
-                            <th>Application</th>
-                            <th>BugID</th>
-                            <th class="wrapAll">Comment</th>
-                            <th class="wrapAll">ControlMessage</th>
-                            <th>Start</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    </tbody>
-                </table>
+            <div id="tableFilter" style="margin-left:3%;width:92%;display:inline-block;background-color:lightgray">
             </div>
-        </div>
+            <div style="clear:both; width:92%; margin-left:3%">
+                <div id="detailedTableDiv" class="">
+                </div>
+                <div id="detailedTableContentDiv" class="">
+                </div>
+            </div>
+            <script type="text/javascript">
+                function loadCookieValues() {
+                    var defaultReporting = ["ShortDescription", "Start"];
+                    $(document).find(".indFilter input").each(function(i, e) {
+                        console.log(e);
+                        if ($.urlParam(e.value) !== null) {
+                            $(e).attr('checked', true);
+                        } else if (getCookie("ReportingExecutionByTag_" + e.value) !== "") {
+                            var ckd = getCookie("ReportingExecutionByTag_" + e.value);
+                            console.log(ckd);
+                            $(e).attr('checked', ckd === 'true' ? true : false);
+                            console.log(ckd);
+                        } else if ($.inArray(e.value, defaultReporting) !== -1) {
+                            $(e).attr('checked', true);
+                        } else {
+                            $(e).attr('checked', false);
+                        }
+                        console.log(e);
+                        showOrHideColumns(e, e.value);
+                    });
+                }
+                ;
+
+                $.urlParam = function(name) {
+                    var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
+                    if (results === null) {
+                        return null;
+                    }
+                    else {
+                        return results[1] || 0;
+                    }
+                }
+
+            </script>
+            <script>
+                function recordColumnSelection(id) {
+                    var expiration_date = new Date();
+                    expiration_date.setFullYear(expiration_date.getFullYear() + 1);
+                    var idVal = $("#filterId_" + id).is(":checked");
+                    document.cookie = "ReportingExecutionByTag_" + id + "=" + idVal + ";expires=" + expiration_date.toGMTString();
+                }
+            </script>
+            <script>
+                function setCookie(cookieName, element) {
+                    var name = cookieName + "=";
+                    var ca = document.cookie.split(';');
+                    for (var i = 0; i < ca.length; i++) {
+                        var c = ca[i].trim();
+                        var val = c.split('=')[1];
+                        if (c.indexOf(name) === 0) {
+                            document.getElementById(element).value = val;
+                        }
+                    }
+                }
+            </script>
+            <script>
+                function getCookie(cname) {
+                    var name = cname + "=";
+                    var ca = document.cookie.split(';');
+                    for (var i = 0; i < ca.length; i++) {
+                        var c = ca[i].trim();
+                        if (c.indexOf(name) === 0)
+                            return c.substring(name.length, c.length);
+                    }
+                    return "";
+                }
+            </script>
     </body>
 </html>

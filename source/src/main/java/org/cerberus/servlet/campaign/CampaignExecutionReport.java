@@ -26,6 +26,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.ServletException;
@@ -85,7 +87,8 @@ public class CampaignExecutionReport extends HttpServlet {
             String[] country = request.getParameterValues("Country");
             String[] browser = request.getParameterValues("Browser");
 
-            JSONArray jSONResult = new JSONArray();
+            JSONObject result = new JSONObject();
+            JSONArray executionList = new JSONArray();
 
 /**
              * Get list of execution by tag, env, country, browser
@@ -125,21 +128,46 @@ public class CampaignExecutionReport extends HttpServlet {
             }
             testCaseWithExecutions = new ArrayList<TestCaseWithExecution>(testCaseWithExecutionsList.values());
             
+            HashMap<String, JSONObject> ttc = new HashMap<String, JSONObject>();
+            HashMap<String, JSONObject> ceb = new HashMap<String, JSONObject>();
             for (TestCaseWithExecution testCaseWithExecution : testCaseWithExecutions) {
                 try {
-                    jSONResult.put(testCaseExecutionToJSONObject(testCaseWithExecution));
+                    executionList.put(testCaseExecutionToJSONObject(testCaseWithExecution));
+                    JSONObject ttcObject = new JSONObject();
+                    ttcObject.put("test", testCaseWithExecution.getTest());
+                    ttcObject.put("testCase", testCaseWithExecution.getTestCase());
+                    ttcObject.put("function", testCaseWithExecution.getFunction());
+                    ttcObject.put("shortDesc", testCaseWithExecution.getShortDescription());
+                    ttcObject.put("status", testCaseWithExecution.getStatus());
+                    ttcObject.put("application", testCaseWithExecution.getApplication());
+                    ttcObject.put("bugId", testCaseWithExecution.getBugID());
+                    ttcObject.put("comment", testCaseWithExecution.getComment());
+                    JSONObject cebObject = new JSONObject();
+                    cebObject.put("country", testCaseWithExecution.getCountry());
+                    cebObject.put("environment", testCaseWithExecution.getEnvironment());
+                    cebObject.put("browser", testCaseWithExecution.getBrowser());
+                    ttc.put(testCaseWithExecution.getTest()+"_"+testCaseWithExecution.getTestCase(), ttcObject); 
+                    ceb.put(testCaseWithExecution.getBrowser()+"_"+testCaseWithExecution.getCountry()+"_"+testCaseWithExecution.getEnvironment(), cebObject);
                 } catch (JSONException ex) {
                     Logger.getLogger(CampaignExecutionReport.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
-
+            JSONArray columns = new JSONArray(ceb.values());
+            JSONArray lines = new JSONArray(ttc.values());
+            result.put("Columns", columns);
+            result.put("Lines", lines);
+            result.put("Values", executionList);
+            
+            
             response.setContentType("application/json");
-            response.getWriter().print(jSONResult);
+            response.getWriter().print(result);
         } catch (CerberusException ex) {
             Logger.getLogger(CampaignExecutionReport.class.getName()).log(
                     Level.WARNING, null, ex);
 
         } catch (ParseException ex) {
+            Logger.getLogger(CampaignExecutionReport.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (JSONException ex) {
             Logger.getLogger(CampaignExecutionReport.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
             out.close();

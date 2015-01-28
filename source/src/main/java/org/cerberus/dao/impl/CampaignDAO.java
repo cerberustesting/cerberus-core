@@ -397,8 +397,8 @@ public class CampaignDAO implements ICampaignDAO {
 //        query.append(") order by test, testcase, ID desc) as tce, application app ")
         query.append(" order by test, testcase, ID desc) as tce, application app ")
           .append("where tce.application = app.application ")
-          .append("group by tce.test, tce.testcase ").toString();
-//          .append("group by tce.test, tce.testcase, tce.Environment, tce.Browser, tce.Country ").toString();
+//          .append("group by tce.test, tce.testcase ").toString();
+          .append("group by tce.test, tce.testcase, tce.Environment, tce.Browser, tce.Country ").toString();
 
         List<TestCaseWithExecution> testCaseWithExecutionList = new ArrayList<TestCaseWithExecution>();
         Connection connection = this.databaseSpring.connect();

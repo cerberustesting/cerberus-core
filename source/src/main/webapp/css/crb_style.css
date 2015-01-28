@@ -618,6 +618,12 @@ input#submitButtonDuplicate {
 .CAF {
     color:purple;
 }
+.NE {
+    background-color:black; /* Purple */
+}
+.NEF {
+    color:white;
+}
 .NotExecuted {
     background-color:whitesmoke; /* White */
 }
