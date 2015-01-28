@@ -372,7 +372,7 @@
                         </goals>
                         <configuration>
                             <target>
-                                <scp todir="${sourceforge.username}:${sourceforge.password}@${sourceforge.url}" verbose="true">
+                                <scp trust="yes" todir="${sourceforge.username}:${sourceforge.password}@${sourceforge.url}" verbose="true">
                                     <fileset dir="${project.build.directory}" includes="${project.build.finalName}.*">
                                         <!-- Select only zip and tar.gz files -->
                                         <filename regex="(zip|tar\.gz)$"/>

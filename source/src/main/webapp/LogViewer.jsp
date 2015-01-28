@@ -50,7 +50,7 @@
                     "bServerSide": true,
                     "sAjaxSource": "GetLogEvent",
                     "bJQueryUI": true,
-                    "bProcessing": true,
+                    "bProcessing": false,
                     "sPaginationType": "full_numbers",
                     "bSearchable": false, "aTargets": [ 0 ],
                     "aoColumns": [

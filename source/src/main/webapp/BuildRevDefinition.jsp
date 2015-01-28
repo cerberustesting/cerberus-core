@@ -56,7 +56,7 @@
                     "bServerSide": false,
                     "sAjaxSource": "GetBuildRevisionInvariant?System=<%=request.getAttribute("MySystem")%>",
                     "bJQueryUI": true,
-                    "bProcessing": true,
+                    "bProcessing": false,
                     "aTargets": [0],
                     "sPaginationType": "full_numbers",
                     "aaSorting": [[ 1, "asc" ]],

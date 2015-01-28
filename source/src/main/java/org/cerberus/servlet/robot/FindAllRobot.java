@@ -29,6 +29,7 @@ import org.apache.log4j.Level;
 import org.cerberus.entity.Robot;
 import org.cerberus.log.MyLogger;
 import org.cerberus.service.IRobotService;
+import org.cerberus.util.StringUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -134,26 +135,27 @@ public class FindAllRobot extends HttpServlet {
                 individualSearch.append(sArray.get(sArray.size() - 1));
             }
 
-            if (sStart != null) {
+            if (!StringUtil.isNullOrEmpty(sStart)) {
                 start = Integer.parseInt(sStart);
                 if (start < 0) {
                     start = 0;
                 }
+            } else {
             }
-            if (sAmount != null) {
+            if (!StringUtil.isNullOrEmpty(sAmount)) {
                 amount = Integer.parseInt(sAmount);
                 if (amount < 10 || amount > 100) {
                     amount = 10;
                 }
             }
 
-            if (sCol != null) {
+            if (!StringUtil.isNullOrEmpty(sCol)) {
                 col = Integer.parseInt(sCol);
                 if (col < 0 || col > 5) {
                     col = 0;
                 }
             }
-            if (sdir != null) {
+            if (!StringUtil.isNullOrEmpty(sdir)) {
                 if (!sdir.equals("asc")) {
                     dir = "desc";
                 }
@@ -161,7 +163,7 @@ public class FindAllRobot extends HttpServlet {
             String colName = cols[col];
 
             String searchTerm = "";
-            if (!request.getParameter("sSearch").equals("")) {
+            if (!StringUtil.isNullOrEmpty(request.getParameter("sSearch"))) {
                 searchTerm = request.getParameter("sSearch");
             }
 

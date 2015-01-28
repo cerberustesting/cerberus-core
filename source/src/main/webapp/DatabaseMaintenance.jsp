@@ -66,7 +66,7 @@
                     if (myVersionService.findMyVersionByKey("database") != null) {
                         DtbVersion = myVersionService.findMyVersionByKey("database");
                     } else {
-                        out.print("<h1><b>Database is empty and a first version has been initialised. Anytime you will deploy a new version of Cerberus, you will have to come back to this page (Admin / Database Maintenance) and execute the missing SQL in order to upgrade the database.</b></h1><br><br>");
+                        out.print("<h1><b>Database is empty. A first version needs to be initialised. Please click on <i>Initialize Database</i> button bellow in order to initialize it. If already done, please click on <i>Apply Next SQL</i> button until all SQLs has been executed.<br>Anytime you will deploy a new version of Cerberus, you will have to come back to this page (Menu : Admin / Database Maintenance) and execute the missing SQL in order to upgrade the database.</b></h1><br><br>");
                         factoryMyversion = new FactoryMyversion();
                         DtbVersion = factoryMyversion.create("database", 0);
                     }
@@ -147,8 +147,12 @@
 
                         if (DtbVersion.getValue() < NewVersion) {
                             out.print("<h1>Pending SQL To be performed : </h1><br>");
+                            String ButtonText = "Apply Next SQL";
+                            if (DtbVersion.getValue()==0) {
+                                ButtonText = "Initialize Database";
+                            }
             %><form action="DatabaseMaintenance.jsp?GO=Y" method="post" name="ExecApply" id="ExecApply">
-                <input style="font-size: large" type="submit" value="Apply Next SQL" onClick="this.form.submit(); this.disabled=true; this.value='Processing...'; "></form>
+                <input style="font-size: large" type="submit" value="<%=ButtonText%>" onClick="this.form.submit(); this.disabled=true; this.value='Processing...'; "></form>
                 <%
                                 i = 0;
                                 out.print("<table>");

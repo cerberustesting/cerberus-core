@@ -49,7 +49,7 @@
                     "bServerSide": false,
                     "sAjaxSource": "GetProject",
                     "bJQueryUI": true,
-                    "bProcessing": true,
+                    "bProcessing": false,
                     "sPaginationType": "full_numbers",
                     "bSearchable": true, 
                     "aTargets": [ 0 ],
