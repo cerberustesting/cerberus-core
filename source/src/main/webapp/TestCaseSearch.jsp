@@ -43,6 +43,16 @@
                 Connection conn = db.connect();
                 IDocumentationService docService = appContext.getBean(IDocumentationService.class);
 
+                
+                    IParameterService paramService = appContext.getBean(IParameterService.class);
+                    String solr_url = paramService.findParameterByKey("solr_url", "").getValue();
+                    
+                    if (!"".equals(solr_url)){
+                        String site = "./TestCaseSearchNew.jsp" ;
+                        response.setStatus(response.SC_MOVED_TEMPORARILY);
+                        response.setHeader("Location", site); 
+                    }
+                    
                                try {
 
                     /*
