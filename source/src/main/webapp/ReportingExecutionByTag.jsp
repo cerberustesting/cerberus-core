@@ -159,40 +159,16 @@
 
                     //First load header
                     $("#detailedTableDiv").empty().append(buildDetailedTableHeader(dataList.Columns));
-                    $("#detailedTableContentDiv").empty().append(buildDetailedTableLines(dataList.Lines, dataList.Columns));
-                    feedDetailedTableWithExecutionInformation(dataList.Values);
-
-                    loadCookieValues();
-                    
-                    getStatistics(dataList.Columns);
-
-
-                    var report = dataList.Values;
-                    $("table.needToBeSort").find("tbody").empty();
-
-                    for (var index = 0; index < report.length; index++) {
-            <%
-                if (!onlyFunction) {
-            %>
-                        report[index].Function = (report[index].Function ? report[index].Function : report[index].Test);
-            <%
-                }
-            %>
-                        addTestCaseToStatusTabs(report[index]);
-                    }
-
-                    $("table.needToBeSort").each(function() {
-                        sorttable.makeSortable(this);
+                    $("#searchColumns").attr('onkeyup', 'filterLines(this.value)');
+                    loadTableContent(dataList.Lines, dataList.Columns, dataList.Values);
                     });
-
-                });
             }
 
-//            var websocket = new WebSocket("ws://localhost:8080/Cerberus-1.0.2-SNAPSHOT/WebsocketTest");
+                    //            var websocket = new WebSocket("ws://localhost:8080/Cerberus-1.0.2-SNAPSHOT/WebsocketTest");
 //        websocket.onmessage = function processMessage(message){
 //        console.log(message.data);
 //            loadData();
-//        }
+                        //        }
 
         </script>
         <style>
@@ -338,7 +314,7 @@
             }
             .TableLine:hover{
                 background-color: #EEEEEE;
-                
+
             }
 
             .indFilter{
@@ -425,61 +401,60 @@
                             var ckd = getCookie("ReportingExecutionByTag_" + e.value);
                             console.log(ckd);
                             $(e).attr('checked', ckd === 'true' ? true : false);
-                            console.log(ckd);
-                        } else if ($.inArray(e.value, defaultReporting) !== -1) {
-                            $(e).attr('checked', true);
+                console.log(ckd);
+                    } else if ($.inArray(e.value, defaultReporting) !== -1) {
+                    $(e).attr('checked', true);
                         } else {
-                            $(e).attr('checked', false);
+                        $(e).attr('checked', false);
                         }
-                        console.log(e);
+                            console.log(e);
                         showOrHideColumns(e, e.value);
                     });
                 }
                 ;
 
-                $.urlParam = function(name) {
-                    var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
+                            $.urlParam = function(name) {
+                            var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
                     if (results === null) {
-                        return null;
+                            return null;
                     }
-                    else {
+                        else {
                         return results[1] || 0;
-                    }
+                            }
                 }
 
             </script>
             <script>
-                function recordColumnSelection(id) {
-                    var expiration_date = new Date();
-                    expiration_date.setFullYear(expiration_date.getFullYear() + 1);
-                    var idVal = $("#filterId_" + id).is(":checked");
+                            function recordColumnSelection(id) {
+                        var expiration_date = new Date();
+                        expiration_date.setFullYear(expiration_date.getFullYear() + 1);
+                var idVal = $("#filterId_" + id).is(":checked");
                     document.cookie = "ReportingExecutionByTag_" + id + "=" + idVal + ";expires=" + expiration_date.toGMTString();
                 }
-            </script>
+                    </script>
             <script>
-                function setCookie(cookieName, element) {
-                    var name = cookieName + "=";
-                    var ca = document.cookie.split(';');
+                    function setCookie(cookieName, element) {
+                        var name = cookieName + "=";
+                var ca = document.cookie.split(';');
                     for (var i = 0; i < ca.length; i++) {
-                        var c = ca[i].trim();
-                        var val = c.split('=')[1];
-                        if (c.indexOf(name) === 0) {
-                            document.getElementById(element).value = val;
+                var c = ca[i].trim();
+                    var val = c.split('=')[1];
+                    if (c.indexOf(name) === 0) {
+                    document.getElementById(element).value = val;
                         }
                     }
                 }
             </script>
             <script>
                 function getCookie(cname) {
-                    var name = cname + "=";
-                    var ca = document.cookie.split(';');
+                var name = cname + "=";
+                var ca = document.cookie.split(';');
                     for (var i = 0; i < ca.length; i++) {
-                        var c = ca[i].trim();
-                        if (c.indexOf(name) === 0)
-                            return c.substring(name.length, c.length);
-                    }
+                    var c = ca[i].trim();
+                    if (c.indexOf(name) === 0)
+                        return c.substring(name.length, c.length);                     }
                     return "";
-                }
+                        }
             </script>
     </body>
 </html>

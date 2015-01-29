@@ -70,6 +70,7 @@ function buildDetailedTableHeader(columns) {
                 "<div class='Application'></div>" +
                 "<div class='BugID'></div>" +
                 "<div class='Comment'></div>" +
+                "<div>Search : <input id='searchColumns' style='width:300px, height:30px'></div>" +
             "</div>" +
             "<div class='StatusPart'>");
 
@@ -81,12 +82,41 @@ function buildDetailedTableHeader(columns) {
         }
 
     detailedTableHeader += ("</div></div>");
+    
     return detailedTableHeader;
 }
+
+function sortByKey(array, key) {
+    return array.sort(function(a, b) {
+        var x = a[key]; var y = b[key];
+        return ((x < y) ? -1 : ((x > y) ? 1 : 0));
+    });
+}
+
+function loadTableContent(lines, columns, values){
+$("#detailedTableContentDiv").empty().append(buildDetailedTableLines(lines, columns));
+                    feedDetailedTableWithExecutionInformation(values);
+
+                    loadCookieValues();
+
+                    getStatistics(columns);
+                    }
+
+function filterLines(string){
+    $(".TableLine").show();
+    if (string!==('')){
+$(".TableLine:not(:contains('"+string+"'))").hide();
+    }
+}
+
+
 
 function buildDetailedTableLines(lines, columns) {
 
     var detailedTableLines = "";
+    
+    lines = sortByKey(lines, 'test');
+    
     for (var l = 0; l < lines.length; l++) {
         
         detailedTableLines += ("<div class='TableLine' style='clear:both; width: 100%; display:inline-block; position:relative'>" +
