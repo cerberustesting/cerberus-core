@@ -77,8 +77,8 @@ function buildDetailedTableHeader(columns) {
     for (var c = 0; c < columns.length; c++) {
             var heightValue = 99 / columns.length;
             var classGen = convertStringToHashcode(columns[c].country + " " + columns[c].environment + " " + columns[c].browser);
-            detailedTableHeader += ("<div style='width:"+heightValue+"%; float:left'><div style='height:100%' class='Country " + classGen + " "+columns[c].browser+"'>" + columns[c].country +" "+ columns[c].browser +" "+ columns[c].environment +"</div>"+
-                    "<div id='stats_"+classGen+"'></div></div>");
+            detailedTableHeader += ("<div style='width:"+heightValue+"%; float:left'><div style='height:100%' class='Country " + classGen + " "+columns[c].browser+" "+columns[c].environment+" "+columns[c].country+"'>" + columns[c].country +" "+ columns[c].browser +" "+ columns[c].environment +"</div>"+
+                    "<div id='stats_"+classGen+"' class='Country " + classGen + " "+columns[c].browser+" "+columns[c].environment+" "+columns[c].country+"'></div></div>");
         }
 
     detailedTableHeader += ("</div></div>");
@@ -127,7 +127,7 @@ function buildDetailedTableLines(lines, columns) {
                 "<div class='Control'></div>" +
                 "<div class='Status'>" + lines[l].status + "</div>" +
                 "<div class='Application'>" + lines[l].application + "</div>" +
-                "<div class='BugID'>" + lines[l].bugId + "</div>" +
+                "<div class='BugID'><b>" + lines[l].bugId + "</b></div>" +
                 "<div class='Comment'><b><i>" + lines[l].comment + "</b></i></div>" +
                 "</div><div class='StatusPart' style='position:relative'>");
 
@@ -135,7 +135,7 @@ function buildDetailedTableLines(lines, columns) {
             var heightValue = 99 / columns.length;
             var classColumnGen = convertStringToHashcode(columns[c].country + " " + columns[c].environment + " " + columns[c].browser);
             var classGen = convertStringToHashcode(columns[c].country + " " + columns[c].environment + " " + columns[c].browser + " " + lines[l].test + " " + lines[l].testCase);
-            detailedTableLines += ("<div style='width:"+heightValue+"%; float:left;margin-left:"+heightValue*c+"  position:absolute; top:0; bottom:0; left:0; right:0'><div style='height:100%' class='Country " + classGen + " "+classColumnGen+" "+columns[c].browser+"'></div></div>");
+            detailedTableLines += ("<div style='width:"+heightValue+"%; float:left;margin-left:"+heightValue*c+"  position:absolute; top:0; bottom:0; left:0; right:0'><div style='height:100%' class='Country " + classGen + " "+classColumnGen+" "+columns[c].browser+" "+columns[c].environment+" "+columns[c].country+"'></div></div>");
         }
 
         detailedTableLines += ("</div></div>");
@@ -199,12 +199,34 @@ function displayFilter(value){
     
 }
 
-function displayFilter2(){
-    var filterList = ["ShortDescription","Start", "Comment", "Status","Application", "ControlMessage"];
+function displayFilter2(columns){
+    var filterList = ["ShortDescription","Start", "Comment", "Status","Application","BugID", "ControlMessage"];
     var filterToAppend = "";
+    
+    
+    var country = [];
+    var environment = [];
+    var browser = [];
+    for (var v = 0; v < columns.length; v++) {
+        if ($.inArray(columns[v].country, country)===-1){
+            country.push(columns[v].country);
+        }
+        if ($.inArray(columns[v].browser, browser)===-1){
+            browser.push(columns[v].browser);
+        }
+        if ($.inArray(columns[v].environment, environment)===-1){
+            environment.push(columns[v].environment);
+        }
+    }
+    console.log(country);
+    filterList = filterList.concat(country);
+    filterList = filterList.concat(environment);
+    filterList = filterList.concat(browser);
+    
     $(filterList).each(function(i, e){
         filterToAppend += displayFilter(e);
     })
+    
     $("#tableFilter").append(filterToAppend);
 }
 

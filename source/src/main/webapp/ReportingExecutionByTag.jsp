@@ -154,7 +154,7 @@
                     // Get context with jQuery - using jQuery's .get() method.
 
 
-                    displayFilter2();
+                    displayFilter2(dataList.Columns);
 
 
                     //First load header
