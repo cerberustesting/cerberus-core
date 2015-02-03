@@ -318,7 +318,7 @@ public class RunTestCase extends HttpServlet {
                     }
                 }
             } catch (Exception ex) {
-                MyLogger.log(RunTestCaseService.class.getName(), Level.FATAL, "Exception cleaning Memory: " + ex.toString());
+                MyLogger.log(RunTestCase.class.getName(), Level.FATAL, "Exception cleaning Memory: " + ex.toString());
             }
 
             long runID = tCExecution.getId();

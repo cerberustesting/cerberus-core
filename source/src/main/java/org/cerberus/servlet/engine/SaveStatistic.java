@@ -66,10 +66,18 @@ public class SaveStatistic extends HttpServlet {
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         ITestCaseExecutionwwwDetService testCaseExecutionwwwDetService = appContext.getBean(TestCaseExecutionwwwDetService.class);
         ExecutionUUID executionUUID = appContext.getBean(ExecutionUUID.class);
-        long executionId = executionUUID.getExecutionID(runId);
+        long executionId = 0; 
+                
+        try{
+        executionId = executionUUID.getExecutionID(runId);
+        } catch (Exception ex){
+           LOG.warn("Error getting the ExecutionID from the memory :" +ex.toString());
+        }
 
+        if (executionId!=0){
         LOG.info(" --> save statistics servlet parameters : runid=" + executionId + " page=" + page);
         testCaseExecutionwwwDetService.registerDetail(executionId, sb.toString(), page);
+        }
 
     }
 

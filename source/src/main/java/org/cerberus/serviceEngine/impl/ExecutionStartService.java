@@ -383,6 +383,17 @@ public class ExecutionStartService implements IExecutionStartService {
         }catch (CerberusException ex){
         MyLogger.log(ExecutionStartService.class.getName(), Level.WARN, ex.getMessageError().getDescription());
         }
+        
+        /**
+         * Stop the browser if executionID is equal to zero (to prevent database instabilities)
+         */
+        try{
+            if (tCExecution.getId()==0){
+                this.serverService.stopServer(tCExecution.getSession());
+            }
+        }catch (Exception ex){
+            MyLogger.log(ExecutionStartService.class.getName(), Level.WARN, ex.toString()); 
+        }
 
         return tCExecution;
     }
