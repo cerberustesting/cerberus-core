@@ -142,6 +142,7 @@ public class CampaignExecutionReport extends HttpServlet {
                     ttcObject.put("application", testCaseWithExecution.getApplication());
                     ttcObject.put("bugId", testCaseWithExecution.getBugID());
                     ttcObject.put("comment", testCaseWithExecution.getComment());
+                    ttcObject.put("application", testCaseWithExecution.getApplication());
                     JSONObject cebObject = new JSONObject();
                     cebObject.put("country", testCaseWithExecution.getCountry());
                     cebObject.put("environment", testCaseWithExecution.getEnvironment());
