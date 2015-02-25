@@ -90,4 +90,9 @@ public class TestCaseExecutionInQueueService implements ITestCaseExecutionInQueu
         return testCaseExecutionInQueueDAO.findByKey(id);
     }
 
+    @Override
+    public List<TestCaseExecutionInQueue> findAllNotProcedeed() throws CerberusException {
+        return testCaseExecutionInQueueDAO.getNotProceededAndProceed();
+    }
+
 }

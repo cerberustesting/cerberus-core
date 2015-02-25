@@ -107,5 +107,12 @@ public interface ITestCaseExecutionInQueueService {
      * @throws CerberusException
      */
     TestCaseExecutionInQueue findByKey(long id) throws CerberusException;
-
+    
+    
+    /**
+     * Find the list of TestCaseWithExecution object with Procedeed = 0 from testcaseexecutionqueue
+     * @return
+     * @throws CerberusException 
+     */
+    List<TestCaseExecutionInQueue> findAllNotProcedeed() throws CerberusException;
 }

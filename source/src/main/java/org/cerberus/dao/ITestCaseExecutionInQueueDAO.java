@@ -100,5 +100,7 @@ public interface ITestCaseExecutionInQueueDAO {
          * @throws CerberusException 
          */
         TestCaseExecutionInQueue findByKey(long id) throws CerberusException;
+        
+        List<TestCaseExecutionInQueue> getNotProceededAndProceed() throws CerberusException;
 
 }

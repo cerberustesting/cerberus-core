@@ -4061,6 +4061,12 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
 		SQLS.append("INSERT INTO `parameter` (`system`, `param`,`value`, `description`) VALUES ('', 'solr_url','', 'URL of Solr search Engine used on Search Testcase Page. Value is empty if no Solr implementation is available');");
                 SQLInstruction.add(SQLS.toString());
                 
+// Add Thread Pool Size parameter.
+// -- ------------------------ 573                
+                SQLS = new StringBuilder();
+		SQLS.append("INSERT INTO `cerberus`.`parameter` (`system`, `param`, `value`, `description`) VALUES ('', 'cerberus_execution_threadpool_size', '10', 'Number of Simultaneous execution handled by Cerberus');");
+                SQLInstruction.add(SQLS.toString());
+                
         return SQLInstruction;
     }
     
