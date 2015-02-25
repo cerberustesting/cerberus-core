@@ -4064,7 +4064,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
 // Add Thread Pool Size parameter.
 // -- ------------------------ 573                
                 SQLS = new StringBuilder();
-		SQLS.append("INSERT INTO `cerberus`.`parameter` (`system`, `param`, `value`, `description`) VALUES ('', 'cerberus_execution_threadpool_size', '10', 'Number of Simultaneous execution handled by Cerberus');");
+		SQLS.append("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) VALUES ('', 'cerberus_execution_threadpool_size', '10', 'Number of Simultaneous execution handled by Cerberus');");
                 SQLInstruction.add(SQLS.toString());
                 
         return SQLInstruction;
