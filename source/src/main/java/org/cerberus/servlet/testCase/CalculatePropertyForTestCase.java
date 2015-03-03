@@ -118,7 +118,7 @@ public class CalculatePropertyForTestCase extends HttpServlet {
                 if (soapLib != null) {
                     ExecutionUUID executionUUIDObject = appContext.getBean(ExecutionUUID.class);
                     UUID executionUUID = UUID.randomUUID();
-                    executionUUIDObject.setExecutionUUID(executionUUID.toString(), 0);
+                    executionUUIDObject.setExecutionUUID(executionUUID.toString(), null);
                     soapService.callSOAPAndStoreResponseInMemory(executionUUID.toString(), soapLib.getEnvelope(), soapLib.getServicePath(), soapLib.getMethod());
                     result = xmlUnitService.getFromXml(executionUUID.toString(), null, soapLib.getParsingAnswer());
                     description = soapLib.getDescription();

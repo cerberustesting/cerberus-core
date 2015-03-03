@@ -28,13 +28,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.logging.Logger;
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Level;
 import org.cerberus.entity.ExecutionSOAPResponse;
@@ -54,6 +52,7 @@ import org.cerberus.log.MyLogger;
 import org.cerberus.service.ILogEventService;
 import org.cerberus.service.IParameterService;
 import org.cerberus.service.IRobotService;
+import org.cerberus.service.ITestCaseExecutionInQueueService;
 import org.cerberus.service.impl.LogEventService;
 import org.cerberus.serviceEngine.IRunTestCaseService;
 import org.cerberus.serviceEngine.impl.RunTestCaseService;
@@ -74,35 +73,36 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  */
 @WebServlet(name = "RunTestCase", urlPatterns = {"/RunTestCase"})
 public class RunTestCase extends HttpServlet {
-	
-	public static final String SERVLET_URL = "/RunTestCase";
-	
-	public static final String PARAMETER_TEST = "Test";
-	public static final String PARAMETER_TEST_CASE = "TestCase";
-	public static final String PARAMETER_COUNTRY = "Country";
-	public static final String PARAMETER_ENVIRONMENT = "Environment";
-	public static final String PARAMETER_ROBOT = "robot";
-	public static final String PARAMETER_ROBOT_IP = "ss_ip";
-	public static final String PARAMETER_ROBOT_PORT = "ss_p";
-	public static final String PARAMETER_BROWSER = "browser";
-	public static final String PARAMETER_BROWSER_VERSION = "version";
-	public static final String PARAMETER_PLATFORM = "platform";
-	public static final String PARAMETER_MANUAL_URL = "manualURL";
-	public static final String PARAMETER_MANUAL_HOST = "myhost";
-	public static final String PARAMETER_MANUAL_CONTEXT_ROOT = "mycontextroot";
-	public static final String PARAMETER_MANUAL_LOGIN_RELATIVE_URL = "myloginrelativeurl";
-	public static final String PARAMETER_MANUAL_ENV_DATA = "myenvdata";
-	public static final String PARAMETER_TAG = "Tag";
-	public static final String PARAMETER_OUTPUT_FORMAT = "outputformat";
-	public static final String PARAMETER_SCREENSHOT = "screenshot";
-	public static final String PARAMETER_VERBOSE = "verbose";
-	public static final String PARAMETER_TIMEOUT = "timeout";
-	public static final String PARAMETER_SYNCHRONEOUS = "synchroneous";
-	public static final String PARAMETER_PAGE_SOURCE = "pageSource";
-	public static final String PARAMETER_SELENIUM_LOG = "seleniumLog";
-        public static final String PARAMETER_MANUAL_EXECUTION = "manualExecution";
-        public static final String PARAMETER_EXECUTION_QUEUE_ID = "IdFromQueue";
-        public static final String PARAMETER_SYSTEM = "MySystem";
+
+    public static final String SERVLET_URL = "/RunTestCase";
+
+    public static final String PARAMETER_TEST = "Test";
+    public static final String PARAMETER_TEST_CASE = "TestCase";
+    public static final String PARAMETER_COUNTRY = "Country";
+    public static final String PARAMETER_ENVIRONMENT = "Environment";
+    public static final String PARAMETER_ROBOT = "robot";
+    public static final String PARAMETER_ROBOT_IP = "ss_ip";
+    public static final String PARAMETER_ROBOT_PORT = "ss_p";
+    public static final String PARAMETER_BROWSER = "browser";
+    public static final String PARAMETER_BROWSER_VERSION = "version";
+    public static final String PARAMETER_PLATFORM = "platform";
+    public static final String PARAMETER_MANUAL_URL = "manualURL";
+    public static final String PARAMETER_MANUAL_HOST = "myhost";
+    public static final String PARAMETER_MANUAL_CONTEXT_ROOT = "mycontextroot";
+    public static final String PARAMETER_MANUAL_LOGIN_RELATIVE_URL = "myloginrelativeurl";
+    public static final String PARAMETER_MANUAL_ENV_DATA = "myenvdata";
+    public static final String PARAMETER_TAG = "Tag";
+    public static final String PARAMETER_OUTPUT_FORMAT = "outputformat";
+    public static final String PARAMETER_SCREENSHOT = "screenshot";
+    public static final String PARAMETER_VERBOSE = "verbose";
+    public static final String PARAMETER_TIMEOUT = "timeout";
+    public static final String PARAMETER_SYNCHRONEOUS = "synchroneous";
+    public static final String PARAMETER_PAGE_SOURCE = "pageSource";
+    public static final String PARAMETER_SELENIUM_LOG = "seleniumLog";
+    public static final String PARAMETER_MANUAL_EXECUTION = "manualExecution";
+    public static final String PARAMETER_EXECUTION_QUEUE_ID = "IdFromQueue";
+    public static final String PARAMETER_SYSTEM = "MySystem";
+    public static final String PARAMETER_NUMBER_OF_TRIES = "tries";
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -183,6 +183,7 @@ public class RunTestCase extends HttpServlet {
         getSeleniumLog = ParameterParserUtil.parseIntegerParam(policy.sanitize(request.getParameter("seleniumLog")), 1);
         manualExecution = ParameterParserUtil.parseStringParam(policy.sanitize(request.getParameter("manualExecution")), "N");
         long idFromQueue = ParameterParserUtil.parseIntegerParam(policy.sanitize(request.getParameter("IdFromQueue")), 0);
+        int numberOfRetries = ParameterParserUtil.parseIntegerParam(policy.sanitize(request.getParameter("retries")), 0);
 
         String helpMessage = "\nThis servlet is used to start the execution of a test case.\n"
                 + "Parameter list :\n"
@@ -209,7 +210,8 @@ public class RunTestCase extends HttpServlet {
                 + "- synchroneous : Synchroneous define if the servlet wait for the end of the execution to report its execution. [" + synchroneous + "\n"
                 + "- pageSource : Record Page Source during the execution. [" + getPageSource + "]\n"
                 + "- seleniumLog : Get the SeleniumLog at the end of the execution. [" + getSeleniumLog + "]\n"
-                + "- manualExecution : Execute testcase in manual mode. [" + manualExecution + "]\n";
+                + "- manualExecution : Execute testcase in manual mode. [" + manualExecution + "]\n"
+                + "- retries : Number of tries if the result is not OK. [" + numberOfRetries + "]\n";
 
         boolean error = false;
 
@@ -245,14 +247,14 @@ public class RunTestCase extends HttpServlet {
 
             TestCaseExecution tCExecution = factoryTCExecution.create(0, test, testCase, null, null, environment, country, browser, version, platform, "",
                     0, 0, "", "", null, robotHost, null, robotPort, tag, "N", verbose, screenshot, getPageSource, getSeleniumLog, synchroneous, timeout, outputFormat, null,
-                    Infos.getInstance().getProjectNameAndVersion(), tCase, null, null, manualURL, myHost, myContextRoot, myLoginRelativeURL, myEnvData, robotHost, robotPort, null, new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_TESTSTARTED), "Selenium");
+                    Infos.getInstance().getProjectNameAndVersion(), tCase, null, null, manualURL, myHost, myContextRoot, myLoginRelativeURL, myEnvData, robotHost, robotPort, null, new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_TESTSTARTED), "Selenium", numberOfRetries);
 
             /**
              * Set UUID
              */
             ExecutionUUID executionUUIDObject = appContext.getBean(ExecutionUUID.class);
             UUID executionUUID = UUID.randomUUID();
-            executionUUIDObject.setExecutionUUID(executionUUID.toString(), 0);
+            executionUUIDObject.setExecutionUUID(executionUUID.toString(), tCExecution);
             tCExecution.setExecutionUUID(executionUUID.toString());
             MyLogger.log(RunTestCase.class.getName(), Level.INFO, "Execution Requested : UUID=" + executionUUID);
 
@@ -272,7 +274,7 @@ public class RunTestCase extends HttpServlet {
                 MyLogger.log(RunTestCase.class.getName(), Level.WARN, "Parameter (selenium_defaultWait) not in Parameter table, default wait set to 90 seconds");
                 defaultWait = 90;
             }
-            
+
             /**
              * Set IdFromQueue
              */
@@ -288,19 +290,34 @@ public class RunTestCase extends HttpServlet {
             sc = new SessionCapabilities();
             sc.create("version", version);
             capabilities.add(sc);
-            
+
             Session session = new Session();
             session.setDefaultWait(defaultWait);
             session.setHost(tCExecution.getSeleniumIP());
             session.setPort(tCExecution.getPort());
             session.setCapabilities(capabilities);
-            
+
             tCExecution.setSession(session);
 
+            while (tCExecution.getNumberOfRetries() >= 0 && !tCExecution.getResultMessage().getCodeString().equals("OK")) {
+                try {
+                    tCExecution = runTestCaseService.runTestCase(tCExecution);
+                    tCExecution.decreaseNumberOfRetries();
+                } catch (Exception ex) {
+                    MyLogger.log(RunTestCase.class.getName(), Level.FATAL, "Exception on testcase: " + tCExecution.getId() + "\nDetail: " + ex.getMessage() + "\n\n" + ex.toString());
+                }
+            }
+
+            /**
+             * If execution from queue, remove it from the queue
+             */
             try {
-                tCExecution = runTestCaseService.runTestCase(tCExecution);
-            } catch (Exception ex) {
-                MyLogger.log(RunTestCase.class.getName(), Level.FATAL, "Exception on testcase: " + tCExecution.getId() + "\nDetail: " + ex.getMessage() + "\n\n" + ex.toString());
+                if (tCExecution.getIdFromQueue() != 0) {
+                    ITestCaseExecutionInQueueService testCaseExecutionInQueueService = appContext.getBean(ITestCaseExecutionInQueueService.class);
+                    testCaseExecutionInQueueService.remove(tCExecution.getIdFromQueue());
+                }
+            } catch (CerberusException ex) {
+                MyLogger.log(RunTestCase.class.getName(), Level.WARN, ex.getMessageError().getDescription());
             }
 
             /**

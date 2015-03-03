@@ -75,9 +75,7 @@ public class ExecutionStartService implements IExecutionStartService {
     ExecutionUUID executionUUIDObject;
     @Autowired
     private ISeleniumServerService serverService;
-    @Autowired
-    private ITestCaseExecutionInQueueService testCaseExecutionInQueueService;
-
+    
     @Override
     public TestCaseExecution startExecution(TestCaseExecution tCExecution) throws CerberusException {
         /**
@@ -357,7 +355,7 @@ public class ExecutionStartService implements IExecutionStartService {
 
             if (runID != 0) {
                 tCExecution.setId(runID);
-                executionUUIDObject.setExecutionUUID(tCExecution.getExecutionUUID(), runID);
+                executionUUIDObject.setExecutionUUID(tCExecution.getExecutionUUID(), tCExecution);
             } else {
                 MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_COULDNOTCREATE_RUNID);
                 tCExecution.setResultMessage(mes);
@@ -372,17 +370,6 @@ public class ExecutionStartService implements IExecutionStartService {
         }
 
         MyLogger.log(ExecutionStartService.class.getName(), Level.DEBUG, tCExecution.getId() + " - RunID Registered on database.");
-        
-        /**
-         * If execution from queue, remove it from the queue
-         */
-        try{
-        if (tCExecution.getIdFromQueue()!=0){
-            testCaseExecutionInQueueService.remove(tCExecution.getIdFromQueue());
-            }
-        }catch (CerberusException ex){
-        MyLogger.log(ExecutionStartService.class.getName(), Level.WARN, ex.getMessageError().getDescription());
-        }
         
         /**
          * Stop the browser if executionID is equal to zero (to prevent database instabilities)

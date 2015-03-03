@@ -81,6 +81,19 @@ public class TestCaseExecution {
     private String manualExecution;
     private List<TestCaseCountryProperties> testCaseCountryPropertyList;
     private long idFromQueue;
+    private Integer numberOfRetries;
+
+    public Integer getNumberOfRetries() {
+        return numberOfRetries;
+    }
+
+    public void setNumberOfRetries(Integer numberOfRetries) {
+        this.numberOfRetries = numberOfRetries;
+    }
+    
+    public void decreaseNumberOfRetries(){
+        this.numberOfRetries--;
+    }
 
     public long getIdFromQueue() {
         return idFromQueue;

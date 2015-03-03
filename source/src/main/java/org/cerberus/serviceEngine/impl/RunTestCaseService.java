@@ -22,8 +22,6 @@ package org.cerberus.serviceEngine.impl;
 import org.apache.log4j.Level;
 import org.cerberus.entity.ExecutionSOAPResponse;
 import org.cerberus.entity.ExecutionUUID;
-import org.cerberus.entity.MessageGeneral;
-import org.cerberus.entity.MessageGeneralEnum;
 import org.cerberus.entity.TestCaseExecution;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.log.MyLogger;

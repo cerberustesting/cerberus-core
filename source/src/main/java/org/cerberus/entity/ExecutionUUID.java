@@ -33,12 +33,12 @@ public class ExecutionUUID {
     
     @PostConstruct
     public void init(){
-    executionHashMap = new HashMap();
+    executionHashMap = new HashMap<String, TestCaseExecution>();
     }
     
     
-    public void setExecutionUUID(String UUID, long executionID){
-    executionHashMap.put(UUID, executionID);
+    public void setExecutionUUID(String UUID, TestCaseExecution execution){
+    executionHashMap.put(UUID, execution);
     }
     
     public void removeExecutionUUID(String uuid) {
@@ -46,6 +46,11 @@ public class ExecutionUUID {
     }
 
     public long getExecutionID(String uuid) {
-        return (Long) executionHashMap.get(uuid);
+        TestCaseExecution t = (TestCaseExecution) executionHashMap.get(uuid);
+        return t.getId();
+    }
+    
+    public TestCaseExecution getTestCaseExecution(String uuid){
+        return (TestCaseExecution) executionHashMap.get(uuid);
     }
 }
