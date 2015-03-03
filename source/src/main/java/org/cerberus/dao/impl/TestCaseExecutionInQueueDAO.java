@@ -28,7 +28,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import org.apache.log4j.Logger;
-import org.cerberus.dao.ICampaignDAO;
 import org.cerberus.dao.ITestCaseExecutionInQueueDAO;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.dto.TestCaseWithExecution;
@@ -90,6 +89,7 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
     private static final String QUERY_GET_NOT_PROCEEDED_BY_TAG = "SELECT * FROM `" + TABLE + "` WHERE `" + COLUMN_PROCEEDED + "` = '" + VALUE_PROCEEDED_FALSE + "' AND `" + COLUMN_TAG + "` = ? ORDER BY `" + COLUMN_ID + "` ASC";
     private static final String QUERY_REMOVE = "DELETE FROM `" + TABLE + "` WHERE `" + COLUMN_ID + "` = ?";
     private static final String QUERY_FIND_BY_KEY = "SELECT * FROM `" + TABLE + "` WHERE `" + COLUMN_ID + "` = ?";
+    private static final String QUERY_GET_ALL = "SELECT * FROM `" + TABLE + "`;";
 
     @Autowired
     private DatabaseSpring databaseSpring;
@@ -125,7 +125,8 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
                 resultSet.getBoolean(COLUMN_SYNCHRONEOUS),
                 resultSet.getInt(COLUMN_PAGE_SOURCE),
                 resultSet.getInt(COLUMN_SELENIUM_LOG),
-                new Date(resultSet.getTimestamp(COLUMN_REQUEST_DATE).getTime()));
+                new Date(resultSet.getTimestamp(COLUMN_REQUEST_DATE).getTime()),
+                resultSet.getString(COLUMN_PROCEEDED));
     }
 
     @Override
@@ -598,5 +599,58 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
             }
         }
 
+    }
+
+    @Override
+    public List<TestCaseExecutionInQueue> findAll() throws CerberusException {
+        final Connection connection = this.databaseSpring.connect();
+        if (connection == null) {
+            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
+        }
+
+        PreparedStatement statement = null;
+
+        List<TestCaseExecutionInQueue> result = new ArrayList<TestCaseExecutionInQueue>();
+
+        try {
+            statement = connection.prepareStatement(QUERY_GET_ALL);
+            ResultSet resultSet = statement.executeQuery();
+
+            while (resultSet.next()) {
+                try {
+                    result.add(fromResultSet(resultSet));
+                } catch (FactoryCreationException fce) {
+                    LOG.warn("Unable to get malformed record from database", fce);
+                }
+            }
+
+            return result;
+        } catch (SQLException sqle) {
+            LOG.warn("Unable to execute query : " + sqle.getMessage() + ". Trying to rollback");
+            if (connection != null) {
+                try {
+                    connection.rollback();
+                } catch (SQLException e) {
+                    LOG.error("Unable to rollback due to " + e.getMessage());
+                }
+                LOG.warn("Rollback done");
+            }
+            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
+        } finally {
+            if (statement != null) {
+                try {
+                    statement.close();
+                } catch (SQLException e) {
+                    LOG.warn("Unable to close statement due to " + e.getMessage());
+                }
+            }
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (SQLException e) {
+                    LOG.warn("Unable to close connection due to " + e.getMessage());
+                }
+            }
+        }
     }
 }

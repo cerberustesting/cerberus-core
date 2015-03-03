@@ -61,7 +61,7 @@ public class FindExecutionInQueue extends HttpServlet {
         try {
             JSONObject jsonResponse = new JSONObject();
             try {
-                for (TestCaseExecutionInQueue exec : executionService.getProceededByTag("toto")) {
+                for (TestCaseExecutionInQueue exec : executionService.findAll()) {
                     JSONArray row = new JSONArray();
                     row.put(exec.getId());
                     row.put(exec.getTest());
@@ -69,6 +69,8 @@ public class FindExecutionInQueue extends HttpServlet {
                     row.put(exec.getCountry());
                     row.put(exec.getEnvironment());
                     row.put(exec.getBrowser());
+                    row.put(exec.getTag());
+                    row.put(exec.getProcessed());
                     data.put(row);
                 }
             } catch (CerberusException ex) {

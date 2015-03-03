@@ -28,61 +28,70 @@ import org.springframework.stereotype.Service;
 
 /**
  * Default {@link IFactoryTestCaseExecutionInQueue} implementation
- * 
+ *
  * @author abourdon
  */
 @Service
 public class FactoryTestCaseExecutionInQueue implements IFactoryTestCaseExecutionInQueue {
 
-	private static final long NEW_ENTRY_INDEX = -1;
+    private static final long NEW_ENTRY_INDEX = -1;
 
-	@Override
-	public TestCaseExecutionInQueue create(long id, String test, String testCase, String country, String environment, String robot, String robotIP, String robotPort,
-			String browser, String browserVersion, String platform, boolean manualURL, String manualHost, String manualContextRoot, String manualLoginRelativeURL,
-			String manualEnvData, String tag, String outputFormat, int screenshot, int verbose, long timeout, boolean synchroneous, int pageSource, int seleniumLog,
-			Date requestDate) throws FactoryCreationException {
-		try {
-			TestCaseExecutionInQueue inQueue = new TestCaseExecutionInQueue();
-			inQueue.setId(id);
-			inQueue.setTest(test);
-			inQueue.setTestCase(testCase);
-			inQueue.setCountry(country);
-			inQueue.setEnvironment(environment);
-			inQueue.setRobot(robot);
-			inQueue.setRobotIP(robotIP);
-			inQueue.setRobotPort(robotPort);
-			inQueue.setBrowser(browser);
-			inQueue.setBrowserVersion(browserVersion);
-			inQueue.setPlatform(platform);
-			inQueue.setManualURL(manualURL);
-			inQueue.setManualHost(manualHost);
-			inQueue.setManualContextRoot(manualContextRoot);
-			inQueue.setManualLoginRelativeURL(manualLoginRelativeURL);
-			inQueue.setManualEnvData(manualEnvData);
-			inQueue.setTag(tag);
-			inQueue.setOutputFormat(outputFormat);
-			inQueue.setScreenshot(screenshot);
-			inQueue.setVerbose(verbose);
-			inQueue.setTimeout(timeout);
-			inQueue.setSynchroneous(synchroneous);
-			inQueue.setPageSource(pageSource);
-			inQueue.setSeleniumLog(seleniumLog);
-			inQueue.setRequestDate(requestDate);
-			return inQueue;
-		} catch (IllegalArgumentException iae) {
-			throw new FactoryCreationException("Unable to create a TestCaseExecutionInQueue instance", iae);
-		} catch (IllegalStateException ise) {
-			throw new FactoryCreationException("Unable to create a TestCaseExecutionInQueue instance", ise);
-		}
-	}
+    @Override
+    public TestCaseExecutionInQueue create(long id, String test, String testCase, String country, String environment, String robot, String robotIP, String robotPort,
+            String browser, String browserVersion, String platform, boolean manualURL, String manualHost, String manualContextRoot, String manualLoginRelativeURL,
+            String manualEnvData, String tag, String outputFormat, int screenshot, int verbose, long timeout, boolean synchroneous, int pageSource, int seleniumLog,
+            Date requestDate) throws FactoryCreationException {
+        try {
+            TestCaseExecutionInQueue inQueue = new TestCaseExecutionInQueue();
+            inQueue.setId(id);
+            inQueue.setTest(test);
+            inQueue.setTestCase(testCase);
+            inQueue.setCountry(country);
+            inQueue.setEnvironment(environment);
+            inQueue.setRobot(robot);
+            inQueue.setRobotIP(robotIP);
+            inQueue.setRobotPort(robotPort);
+            inQueue.setBrowser(browser);
+            inQueue.setBrowserVersion(browserVersion);
+            inQueue.setPlatform(platform);
+            inQueue.setManualURL(manualURL);
+            inQueue.setManualHost(manualHost);
+            inQueue.setManualContextRoot(manualContextRoot);
+            inQueue.setManualLoginRelativeURL(manualLoginRelativeURL);
+            inQueue.setManualEnvData(manualEnvData);
+            inQueue.setTag(tag);
+            inQueue.setOutputFormat(outputFormat);
+            inQueue.setScreenshot(screenshot);
+            inQueue.setVerbose(verbose);
+            inQueue.setTimeout(timeout);
+            inQueue.setSynchroneous(synchroneous);
+            inQueue.setPageSource(pageSource);
+            inQueue.setSeleniumLog(seleniumLog);
+            inQueue.setRequestDate(requestDate);
+            return inQueue;
+        } catch (IllegalArgumentException iae) {
+            throw new FactoryCreationException("Unable to create a TestCaseExecutionInQueue instance", iae);
+        } catch (IllegalStateException ise) {
+            throw new FactoryCreationException("Unable to create a TestCaseExecutionInQueue instance", ise);
+        }
+    }
 
-	@Override
-	public TestCaseExecutionInQueue create(String test, String testCase, String country, String environment, String robot, String robotIP, String robotPort, String browser,
+    @Override
+    public TestCaseExecutionInQueue create(String test, String testCase, String country, String environment, String robot, String robotIP, String robotPort, String browser,
+            String browserVersion, String platform, boolean manualURL, String manualHost, String manualContextRoot, String manualLoginRelativeURL, String manualEnvData,
+            String tag, String outputFormat, int screenshot, int verbose, long timeout, boolean synchroneous, int pageSource, int seleniumLog, Date requestDate)
+            throws FactoryCreationException {
+        return create(NEW_ENTRY_INDEX, test, testCase, country, environment, robot, robotIP, robotPort, browser, browserVersion, platform, manualURL, manualHost,
+                manualContextRoot, manualLoginRelativeURL, manualEnvData, tag, outputFormat, screenshot, verbose, timeout, synchroneous, pageSource, seleniumLog, requestDate);
+    }
+
+    @Override
+    public TestCaseExecutionInQueue create(long id, String test, String testCase, String country, String environment, String robot, String robotIP, String robotPort, String browser,
 			String browserVersion, String platform, boolean manualURL, String manualHost, String manualContextRoot, String manualLoginRelativeURL, String manualEnvData,
-			String tag, String outputFormat, int screenshot, int verbose, long timeout, boolean synchroneous, int pageSource, int seleniumLog, Date requestDate)
-			throws FactoryCreationException {
-		return create(NEW_ENTRY_INDEX, test, testCase, country, environment, robot, robotIP, robotPort, browser, browserVersion, platform, manualURL, manualHost,
-				manualContextRoot, manualLoginRelativeURL, manualEnvData, tag, outputFormat, screenshot, verbose, timeout, synchroneous, pageSource, seleniumLog, requestDate);
-	}
-
+			String tag, String outputFormat, int screenshot, int verbose, long timeout, boolean synchroneous, int pageSource, int seleniumLog, Date requestDate, String processed) throws FactoryCreationException {
+        TestCaseExecutionInQueue inQueue;
+        inQueue = this.create(id, test, testCase, country, environment, robot, robotIP, robotPort, browser, browserVersion, platform, manualURL, manualHost, manualContextRoot, manualLoginRelativeURL, manualEnvData, tag, outputFormat, screenshot, verbose, timeout, synchroneous, pageSource, seleniumLog, requestDate);
+        inQueue.setProcessed(processed);
+        return inQueue;
+    }
 }

@@ -48,8 +48,17 @@ public class TestCaseExecutionInQueue {
 	private int pageSource;
 	private int seleniumLog;
 	private Date requestDate;
+        private String processed;
 
-	public long getId() {
+        public String getProcessed() {
+            return processed;
+        }
+
+        public void setProcessed(String processed) {
+            this.processed = processed;
+        }
+        
+        public long getId() {
 		return id;
 	}
 

@@ -21,16 +21,12 @@ package org.cerberus.serviceExecutor;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.cerberus.entity.ExecutionThreadPool;
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -38,8 +34,8 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  *
  * @author bcivel
  */
-@WebServlet(name = "ExecutionThreadMonitoring", urlPatterns = {"/ExecutionThreadMonitoring"})
-public class ExecutionThreadMonitoring extends HttpServlet {
+@WebServlet(name = "ExecutionThreadReset", urlPatterns = {"/ExecutionThreadReset"})
+public class ExecutionThreadReset extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -52,19 +48,9 @@ public class ExecutionThreadMonitoring extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        JSONObject jsonResponse = new JSONObject();
-            ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-            ExecutionThreadPool etp = appContext.getBean(ExecutionThreadPool.class);
-
-        try {
-            jsonResponse.put("size_queue", etp.getSize());
-            jsonResponse.put("simultaneous_execution", etp.getInExecution());
-            } catch (JSONException ex) {
-            Logger.getLogger(ExecutionThreadMonitoring.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
-        response.setContentType("application/json");
-        response.getWriter().print(jsonResponse.toString());
+        ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+        ExecutionThreadPool etp = appContext.getBean(ExecutionThreadPool.class);
+        etp.reset();
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

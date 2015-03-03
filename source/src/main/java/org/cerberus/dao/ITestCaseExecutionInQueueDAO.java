@@ -103,4 +103,6 @@ public interface ITestCaseExecutionInQueueDAO {
         
         List<TestCaseExecutionInQueue> getNotProceededAndProceed() throws CerberusException;
 
+        public List<TestCaseExecutionInQueue> findAll() throws CerberusException;
+
 }

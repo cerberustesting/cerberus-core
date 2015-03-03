@@ -27,7 +27,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Run Manual Test Case</title>
+        <title>Execution in Queue</title>
         <meta content="text/html; charset=UTF-8" http-equiv="content-type">
         <link rel="stylesheet" type="text/css" href="css/crb_style.css">
         <link rel="stylesheet" type="text/css" href="css/jquery.dataTables.css">
@@ -90,27 +90,9 @@
     <body>
         <%@ include file="include/function.jsp" %>
         <%@ include file="include/header.jsp" %>
-        <%
-            IInvariantService invariantService = appContext.getBean(IInvariantService.class);
-            List<Invariant> invariants = invariantService.findListOfInvariantById("BROWSER");
-            
-                    %>
-        <div id="searchTestCase" style="width:100%">
-            <div class="fields" style="margin-left: 15px; width:97%">
-                <div>
-                    <h4>Search</h4>
-                    <div class="field">
-                        <label for="tag" style="width: 100px">Tag</label><br/>
-                        <select id="tag" name="tag" style="width: 100px">
-                            <option value="All">-- ALL --</option>
-                        </select>
-                    </div>
-                </div>
-                <div><input type="button" value="Search" onclick="loadTestCases()"></div>
-            </div>
-        </div>
-        <div id="manualTestCaseExecution" style="display: none; padding-top: 25px; padding-left: 15px;">
-            <div style="margin-left: 15px; width: 97%; font: 90% sans-serif">
+        <div id="manualTestCaseExecution" style="display: none;">
+            <p class="dttTitle">Execution In Queue</p>
+            <div style="width: 100%; font: 90% sans-serif">
                 <table id="testCaseTable" class="display">
                     <thead>
                         <tr>
@@ -120,6 +102,8 @@
                             <th>Environment</th>
                             <th>Country</th>
                             <th>Browser</th>
+                            <th>Tag</th>
+                            <th>Processed</th>
                             <th>Run</th>
                         </tr>
                     </thead>
@@ -128,16 +112,6 @@
                 </table>
             </div>
         </div>
-        <script>function displayOrHideElement(element) {
-                var disp = document.getElementById(element).style.display;
-                if (disp === "none") {
-                    document.getElementById(element).style.display = "inline";
-                } else {
-                    document.getElementById(element).style.display = "none";
-                }
-
-
-            }</script>
         <script type="text/javascript">
             var oTable;
             
@@ -161,13 +135,15 @@
                             {"sName": "environment", "bSortable": false, sWidth: "10%"},
                             {"sName": "country", "bSortable": false, sWidth: "10%"},
                             {"sName": "browser", "bSortable": false, sWidth: "10%"},
+                            {"sName": "tag", "bSortable": false, sWidth: "10%"},
+                            {"sName": "processed", "bSortable": false, sWidth: "10%"},
                             {"sDefaultContent": '', "bSortable": false, sWidth: "10%"}
                         ],
                         aoColumnDefs: [
                             {
-                                "aTargets": [6],
+                                "aTargets": [8],
                                 "mRender": function(data, type, full) {
-                                    return "<p style='text-align: center'><input type='button' style='background-image: url(images/play.png);background-size: 100%; width: 20px; height: 20px; border: 0 none; top: 0px' onclick='openRunManualPopin(\""+full[0]+"\",\""+full[1]+"\",\""+full[3]+"\",\""+full[2]+"\")'/></p>"
+                                    return "<p style='text-align: center'><input type='button' style='background-image: url(images/play.png);background-size: 100%; width: 20px; height: 20px; border: 0 none; top: 0px' onclick=window.location.href='RunTests.jsp?queuedExecution="+full[0]+"'></p>"
                                 }
                             }
                         ]
@@ -176,6 +152,11 @@
                     $('#manualTestCaseExecution').show();
                 }
             
+        </script>
+        <script>
+            $(document).ready(function(){
+                loadTestCases();
+            });
         </script>
         <br/>
         <div id="popin"></div>

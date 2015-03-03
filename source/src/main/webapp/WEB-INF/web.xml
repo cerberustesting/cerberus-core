@@ -664,6 +664,18 @@
         <servlet-name>UpdateCountryEnvironmentDatabase</servlet-name>
         <servlet-class>org.cerberus.servlet.countryenvironmentdatabase.UpdateCountryEnvironmentDatabase</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>ExecutionThreadMonitoring</servlet-name>
+        <servlet-class>org.cerberus.serviceExecutor.ExecutionThreadMonitoring</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ExecutionThreadReset</servlet-name>
+        <servlet-class>org.cerberus.serviceExecutor.ExecutionThreadReset</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ExecutionThreadMonitoring</servlet-name>
+        <url-pattern>/ExecutionThreadMonitoring</url-pattern>
+    </servlet-mapping>
     <servlet-mapping>
         <servlet-name>RunTestCase</servlet-name>
         <url-pattern>/RunTestCase</url-pattern>
@@ -1288,6 +1300,10 @@
         <servlet-name>UpdateCountryEnvironmentDatabase</servlet-name>
         <url-pattern>/UpdateCountryEnvironmentDatabase</url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ExecutionThreadReset</servlet-name>
+        <url-pattern>/ExecutionThreadReset</url-pattern>
+    </servlet-mapping>
     <session-config>
         <session-timeout>
             60
@@ -1594,6 +1610,7 @@
             <url-pattern>/UserManager.jsp</url-pattern>
             <url-pattern>/InvariantPublic.jsp</url-pattern>
             <url-pattern>/InvariantPrivate.jsp</url-pattern>
+            <url-pattern>/ExecutionThreadMonitoring.jsp</url-pattern>
         </web-resource-collection>
         <web-resource-collection>
             <web-resource-name>servlet</web-resource-name>
@@ -1613,6 +1630,7 @@
             <url-pattern>/UpdateInvariant</url-pattern>
             <url-pattern>/DeleteInvariant</url-pattern>
             <url-pattern>/DeleteApplication</url-pattern>
+            <url-pattern>/ExecutionThreadMonitoring</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <description>Administrator</description>
