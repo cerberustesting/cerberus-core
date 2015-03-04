@@ -29,6 +29,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.cerberus.entity.ExecutionThreadPool;
+import org.cerberus.entity.ExecutionUUID;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.context.ApplicationContext;
@@ -55,10 +56,12 @@ public class ExecutionThreadMonitoring extends HttpServlet {
         JSONObject jsonResponse = new JSONObject();
             ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
             ExecutionThreadPool etp = appContext.getBean(ExecutionThreadPool.class);
+            ExecutionUUID euuid = appContext.getBean(ExecutionUUID.class);
 
         try {
             jsonResponse.put("size_queue", etp.getSize());
-            jsonResponse.put("simultaneous_execution", etp.getInExecution());
+            jsonResponse.put("queue_in_execution", etp.getInExecution());
+            jsonResponse.put("simultaneous_execution", euuid.size());
             } catch (JSONException ex) {
             Logger.getLogger(ExecutionThreadMonitoring.class.getName()).log(Level.SEVERE, null, ex);
         }

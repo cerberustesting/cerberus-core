@@ -17,6 +17,7 @@
             $(document).ready(function() {
                 $.get('ExecutionThreadMonitoring', function(data) {
                     $("#sizeOfQueue").html(data.size_queue);
+                    $("#QueueInExecution").html(data.queue_in_execution);
                     $("#SimultaneousExecution").html(data.simultaneous_execution);
                 });
 
@@ -34,7 +35,9 @@
         <%@ include file="include/function.jsp" %>
         <%@ include file="include/header.jsp" %>
         <h3>Execution Thread Monitoring</h3>
-        <p>Size Of Queue In Memory: </p><p id="sizeOfQueue"></p>
+        <p>Total Size Of Queue In Memory: </p><p id="sizeOfQueue"></p>
+        <br>
+        <p>Number of Queue In Execution : </p><p id="QueueInExecution"></p>
         <br>
         <p>Number of Actual Simultaneous Execution : </p><p id="SimultaneousExecution"></p>
         <br>

@@ -179,7 +179,9 @@
                                                     "value": sData
                                                 }
                                             ],
-                                            "success": function() { loadTestCases()},
+                                            "success": function() {
+                                                loadTestCases()
+                                            },
                                             "dataType": "json",
                                             "type": "POST",
                                             "cache": false,
@@ -192,7 +194,7 @@
                                         alert('Not deleted');
                                     }
                                 },
-                                        "oSelectorOpts": {filter: 'applied', order: 'current'}
+                                "oSelectorOpts": {filter: 'applied', order: 'current'}
                             },
                             {
                                 "sExtends": "collection",
@@ -208,25 +210,28 @@
                                         "bOpenRows": true,
                                         "sFieldSeperator": "|",
                                         "fnClick": function(nButton, oConfig) {
-                                    var sData = this.fnGetTableData(oConfig);
-                                        $.ajax({
-                                            "url": "UpdateExecutionInQueue?changeTo=1",
-                                            "data": [
-                                                {
-                                                    "name": "tableData",
-                                                    "value": sData
-                                                }
-                                            ],
-                                            "success": function() { loadTestCases()},
-                                            "dataType": "json",
-                                            "type": "POST",
-                                            "cache": false,
-                                            "error": function() {
-                                                alert("Error detected when sending table data to server");
+                                            var sData = this.fnGetTableData(oConfig);
+                                            if (!$(nButton).hasClass('DTTT_disabled')) {
+                                                $.ajax({
+                                                    "url": "UpdateExecutionInQueue?changeTo=1",
+                                                    "data": [
+                                                        {
+                                                            "name": "tableData",
+                                                            "value": sData
+                                                        }
+                                                    ],
+                                                    "success": function() {
+                                                        loadTestCases()
+                                                    },
+                                                    "dataType": "json",
+                                                    "type": "POST",
+                                                    "cache": false,
+                                                    "error": function() {
+                                                        alert("Error detected when sending table data to server");
+                                                    }
+                                                });
                                             }
-                                        });
-                                    
-                                },
+                                        },
                                         "oSelectorOpts": {filter: 'applied', order: 'current'}
                                     }, {
                                         "sExtends": "ajax",
@@ -234,30 +239,35 @@
                                         "sAjaxUrl": "UpdateExecutionInQueue?changeTo=0",
                                         "bSelectedOnly": true,
                                         "sRowSelect": "multi",
-                                        "success": function() { loadTestCases()},
+                                        "success": function() {
+                                            loadTestCases()
+                                        },
                                         "bHeader": false,
                                         "mColumns": [0],
                                         "bOpenRows": true,
-                                        "sFieldSeperator": "|","fnClick": function(nButton, oConfig) {
-                                    var sData = this.fnGetTableData(oConfig);
-                                        $.ajax({
-                                            "url": "UpdateExecutionInQueue?changeTo=0",
-                                            "data": [
-                                                {
-                                                    "name": "tableData",
-                                                    "value": sData
-                                                }
-                                            ],
-                                            "success": function() { loadTestCases()},
-                                            "dataType": "json",
-                                            "type": "POST",
-                                            "cache": false,
-                                            "error": function() {
-                                                alert("Error detected when sending table data to server");
+                                        "sFieldSeperator": "|", "fnClick": function(nButton, oConfig) {
+                                            var sData = this.fnGetTableData(oConfig);
+                                            if (!$(nButton).hasClass('DTTT_disabled')) {
+                                                $.ajax({
+                                                    "url": "UpdateExecutionInQueue?changeTo=0",
+                                                    "data": [
+                                                        {
+                                                            "name": "tableData",
+                                                            "value": sData
+                                                        }
+                                                    ],
+                                                    "success": function() {
+                                                        loadTestCases()
+                                                    },
+                                                    "dataType": "json",
+                                                    "type": "POST",
+                                                    "cache": false,
+                                                    "error": function() {
+                                                        alert("Error detected when sending table data to server");
+                                                    }
+                                                });
                                             }
-                                        });
-                                    
-                                },
+                                        },
                                         "oSelectorOpts": {filter: 'applied', order: 'current'}
                                     }]
                             }]},
@@ -294,10 +304,14 @@
                     $('#ToolTables_testCaseTable_0').addClass('DTTT_disabled');
                     $('#ToolTables_testCaseTable_2').removeClass('DTTT_disabled');
                     $('#ToolTables_testCaseTable_3').removeClass('DTTT_disabled');
+                    $('#ToolTables_testCaseTable_4').removeClass('DTTT_disabled');
+                    $('#ToolTables_testCaseTable_5').removeClass('DTTT_disabled');
                 } else {
                     $('#ToolTables_testCaseTable_0').removeClass('DTTT_disabled');
                     $('#ToolTables_testCaseTable_2').addClass('DTTT_disabled');
                     $('#ToolTables_testCaseTable_3').addClass('DTTT_disabled');
+                    $('#ToolTables_testCaseTable_4').addClass('DTTT_disabled');
+                    $('#ToolTables_testCaseTable_5').addClass('DTTT_disabled');
                 }
             }
 

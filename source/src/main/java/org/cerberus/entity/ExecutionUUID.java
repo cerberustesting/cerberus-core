@@ -53,4 +53,8 @@ public class ExecutionUUID {
     public TestCaseExecution getTestCaseExecution(String uuid){
         return (TestCaseExecution) executionHashMap.get(uuid);
     }
+    
+    public int size(){
+        return executionHashMap.size();
+    }
 }
