@@ -122,4 +122,6 @@ public interface ITestCaseExecutionInQueueService {
      * @throws CerberusException 
      */
     List<TestCaseExecutionInQueue> findAll() throws CerberusException;
+
+    public void setProcessedTo(Long l, String changeTo) throws CerberusException;
 }

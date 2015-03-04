@@ -90,6 +90,8 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
     private static final String QUERY_REMOVE = "DELETE FROM `" + TABLE + "` WHERE `" + COLUMN_ID + "` = ?";
     private static final String QUERY_FIND_BY_KEY = "SELECT * FROM `" + TABLE + "` WHERE `" + COLUMN_ID + "` = ?";
     private static final String QUERY_GET_ALL = "SELECT * FROM `" + TABLE + "`;";
+    private static final String QUERY_NOT_PROCEEDED = "UPDATE `" + TABLE + "` SET `" + COLUMN_PROCEEDED + "` = '" + VALUE_PROCEEDED_FALSE + "' WHERE `" + COLUMN_ID + "` = ?";
+    
 
     @Autowired
     private DatabaseSpring databaseSpring;
@@ -642,6 +644,56 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
                     statement.close();
                 } catch (SQLException e) {
                     LOG.warn("Unable to close statement due to " + e.getMessage());
+                }
+            }
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (SQLException e) {
+                    LOG.warn("Unable to close connection due to " + e.getMessage());
+                }
+            }
+        }
+    }
+
+    @Override
+    public void setProcessedTo(Long l, String changeTo) throws CerberusException {
+        final Connection connection = this.databaseSpring.connect();
+        if (connection == null) {
+            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
+        }
+
+        PreparedStatement statementProceed = null;
+
+        TestCaseExecutionInQueue result = null;
+
+        try {
+            // Make the actual record as proceeded
+            if (!changeTo.equals("0")){
+            statementProceed = connection.prepareStatement(QUERY_PROCEED);
+            } else {
+            statementProceed = connection.prepareStatement(QUERY_NOT_PROCEEDED);
+            }
+            statementProceed.setLong(1, l);
+            statementProceed.executeUpdate();
+
+        } catch (SQLException sqle) {
+            LOG.warn("Unable to execute query : " + sqle.getMessage() + ". Trying to rollback");
+            if (connection != null) {
+                try {
+                    connection.rollback();
+                } catch (SQLException e) {
+                    LOG.error("Unable to rollback due to " + e.getMessage());
+                }
+                LOG.warn("Rollback done");
+            }
+            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
+        } finally {
+            if (statementProceed != null) {
+                try {
+                    statementProceed.close();
+                } catch (SQLException e) {
+                    LOG.warn("Unable to close proceed statement due to " + e.getMessage());
                 }
             }
             if (connection != null) {

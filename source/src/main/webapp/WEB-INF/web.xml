@@ -672,6 +672,14 @@
         <servlet-name>ExecutionThreadReset</servlet-name>
         <servlet-class>org.cerberus.serviceExecutor.ExecutionThreadReset</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>DeleteExecutionInQueue</servlet-name>
+        <servlet-class>org.cerberus.servlet.execution.DeleteExecutionInQueue</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>UpdateExecutionInQueue</servlet-name>
+        <servlet-class>org.cerberus.servlet.execution.UpdateExecutionInQueue</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>ExecutionThreadMonitoring</servlet-name>
         <url-pattern>/ExecutionThreadMonitoring</url-pattern>
@@ -1304,6 +1312,14 @@
         <servlet-name>ExecutionThreadReset</servlet-name>
         <url-pattern>/ExecutionThreadReset</url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DeleteExecutionInQueue</servlet-name>
+        <url-pattern>/DeleteExecutionInQueue</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>UpdateExecutionInQueue</servlet-name>
+        <url-pattern>/UpdateExecutionInQueue</url-pattern>
+    </servlet-mapping>
     <session-config>
         <session-timeout>
             60
@@ -1745,4 +1761,4 @@
     <listener>
         <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
     </listener>
-</web-app>
+    </web-app>

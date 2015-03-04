@@ -21,7 +21,7 @@
 <%@page import="org.json.JSONArray"%>
 <%@page import="org.cerberus.entity.TestCaseExecution"%>
 <%@page import="org.cerberus.service.ITestCaseExecutionService"%>
-<% Date start = new Date(); %>
+<% Date start = new Date();%>
 
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <!DOCTYPE html>
@@ -33,6 +33,7 @@
         <link rel="stylesheet" type="text/css" href="css/jquery.dataTables.css">
         <link rel="stylesheet" type="text/css" href="css/jquery-ui.css">
         <link rel="stylesheet" type="text/css" href="css/dataTables_jui.css">
+        <link rel="stylesheet" type="text/css" href="css/jquery.dataTables.tableTools.css">
         <link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico">
         <script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>
         <script type="text/javascript" src="js/jquery-ui-1.10.2.js"></script>
@@ -41,6 +42,7 @@
         <script type="text/javascript" src="js/jquery.dataTables.editable.js"></script>
         <script type="text/javascript" src="js/jquery.validate.min.js"></script>
         <script type="text/javascript" src="js/ajax-loader.js"></script>
+        <script type="text/javascript" src="js/jquery.dataTables.tableTools.js"></script>
         <style type="text/css">
             .fields {
                 background-color: #E1E7F3;
@@ -85,6 +87,19 @@
             .center {
                 text-align: center;
             }
+
+            #testCaseTable_wrapper{
+                background-image: -moz-linear-gradient(bottom, #ebebeb, #CCCCCC); 
+                background-image: -webkit-linear-gradient(bottom, #ebebeb, #CCCCCC); 
+                font-weight:bold;
+                font-family: Trebuchet MS;
+                color:#555555;
+                text-align: center;
+            }
+
+            table.dataTable tbody tr.selected {
+                background-color: #b0bed9;
+            }
         </style>
     </head>
     <body>
@@ -114,47 +129,181 @@
         </div>
         <script type="text/javascript">
             var oTable;
-            
-            
             function showMessage() {
                 $("#divResultMessage").slideUp("slow");
             }
 
             function loadTestCases() {
                 oTable = $('#testCaseTable').dataTable({
-                        "bJQueryUI": true,
-                        "bServerSide": false,
-                        "bDestroy": true,
-                        "bAutoWidth": false,
-                        "sAjaxSource": "FindExecutionInQueue",
-                        "sServerMethod": "POST",
-                        "aoColumns": [
-                            {"sName": "id", "bSortable": false, sWidth: "5%"},
-                            {"sName": "test", "bSortable": false, sWidth: "20%"},
-                            {"sName": "testcase", "bSortable": false, sWidth: "10%"},
-                            {"sName": "environment", "bSortable": false, sWidth: "10%"},
-                            {"sName": "country", "bSortable": false, sWidth: "10%"},
-                            {"sName": "browser", "bSortable": false, sWidth: "10%"},
-                            {"sName": "tag", "bSortable": false, sWidth: "10%"},
-                            {"sName": "processed", "bSortable": false, sWidth: "10%"},
-                            {"sDefaultContent": '', "bSortable": false, sWidth: "10%"}
-                        ],
-                        aoColumnDefs: [
+                    "bJQueryUI": true,
+                    "bServerSide": false,
+                    "Searching": true,
+                    "bDestroy": true,
+                    "bAutoWidth": false,
+                    "sAjaxSource": "FindExecutionInQueue",
+                    "sServerMethod": "POST",
+                    dom: 'T<"clear">lfrtip',
+                    tableTools: {
+                        "sRowSelect": "multi",
+                        "aButtons": [
+                            {"sExtends": "select",
+                                "sButtonText": "Select All",
+                                "fnClick": function(nButton, oConfig, oFlash) {
+                                    var oTT = TableTools.fnGetInstance('testCaseTable');
+                                    oTT.fnSelectAll(true); //True = Select only filtered rows (true). Optional - default false.
+                                    checkSelected();
+                                }},
+                            {"sExtends": "select",
+                                "sButtonText": "Select None",
+                                "fnClick": function(nButton, oConfig, oFlash) {
+                                    var oTT = TableTools.fnGetInstance('testCaseTable');
+                                    oTT.fnSelectNone(true); //True = Select only filtered rows (true). Optional - default false.
+                                    checkSelected();
+                                }},
                             {
-                                "aTargets": [8],
-                                "mRender": function(data, type, full) {
-                                    return "<p style='text-align: center'><input type='button' style='background-image: url(images/play.png);background-size: 100%; width: 20px; height: 20px; border: 0 none; top: 0px' onclick=window.location.href='RunTests.jsp?queuedExecution="+full[0]+"'></p>"
-                                }
+                                "sExtends": "ajax",
+                                "sButtonText": "Delete",
+                                "sAjaxUrl": "DeleteExecutionInQueue",
+                                "bHeader": false,
+                                "bSelectedOnly": true,
+                                "mColumns": [0],
+                                "sFieldSeperator": "|",
+                                "fnClick": function(nButton, oConfig) {
+                                    var sData = this.fnGetTableData(oConfig);
+                                    if (!$(nButton).hasClass('DTTT_disabled') && confirm('Do you really want to delete?')) {
+                                        $.ajax({
+                                            "url": "DeleteExecutionInQueue",
+                                            "data": [
+                                                {
+                                                    "name": "tableData",
+                                                    "value": sData
+                                                }
+                                            ],
+                                            "success": function() { loadTestCases()},
+                                            "dataType": "json",
+                                            "type": "POST",
+                                            "cache": false,
+                                            "error": function() {
+                                                alert("Error detected when sending table data to server");
+                                            }
+                                        });
+                                    }
+                                    else {
+                                        alert('Not deleted');
+                                    }
+                                },
+                                        "oSelectorOpts": {filter: 'applied', order: 'current'}
+                            },
+                            {
+                                "sExtends": "collection",
+                                "sButtonText": "Change Processed",
+                                "aButtons": [{
+                                        "sExtends": "ajax",
+                                        "sButtonText": "To Processed",
+                                        "sAjaxUrl": "UpdateExecutionInQueue?changeTo=1",
+                                        "bSelectedOnly": true,
+                                        "sRowSelect": "multi",
+                                        "bHeader": false,
+                                        "mColumns": [0],
+                                        "bOpenRows": true,
+                                        "sFieldSeperator": "|",
+                                        "fnClick": function(nButton, oConfig) {
+                                    var sData = this.fnGetTableData(oConfig);
+                                        $.ajax({
+                                            "url": "UpdateExecutionInQueue?changeTo=1",
+                                            "data": [
+                                                {
+                                                    "name": "tableData",
+                                                    "value": sData
+                                                }
+                                            ],
+                                            "success": function() { loadTestCases()},
+                                            "dataType": "json",
+                                            "type": "POST",
+                                            "cache": false,
+                                            "error": function() {
+                                                alert("Error detected when sending table data to server");
+                                            }
+                                        });
+                                    
+                                },
+                                        "oSelectorOpts": {filter: 'applied', order: 'current'}
+                                    }, {
+                                        "sExtends": "ajax",
+                                        "sButtonText": "To Not processed",
+                                        "sAjaxUrl": "UpdateExecutionInQueue?changeTo=0",
+                                        "bSelectedOnly": true,
+                                        "sRowSelect": "multi",
+                                        "success": function() { loadTestCases()},
+                                        "bHeader": false,
+                                        "mColumns": [0],
+                                        "bOpenRows": true,
+                                        "sFieldSeperator": "|","fnClick": function(nButton, oConfig) {
+                                    var sData = this.fnGetTableData(oConfig);
+                                        $.ajax({
+                                            "url": "UpdateExecutionInQueue?changeTo=0",
+                                            "data": [
+                                                {
+                                                    "name": "tableData",
+                                                    "value": sData
+                                                }
+                                            ],
+                                            "success": function() { loadTestCases()},
+                                            "dataType": "json",
+                                            "type": "POST",
+                                            "cache": false,
+                                            "error": function() {
+                                                alert("Error detected when sending table data to server");
+                                            }
+                                        });
+                                    
+                                },
+                                        "oSelectorOpts": {filter: 'applied', order: 'current'}
+                                    }]
+                            }]},
+                    "aoColumns": [
+                        {"sName": "id", "bSortable": false, sWidth: "5%"},
+                        {"sName": "test", "bSortable": false, sWidth: "20%"},
+                        {"sName": "testcase", "bSortable": false, sWidth: "10%"},
+                        {"sName": "environment", "bSortable": false, sWidth: "10%"},
+                        {"sName": "country", "bSortable": false, sWidth: "10%"},
+                        {"sName": "browser", "bSortable": false, sWidth: "10%"},
+                        {"sName": "tag", "bSortable": false, sWidth: "10%"},
+                        {"sName": "processed", "bSortable": false, sWidth: "10%"},
+                        {"sDefaultContent": '', "bSortable": false, sWidth: "10%"}
+                    ],
+                    aoColumnDefs: [
+                        {
+                            "aTargets": [8],
+                            "mRender": function(data, type, full) {
+                                return "<p style='text-align: center'><input type='button' style='background-image: url(images/play.png);background-size: 100%; width: 20px; height: 20px; border: 0 none; top: 0px' onclick=window.location.href='RunTests.jsp?queuedExecution=" + full[0] + "'></p>"
                             }
-                        ]
-                    });
+                        }
+                    ]
+                });
+                $('#manualTestCaseExecution').show();
+                $('#testCaseTable tbody').on('click', 'tr', function() {
+                    $(this).toggleClass('selected');
+                    checkSelected();
+                });
+                checkSelected();
+            }
 
-                    $('#manualTestCaseExecution').show();
+            function checkSelected() {
+                if ($("#testCaseTable tbody").find('tr.DTTT_selected').length > 0) {
+                    $('#ToolTables_testCaseTable_0').addClass('DTTT_disabled');
+                    $('#ToolTables_testCaseTable_2').removeClass('DTTT_disabled');
+                    $('#ToolTables_testCaseTable_3').removeClass('DTTT_disabled');
+                } else {
+                    $('#ToolTables_testCaseTable_0').removeClass('DTTT_disabled');
+                    $('#ToolTables_testCaseTable_2').addClass('DTTT_disabled');
+                    $('#ToolTables_testCaseTable_3').addClass('DTTT_disabled');
                 }
-            
+            }
+
         </script>
         <script>
-            $(document).ready(function(){
+            $(document).ready(function() {
                 loadTestCases();
             });
         </script>

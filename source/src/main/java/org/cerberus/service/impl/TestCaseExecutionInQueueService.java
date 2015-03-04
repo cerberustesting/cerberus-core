@@ -100,4 +100,9 @@ public class TestCaseExecutionInQueueService implements ITestCaseExecutionInQueu
         return testCaseExecutionInQueueDAO.findAll();
     }
 
+    @Override
+    public void setProcessedTo(Long l, String changeTo) throws CerberusException {
+        testCaseExecutionInQueueDAO.setProcessedTo(l, changeTo);
+    }
+
 }
