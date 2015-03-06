@@ -102,7 +102,7 @@ public class RunTestCase extends HttpServlet {
     public static final String PARAMETER_MANUAL_EXECUTION = "manualExecution";
     public static final String PARAMETER_EXECUTION_QUEUE_ID = "IdFromQueue";
     public static final String PARAMETER_SYSTEM = "MySystem";
-    public static final String PARAMETER_NUMBER_OF_TRIES = "tries";
+    public static final String PARAMETER_NUMBER_OF_RETRIES = "retries";
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -309,26 +309,32 @@ public class RunTestCase extends HttpServlet {
             }
 
             /**
-             * If execution from queue, remove it from the queue
+             * If execution from queue, remove it from the queue or update information in Queue
+             * 
+             * IdFromQueue must be different of 0
+             * ReturnCode of Testcase should be
              */
             try {
                 if (tCExecution.getIdFromQueue() != 0) {
                     ITestCaseExecutionInQueueService testCaseExecutionInQueueService = appContext.getBean(ITestCaseExecutionInQueueService.class);
+                    if (tCExecution.getResultMessage().getCode() == 63){
+                    testCaseExecutionInQueueService.updateComment(tCExecution.getIdFromQueue(),tCExecution.getResultMessage().getDescription());
+                    }else{
                     testCaseExecutionInQueueService.remove(tCExecution.getIdFromQueue());
+                    }
                 }
             } catch (CerberusException ex) {
                 MyLogger.log(RunTestCase.class.getName(), Level.WARN, ex.getMessageError().getDescription());
             }
 
             /**
-             * Clean memory (Remove all object put in memory)
+             * Clean memory in case testcase has not been launched(Remove all object put in memory)
              */
             try {
-                if (tCExecution.isSynchroneous()) {
-                    if (executionUUIDObject.getExecutionID(tCExecution.getExecutionUUID()) != 0) {
+                if (tCExecution.getId()==0) {
                         executionUUIDObject.removeExecutionUUID(tCExecution.getExecutionUUID());
                         MyLogger.log(RunTestCase.class.getName(), Level.DEBUG, "Clean ExecutionUUID");
-                    }
+                    
                     if (eSResponse.getExecutionSOAPResponse(tCExecution.getExecutionUUID()) != null) {
                         eSResponse.removeExecutionSOAPResponse(tCExecution.getExecutionUUID());
                         MyLogger.log(RunTestCase.class.getName(), Level.DEBUG, "Clean ExecutionSOAPResponse");
@@ -347,6 +353,7 @@ public class RunTestCase extends HttpServlet {
                     out.println("<body>");
                     out.println("<table>");
                     out.println("<tr><td>RunID</td><td><span id='RunID'>" + runID + "</span></td></tr>");
+                    out.println("<tr><td>IdFromQueue</td><td><b><span id='IdFromQueue'>" + tCExecution.getIdFromQueue() + "</span></b></td></tr>");
                     out.println("<tr><td>Test</td><td><span id='Test'>" + test + "</span></td></tr>");
                     out.println("<tr><td>TestCase</td><td><span id='TestCase'>" + testCase + "</span></td></tr>");
                     out.println("<tr><td>Country</td><td><span id='Country'>" + country + "</span></td></tr>");
@@ -408,7 +415,9 @@ public class RunTestCase extends HttpServlet {
                 out.println("ReturnCode" + separator + tCExecution.getResultMessage().getCode());
                 out.println("ReturnCodeDescription" + separator + tCExecution.getResultMessage().getDescription());
                 out.println("ControlStatus" + separator + tCExecution.getResultMessage().getCodeString());
-            } else {
+            } else if (outputFormat.equalsIgnoreCase("redirectToReport")) {
+                response.sendRedirect("./ReportingExecutionByTag.jsp?Tag=" + tag);
+            }else {
                 DateFormat df = new SimpleDateFormat(DateUtil.DATE_FORMAT_DISPLAY);
                 out.println(df.format(tCExecution.getStart()) + " - " + runID
                         + " [" + test

@@ -23,284 +23,311 @@ import java.util.Date;
 
 public class TestCaseExecutionInQueue {
 
-	private long id;
-	private String test;
-	private String testCase;
-	private String country;
-	private String environment;
-	private String robot;
-	private String robotIP;
-	private String robotPort;
-	private String browser;
-	private String browserVersion;
-	private String platform;
-	private boolean manualURL;
-	private String manualHost;
-	private String manualContextRoot;
-	private String manualLoginRelativeURL;
-	private String manualEnvData;
-	private String tag;
-	private String outputFormat;
-	private int screenshot;
-	private int verbose;
-	private long timeout;
-	private boolean synchroneous;
-	private int pageSource;
-	private int seleniumLog;
-	private Date requestDate;
-        private String processed;
+    private long id;
+    private String test;
+    private String testCase;
+    private String country;
+    private String environment;
+    private String robot;
+    private String robotIP;
+    private String robotPort;
+    private String browser;
+    private String browserVersion;
+    private String platform;
+    private boolean manualURL;
+    private String manualHost;
+    private String manualContextRoot;
+    private String manualLoginRelativeURL;
+    private String manualEnvData;
+    private String tag;
+    private String outputFormat;
+    private int screenshot;
+    private int verbose;
+    private long timeout;
+    private boolean synchroneous;
+    private int pageSource;
+    private int seleniumLog;
+    private Date requestDate;
+    private String processed;
+    private String comment;
+    private int retries;
+    private boolean manualExecution;
 
-        public String getProcessed() {
-            return processed;
+    public boolean isManualExecution() {
+        return manualExecution;
+    }
+
+    public void setManualExecution(boolean manualExecution) {
+        this.manualExecution = manualExecution;
+    }
+
+    public int getRetries() {
+        return retries;
+    }
+
+    public void setRetries(int retries) {
+        this.retries = retries;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
+
+    public String getProcessed() {
+        return processed;
+    }
+
+    public void setProcessed(String processed) {
+        this.processed = processed;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public String getTest() {
+        if (test == null) {
+            throw new IllegalStateException("test must not be null");
         }
+        return test;
+    }
 
-        public void setProcessed(String processed) {
-            this.processed = processed;
+    public void setTest(String test) {
+        if (test == null) {
+            throw new IllegalArgumentException("test must not be null");
         }
-        
-        public long getId() {
-		return id;
-	}
+        this.test = test;
+    }
 
-	public void setId(long id) {
-		this.id = id;
-	}
+    public String getTestCase() {
+        if (testCase == null) {
+            throw new IllegalStateException("testCase must not be null");
+        }
+        return testCase;
+    }
 
-	public String getTest() {
-		if (test == null) {
-			throw new IllegalStateException("test must not be null");
-		}
-		return test;
-	}
+    public void setTestCase(String testCase) {
+        if (testCase == null) {
+            throw new IllegalArgumentException("testCase must not be null");
+        }
+        this.testCase = testCase;
+    }
 
-	public void setTest(String test) {
-		if (test == null) {
-			throw new IllegalArgumentException("test must not be null");
-		}
-		this.test = test;
-	}
+    public String getCountry() {
+        if (country == null) {
+            throw new IllegalStateException("country must not be null");
+        }
+        return country;
+    }
 
-	public String getTestCase() {
-		if (testCase == null) {
-			throw new IllegalStateException("testCase must not be null");
-		}
-		return testCase;
-	}
+    public void setCountry(String country) {
+        if (country == null) {
+            throw new IllegalArgumentException("country must not be null");
+        }
+        this.country = country;
+    }
 
-	public void setTestCase(String testCase) {
-		if (testCase == null) {
-			throw new IllegalArgumentException("testCase must not be null");
-		}
-		this.testCase = testCase;
-	}
+    public String getEnvironment() {
+        if (environment == null) {
+            throw new IllegalStateException("environment must not be null");
+        }
+        return environment;
+    }
 
-	public String getCountry() {
-		if (country == null) {
-			throw new IllegalStateException("country must not be null");
-		}
-		return country;
-	}
+    public void setEnvironment(String environment) {
+        if (environment == null) {
+            throw new IllegalArgumentException("environment must not be null");
+        }
+        this.environment = environment;
+    }
 
-	public void setCountry(String country) {
-		if (country == null) {
-			throw new IllegalArgumentException("country must not be null");
-		}
-		this.country = country;
-	}
+    public String getRobot() {
+        return robot;
+    }
 
-	public String getEnvironment() {
-		if (environment == null) {
-			throw new IllegalStateException("environment must not be null");
-		}
-		return environment;
-	}
+    public void setRobot(String robot) {
+        this.robot = robot;
+    }
 
-	public void setEnvironment(String environment) {
-		if (environment == null) {
-			throw new IllegalArgumentException("environment must not be null");
-		}
-		this.environment = environment;
-	}
+    public String getRobotIP() {
+        return robotIP;
+    }
 
-	public String getRobot() {
-		return robot;
-	}
+    public void setRobotIP(String robotIP) {
+        this.robotIP = robotIP;
+    }
 
-	public void setRobot(String robot) {
-		this.robot = robot;
-	}
+    public String getRobotPort() {
+        return robotPort;
+    }
 
-	public String getRobotIP() {
-		return robotIP;
-	}
+    public void setRobotPort(String robotPort) {
+        this.robotPort = robotPort;
+    }
 
-	public void setRobotIP(String robotIP) {
-		this.robotIP = robotIP;
-	}
+    public String getBrowser() {
+        if (browser == null) {
+            throw new IllegalStateException("browser must not be null");
+        }
+        return browser;
+    }
 
-	public String getRobotPort() {
-		return robotPort;
-	}
+    public void setBrowser(String browser) {
+        if (country == null) {
+            throw new IllegalArgumentException("browser must not be null");
+        }
+        this.browser = browser;
+    }
 
-	public void setRobotPort(String robotPort) {
-		this.robotPort = robotPort;
-	}
+    public String getBrowserVersion() {
+        return browserVersion;
+    }
 
-	public String getBrowser() {
-		if (browser == null) {
-			throw new IllegalStateException("browser must not be null");
-		}
-		return browser;
-	}
+    public void setBrowserVersion(String browserVersion) {
+        this.browserVersion = browserVersion;
+    }
 
-	public void setBrowser(String browser) {
-		if (country == null) {
-			throw new IllegalArgumentException("browser must not be null");
-		}
-		this.browser = browser;
-	}
+    public String getPlatform() {
+        return platform;
+    }
 
-	public String getBrowserVersion() {
-		return browserVersion;
-	}
+    public void setPlatform(String platform) {
+        this.platform = platform;
+    }
 
-	public void setBrowserVersion(String browserVersion) {
-		this.browserVersion = browserVersion;
-	}
+    public boolean isManualURL() {
+        return manualURL;
+    }
 
-	public String getPlatform() {
-		return platform;
-	}
+    public void setManualURL(boolean manualURL) {
+        this.manualURL = manualURL;
+    }
 
-	public void setPlatform(String platform) {
-		this.platform = platform;
-	}
+    public String getManualHost() {
+        return manualHost;
+    }
 
-	public boolean isManualURL() {
-		return manualURL;
-	}
+    public void setManualHost(String manualHost) {
+        this.manualHost = manualHost;
+    }
 
-	public void setManualURL(boolean manualURL) {
-		this.manualURL = manualURL;
-	}
+    public String getManualContextRoot() {
+        return manualContextRoot;
+    }
 
-	public String getManualHost() {
-		return manualHost;
-	}
+    public void setManualContextRoot(String manualContextRoot) {
+        this.manualContextRoot = manualContextRoot;
+    }
 
-	public void setManualHost(String manualHost) {
-		this.manualHost = manualHost;
-	}
+    public String getManualLoginRelativeURL() {
+        return manualLoginRelativeURL;
+    }
 
-	public String getManualContextRoot() {
-		return manualContextRoot;
-	}
+    public void setManualLoginRelativeURL(String manualLoginRelativeURL) {
+        this.manualLoginRelativeURL = manualLoginRelativeURL;
+    }
 
-	public void setManualContextRoot(String manualContextRoot) {
-		this.manualContextRoot = manualContextRoot;
-	}
+    public String getManualEnvData() {
+        return manualEnvData;
+    }
 
-	public String getManualLoginRelativeURL() {
-		return manualLoginRelativeURL;
-	}
+    public void setManualEnvData(String manualEnvData) {
+        this.manualEnvData = manualEnvData;
+    }
 
-	public void setManualLoginRelativeURL(String manualLoginRelativeURL) {
-		this.manualLoginRelativeURL = manualLoginRelativeURL;
-	}
+    public String getTag() {
+        if (tag == null) {
+            throw new IllegalStateException("tag must not be null");
+        }
+        return tag;
+    }
 
-	public String getManualEnvData() {
-		return manualEnvData;
-	}
+    public void setTag(String tag) {
+        if (tag == null) {
+            throw new IllegalArgumentException("tag must not be null");
+        }
+        this.tag = tag;
+    }
 
-	public void setManualEnvData(String manualEnvData) {
-		this.manualEnvData = manualEnvData;
-	}
+    public String getOutputFormat() {
+        return outputFormat;
+    }
 
-	public String getTag() {
-		if (tag == null) {
-			throw new IllegalStateException("tag must not be null");
-		}
-		return tag;
-	}
+    public void setOutputFormat(String outputFormat) {
+        this.outputFormat = outputFormat;
+    }
 
-	public void setTag(String tag) {
-		if (tag == null) {
-			throw new IllegalArgumentException("tag must not be null");
-		}
-		this.tag = tag;
-	}
+    public int getScreenshot() {
+        return screenshot;
+    }
 
-	public String getOutputFormat() {
-		return outputFormat;
-	}
+    public void setScreenshot(int screenshot) {
+        this.screenshot = screenshot;
+    }
 
-	public void setOutputFormat(String outputFormat) {
-		this.outputFormat = outputFormat;
-	}
+    public int getVerbose() {
+        return verbose;
+    }
 
-	public int getScreenshot() {
-		return screenshot;
-	}
+    public void setVerbose(int verbose) {
+        this.verbose = verbose;
+    }
 
-	public void setScreenshot(int screenshot) {
-		this.screenshot = screenshot;
-	}
+    public long getTimeout() {
+        return timeout;
+    }
 
-	public int getVerbose() {
-		return verbose;
-	}
+    public void setTimeout(long timeout) {
+        this.timeout = timeout;
+    }
 
-	public void setVerbose(int verbose) {
-		this.verbose = verbose;
-	}
+    public boolean isSynchroneous() {
+        return synchroneous;
+    }
 
-	public long getTimeout() {
-		return timeout;
-	}
+    public void setSynchroneous(boolean synchroneous) {
+        this.synchroneous = synchroneous;
+    }
 
-	public void setTimeout(long timeout) {
-		this.timeout = timeout;
-	}
+    public int getPageSource() {
+        return pageSource;
+    }
 
-	public boolean isSynchroneous() {
-		return synchroneous;
-	}
+    public void setPageSource(int pageSource) {
+        this.pageSource = pageSource;
+    }
 
-	public void setSynchroneous(boolean synchroneous) {
-		this.synchroneous = synchroneous;
-	}
+    public int getSeleniumLog() {
+        return seleniumLog;
+    }
 
-	public int getPageSource() {
-		return pageSource;
-	}
+    public void setSeleniumLog(int seleniumLog) {
+        this.seleniumLog = seleniumLog;
+    }
 
-	public void setPageSource(int pageSource) {
-		this.pageSource = pageSource;
-	}
+    public Date getRequestDate() {
+        return requestDate;
+    }
 
-	public int getSeleniumLog() {
-		return seleniumLog;
-	}
+    public void setRequestDate(Date requestDate) {
+        this.requestDate = requestDate;
+    }
 
-	public void setSeleniumLog(int seleniumLog) {
-		this.seleniumLog = seleniumLog;
-	}
-
-	public Date getRequestDate() {
-		return requestDate;
-	}
-
-	public void setRequestDate(Date requestDate) {
-		this.requestDate = requestDate;
-	}
-
-	@Override
-	public String toString() {
-		return "TestCaseExecutionInQueue [id=" + id + ", test=" + test + ", testCase=" + testCase + ", country=" + country + ", environment=" + environment + ", robot=" + robot
-				+ ", robotIP=" + robotIP + ", robotPort=" + robotPort + ", browser=" + browser + ", browserVersion=" + browserVersion + ", platform=" + platform + ", manualURL="
-				+ manualURL + ", manualHost=" + manualHost + ", manualContextRoot=" + manualContextRoot + ", manualLoginRelativeURL=" + manualLoginRelativeURL + ", manualEnvData="
-				+ manualEnvData + ", tag=" + tag + ", outputFormat=" + outputFormat + ", screenshot=" + screenshot + ", verbose=" + verbose + ", timeout=" + timeout
-				+ ", synchroneous=" + synchroneous + ", pageSource=" + pageSource + ", seleniumLog=" + seleniumLog + ", requestDate=" + requestDate + "]";
-	}
+    @Override
+    public String toString() {
+        return "TestCaseExecutionInQueue [id=" + id + ", test=" + test + ", testCase=" + testCase + ", country=" + country + ", environment=" + environment + ", robot=" + robot
+                + ", robotIP=" + robotIP + ", robotPort=" + robotPort + ", browser=" + browser + ", browserVersion=" + browserVersion + ", platform=" + platform + ", manualURL="
+                + manualURL + ", manualHost=" + manualHost + ", manualContextRoot=" + manualContextRoot + ", manualLoginRelativeURL=" + manualLoginRelativeURL + ", manualEnvData="
+                + manualEnvData + ", tag=" + tag + ", outputFormat=" + outputFormat + ", screenshot=" + screenshot + ", verbose=" + verbose + ", timeout=" + timeout
+                + ", synchroneous=" + synchroneous + ", pageSource=" + pageSource + ", seleniumLog=" + seleniumLog + ", requestDate=" + requestDate + "]";
+    }
 
 }

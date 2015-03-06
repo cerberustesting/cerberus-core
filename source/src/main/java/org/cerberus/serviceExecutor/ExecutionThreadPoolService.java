@@ -26,9 +26,11 @@ import java.util.List;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.RunnableFuture;
 import java.util.concurrent.TimeUnit;
+import org.apache.log4j.Level;
 import org.cerberus.entity.ExecutionThreadPool;
 import org.cerberus.entity.TestCaseExecutionInQueue;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.log.MyLogger;
 import org.cerberus.service.IParameterService;
 import org.cerberus.service.ITestCaseExecutionInQueueService;
 import org.cerberus.servlet.publi.RunTestCase;
@@ -80,7 +82,12 @@ public class ExecutionThreadPoolService {
 //}
 
     public void searchExecutionInQueueTableAndTriggerExecution() throws CerberusException, UnsupportedEncodingException, InterruptedException {
+        
+        try {
         List<TestCaseExecutionInQueue> tceiqList = tceiqService.findAllNotProcedeed();
+        
+        if (!tceiqList.isEmpty()){
+        
         String host = parameterService.findParameterByKey("cerberus_url", "").getValue() ;
         host += "/RunTestCase?";
         
@@ -95,6 +102,11 @@ public class ExecutionThreadPoolService {
             String uri = paramRequestMaker.mkString().replace(" ", "+");
             String query = host + uri;
             this.putExecutionInQueue(query);
+        }
+        }
+        
+        }catch (CerberusException ex){
+        MyLogger.log(ExecutionThreadPoolService.class.getName(), Level.INFO, ex.toString());
         }
 
     }
@@ -128,6 +140,7 @@ public class ExecutionThreadPoolService {
         paramRequestMaker.addParam(RunTestCase.PARAMETER_PAGE_SOURCE, Integer.toString(lastInQueue.getPageSource()));
         paramRequestMaker.addParam(RunTestCase.PARAMETER_SELENIUM_LOG, Integer.toString(lastInQueue.getSeleniumLog()));
         paramRequestMaker.addParam(RunTestCase.PARAMETER_EXECUTION_QUEUE_ID, Long.toString(lastInQueue.getId()));
+        paramRequestMaker.addParam(RunTestCase.PARAMETER_NUMBER_OF_RETRIES, Long.toString(lastInQueue.getRetries()));
         return paramRequestMaker;
     }
 

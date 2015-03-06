@@ -105,6 +105,8 @@ public interface ITestCaseExecutionInQueueDAO {
 
         public List<TestCaseExecutionInQueue> findAll() throws CerberusException;
 
-    public void setProcessedTo(Long l, String changeTo) throws CerberusException;
+        public void setProcessedTo(Long l, String changeTo) throws CerberusException;
+        
+        public void updateComment(Long queueId, String comment) throws CerberusException;
 
 }

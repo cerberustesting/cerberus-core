@@ -105,4 +105,9 @@ public class TestCaseExecutionInQueueService implements ITestCaseExecutionInQueu
         testCaseExecutionInQueueDAO.setProcessedTo(l, changeTo);
     }
 
+    @Override
+    public void updateComment(Long queueId, String comment) throws CerberusException {
+        testCaseExecutionInQueueDAO.updateComment(queueId, comment);
+    }
+
 }

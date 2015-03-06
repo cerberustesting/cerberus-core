@@ -144,226 +144,238 @@ public class ExecutionRunService implements IExecutionRunService {
          * Feeding Build Rev of main Application system to
          * testcaseexecutionsysver table. Only if execution is not manual.
          */
-        if (!(tCExecution.isManualURL())) {
-            /**
-             * Insert SystemVersion in Database
-             */
-            TestCaseExecutionSysVer myExeSysVer = null;
-            try {
-                myExeSysVer = factoryTestCaseExecutionSysVer.create(runID, tCExecution.getApplication().getSystem(), tCExecution.getBuild(), tCExecution.getRevision());
-                testCaseExecutionSysVerService.insertTestCaseExecutionSysVer(myExeSysVer);
-            } catch (CerberusException ex) {
-                MyLogger.log(ExecutionRunService.class.getName(), Level.INFO, ex.getMessage());
-            }
+        try {
+            if (!(tCExecution.isManualURL())) {
+                /**
+                 * Insert SystemVersion in Database
+                 */
+                TestCaseExecutionSysVer myExeSysVer = null;
+                try {
+                    myExeSysVer = factoryTestCaseExecutionSysVer.create(runID, tCExecution.getApplication().getSystem(), tCExecution.getBuild(), tCExecution.getRevision());
+                    testCaseExecutionSysVerService.insertTestCaseExecutionSysVer(myExeSysVer);
+                } catch (CerberusException ex) {
+                    MyLogger.log(ExecutionRunService.class.getName(), Level.INFO, ex.getMessage());
+                }
 
-            /**
-             * For all Linked environment, we also keep track on the build/rev
-             * information inside testcaseexecutionsysver table.
-             */
-            try {
-                List<CountryEnvLink> ceLink = null;
-                ceLink = countryEnvLinkService.findCountryEnvLinkByCriteria(tCExecution.getApplication().getSystem(), tCExecution.getCountry(), tCExecution.getEnvironment());
-                MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, tCExecution.getId() + " - Linked environment found.");
-                for (CountryEnvLink myCeLink : ceLink) {
-                    MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, tCExecution.getId() + " - Linked environment found : " + myCeLink.getSystemLink() + myCeLink.getCountryLink() + myCeLink.getEnvironmentLink());
+                /**
+                 * For all Linked environment, we also keep track on the
+                 * build/rev information inside testcaseexecutionsysver table.
+                 */
+                try {
+                    List<CountryEnvLink> ceLink = null;
+                    ceLink = countryEnvLinkService.findCountryEnvLinkByCriteria(tCExecution.getApplication().getSystem(), tCExecution.getCountry(), tCExecution.getEnvironment());
+                    MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, tCExecution.getId() + " - Linked environment found.");
+                    for (CountryEnvLink myCeLink : ceLink) {
+                        MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, tCExecution.getId() + " - Linked environment found : " + myCeLink.getSystemLink() + myCeLink.getCountryLink() + myCeLink.getEnvironmentLink());
 
-                    CountryEnvParam mycountEnvParam;
-                    try {
-                        mycountEnvParam = this.countryEnvParamService.findCountryEnvParamByKey(myCeLink.getSystemLink(), myCeLink.getCountryLink(), myCeLink.getEnvironmentLink());
-                        myExeSysVer = factoryTestCaseExecutionSysVer.create(runID, myCeLink.getSystemLink(), mycountEnvParam.getBuild(), mycountEnvParam.getRevision());
-                        testCaseExecutionSysVerService.insertTestCaseExecutionSysVer(myExeSysVer);
-                    } catch (CerberusException ex) {
-                        // Referencial Integrity link between countryEnvLink and CountryEnvParam table should secure that exception to never happen.
-                        MyLogger.log(ExecutionRunService.class.getName(), Level.FATAL, ex.getMessage());
-                        throw new CerberusException(ex.getMessageError());
+                        CountryEnvParam mycountEnvParam;
+                        try {
+                            mycountEnvParam = this.countryEnvParamService.findCountryEnvParamByKey(myCeLink.getSystemLink(), myCeLink.getCountryLink(), myCeLink.getEnvironmentLink());
+                            myExeSysVer = factoryTestCaseExecutionSysVer.create(runID, myCeLink.getSystemLink(), mycountEnvParam.getBuild(), mycountEnvParam.getRevision());
+                            testCaseExecutionSysVerService.insertTestCaseExecutionSysVer(myExeSysVer);
+                        } catch (CerberusException ex) {
+                            // Referencial Integrity link between countryEnvLink and CountryEnvParam table should secure that exception to never happen.
+                            MyLogger.log(ExecutionRunService.class.getName(), Level.FATAL, ex.getMessage());
+                            throw new CerberusException(ex.getMessageError());
+                        }
                     }
+                } catch (CerberusException ex) {
+                    MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, tCExecution.getId() + " - No Linked environment found.");
+                }
+            }
+
+            /**
+             * Get used SeleniumCapabilities (empty if application is not GUI)
+             */
+            if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")) {
+                try {
+                    Capabilities caps = this.serverService.getUsedCapabilities(tCExecution.getSession());
+                    tCExecution.setBrowserFullVersion(caps.getBrowserName() + " " + caps.getVersion() + " " + caps.getPlatform().toString());
+                    tCExecution.setVersion(caps.getVersion());
+                    tCExecution.setPlatform(caps.getPlatform().toString());
+                } catch (Exception ex) {
+                    MyLogger.log(ExecutionRunService.class.getName(), Level.ERROR, "exception on selenium getting Used Capabilities :" + ex.toString());
+                }
+            } else {
+                // If Selenium is not needed, the selenium and browser info is set to empty.
+                tCExecution.setSeleniumIP("");
+                tCExecution.setSeleniumPort("");
+                tCExecution.setBrowser("");
+                tCExecution.setVersion("");
+                tCExecution.setPlatform("");
+            }
+
+            /**
+             * Load PreTestCase information and set PreTCase to the
+             * TestCaseExecution object
+             */
+            tCExecution.setResultMessage(new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_LOADINGDETAILEDDATA));
+            MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, runID + " - Loading Pre testcases.");
+            List<TCase> preTests = testCaseService.findTestCaseActiveByCriteria("Pre Testing", tCExecution.gettCase().getApplication(), tCExecution.getCountry());
+            tCExecution.setPreTCase(preTests);
+            if (!(preTests == null)) {
+                MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, runID + " - Loaded PreTest List. " + tCExecution.getPreTCase().size() + " found.");
+            }
+
+            /**
+             * Load Main TestCase with Step dependencies (Actions/Control)
+             */
+            MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, runID + " - Loading all Steps information of main testcase.");
+            List<TestCaseStep> testCaseStepList;
+            testCaseStepList = this.loadTestCaseService.loadTestCaseStep(tCExecution.gettCase());
+            tCExecution.gettCase().setTestCaseStep(testCaseStepList);
+            MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, runID + " - Loaded all Steps information of main testcase. " + tCExecution.gettCase().getTestCaseStep().size() + " Step(s) found.");
+
+            /**
+             * Load Pre TestCase with Step dependencies (Actions/Control)
+             */
+            MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, runID + " - Loading all Steps information of all pre testcase.");
+            //TODO Pretest this.loadTestCaseService.loadTestCaseStep(tCExecution.getPreTCase());
+            List<TestCaseStep> preTestCaseStepList = new ArrayList<TestCaseStep>();
+            List<TCase> preTestCase = new ArrayList<TCase>();
+            for (TCase myTCase : tCExecution.getPreTCase()) {
+                myTCase.setTestCaseStep(this.loadTestCaseService.loadTestCaseStep(myTCase));
+                preTestCaseStepList.addAll(myTCase.getTestCaseStep());
+                preTestCase.add(myTCase);
+                MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, runID + " - Pre testcase : " + myTCase.getTest() + "-" + myTCase.getTestCase() + " With " + myTCase.getTestCaseStep().size() + " Step(s) found.");
+            }
+            tCExecution.setPreTCase(preTestCase);
+
+            /**
+             * Load All properties of the testcase
+             */
+            List<TestCaseCountryProperties> tcProperties = new ArrayList();
+            try {
+                tcProperties = testCaseCountryPropertiesService.findAllWithDependencies(tCExecution.getTest(), tCExecution.getTestCase(), tCExecution.getCountry());
+                tCExecution.setTestCaseCountryPropertyList(tcProperties);
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug(tcProperties.size() + " property(ies) : " + tcProperties);
                 }
             } catch (CerberusException ex) {
-                MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, tCExecution.getId() + " - No Linked environment found.");
+                LOG.warn("Exception getting all the properties : " + ex);
             }
-        }
 
-        /**
-         * Get used SeleniumCapabilities (empty if application is not GUI)
-         */
-        if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")) {
+            /**
+             * Start Execution of the steps/Actions/controls Iterate Steps.
+             * mainExecutionTestCaseStepList will contain the list of steps to
+             * execute for both pretest and test. This is where we schedule the
+             * execution of the steps using mainExecutionTestCaseStepList
+             * object.
+             */
+            MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, runID + " - Starting the execution with step iteration.");
+            List<TestCaseStep> mainExecutionTestCaseStepList;
+            mainExecutionTestCaseStepList = new ArrayList<TestCaseStep>();
+            mainExecutionTestCaseStepList.addAll(preTestCaseStepList);
+            mainExecutionTestCaseStepList.addAll(testCaseStepList);
+
+            /**
+             * Initialise the global TestCaseExecution Data List.
+             */
+            // 
+            tCExecution.setResultMessage(new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_TESTEXECUTING));
             try {
-                Capabilities caps = this.serverService.getUsedCapabilities(tCExecution.getSession());
-                tCExecution.setBrowserFullVersion(caps.getBrowserName() + " " + caps.getVersion() + " " + caps.getPlatform().toString());
-                tCExecution.setVersion(caps.getVersion());
-                tCExecution.setPlatform(caps.getPlatform().toString());
-            } catch (Exception ex) {
-                MyLogger.log(ExecutionRunService.class.getName(), Level.ERROR, "exception on selenium getting Used Capabilities :" + ex.toString());
+                testCaseExecutionService.updateTCExecution(tCExecution);
+            } catch (CerberusException ex) {
+                Logger.getLogger(ExecutionRunService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
             }
-        } else {
-            // If Selenium is not needed, the selenium and browser info is set to empty.
-            tCExecution.setSeleniumIP("");
-            tCExecution.setSeleniumPort("");
-            tCExecution.setBrowser("");
-            tCExecution.setVersion("");
-            tCExecution.setPlatform("");
-        }
+            List<TestCaseExecutionData> myExecutionDataList = new ArrayList<TestCaseExecutionData>();
+            tCExecution.setTestCaseExecutionDataList(myExecutionDataList);
 
-        /**
-         * Load PreTestCase information and set PreTCase to the
-         * TestCaseExecution object
-         */
-        tCExecution.setResultMessage(new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_LOADINGDETAILEDDATA));
-        MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, runID + " - Loading Pre testcases.");
-        List<TCase> preTests = testCaseService.findTestCaseActiveByCriteria("Pre Testing", tCExecution.gettCase().getApplication(), tCExecution.getCountry());
-        tCExecution.setPreTCase(preTests);
-        if (!(preTests == null)) {
-            MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, runID + " - Loaded PreTest List. " + tCExecution.getPreTCase().size() + " found.");
-        }
+            for (TestCaseStep testCaseStep : mainExecutionTestCaseStepList) {
 
-        /**
-         * Load Main TestCase with Step dependencies (Actions/Control)
-         */
-        MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, runID + " - Loading all Steps information of main testcase.");
-        List<TestCaseStep> testCaseStepList;
-        testCaseStepList = this.loadTestCaseService.loadTestCaseStep(tCExecution.gettCase());
-        tCExecution.gettCase().setTestCaseStep(testCaseStepList);
-        MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, runID + " - Loaded all Steps information of main testcase. " + tCExecution.gettCase().getTestCaseStep().size() + " Step(s) found.");
+                /**
+                 * Start Execution of TestCaseStep
+                 */
+                long startStep = new Date().getTime();
 
-        /**
-         * Load Pre TestCase with Step dependencies (Actions/Control)
-         */
-        MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, runID + " - Loading all Steps information of all pre testcase.");
-        //TODO Pretest this.loadTestCaseService.loadTestCaseStep(tCExecution.getPreTCase());
-        List<TestCaseStep> preTestCaseStepList = new ArrayList<TestCaseStep>();
-        List<TCase> preTestCase = new ArrayList<TCase>();
-        for (TCase myTCase : tCExecution.getPreTCase()) {
-            myTCase.setTestCaseStep(this.loadTestCaseService.loadTestCaseStep(myTCase));
-            preTestCaseStepList.addAll(myTCase.getTestCaseStep());
-            preTestCase.add(myTCase);
-            MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, runID + " - Pre testcase : " + myTCase.getTest() + "-" + myTCase.getTestCase() + " With " + myTCase.getTestCaseStep().size() + " Step(s) found.");
-        }
-        tCExecution.setPreTCase(preTestCase);
+                /**
+                 * Create and Register TestCaseStepExecution
+                 */
+                TestCaseStepExecution testCaseStepExecution = factoryTestCaseStepExecution.create(
+                        runID, testCaseStep.getTest(), testCaseStep.getTestCase(),
+                        testCaseStep.getStep(), null,
+                        startStep, 0, startStep, 0, 0, null, new MessageEvent(MessageEventEnum.STEP_PENDING), testCaseStep, tCExecution,
+                        testCaseStep.getUseStep(), testCaseStep.getUseStepTest(), testCaseStep.getUseStepTestCase(), testCaseStep.getUseStepStep());
+                testCaseStepExecutionService.insertTestCaseStepExecution(testCaseStepExecution);
+                testCaseStepExecution.setExecutionResultMessage(new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_TESTSTARTED));
 
-        /**
-         * Load All properties of the testcase
-         */
-        List<TestCaseCountryProperties> tcProperties = new ArrayList();
-        try {
-            tcProperties = testCaseCountryPropertiesService.findAllWithDependencies(tCExecution.getTest(), tCExecution.getTestCase(), tCExecution.getCountry());
-            tCExecution.setTestCaseCountryPropertyList(tcProperties);
-            if (LOG.isDebugEnabled()) {
-                LOG.debug(tcProperties.size() + " property(ies) : " + tcProperties);
-            }
-        } catch (CerberusException ex) {
-            LOG.warn("Exception getting all the properties : " + ex);
-        }
+                /**
+                 * Execute Step
+                 */
+                MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, runID + " - Executing step : " + testCaseStepExecution.getTest() + "-" + testCaseStepExecution.getTestCase() + "-" + testCaseStepExecution.getStep());
+                testCaseStepExecution = this.executeStep(testCaseStepExecution);
 
-        /**
-         * Start Execution of the steps/Actions/controls Iterate Steps.
-         * mainExecutionTestCaseStepList will contain the list of steps to
-         * execute for both pretest and test. This is where we schedule the
-         * execution of the steps using mainExecutionTestCaseStepList object.
-         */
-        MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, runID + " - Starting the execution with step iteration.");
-        List<TestCaseStep> mainExecutionTestCaseStepList;
-        mainExecutionTestCaseStepList = new ArrayList<TestCaseStep>();
-        mainExecutionTestCaseStepList.addAll(preTestCaseStepList);
-        mainExecutionTestCaseStepList.addAll(testCaseStepList);
-
-        /**
-         * Initialise the global TestCaseExecution Data List.
-         */
-        // 
-        tCExecution.setResultMessage(new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_TESTEXECUTING));
-        try {
-            testCaseExecutionService.updateTCExecution(tCExecution);
-        } catch (CerberusException ex) {
-            Logger.getLogger(ExecutionRunService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        List<TestCaseExecutionData> myExecutionDataList = new ArrayList<TestCaseExecutionData>();
-        tCExecution.setTestCaseExecutionDataList(myExecutionDataList);
-
-        for (TestCaseStep testCaseStep : mainExecutionTestCaseStepList) {
-
-            /**
-             * Start Execution of TestCaseStep
-             */
-            long startStep = new Date().getTime();
-
-            /**
-             * Create and Register TestCaseStepExecution
-             */
-            TestCaseStepExecution testCaseStepExecution = factoryTestCaseStepExecution.create(
-                    runID, testCaseStep.getTest(), testCaseStep.getTestCase(),
-                    testCaseStep.getStep(), null,
-                    startStep, 0, startStep, 0, 0, null, new MessageEvent(MessageEventEnum.STEP_PENDING), testCaseStep, tCExecution,
-                    testCaseStep.getUseStep(), testCaseStep.getUseStepTest(), testCaseStep.getUseStepTestCase(), testCaseStep.getUseStepStep());
-            testCaseStepExecutionService.insertTestCaseStepExecution(testCaseStepExecution);
-            testCaseStepExecution.setExecutionResultMessage(new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_TESTSTARTED));
-
-            /**
-             * Execute Step
-             */
-            MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, runID + " - Executing step : " + testCaseStepExecution.getTest() + "-" + testCaseStepExecution.getTestCase() + "-" + testCaseStepExecution.getStep());
-            testCaseStepExecution = this.executeStep(testCaseStepExecution);
-
-            /**
-             * Updating Execution Result Message only if execution result
-             * message of the step is not PE or OK.
-             */
-            if ((!(testCaseStepExecution.getExecutionResultMessage().equals(new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_TESTSTARTED))))
-                    && (!(testCaseStepExecution.getExecutionResultMessage().equals(new MessageGeneral(MessageGeneralEnum.EXECUTION_OK))))) {
-                tCExecution.setResultMessage(testCaseStepExecution.getExecutionResultMessage());
-            }
-            if (testCaseStepExecution.getStepResultMessage().equals(new MessageEvent(MessageEventEnum.STEP_PENDING))) {
-                testCaseStepExecution.setStepResultMessage(new MessageEvent(MessageEventEnum.STEP_SUCCESS));
-            }
-
-            testCaseStepExecutionService.updateTestCaseStepExecution(testCaseStepExecution);
-
-            if (testCaseStepExecution.isStopExecution()) {
-                break;
-            }
-
-        }
-
-        /**
-         * If at that time the execution is still PE, we move it to OK. It means
-         * that no issue were met.
-         */
-        if ((tCExecution.getResultMessage() == null) || (tCExecution.getResultMessage().equals(new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_TESTSTARTED)))) {
-            tCExecution.setResultMessage(new MessageGeneral(MessageGeneralEnum.EXECUTION_OK));
-        }
-
-        try {
-            recorderService.recordSeleniumLogAndGetName(tCExecution);
-        } catch (Exception ex) {
-            MyLogger.log(ExecutionRunService.class.getName(), Level.FATAL, "Exception Getting Selenium Logs " + tCExecution.getId() + " Exception :" + ex.toString());
-        }
-
-        try {
-            tCExecution = this.stopTestCase(tCExecution);
-        } catch (Exception ex) {
-            MyLogger.log(ExecutionRunService.class.getName(), Level.FATAL, "Exception Stopping Test " + tCExecution.getId() + " Exception :" + ex.toString());
-        }
-
-        try {
-            if (!tCExecution.isSynchroneous()) {
-                if (executionUUID.getExecutionID(tCExecution.getExecutionUUID()) != 0) {
-                    executionUUID.removeExecutionUUID(tCExecution.getExecutionUUID());
-                    MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, "Clean ExecutionUUID");
+                /**
+                 * Updating Execution Result Message only if execution result
+                 * message of the step is not PE or OK.
+                 */
+                if ((!(testCaseStepExecution.getExecutionResultMessage().equals(new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_TESTSTARTED))))
+                        && (!(testCaseStepExecution.getExecutionResultMessage().equals(new MessageGeneral(MessageGeneralEnum.EXECUTION_OK))))) {
+                    tCExecution.setResultMessage(testCaseStepExecution.getExecutionResultMessage());
                 }
+                if (testCaseStepExecution.getStepResultMessage().equals(new MessageEvent(MessageEventEnum.STEP_PENDING))) {
+                    testCaseStepExecution.setStepResultMessage(new MessageEvent(MessageEventEnum.STEP_SUCCESS));
+                }
+
+                testCaseStepExecutionService.updateTestCaseStepExecution(testCaseStepExecution);
+
+                if (testCaseStepExecution.isStopExecution()) {
+                    break;
+                }
+
+            }
+
+            /**
+             * If at that time the execution is still PE, we move it to OK. It
+             * means that no issue were met.
+             */
+            if ((tCExecution.getResultMessage() == null) || (tCExecution.getResultMessage().equals(new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_TESTSTARTED)))) {
+                tCExecution.setResultMessage(new MessageGeneral(MessageGeneralEnum.EXECUTION_OK));
+            }
+
+            try {
+                recorderService.recordSeleniumLogAndGetName(tCExecution);
+            } catch (Exception ex) {
+                MyLogger.log(ExecutionRunService.class.getName(), Level.FATAL, "Exception Getting Selenium Logs " + tCExecution.getId() + " Exception :" + ex.toString());
+            }
+
+            try {
+                tCExecution = this.stopTestCase(tCExecution);
+            } catch (Exception ex) {
+                MyLogger.log(ExecutionRunService.class.getName(), Level.FATAL, "Exception Stopping Test " + tCExecution.getId() + " Exception :" + ex.toString());
+            }
+
+        } finally {
+
+            try {
+                executionUUID.removeExecutionUUID(tCExecution.getExecutionUUID());
+                MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, "Clean ExecutionUUID");
+
                 if (eSResponse.getExecutionSOAPResponse(tCExecution.getExecutionUUID()) != null) {
                     eSResponse.removeExecutionSOAPResponse(tCExecution.getExecutionUUID());
                     MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, "Clean ExecutionSOAPResponse");
                 }
+
+            } catch (Exception ex) {
+                MyLogger.log(ExecutionRunService.class.getName(), Level.FATAL, "Exception cleaning Memory: " + ex.toString());
             }
-        } catch (Exception ex) {
-            MyLogger.log(ExecutionRunService.class.getName(), Level.FATAL, "Exception cleaning Memory: " + ex.toString());
+
+            MyLogger.log(ExecutionRunService.class.getName(), Level.INFO, "Execution Finished : UUID=" + tCExecution.getExecutionUUID()
+                    + "__ID=" + tCExecution.getId() + "__RC=" + tCExecution.getControlStatus() + "__"
+                    + "TestName=" + tCExecution.getEnvironment() + "." + tCExecution.getCountry() + "."
+                    + tCExecution.getBuild() + "." + tCExecution.getRevision() + "." + tCExecution.getTest() + "_"
+                    + tCExecution.getTestCase() + "_" + tCExecution.gettCase().getShortDescription().replace(".", ""));
+
         }
 
-        MyLogger.log(ExecutionRunService.class.getName(), Level.INFO, "Execution Finished : UUID=" + tCExecution.getExecutionUUID()
-                + "__ID=" + tCExecution.getId() + "__RC=" + tCExecution.getControlStatus() + "__"
-                + "TestName=" + tCExecution.getEnvironment() + "." + tCExecution.getCountry() + "."
-                + tCExecution.getBuild() + "." + tCExecution.getRevision() + "." + tCExecution.getTest() + "_"
-                + tCExecution.getTestCase() + "_" + tCExecution.gettCase().getShortDescription().replace(".", ""));
-
+        //Notify it's finnished
+//        WebsocketTest wst = new WebsocketTest();
+//        try {
+//            wst.handleMessage(tCExecution.getTag());
+//        } catch (IOException ex) {
+//            Logger.getLogger(ExecutionRunService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//        }
+//                    
         return tCExecution;
 
     }

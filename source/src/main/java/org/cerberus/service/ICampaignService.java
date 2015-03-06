@@ -84,4 +84,6 @@ public interface ICampaignService {
      */
     List<TestCaseWithExecution> getCampaignTestCaseExecutionForEnvCountriesBrowserTag(
             String campaignName, String tag, String[] env, String[] country, String[] browser ) throws CerberusException;
+    
+    List<String> findCountries(String campaignName) throws CerberusException;
 }

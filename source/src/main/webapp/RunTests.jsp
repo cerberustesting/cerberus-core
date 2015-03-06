@@ -146,7 +146,8 @@
                                         || sName.compareTo("synchroneous") == 0 || sName.compareTo("timeout") == 0
                                         || sName.compareTo("seleniumLog") == 0 || sName.compareTo("pageSource") == 0
                                         || sName.compareTo("platform") == 0 || sName.compareTo("os") == 0
-                                        || sName.compareTo("robot") == 0 || sName.compareTo("IdFromQueue")==0) {
+                                        || sName.compareTo("robot") == 0 || sName.compareTo("IdFromQueue")==0
+                                        || sName.compareTo("retries")==0) {
                                     String[] sMultiple = request.getParameterValues(sName);
 
                                     for (int i = 0; i < sMultiple.length; i++) {
@@ -300,6 +301,13 @@
                         } else {
                             idFromQueue = new String("");
                         }
+                        
+                        String retries;
+                        if (request.getParameter("retries") != null && request.getParameter("retries").compareTo("") != 0) {
+                            retries = request.getParameter("retries");
+                        } else {
+                            retries = new String("");
+                        }
 
                         String timeout;
                         if (request.getParameter("timeout") != null && request.getParameter("timeout").compareTo("") != 0) {
@@ -360,6 +368,7 @@
                 <input hidden="hidden" id="defManualExecution" value="<%=manualExecution%>">
                 <input hidden="hidden" id="defTag" value="<%=tag%>">
                 <input hidden="hidden" id="IdFromQueue" name="IdFromQueue" value="<%=idFromQueue%>">
+                <input hidden="hidden" id="defRetries" value="<%=retries%>">
                 <div class="filters" style="clear:both; width:100%">
                     <p style="float:left" class="dttTitle">Choose Test</p>
                     <div id="dropDownDownArrow" style="float:left">
@@ -602,6 +611,14 @@
                             <input id="timeout" name="timeout" style="width: 200px">
                         </div>
                     </div>
+                        <div style="clear:both">
+                            <div style="float:left;width:150px; text-align:left"><% out.print(docService.findLabelHTML("page_runtests", "retries", ""));%>
+                            </div>
+                            <div style="float:left">
+                                <select id="retries" name="retries" style="width: 200px">
+                                </select>
+                            </div>
+                        </div>
                     <div style="clear:both">
                         <div style="float:left;width:150px; text-align:left"><% out.print(docService.findLabelHTML("page_runtests", "manualExecution", ""));%>
                         </div>
@@ -1050,6 +1067,39 @@
         </script>
         <script type="text/javascript">
             $(document).ready(function() {
+                $.getJSON('FindInvariantByID?idName=retries', function(data) {
+                    $("#retries").empty();
+                    var pl = document.getElementById("defRetries").value;
+
+                    for (var i = 0; i < data.length; i++) {
+                        $("#retries").append($("<option></option>")
+                                .attr("value", data[i].value)
+                                .text(data[i].value + " ( " + data[i].description + " )"));
+                    }
+
+                    setCookie('ExecutionRetries', 'retries');
+
+                    var ExecutionRetries = getCookie('ExecutionRetries');
+
+                    if (ExecutionRetries === "" && pl === "") {
+                        pl = "0";
+                    }
+
+
+
+                    $("#retries").find('option').each(function(i, opt) {
+                        if (opt.value === pl) {
+                            $(opt).attr('selected', 'selected');
+                        }
+
+
+                    });
+                })
+            });
+
+        </script>
+        <script type="text/javascript">
+            $(document).ready(function() {
                 $("#tag").empty();
                 var tag = document.getElementById("defTag").value;
                 if (tag !== "None") {
@@ -1110,6 +1160,7 @@
                 var prefPS = $("#pageSource").val();
                 var prefSL = $("#seleniumLog").val();
                 var prefME = $("#manualExecution").val();
+                var prefRt = $("#retries").val();
                 document.cookie = "TagPreference=" + prefTag + ";expires=" + expiration_date.toGMTString();
                 document.cookie = "OutputFormatPreference=" + prefOf + ";expires=" + expiration_date.toGMTString();
                 document.cookie = "VerbosePreference=" + prefVerb + ";expires=" + expiration_date.toGMTString();
@@ -1119,6 +1170,7 @@
                 document.cookie = "PageSourcePreference=" + prefPS + ";expires=" + expiration_date.toGMTString();
                 document.cookie = "SeleniumLogPreference=" + prefSL + ";expires=" + expiration_date.toGMTString();
                 document.cookie = "ManualExecutionPreference=" + prefME + ";expires=" + expiration_date.toGMTString();
+                document.cookie = "ExecutionRetries=" + prefRt + ";expires=" + expiration_date.toGMTString();
             }
         </script>
         <script>

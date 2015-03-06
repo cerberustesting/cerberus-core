@@ -79,7 +79,7 @@ public class ExecutionThreadPool {
 
     public void stop() {
         if (!executor.isShutdown()) {
-            executor.shutdown();
+            executor.shutdownNow();
         }
     }
 

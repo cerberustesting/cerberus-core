@@ -19,6 +19,7 @@
  */
 package org.cerberus.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 import org.cerberus.dao.ICampaignContentDAO;
 import org.cerberus.dao.ICampaignDAO;
@@ -146,5 +147,18 @@ public class CampaignService implements ICampaignService {
     @Override
     public List<TestCaseWithExecution> getCampaignTestCaseExecutionForEnvCountriesBrowserTag(String campaignName, String tag, String[] env, String[] country, String[] browser) throws CerberusException {
         return campaignDAO.getCampaignTestCaseExecutionForEnvCountriesBrowserTag(campaignName, tag, env, country, browser);
+    }
+
+    @Override
+    public List<String> findCountries(String campaignName) throws CerberusException {
+        List<String> result = new ArrayList<String>();
+        List<CampaignParameter> parameters = this.findCampaignParametersByCampaignName(campaignName);
+
+        for (CampaignParameter parameter : parameters) {
+            if (parameter.getParameter().equals("COUNTRY")) {
+                result.add(parameter.getValue());
+            }
+        }
+        return result;
     }
 }

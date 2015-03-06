@@ -4067,6 +4067,41 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
 		SQLS.append("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) VALUES ('', 'cerberus_execution_threadpool_size', '10', 'Number of Simultaneous execution handled by Cerberus');");
                 SQLInstruction.add(SQLS.toString());
                 
+// Add Column Comment,Retries and manualExecution in TestCaseExecutionQueue table.
+// -- ------------------------ 574                
+                SQLS = new StringBuilder();
+		SQLS.append("ALTER TABLE `testcaseexecutionqueue` ");
+                SQLS.append("ADD COLUMN `comment` VARCHAR(250) NULL DEFAULT NULL AFTER `proceeded`, ");
+                SQLS.append("ADD COLUMN `retries` TINYINT(1) NOT NULL DEFAULT '0' AFTER `comment`,");
+                SQLS.append("ADD COLUMN `manualexecution` VARCHAR(1) NOT NULL DEFAULT 'N' AFTER `retries`;");
+
+                SQLInstruction.add(SQLS.toString());
+                
+// Add Column Comment in TestCaseExecutionQueue table.
+// -- ------------------------ 575                
+                SQLS = new StringBuilder();
+		SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ('OUTPUTFORMAT', 'redirectToReport', '4', 'Go to ReportByTag page', '');");
+                SQLInstruction.add(SQLS.toString());
+
+// Add Column Comment in TestCaseExecutionQueue table.
+// -- ------------------------ 576               
+                SQLS = new StringBuilder();
+		SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `DocLabel`, `DocDesc`) VALUES ('page_runtests', 'Retries', '', 'Retries', 'Define the number of Retry of the Execution in case of Not OK status.<br>\nAs soon a OK status if reached, the engine stop to retry to execute the testcase.');");
+                SQLInstruction.add(SQLS.toString());
+                
+// Add Column Comment in TestCaseExecutionQueue table.
+// -- ------------------------ 577               
+                SQLS = new StringBuilder();
+		SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ");
+                SQLS.append("('INVARIANTPRIVATE', 'RETRIES', '470', '', ''), ");
+                SQLS.append("('RETRIES', '0', '10', 'Do not retry in case of Not OK', ''), ");
+                SQLS.append("('RETRIES', '1', '20', 'Retry 1 time in case of Not OK', ''), ");
+                SQLS.append("('RETRIES', '2', '30', 'Retry 2 times in case of Not OK', ''), ");
+                SQLS.append("('RETRIES', '3', '40', 'Retry 3 times in case of Not OK', '');");
+                
+                SQLInstruction.add(SQLS.toString());
+
+                
         return SQLInstruction;
     }
     

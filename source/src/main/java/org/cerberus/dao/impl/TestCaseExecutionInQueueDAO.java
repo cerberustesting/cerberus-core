@@ -76,22 +76,26 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
     private static final String COLUMN_SELENIUM_LOG = "SeleniumLog";
     private static final String COLUMN_REQUEST_DATE = "RequestDate";
     private static final String COLUMN_PROCEEDED = "Proceeded";
+    private static final String COLUMN_COMMENT = "Comment";
+    private static final String COLUMN_RETRIES = "Retries";
+    private static final String COLUMN_MANUAL_EXECUTION = "ManualExecution";
 
     private static final String VALUE_PROCEEDED_FALSE = "0";
     private static final String VALUE_PROCEEDED_TRUE = "1";
+    private static final String VALUE_MANUAL_EXECUTION_FALSE = "N";
 
-    private static final String QUERY_INSERT = "INSERT INTO `" + TABLE + "` (`" + COLUMN_TEST + "`, `" + COLUMN_TEST_CASE + "`, `" + COLUMN_COUNTRY + "`, `" + COLUMN_ENVIRONMENT + "`, `" + COLUMN_ROBOT + "`, `" + COLUMN_ROBOT_IP + "`, `" + COLUMN_ROBOT_PORT + "`, `" + COLUMN_BROWSER + "`, `" + COLUMN_BROWSER_VERSION + "`, `" + COLUMN_PLATFORM + "`, `" + COLUMN_MANUAL_URL + "`, `" + COLUMN_MANUAL_HOST + "`, `" + COLUMN_MANUAL_CONTEXT_ROOT + "`, `" + COLUMN_MANUAL_LOGIN_RELATIVE_URL + "`, `" + COLUMN_MANUAL_ENV_DATA + "`, `" + COLUMN_TAG + "`, `" + COLUMN_OUTPUT_FORMAT + "`, `" + COLUMN_SCREENSHOT + "`, `" + COLUMN_VERBOSE + "`, `" + COLUMN_TIMEOUT + "`, `" + COLUMN_SYNCHRONEOUS + "`, `" + COLUMN_PAGE_SOURCE + "`, `" + COLUMN_SELENIUM_LOG + "`, `" + COLUMN_REQUEST_DATE + "`) " + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+    private static final String QUERY_INSERT = "INSERT INTO `" + TABLE + "` (`" + COLUMN_TEST + "`, `" + COLUMN_TEST_CASE + "`, `" + COLUMN_COUNTRY + "`, `" + COLUMN_ENVIRONMENT + "`, `" + COLUMN_ROBOT + "`, `" + COLUMN_ROBOT_IP + "`, `" + COLUMN_ROBOT_PORT + "`, `" + COLUMN_BROWSER + "`, `" + COLUMN_BROWSER_VERSION + "`, `" + COLUMN_PLATFORM + "`, `" + COLUMN_MANUAL_URL + "`, `" + COLUMN_MANUAL_HOST + "`, `" + COLUMN_MANUAL_CONTEXT_ROOT + "`, `" + COLUMN_MANUAL_LOGIN_RELATIVE_URL + "`, `" + COLUMN_MANUAL_ENV_DATA + "`, `" + COLUMN_TAG + "`, `" + COLUMN_OUTPUT_FORMAT + "`, `" + COLUMN_SCREENSHOT + "`, `" + COLUMN_VERBOSE + "`, `" + COLUMN_TIMEOUT + "`, `" + COLUMN_SYNCHRONEOUS + "`, `" + COLUMN_PAGE_SOURCE + "`, `" + COLUMN_SELENIUM_LOG + "`, `" + COLUMN_REQUEST_DATE + "`, `" + COLUMN_RETRIES + "`, `" + COLUMN_MANUAL_EXECUTION + "`) " + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
     private static final String QUERY_SELECT_NEXT = "SELECT * FROM `" + TABLE + "` WHERE `" + COLUMN_PROCEEDED + "` = '" + VALUE_PROCEEDED_FALSE + "' ORDER BY `" + COLUMN_ID + "` ASC LIMIT 1";
     private static final String QUERY_PROCEED = "UPDATE `" + TABLE + "` SET `" + COLUMN_PROCEEDED + "` = '" + VALUE_PROCEEDED_TRUE + "' WHERE `" + COLUMN_ID + "` = ?";
     private static final String QUERY_GET_PROCEEDED = "SELECT * FROM `" + TABLE + "` WHERE `" + COLUMN_PROCEEDED + "` = '" + VALUE_PROCEEDED_TRUE + "' ORDER BY `" + COLUMN_ID + "` ASC";
     private static final String QUERY_GET_PROCEEDED_BY_TAG = "SELECT * FROM `" + TABLE + "` WHERE `" + COLUMN_PROCEEDED + "` = '" + VALUE_PROCEEDED_TRUE + "' AND `" + COLUMN_TAG + "` = ? ORDER BY `" + COLUMN_ID + "` ASC";
-    private static final String QUERY_GET_NOT_PROCEEDED = "SELECT * FROM `" + TABLE + "` WHERE `" + COLUMN_PROCEEDED + "` = '" + VALUE_PROCEEDED_FALSE + "' ORDER BY `" + COLUMN_ID + "` ASC";
+    private static final String QUERY_GET_NOT_PROCEEDED = "SELECT * FROM `" + TABLE + "` WHERE `" + COLUMN_PROCEEDED + "` = '" + VALUE_PROCEEDED_FALSE + "' AND `"+ COLUMN_MANUAL_EXECUTION +"` = '"+ VALUE_MANUAL_EXECUTION_FALSE +"' ORDER BY `" + COLUMN_ID + "` ASC";
     private static final String QUERY_GET_NOT_PROCEEDED_BY_TAG = "SELECT * FROM `" + TABLE + "` WHERE `" + COLUMN_PROCEEDED + "` = '" + VALUE_PROCEEDED_FALSE + "' AND `" + COLUMN_TAG + "` = ? ORDER BY `" + COLUMN_ID + "` ASC";
     private static final String QUERY_REMOVE = "DELETE FROM `" + TABLE + "` WHERE `" + COLUMN_ID + "` = ?";
     private static final String QUERY_FIND_BY_KEY = "SELECT * FROM `" + TABLE + "` WHERE `" + COLUMN_ID + "` = ?";
     private static final String QUERY_GET_ALL = "SELECT * FROM `" + TABLE + "`;";
     private static final String QUERY_NOT_PROCEEDED = "UPDATE `" + TABLE + "` SET `" + COLUMN_PROCEEDED + "` = '" + VALUE_PROCEEDED_FALSE + "' WHERE `" + COLUMN_ID + "` = ?";
-    
+    private static final String QUERY_UPDATE_COMMENT = "UPDATE `" + TABLE + "` SET `" + COLUMN_COMMENT + "` = ? WHERE `" + COLUMN_ID + "` = ?";
 
     @Autowired
     private DatabaseSpring databaseSpring;
@@ -128,7 +132,10 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
                 resultSet.getInt(COLUMN_PAGE_SOURCE),
                 resultSet.getInt(COLUMN_SELENIUM_LOG),
                 new Date(resultSet.getTimestamp(COLUMN_REQUEST_DATE).getTime()),
-                resultSet.getString(COLUMN_PROCEEDED));
+                resultSet.getString(COLUMN_PROCEEDED),
+                resultSet.getString(COLUMN_COMMENT),
+                resultSet.getInt(COLUMN_RETRIES),
+                resultSet.getString(COLUMN_MANUAL_EXECUTION).equals("Y"));
     }
 
     @Override
@@ -166,6 +173,8 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
             statementInsert.setInt(22, inQueue.getPageSource());
             statementInsert.setInt(23, inQueue.getSeleniumLog());
             statementInsert.setTimestamp(24, new Timestamp(inQueue.getRequestDate().getTime()));
+            statementInsert.setInt(25, inQueue.getRetries());
+            statementInsert.setString(26, inQueue.isManualExecution()?"Y":"N");
 
             statementInsert.executeUpdate();
         } catch (SQLException exception) {
@@ -401,8 +410,8 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
 //        query.append(") order by test, testcase, ID desc) as tce, application app ")
         query.append(" order by test, testcase, ID desc) as tce, application app ")
                 .append("where tce.application = app.application ")
-                .append("group by tce.test, tce.testcase ").toString();
-//          .append("group by tce.test, tce.testcase, tce.Environment, tce.Browser, tce.Country ").toString();
+//                .append("group by tce.test, tce.testcase ").toString();
+          .append("group by tce.test, tce.testcase, tce.Environment, tce.Browser, tce.Country ").toString();
 
         List<TestCaseWithExecution> testCaseWithExecutionList = new ArrayList<TestCaseWithExecution>();
         Connection connection = this.databaseSpring.connect();
@@ -692,6 +701,53 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
             if (statementProceed != null) {
                 try {
                     statementProceed.close();
+                } catch (SQLException e) {
+                    LOG.warn("Unable to close proceed statement due to " + e.getMessage());
+                }
+            }
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (SQLException e) {
+                    LOG.warn("Unable to close connection due to " + e.getMessage());
+                }
+            }
+        }
+    }
+
+    @Override
+    public void updateComment(Long queueId, String comment) throws CerberusException {
+        final Connection connection = this.databaseSpring.connect();
+        if (connection == null) {
+            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
+        }
+
+        PreparedStatement statementComment = null;
+
+        TestCaseExecutionInQueue result = null;
+
+        try {
+            // Make the actual record as proceeded
+            statementComment = connection.prepareStatement(QUERY_UPDATE_COMMENT);
+            statementComment.setString(1, comment);
+            statementComment.setLong(2, queueId);
+            statementComment.executeUpdate();
+
+        } catch (SQLException sqle) {
+            LOG.warn("Unable to execute query : " + sqle.getMessage() + ". Trying to rollback");
+            if (connection != null) {
+                try {
+                    connection.rollback();
+                } catch (SQLException e) {
+                    LOG.error("Unable to rollback due to " + e.getMessage());
+                }
+                LOG.warn("Rollback done");
+            }
+            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
+        } finally {
+            if (statementComment != null) {
+                try {
+                    statementComment.close();
                 } catch (SQLException e) {
                     LOG.warn("Unable to close proceed statement due to " + e.getMessage());
                 }

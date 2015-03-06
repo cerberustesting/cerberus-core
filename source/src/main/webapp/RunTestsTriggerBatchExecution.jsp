@@ -104,37 +104,6 @@
                         userService.updateUser(usr);
                     }
 
-                    if (request.getParameter("statusPage") != null && request.getParameter("statusPage").compareTo("Run") == 0) {
-
-                        StringBuilder params = new StringBuilder();
-                        params.append("RunTestCase?redirect=Y");
-                        Enumeration<String> pList = request.getParameterNames();
-                        while (pList.hasMoreElements()) {
-                            String sName = pList.nextElement().toString();
-                            if (sName.compareTo("Test") == 0 || sName.compareTo("TestCase") == 0
-                                    || sName.compareTo("Country") == 0 || sName.compareTo("Environment") == 0
-                                    || sName.compareTo("ss_ip") == 0 || sName.compareTo("ss_p") == 0
-                                    || sName.compareTo("Browser") == 0
-                                    || sName.compareTo("manualURL") == 0
-                                    || sName.compareTo("myhost") == 0 || sName.compareTo("mycontextroot") == 0 || sName.compareTo("myloginrelativeurl") == 0
-                                    || sName.compareTo("myenvdata") == 0
-                                    || sName.compareTo("Tag") == 0 || sName.compareTo("outputformat") == 0
-                                    || sName.compareTo("verbose") == 0 || sName.compareTo("screenshot") == 0
-                                    || sName.compareTo("synchroneous") == 0 || sName.compareTo("timeout") == 0
-                                    || sName.compareTo("seleniumLog") == 0 || sName.compareTo("pageSource") == 0
-                                    || sName.compareTo("platform") == 0 || sName.compareTo("os") == 0
-                                    || sName.compareTo("robot") == 0) {
-                                String[] sMultiple = request.getParameterValues(sName);
-
-                                for (int i = 0; i < sMultiple.length; i++) {
-                                    params.append("&" + sName + "=" + sMultiple[i] + "");
-                                }
-
-                            }
-                        }
-                        response.sendRedirect(params.toString());
-                    }
-
                     String ssIP;
                     if (request.getParameter("ss_ip") != null && request.getParameter("ss_ip").compareTo("") != 0) {
                         ssIP = request.getParameter("ss_ip");
@@ -206,6 +175,13 @@
                         test = request.getParameter("Test");
                     } else {
                         test = new String("%%");
+                    }
+
+                    String retries;
+                    if (request.getParameter("retries") != null && request.getParameter("retries").compareTo("") != 0) {
+                        retries = request.getParameter("retries");
+                    } else {
+                        retries = new String("");
                     }
 
                     String testcase;
@@ -328,6 +304,7 @@
             <input hidden="hidden" id="defSeleniumLog" value="<%=seleniumLog%>">
             <input hidden="hidden" id="defPageSource" value="<%=pageSource%>">
             <input hidden="hidden" id="defManualExecution" value="<%=manualExecution%>">
+            <input hidden="hidden" id="defRetries" value="<%=retries%>">
             <div style="display:block" class="filters"  id="testcasesearchdiv"></div>
             <br><br>
             <div style="display:inline-block; width:100%">
@@ -558,6 +535,14 @@
                     </div>
                 </div>
                 <div style="clear:both">
+                    <div style="float:left;width:150px; text-align:left"><% out.print(docService.findLabelHTML("page_runtests", "retries", ""));%>
+                    </div>
+                    <div style="float:left">
+                        <select id="retries" name="retries" style="width: 200px">
+                        </select>
+                    </div>
+                </div>
+                <div style="clear:both">
                     <div style="float:left;width:150px; text-align:left"><% out.print(docService.findLabelHTML("page_runtests", "manualExecution", ""));%>
                     </div>
                     <div style="float:left">
@@ -767,6 +752,39 @@
         }
         ;
     </script>
+    <script type="text/javascript">
+            $(document).ready(function() {
+                $.getJSON('FindInvariantByID?idName=retries', function(data) {
+                    $("#retries").empty();
+                    var pl = document.getElementById("defRetries").value;
+
+                    for (var i = 0; i < data.length; i++) {
+                        $("#retries").append($("<option></option>")
+                                .attr("value", data[i].value)
+                                .text(data[i].value + " ( " + data[i].description + " )"));
+                    }
+
+                    setCookie('ExecutionRetries', 'retries');
+
+                    var ExecutionRetries = getCookie('ExecutionRetries');
+
+                    if (ExecutionRetries === "" && pl === "") {
+                        pl = "0";
+                    }
+
+
+
+                    $("#retries").find('option').each(function(i, opt) {
+                        if (opt.value === pl) {
+                            $(opt).attr('selected', 'selected');
+                        }
+
+
+                    });
+                })
+            });
+
+        </script>
     <script type="text/javascript">
         $(document).ready(function() {
             $.getJSON('FindInvariantByID?idName=outputformat', function(data) {
@@ -1068,6 +1086,7 @@
             var prefPS = $("#pageSource").val();
             var prefSL = $("#seleniumLog").val();
             var prefME = $("#manualExecution").val();
+            var prefRt = $("#retries").val();
             document.cookie = "TagPreference=" + prefTag + ";expires=" + expiration_date.toGMTString();
             document.cookie = "OutputFormatPreference=" + prefOf + ";expires=" + expiration_date.toGMTString();
             document.cookie = "VerbosePreference=" + prefVerb + ";expires=" + expiration_date.toGMTString();
@@ -1077,6 +1096,7 @@
             document.cookie = "PageSourcePreference=" + prefPS + ";expires=" + expiration_date.toGMTString();
             document.cookie = "SeleniumLogPreference=" + prefSL + ";expires=" + expiration_date.toGMTString();
             document.cookie = "ManualExecutionPreference=" + prefME + ";expires=" + expiration_date.toGMTString();
+            document.cookie = "ExecutionRetries=" + prefRt + ";expires=" + expiration_date.toGMTString();
         }
     </script>
     <script>

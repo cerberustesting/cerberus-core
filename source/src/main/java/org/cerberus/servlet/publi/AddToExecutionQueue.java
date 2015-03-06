@@ -25,19 +25,21 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-
+import java.util.logging.Level;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.apache.log4j.Logger;
+import org.cerberus.entity.TCase;
 import org.cerberus.entity.TestCaseExecutionInQueue;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.exception.FactoryCreationException;
 import org.cerberus.factory.IFactoryTestCaseExecutionInQueue;
+import org.cerberus.service.ICampaignService;
 import org.cerberus.service.ITestCaseExecutionInQueueService;
+import org.cerberus.service.ITestCaseService;
 import org.cerberus.serviceExecutor.ExecutionThreadPoolService;
 import org.cerberus.util.ParameterParserUtil;
 import org.springframework.context.ApplicationContext;
@@ -50,7 +52,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  */
 @WebServlet(name = "AddToExecutionQueue", urlPatterns = {"/AddToExecutionQueue"})
 public class AddToExecutionQueue extends HttpServlet {
-
+    
     /**
      * Exception thrown when the parameter scanning process goes wrong.
      *
@@ -97,6 +99,9 @@ public class AddToExecutionQueue extends HttpServlet {
     private static final String PARAMETER_SYNCHRONEOUS = "Synchroneous";
     private static final String PARAMETER_PAGE_SOURCE = "PageSource";
     private static final String PARAMETER_SELENIUM_LOG = "SeleniumLog";
+    private static final String PARAMETER_CAMPAIGN = "SelectedCampaign";
+    private static final String PARAMETER_RETRIES = "retries";
+    private static final String PARAMETER_MANUAL_EXECUTION = "manualExecution";
 
     private static final String DEFAULT_VALUE_OUTPUT_FORMAT = "compact";
     private static final int DEFAULT_VALUE_SCREENSHOT = 0;
@@ -106,12 +111,17 @@ public class AddToExecutionQueue extends HttpServlet {
     private static final boolean DEFAULT_VALUE_SYNCHRONEOUS = true;
     private static final int DEFAULT_VALUE_PAGE_SOURCE = 1;
     private static final int DEFAULT_VALUE_SELENIUM_LOG = 1;
+    private static final int DEFAULT_VALUE_RETRIES = 0;
+    private static final boolean DEFAULT_VALUE_MANUAL_EXECUTION = false;
+
 
     private static final String LINE_SEPARATOR = "\n";
 
     private ITestCaseExecutionInQueueService inQueueService;
     private IFactoryTestCaseExecutionInQueue inQueueFactoryService;
     private ExecutionThreadPoolService executionThreadService;
+    private ITestCaseService testCaseService;
+    private ICampaignService campaignService;
 
     @Override
     public void init() throws ServletException {
@@ -119,6 +129,8 @@ public class AddToExecutionQueue extends HttpServlet {
         inQueueService = appContext.getBean(ITestCaseExecutionInQueueService.class);
         inQueueFactoryService = appContext.getBean(IFactoryTestCaseExecutionInQueue.class);
         executionThreadService = appContext.getBean(ExecutionThreadPoolService.class);
+        testCaseService = appContext.getBean(ITestCaseService.class);
+        campaignService = appContext.getBean(ICampaignService.class);
     }
 
     @Override
@@ -155,6 +167,8 @@ public class AddToExecutionQueue extends HttpServlet {
         } catch (ParameterException pe) {
             resp.sendError(HttpServletResponse.SC_BAD_REQUEST, pe.getMessage());
             return;
+        } catch (CerberusException ex) {
+            java.util.logging.Logger.getLogger(AddToExecutionQueue.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         // Part 2: Try to insert all these test cases to the execution queue.
@@ -177,16 +191,16 @@ public class AddToExecutionQueue extends HttpServlet {
             executionThreadService.searchExecutionInQueueTableAndTriggerExecution();
         } catch (CerberusException ex) {
             String errorMessage = "Unable to feed the execution queue due to " + ex.getMessage();
-                LOG.warn(errorMessage);
-                errorMessages.add(errorMessage);
+            LOG.warn(errorMessage);
+            errorMessages.add(errorMessage);
         } catch (UnsupportedEncodingException ex) {
             String errorMessage = "Unable to feed the execution queue due to " + ex.getMessage();
-                LOG.warn(errorMessage);
-                errorMessages.add(errorMessage);
+            LOG.warn(errorMessage);
+            errorMessages.add(errorMessage);
         } catch (InterruptedException ex) {
             String errorMessage = "Unable to feed the execution queue due to " + ex.getMessage();
-                LOG.warn(errorMessage);
-                errorMessages.add(errorMessage);
+            LOG.warn(errorMessage);
+            errorMessages.add(errorMessage);
         }
 
         if (!errorMessages.isEmpty()) {
@@ -210,17 +224,42 @@ public class AddToExecutionQueue extends HttpServlet {
      * been defined into the request.
      * @throws ParameterException
      */
-    private List<TestCaseExecutionInQueue> getTestCasesToInsert(HttpServletRequest req) throws ParameterException {
+    private List<TestCaseExecutionInQueue> getTestCasesToInsert(HttpServletRequest req) throws ParameterException, CerberusException {
+
         String charset = req.getCharacterEncoding();
 
-        List<Map<String, String>> selectedTests = ParameterParserUtil.parseListMapParamAndDecode(req.getParameterValues(PARAMETER_SELECTED_TEST), null, charset);
+        boolean autoRunCampaign = false;
+        String campaign = ParameterParserUtil.parseStringParamAndDecode(req.getParameter(PARAMETER_CAMPAIGN), null, charset);
+        if (campaign != null && !campaign.isEmpty()) {
+            autoRunCampaign = true;
+        }
+
+        List<Map<String, String>> selectedTests = new ArrayList();
+        List<String> countries = new ArrayList();
+        if (!autoRunCampaign) {
+            selectedTests = ParameterParserUtil.parseListMapParamAndDecode(req.getParameterValues(PARAMETER_SELECTED_TEST), null, charset);
+            countries = ParameterParserUtil.parseListParamAndDecode(req.getParameterValues(PARAMETER_COUNTRY), null, charset);
+        } else {
+            countries = campaignService.findCountries(campaign);
+            String[] countryList = new String[countries.size()];
+            countryList = countries.toArray(countryList);
+            List<TCase> testCaseList = testCaseService.findTestCaseByCampaignNameAndCountries(campaign, countryList);
+            List<String> selTc = new ArrayList();
+            for (TCase tc : testCaseList) {
+                selTc.add("Test=" + tc.getTest() + "&TestCase=" + tc.getTestCase());
+            }
+            String[] tcList = new String[selTc.size()];
+            tcList = selTc.toArray(tcList);
+            selectedTests = ParameterParserUtil.parseListMapParamAndDecode(tcList, null, charset);
+        }
+
         if (selectedTests == null || selectedTests.isEmpty()) {
             throw new ParameterException("Selected test must not be null");
         }
-        List<String> countries = ParameterParserUtil.parseListParamAndDecode(req.getParameterValues(PARAMETER_COUNTRY), null, charset);
         if (countries == null || countries.isEmpty()) {
             throw new ParameterException("Countries can not be null");
         }
+
         String environment = ParameterParserUtil.parseStringParamAndDecode(req.getParameter(PARAMETER_ENVIRONMENT), null, charset);
         if (environment == null || environment.isEmpty()) {
             throw new ParameterException("Environment must not be null");
@@ -229,6 +268,7 @@ public class AddToExecutionQueue extends HttpServlet {
         if (browser == null || browser.isEmpty()) {
             throw new ParameterException("Browser must not be null");
         }
+
         String tag = ParameterParserUtil.parseStringParamAndDecode(req.getParameter(PARAMETER_TAG), null, charset);
         if (tag == null || tag.isEmpty()) {
             throw new ParameterException("Tag must not be null");
@@ -252,6 +292,8 @@ public class AddToExecutionQueue extends HttpServlet {
         boolean synchroneous = ParameterParserUtil.parseBooleanParamAndDecode(req.getParameter(PARAMETER_SYNCHRONEOUS), DEFAULT_VALUE_SYNCHRONEOUS, charset);
         int pageSource = ParameterParserUtil.parseIntegerParamAndDecode(req.getParameter(PARAMETER_PAGE_SOURCE), DEFAULT_VALUE_PAGE_SOURCE, charset);
         int seleniumLog = ParameterParserUtil.parseIntegerParamAndDecode(req.getParameter(PARAMETER_SELENIUM_LOG), DEFAULT_VALUE_SELENIUM_LOG, charset);
+        int retries = ParameterParserUtil.parseIntegerParamAndDecode(req.getParameter(PARAMETER_RETRIES), DEFAULT_VALUE_RETRIES, charset);
+        boolean manualExecution = ParameterParserUtil.parseBooleanParamAndDecode(req.getParameter(PARAMETER_MANUAL_EXECUTION), DEFAULT_VALUE_MANUAL_EXECUTION, charset);
 
         List<TestCaseExecutionInQueue> inQueues = new ArrayList<TestCaseExecutionInQueue>();
         for (Map<String, String> selectedTest : selectedTests) {
@@ -282,7 +324,9 @@ public class AddToExecutionQueue extends HttpServlet {
                             synchroneous,
                             pageSource,
                             seleniumLog,
-                            requestDate));
+                            requestDate, 
+                            retries, 
+                            manualExecution));
                 } catch (FactoryCreationException e) {
                     throw new ParameterException("Unable to insert record due to: " + e.getMessage(), e);
                 }

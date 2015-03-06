@@ -72,7 +72,6 @@ public class ExecutionWorkerThread implements Runnable, Comparable {
             }
         br.close();
         execThreadPool.decrementInExecution();
-        System.out.print(sb.toString());
     }
 
     @Override
