@@ -624,9 +624,9 @@
                 <table class="tableBorder"  style="text-align: left" border="1" >
                     <tr>
                         <% if (tcGroup.equalsIgnoreCase("AUTOMATED")) {%>
-                        <td><a href="RunTests.jsp?Test=<%=test%>&TestCase=<%=testCase%>&MySystem=<%=appSystem%>&Country=<%=country%>&Environment=<%=environment%>">Run the same Test Case again.</a></td>
+                        <td><a href="RunTests.jsp?Test=<%=test%>&TestCase=<%=testCase%>&MySystem=<%=appSystem%>&Country=<%=country%>&Environment=<%=environment%>&Tag=<%=testCaseExecution.getTag()==null?"":testCaseExecution.getTag()%>">Run the same Test Case again.</a></td>
                         <%        } else if (tcGroup.equalsIgnoreCase("MANUAL")) {%>
-                        <td><a href="RunManualTestCase.jsp?Test=<%=test%>&TestCase=<%=testCase%>&MySystem=<%=appSystem%>&Country=<%=country%>&Env=<%=environment%>">Run the same Test Case again.</a></td>
+                        <td><a href="RunManualTestCase.jsp?Test=<%=test%>&TestCase=<%=testCase%>&MySystem=<%=appSystem%>&Country=<%=country%>&Env=<%=environment%>&Tag=<%=testCaseExecution.getTag()==null?"":testCaseExecution.getTag()%>">Run the same Test Case again.</a></td>
                         <%        }%>    
                         <td>
                             <a href="TestCase.jsp?Test=<%=test%>&TestCase=<%=testCase%>&Load=Load">Modify the Test Case.</a>
