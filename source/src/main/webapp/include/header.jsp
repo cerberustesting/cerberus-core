@@ -109,9 +109,6 @@
                     <li id="subactive"><a name="menu" id="menuReportingExecutionTime" href="ReportingExecutionTime.jsp" style="width:200px">Execution Time</a></li>
                     <li id="subactive"><a name="menu" id="menuReportingExecutionDetail" href="ExecutionDetailList.jsp" style="width:200px">Execution Detail</a></li>
                     <li id="subactive"><a name="menu" id="menuReportingExecutionByTag" href="ReportingExecutionByTag.jsp" style="width:200px">Execution Report By Tag</a></li>
-                <% if (request.getUserPrincipal() != null && (request.isUserInRole("Administrator"))) {%>
-                    <li id="subactive"><a name="menu" id="menuReportingExecutionThreadMonitoring" href="ExecutionThreadMonitoring.jsp" style="width:200px">Execution Thread Monitoring</a></li>
-                <% }%>
                 </ul>
             </li>
             <% }%>
@@ -140,6 +137,7 @@
                     <li id="subactive"><a name="menu" id="menuParameter" href="Parameter.jsp" style="width:180px">Parameters</a></li>
                     <li id="subactive"><a name="menu" id="menuInvariantPublic" href="InvariantPublic.jsp" style="width:180px">Edit Public Invariants</a></li>
                     <li id="subactive"><a name="menu" id="menuInvariantPrivate" href="InvariantPrivate.jsp" style="width:180px">See Private Invariants</a></li>
+                    <li id="subactive"><a name="menu" id="menuReportingExecutionThreadMonitoring" href="ExecutionThreadMonitoring.jsp" style="width:200px">Monitoring</a></li>
                 </ul>
             </li>
             <% }%>

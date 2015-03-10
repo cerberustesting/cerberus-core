@@ -19,6 +19,11 @@
                     $("#sizeOfQueue").html(data.size_queue);
                     $("#QueueInExecution").html(data.queue_in_execution);
                     $("#SimultaneousExecution").html(data.simultaneous_execution);
+                    $("#SimultaneousSession").html(data.simultaneous_session);
+                    $.each(data.active_users, function (a, v){
+                        $("#ActiveUsers").append(v + "<br>");
+                    });
+                    
                 });
 
             });
@@ -34,7 +39,7 @@
     <body>
         <%@ include file="include/function.jsp" %>
         <%@ include file="include/header.jsp" %>
-        <h3>Execution Thread Monitoring</h3>
+        <h3>Execution Monitoring</h3>
         <p>Total Size Of Queue In Memory: </p><p id="sizeOfQueue"></p>
         <br>
         <p>Number of Queue In Execution : </p><p id="QueueInExecution"></p>
@@ -42,5 +47,11 @@
         <p>Number of Actual Simultaneous Execution : </p><p id="SimultaneousExecution"></p>
         <br>
         <input type="button" value="Reset Queue" onclick="resetThreadPool()">
+        <br><br>
+        <h3>Session Monitoring</h3>
+        <p>Number of HTTP Session opened : </p><p id="SimultaneousSession"></p>
+        <br>
+        <p>List of Active Users : </p><p id="ActiveUsers"></p>
+        <br>
     </body>
 </html>

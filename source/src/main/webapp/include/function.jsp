@@ -17,6 +17,7 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
+<%@page import="org.cerberus.entity.SessionCounter"%>
 <%@page import="org.cerberus.entity.Project"%>
 <%@page import="org.cerberus.service.IProjectService"%>
 <%@page import="org.cerberus.entity.Invariant"%>
@@ -296,3 +297,9 @@
     DatabaseSpring db = appContext.getBean(DatabaseSpring.class);
 
 %>
+<%
+    SessionCounter sc = appContext.getBean(SessionCounter.class);
+    if (request.getUserPrincipal()!=null){
+        sc.identifiateUser(request.getSession().getId(), request.getUserPrincipal().getName());
+    }
+    %>

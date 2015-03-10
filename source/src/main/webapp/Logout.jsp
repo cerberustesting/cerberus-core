@@ -36,4 +36,8 @@
         </div>
     </body>
 </html>
-<% session.invalidate(); %>
+<% 
+    if (request.getUserPrincipal()!=null){
+        sc.destroyUser(request.getSession().getId());
+    }
+request.getSession().invalidate(); %>

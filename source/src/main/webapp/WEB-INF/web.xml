@@ -1761,4 +1761,7 @@
     <listener>
         <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
     </listener>
-    </web-app>
+    <listener>
+        <listener-class>org.cerberus.entity.SessionCounterListener</listener-class>
+    </listener>
+</web-app>
