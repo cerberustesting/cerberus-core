@@ -68,12 +68,13 @@ public class CreateRobot extends HttpServlet {
             String browser = policy.sanitize(request.getParameter("Browser"));
             String active = policy.sanitize(request.getParameter("Active"));
             String version = policy.sanitize(request.getParameter("Version"));
+            String userAgent = policy.sanitize(request.getParameter("UserAgent"));
 
             ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
             IRobotService robotService = appContext.getBean(IRobotService.class);
             IFactoryRobot factoryRobot = appContext.getBean(IFactoryRobot.class);
 
-            Robot robotObj = factoryRobot.create(0, robot, host, port, platform, browser, version, active, description);
+            Robot robotObj = factoryRobot.create(0, robot, host, port, platform, browser, version, active, description, userAgent);
             robotService.createRobot(robotObj);
             /**
              * Adding Log entry.

@@ -82,6 +82,15 @@ public class TestCaseExecution {
     private List<TestCaseCountryProperties> testCaseCountryPropertyList;
     private long idFromQueue;
     private Integer numberOfRetries;
+    private String userAgent;
+
+    public String getUserAgent() {
+        return userAgent;
+    }
+
+    public void setUserAgent(String userAgent) {
+        this.userAgent = userAgent;
+    }
 
     public Integer getNumberOfRetries() {
         return numberOfRetries;

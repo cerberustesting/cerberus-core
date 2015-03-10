@@ -127,6 +127,7 @@ public class RunTestCase extends HttpServlet {
         String robot = ParameterParserUtil.parseStringParam(policy.sanitize(request.getParameter("robot")), "");
         String active = "";
         String timeout = "";
+        String userAgent = "";
         boolean synchroneous = true;
         int getPageSource = 0;
         int getSeleniumLog = 0;
@@ -152,6 +153,7 @@ public class RunTestCase extends HttpServlet {
                 version = robObj.getVersion();
                 platform = robObj.getPlatform();
                 active = robObj.getActive();
+                userAgent = robObj.getUserAgent();
             } catch (CerberusException ex) {
                 Logger.getLogger(RunTestCase.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
             }
@@ -249,6 +251,10 @@ public class RunTestCase extends HttpServlet {
                     0, 0, "", "", null, robotHost, null, robotPort, tag, "N", verbose, screenshot, getPageSource, getSeleniumLog, synchroneous, timeout, outputFormat, null,
                     Infos.getInstance().getProjectNameAndVersion(), tCase, null, null, manualURL, myHost, myContextRoot, myLoginRelativeURL, myEnvData, robotHost, robotPort, null, new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_TESTSTARTED), "Selenium", numberOfRetries);
 
+            /**
+             * Set UserAgent
+             */
+            tCExecution.setUserAgent(userAgent);
             /**
              * Set UUID
              */

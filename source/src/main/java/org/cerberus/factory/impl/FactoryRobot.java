@@ -31,7 +31,7 @@ public class FactoryRobot implements IFactoryRobot {
 
     @Override
     public Robot create(Integer robotID, String robot, String host, String port, String platform ,
-    String browser, String version, String active, String description) {
+    String browser, String version, String active, String description, String userAgent) {
         Robot newRobot = new Robot();
         newRobot.setRoborID(robotID);
         newRobot.setRobot(robot);
@@ -42,6 +42,7 @@ public class FactoryRobot implements IFactoryRobot {
         newRobot.setVersion(version);
         newRobot.setActive(active);
         newRobot.setDescription(description);
+        newRobot.setUserAgent(userAgent);
         return newRobot;
     }
 

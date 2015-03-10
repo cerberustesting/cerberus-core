@@ -218,7 +218,12 @@ public class SeleniumServerService implements ISeleniumServerService {
             profile.setPreference("extensions.firebug.netexport.showPreview", false);
 
         }
-
+        
+        //if userAgent
+        if (!("").equals(tCExecution.getUserAgent())){
+        profile.setPreference("general.useragent.override", tCExecution.getUserAgent()); 
+        }
+        
         DesiredCapabilities dc = DesiredCapabilities.firefox();
         dc.setCapability(FirefoxDriver.PROFILE, profile);
 

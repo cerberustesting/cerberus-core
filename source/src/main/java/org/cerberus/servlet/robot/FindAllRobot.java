@@ -66,7 +66,7 @@ public class FindAllRobot extends HttpServlet {
             String sCol = policy.sanitize(request.getParameter("iSortCol_0"));
             String sdir = policy.sanitize(request.getParameter("sSortDir_0"));
             String dir = "asc";
-            String[] cols = {"Robot", "Host", "Port", "Platform", "Browser", "Version", "Active", "Description"};
+            String[] cols = {"Robot", "Host", "Port", "Platform", "Browser", "Version", "Active","UserAgent", "Description"};
 
             int amount = 10;
             int start = 0;
@@ -80,6 +80,7 @@ public class FindAllRobot extends HttpServlet {
             String version = "";
             String active = "";
             String description = "";
+            String userAgent = "";
 
             robot = policy.sanitize(request.getParameter("sSearch_1"));
             host = policy.sanitize(request.getParameter("sSearch_2"));
@@ -88,7 +89,8 @@ public class FindAllRobot extends HttpServlet {
             browser = policy.sanitize(request.getParameter("sSearch_5"));
             version = policy.sanitize(request.getParameter("sSearch_6"));
             active = policy.sanitize(request.getParameter("sSearch_7"));
-            description = policy.sanitize(request.getParameter("sSearch_8"));
+            userAgent = policy.sanitize(request.getParameter("sSearch_8"));
+            description = policy.sanitize(request.getParameter("sSearch_9"));
 
             List<String> sArray = new ArrayList<String>();
             if (!platform.equals("")) {
@@ -118,6 +120,10 @@ public class FindAllRobot extends HttpServlet {
             if (!active.equals("")) {
                 String sactive = " `active` like '%" + active + "%'";
                 sArray.add(sactive);
+            }
+            if (!userAgent.equals("")) {
+                String sua = " `useragent` like '%" + userAgent + "%'";
+                sArray.add(sua);
             }
             if (!description.equals("")) {
                 String sDescription = " `description` like '%" + description + "%'";
@@ -188,6 +194,7 @@ public class FindAllRobot extends HttpServlet {
                         .put(robotInv.getBrowser())
                         .put(robotInv.getVersion())
                         .put(robotInv.getActive())
+                        .put(robotInv.getUserAgent())
                         .put(robotInv.getDescription());
 
                 data.put(row);

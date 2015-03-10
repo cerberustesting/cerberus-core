@@ -34,6 +34,15 @@ public class Robot {
     String version;
     String active;
     String description;
+    String userAgent;
+
+    public String getUserAgent() {
+        return userAgent;
+    }
+
+    public void setUserAgent(String userAgent) {
+        this.userAgent = userAgent;
+    }
     
     public String getPort() {
         return port;

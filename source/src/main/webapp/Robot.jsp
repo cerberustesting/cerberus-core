@@ -61,6 +61,7 @@
                         {"sName": "Browser", "sWidth": "10%"},
                         {"sName": "Version", "sWidth": "10%"},
                         {"sName": "Active", "sWidth": "1%"},
+                        {"sName": "UserAgent", "sWidth": "10%"},
                         {"sName": "Description", "sWidth": "10%"}
                     ]
                 }
@@ -115,6 +116,8 @@
                         {onblur: 'submit',
                             placeholder: ''},
                         {onblur: 'submit',
+                            placeholder: ''},
+                        {onblur: 'submit',
                             placeholder: ''}
 
                     ]
@@ -142,6 +145,7 @@
                         <th>Browser</th>
                         <th>Version</th>
                         <th>Active</th>
+                        <th>UserAgent</th>
                         <th>Description</th>
                         
                     </tr>
@@ -190,9 +194,14 @@
                         class="ncdetailstext" rel="7" ></select>
                 <br />
                 <br />
+                <label for="UserAgent" style="font-weight:bold">UserAgent</label>
+                <select id="UserAgent" name="UserAgent" style="width:350px;" 
+                        class="ncdetailstext" rel="8" ></select>
+                <br />
+                <br />
                 <label for="Description" style="font-weight:bold">Description</label>
                 <input id="Description" name="Description" style="width:350px;" 
-                       class="ncdetailstext" rel="8" placeholder="Example : Used for Regression Testing">
+                       class="ncdetailstext" rel="9" placeholder="Example : Used for Regression Testing">
                 <br />
                 <br />
                 <div style="width: 250px; float:right">

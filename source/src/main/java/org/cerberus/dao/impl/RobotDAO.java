@@ -180,7 +180,7 @@ public class RobotDAO implements IRobotDAO{
     public void updateRobot(Robot robot) throws CerberusException {
         StringBuilder query = new StringBuilder();
         query.append("UPDATE robot SET robot= ? , host = ? , port = ? ,");
-        query.append("platform = ?, browser = ? , version = ?, active=?, description = ? WHERE robotID = ?");
+        query.append("platform = ?, browser = ? , version = ?, active=?, description = ?, useragent = ? WHERE robotID = ?");
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -194,7 +194,8 @@ public class RobotDAO implements IRobotDAO{
                 preStat.setString(6, robot.getVersion());
                 preStat.setString(7, robot.getActive());
                 preStat.setString(8, robot.getDescription());
-                preStat.setInt(9, robot.getRoborID());
+                preStat.setString(9, robot.getUserAgent());
+                preStat.setInt(10, robot.getRoborID());
                 
                 preStat.executeUpdate();
                 } catch (SQLException exception) {
@@ -312,10 +313,10 @@ public class RobotDAO implements IRobotDAO{
         String version = ParameterParserUtil.parseStringParam(rs.getString("version"), "");
         String active = ParameterParserUtil.parseStringParam(rs.getString("active"), "");
         String description = ParameterParserUtil.parseStringParam(rs.getString("description"), "");
-
+        String userAgent = ParameterParserUtil.parseStringParam(rs.getString("useragent"), "");
         //TODO remove when working in test with mockito and autowired
         factoryRobot = new FactoryRobot();
-        return factoryRobot.create(robotID, robot, host, port, platform, browser, version, active, description);
+        return factoryRobot.create(robotID, robot, host, port, platform, browser, version, active, description, userAgent);
     }
 
     @Override
@@ -346,6 +347,9 @@ public class RobotDAO implements IRobotDAO{
         gSearch.append(searchTerm);
         gSearch.append("%'");
         gSearch.append(" or `active` like '%");
+        gSearch.append(searchTerm);
+        gSearch.append("%'");
+        gSearch.append(" or `useragent` like '%");
         gSearch.append(searchTerm);
         gSearch.append("%'");
         gSearch.append(" or `version` like '%");
@@ -440,6 +444,9 @@ public class RobotDAO implements IRobotDAO{
         gSearch.append(searchTerm);
         gSearch.append("%'");
         gSearch.append(" or `active` like '%");
+        gSearch.append(searchTerm);
+        gSearch.append("%'");
+        gSearch.append(" or `useragent` like '%");
         gSearch.append(searchTerm);
         gSearch.append("%'");
         gSearch.append(" or `version` like '%");

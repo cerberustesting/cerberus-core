@@ -4100,6 +4100,13 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
                 SQLS.append("('RETRIES', '3', '40', 'Retry 3 times in case of Not OK', '');");
                 
                 SQLInstruction.add(SQLS.toString());
+                
+// Add Column UserAgent in Robot Table.
+// -- ------------------------ 578               
+                SQLS = new StringBuilder();
+		SQLS.append("ALTER TABLE `robot` ");
+                SQLS.append("ADD COLUMN `useragent` VARCHAR(250) NOT NULL DEFAULT '' AFTER `active`;");
+                SQLInstruction.add(SQLS.toString());
 
                 
         return SQLInstruction;

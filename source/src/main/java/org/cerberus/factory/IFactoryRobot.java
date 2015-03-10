@@ -37,9 +37,10 @@ public interface IFactoryRobot {
      * @param version version of the Robot
      * @param active Robot active
      * @param description description of the Robot
+     * @param userAgent userAgent to Use
      * @return 
      */
     Robot create(Integer robotID, String robot, String host, String port, String platform ,
-    String browser, String version, String active, String description);
+    String browser, String version, String active, String description, String userAgent);
 
 }
