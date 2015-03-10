@@ -119,9 +119,14 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
          */
         if (!tc.getTest().equals(initialTest)) {
             if (tService.findTestByKey(tc.getTest()) == null) {
+                if (groupList.contains("TestAdmin")){
                 Test newTest = tService.findTestByKey(initialTest);
                 newTest.setTest(tc.getTest());
                 tService.createTest(newTest);
+                } else {
+                response.sendError(403, MessageGeneralEnum.GUI_TEST_CREATION_NOT_HAVE_RIGHT.getDescription());
+                return;
+                }
             }
         }
 
