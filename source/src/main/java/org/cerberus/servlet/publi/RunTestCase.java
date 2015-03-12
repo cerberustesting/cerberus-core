@@ -311,6 +311,7 @@ public class RunTestCase extends HttpServlet {
                     tCExecution.decreaseNumberOfRetries();
                 } catch (Exception ex) {
                     MyLogger.log(RunTestCase.class.getName(), Level.FATAL, "Exception on testcase: " + tCExecution.getId() + "\nDetail: " + ex.getMessage() + "\n\n" + ex.toString());
+                    break;
                 }
             }
 
