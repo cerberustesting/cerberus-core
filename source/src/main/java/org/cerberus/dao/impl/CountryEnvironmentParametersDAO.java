@@ -87,9 +87,10 @@ public class CountryEnvironmentParametersDAO implements ICountryEnvironmentParam
                 try {
                     if (resultSet.first()) {
                         String ip = resultSet.getString("IP");
+                        String domain = resultSet.getString("domain");
                         String url = resultSet.getString("URL");
                         String urlLogin = resultSet.getString("URLLOGIN");
-                        result = factoryCountryEnvironmentApplication.create(system, country, environment, application, ip, url, urlLogin);
+                        result = factoryCountryEnvironmentApplication.create(system, country, environment, application, ip, domain, url, urlLogin);
                     } else {
                         throwException = true;
                     }
@@ -178,9 +179,9 @@ public class CountryEnvironmentParametersDAO implements ICountryEnvironmentParam
         List<CountryEnvironmentApplication> result = new ArrayList<CountryEnvironmentApplication>();
         boolean throwex = false;
         StringBuilder query = new StringBuilder();
-        query.append("SELECT `system`, country, environment, Application, IP,URL, URLLOGIN FROM countryenvironmentparameters ");
+        query.append("SELECT `system`, country, environment, Application, IP, domain, URL, URLLOGIN FROM countryenvironmentparameters ");
         query.append(" WHERE `system` LIKE ? AND country LIKE ? AND environment LIKE ? AND Application LIKE ? ");
-        query.append("AND IP LIKE ? AND URL LIKE ? AND URLLOGIN LIKE ?");
+        query.append("AND IP LIKE ? AND URL LIKE ? AND URLLOGIN LIKE ? AND domain like ? ");
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -193,6 +194,7 @@ public class CountryEnvironmentParametersDAO implements ICountryEnvironmentParam
                 preStat.setString(5, ParameterParserUtil.wildcardIfEmpty(countryEnvironmentParameter.getIp()));
                 preStat.setString(6, ParameterParserUtil.wildcardIfEmpty(countryEnvironmentParameter.getUrl()));
                 preStat.setString(7, ParameterParserUtil.wildcardIfEmpty(countryEnvironmentParameter.getUrlLogin()));
+                preStat.setString(8, ParameterParserUtil.wildcardIfEmpty(countryEnvironmentParameter.getDomain()));
 
                 ResultSet resultSet = preStat.executeQuery();
                 try {
@@ -202,9 +204,10 @@ public class CountryEnvironmentParametersDAO implements ICountryEnvironmentParam
                         String application = resultSet.getString("application");
                         String environment = resultSet.getString("environment");
                         String ip = resultSet.getString("IP");
+                        String domain = resultSet.getString("domain");
                         String url = resultSet.getString("URL");
                         String urlLogin = resultSet.getString("URLLOGIN");
-                        result.add(factoryCountryEnvironmentApplication.create(system, country, environment, application, ip, url, urlLogin));
+                        result.add(factoryCountryEnvironmentApplication.create(system, country, environment, application, ip, domain, url, urlLogin));
                     }
                 } catch (SQLException exception) {
                     MyLogger.log(CountryEnvironmentParametersDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
@@ -284,9 +287,10 @@ public class CountryEnvironmentParametersDAO implements ICountryEnvironmentParam
         String env = resultSet.getString("Environment");
         String application = resultSet.getString("application");
         String ip = resultSet.getString("ip");
+        String domain = resultSet.getString("domain");
         String url = resultSet.getString("url");
         String urllogin = resultSet.getString("urllogin");
-        return factoryCountryEnvironmentApplication.create(system, count, env, application, ip, url, urllogin);
+        return factoryCountryEnvironmentApplication.create(system, count, env, application, ip, domain, url, urllogin);
     }
 
     @Override
@@ -337,7 +341,7 @@ public class CountryEnvironmentParametersDAO implements ICountryEnvironmentParam
     @Override
     public void update(CountryEnvironmentApplication cea) throws CerberusException {
         final StringBuffer query = new StringBuffer("UPDATE `countryenvironmentparameters` SET `IP`=?, ");
-        query.append("`URL`=?,`URLLOGIN`=? ");
+        query.append("`URL`=?, `URLLOGIN`=?, `domain`=? ");
         query.append(" where `system`=? and `country`=? and `environment`=? and `application`=?");
 
         Connection connection = this.databaseSpring.connect();
@@ -346,10 +350,11 @@ public class CountryEnvironmentParametersDAO implements ICountryEnvironmentParam
             preStat.setString(1, cea.getIp());
             preStat.setString(2, cea.getUrl());
             preStat.setString(3, cea.getUrlLogin());
-            preStat.setString(4, cea.getSystem());
-            preStat.setString(5, cea.getCountry());
-            preStat.setString(6, cea.getEnvironment());
-            preStat.setString(7, cea.getApplication());
+            preStat.setString(4, cea.getDomain());
+            preStat.setString(5, cea.getSystem());
+            preStat.setString(6, cea.getCountry());
+            preStat.setString(7, cea.getEnvironment());
+            preStat.setString(8, cea.getApplication());
 
             try {
                 preStat.executeUpdate();
@@ -406,8 +411,8 @@ public class CountryEnvironmentParametersDAO implements ICountryEnvironmentParam
     @Override
     public void create(CountryEnvironmentApplication cea) throws CerberusException {
         final StringBuffer query = new StringBuffer("INSERT INTO `countryenvironmentparameters` ");
-        query.append("(`system`, `country`, `environment`, `application`, `ip`,`url`, `urllogin`) VALUES ");
-        query.append("(?,?,?,?,?,?,?)");
+        query.append("(`system`, `country`, `environment`, `application`, `ip`, `domain`, `url`, `urllogin`) VALUES ");
+        query.append("(?,?,?,?,?,?,?,?)");
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -417,8 +422,9 @@ public class CountryEnvironmentParametersDAO implements ICountryEnvironmentParam
             preStat.setString(3, cea.getEnvironment());
             preStat.setString(4, cea.getApplication());
             preStat.setString(5, cea.getIp());
-            preStat.setString(6, cea.getUrl());
-            preStat.setString(7, cea.getUrlLogin());
+            preStat.setString(6, cea.getDomain());
+            preStat.setString(7, cea.getUrl());
+            preStat.setString(8, cea.getUrlLogin());
 
             try {
                 preStat.executeUpdate();
@@ -462,6 +468,9 @@ public class CountryEnvironmentParametersDAO implements ICountryEnvironmentParam
         gSearch.append(searchTerm);
         gSearch.append("%'");
         gSearch.append(" or `ip` like '%");
+        gSearch.append(searchTerm);
+        gSearch.append("%'");
+        gSearch.append(" or `domain` like '%");
         gSearch.append(searchTerm);
         gSearch.append("%'");
         gSearch.append(" or `url` like '%");
@@ -531,6 +540,9 @@ public class CountryEnvironmentParametersDAO implements ICountryEnvironmentParam
         gSearch.append(searchTerm);
         gSearch.append("%'");
         gSearch.append(" or `ip` like '%");
+        gSearch.append(searchTerm);
+        gSearch.append("%'");
+        gSearch.append(" or `domain` like '%");
         gSearch.append(searchTerm);
         gSearch.append("%'");
         gSearch.append(" or `url` like '%");

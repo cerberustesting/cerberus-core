@@ -28,5 +28,5 @@ import org.cerberus.entity.CountryEnvironmentApplication;
 public interface IFactoryCountryEnvironmentApplication {
 
     CountryEnvironmentApplication create(String system, String country, String environment, String application, String ip,
-            String url, String urlLogin);
+            String Domain, String url, String urlLogin);
 }

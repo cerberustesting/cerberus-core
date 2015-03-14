@@ -87,6 +87,7 @@ public class GetCountryEnvironmentParameterList extends HttpServlet {
                         .put(cea.getEnvironment())
                         .put(cea.getApplication())
                         .put(cea.getIp())
+                        .put(cea.getDomain())
                         .put(cea.getUrl())
                         .put(cea.getUrlLogin());
 

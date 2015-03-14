@@ -30,13 +30,14 @@ import org.springframework.stereotype.Service;
 public class FactoryCountryEnvironmentApplication implements IFactoryCountryEnvironmentApplication {
 
     @Override
-    public CountryEnvironmentApplication create(String system, String country, String environment, String application, String ip, String url, String urlLogin) {
+    public CountryEnvironmentApplication create(String system, String country, String environment, String application, String ip, String domain, String url, String urlLogin) {
         CountryEnvironmentApplication countryEnvironmentApplication = new CountryEnvironmentApplication();
         countryEnvironmentApplication.setSystem(system);
         countryEnvironmentApplication.setCountry(country);
         countryEnvironmentApplication.setEnvironment(environment);
         countryEnvironmentApplication.setApplication(application);
         countryEnvironmentApplication.setIp(ip);
+        countryEnvironmentApplication.setDomain(domain);
         countryEnvironmentApplication.setUrl(url);
         countryEnvironmentApplication.setUrlLogin(urlLogin);
         return countryEnvironmentApplication;

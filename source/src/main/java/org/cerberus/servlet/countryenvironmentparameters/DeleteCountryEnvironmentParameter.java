@@ -72,7 +72,7 @@ public class DeleteCountryEnvironmentParameter extends HttpServlet {
         String app = id.split("App&#61;")[1].split("&amp;")[0];
 
         response.setContentType("text/html");
-            ceaService.delete(factoryCea.create(system, country, env, app, null, null, null));
+            ceaService.delete(factoryCea.create(system, country, env, app, null, null, null, null));
         } catch (CerberusException ex) {
             Logger.getLogger(DeleteCountryEnvironmentParameter.class.getName()).log(Level.SEVERE, null, ex);
         }

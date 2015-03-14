@@ -66,6 +66,7 @@ public class CreateCountryEnvironmentParameter extends HttpServlet {
             String environment = policy.sanitize(request.getParameter("Environment"));
             String application = policy.sanitize(request.getParameter("Application"));
             String ip = policy.sanitize(request.getParameter("IP"));
+            String domain = policy.sanitize(request.getParameter("domain"));
             String url = policy.sanitize(request.getParameter("Url"));
             String urlLogin = policy.sanitize(request.getParameter("UrlLogin"));
 
@@ -73,7 +74,7 @@ public class CreateCountryEnvironmentParameter extends HttpServlet {
             ICountryEnvironmentApplicationService cepService = appContext.getBean(ICountryEnvironmentApplicationService.class);
             IFactoryCountryEnvironmentApplication factoryCep = appContext.getBean(IFactoryCountryEnvironmentApplication.class);
 
-            CountryEnvironmentApplication cea = factoryCep.create(system, country, environment, application, ip, url, urlLogin);
+            CountryEnvironmentApplication cea = factoryCep.create(system, country, environment, application, ip, domain, url, urlLogin);
             cepService.create(cea);
 
             /**

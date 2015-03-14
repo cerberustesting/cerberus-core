@@ -229,12 +229,13 @@
                         <tr id="header">
                             <td><%=docService.findLabelHTML("application", "Application", "")%></td>
                             <td><%=docService.findLabelHTML("countryenvironmentparameters", "IP", "")%></td>
+                            <td><%=docService.findLabelHTML("countryenvironmentparameters", "Domain", "")%></td>
                             <td><%=docService.findLabelHTML("countryenvironmentparameters", "URL", "")%></td>
                             <td><%=docService.findLabelHTML("countryenvironmentparameters", "URLLOGIN", "")%></td>
                         </tr>
                         <%
                         	Statement stmtCEP = conn.createStatement();
-                                                    String CEP = "SELECT DISTINCT c.Application, c.IP, c.URL, c.URLLOGIN "
+                                                    String CEP = "SELECT DISTINCT c.Application, c.IP, c.domain, c.URL, c.URLLOGIN "
                                                             + "FROM `countryenvironmentparameters` c "
                                                             + "JOIN application a ON a.application = c.application "
                                                             + "WHERE 1=1 "
@@ -248,6 +249,7 @@
 
                             <td><%=rsCEP.getString("Application")%></td>
                             <td><%=rsCEP.getString("IP")%></td>
+                            <td><%=rsCEP.getString("domain")%></td>
 
                             <td><%=rsCEP.getString("URL")%></td>
                             <td><%=rsCEP.getString("URLLOGIN")%></td>
