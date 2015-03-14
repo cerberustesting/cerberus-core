@@ -4108,6 +4108,13 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
                 SQLS.append("ADD COLUMN `useragent` VARCHAR(250) NOT NULL DEFAULT '' AFTER `active`;");
                 SQLInstruction.add(SQLS.toString());
 
+// Add Column Domain in countryenvironmentparameters Table.
+// -- ------------------------ 579               
+                SQLS = new StringBuilder();
+		SQLS.append("ALTER TABLE `countryenvironmentparameters` ");
+                SQLS.append("ADD COLUMN `domain` VARCHAR(150) NOT NULL DEFAULT '' AFTER `IP`;");
+                SQLInstruction.add(SQLS.toString());
+
                 
         return SQLInstruction;
     }
