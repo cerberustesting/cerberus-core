@@ -110,8 +110,8 @@
                             paramRequestMaker.addParam(RunTestCase.PARAMETER_PAGE_SOURCE, Integer.toString(tceiq.getPageSource()));
                             paramRequestMaker.addParam(RunTestCase.PARAMETER_SELENIUM_LOG, Integer.toString(tceiq.getSeleniumLog()));
                             paramRequestMaker.addParam(RunTestCase.PARAMETER_EXECUTION_QUEUE_ID, request.getParameter("queuedExecution"));
-                            paramRequestMaker.addParam(RunTestCase.PARAMETER_SYSTEM, tcService.findSystemOfTestCase(tceiq.getTest(), tceiq.getTestCase()));
-                            
+                            paramRequestMaker.addParam(RunTestCase.AUTOMATIC_RUN, "true");
+                            paramRequestMaker.addParam(RunTestCase.PARAMETER_MANUAL_EXECUTION, tceiq.isManualExecution() ? "Y" : "N");
 
                             String query = paramRequestMaker.mkString();
                             response.sendRedirect("RunTests.jsp?" + query);
@@ -146,8 +146,8 @@
                                         || sName.compareTo("synchroneous") == 0 || sName.compareTo("timeout") == 0
                                         || sName.compareTo("seleniumLog") == 0 || sName.compareTo("pageSource") == 0
                                         || sName.compareTo("platform") == 0 || sName.compareTo("os") == 0
-                                        || sName.compareTo("robot") == 0 || sName.compareTo("IdFromQueue")==0
-                                        || sName.compareTo("retries")==0) {
+                                        || sName.compareTo("robot") == 0 || sName.compareTo("IdFromQueue") == 0
+                                        || sName.compareTo("retries") == 0) {
                                     String[] sMultiple = request.getParameterValues(sName);
 
                                     for (int i = 0; i < sMultiple.length; i++) {
@@ -294,19 +294,26 @@
                         } else {
                             manualExecution = new String("");
                         }
-                        
+
                         String idFromQueue;
                         if (request.getParameter("IdFromQueue") != null && request.getParameter("IdFromQueue").compareTo("") != 0) {
                             idFromQueue = request.getParameter("IdFromQueue");
                         } else {
                             idFromQueue = new String("");
                         }
-                        
+
                         String retries;
                         if (request.getParameter("retries") != null && request.getParameter("retries").compareTo("") != 0) {
                             retries = request.getParameter("retries");
                         } else {
                             retries = new String("");
+                        }
+
+                        boolean autoRun;
+                        if (request.getParameter("autoRun") != null && request.getParameter("autoRun").compareTo("") != 0) {
+                            autoRun = true;
+                        } else {
+                            autoRun = false;
                         }
 
                         String timeout;
@@ -369,6 +376,7 @@
                 <input hidden="hidden" id="defTag" value="<%=tag%>">
                 <input hidden="hidden" id="IdFromQueue" name="IdFromQueue" value="<%=idFromQueue%>">
                 <input hidden="hidden" id="defRetries" value="<%=retries%>">
+                <input hidden="hidden" id="defAutoRun" value="<%=autoRun%>">
                 <div class="filters" style="clear:both; width:100%">
                     <p style="float:left" class="dttTitle">Choose Test</p>
                     <div id="dropDownDownArrow" style="float:left">
@@ -611,14 +619,14 @@
                             <input id="timeout" name="timeout" style="width: 200px">
                         </div>
                     </div>
-                        <div style="clear:both">
-                            <div style="float:left;width:150px; text-align:left"><% out.print(docService.findLabelHTML("page_runtests", "retries", ""));%>
-                            </div>
-                            <div style="float:left">
-                                <select id="retries" name="retries" style="width: 200px">
-                                </select>
-                            </div>
+                    <div style="clear:both">
+                        <div style="float:left;width:150px; text-align:left"><% out.print(docService.findLabelHTML("page_runtests", "retries", ""));%>
                         </div>
+                        <div style="float:left">
+                            <select id="retries" name="retries" style="width: 200px">
+                            </select>
+                        </div>
+                    </div>
                     <div style="clear:both">
                         <div style="float:left;width:150px; text-align:left"><% out.print(docService.findLabelHTML("page_runtests", "manualExecution", ""));%>
                         </div>
@@ -667,11 +675,11 @@
 
 
                     if (manualExec === "Y") {
-                        if (typeof test==='undefined' ||typeof testcase==='undefined' ||typeof env==='undefined' ||typeof country==='undefined'){
-                            alert("Testcase cannot be executed : Mandatory parameter(s) is(are) missing\n\ntest : "+test+"\ntestcase : "+testcase+"\ncountry : "+country+"\nenvironment : "+env);
-                        }else{
-                        openRunManualPopin(test, testcase, env, country, idFromQueue, tag);
-                    }
+                        if (typeof test === 'undefined' || typeof testcase === 'undefined' || typeof env === 'undefined' || typeof country === 'undefined') {
+                            alert("Testcase cannot be executed : Mandatory parameter(s) is(are) missing\n\ntest : " + test + "\ntestcase : " + testcase + "\ncountry : " + country + "\nenvironment : " + env);
+                        } else {
+                            openRunManualPopin(test, testcase, env, country, idFromQueue, tag);
+                        }
                     } else {
                         if (data.group === "MANUAL") {
                             alert("You cannot automatically execute manual testcase");
@@ -685,6 +693,8 @@
 
 
             }
+
+
         </script>
         <script type="text/javascript">
             function validateForm() {
@@ -799,6 +809,7 @@
                 var cou = document.getElementById("country");
                 var countrySelected = cou.options[cou.selectedIndex].value;
                 var env = document.getElementById("defEnvironment").value;
+                var autoRun = document.getElementById("defAutoRun").value;
 
                 $.getJSON('findEnvironmentByCriteria?system=' + systemSelected + '&country=' + countrySelected + '&application=' + applicationSelected, function(data) {
                     $("#environment").empty();
@@ -817,11 +828,18 @@
                             $(opt).attr('selected', 'selected');
                     });
 
+                    if (autoRun === "true") {
+                        checkTestcaseGroupAndPerformTest();
+                    }
                 });
             }
-            ;
         </script>
-        <script type="text/javascript">
+
+        });
+        }
+        ;
+    </script>
+    <script type="text/javascript">
             $(document).ready(function() {
                 $.getJSON('FindInvariantByID?idName=outputformat', function(data) {
                     $("#outputformat").empty();
@@ -837,8 +855,8 @@
                 })
             });
 
-        </script>
-        <script type="text/javascript">
+    </script>
+    <script type="text/javascript">
             $(document).ready(function() {
                 $.getJSON('FindInvariantByID?idName=verbose', function(data) {
                     $("#verbose").empty();
@@ -863,8 +881,8 @@
                 })
             });
 
-        </script>
-        <script type="text/javascript">
+    </script>
+    <script type="text/javascript">
             $(document).ready(function() {
                 $.getJSON('FindInvariantByID?idName=synchroneous', function(data) {
                     $("#synchroneous").empty();
@@ -889,8 +907,8 @@
                 })
             });
 
-        </script>
-        <script type="text/javascript">
+    </script>
+    <script type="text/javascript">
             $(document).ready(function() {
                 $.getJSON('FindInvariantByID?idName=manualExecution', function(data) {
                     $("#manualExecution").empty();
@@ -916,8 +934,8 @@
                 })
             });
 
-        </script>
-        <script type="text/javascript">
+    </script>
+    <script type="text/javascript">
             $(document).ready(function() {
                 $.getJSON('FindInvariantByID?idName=screenshot', function(data) {
                     $("#screenshot").empty();
@@ -949,8 +967,8 @@
                 })
             });
 
-        </script>
-        <script type="text/javascript">
+    </script>
+    <script type="text/javascript">
             $(document).ready(function() {
                 $.getJSON('FindInvariantByID?idName=pageSource', function(data) {
                     $("#pageSource").empty();
@@ -982,8 +1000,8 @@
                 })
             });
 
-        </script>
-        <script type="text/javascript">
+    </script>
+    <script type="text/javascript">
             $(document).ready(function() {
                 $.getJSON('FindInvariantByID?idName=seleniumLog', function(data) {
                     $("#seleniumLog").empty();
@@ -1015,8 +1033,8 @@
                 })
             });
 
-        </script>
-        <script type="text/javascript">
+    </script>
+    <script type="text/javascript">
             $(document).ready(function() {
                 $.getJSON('FindInvariantByID?idName=browser', function(data) {
                     $("#browser").empty();
@@ -1037,8 +1055,8 @@
                 })
             });
 
-        </script>
-        <script type="text/javascript">
+    </script>
+    <script type="text/javascript">
             $(document).ready(function() {
                 $.getJSON('FindInvariantByID?idName=platform', function(data) {
                     $("#platform").empty();
@@ -1064,8 +1082,8 @@
                 })
             });
 
-        </script>
-        <script type="text/javascript">
+    </script>
+    <script type="text/javascript">
             $(document).ready(function() {
                 $.getJSON('FindInvariantByID?idName=retries', function(data) {
                     $("#retries").empty();
@@ -1097,8 +1115,8 @@
                 })
             });
 
-        </script>
-        <script type="text/javascript">
+    </script>
+    <script type="text/javascript">
             $(document).ready(function() {
                 $("#tag").empty();
                 var tag = document.getElementById("defTag").value;
@@ -1109,15 +1127,15 @@
                 }
             });
 
-        </script>
-        <script type="text/javascript">
+    </script>
+    <script type="text/javascript">
             $(document).ready(function() {
                 $("#timeout").empty();
                 setCookie('TimeoutPreference', 'timeout');
             });
 
-        </script>
-        <script>
+    </script>
+    <script>
             function changeStyleWhenSelected(field) {
                 var b = document.getElementById(field);
                 var c = b.options[b.selectedIndex].value;
@@ -1128,8 +1146,8 @@
                     document.getElementById(field).setAttribute('class', 'selectRobot');
                 }
             }
-        </script>
-        <script>
+    </script>
+    <script>
             function recordRobotPreference() {
                 var ip = document.getElementById("ss_ip").value;
                 var p = document.getElementById("ss_p").value;
@@ -1145,8 +1163,8 @@
                 var xmlDoc = xhttp.responseText;
                 $("#loader").remove();
             }
-        </script>
-        <script>
+    </script>
+    <script>
             function recordExecutionParam() {
                 var expiration_date = new Date();
                 expiration_date.setFullYear(expiration_date.getFullYear() + 1);
@@ -1172,8 +1190,8 @@
                 document.cookie = "ManualExecutionPreference=" + prefME + ";expires=" + expiration_date.toGMTString();
                 document.cookie = "ExecutionRetries=" + prefRt + ";expires=" + expiration_date.toGMTString();
             }
-        </script>
-        <script>
+    </script>
+    <script>
             function setCookie(cookieName, element) {
                 var name = cookieName + "=";
                 var ca = document.cookie.split(';');
@@ -1185,8 +1203,8 @@
                     }
                 }
             }
-        </script>
-        <script>
+    </script>
+    <script>
             function getCookie(cname) {
                 var name = cname + "=";
                 var ca = document.cookie.split(';');
@@ -1196,7 +1214,7 @@
                         return c.substring(name.length, c.length);
                 }
                 return "";
-            }
-        </script>
-    </body>
+        }
+    </script>
+</body>
 </html>

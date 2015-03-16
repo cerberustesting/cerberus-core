@@ -103,6 +103,7 @@ public class RunTestCase extends HttpServlet {
     public static final String PARAMETER_EXECUTION_QUEUE_ID = "IdFromQueue";
     public static final String PARAMETER_SYSTEM = "MySystem";
     public static final String PARAMETER_NUMBER_OF_RETRIES = "retries";
+    public static final String AUTOMATIC_RUN = "autoRun";
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

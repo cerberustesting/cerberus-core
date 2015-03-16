@@ -135,7 +135,7 @@ function buildDetailedTableLines(lines, columns) {
             var heightValue = 99 / columns.length;
             var classColumnGen = convertStringToHashcode(columns[c].country + " " + columns[c].environment + " " + columns[c].browser);
             var classGen = convertStringToHashcode(columns[c].country + " " + columns[c].environment + " " + columns[c].browser + " " + lines[l].test + " " + lines[l].testCase);
-            detailedTableLines += ("<div style='width:"+heightValue+"%; float:left;margin-left:"+heightValue*c+"  position:absolute; top:0; bottom:0; left:0; right:0'><div style='height:100%' class='Country " + classGen + " "+classColumnGen+" "+columns[c].browser+" "+columns[c].environment+" "+columns[c].country+"'></div></div>");
+            detailedTableLines += ("<div style='width:"+heightValue+"%; float:left;margin-left:"+heightValue*c+" position:absolute; top:0; bottom:0; left:0; right:0' class='TableRow'><div style='height:100%' class='Country " + classGen + " "+classColumnGen+" "+columns[c].browser+" "+columns[c].environment+" "+columns[c].country+"'></div></div>");
         }
 
         detailedTableLines += ("</div></div>");
@@ -187,14 +187,16 @@ function showOrHideColumns(checkboxElem, columnName) {
     } else {
         $(e).attr('style', 'clear:both; width: 100%;display:none');
     }
-
-    })
+    });
+    $.each($(document).find(".TableRow"), function (id,elem){
+        $(elem).attr('style', 'width:' + 100 / 2 +'% ; float:left;margin-left:0 position:absolute; top:0; bottom:0; left:0; right:0');
+});
 
 }
 
 function displayFilter(value){
     var detailedTableFilter = "<div class='indFilter'><p>" +value +"</p>"+
-                "<input type='checkbox' id='filterId_"+value+"' onclick=\"showOrHideColumns(this,'"+value+"'), recordColumnSelection('"+value+"')\" value='"+value+"'></div>";
+                "<input type='checkbox' class='FilterCheckbox' id='filterId_"+value+"' onclick=\"showOrHideColumns(this,'"+value+"'), recordColumnSelection('"+value+"')\" value='"+value+"'></div>";
         return detailedTableFilter;
     
 }
