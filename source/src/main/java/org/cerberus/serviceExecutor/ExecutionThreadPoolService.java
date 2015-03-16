@@ -86,7 +86,7 @@ public class ExecutionThreadPoolService {
         try {
         List<TestCaseExecutionInQueue> tceiqList = tceiqService.findAllNotProcedeed();
         
-        if (!tceiqList.isEmpty()){
+        if (null != tceiqList && !tceiqList.isEmpty()){
         
         String host = parameterService.findParameterByKey("cerberus_url", "").getValue() ;
         host += "/RunTestCase?";

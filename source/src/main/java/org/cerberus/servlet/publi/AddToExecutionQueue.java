@@ -52,7 +52,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  */
 @WebServlet(name = "AddToExecutionQueue", urlPatterns = {"/AddToExecutionQueue"})
 public class AddToExecutionQueue extends HttpServlet {
-    
+
     /**
      * Exception thrown when the parameter scanning process goes wrong.
      *
@@ -113,7 +113,6 @@ public class AddToExecutionQueue extends HttpServlet {
     private static final int DEFAULT_VALUE_SELENIUM_LOG = 1;
     private static final int DEFAULT_VALUE_RETRIES = 0;
     private static final boolean DEFAULT_VALUE_MANUAL_EXECUTION = false;
-
 
     private static final String LINE_SEPARATOR = "\n";
 
@@ -260,12 +259,14 @@ public class AddToExecutionQueue extends HttpServlet {
             throw new ParameterException("Countries can not be null");
         }
 
-        String environment = ParameterParserUtil.parseStringParamAndDecode(req.getParameter(PARAMETER_ENVIRONMENT), null, charset);
-        if (environment == null || environment.isEmpty()) {
+        List<String> environments = new ArrayList();
+        environments = ParameterParserUtil.parseListParamAndDecode(req.getParameterValues(PARAMETER_ENVIRONMENT), null, charset);
+        if (environments == null || environments.isEmpty()) {
             throw new ParameterException("Environment must not be null");
         }
-        String browser = ParameterParserUtil.parseStringParamAndDecode(req.getParameter(PARAMETER_BROWSER), null, charset);
-        if (browser == null || browser.isEmpty()) {
+        List<String> browsers = new ArrayList();
+        browsers = ParameterParserUtil.parseListParamAndDecode(req.getParameterValues(PARAMETER_BROWSER), null, charset);
+        if (browsers == null || browsers.isEmpty()) {
             throw new ParameterException("Browser must not be null");
         }
 
@@ -300,35 +301,39 @@ public class AddToExecutionQueue extends HttpServlet {
             String test = selectedTest.get(PARAMETER_SELECTED_TEST_TEST);
             String testCase = selectedTest.get(PARAMETER_SELECTED_TEST_TEST_CASE);
             for (String country : countries) {
-                try {
-                    inQueues.add(inQueueFactoryService.create(test,
-                            testCase,
-                            country,
-                            environment,
-                            robot,
-                            robotIP,
-                            robotPort,
-                            browser,
-                            browserVersion,
-                            platform,
-                            manualURL,
-                            manualHost,
-                            manualContextRoot,
-                            manualLoginRelativeURL,
-                            manualEnvData,
-                            tag,
-                            outputFormat,
-                            screenshot,
-                            verbose,
-                            timeout,
-                            synchroneous,
-                            pageSource,
-                            seleniumLog,
-                            requestDate, 
-                            retries, 
-                            manualExecution));
-                } catch (FactoryCreationException e) {
-                    throw new ParameterException("Unable to insert record due to: " + e.getMessage(), e);
+                for (String environment : environments) {
+                    for (String browser : browsers) {
+                        try {
+                            inQueues.add(inQueueFactoryService.create(test,
+                                    testCase,
+                                    country,
+                                    environment,
+                                    robot,
+                                    robotIP,
+                                    robotPort,
+                                    browser,
+                                    browserVersion,
+                                    platform,
+                                    manualURL,
+                                    manualHost,
+                                    manualContextRoot,
+                                    manualLoginRelativeURL,
+                                    manualEnvData,
+                                    tag,
+                                    outputFormat,
+                                    screenshot,
+                                    verbose,
+                                    timeout,
+                                    synchroneous,
+                                    pageSource,
+                                    seleniumLog,
+                                    requestDate,
+                                    retries,
+                                    manualExecution));
+                        } catch (FactoryCreationException e) {
+                            throw new ParameterException("Unable to insert record due to: " + e.getMessage(), e);
+                        }
+                    }
                 }
             }
         }

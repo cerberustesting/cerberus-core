@@ -346,7 +346,7 @@
                                     </span>
                                 </div>
                                 <div style="float:left">
-                                    <select id="environment" name="Environment" style="width: 400px">
+                                    <select id="environment" name="Environment" multiple style="width: 400px">
                                         <%
                                             CountryEnvParam countryEnvironmentParameter = new CountryEnvParam();
                                             countryEnvironmentParameter.setActive(true);
@@ -415,7 +415,7 @@
                             <div style="float:left; width:150px; text-align:left"><% out.print(docService.findLabelHTML("page_runtests", "Browser", "Browser"));%>
                             </div>
                             <div style="float:left">
-                                <select id="Browser" name="Browser" style="width: 150px;" class="<%=browserClass%>">
+                                <select id="Browser" multiple name="Browser" style="width: 150px;" class="<%=browserClass%>">
                                 </select>
                             </div>
                         </div>

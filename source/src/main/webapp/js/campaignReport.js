@@ -188,9 +188,9 @@ function showOrHideColumns(checkboxElem, columnName) {
         $(e).attr('style', 'clear:both; width: 100%;display:none');
     }
     });
-    $.each($(document).find(".TableRow"), function (id,elem){
-        $(elem).attr('style', 'width:' + 100 / 2 +'% ; float:left;margin-left:0 position:absolute; top:0; bottom:0; left:0; right:0');
-});
+//    $.each($(document).find(".TableRow"), function (id,elem){
+//        $(elem).attr('style', 'width:' + 100 / 2 +'% ; float:left;margin-left:0 position:absolute; top:0; bottom:0; left:0; right:0');
+//});
 
 }
 
