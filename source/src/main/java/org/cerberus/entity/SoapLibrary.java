@@ -31,6 +31,15 @@ public class SoapLibrary {
     private String servicePath;
     private String parsingAnswer;
     private String method;
+    private String attachmentUrl;
+
+    public String getAttachmentUrl() {
+        return attachmentUrl;
+    }
+
+    public void setAttachmentUrl(String attachmentUrl) {
+        this.attachmentUrl = attachmentUrl;
+    }
 
     public void setMethod(String method) {
         this.method = method;
@@ -88,4 +97,5 @@ public class SoapLibrary {
         return description;
     }
 
+    
 }

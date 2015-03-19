@@ -540,8 +540,13 @@ public class PropertyService implements IPropertyService {
         try {
             SoapLibrary soapLib = this.soapLibraryService.findSoapLibraryByKey(testCaseExecutionData.getValue1());
             if (soapLib != null) {
-
-                soapService.callSOAPAndStoreResponseInMemory(tCExecution.getExecutionUUID(), soapLib.getEnvelope(), soapLib.getServicePath(), soapLib.getMethod());
+                String attachement = "";
+                if (!testCaseExecutionData.getValue2().isEmpty()){
+                    attachement = testCaseExecutionData.getValue2();
+                }else{
+                    attachement = soapLib.getAttachmentUrl();
+                }
+                soapService.callSOAPAndStoreResponseInMemory(tCExecution.getExecutionUUID(), soapLib.getEnvelope(), soapLib.getServicePath(), soapLib.getMethod(), attachement);
                 String result = xmlUnitService.getFromXml(tCExecution.getExecutionUUID(), null, soapLib.getParsingAnswer());
                 if (result != null) {
                     testCaseExecutionData.setValue(result);

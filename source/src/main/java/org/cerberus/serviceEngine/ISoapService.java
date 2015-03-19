@@ -53,8 +53,17 @@ public interface ISoapService {
      * @param envelope The envelope of the the SOAP
      * @param servicePath The servicePath (WSDL) of the SOAP
      * @param method The name of the method of the SOAP
+     * @param attachmentUrl
      * @return MessageEvent with the status of the call
      */
-    MessageEvent callSOAPAndStoreResponseInMemory(String uuid, final String envelope, final String servicePath, final String method);
+    MessageEvent callSOAPAndStoreResponseInMemory(String uuid, final String envelope, final String servicePath, final String method, final String attachmentUrl);
+    
+    /**
+     * 
+     * @param message
+     * @param url 
+     * @throws org.cerberus.exception.CerberusException 
+     */
+    void addAttachmentPart(SOAPMessage message, String url) throws CerberusException;
     
 }

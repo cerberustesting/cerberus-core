@@ -19,14 +19,19 @@
  */
 package org.cerberus.serviceEngine.impl;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
-
+import javax.activation.DataHandler;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.soap.AttachmentPart;
 import javax.xml.soap.MessageFactory;
 import javax.xml.soap.MimeHeaders;
 import javax.xml.soap.SOAPConnection;
@@ -34,11 +39,13 @@ import javax.xml.soap.SOAPConnectionFactory;
 import javax.xml.soap.SOAPConstants;
 import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPMessage;
-
 import org.apache.log4j.Level;
 import org.cerberus.entity.ExecutionSOAPResponse;
 import org.cerberus.entity.MessageEvent;
 import org.cerberus.entity.MessageEventEnum;
+import org.cerberus.entity.MessageGeneral;
+import org.cerberus.entity.MessageGeneralEnum;
+import org.cerberus.exception.CerberusException;
 import org.cerberus.log.MyLogger;
 import org.cerberus.serviceEngine.ISoapService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,28 +59,28 @@ import org.xml.sax.SAXException;
  */
 @Service
 public class SoapService implements ISoapService {
-	
+
 	/** The SOAP 1.2 namespace pattern */
-	private static final Pattern SOAP_1_2_NAMESPACE_PATTERN = Pattern.compile(SOAPConstants.URI_NS_SOAP_1_2_ENVELOPE);
+    private static final Pattern SOAP_1_2_NAMESPACE_PATTERN = Pattern.compile(SOAPConstants.URI_NS_SOAP_1_2_ENVELOPE);
 
     @Autowired
     ExecutionSOAPResponse executionSOAPResponse;
 
-	@Override
-	public SOAPMessage createSoapRequest(String envelope, String method) throws SOAPException, IOException, SAXException, ParserConfigurationException {
-		String unescapedEnvelope = HtmlUtils.htmlUnescape(envelope);
+    @Override
+    public SOAPMessage createSoapRequest(String envelope, String method) throws SOAPException, IOException, SAXException, ParserConfigurationException {
+        String unescapedEnvelope = HtmlUtils.htmlUnescape(envelope);
 
-		MimeHeaders headers = new MimeHeaders();
-		headers.addHeader("SOAPAction", method);
-		headers.addHeader("Content-Type", SOAP_1_2_NAMESPACE_PATTERN.matcher(unescapedEnvelope).matches() ? SOAPConstants.SOAP_1_2_CONTENT_TYPE : SOAPConstants.SOAP_1_1_CONTENT_TYPE);
+        MimeHeaders headers = new MimeHeaders();
+        headers.addHeader("SOAPAction", method);
+        headers.addHeader("Content-Type", SOAP_1_2_NAMESPACE_PATTERN.matcher(unescapedEnvelope).matches() ? SOAPConstants.SOAP_1_2_CONTENT_TYPE : SOAPConstants.SOAP_1_1_CONTENT_TYPE);
 
-		InputStream input = new ByteArrayInputStream(unescapedEnvelope.getBytes("UTF-8"));
-		MessageFactory messageFactory = MessageFactory.newInstance(SOAPConstants.DYNAMIC_SOAP_PROTOCOL);
-		return messageFactory.createMessage(headers, input);
-	}
+        InputStream input = new ByteArrayInputStream(unescapedEnvelope.getBytes("UTF-8"));
+        MessageFactory messageFactory = MessageFactory.newInstance(SOAPConstants.DYNAMIC_SOAP_PROTOCOL);
+        return messageFactory.createMessage(headers, input);
+    }
 
     @Override
-    public MessageEvent callSOAPAndStoreResponseInMemory(String uuid, String envelope, String servicePath, String method) {
+    public MessageEvent callSOAPAndStoreResponseInMemory(String uuid, String envelope, String servicePath, String method, String attachmentUrl) {
         String result = null;
         ByteArrayOutputStream out = null;
         MessageEvent message = null;
@@ -82,24 +89,29 @@ public class SoapService implements ISoapService {
             SOAPConnectionFactory soapConnectionFactory;
             SOAPConnection soapConnection = null;
             try {
-            	//Initialize SOAP Connection
+                //Initialize SOAP Connection
                 soapConnectionFactory = SOAPConnectionFactory.newInstance();
                 soapConnection = soapConnectionFactory.createConnection();
-                MyLogger.log(SoapService.class.getName(), Level.INFO, "Connection opened");
+                MyLogger.log(SoapService.class.getName(), Level.DEBUG, "Connection opened");
 
                 // Create SOAP Request
-                MyLogger.log(SoapService.class.getName(), Level.INFO, "Create request");
+                MyLogger.log(SoapService.class.getName(), Level.DEBUG, "Create request");
                 SOAPMessage input = createSoapRequest(envelope, method);
 
-                // Call the WS
-                MyLogger.log(SoapService.class.getName(), Level.INFO, "Calling WS");
-                SOAPMessage soapResponse = soapConnection.call(input, servicePath);
+                //Add attachment File if specified
+                if (!attachmentUrl.isEmpty()) {
+                    this.addAttachmentPart(input, attachmentUrl);
+                }
 
+                // Call the WS
+                MyLogger.log(SoapService.class.getName(), Level.DEBUG, "Calling WS");
+                SOAPMessage soapResponse = soapConnection.call(input, servicePath);
+                MyLogger.log(SoapService.class.getName(), Level.DEBUG, "Called WS");
                 out = new ByteArrayOutputStream();
 
                 // Store the response in memory (Using the persistent ExecutionSOAPResponse object)
                 soapResponse.writeTo(out);
-                MyLogger.log(SoapService.class.getName(), Level.INFO, "WS response received");
+                MyLogger.log(SoapService.class.getName(), Level.DEBUG, "WS response received");
                 MyLogger.log(SoapService.class.getName(), Level.DEBUG, "WS response : " + out.toString());
                 result = out.toString();
                 executionSOAPResponse.setExecutionSOAPResponse(uuid, result);
@@ -123,6 +135,10 @@ public class SoapService implements ISoapService {
                 MyLogger.log(SoapService.class.getName(), Level.ERROR, e.toString());
                 message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSOAP);
                 message.setDescription(message.getDescription().replaceAll("%SOAPNAME%", method));
+            } catch (CerberusException e) {
+                MyLogger.log(SoapService.class.getName(), Level.ERROR, e.toString());
+                message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSOAP);
+                message.setDescription(message.getDescription().replaceAll("%SOAPNAME%", method));
             } finally {
                 try {
                     if (soapConnection != null) {
@@ -141,6 +157,28 @@ public class SoapService implements ISoapService {
         }
 
         return message;
+    }
+
+    @Override
+    public void addAttachmentPart(SOAPMessage input, String path) throws CerberusException {
+        URL url;
+        try {
+            url = new URL(path);
+            DataHandler handler = new DataHandler(url);
+            String str = "";
+            StringBuilder sb = new StringBuilder();
+            BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()));
+            while (null != (str = br.readLine())) {
+                sb.append(str);
+            }
+            AttachmentPart attachPart = input.createAttachmentPart(handler);
+            input.addAttachmentPart(attachPart);
+        } catch (MalformedURLException ex) {
+            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.SOAPLIB_MALFORMED_URL));
+        } catch (IOException ex) {
+            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.SOAPLIB_MALFORMED_URL));
+        }
+
     }
 
 }

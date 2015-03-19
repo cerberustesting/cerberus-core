@@ -90,6 +90,7 @@ public enum MessageGeneralEnum {
     SQLLIB_NOT_FOUND(103, "FA", "SQL Library was not found."),
     CANNOT_UPDATE_TABLE(104, "", "Cannot update table."),
     SOAPLIB_NOT_FOUND(105, "FA", "SOAP Library was not found"),
+    SOAPLIB_MALFORMED_URL(106, "FA", "SOAP Attachment File badly configured"),
     
     GUI_TEST_CREATION_NOT_HAVE_RIGHT(403, "", "Error : You dont have the user right to create a Test. Please contact your Cerberus Administrator"),
     GUI_TEST_DUPLICATION_NOT_EXISTING_TEST(403, "", "Error : You're trying to duplicate a test which does not exist anymore."),

@@ -159,10 +159,10 @@ public class ActionService implements IActionService {
             res = this.doActionManageDialog(tCExecution, object, property);
 
         } else if (testCaseStepActionExecution.getAction().equals("callSoapWithBase")) {
-            res = this.doActionMakeSoapCall(testCaseStepActionExecution, object, true);
+            res = this.doActionMakeSoapCall(testCaseStepActionExecution, object, property, true);
 
         } else if (testCaseStepActionExecution.getAction().equals("callSoap")) {
-            res = this.doActionMakeSoapCall(testCaseStepActionExecution, object, false);
+            res = this.doActionMakeSoapCall(testCaseStepActionExecution, object, property, false);
 
         } else if (testCaseStepActionExecution.getAction().equals("mouseDownMouseUp")) {
             res = this.doActionMouseDownMouseUp(tCExecution, object, property);
@@ -204,7 +204,7 @@ public class ActionService implements IActionService {
         MessageEvent message;
         if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")) {
             return webdriverService.doSeleniumActionClick(tCExecution.getSession(), string1, string2, true, true);
-        } else if ( tCExecution.getApplication().getType().equalsIgnoreCase("APK")){
+        } else if (tCExecution.getApplication().getType().equalsIgnoreCase("APK")) {
             return webdriverService.doSeleniumActionClick(tCExecution.getSession(), string1, string2, true, false);
         }
         message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
@@ -332,14 +332,14 @@ public class ActionService implements IActionService {
                     message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_WAIT_TIME);
                     message.setDescription(message.getDescription().replaceAll("%TIME%", property));
                     return message;
-                } else if (StringUtil.isNull(object) && StringUtil.isNull(property)){
-                    Thread.sleep(1000*tCExecution.getSession().getDefaultWait());
+                } else if (StringUtil.isNull(object) && StringUtil.isNull(property)) {
+                    Thread.sleep(1000 * tCExecution.getSession().getDefaultWait());
                     message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_WAIT_TIME);
-                    message.setDescription(message.getDescription().replaceAll("%TIME%", String.valueOf(1000*tCExecution.getSession().getDefaultWait())));
+                    message.setDescription(message.getDescription().replaceAll("%TIME%", String.valueOf(1000 * tCExecution.getSession().getDefaultWait())));
                     return message;
                 } else {
-                message = new MessageEvent(MessageEventEnum.ACTION_FAILED_WAIT_INVALID_FORMAT);
-                return message;
+                    message = new MessageEvent(MessageEventEnum.ACTION_FAILED_WAIT_INVALID_FORMAT);
+                    return message;
                 }
             } catch (InterruptedException exception) {
                 MyLogger.log(ActionService.class.getName(), Level.INFO, exception.toString());
@@ -433,7 +433,7 @@ public class ActionService implements IActionService {
 
     }
 
-    private MessageEvent doActionMakeSoapCall(TestCaseStepActionExecution testCaseStepActionExecution, String object, boolean withBase) {
+    private MessageEvent doActionMakeSoapCall(TestCaseStepActionExecution testCaseStepActionExecution, String object, String property, boolean withBase) {
         MessageEvent message;
         TestCaseExecution tCExecution = testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution();
         //if (tCExecution.getApplication().getType().equalsIgnoreCase("WS")) {
@@ -459,7 +459,16 @@ public class ActionService implements IActionService {
                     return message;
                 }
             }
-            return soapService.callSOAPAndStoreResponseInMemory(tCExecution.getExecutionUUID(), decodedEnveloppe, servicePath, soapLibrary.getMethod());
+            /*
+             * Add attachment
+             */
+            String attachement = "";
+            if (!property.isEmpty()) {
+                attachement = property;
+            } else {
+                attachement = soapLibrary.getAttachmentUrl();
+            }
+            return soapService.callSOAPAndStoreResponseInMemory(tCExecution.getExecutionUUID(), decodedEnveloppe, servicePath, soapLibrary.getMethod(), attachement);
         } catch (CerberusException ex) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSOAP);
             message.setDescription(message.getDescription().replaceAll("%SOAPNAME%", object));

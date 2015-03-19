@@ -61,51 +61,62 @@ function buildDynamicsColumns(columns) {
 function buildDetailedTableHeader(columns) {
     var detailedTableHeader = ("<div class='tableHeader' style='width: 100%; height: 100%; display:inline-block'>" +
             "<div class='TestPart'>" +
-                "<div class='Test'></div>" +
-                "<div class='TestCase'></div>" +
-                "<div class='Function'></div>" +
-                "<div class='ShortDescription wrapAll'></div>" +
-                "<div class='Control'></div>" +
-                "<div class='Status'></div>" +
-                "<div class='Application'></div>" +
-                "<div class='BugID'></div>" +
-                "<div class='Comment'></div>" +
-                "<div>Search : <input id='searchColumns' style='width:300px, height:30px'></div>" +
+            "<div class='Test'></div>" +
+            "<div class='TestCase'></div>" +
+            "<div class='Function'></div>" +
+            "<div class='ShortDescription wrapAll'></div>" +
+            "<div class='Control'></div>" +
+            "<div class='Status'></div>" +
+            "<div class='Application'></div>" +
+            "<div class='BugID'></div>" +
+            "<div class='Comment'></div>" +
+            "<div>Search : <input id='searchColumns' style='width:300px, height:30px'></div>" +
             "</div>" +
             "<div class='StatusPart'>");
 
     for (var c = 0; c < columns.length; c++) {
-            var heightValue = 99 / columns.length;
-            var classGen = convertStringToHashcode(columns[c].country + " " + columns[c].environment + " " + columns[c].browser);
-            detailedTableHeader += ("<div style='width:"+heightValue+"%; float:left'><div style='height:100%' class='Country " + classGen + " "+columns[c].browser+" "+columns[c].environment+" "+columns[c].country+"'>" + columns[c].country +" "+ columns[c].browser +" "+ columns[c].environment +"</div>"+
-                    "<div id='stats_"+classGen+"' class='Country " + classGen + " "+columns[c].browser+" "+columns[c].environment+" "+columns[c].country+"'></div></div>");
-        }
+        var heightValue = 99 / columns.length;
+        var classGen = convertStringToHashcode(columns[c].country + " " + columns[c].environment + " " + columns[c].browser);
+        detailedTableHeader += ("<div class='StatsHeader' style='width:" + heightValue + "%; float:left'><div style='height:100%' class='Stats Country " + classGen + " " + columns[c].browser + " " + columns[c].environment + " " + columns[c].country + "'>" + columns[c].country + " " + columns[c].browser + " " + columns[c].environment + "</div>" +
+                "<div id='stats_" + classGen + "' class='Country " + classGen + " " + columns[c].browser + " " + columns[c].environment + " " + columns[c].country + "'></div></div>");
+    }
 
     detailedTableHeader += ("</div></div>");
-    
+
     return detailedTableHeader;
 }
 
 function sortByKey(array, key) {
     return array.sort(function(a, b) {
-        var x = a[key]; var y = b[key];
+        var x = a[key];
+        var y = b[key];
         return ((x < y) ? -1 : ((x > y) ? 1 : 0));
     });
 }
 
-function loadTableContent(lines, columns, values){
-$("#detailedTableContentDiv").empty().append(buildDetailedTableLines(lines, columns));
-                    feedDetailedTableWithExecutionInformation(values);
+function loadTableContent(lines, columns, values) {
 
-                    loadCookieValues();
+    $.when($("#detailedTableContentDiv").empty().append(buildDetailedTableLines(lines, columns)))
+            .done(
+                    $.when(feedDetailedTableWithExecutionInformation(values))
+                    .done(
+                            $.when(loadCookieValues())
+                            .done(
+                                    $.when(changeView())
+                                    .done(getStatistics(columns)))));
+}
 
-                    getStatistics(columns);
-                    }
+function changeView() {
+    $(document).find(".indFilter input").each(function(i, e) {
+        showOrHideColumns(e, e.value, true);
+    });
+    $(document).find(".Init").removeClass('Init');
+}
 
-function filterLines(string){
+function filterLines(string) {
     $(".TableLine").show();
-    if (string!==('')){
-$(".TableLine:not(:contains('"+string+"'))").hide();
+    if (string !== ('')) {
+        $(".TableLine:not(:contains('" + string + "'))").hide();
     }
 }
 
@@ -114,11 +125,11 @@ $(".TableLine:not(:contains('"+string+"'))").hide();
 function buildDetailedTableLines(lines, columns) {
 
     var detailedTableLines = "";
-    
+
     lines = sortByKey(lines, 'test');
-    
+
     for (var l = 0; l < lines.length; l++) {
-        
+
         detailedTableLines += ("<div class='TableLine' style='clear:both; width: 100%; display:inline-block; position:relative'>" +
                 "<div class='TestPart'><div class='Test'>" + lines[l].test + "</div>" +
                 "<div class='TestCase'>" + generateTestCaseLink(lines[l].test, lines[l].testCase) + "</div>" +
@@ -135,7 +146,7 @@ function buildDetailedTableLines(lines, columns) {
             var heightValue = 99 / columns.length;
             var classColumnGen = convertStringToHashcode(columns[c].country + " " + columns[c].environment + " " + columns[c].browser);
             var classGen = convertStringToHashcode(columns[c].country + " " + columns[c].environment + " " + columns[c].browser + " " + lines[l].test + " " + lines[l].testCase);
-            detailedTableLines += ("<div style='width:"+heightValue+"%; float:left;margin-left:"+heightValue*c+" position:absolute; top:0; bottom:0; left:0; right:0' class='TableRow'><div style='height:100%' class='Country " + classGen + " "+classColumnGen+" "+columns[c].browser+" "+columns[c].environment+" "+columns[c].country+"'></div></div>");
+            detailedTableLines += ("<div style='width:" + heightValue + "%; float:left;margin-left:" + heightValue * c + " position:absolute; top:0; bottom:0; left:0; right:0' class='TableRow'><div style='height:100%' class='Country " + classGen + " " + classColumnGen + " " + columns[c].browser + " " + columns[c].environment + " " + columns[c].country + "'></div></div>");
         }
 
         detailedTableLines += ("</div></div>");
@@ -146,25 +157,25 @@ function buildDetailedTableLines(lines, columns) {
 function feedDetailedTableWithExecutionInformation(values) {
     for (var v = 0; v < values.length; v++) {
         var classGen = convertStringToHashcode(values[v].Country + " " + values[v].Environment + " " + values[v].Browser + " " + values[v].Test + " " + values[v].TestCase);
-        $(document).find("."+classGen).append("<div style='width:100%' class='"+values[v].ControlStatus+" "+values[v].ControlStatus+"F'><div style='height:100%; width:50%;float:left' name='controlStatusElement' class='"+values[v].ControlStatus+" "+values[v].ControlStatus+"F' data-app='"+values[v].Application+"' value='"+values[v].ControlStatus+"'><b>"+values[v].ControlStatus+"</b></div>"+
-        "<div style='height:100%;width:50%' class='ID "+values[v].ControlStatus+"'>"+generateExecutionLink(values[v].ControlStatus, values[v].ID)+"</div></div>"+
-        "<div style='height:100%; width:100%' class='Start "+values[v].ControlStatus+" "+values[v].ControlStatus+"F'>"+values[v].Start+"</div>"+
-        "<div style='height:100%; width:100%' class='ControlMessage "+values[v].ControlStatus+" "+values[v].ControlStatus+"F'>"+values[v].ControlMessage+"</div>");
-        $(document).find("."+classGen).parent().parent().parent().addClass('Status_'+values[v].ControlStatus);
+        $(document).find("." + classGen).append("<div style='width:100%' class='" + values[v].ControlStatus + " " + values[v].ControlStatus + "F'><div style='height:100%; width:50%;float:left' name='controlStatusElement' class='" + values[v].ControlStatus + " " + values[v].ControlStatus + "F' data-app='" + values[v].Application + "' value='" + values[v].ControlStatus + "'><b>" + values[v].ControlStatus + "</b></div>" +
+                "<div style='height:100%;width:50%' class='ID " + values[v].ControlStatus + "'>" + generateExecutionLink(values[v].ControlStatus, values[v].ID) + "</div></div>" +
+                "<div style='height:100%; width:100%' class='Start " + values[v].ControlStatus + " " + values[v].ControlStatus + "F'>" + values[v].Start + "</div>" +
+                "<div style='height:100%; width:100%' class='ControlMessage " + values[v].ControlStatus + " " + values[v].ControlStatus + "F'>" + values[v].ControlMessage + "</div>");
+        $(document).find("." + classGen).parent().parent().parent().addClass('Status_' + values[v].ControlStatus);
     }
 }
 
-function generateExecutionLink(status, id){
+function generateExecutionLink(status, id) {
     var result = "";
-    if (status === "NE"){
-        result = "<a href='./RunTests.jsp?queuedExecution="+id+"'>"+id+"</a>";
+    if (status === "NE") {
+        result = "<a href='./RunTests.jsp?queuedExecution=" + id + "'>" + id + "</a>";
     } else {
-        result = "<a href='./ExecutionDetail.jsp?id_tc="+id+"'>"+id+"</a>";
+        result = "<a href='./ExecutionDetail.jsp?id_tc=" + id + "'>" + id + "</a>";
     }
     return result;
 }
-function generateTestCaseLink(t, tc){
-    var result = "<a href='./TestCase.jsp?Test="+t+"&TestCase="+tc+"&Load=Load'>   : "+tc+"</a>";
+function generateTestCaseLink(t, tc) {
+    var result = "<a href='./TestCase.jsp?Test=" + t + "&TestCase=" + tc + "&Load=Load'>   : " + tc + "</a>";
     return result;
 }
 
@@ -180,133 +191,193 @@ function convertStringToHashcode(str) {
     return hash;
 }
 
-function showOrHideColumns(checkboxElem, columnName) {
+function showOrHideColumns(checkboxElem, columnName, init) {
     $(document).find("." + columnName).each(function(i, e) {
-        if (checkboxElem.checked){
-        $(e).attr('style', 'clear:both; width: 100%;display:inline-block');
-    } else {
-        $(e).attr('style', 'clear:both; width: 100%;display:none');
-    }
+        if (checkboxElem.checked) {
+            insertCss('.'+ columnName +'{ display:inline-block}');
+            console.log(columnName);
+        } else {
+            insertCss('.'+ columnName +'{ display:none}');
+            console.log(columnName);
+            
+        }
+
+
     });
-//    $.each($(document).find(".TableRow"), function (id,elem){
-//        $(elem).attr('style', 'width:' + 100 / 2 +'% ; float:left;margin-left:0 position:absolute; top:0; bottom:0; left:0; right:0');
-//});
+
+    var size = $(document).find(".Stats:visible").size();
+    $(document).find(".TableRow").attr('style', 'width:' + 99 / size + '% ; float:left;margin-left:0 position:absolute; top:0; bottom:0; left:0; right:0');
+    $(document).find(".StatsHeader").attr('style', 'width:' + 99 / size + '%  ; float:left;margin-left:0 position:absolute; top:0; bottom:0; left:0; right:0');
 
 }
 
-function displayFilter(value){
-    var detailedTableFilter = "<div class='indFilter'><p>" +value +"</p>"+
-                "<input type='checkbox' class='FilterCheckbox' id='filterId_"+value+"' onclick=\"showOrHideColumns(this,'"+value+"'), recordColumnSelection('"+value+"')\" value='"+value+"'></div>";
-        return detailedTableFilter;
-    
+function insertCss( code ) {
+    var style = document.createElement('style');
+    style.type = 'text/css';
+
+    if (style.styleSheet) {
+        // IE
+        style.styleSheet.cssText = code;
+    } else {
+        // Other browsers
+        style.innerHTML = code;
+    }
+
+    document.getElementsByTagName("head")[0].appendChild( style );
 }
 
-function displayFilter2(columns){
-    var filterList = ["ShortDescription","Start", "Comment", "Status","Application","BugID", "ControlMessage"];
+function displayFilter(value) {
+    var detailedTableFilter = "<div class='indFilter'><p>" + value + "</p>" +
+            "<input type='checkbox' class='FilterCheckbox' id='filterId_" + value + "' onclick=\"showOrHideColumns(this,'" + value + "', false), recordColumnSelection('" + value + "')\" value='" + value + "'></div>";
+    return detailedTableFilter;
+
+}
+
+function displayFilter2(columns) {
+    var filterList = ["ShortDescription", "Start", "Comment", "Status", "Application", "BugID", "ControlMessage"];
     var filterToAppend = "";
-    
-    
+
+
     var country = [];
     var environment = [];
     var browser = [];
     for (var v = 0; v < columns.length; v++) {
-        if ($.inArray(columns[v].country, country)===-1){
+        if ($.inArray(columns[v].country, country) === -1) {
             country.push(columns[v].country);
         }
-        if ($.inArray(columns[v].browser, browser)===-1){
+        if ($.inArray(columns[v].browser, browser) === -1) {
             browser.push(columns[v].browser);
         }
-        if ($.inArray(columns[v].environment, environment)===-1){
+        if ($.inArray(columns[v].environment, environment) === -1) {
             environment.push(columns[v].environment);
         }
     }
-    console.log(country);
     filterList = filterList.concat(country);
     filterList = filterList.concat(environment);
     filterList = filterList.concat(browser);
-    
-    $(filterList).each(function(i, e){
+
+    $(filterList).each(function(i, e) {
         filterToAppend += displayFilter(e);
-    })
+    });
     
+    console.log(cartProd(country, environment, browser));
+
     $("#tableFilter").append(filterToAppend);
 }
 
-function getStatistics(columns){
+function cartProd(paramArray) {
+
+  function addTo(curr, args) {
+
+    var i, copy, 
+        rest = args.slice(1),
+        last = !rest.length,
+        result = [];
+
+    for (i = 0; i < args[0].length; i++) {
+
+      copy = curr.slice();
+      copy.push(args[0][i]);
+
+      if (last) {
+        result.push(copy);
+
+      } else {
+        result = result.concat(addTo(copy, rest));
+      }
+    }
+
+    return result;
+  }
+
+
+  return addTo([], Array.prototype.slice.call(arguments));
+}
+
+
+
+
+function getStatistics(columns) {
     for (var c = 0; c < columns.length; c++) {
         var countOK = 0;
         var countKO = 0;
         var countFA = 0;
         var countNA = 0;
         var countPE = 0;
+        var countNE = 0;
         var axis = [];
         var labels = [];
         var app = [];
         var dataCountry = "";
-            var classGen = convertStringToHashcode(columns[c].country + " " + columns[c].environment + " " + columns[c].browser);
-            $(document).find("."+classGen).each(function(i,e){
-                if ($($(e).find("[name='controlStatusElement']").get(0)).attr('value')==="OK"){
-                    countOK++;
-                    }
-                if ($($(e).find("[name='controlStatusElement']").get(0)).attr('value')==="KO"){
-                    countKO++;
-                }
-                if ($($(e).find("[name='controlStatusElement']").get(0)).attr('value')==="FA"){
-                    countFA++;
-                }
-                if ($($(e).find("[name='controlStatusElement']").get(0)).attr('value')==="NA"){
-                    countNA++;
-                }
-                if ($($(e).find("[name='controlStatusElement']").get(0)).attr('value')==="PE"){
-                    countPE++;
-                }
-                if ($($(e).find("[name='controlStatusElement']").get(0)).attr('data-app') !== undefined){
+        var classGen = convertStringToHashcode(columns[c].country + " " + columns[c].environment + " " + columns[c].browser);
+        $(document).find("." + classGen).each(function(i, e) {
+            if ($($(e).find("[name='controlStatusElement']").get(0)).attr('value') === "OK") {
+                countOK++;
+            }
+            if ($($(e).find("[name='controlStatusElement']").get(0)).attr('value') === "KO") {
+                countKO++;
+            }
+            if ($($(e).find("[name='controlStatusElement']").get(0)).attr('value') === "FA") {
+                countFA++;
+            }
+            if ($($(e).find("[name='controlStatusElement']").get(0)).attr('value') === "NA") {
+                countNA++;
+            }
+            if ($($(e).find("[name='controlStatusElement']").get(0)).attr('value') === "PE") {
+                countPE++;
+            }
+            if ($($(e).find("[name='controlStatusElement']").get(0)).attr('value') === "NE") {
+                countNE++;
+            }
+            if ($($(e).find("[name='controlStatusElement']").get(0)).attr('data-app') !== undefined) {
                 app.push($($(e).find("[name='controlStatusElement']").get(0)).attr('data-app'));
             }
-            });
-            $("#stats_"+classGen).append("<p>OK: "+countOK+"</p>");
-            $("#stats_"+classGen).append("<p>KO: "+countKO+"</p>");
-            $("#stats_"+classGen).append("<p>FA: "+countFA+"</p>");
-            $("#stats_"+classGen).append("<p>NA: "+countNA+"</p>");
-            $("#stats_"+classGen).append("<p>PE: "+countPE+"</p>");
-            axis.push({"color":"#00EE00", "value":countOK, "label":"OK"});
-            axis.push({"color":"red", "value":countKO, "label":"KO"});
-            axis.push({"color":"pink", "value":countFA, "label":"FA"});
-            axis.push({"color":"blue", "value":countPE, "label":"PE"});
-            axis.push({"color":"yellow", "value":countNA, "label":"NA"});
-            labels.push("OK");
-            labels.push("KO");
-            labels.push("FA");
-            labels.push("PE");
-            labels.push("NA");
-            
-            var countCountry = agregateData(app);
-            dataCountry += "<div>"
-            for (var cts = 0; cts < countCountry[0].length; cts++){
-                dataCountry+="<p>"+countCountry[0][cts]+": "+countCountry[1][cts]+"</p>";
-            }
-            dataCountry += "</div>";
-            
-            var data = {"axis":axis, "labels": labels, "type":"Pie"};
-            $("#stats_"+classGen).append("<div style='width:100%;'><div style='width:100px;height:100px;margin-left:auto; margin-right:auto'><canvas id='singlePie_"+classGen+"'></canvas></div></div>");
-            createGraphFromDataToElement(data, "#singlePie_"+classGen , null);
-            
-            $("#stats_"+classGen).append(dataCountry);
-            
+        });
+        $("#stats_" + classGen).append("<p>OK: " + countOK + "</p>");
+        $("#stats_" + classGen).append("<p>KO: " + countKO + "</p>");
+        $("#stats_" + classGen).append("<p>FA: " + countFA + "</p>");
+        $("#stats_" + classGen).append("<p>NA: " + countNA + "</p>");
+        $("#stats_" + classGen).append("<p>PE: " + countPE + "</p>");
+        $("#stats_" + classGen).append("<p>NE: " + countNE + "</p>");
+        axis.push({"color": "#00EE00", "value": countOK, "label": "OK"});
+        axis.push({"color": "red", "value": countKO, "label": "KO"});
+        axis.push({"color": "pink", "value": countFA, "label": "FA"});
+        axis.push({"color": "blue", "value": countPE, "label": "PE"});
+        axis.push({"color": "yellow", "value": countNA, "label": "NA"});
+        axis.push({"color": "black", "value": countNE, "label": "NE"});
+        labels.push("OK");
+        labels.push("KO");
+        labels.push("FA");
+        labels.push("PE");
+        labels.push("NA");
+        labels.push("NE");
+
+        var countCountry = agregateData(app);
+        dataCountry += "<div>"
+        for (var cts = 0; cts < countCountry[0].length; cts++) {
+            dataCountry += "<p>" + countCountry[0][cts] + ": " + countCountry[1][cts] + "</p>";
         }
-    
+        dataCountry += "</div>";
+
+        var data = {"axis": axis, "labels": labels, "type": "Pie"};
+        $("#stats_" + classGen).append("<div style='width:100%;'><div style='width:100px;height:100px;margin-left:auto; margin-right:auto'><canvas id='singlePie_" + classGen + "'></canvas></div></div>");
+        createGraphFromDataToElement(data, "#singlePie_" + classGen, null);
+
+        $("#stats_" + classGen).append(dataCountry);
+
+    }
+
 }
 
 function agregateData(arr) {
     var a = [], b = [], prev;
-console.log(arr);
     arr.sort();
-    for ( var i = 0; i < arr.length; i++ ) {
-        if ( arr[i] !== prev ) {
+    for (var i = 0; i < arr.length; i++) {
+        if (arr[i] !== prev) {
             a.push(arr[i]);
             b.push(1);
         } else {
-            b[b.length-1]++;
+            b[b.length - 1]++;
         }
         prev = arr[i];
     }

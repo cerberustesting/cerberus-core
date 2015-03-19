@@ -394,21 +394,17 @@
                 function loadCookieValues() {
                     var defaultReporting = ["ShortDescription", "Start"];
                     $(document).find(".indFilter input").each(function(i, e) {
-                        console.log(e);
                         if ($.urlParam(e.value) !== null) {
                             $(e).attr('checked', true);
                         } else if (getCookie("ReportingExecutionByTag_" + e.value) !== "") {
                             var ckd = getCookie("ReportingExecutionByTag_" + e.value);
-                            console.log(ckd);
                             $(e).attr('checked', ckd === 'true' ? true : false);
-                console.log(ckd);
                     } else if ($.inArray(e.value, defaultReporting) !== -1) {
                     $(e).attr('checked', true);
                         } else {
                         $(e).attr('checked', false);
                         }
-                            console.log(e);
-                        showOrHideColumns(e, e.value);
+                        //showOrHideColumns(e, e.value);
                     });
                 }
                 ;
