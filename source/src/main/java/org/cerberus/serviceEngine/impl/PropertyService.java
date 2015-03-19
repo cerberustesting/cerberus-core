@@ -343,6 +343,7 @@ public class PropertyService implements IPropertyService {
          */
         stringToDecode = StringUtil.replaceAllProperties(stringToDecode, "%SYS_SYSTEM%", tCExecution.getApplication().getSystem());
         stringToDecode = StringUtil.replaceAllProperties(stringToDecode, "%SYS_APPLI%", tCExecution.getApplication().getApplication());
+        stringToDecode = StringUtil.replaceAllProperties(stringToDecode, "%SYS_APP_DOMAIN%", tCExecution.getCountryEnvironmentApplication().getDomain());
         stringToDecode = StringUtil.replaceAllProperties(stringToDecode, "%SYS_ENV%", tCExecution.getEnvironmentData());
         stringToDecode = StringUtil.replaceAllProperties(stringToDecode, "%SYS_ENVGP%", tCExecution.getEnvironmentDataObj().getGp1());
         stringToDecode = StringUtil.replaceAllProperties(stringToDecode, "%SYS_COUNTRY%", tCExecution.getCountry());
@@ -369,7 +370,13 @@ public class PropertyService implements IPropertyService {
         stringToDecode = StringUtil.replaceAllProperties(stringToDecode, "%SYS_YESTERDAY-HH%", DateUtil.getYesterdayFormat("HH"));
         stringToDecode = StringUtil.replaceAllProperties(stringToDecode, "%SYS_YESTERDAY-mm%", DateUtil.getYesterdayFormat("mm"));
         stringToDecode = StringUtil.replaceAllProperties(stringToDecode, "%SYS_YESTERDAY-ss%", DateUtil.getYesterdayFormat("ss"));
-
+        
+        /**
+         * Trying to replace timing variables .
+         */
+        stringToDecode = StringUtil.replaceAllProperties(stringToDecode, "%SYS_ELAPSED-EXESTART%", "To Be Implemented");
+        stringToDecode = StringUtil.replaceAllProperties(stringToDecode, "%SYS_ELAPSED-STEPSTART%", "To Be Implemented");
+        
         return stringToDecode;
     }
 

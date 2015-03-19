@@ -116,14 +116,14 @@
             <li id="active"><a id="menu-Integration" name="menu" href="#" style="width:100px">Integration
                     <img src="images/dropdown.gif"/></a>
                 <ul class="subnav" id="subnavlist">
-                    <li id="subactive"><a name="menu" id="menuIntegrationStatus" href="IntegrationStatus.jsp" style="width:170px">Integration Status</a></li>
-                    <li id="subactive"><a name="menu" id="menuApplications" href="Application.jsp" style="width:170px">Applications</a></li>
-                    <li id="subactive"><a name="menu" id="menuEnvironments" href="EnvironmentList.jsp" style="width:170px">Environments</a></li>
-                    <li id="subactive"><a name="menu" id="menuEnvironmentManagement" href="EnvironmentManagement.jsp" style="width:170px">Environment Management</a></li>
-                    <li id="subactive"><a name="menu" id="menuBuildRevision" href="BuildRevDefinition.jsp" style="width:170px">Build/Rev Definition</a></li>
-                    <li id="subactive"><a name="menu" id="menuBuildContent" href="BuildContent.jsp" style="width:170px">Build Content</a></li>
-                    <li id="subactive"><a name="menu" id="menuRobot" href="Robot.jsp" style="width:170px">Robot</a></li>
-                    <li id="subactive"><a name="menu" id="menuProject" href="Project.jsp" style="width:170px">Project</a></li>
+                    <li id="subactive"><a name="menu" id="menuIntegrationStatus" href="IntegrationStatus.jsp" style="width:200px">Integration Status</a></li>
+                    <li id="subactive"><a name="menu" id="menuApplications" href="Application.jsp" style="width:200px">Applications</a></li>
+                    <li id="subactive"><a name="menu" id="menuEnvironments" href="EnvironmentList.jsp" style="width:200px">Environments</a></li>
+                    <li id="subactive"><a name="menu" id="menuEnvironmentManagement" href="EnvironmentManagement.jsp" style="width:200px">Environment Management</a></li>
+                    <li id="subactive"><a name="menu" id="menuBuildRevision" href="BuildRevDefinition.jsp" style="width:200px">Build/Rev Definition</a></li>
+                    <li id="subactive"><a name="menu" id="menuBuildContent" href="BuildContent.jsp" style="width:200px">Build Content</a></li>
+                    <li id="subactive"><a name="menu" id="menuRobot" href="Robot.jsp" style="width:200px">Robot</a></li>
+                    <li id="subactive"><a name="menu" id="menuProject" href="Project.jsp" style="width:200px">Project</a></li>
                 </ul>
             </li>
             <% }%>
@@ -131,12 +131,12 @@
             <li id="active"><a id="menu-Admin" name="menuAdmin" href="#" style="width:100px">Admin
                     <img src="images/dropdown.gif"/></a>
                 <ul class="subnav" id="subnavlist">
-                    <li id="subactive"><a name="menu" id="menuUsersManager" href="UserManager.jsp" style="width:180px">Users Manager</a></li>
-                    <li id="subactive"><a name="menu" id="menuLogViewer" href="LogViewer.jsp" style="width:180px">Log Viewer</a></li>
-                    <li id="subactive"><a name="menu" id="menuDatabaseMaintenance" href="DatabaseMaintenance.jsp" style="width:180px">Database Maintenance</a></li>
-                    <li id="subactive"><a name="menu" id="menuParameter" href="Parameter.jsp" style="width:180px">Parameters</a></li>
-                    <li id="subactive"><a name="menu" id="menuInvariantPublic" href="InvariantPublic.jsp" style="width:180px">Edit Public Invariants</a></li>
-                    <li id="subactive"><a name="menu" id="menuInvariantPrivate" href="InvariantPrivate.jsp" style="width:180px">See Private Invariants</a></li>
+                    <li id="subactive"><a name="menu" id="menuUsersManager" href="UserManager.jsp" style="width:200px">Users Manager</a></li>
+                    <li id="subactive"><a name="menu" id="menuLogViewer" href="LogViewer.jsp" style="width:200px">Log Viewer</a></li>
+                    <li id="subactive"><a name="menu" id="menuDatabaseMaintenance" href="DatabaseMaintenance.jsp" style="width:200px">Database Maintenance</a></li>
+                    <li id="subactive"><a name="menu" id="menuParameter" href="Parameter.jsp" style="width:200px">Parameters</a></li>
+                    <li id="subactive"><a name="menu" id="menuInvariantPublic" href="InvariantPublic.jsp" style="width:200px">Edit Public Invariants</a></li>
+                    <li id="subactive"><a name="menu" id="menuInvariantPrivate" href="InvariantPrivate.jsp" style="width:200px">See Private Invariants</a></li>
                     <li id="subactive"><a name="menu" id="menuReportingExecutionThreadMonitoring" href="ExecutionThreadMonitoring.jsp" style="width:200px">Monitoring</a></li>
                 </ul>
             </li>

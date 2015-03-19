@@ -71,6 +71,8 @@ public class UpdateCountryEnvironmentParameter extends HttpServlet {
             CountryEnvironmentApplication cea = countryEnvAppService.findCountryEnvironmentParameterByKey(system, country, env, app);
             if (name != null && "IP".equalsIgnoreCase(name.trim())) {
                 cea.setIp(value);
+            } else if (name != null && "domain".equalsIgnoreCase(name.trim())) {
+                cea.setDomain(value);
             } else if (name != null && "Url".equalsIgnoreCase(name.trim())) {
                 cea.setUrl(value);
             } else if (name != null && "UrlLogin".equalsIgnoreCase(name.trim())) {

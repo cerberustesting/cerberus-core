@@ -1435,6 +1435,7 @@
             <url-pattern>/TestData.jsp</url-pattern>
             <url-pattern>/SqlLibrary.jsp</url-pattern>
             <url-pattern>/SoapLibrary.jsp</url-pattern>
+            <url-pattern>/TestDataLib.jsp</url-pattern>
         </web-resource-collection>
         <web-resource-collection>
             <web-resource-name>servlet</web-resource-name>

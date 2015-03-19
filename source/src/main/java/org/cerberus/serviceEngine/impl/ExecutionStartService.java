@@ -191,7 +191,7 @@ public class ExecutionStartService implements IExecutionStartService {
                 throw new CerberusException(mes);
             } else {
                 CountryEnvironmentApplication cea;
-                cea = this.factorycountryEnvironmentApplication.create(tCExecution.getApplication().getSystem(), tCExecution.getCountry(), tCExecution.getEnvironment(), tCExecution.getApplication().getApplication(), tCExecution.getMyHost(), tCExecution.getMyContextRoot(), tCExecution.getMyLoginRelativeURL());
+                cea = this.factorycountryEnvironmentApplication.create(tCExecution.getApplication().getSystem(), tCExecution.getCountry(), tCExecution.getEnvironment(), tCExecution.getApplication().getApplication(), tCExecution.getMyHost(), "", tCExecution.getMyContextRoot(), tCExecution.getMyLoginRelativeURL());
                 cea.setIp(tCExecution.getMyHost());
                 cea.setUrl(tCExecution.getMyContextRoot());
                 tCExecution.setUrl(cea.getIp() + cea.getUrl());
