@@ -65,7 +65,18 @@ public class ActionService implements IActionService {
     @Override
     public TestCaseStepActionExecution doAction(TestCaseStepActionExecution testCaseStepActionExecution) {
         MessageEvent res;
-
+        
+        //if the object and the property are not defined for the calculatePropery action then an exception should be raised and 
+        //the execution stopped
+        if(testCaseStepActionExecution.getAction().equals("calculateProperty") && 
+                StringUtil.isNullOrEmpty(testCaseStepActionExecution.getObject()) && 
+                StringUtil.isNullOrEmpty(testCaseStepActionExecution.getProperty())){
+            res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_CALCULATE_OBJECTPROPERTYNULL);            
+            testCaseStepActionExecution.setActionResultMessage(res);
+            testCaseStepActionExecution.setExecutionResultMessage(new MessageGeneral(res.getMessage()));
+            testCaseStepActionExecution.setStopExecution(res.isStopTest());
+            return testCaseStepActionExecution;    
+        }      
         /**
          * Decode the object field before doing the action.
          */
