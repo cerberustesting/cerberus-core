@@ -77,7 +77,7 @@ function buildDetailedTableHeader(columns) {
     for (var c = 0; c < columns.length; c++) {
         var heightValue = 99 / columns.length;
         var classGen = convertStringToHashcode(columns[c].country + " " + columns[c].environment + " " + columns[c].browser);
-        detailedTableHeader += ("<div class='StatsHeader' style='width:" + heightValue + "%; float:left'><div style='height:100%' class='Stats Country " + classGen + " " + columns[c].browser + " " + columns[c].environment + " " + columns[c].country + "'>" + columns[c].country + " " + columns[c].browser + " " + columns[c].environment + "</div>" +
+        detailedTableHeader += ("<div class='StatsHeader ceb_"+classGen+"' style='width:" + heightValue + "%; float:left'><div style='height:100%' class='Stats Country " + classGen + " " + columns[c].browser + " " + columns[c].environment + " " + columns[c].country + "'>" + columns[c].country + " " + columns[c].browser + " " + columns[c].environment + "</div>" +
                 "<div id='stats_" + classGen + "' class='Country " + classGen + " " + columns[c].browser + " " + columns[c].environment + " " + columns[c].country + "'></div></div>");
     }
 
@@ -146,7 +146,7 @@ function buildDetailedTableLines(lines, columns) {
             var heightValue = 99 / columns.length;
             var classColumnGen = convertStringToHashcode(columns[c].country + " " + columns[c].environment + " " + columns[c].browser);
             var classGen = convertStringToHashcode(columns[c].country + " " + columns[c].environment + " " + columns[c].browser + " " + lines[l].test + " " + lines[l].testCase);
-            detailedTableLines += ("<div style='width:" + heightValue + "%; float:left;margin-left:" + heightValue * c + " position:absolute; top:0; bottom:0; left:0; right:0' class='TableRow'><div style='height:100%' class='Country " + classGen + " " + classColumnGen + " " + columns[c].browser + " " + columns[c].environment + " " + columns[c].country + "'></div></div>");
+            detailedTableLines += ("<div style='width:" + heightValue + "%; float:left;margin-left:" + heightValue * c + " position:absolute; top:0; bottom:0; left:0; right:0' class='TableRow ceb_"+classColumnGen+"'><div style='height:100%' class='Country " + classGen + " " + classColumnGen + " " + columns[c].browser + " " + columns[c].environment + " " + columns[c].country + "'></div></div>");
         }
 
         detailedTableLines += ("</div></div>");
@@ -192,14 +192,18 @@ function convertStringToHashcode(str) {
 }
 
 function showOrHideColumns(checkboxElem, columnName, init) {
-    $(document).find("." + columnName).each(function(i, e) {
-        if (checkboxElem.checked) {
-            insertCss('.'+ columnName +'{ display:inline-block}');
-            console.log(columnName);
+    $(document).find("[data-ceb*='"+ columnName +"']").each(function(i, e) {
+        var co = $(document).find("#filterId_"+$(e).attr('data-country'));
+        var en = $(document).find("#filterId_"+$(e).attr('data-env'));
+        var br = $(document).find("#filterId_"+$(e).attr('data-browser'));
+        if (checkboxElem.checked && $(co).is(':checked') && $(en).is(':checked') && $(br).is(':checked')) {
+            var txt = $(e).text();
+            var txt2 = txt.split('{')[0] + '{display:inline-block;}';
+            $(e).html(txt2);
         } else {
-            insertCss('.'+ columnName +'{ display:none}');
-            console.log(columnName);
-            
+            var txt = $(e).text();
+            var txt2 = txt.split('{')[0] + '{display:none;}';
+            $(e).html(txt2);
         }
 
 
@@ -211,9 +215,13 @@ function showOrHideColumns(checkboxElem, columnName, init) {
 
 }
 
-function insertCss( code ) {
+function insertCss( code , country, env, browser) {
     var style = document.createElement('style');
     style.type = 'text/css';
+    style.setAttribute('data-ceb', country+'_'+env+'_'+browser);
+    style.setAttribute('data-country', country);
+    style.setAttribute('data-env', env);
+    style.setAttribute('data-browser', browser);
 
     if (style.styleSheet) {
         // IE
@@ -260,7 +268,12 @@ function displayFilter2(columns) {
         filterToAppend += displayFilter(e);
     });
     
-    console.log(cartProd(country, environment, browser));
+    var cp = cartProd(country, environment, browser);
+    
+    for (var a = 0 ; a < cp.length ; a++){
+        
+        insertCss('.ceb_'+ convertStringToHashcode(cp[a][0] + " " + cp[a][1] + " " + cp[a][2]) +'{ display:inline-block}', cp[a][0], cp[a][1], cp[a][2]);
+    }
 
     $("#tableFilter").append(filterToAppend);
 }
