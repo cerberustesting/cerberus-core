@@ -253,23 +253,15 @@
                             submit: 'Save changes'
                         },
                         {
-                            loadtext: 'loading...',
-                            placeholder: '',
-                            type: 'select',
-                            loadurl: 'GetInvariantList?idName=APPLITYPE',
-                            loadtype: 'GET',
-                            submit: 'Save changes'
-                        },
-                        {
                             placeholder: '',
                             submit: 'Save changes'
                         },
                         {
-                            loadtext: 'loading...',
                             placeholder: '',
-                            type: 'select',
-                            loadurl: 'GetDeployTypeList',
-                            loadtype: 'GET',
+                            submit: 'Save changes'
+                        },
+                        {
+                            placeholder: '',
                             submit: 'Save changes'
                         },
                         {
@@ -282,9 +274,8 @@
                         },
                         {
                             loadtext: 'loading...',
-                            placeholder: '',
                             type: 'select',
-                            loadurl: 'GetDeployTypeList',
+                            loadurl: 'GetInvariantList?idName=ENVTYPE',
                             loadtype: 'GET',
                             submit: 'Save changes'
                         },
@@ -297,11 +288,17 @@
                             submit: 'Save changes'
                         },
                         {
-                            placeholder: '',
+                            loadtext: 'loading...',
+                            type: 'select',
+                            loadurl: 'GetInvariantList?idName=ENVACTIVE',
+                            loadtype: 'GET',
                             submit: 'Save changes'
                         },
                         {
-                            placeholder: '',
+                            loadtext: 'loading...',
+                            type: 'select',
+                            loadurl: 'GetInvariantList?idName=ENVACTIVE',
+                            loadtype: 'GET',
                             submit: 'Save changes'
                         },
                         {
@@ -538,7 +535,7 @@
             <input id="Chain" name="Chain" style="width:100px;" 
                    class="ncdetailstext" rel="7" >
             <label for="Type" style="font-weight:bold"><%=docService.findLabelHTML("countryenvparam", "Type", "")%></label>
-            <%=ComboDeployTypeAjax(appContext, "DeployType", "", "DeployType", "6", "", "")%>
+            <%=ComboInvariantAjax(appContext, "Type", "", "Type", "6", "ENVTYPE", "", "", false)%>
             <br><br>
             <label for="DistribList" style="font-weight:bold"><%=docService.findLabelHTML("countryenvparam", "DistribList", "")%></label>
             <input id="DistribList" name="DistribList" style="width:500px;" 
