@@ -87,10 +87,13 @@
         }
 
         function _fnColumnIndex(iColumnIndex) {
-            if (properties.bUseColVis)
-                return iColumnIndex;
-            else
+            //Fix for handling hidden columns
+            //source: https://code.google.com/p/jquery-datatables-column-filter/issues/detail?id=88
+            if (properties.bUseColVis){
                 return oTable.fnSettings().oApi._fnVisibleToColumnIndex(oTable.fnSettings(), iColumnIndex);
+            }else{
+                return iColumnIndex;
+            }
             //return iColumnIndex;
             //return oTable.fnSettings().oApi._fnColumnIndexToVisible(oTable.fnSettings(), iColumnIndex);
         }

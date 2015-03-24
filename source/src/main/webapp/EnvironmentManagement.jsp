@@ -189,6 +189,7 @@
                     "bSearchable": true,
                     "aTargets": [0],
                     "iDisplayLength": 10,
+                    "bUseColVis":true,
                     "aoColumns": [
                         {"sName": "id", "sWidth": "5%", bVisible: false},
                         {"sName": "Country", "sWidth": "5%"},
@@ -354,6 +355,7 @@
                         "bSearchable": true,
                         "aTargets": [0],
                         "iDisplayLength": 10,
+                        "bUseColVis":true,            
                         "aoColumns": [
                             {"sName": "System", "sWidth": "5%", bVisible: false},
                             {"sName": "Country", "sWidth": "5%", bVisible: false},
@@ -438,6 +440,7 @@
                         "bSearchable": true,
                         "aTargets": [0],
                         "iDisplayLength": 10,
+                        "bUseColVis":true,
                         "aoColumns": [
                             {"sName": "id", "sWidth": "5%", bVisible: false},
                             {"sName": "Country", "sWidth": "5%"},
@@ -624,3 +627,4 @@
             </form>
     </body>
 </html>
+l
