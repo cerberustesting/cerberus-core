@@ -127,6 +127,7 @@
                         <th><%=docService.findLabel("Application", "Environment", "")%></th>
                         <th><%=docService.findLabel("Application", "Application", "")%></th>
                         <th><%=docService.findLabel("countryenvironmentparameters", "Ip", "")%></th>
+                        <th><%=docService.findLabel("countryenvironmentparameters", "Domain", "")%></th>
                         <th><%=docService.findLabel("countryenvironmentparameters", "Url", "")%></th>
                         <th><%=docService.findLabel("countryenvironmentparameters", "UrlLogin", "")%></th>
                     </tr>
@@ -140,6 +141,7 @@
                         <th>Env</th>
                         <th>Application</th>
                         <th>Ip</th>
+                        <th>Domain</th>
                         <th>Url</th>
                         <th>UrlLogin</th>
                     </tr>
@@ -354,12 +356,13 @@
                         "aTargets": [0],
                         "iDisplayLength": 10,
                         "bUseColVis":true,            
-                            "aoColumns": [
+                        "aoColumns": [
                             {"sName": "System", "sWidth": "5%", bVisible: false},
                             {"sName": "Country", "sWidth": "5%", bVisible: false},
                             {"sName": "Environment", "sWidth": "10%", bVisible: false},
                             {"sName": "Application", "sWidth": "10%"},
                             {"sName": "Ip", "sWidth": "5%"},
+                            {"sName": "Domain", "sWidth": "5%"},
                             {"sName": "Url", "sWidth": "5%"},
                             {"sName": "UrlLogin", "sWidth": "5%"},
                         ],
@@ -413,6 +416,10 @@
                             {
                                 placeholder: '',
                                 submit: 'Save changes'
+                            },
+                            {
+                                placeholder: '',
+                                submit: 'Save changes'
                             }
                         ]
                     }).columnFilter();
@@ -434,7 +441,7 @@
                         "aTargets": [0],
                         "iDisplayLength": 10,
                         "bUseColVis":true,
-                           "aoColumns": [
+                        "aoColumns": [
                             {"sName": "id", "sWidth": "5%", bVisible: false},
                             {"sName": "Country", "sWidth": "5%"},
                             {"sName": "Environment", "sWidth": "5%"},
@@ -585,13 +592,17 @@
             <input id="IP" name="IP" style="width:100px;" 
                    class="ncdetailstext" rel="4" >
             <br><br>
+            <label for="Domain" style="font-weight:bold"><%=docService.findLabelHTML("countryenvironmentparameters", "domain", "")%></label>
+            <input id="domain" name="domain" style="width:100px;" 
+                   class="ncdetailstext" rel="5" >
+            <br><br>
             <label for="Url" style="font-weight:bold"><%=docService.findLabelHTML("countryenvironmentparameters", "url", "")%></label>
             <input id="Url" name="Url" style="width:400px;" 
-                   class="ncdetailstext" rel="5" >
+                   class="ncdetailstext" rel="6" >
             <br><br>
             <label for="UrlLogin" style="font-weight:bold"><%=docService.findLabelHTML("countryenvironmentparameters", "urllogin", "")%></label>
             <input id="UrlLogin" name="UrlLogin" style="width:600px;" 
-                   class="ncdetailstext" rel="6" >
+                   class="ncdetailstext" rel="7" >
             <br><br>
             <button id="btnAddNewCountryEnvironmentParameterOk">Add</button>
             <button id="btnAddNewCountryEnvironmentParameterCancel">Cancel</button>
@@ -616,3 +627,4 @@
             </form>
     </body>
 </html>
+l
