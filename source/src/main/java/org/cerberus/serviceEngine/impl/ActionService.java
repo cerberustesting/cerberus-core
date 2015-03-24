@@ -65,7 +65,7 @@ public class ActionService implements IActionService {
     @Override
     public TestCaseStepActionExecution doAction(TestCaseStepActionExecution testCaseStepActionExecution) {
         MessageEvent res;
-
+     
         /**
          * Decode the object field before doing the action.
          */
@@ -168,8 +168,8 @@ public class ActionService implements IActionService {
             res = this.doActionMouseDownMouseUp(tCExecution, object, property);
 
         } else if (testCaseStepActionExecution.getAction().equals("calculateProperty")) {
-            res = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_PROPERTYCALCULATED);
-            res.setDescription(res.getDescription().replaceAll("%PROP%", propertyName));
+            res = this.doActionCalculateProperty(object, property, propertyName);          
+            
         } else if (testCaseStepActionExecution.getAction().equals("takeScreenshot")) {
             res = this.doActionTakeScreenshot(testCaseStepActionExecution);
             //res = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_TAKESCREENSHOT);
@@ -545,6 +545,19 @@ public class ActionService implements IActionService {
         MessageEvent message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_REMOVEDIFFERENCE);
         message.setDescription(message.getDescription().replaceAll("%DIFFERENCE%", object));
         message.setDescription(message.getDescription().replaceAll("%DIFFERENCES%", property));
+        return message;
+    }
+    
+    private MessageEvent doActionCalculateProperty(String object, String property, String propertyName) {
+        MessageEvent message; 
+        //if the object and the property are not defined for the calculatePropery action then an exception should be raised and 
+        //the execution stopped
+        if(StringUtil.isNullOrEmpty(object) && StringUtil.isNullOrEmpty(property)){
+            message = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_CALCULATE_OBJECTPROPERTYNULL);                        
+         }else{         
+            message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_PROPERTYCALCULATED);            
+            message.setDescription(message.getDescription().replaceAll("%PROP%", propertyName));
+        }
         return message;
     }
 

@@ -80,6 +80,7 @@ public enum MessageEventEnum {
     PROPERTY_FAILED_GETDIFFERENCESFROMXML(188, "FA", "Failed to compute differences from '%VALUE1%' and '%VALUE2%'", true, true ,false , MessageGeneralEnum.EXECUTION_FA),
     PROPERTY_FAILED_CYCLICDEFINITION(189, "FA", "Property %PROP% is cyclically defined", true, false ,false , MessageGeneralEnum.EXECUTION_FA),
     PROPERTY_FAILED_GETFROMJSON_PARAMETERNOTFOUND(190, "FA", "Value %PARAM% not found in Json file from %URL%", true, true ,true , MessageGeneralEnum.EXECUTION_FA),
+    PROPERTY_FAILED_CALCULATE_OBJECTPROPERTYNULL(191, "FA", "Both object and property are null. Please specify one of them.", true, false, false, MessageGeneralEnum.EXECUTION_FA),
     PROPERTY_PENDING(199, "PE", "Calculating property...", false, false ,false , MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     ACTION_SUCCESS(200, "OK", "", false, false ,false , MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     ACTION_SUCCESS_CLICK(200, "OK", "Element '%ELEMENT%' clicked.", false, false ,false , MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
