@@ -993,6 +993,7 @@
 
                                 <%
                                     int incrementStep = 0;
+                                    List<String> listOfImportedProperties = new ArrayList<String>();
                                     List<TestCaseStep> tcsList = tcsService.getListOfSteps(test, testcase);
                                     for (TestCaseStep tcs : tcsList) {
                                         incrementStep++;
@@ -1252,7 +1253,7 @@
                                                                 </div>
                                                                 <div class="technical_part" style="width: 40%; float:left; background-color: transparent">
                                                                     <div style="float:left;"><p style="float:right;font-weight:bold;" link="white" ><%out.print(docService.findLabelHTML("testcasestepaction", "object", "Object"));%></p>
-                                                                    </div>
+                                                                     </div>
                                                                     <input style="float:left;border-style:groove;border-width:thin;border-color:white;border: 1px solid white; height:100%;width:75%; color:#999999"
                                                                            value="<%=tcsa.getObject()%>"
                                                                            onchange="showChangedRow(this.parentNode.parentNode.parentNode.parentNode)" name="action_object_<%=incrementStep%>_<%=incrementAction%>" <%=isReadonly%>>
@@ -1262,11 +1263,26 @@
                                                                     </div>
                                                                     <input  class="wob property_value" style="width:75%;border-style:groove;border-width:thin;border-color:white;border: 1px solid white; color:#888888"
                                                                             value="<%=tcsa.getProperty()%>"
-                                                                            <%if (useStep) {%>
+                                                                            <%if (useStep) {
+                                                                                //if is the step was imported, then adds the propertu to the list
+                                                                                listOfImportedProperties.add(tcsa.getProperty());
+                                                                                //defines each attribute related to the test case step that was imported
+                                                                            %>
                                                                             data-usestep-test="<%=testForQuery%>"
                                                                             data-usestep-testcase="<%=testcaseForQuery%>"
                                                                             data-usestep-step="<%=stepForQuery%>"
-                                                                            <%}%>
+                                                                            <%}
+                                                                            else{
+                                                                                //verify if the property is currently in the list of imported properties
+                                                                                if(listOfImportedProperties.contains(tcsa.getProperty())){
+                                                                                //defines one attribute that will distinguish if the imported property
+                                                                                //from the undefined property
+                                                                                %>              
+                                                                                    data-imported-property = "true"
+                                                                                <%                                                                              
+                                                                                }
+                                                                            }                                                                            
+                                                                            %>
                                                                             onchange="showChangedRow(this.parentNode.parentNode.parentNode.parentNode)" name="action_property_<%=incrementStep%>_<%=incrementAction%>" <%=isReadonly%>>
                                                                 </div>
                                                             </div>
@@ -1729,7 +1745,7 @@
                 <tr>
                     <% if (tcase.getGroup().equalsIgnoreCase("AUTOMATED")) {%>
                     <td>
-                        <a href="RunTests.jsp?Test=<%=test%>&TestCase=<%=testcase%>&MySystem=<%=appSystem%>">Run this Test Case.</a>
+                        <a onclick="return checkUndefinedProperties();" href="RunTests.jsp?Test=<%=test%>&TestCase=<%=testcase%>&MySystem=<%=appSystem%>">Run this Test Case.</a>
                     </td>
                     <%        } else if (tcase.getGroup().equalsIgnoreCase("MANUAL")) {%>
                     <td>
@@ -2007,18 +2023,70 @@
 
             </div>
             <script>
+                //for each property adds the icon corresponding to its state
                 $("input.property_value").each(function() {
-                    //var jinput = $(this);
-                    if (this.value && this.value !== "" && isNaN(this.value) && $("input.property_name[value='" + this.value + "']").length === 0) {
+                    var propertyValue = this.value;
+                    
+                    if(propertyValue && propertyValue !== "" && isNaN(propertyValue)){
+                        //var jinput = $(this);
                         this.style.width = '60%';
-                        $(this).before("<img class='property_ko' data-property-name='" + this.value + "' src='./images/pen.png' title='Property Missing' style='float:left;display:inline;' width='16px' height='16px' />");
+                        var toolTipMessage = "";
+                        var imageUrl = "";
+                        var classForImage=''; //this class is used by the click function to get the image that was clicked
+                        var testDesc = $(this).attr('data-usestep-test');
+                        
+                        if (!Boolean(testDesc) && $("input.property_name[value='" + this.value + "']").length === 0){ 
+                            //Missing - property is not defined anywhere
+                            imageUrl = "./images/problem.png";
+                            toolTipMessage = "Property " + propertyValue +" is missing! Click to create a property! ";
+                            classForImage='class = "property_missing"'; 
+                            
+                        }else if (Boolean(testDesc)){ //verify if it is defined
+                            var testCaseDesc = $(this).attr('data-usestep-testcase');
+                            var testStepDesc = $(this).attr('data-usestep-step');
+                            
+                            if( $("input.property_name[value='" + propertyValue + "']").length !== 0) { 
+                                //Overridden - the property was defined in the imported step and redefined in the current test case                            
+                                toolTipMessage = "The property " + propertyValue + " was overridden in the current test case. It was originally defined in the test: "+
+                                           testDesc + " - " + testCaseDesc + " [step: " + testStepDesc  +"]" ;
+                                imageUrl = "./images/overridden.png";
+                            }else {
+                                ////Imported - the property is only defined in the import test step
+                                toolTipMessage = "The property " + propertyValue + " is defined in the test: " +
+                                        testDesc + " - " + testCaseDesc + " [step: " +  testStepDesc  +"]. Click to override property!" ; 
+                                imageUrl = "./images/pen.png";                           
+                                classForImage='class = "property_toovorride"';
+                            }
+                        }
+                    
+                        //if the property is not related to an imported step and if there is an image defined     
+                        //then the image is added into the page
+                        //the default scenario does not add any image to the property definition
+                        if(!Boolean($(this).attr('data-imported-property')) && imageUrl !== ""){
+                            $(this).before("<img " + classForImage + " data-property-name='" + propertyValue + 
+                                    "' src='" + imageUrl + "' title='" + toolTipMessage +"' style='float:left;display:inline;' width='16px' height='16px' />");                            
+                        }
+                    
                     }
                 });
-                $("img.property_ko").on("click", function(event) {
-                    var propertyName = $(event.target).data("property-name");
-                    var property = $("input.property_value[value='" + propertyName + "']");
-                    if (property.data("usestep-step") != null
-                            && property.data("usestep-step") != "") {
+                
+                //click to add property that is missing
+                $("img.property_missing").on("click", function() {  
+                    var propertyName = $(this).attr("data-property-name"); //gets the name of the property    
+                    $.get("./CreateNotDefinedProperty", {"totest": "<%=test%>", "totestcase": "<%=testcase%>",
+                            "property": propertyName}
+                        , function(data) {
+                            $("#selectTestCase").submit();
+                        });
+                }); 
+                //click to override property
+                $("img.property_toovorride").on("click", function() {                                    
+                    //var propertyName = $(event.target).data("property-name"); //does not work when he have two imported properties with the same name
+                    //var property = $("input.property_value[value='" + propertyName + "']");
+                    var property = $(this).next("input.property_value");//gets the input tag next to the img tag
+                    var propertyName = $(this).attr("data-property-name"); //gets the name of the property
+                    
+                    if (property.data("usestep-step") !== null && property.data("usestep-step") !== "") {
                         var useTest = property.data("usestep-test");
                         var useTestcase = property.data("usestep-testcase");
                         $.get("./ImportPropertyOfATestCaseToAnOtherTestCase", {"fromtest": useTest, "fromtestcase": useTestcase,
@@ -2028,13 +2096,7 @@
                             $("#selectTestCase").submit();
                         }
                         );
-                    } else {
-                        $.get("./CreateNotDefinedProperty", {"totest": "<%=test%>", "totestcase": "<%=testcase%>",
-                            "property": propertyName}
-                        , function(data) {
-                            $("#selectTestCase").submit();
-                        });
-                    }
+                    } 
                 });</script>
                 <%
                             }
