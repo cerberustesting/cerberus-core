@@ -552,12 +552,12 @@ public class ActionService implements IActionService {
         MessageEvent message; 
         //if the object and the property are not defined for the calculatePropery action then an exception should be raised and 
         //the execution stopped
-        if(StringUtil.isNullOrEmpty(object) && StringUtil.isNullOrEmpty(property)){
-            message = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_CALCULATE_OBJECTPROPERTYNULL);                        
-         }else{         
+//        if(StringUtil.isNullOrEmpty(object) && StringUtil.isNullOrEmpty(property)){
+//            message = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_CALCULATE_OBJECTPROPERTYNULL);                        
+//         }else{         
             message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_PROPERTYCALCULATED);            
             message.setDescription(message.getDescription().replaceAll("%PROP%", propertyName));
-        }
+//        }
         return message;
     }
 
