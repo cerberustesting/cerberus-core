@@ -168,7 +168,7 @@ public class ActionService implements IActionService {
             res = this.doActionMouseDownMouseUp(tCExecution, object, property);
 
         } else if (testCaseStepActionExecution.getAction().equals("calculateProperty")) {
-            res = this.doActionCalculateProperty(object, propertyName);          
+            res = this.doActionCalculateProperty(object, property, propertyName);          
             
         } else if (testCaseStepActionExecution.getAction().equals("takeScreenshot")) {
             res = this.doActionTakeScreenshot(testCaseStepActionExecution);
@@ -548,16 +548,16 @@ public class ActionService implements IActionService {
         return message;
     }
     
-    private MessageEvent doActionCalculateProperty(String object, String propertyName) {
+    private MessageEvent doActionCalculateProperty(String object, String property, String propertyName) {
         MessageEvent message; 
-        //if the object and the property name are not defined for the calculatePropery action then an exception should be raised and 
+        //if the object and the property are not defined for the calculatePropery action then an exception should be raised and 
         //the execution stopped
-        if(StringUtil.isNullOrEmpty(object) && StringUtil.isNullOrEmpty(propertyName)){
-            message = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_CALCULATE_OBJECTPROPERTYNULL);                        
-         }else{         
+//        if(StringUtil.isNullOrEmpty(object) && StringUtil.isNullOrEmpty(property)){
+//            message = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_CALCULATE_OBJECTPROPERTYNULL);                        
+//         }else{         
             message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_PROPERTYCALCULATED);            
             message.setDescription(message.getDescription().replaceAll("%PROP%", propertyName));
-        }
+//        }
         return message;
     }
 
