@@ -53,7 +53,7 @@ public class TestBatteryDAO implements ITestBatteryDAO {
     @Override
     public List<TestBattery> findAll() throws CerberusException {
         boolean throwEx = false;
-        final String query = "SELECT * FROM testbattery t";
+        final String query = "SELECT * FROM testbattery t order by testbattery asc, description asc";
 
         List<TestBattery> testBatteryList = new ArrayList<TestBattery>();
         Connection connection = this.databaseSpring.connect();
