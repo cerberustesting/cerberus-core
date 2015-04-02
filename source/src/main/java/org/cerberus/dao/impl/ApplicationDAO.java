@@ -129,7 +129,7 @@ public class ApplicationDAO implements IApplicationDAO {
     @Override
     public List<Application> findAllApplication() throws CerberusException {
         List<Application> list = null;
-        final String query = "SELECT * FROM application a ORDER BY a.sort";
+        final String query = "SELECT * FROM application a ORDER BY a.Application asc, a.sort";
 
         Connection connection = this.databaseSpring.connect();
         try {
