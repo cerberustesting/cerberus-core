@@ -118,31 +118,46 @@ public class TestCaseCountryPropertiesService implements ITestCaseCountryPropert
     @Override
     public List<TestCaseCountryProperties> findAllWithDependencies(String test, String testcase, String country) throws CerberusException {
         List<TestCaseCountryProperties> tccpList = new ArrayList();
+        List<TestCaseCountryProperties> tccpListPerCountry = new ArrayList();
         TCase mainTC = testCaseService.findTestCaseByKey(test, testcase);
         
         //find all properties of preTests
         List<TCase> tcptList = testCaseService.findTestCaseActiveByCriteria("Pre Testing", mainTC.getApplication(), country);
         for (TCase tcase : tcptList){
-        tccpList.addAll(testCaseCountryPropertiesDAO.findListOfPropertyPerTestTestCase(tcase.getTest(), tcase.getTestCase()));
-        tccpList.addAll(testCaseCountryPropertiesDAO.findListOfPropertyPerTestTestCaseCountry(tcase.getTest(), tcase.getTestCase(), country));
+            tccpList.addAll(testCaseCountryPropertiesDAO.findListOfPropertyPerTestTestCase(tcase.getTest(), tcase.getTestCase()));
+            tccpListPerCountry.addAll(testCaseCountryPropertiesDAO.findListOfPropertyPerTestTestCaseCountry(tcase.getTest(), tcase.getTestCase(), country));
         }
         
         //find all properties of the used step
         List<TCase> tcList = testCaseService.findUseTestCaseList(test, testcase);
         for (TCase tcase : tcList){
-        tccpList.addAll(testCaseCountryPropertiesDAO.findListOfPropertyPerTestTestCase(tcase.getTest(), tcase.getTestCase()));
-        tccpList.addAll(testCaseCountryPropertiesDAO.findListOfPropertyPerTestTestCaseCountry(tcase.getTest(), tcase.getTestCase(), country));
+            tccpList.addAll(testCaseCountryPropertiesDAO.findListOfPropertyPerTestTestCase(tcase.getTest(), tcase.getTestCase()));            
+            tccpListPerCountry.addAll(testCaseCountryPropertiesDAO.findListOfPropertyPerTestTestCaseCountry(tcase.getTest(), tcase.getTestCase(), country));
         }
         
         //find all properties of the testcase
         tccpList.addAll(testCaseCountryPropertiesDAO.findListOfPropertyPerTestTestCase(test, testcase));
-        tccpList.addAll(testCaseCountryPropertiesDAO.findListOfPropertyPerTestTestCaseCountry(test, testcase, country));
+        tccpListPerCountry.addAll(testCaseCountryPropertiesDAO.findListOfPropertyPerTestTestCaseCountry(test, testcase, country));
         
         //Keep only one property by name
+        //all properties that are defined for the country are included
         HashMap tccpMap = new HashMap();
-        for (TestCaseCountryProperties tccp : tccpList){
-        tccpMap.put(tccp.getProperty(), tccp);
+        for (TestCaseCountryProperties tccp : tccpListPerCountry){
+            tccpMap.put(tccp.getProperty(), tccp);
         }
+        //These if/else instructions are done because of the way how the propertyService verifies if
+        //the properties exist for the country. 
+        for (TestCaseCountryProperties tccp : tccpList){
+            TestCaseCountryProperties p = (TestCaseCountryProperties)tccpMap.get(tccp.getProperty());
+            if(p == null){
+                tccpMap.put(tccp.getProperty(), tccp);
+            }else{
+                if(p.getCountry().compareTo(country) != 0 && tccp.getCountry().compareTo(country) == 0){
+                    tccpMap.put(tccp.getProperty(), tccp);
+                }
+            }
+        }
+        
         List<TestCaseCountryProperties> result = new ArrayList<TestCaseCountryProperties>(tccpMap.values());
         return result;
     }

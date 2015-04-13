@@ -472,9 +472,10 @@ public class ExecutionRunService implements IExecutionRunService {
                     boolean isCalledFromCalculateProperty = false;
                     if (testCaseStepActionExecution.getAction().equals("calculateProperty")) {
                         isCalledFromCalculateProperty = true;
-                        if (StringUtil.isNullOrEmpty(testCaseStepActionExecution.getObject()) && StringUtil.isNullOrEmpty(testCaseStepActionExecution.getProperty())) {
+                        //TODO  check if this is ever executed
+                        /*if (StringUtil.isNullOrEmpty(testCaseStepActionExecution.getObject()) && StringUtil.isNullOrEmpty(testCaseStepActionExecution.getProperty())) {
                             throw new CerberusEventException(new MessageEvent(MessageEventEnum.PROPERTY_FAILED_CALCULATE_OBJECTPROPERTYNULL));
-                        }
+                        }*/
                     }
                     propertyService.getValue("%" + propertyToCalculate + "%", testCaseStepActionExecution, isCalledFromCalculateProperty);
                 } catch (CerberusEventException ex) {
@@ -542,8 +543,26 @@ public class ExecutionRunService implements IExecutionRunService {
                 /**
                  * If no property defined, we just execute the action.
                  */
-                MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, "Executing action : " + testCaseStepActionExecution.getAction() + " without property.");
-                testCaseStepActionExecution = this.executeAction(testCaseStepActionExecution);
+                if (testCaseStepActionExecution.getAction().equals("calculateProperty") && StringUtil.isNullOrEmpty(testCaseStepActionExecution.getObject())) {
+                    //TODO:FN check which actions can be executed without property and object
+                    //if there is no object and also we are using the calculateProperty, then the step execution should be stopped 
+                    MessageEvent mes = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_CALCULATE_OBJECTPROPERTYNULL);
+                    
+                    testCaseStepActionExecution.setStopExecution(mes.isStopTest());
+                    testCaseStepActionExecution.setActionResultMessage(mes);
+                    testCaseStepActionExecution.setExecutionResultMessage(new MessageGeneral(mes.getMessage()));
+                    Logger.getLogger(ExecutionRunService.class.getName()).log(java.util.logging.Level.SEVERE, null, mes.getDescription());
+
+                    recorderService.recordExecutionInformation(testCaseStepActionExecution, null);
+
+                    MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, "Registering Action : " + testCaseStepActionExecution.getAction());
+                    this.testCaseStepActionExecutionService.updateTestCaseStepActionExecution(testCaseStepActionExecution);
+                    MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, "Registered Action");
+                    
+                }else{
+                    MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, "Executing action : " + testCaseStepActionExecution.getAction() + " without property.");
+                    testCaseStepActionExecution = this.executeAction(testCaseStepActionExecution);
+                }
             }
 
             /**

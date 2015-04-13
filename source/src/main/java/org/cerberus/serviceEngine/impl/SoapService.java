@@ -19,6 +19,7 @@
  */
 package org.cerberus.serviceEngine.impl;
 
+import com.mysql.jdbc.StringUtils;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -99,7 +100,8 @@ public class SoapService implements ISoapService {
                 SOAPMessage input = createSoapRequest(envelope, method);
 
                 //Add attachment File if specified
-                if (!attachmentUrl.isEmpty()) {
+                //TODO: this feature is not implemented yet therefore is always empty!
+                if (!StringUtils.isNullOrEmpty(attachmentUrl)) {
                     this.addAttachmentPart(input, attachmentUrl);
                 }
 
@@ -123,22 +125,27 @@ public class SoapService implements ISoapService {
                 MyLogger.log(SoapService.class.getName(), Level.ERROR, e.toString());
                 message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSOAP);
                 message.setDescription(message.getDescription().replaceAll("%SOAPNAME%", method));
+                message.setDescription(message.getDescription().replaceAll("%DESCRIPTION%", e.getMessage()));                
             } catch (IOException e) {
                 MyLogger.log(SoapService.class.getName(), Level.ERROR, e.toString());
                 message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSOAP);
                 message.setDescription(message.getDescription().replaceAll("%SOAPNAME%", method));
+                message.setDescription(message.getDescription().replaceAll("%DESCRIPTION%", e.getMessage()));                
             } catch (ParserConfigurationException e) {
                 MyLogger.log(SoapService.class.getName(), Level.ERROR, e.toString());
                 message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSOAP);
                 message.setDescription(message.getDescription().replaceAll("%SOAPNAME%", method));
+                message.setDescription(message.getDescription().replaceAll("%DESCRIPTION%", e.getMessage()));                
             } catch (SAXException e) {
                 MyLogger.log(SoapService.class.getName(), Level.ERROR, e.toString());
                 message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSOAP);
                 message.setDescription(message.getDescription().replaceAll("%SOAPNAME%", method));
+                message.setDescription(message.getDescription().replaceAll("%DESCRIPTION%", e.getMessage()));                
             } catch (CerberusException e) {
                 MyLogger.log(SoapService.class.getName(), Level.ERROR, e.toString());
                 message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSOAP);
                 message.setDescription(message.getDescription().replaceAll("%SOAPNAME%", method));
+                message.setDescription(message.getDescription().replaceAll("%DESCRIPTION%", e.getMessage()));                
             } finally {
                 try {
                     if (soapConnection != null) {
@@ -165,12 +172,13 @@ public class SoapService implements ISoapService {
         try {
             url = new URL(path);
             DataHandler handler = new DataHandler(url);
-            String str = "";
+            //TODO: verify if this code is necessary
+            /*String str = "";
             StringBuilder sb = new StringBuilder();
             BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()));
             while (null != (str = br.readLine())) {
                 sb.append(str);
-            }
+            }*/
             AttachmentPart attachPart = input.createAttachmentPart(handler);
             input.addAttachmentPart(attachPart);
         } catch (MalformedURLException ex) {

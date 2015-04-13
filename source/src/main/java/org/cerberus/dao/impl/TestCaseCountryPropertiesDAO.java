@@ -122,7 +122,7 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
         List<TestCaseCountryProperties> listProperties = null;
         final StringBuilder query = new StringBuilder();
         query.append("SELECT * FROM testcasecountryproperties WHERE test = ? AND testcase = ?");
-        query.append(" group by `property`, `type`, `database`, `value1`, `value2`, `length`, `rowlimit`, `nature`");
+        query.append(" group by HEX(`property`), `type`, `database`, HEX(`value1`) ,  HEX(`value2`) , `length`, `rowlimit`, `nature`");
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -177,7 +177,7 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
         List<String> list = null;
         final StringBuilder query = new StringBuilder();
         query.append("SELECT country FROM testcasecountryproperties WHERE test = ? AND testcase = ?");
-        query.append(" AND `property` = ? AND `type` = ? AND `database` = ? AND `value1` = ? AND `value2` = ? AND `length` = ?");
+        query.append(" AND HEX(`property`) = hex(?) AND `type` =? AND `database` =? AND hex(`value1`) like hex( ? ) AND hex(`value2`) like hex( ? ) AND `length` = ? ");
         query.append(" AND `rowlimit` = ? AND `nature` = ?");
 
         Connection connection = this.databaseSpring.connect();
@@ -186,11 +186,11 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
             try {
                 preStat.setString(1, testCaseCountryProperties.getTest());
                 preStat.setString(2, testCaseCountryProperties.getTestCase());
-                preStat.setString(3, testCaseCountryProperties.getProperty());
+                preStat.setNString(3, testCaseCountryProperties.getProperty());
                 preStat.setString(4, testCaseCountryProperties.getType());
                 preStat.setString(5, testCaseCountryProperties.getDatabase());
-                preStat.setString(6, testCaseCountryProperties.getValue1());
-                preStat.setString(7, testCaseCountryProperties.getValue2());
+                preStat.setNString(6, testCaseCountryProperties.getValue1());
+                preStat.setNString(7, testCaseCountryProperties.getValue2());
                 preStat.setString(8, String.valueOf(testCaseCountryProperties.getLength()));
                 preStat.setString(9, String.valueOf(testCaseCountryProperties.getRowLimit()));
                 preStat.setString(10, testCaseCountryProperties.getNature());
@@ -285,7 +285,7 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
     public TestCaseCountryProperties findTestCaseCountryPropertiesByKey(String test, String testcase, String country, String property) throws CerberusException {
         TestCaseCountryProperties result = null;
         boolean throwException = false;
-        final String query = "SELECT * FROM testcasecountryproperties WHERE test = ? AND testcase = ? AND country = ? AND property = ?";
+        final String query = "SELECT * FROM testcasecountryproperties WHERE test = ? AND testcase = ? AND country = ? AND hex(`property`) = hex(?)";
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -294,7 +294,7 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
                 preStat.setString(1, test);
                 preStat.setString(2, testcase);
                 preStat.setString(3, country);
-                preStat.setString(4, property);
+                preStat.setNString(4, property);
 
                 ResultSet resultSet = preStat.executeQuery();
                 try {
@@ -393,7 +393,7 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
         StringBuilder query = new StringBuilder();
         query.append("UPDATE testcasecountryproperties SET ");
         query.append(" `Type` = ? ,`Database` = ? ,Value1 = ?,Value2 = ?,`Length` = ?,  RowLimit = ?,  `Nature` = ? ");
-        query.append(" WHERE Test = ? AND TestCase = ? AND Country = ? AND Property = ? ");
+        query.append(" WHERE Test = ? AND TestCase = ? AND Country = ? AND hex(`Property`) like hex(?)");
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -409,7 +409,7 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
                 preStat.setString(8, testCaseCountryProperties.getTest());
                 preStat.setString(9, testCaseCountryProperties.getTestCase());
                 preStat.setString(10, testCaseCountryProperties.getCountry());
-                preStat.setString(11, testCaseCountryProperties.getProperty());
+                preStat.setNString(11, testCaseCountryProperties.getProperty());
                 
 
                 preStat.executeUpdate();
@@ -441,7 +441,7 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
     public List<String> findCountryByPropertyNameAndTestCase(String test, String testcase, String property) {
         List<String> result = new ArrayList<String>();
 
-        final String query = "SELECT country FROM testcasecountryproperties WHERE test = ? AND testcase = ? AND property = ?";
+        final String query = "SELECT country FROM testcasecountryproperties WHERE test = ? AND testcase = ? AND hex(`property`) like hex(?)";
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -449,7 +449,7 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
             try {
                 preStat.setString(1, test);
                 preStat.setString(2, testcase);
-                preStat.setString(3, property);
+                preStat.setNString(3, property);
 
                 ResultSet resultSet = preStat.executeQuery();
                 try {
@@ -491,7 +491,7 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
     @Override
     public void deleteTestCaseCountryProperties(TestCaseCountryProperties tccp) throws CerberusException {
         boolean throwExcep = false;
-        final String query = "DELETE FROM testcasecountryproperties WHERE test = ? and testcase = ? and country = ? and property = ?";
+        final String query = "DELETE FROM testcasecountryproperties WHERE test = ? and testcase = ? and country = ? and hex(`property`) like hex(?)";
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -500,7 +500,7 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
                 preStat.setString(1, tccp.getTest());
                 preStat.setString(2, tccp.getTestCase());
                 preStat.setString(3, tccp.getCountry());
-                preStat.setString(4, tccp.getProperty());
+                preStat.setNString(4, tccp.getProperty());
 
                 throwExcep = preStat.executeUpdate() == 0;
             } catch (SQLException exception) {

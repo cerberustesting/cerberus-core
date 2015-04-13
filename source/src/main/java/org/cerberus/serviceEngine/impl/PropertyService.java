@@ -26,6 +26,7 @@ import java.util.logging.Logger;
 import org.apache.log4j.Level;
 import org.cerberus.entity.MessageEvent;
 import org.cerberus.entity.MessageEventEnum;
+import org.cerberus.entity.MessageGeneral;
 import org.cerberus.entity.Property;
 import org.cerberus.entity.SoapLibrary;
 import org.cerberus.entity.TestCaseCountryProperties;
@@ -105,7 +106,7 @@ public class PropertyService implements IPropertyService {
         if (testCaseCountryProperty.getValue1().contains("%")) {
             String decodedValue = decodeValue(testCaseCountryProperty.getValue1(), tCExecution);
             decodedValue = this.replaceWithCalculatedProperty(decodedValue, tCExecution);
-            testCaseExecutionData.setValue(decodedValue);
+            //testCaseExecutionData.setValue(decodedValue);
             testCaseExecutionData.setValue1(decodedValue);
         }
 
@@ -255,6 +256,21 @@ public class PropertyService implements IPropertyService {
                     LOG.error(cex.getMessage(), cex);
                 }
             }
+            
+                    //if the property result message indicates that we need to stop the test action, then                
+            if(tecd.getPropertyResultMessage().isStopTest()){
+                testCaseStepActionExecution.setStopExecution(tecd.isStopExecution());
+                testCaseStepActionExecution.setActionResultMessage(tecd.getPropertyResultMessage());
+                testCaseStepActionExecution.setExecutionResultMessage(new MessageGeneral(tecd.getPropertyResultMessage().getMessage()));            
+            }
+            //if the property was not successfully calculated, either because it was not defined for the country or because it does not exist
+            //the we notify the execution
+            if(tecd.getPropertyResultMessage().getCode() == MessageEventEnum.PROPERTY_FAILED_NO_PROPERTY_DEFINITION.getCode()){
+                testCaseStepActionExecution.setStopExecution(tecd.isStopExecution());
+                testCaseStepActionExecution.setActionResultMessage(tecd.getPropertyResultMessage());
+                testCaseStepActionExecution.setExecutionResultMessage(new MessageGeneral(tecd.getPropertyResultMessage().getMessage()));            
+            }
+            
             /**
              * Add TestCaseExecutionData in TestCaseExecutionData List of the
              * TestCaseExecution
@@ -547,18 +563,18 @@ public class PropertyService implements IPropertyService {
         try {
             SoapLibrary soapLib = this.soapLibraryService.findSoapLibraryByKey(testCaseExecutionData.getValue1());
             if (soapLib != null) {
-                String attachement = "";
-                if (!testCaseExecutionData.getValue2().isEmpty()){
+                String attachement = "";//TODO implement this feature
+                //TODO implement the executeSoapFromLib
+                /*if (!testCaseExecutionData.getValue2().isEmpty()){
                     attachement = testCaseExecutionData.getValue2();
                 }else{
                     attachement = soapLib.getAttachmentUrl();
-                }
+                }*/
                 soapService.callSOAPAndStoreResponseInMemory(tCExecution.getExecutionUUID(), soapLib.getEnvelope(), soapLib.getServicePath(), soapLib.getMethod(), attachement);
                 String result = xmlUnitService.getFromXml(tCExecution.getExecutionUUID(), null, soapLib.getParsingAnswer());
                 if (result != null) {
                     testCaseExecutionData.setValue(result);
                     testCaseExecutionData.setPropertyResultMessage(new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_SOAP));
-
                 }
             }
         } catch (CerberusException exception) {
