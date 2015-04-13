@@ -80,9 +80,9 @@ function buildDetailedTableHeader(columns) {
         detailedTableHeader += ("<div class='StatsHeader ceb_"+classGen+"' style='width:" + heightValue + "%; float:left'><div style='height:100%' class='Stats Country " + classGen + " " + columns[c].browser + " " + columns[c].environment + " " + columns[c].country + "'>" + columns[c].country + " " + columns[c].browser + " " + columns[c].environment + "</div>" +
                 "<div id='stats_" + classGen + "' class='Country " + classGen + " " + columns[c].browser + " " + columns[c].environment + " " + columns[c].country + "'></div></div>");
     }
-
+        
     detailedTableHeader += ("</div></div>");
-
+    
     return detailedTableHeader;
 }
 
@@ -192,27 +192,42 @@ function convertStringToHashcode(str) {
 }
 
 function showOrHideColumns(checkboxElem, columnName, init) {
+    
+    //search for all elements with the class columnName <div class="columName"> that are inside the divs TableLine > TestPart
+    //For instance, for the column "ShortDescription", it will search for all elements that match the following: 
+    //<div class="TableLine"><div class="TestPart"><div class="ShortDescription"></div></div></div>
+
+    var criteria = "div.TableLine > .TestPart > ." + columnName;
+
+    // if there are elements that match the column associated with the checkbox, then we can hide/show them
+    if($(document).find(criteria).length !== 0){         
+        if(checkboxElem.checked){
+            $(document).find(criteria).show();    
+        }else{    
+            $(document).find(criteria).hide();
+        }
+    }   
+    
+    //the charts only can be drawn if the container elements exist in the page (even if invisible)
     $(document).find("[data-ceb*='"+ columnName +"']").each(function(i, e) {
         var co = $(document).find("#filterId_"+$(e).attr('data-country'));
         var en = $(document).find("#filterId_"+$(e).attr('data-env'));
         var br = $(document).find("#filterId_"+$(e).attr('data-browser'));
         if (checkboxElem.checked && $(co).is(':checked') && $(en).is(':checked') && $(br).is(':checked')) {
             var txt = $(e).text();
-            var txt2 = txt.split('{')[0] + '{display:inline-block;}';
+            var txt2 = txt.split('{')[0] + '{visibility:visible;}'; 
             $(e).html(txt2);
-        } else {
+        } else { 
             var txt = $(e).text();
-            var txt2 = txt.split('{')[0] + '{display:none;}';
+            var txt2 = txt.split('{')[0] + '{visibility:hidden;height:0;width:0}';
             $(e).html(txt2);
         }
-
-
     });
 
     var size = $(document).find(".Stats:visible").size();
     $(document).find(".TableRow").attr('style', 'width:' + 99 / size + '% ; float:left;margin-left:0 position:absolute; top:0; bottom:0; left:0; right:0');
     $(document).find(".StatsHeader").attr('style', 'width:' + 99 / size + '%  ; float:left;margin-left:0 position:absolute; top:0; bottom:0; left:0; right:0');
-
+    
 }
 
 function insertCss( code , country, env, browser) {
@@ -373,9 +388,9 @@ function getStatistics(columns) {
         dataCountry += "</div>";
 
         var data = {"axis": axis, "labels": labels, "type": "Pie"};
-        $("#stats_" + classGen).append("<div style='width:100%;'><div style='width:100px;height:100px;margin-left:auto; margin-right:auto'><canvas id='singlePie_" + classGen + "'></canvas></div></div>");
+        $("#stats_" + classGen).append("<div style='width:100%;'><div style='width:100px;height:60px;margin-left:auto; margin-top:5px; margin-right:auto'><canvas id='singlePie_" + classGen + "'></canvas></div></div>");
         createGraphFromDataToElement(data, "#singlePie_" + classGen, null);
-
+        
         $("#stats_" + classGen).append(dataCountry);
 
     }
@@ -503,26 +518,26 @@ function createGraphFromDataToElement(data, element, config) {
     if (isOk) {
         var ctx = $(element).get(0).getContext("2d");
 
-        if (data.type == "Pie") {
-            return new Chart(ctx).Pie(dataset, config);
+            if (data.type == "Pie") {
+                return new Chart(ctx).Pie(dataset, config);
 
-        } else if (data.type == "Donut") {
-            return new Chart(ctx).Donut(dataset, config);
+            } else if (data.type == "Donut") {
+                return new Chart(ctx).Donut(dataset, config);
 
-        } else if (data.type == "Bar") {
-            return new Chart(ctx).Bar(dataset, config);
+            } else if (data.type == "Bar") {
+                return new Chart(ctx).Bar(dataset, config);
 
-        } else if (data.type == "BarColor") {
-            return new Chart(ctx).BarColor(dataset, config);
+            } else if (data.type == "BarColor") {
+                return new Chart(ctx).BarColor(dataset, config);
 
-        } else if (data.type == "Radar") {
-            return new Chart(ctx).Radar(dataset, config);
+            } else if (data.type == "Radar") {
+                return new Chart(ctx).Radar(dataset, config);
 
-        } else if (data.type == "MultiBar") {
-            return new Chart(ctx).StackedBar(dataset, config);
+            } else if (data.type == "MultiBar") {
+                return new Chart(ctx).StackedBar(dataset, config);
 
+            }
         }
-    }
 }
 ;
 

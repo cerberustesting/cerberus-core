@@ -109,8 +109,9 @@
             });
 
             function loadData() {
-
-                createGraphFromAjaxToElement("./CampaignExecutionReportByFunction?<%=query.toString()%>", "#functionTest", null);
+                //TODO: verify if this option is to be implemented (or if it should be deleted)
+                /*createGraphFromAjaxToElement("./CampaignExecutionReportByFunction?<%=query.toString()%>", "#functionTest", null);*/
+                
                 createGraphFromAjaxToElement("./CampaignExecutionStatusBarGraphByFunction?<%=query.toString()%>", "#functionBar", null);
 
                 jQuery.ajax("./CampaignExecutionGraphByStatus?<%=query.toString()%>").done(function(data) {
