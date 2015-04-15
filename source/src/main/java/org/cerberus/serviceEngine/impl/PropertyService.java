@@ -65,7 +65,7 @@ import org.springframework.stereotype.Service;
 public class PropertyService implements IPropertyService {
 
     private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(PropertyService.class);
-
+    
     @Autowired
     private IWebDriverService webdriverService;
     @Autowired
@@ -257,20 +257,24 @@ public class PropertyService implements IPropertyService {
                 }
             }
             
-                    //if the property result message indicates that we need to stop the test action, then                
-            if(tecd.getPropertyResultMessage().isStopTest()){
-                testCaseStepActionExecution.setStopExecution(tecd.isStopExecution());
-                testCaseStepActionExecution.setActionResultMessage(tecd.getPropertyResultMessage());
-                testCaseStepActionExecution.setExecutionResultMessage(new MessageGeneral(tecd.getPropertyResultMessage().getMessage()));            
+            //if is not a system property, then check if it was calculated with success
+            //system properties are decoded before these instructions or (when using calculateProperty)
+            //in the calculateProperty action, therefore these are not properties that would stop/fail the execution
+            if(!SystemPropertyEnum.contains(tecd.getProperty())){
+                //if the property result message indicates that we need to stop the test action, then the action is notified                
+                if(tecd.getPropertyResultMessage().isStopTest()){
+                    testCaseStepActionExecution.setStopExecution(tecd.isStopExecution());
+                    testCaseStepActionExecution.setActionResultMessage(tecd.getPropertyResultMessage());
+                    testCaseStepActionExecution.setExecutionResultMessage(new MessageGeneral(tecd.getPropertyResultMessage().getMessage()));            
+                }
+                //if the property was not successfully calculated, either because it was not defined for the country or because it does not exist
+                //the we notify the execution
+                if(tecd.getPropertyResultMessage().getCode() == MessageEventEnum.PROPERTY_FAILED_NO_PROPERTY_DEFINITION.getCode()){
+                    testCaseStepActionExecution.setStopExecution(tecd.isStopExecution());
+                    testCaseStepActionExecution.setActionResultMessage(tecd.getPropertyResultMessage());
+                    testCaseStepActionExecution.setExecutionResultMessage(new MessageGeneral(tecd.getPropertyResultMessage().getMessage()));            
+                }
             }
-            //if the property was not successfully calculated, either because it was not defined for the country or because it does not exist
-            //the we notify the execution
-            if(tecd.getPropertyResultMessage().getCode() == MessageEventEnum.PROPERTY_FAILED_NO_PROPERTY_DEFINITION.getCode()){
-                testCaseStepActionExecution.setStopExecution(tecd.isStopExecution());
-                testCaseStepActionExecution.setActionResultMessage(tecd.getPropertyResultMessage());
-                testCaseStepActionExecution.setExecutionResultMessage(new MessageGeneral(tecd.getPropertyResultMessage().getMessage()));            
-            }
-            
             /**
              * Add TestCaseExecutionData in TestCaseExecutionData List of the
              * TestCaseExecution
@@ -748,5 +752,4 @@ public class PropertyService implements IPropertyService {
         }
         return testCaseExecutionData;
     }
-
 }
