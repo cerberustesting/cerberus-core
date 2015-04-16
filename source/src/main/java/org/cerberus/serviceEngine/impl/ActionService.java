@@ -451,7 +451,7 @@ public class ActionService implements IActionService {
             SoapLibrary soapLibrary = soapLibraryService.findSoapLibraryByKey(object);
             String servicePath;
             if (withBase) {
-                servicePath = tCExecution.getCountryEnvironmentApplication().getIp();
+                servicePath = tCExecution.getCountryEnvironmentApplication().getIp() +  tCExecution.getCountryEnvironmentApplication().getUrl(); 
             } else {
                 servicePath = soapLibrary.getServicePath();
             }
