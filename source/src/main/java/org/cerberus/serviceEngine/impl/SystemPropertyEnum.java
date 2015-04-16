@@ -5,6 +5,7 @@ package org.cerberus.serviceEngine.impl;
  */
 public enum SystemPropertyEnum {
             SYS_SYSTEM("SYS_SYSTEM"),
+            SYS_TAG("SYS_TAG"),
             SYS_APPLI("SYS_APPLI"),
             SYS_APP_DOMAIN("SYS_APP_DOMAIN"),
             SYS_ENV("SYS_ENV"),
