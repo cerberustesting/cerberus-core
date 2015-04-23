@@ -30,7 +30,7 @@ public enum SystemPropertyEnum {
             SYS_YESTERDAY_mm("SYS_YESTERDAY-mm"),
             SYS_YESTERDAY_ss("SYS_YESTERDAY-ss"),
             SYS_ELAPSED_EXESTART("SYS_ELAPSED-EXESTART"),
-            SYS_ELAPSED_STEPSTART("SYS_YESTERDAY-ss");
+            SYS_ELAPSED_STEPSTART("SYS_ELAPSED-STEPSTART");
         private final String propertyName;
 
         public String getPropertyName() {
