@@ -26,8 +26,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.ServletException;
@@ -82,7 +80,7 @@ public class CampaignExecutionReport extends HttpServlet {
 
             String campaignName = policy.sanitize(request
                     .getParameter("CampaignName"));
-            String tag = policy.sanitize(request.getParameter("Tag"));
+            String tag = request.getParameter("Tag");
             String[] env = request.getParameterValues("Environment");
             String[] country = request.getParameterValues("Country");
             String[] browser = request.getParameterValues("Browser");

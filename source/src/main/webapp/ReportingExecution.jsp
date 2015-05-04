@@ -17,6 +17,7 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
   --%>
+<%@page import="org.apache.commons.lang3.StringEscapeUtils"%>
 <%@ page import="java.util.TreeMap" %>
 <%@ page import="org.cerberus.service.IDocumentationService" %>
 <%@ page import="org.cerberus.service.ITestService" %>
@@ -750,7 +751,7 @@
                 <%=docService.findLabelHTML("testcaseexecution", "tag", "Tag")%>
             </div>
             <div>
-                <input style="font-weight: bold; width: 130px; height:16px" name="Tag" id="Tag" value="<%=tag%>"/>
+                <input style="font-weight: bold; width: 130px; height:16px" name="Tag" id="Tag" value="<%=StringEscapeUtils.escapeHtml4(tag)%>"/>
             </div>
         </div>
         <div style="float: left">

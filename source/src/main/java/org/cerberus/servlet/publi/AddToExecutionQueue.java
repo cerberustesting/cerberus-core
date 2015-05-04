@@ -42,6 +42,7 @@ import org.cerberus.service.ITestCaseExecutionInQueueService;
 import org.cerberus.service.ITestCaseService;
 import org.cerberus.serviceExecutor.ExecutionThreadPoolService;
 import org.cerberus.util.ParameterParserUtil;
+import org.cerberus.util.StringUtil;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -211,7 +212,8 @@ public class AddToExecutionQueue extends HttpServlet {
             resp.sendError(HttpServletResponse.SC_BAD_REQUEST, errorMessage.toString());
         }
 
-        resp.sendRedirect("ReportingExecutionByTag.jsp?Tag=" + req.getParameter(PARAMETER_TAG));
+        resp.sendRedirect("ReportingExecutionByTag.jsp?enc=1&Tag=" + StringUtil.encodeAsJavaScriptURIComponent(req.getParameter(PARAMETER_TAG)));
+
 
     }
 
@@ -270,7 +272,8 @@ public class AddToExecutionQueue extends HttpServlet {
             throw new ParameterException("Browser must not be null");
         }
 
-        String tag = ParameterParserUtil.parseStringParamAndDecode(req.getParameter(PARAMETER_TAG), null, charset);
+        //String tag = ParameterParserUtil.parseStringParamAndDecode(req.getParameter(PARAMETER_TAG), null, charset);
+        String tag = ParameterParserUtil.parseStringParam(req.getParameter(PARAMETER_TAG),"");
         if (tag == null || tag.isEmpty()) {
             throw new ParameterException("Tag must not be null");
         }

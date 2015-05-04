@@ -33,6 +33,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Level;
 import org.cerberus.entity.ExecutionSOAPResponse;
@@ -58,6 +59,7 @@ import org.cerberus.serviceEngine.IRunTestCaseService;
 import org.cerberus.serviceEngine.impl.RunTestCaseService;
 import org.cerberus.util.DateUtil;
 import org.cerberus.util.ParameterParserUtil;
+import org.cerberus.util.StringUtil;
 import org.cerberus.version.Infos;
 import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;
@@ -176,7 +178,7 @@ public class RunTestCase extends HttpServlet {
         String myEnvData = ParameterParserUtil.parseStringParam(policy.sanitize(request.getParameter("myenvdata")), "");
 
         //Execution
-        String tag = ParameterParserUtil.parseStringParam(policy.sanitize(request.getParameter("Tag")), "");
+        String tag = ParameterParserUtil.parseStringParam(request.getParameter("Tag"), "");
         String outputFormat = ParameterParserUtil.parseStringParam(policy.sanitize(request.getParameter("outputformat")), "compact");
         int screenshot = ParameterParserUtil.parseIntegerParam(policy.sanitize(request.getParameter("screenshot")), 1);
         int verbose = ParameterParserUtil.parseIntegerParam(policy.sanitize(request.getParameter("verbose")), 0);
@@ -205,7 +207,7 @@ public class RunTestCase extends HttpServlet {
                 + "- mycontextroot : Context root of the application to test. [" + myContextRoot + "]\n"
                 + "- myloginrelativeurl : Relative login URL of the application. [" + myLoginRelativeURL + "]\n"
                 + "- myenvdata : Environment where to get the test data when a manualURL is defined. [" + myEnvData + "]\n"
-                + "- Tag : Tag that will be stored on the execution. [" + tag + "]\n"
+                + "- Tag : Tag that will be stored on the execution. [" + StringEscapeUtils.escapeHtml4(tag) + "]\n"
                 + "- outputformat : Format of the output of the execution. [" + outputFormat + "]\n"
                 + "- screenshot : Activate or not the screenshots. [" + screenshot + "]\n"
                 + "- verbose : Verbose level of the execution. [" + verbose + "]\n"
@@ -424,7 +426,7 @@ public class RunTestCase extends HttpServlet {
                 out.println("ReturnCodeDescription" + separator + tCExecution.getResultMessage().getDescription());
                 out.println("ControlStatus" + separator + tCExecution.getResultMessage().getCodeString());
             } else if (outputFormat.equalsIgnoreCase("redirectToReport")) {
-                response.sendRedirect("./ReportingExecutionByTag.jsp?Tag=" + tag);
+                response.sendRedirect("./ReportingExecutionByTag.jsp?Tag=" + StringUtil.encodeAsJavaScriptURIComponent(tag));
             }else {
                 DateFormat df = new SimpleDateFormat(DateUtil.DATE_FORMAT_DISPLAY);
                 out.println(df.format(tCExecution.getStart()) + " - " + runID

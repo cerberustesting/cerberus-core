@@ -18,6 +18,7 @@
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
 
+<%@page import="org.cerberus.util.StringUtil"%>
 <%@page import="java.util.HashMap"%>
 <%@page import="org.cerberus.entity.CountryEnvParam"%>
 <%@page import="org.cerberus.service.ICountryEnvParamService"%>
@@ -201,6 +202,7 @@
                     String tag;
                     if (request.getParameter("Tag") != null && request.getParameter("Tag").compareTo("All") != 0) {
                         tag = request.getParameter("Tag");
+                        tag = StringUtil.encodeAsJavaScriptURIComponent(tag);
                     } else {
                         tag = new String("None");
                     }

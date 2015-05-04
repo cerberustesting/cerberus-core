@@ -17,6 +17,8 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
+<%@page import="java.sql.PreparedStatement"%>
+<%@page import="org.apache.commons.lang3.StringEscapeUtils"%>
 <%@page import="org.cerberus.servlet.reporting.GeneratePerformanceString"%>
 <%@page import="java.util.Calendar"%>
 <%@page import="java.sql.Statement"%>
@@ -161,9 +163,10 @@
                         port = request.getParameter("port");
                     }
 
-                    String tag = "";
+                    String tag = "", tagEncoded = "";
                     if (request.getParameter("tag") != null) {
                         tag = request.getParameter("tag");
+                        tagEncoded = StringEscapeUtils.escapeHtml4(tag);
                     }
 
                     String tcstatus = "";
@@ -306,7 +309,7 @@
                                         <br>
                                         IP&nbsp;&nbsp;&nbsp;<input style="font-weight: bold; width: 100px" name="IP" id="IP" value="<%=IP%>">
                                         port&nbsp;&nbsp;&nbsp;<input style="font-weight: bold; width: 50px" name="port" id="port" value="<%=port%>">
-                                        Tag&nbsp;&nbsp;&nbsp;<input style="font-weight: bold; width: 300px" name="tag" id="tag" value="<%=tag%>">
+                                        Tag&nbsp;&nbsp;&nbsp;<input style="font-weight: bold; width: 300px" name="tag" id="tag" value="<%=tagEncoded%>">
                                         Before&nbsp;&nbsp;&nbsp;<input style="font-weight: bold; width: 130px" name="BeforeDate" id="BeforeDate" value="<%=BeforeDate%>" placeholder="2000-01-01 14:00:00">
                                         Max Nb of Exec returned&nbsp;&nbsp;&nbsp;
                                         <%=ComboInvariant(appContext, "execmax", "width: 50px", "execmax", "execmax", "MAXEXEC", String.valueOf(execmax), "document.ExecFilters.submit()", null)%>&nbsp;&nbsp;&nbsp;
@@ -321,79 +324,137 @@
                 </tr>
             </table>
             <%
-
+                
                 /*
                  * Get Execution Information
                  */
-                String ExeclistSQL = "";
-                String ExeclistWhereSQL = "";
-                ExeclistSQL = "SELECT tce.Id, tce.Test, tce.TestCase, tc.Description, "
-                        + "tce.Build, tce.Revision, tce.Environment, tce.Country, tce.Browser, "
-                        + "tce.Start, tce.End, tce.ControlStatus, tce.Application, "
-                        + "tce.Ip, tce.URL, UNIX_TIMESTAMP(tce.End)-UNIX_TIMESTAMP(tce.Start) time_elapsed "
-                        + " FROM "
-                        + "(SELECT * FROM testcaseexecution tce "
-                        + " WHERE 1=1 ";
+                ArrayList list = new ArrayList(14);
+                int index = 0;
+                //String ExeclistWhereSQL = "";
+                StringBuilder ExeclistWhereSQL = new StringBuilder();
+                //TODO:FN this needs to be refactored
+                StringBuilder query = new StringBuilder();
+                query.append("SELECT tce.Id, tce.Test, tce.TestCase, tc.Description, ");
+                query.append("tce.Build, tce.Revision, tce.Environment, tce.Country, tce.Browser, ");
+                query.append("tce.Start, tce.End, tce.ControlStatus, tce.Application, ");
+                query.append("tce.Ip, tce.URL, UNIX_TIMESTAMP(tce.End)-UNIX_TIMESTAMP(tce.Start) time_elapsed ");
+                query.append(" FROM ");
+                query.append("(SELECT * FROM testcaseexecution tce ");
+                query.append(" WHERE 1=1 ");
                 if (test.equalsIgnoreCase("") == false) {
-                    ExeclistWhereSQL += " and tce.test='" + test + "'";
+                        list.add(test);
+                        index++;
+                        ExeclistWhereSQL.append( " and tce.test = ? ");
+                        //ExeclistWhereSQL += " and tce.test='" + test + "'";
                 }
                 if (testCase.equalsIgnoreCase("") == false) {
-                    ExeclistWhereSQL += " and tce.testcase='" + testCase + "'";
+                        list.add(testCase);
+                        index++;
+                        ExeclistWhereSQL.append(" and tce.testcase= ? ");
+                        //ExeclistWhereSQL += " and tce.testcase='" + testCase + "'";
                 }
                 if (country.equalsIgnoreCase("") == false) {
-                    ExeclistWhereSQL += " and tce.Country='" + country + "'";
+                   list.add(country);
+                   index++;
+                   ExeclistWhereSQL.append(" and tce.Country= ? ");
                 }
                 if (build.equalsIgnoreCase("") == false) {
-                    ExeclistWhereSQL += " and tce.Build='" + build + "'";
+                        list.add(build);
+                        index++;
+                        //ExeclistWhereSQL += " and tce.Build='" + build + "'";
+                        ExeclistWhereSQL.append(" and tce.Build=? ");
                 }
                 if (revision.equalsIgnoreCase("") == false) {
-                    ExeclistWhereSQL += " and tce.Revision='" + revision + "'";
+                        list.add(revision);
+                        index++;
+                        //ExeclistWhereSQL += " and tce.Revision='" + revision + "'";
+                        ExeclistWhereSQL.append(" and tce.Revision=? ");
                 }
                 if (environment.equalsIgnoreCase("") == false) {
-                    ExeclistWhereSQL += " and tce.Environment='" + environment + "'";
+                        list.add(environment);
+                        index++;
+                        //ExeclistWhereSQL += " and tce.Environment='" + environment + "'";
+                        ExeclistWhereSQL.append(" and tce.Environment=? ");
                 }
                 if (controlStatus.equalsIgnoreCase("") == false) {
-                    ExeclistWhereSQL += " and tce.ControlStatus='" + controlStatus + "'";
+                        list.add(controlStatus);
+                        index++;
+                        //ExeclistWhereSQL += " and tce.ControlStatus='" + controlStatus + "'";
+                        ExeclistWhereSQL.append( " and tce.ControlStatus=? ");
                 }
                 if (systemFlt.equalsIgnoreCase("") == false) {
-                    List<Application> appliList = applicationService.findApplicationBySystem(systemFlt);
-                    String inSQL = SqlUtil.getInSQLClause(appliList);
-                    if (!(inSQL.equalsIgnoreCase(""))) {
-                        ExeclistWhereSQL += " and tce.Application ";
-                        ExeclistWhereSQL += inSQL;
-                    } else {
-                        ExeclistWhereSQL += " and 1=0 ";
-                    }
+                        List<Application> appliList = applicationService.findApplicationBySystem(systemFlt);
+                        String inSQL = SqlUtil.getInSQLClause(appliList);
+                        if (!(inSQL.equalsIgnoreCase(""))) {
+                            ExeclistWhereSQL.append(" and tce.Application ");
+                            ExeclistWhereSQL.append(inSQL);
+                            //ExeclistWhereSQL += " and tce.Application ";
+                            //ExeclistWhereSQL += inSQL;
+                        } else {
+                            ExeclistWhereSQL.append( " and 1=0 ");
+                            //ExeclistWhereSQL += " and 1=0 ";
+                        }
                 }
                 if (Application.equalsIgnoreCase("") == false) {
-                    ExeclistWhereSQL += " and tce.Application='" + Application + "'";
+                        list.add(Application);
+                        index++;
+                        ExeclistWhereSQL.append( " and tce.Application=? " );
+                        //ExeclistWhereSQL += " and tce.Application='" + Application + "'";
                 }
                 if (IP.equalsIgnoreCase("") == false) {
-                    ExeclistWhereSQL += " and tce.ip='" + IP + "'";
+                        list.add(IP);
+                        index++;
+                        ExeclistWhereSQL.append( " and tce.ip=? ");
+                        //ExeclistWhereSQL += " and tce.ip='" + IP + "'";
                 }
                 if (port.equalsIgnoreCase("") == false) {
-                    ExeclistWhereSQL += " and tce.port='" + port + "'";
+                        list.add(port);
+                        index++;
+                        ExeclistWhereSQL.append( " and tce.port=? ");
+                        //ExeclistWhereSQL += " and tce.port='" + port + "'";
                 }
                 if (tag.equalsIgnoreCase("") == false) {
-                    ExeclistWhereSQL += " and tce.tag='" + tag + "'";
+                        list.add(tag);
+                        index++;
+                        ExeclistWhereSQL.append( " and tce.tag=? ");
+//                        ExeclistWhereSQL += " and tce.tag='" + tag + "'";
                 }
                 if (PerfExcluded.equalsIgnoreCase("") == false) {
-                    ExeclistWhereSQL += " and tce.test!='Performance Monitor'";
+                        ExeclistWhereSQL.append( " and tce.test!='Performance Monitor' ");
+                        //ExeclistWhereSQL += " and tce.test!='Performance Monitor'";
                 }
                 if (BAMExcluded.equalsIgnoreCase("") == false) {
-                    ExeclistWhereSQL += " and tce.test!='Business Activity Monitor'";
+                        ExeclistWhereSQL.append( " and tce.test!='Business Activity Monitor' ");
+                        //ExeclistWhereSQL += " and tce.test!='Business Activity Monitor'";
                 }
                 if (tcstatus.equalsIgnoreCase("") == false) {
-                    ExeclistWhereSQL += " and tce.status='" + tcstatus + "'";
+                        list.add(tcstatus);
+                        index++;
+                        ExeclistWhereSQL.append( " and tce.status=? ");
+                        //ExeclistWhereSQL += " and tce.status='" + tcstatus + "'";
                 }
                 if (BeforeDate.equalsIgnoreCase("") == false) {
-                    ExeclistWhereSQL += " and tce.start<='" + BeforeDate + "'";
+                        list.add(BeforeDate);
+                        index++;
+                        ExeclistWhereSQL.append( " and tce.start<=? "); 
+                        //ExeclistWhereSQL += " and tce.start<='" + BeforeDate + "'";
                 }
-                ExeclistSQL += ExeclistWhereSQL + " ORDER BY tce.id desc LIMIT " + execmax + " "
-                        + ") tce "
-                        + "LEFT OUTER JOIN testcase tc "
-                        + " ON tc.test=tce.test AND tc.testcase=tce.testcase ";
-                ResultSet rs_inf = stmt0.executeQuery(ExeclistSQL);
+                 
+                query.append(ExeclistWhereSQL.toString());
+                query.append( " ORDER BY tce.id desc LIMIT ?");
+                query.append( ") tce ");
+                query.append( " LEFT OUTER JOIN testcase tc ");
+                query.append(" ON tc.test=tce.test AND tc.testcase=tce.testcase "); 
+                
+                PreparedStatement prepStatement = conn.prepareStatement(query.toString());
+                
+                for(int ix=0 ; ix < index; ix++){
+                    prepStatement.setString(ix+1, (String)list.get(ix));    
+                }
+                
+                prepStatement.setInt(index+1, execmax);    
+
+                ResultSet rs_inf = prepStatement.executeQuery();
 
                 String data = "";
                 int j = 0;
@@ -454,13 +515,19 @@
                         %></td>
                     <td><%
 // Table to report the number of exe per testcase.
-                        ExeclistSQL = "SELECT test,testcase, count(*) c FROM ( "
+                        String ExeclistSQL = "SELECT test,testcase, count(*) c FROM ( "
                                 + "SELECT tce.id, tce.test, tce.testcase FROM testcaseexecution tce "
                                 + "WHERE 1=1 "
-                                + ExeclistWhereSQL
-                                + "ORDER BY tce.id desc LIMIT " + execmax + " ) as toto "
+                                + ExeclistWhereSQL.toString()
+                                + "ORDER BY tce.id desc LIMIT ? ) as toto "
                                 + " GROUP by test,testcase; ";
-                        ResultSet rs_TCinf = stmt0.executeQuery(ExeclistSQL);
+                        //ResultSet rs_TCinf = stmt0.executeQuery(ExeclistSQL);
+                        prepStatement = conn.prepareStatement(ExeclistSQL);
+                        for(int ix=0 ; ix < index; ix++){
+                            prepStatement.setString(ix+1, (String)list.get(ix));    
+                        }
+                        prepStatement.setInt(index+1, execmax); 
+                        ResultSet rs_TCinf = prepStatement.executeQuery();
                         rs_TCinf.first();
                         %>
                         <table><%
@@ -478,10 +545,16 @@
                         ExeclistSQL = "SELECT Application, count(*) c FROM ( "
                                 + "SELECT tce.id, tce.application, tce.IP, tce.controlstatus  FROM testcaseexecution tce "
                                 + "WHERE 1=1 "
-                                + ExeclistWhereSQL
-                                + "ORDER BY tce.id desc LIMIT " + execmax + " ) as toto "
+                                + ExeclistWhereSQL.toString()
+                                + "ORDER BY tce.id desc LIMIT ? ) as toto "
                                 + " GROUP by Application; ";
-                        ResultSet rs_APinf = stmt0.executeQuery(ExeclistSQL);
+                        //ResultSet rs_APinf = stmt0.executeQuery(ExeclistSQL);
+                        prepStatement = conn.prepareStatement(ExeclistSQL);
+                        for(int ix=0 ; ix < index; ix++){
+                            prepStatement.setString(ix+1, (String)list.get(ix));    
+                        }
+                        prepStatement.setInt(index+1, execmax); 
+                        ResultSet rs_APinf = prepStatement.executeQuery();
                         rs_APinf.first();
                         %>
                         <table><%
@@ -499,10 +572,17 @@
                         ExeclistSQL = "SELECT Country, count(*) c FROM ( "
                                 + "SELECT tce.id, tce.Country FROM testcaseexecution tce "
                                 + "WHERE 1=1 "
-                                + ExeclistWhereSQL
-                                + "ORDER BY tce.id desc LIMIT " + execmax + " ) as toto "
+                                + ExeclistWhereSQL.toString()
+                                + "ORDER BY tce.id desc LIMIT ? ) as toto "
                                 + " GROUP by Country; ";
-                        ResultSet rs_COinf = stmt0.executeQuery(ExeclistSQL);
+                        //ResultSet rs_COinf = stmt0.executeQuery(ExeclistSQL);
+                        prepStatement = conn.prepareStatement(ExeclistSQL);
+                        for(int ix=0 ; ix < index; ix++){
+                            prepStatement.setString(ix+1, (String)list.get(ix));    
+                        }
+                        prepStatement.setInt(index+1, execmax); 
+                        ResultSet rs_COinf = prepStatement.executeQuery();
+                         
                         rs_COinf.first();
                         %>
                         <table><%
@@ -520,10 +600,16 @@
                         ExeclistSQL = "SELECT environment, count(*) c FROM ( "
                                 + "SELECT tce.id, tce.environment  FROM testcaseexecution tce "
                                 + "WHERE 1=1 "
-                                + ExeclistWhereSQL
-                                + "order by tce.id desc LIMIT " + execmax + " ) as toto "
+                                + ExeclistWhereSQL.toString()
+                                + "order by tce.id desc LIMIT ? ) as toto "
                                 + " GROUP by environment; ";
-                        ResultSet rs_ENVinf = stmt0.executeQuery(ExeclistSQL);
+                        //ResultSet rs_ENVinf = stmt0.executeQuery(ExeclistSQL);
+                        prepStatement = conn.prepareStatement(ExeclistSQL);
+                        for(int ix=0 ; ix < index; ix++){
+                            prepStatement.setString(ix+1, (String)list.get(ix));    
+                        }
+                        prepStatement.setInt(index+1, execmax); 
+                        ResultSet rs_ENVinf = prepStatement.executeQuery();
                         rs_ENVinf.first();
                         %>
                         <table><%
@@ -541,10 +627,17 @@
                         ExeclistSQL = "SELECT IP, count(*) c FROM ( "
                                 + "SELECT tce.id, tce.application, tce.IP, tce.controlstatus  FROM testcaseexecution tce "
                                 + "WHERE 1=1 "
-                                + ExeclistWhereSQL
-                                + "ORDER BY tce.id desc LIMIT " + execmax + " ) as toto "
+                                + ExeclistWhereSQL.toString()
+                                + "ORDER BY tce.id desc LIMIT ? ) as toto "
                                 + " GROUP by IP; ";
-                        ResultSet rs_IPinf = stmt0.executeQuery(ExeclistSQL);
+                        
+                        prepStatement = conn.prepareStatement(ExeclistSQL);
+                        for(int ix=0 ; ix < index; ix++){
+                            prepStatement.setString(ix+1, (String)list.get(ix));    
+                        }
+                        prepStatement.setInt(index+1, execmax); 
+                       
+                        ResultSet rs_IPinf = prepStatement.executeQuery();
                         rs_IPinf.first();
                         %>
                         <table><%
@@ -562,10 +655,17 @@
                         ExeclistSQL = "SELECT ControlStatus, count(*) c FROM ( "
                                 + "SELECT tce.id,  tce.controlstatus  FROM testcaseexecution tce "
                                 + "WHERE 1=1 "
-                                + ExeclistWhereSQL
-                                + "ORDER BY tce.id desc LIMIT " + execmax + " ) as toto "
+                                + ExeclistWhereSQL.toString()
+                                + "ORDER BY tce.id desc LIMIT ? ) as toto "
                                 + " GROUP by ControlStatus; ";
-                        ResultSet rs_CSinf = stmt0.executeQuery(ExeclistSQL);
+                        
+                        prepStatement = conn.prepareStatement(ExeclistSQL);
+                        for(int ix=0 ; ix < index; ix++){
+                            prepStatement.setString(ix+1, (String)list.get(ix));    
+                        }
+                        prepStatement.setInt(index+1, execmax); 
+                        
+                        ResultSet rs_CSinf = prepStatement.executeQuery();
                         rs_CSinf.first();
                         %>
                         <table><%
@@ -768,7 +868,7 @@
         </script>
 
         <%  }
-
+                prepStatement.close();
                 stmt0.close();
                 stmt1.close();
                 stmt2.close();

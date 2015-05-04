@@ -17,6 +17,7 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
+<%@page import="org.apache.commons.lang3.StringEscapeUtils"%>
 <%@page import="org.cerberus.entity.TestCaseExecutionwwwSum"%>
 <%@page import="org.cerberus.service.ITestCaseExecutionwwwSumService"%>
 <%@page import="org.cerberus.entity.TestCaseExecution"%>
@@ -271,8 +272,15 @@
                         <td style="font-weight: bold;"><%out.print(docService.findLabelHTML("testcaseexecution", "crbversion", "Engine Version"));%></td>
                     </tr>
                     <tr>
-                        <td colspan=2><span id="exetag"><%= testCaseExecution.getTag() == null ? "" : testCaseExecution.getTag()%></span></td>
-                        <td><span id="exetaglink"><%= testCaseExecution.getTag() == null ? "" : "<a href='ReportingExecutionByTag.jsp?Tag=" + testCaseExecution.getTag() + "'>link</a>"%></span></td>
+                        <td colspan=2><span id="exetag"><code><pre><%= testCaseExecution.getTag() == null ? "" : StringEscapeUtils.escapeHtml4(testCaseExecution.getTag()) %></pre></code></span></td>
+                        <% 
+                            String tagEncoded = testCaseExecution.getTag();
+                            if(testCaseExecution.getTag() != null){                                
+                                tagEncoded = StringUtil.encodeAsJavaScriptURIComponent(testCaseExecution.getTag());                                                                 
+                            }
+                        %>
+                        <td><span id="exetaglink"><%= testCaseExecution.getTag() == null ? "" : 
+                                "<a href='ReportingExecutionByTag.jsp?enc=1&Tag=" + tagEncoded.replace("'", "%27") + "'>link</a>"%></span></td>
                         <td colspan=7><span id="exemsg"><%= testCaseExecution.getControlMessage() == null ? "" : testCaseExecution.getControlMessage() %></span></td>
                         <td><span id="exemsg"><%=executor%></span></td>
                         <td><span id="exeverbose"><%= String.valueOf(testCaseExecution.getVerbose()) %></span></td>
@@ -624,9 +632,9 @@
                 <table class="tableBorder"  style="text-align: left" border="1" >
                     <tr>
                         <% if (tcGroup.equalsIgnoreCase("AUTOMATED")) {%>
-                        <td><a href="RunTests.jsp?Test=<%=test%>&TestCase=<%=testCase%>&MySystem=<%=appSystem%>&Country=<%=country%>&Environment=<%=environment%>&Tag=<%=testCaseExecution.getTag()==null?"":testCaseExecution.getTag()%>">Run the same Test Case again.</a></td>
+                        <td><a href="RunTests.jsp?Test=<%=test%>&TestCase=<%=testCase%>&MySystem=<%=appSystem%>&Country=<%=country%>&Environment=<%=environment%>&Tag=<%=testCaseExecution.getTag()==null?"" : tagEncoded%>">Run the same Test Case again.</a></td>
                         <%        } else if (tcGroup.equalsIgnoreCase("MANUAL")) {%>
-                        <td><a href="RunManualTestCase.jsp?Test=<%=test%>&TestCase=<%=testCase%>&MySystem=<%=appSystem%>&Country=<%=country%>&Env=<%=environment%>&Tag=<%=testCaseExecution.getTag()==null?"":testCaseExecution.getTag()%>">Run the same Test Case again.</a></td>
+                        <td><a href="RunManualTestCase.jsp?Test=<%=test%>&TestCase=<%=testCase%>&MySystem=<%=appSystem%>&Country=<%=country%>&Env=<%=environment%>&Tag=<%=testCaseExecution.getTag()==null?"" : tagEncoded%>">Run the same Test Case again.</a></td>
                         <%        }%>    
                         <td>
                             <a href="TestCase.jsp?Test=<%=test%>&TestCase=<%=testCase%>&Load=Load">Modify the Test Case.</a>

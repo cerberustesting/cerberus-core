@@ -17,9 +17,30 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
+<%@page import="org.cerberus.util.StringUtil"%>
 <%
     String campaignName = request.getParameter("CampaignName");
     String tag = request.getParameter("Tag");
+    String enc = request.getParameter("enc");
+    
+    if(tag!=null){
+        if(enc != null && enc.equals("1")){// the 
+            tag = StringUtil.encodeAsJavaScriptURIComponent(tag);
+        }else{
+            //needs to handle the special characters, the remaining are 
+            //for some special characters that are not encoded or that have special meanings 
+            //% we need to transform it to its encoded version
+            tag = tag.replace("%", "%25"); //handles the character %
+            tag = tag.replace("\"", "%22");//handles the character "
+            tag = tag.replace("&", "%26"); //handles the character &
+            tag = tag.replace("#", "%23"); //handles the character #                  
+            tag = tag.replace("+", "%2B"); //handles the character +            
+        }
+        //when using the combobox, the %25 added to represent the %
+        tag = tag.replace("%2522", "%22");
+    }
+    
+    
     String[] environments = request.getParameterValues("Environment");
     String[] countries = request.getParameterValues("Country");
     String[] browsers = request.getParameterValues("Browser");
@@ -77,28 +98,35 @@
 
             var executionStatus, pieExecutionStatus;
 
-            $.isParamInURL = function(name, value) {
-                var results = new RegExp('[\?&]' + name + '=' + value + '([^&#]*)').exec(window.location.href);
-                if (results == null) {
-                    return false;
-                }
-                else {
-                    return true;
-                }
+            $.getTagForReport = function() {
+                var results = new RegExp('[\?&]' + "Tag="  + '([^&#]*)').exec(window.location.href);
+                
+                if (results === null) {
+                    return null;
+                } 
+                var decodedTag = decodeURIComponent(results[1].replace(/\+/g, ' '));
+                return decodedTag;                           
             };
 
             $(document).ready(function() {
                 jQuery.ajax({url: './GetTagExecutions?withUUID', async: false}).done(function(data) {
                     var index;
                     $('#selectTag').append($('<option></option>').attr("value", "")).attr("placeholder", "Select a Tag");
-                    for (index = 0; index < data.tags.length; index++) {
-                        var option = $('<option></option>').attr("value", data.tags[index]).text(data.tags[index]);
+                     for (index = 0; index < data.tags.length; index++) {
+                            //the character " needs a special encoding in order to avoid breaking the string that creates the html element   
+                            var encodedString = data.tags[index].replace(/\"/g, "%22");
+                            var option = $('<option></option>').attr("value", encodedString).text(data.tags[index]);
+                            $('#selectTag').append(option);
+                    }
+                    var elementToSelect = $.getTagForReport();
 
-                        if ($.isParamInURL("Tag", data.tags[index])) {
-                            option.attr("selected", "selected");
+                    if(elementToSelect !== null){
+                        var optionSelected = $('#selectTag option[value="' + 
+                                elementToSelect.replace(/\"/g, "%22").replace(/%23/g, "#").replace(/%26/g, "&") + '"]');
+
+                        if(optionSelected !== null){
+                            optionSelected.attr("selected", "selected");
                         }
-
-                        $('#selectTag').append(option);
                     }
                 });
 
