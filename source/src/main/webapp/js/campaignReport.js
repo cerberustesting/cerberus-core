@@ -73,7 +73,7 @@ function buildDetailedTableHeader(columns) {
             "<div>Search : <input id='searchColumns' style='width:300px, height:30px'></div>" +
             "</div>" +
             "<div class='StatusPart'>");
-
+    
     for (var c = 0; c < columns.length; c++) {
         var heightValue = 99 / columns.length;
         var classGen = convertStringToHashcode(columns[c].country + " " + columns[c].environment + " " + columns[c].browser);
@@ -141,14 +141,14 @@ function buildDetailedTableLines(lines, columns) {
                 "<div class='BugID'><b>" + lines[l].bugId + "</b></div>" +
                 "<div class='Comment'><b><i>" + lines[l].comment + "</b></i></div>" +
                 "</div><div class='StatusPart' style='position:relative'>");
-
+        
         for (var c = 0; c < columns.length; c++) {
             var heightValue = 99 / columns.length;
             var classColumnGen = convertStringToHashcode(columns[c].country + " " + columns[c].environment + " " + columns[c].browser);
             var classGen = convertStringToHashcode(columns[c].country + " " + columns[c].environment + " " + columns[c].browser + " " + lines[l].test + " " + lines[l].testCase);
             detailedTableLines += ("<div style='width:" + heightValue + "%; float:left;margin-left:" + heightValue * c + " position:absolute; top:0; bottom:0; left:0; right:0' class='TableRow ceb_"+classColumnGen+"'><div style='height:100%' class='Country " + classGen + " " + classColumnGen + " " + columns[c].browser + " " + columns[c].environment + " " + columns[c].country + "'></div></div>");
         }
-
+        
         detailedTableLines += ("</div></div>");
     }
     return detailedTableLines;
@@ -207,24 +207,29 @@ function showOrHideColumns(checkboxElem, columnName, init) {
             $(document).find(criteria).hide();
         }
     }   
-    
-    //the charts only can be drawn if the container elements exist in the page (even if invisible)
+     
+     //the charts only can be drawn if the container elements exist in the page (even if invisible)
     $(document).find("[data-ceb*='"+ columnName +"']").each(function(i, e) {
         var co = $(document).find("#filterId_"+$(e).attr('data-country'));
         var en = $(document).find("#filterId_"+$(e).attr('data-env'));
-        var br = $(document).find("#filterId_"+$(e).attr('data-browser'));
-        if (checkboxElem.checked && $(co).is(':checked') && $(en).is(':checked') && $(br).is(':checked')) {
+        var br = $(document).find("#filterId_"+$(e).attr('data-browser'));        
+        if (checkboxElem.checked && $(co).is(':checked') && $(en).is(':checked') && $(br).is(':checked')) {             
             var txt = $(e).text();
-            var txt2 = txt.split('{')[0] + '{visibility:visible;}'; 
-            $(e).html(txt2);
+            var txt2 = txt.split('{')[0] + '{visibility:visible;display:inline-block;}';  
+            $(e).html(txt2);            
         } else { 
             var txt = $(e).text();
-            var txt2 = txt.split('{')[0] + '{visibility:hidden;height:0;width:0}';
-            $(e).html(txt2);
+            var txt2 = txt.split('{')[0] + '{visibility:hidden;height:0;width:0; margin:0;padding:0}';
+            $(e).html(txt2); 
         }
     });
-
-    var size = $(document).find(".Stats:visible").size();
+     
+    //determines the number of columns that are currently displayed 
+    var visible = $(".Stats ").filter(function(i, e) {
+        return ($(e).css('visibility') === 'visible');
+    }); 
+    
+    var size = visible.size();    
     $(document).find(".TableRow").attr('style', 'width:' + 99 / size + '% ; float:left;margin-left:0 position:absolute; top:0; bottom:0; left:0; right:0');
     $(document).find(".StatsHeader").attr('style', 'width:' + 99 / size + '%  ; float:left;margin-left:0 position:absolute; top:0; bottom:0; left:0; right:0');
     
