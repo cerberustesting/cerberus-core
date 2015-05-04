@@ -441,8 +441,9 @@
                                     	q.close();
                                                                             stmtQuery.close();
                                     %>
-                                    <br><button name="buttonNewChain" <%if (!rsPCE.getString("c.Active").equalsIgnoreCase("Y")) {
-                                            out.print("disabled=\"true\"");
+                                    <br><button name="buttonNewChain" <%if (!rsPCE.getString("c.Active").equalsIgnoreCase("Y") || 
+                                            (!rsPCE.getString("c.Chain").equalsIgnoreCase("Y") &&  !rsPCE.getString("c.Chain").isEmpty())) {
+                                            out.print("disabled=\"disabled\"");
                                         }%>>New Chain</button>
                                 </form>
                             </td>
