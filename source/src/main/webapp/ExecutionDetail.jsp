@@ -631,11 +631,26 @@
                 <h4>Contextual Actions</h4>
                 <table class="tableBorder"  style="text-align: left" border="1" >
                     <tr>
+                        <%if (tcGroup.equalsIgnoreCase("MANUAL")) {%>
+                            <td> 
+                                <button style="cursor:pointer; background:none; border:none;margin:0;padding:0;color: #008CDA;text-decoration: none;font-family: helvetica;font-size:11.2px " 
+                                        onclick="openRunManualPopin('<%=test%>','<%=testCase%>', '<%=environment%>','<%=country%>','','<%=testCaseExecution.getTag()==null?"" : tagEncoded%>')" 
+                                        title="Allows the user to execute the current test case. It is executed with the exact same configurations: tag, environment, country...">
+                                    Run the same Test Case again
+                                </button>
+                            </td>
+                        <%}%>    
                         <% if (tcGroup.equalsIgnoreCase("AUTOMATED")) {%>
-                        <td><a href="RunTests.jsp?Test=<%=test%>&TestCase=<%=testCase%>&MySystem=<%=appSystem%>&Country=<%=country%>&Environment=<%=environment%>&Tag=<%=testCaseExecution.getTag()==null?"" : tagEncoded%>">Run the same Test Case again.</a></td>
-                        <%        } else if (tcGroup.equalsIgnoreCase("MANUAL")) {%>
-                        <td><a href="RunManualTestCase.jsp?Test=<%=test%>&TestCase=<%=testCase%>&MySystem=<%=appSystem%>&Country=<%=country%>&Env=<%=environment%>&Tag=<%=testCaseExecution.getTag()==null?"" : tagEncoded%>">Run the same Test Case again.</a></td>
-                        <%        }%>    
+                            <td><a href="RunTests.jsp?Test=<%=test%>&TestCase=<%=testCase%>&MySystem=<%=appSystem%>&Country=<%=country%>&Environment=<%=environment%>&Tag=<%=testCaseExecution.getTag()==null?"" : tagEncoded%>"
+                                   title="Allows the user to execute the current test case. The user can modify the configurations associated with the execution: tag, environment, country... ">
+                                    Run the same Test Case again</a></td>
+                        <% } else if (tcGroup.equalsIgnoreCase("MANUAL")){%>
+                        <td>
+                            <a href="RunTests.jsp?Test=<%=test%>&TestCase=<%=testCase%>&MySystem=<%=appSystem%>&Country=<%=country%>&Environment=<%=environment%>&Tag=<%=testCaseExecution.getTag()==null?"" : tagEncoded%>&manualExecution=Y"
+                                title="Allows the user to execute the current test case. The user can modify the configurations associated with the execution: tag, environment, country... ">
+                                Edit configurations and Run the same Test Case again</a>
+                        </td>
+                        <%}%>                           
                         <td>
                             <a href="TestCase.jsp?Test=<%=test%>&TestCase=<%=testCase%>&Load=Load">Modify the Test Case.</a>
                         </td>
@@ -670,6 +685,7 @@
 
                 <input style="display:none" id="refreshAuto">
             </div>
+            <div id="popin" title="Manual Execution"></div>
             <script>
                 $(document).ready(function() {
                     var stat = document.getElementById("statushidden").value;
@@ -734,7 +750,7 @@
                     $('#dialogTheDiff').empty().html(dmp.diff_prettyHtml(d))
                     $('#dialogTheDiff').dialog();
                 }
-            </SCRIPT>
+            </script>
                 <br><%=display_footer(DatePageStart)%>
                 <div id="dialogTheDiff"></div>
             </body>
