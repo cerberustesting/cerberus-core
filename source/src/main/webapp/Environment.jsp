@@ -163,7 +163,7 @@
                             <td><b><%=rsPCE.getString("c.Environment")%></b></td>
                             <td><%=Build%></td>
                             <td><%=Revision%></td>
-                            <td><%=rsPCE.getString("c.Chain")%></td>
+                            <td><%=rsPCE.getString("c.Chain").trim()%></td>
                             <td><%=rsPCE.getString("c.Active")%></td>
                             <td><%=rsPCE.getString("c.Type")%></td>
                             <td><a href="<%=final_CerberusReportingURL%>" target="_blank">Test Result</a></td>
@@ -442,7 +442,7 @@
                                                                             stmtQuery.close();
                                     %>
                                     <br><button name="buttonNewChain" <%if (!rsPCE.getString("c.Active").equalsIgnoreCase("Y") || 
-                                            (!rsPCE.getString("c.Chain").equalsIgnoreCase("Y") &&  !rsPCE.getString("c.Chain").isEmpty())) {
+                                            (!rsPCE.getString("c.Chain").trim().equalsIgnoreCase("Y") &&  !rsPCE.getString("c.Chain").trim().isEmpty())) {
                                             out.print("disabled=\"disabled\"");
                                         }%>>New Chain</button>
                                 </form>
