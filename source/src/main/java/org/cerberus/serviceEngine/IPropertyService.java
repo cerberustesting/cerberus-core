@@ -22,11 +22,8 @@ package org.cerberus.serviceEngine;
 
 import java.util.List;
 import org.cerberus.entity.TestCaseCountryProperties;
-import org.cerberus.entity.TestCaseExecutionData;
 import org.cerberus.entity.TestCaseStepActionExecution;
-import org.cerberus.entity.TestCaseStepExecution;
 import org.cerberus.exception.CerberusEventException;
-import org.cerberus.exception.CerberusException;
 
 /**
  * {Insert class description here}

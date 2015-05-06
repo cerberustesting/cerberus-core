@@ -22,7 +22,7 @@ package org.cerberus.serviceEngine.impl;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Logger;
+import java.util.logging.Logger; 
 import org.apache.log4j.Level;
 import org.cerberus.entity.MessageEvent;
 import org.cerberus.entity.MessageEventEnum;
@@ -202,7 +202,7 @@ public class PropertyService implements IPropertyService {
                 LOG.debug("Property " + internalProperty + " need calculation of these properties " + linkedProperties);
             }
         }
-
+        
         /**
          * For all linked properties, calculate it if needed.
          */
@@ -248,7 +248,7 @@ public class PropertyService implements IPropertyService {
              * If not already calculated, or calculateProperty, then calculate it and insert or update it.
              */
             if (tecd.getPropertyResultMessage().equals(new MessageEvent(MessageEventEnum.PROPERTY_PENDING))) {
-                calculateProperty(tecd, testCaseStepActionExecution, eachTccp, forceCalculation);
+                    calculateProperty(tecd, testCaseStepActionExecution, eachTccp, forceCalculation);
                 try {
                     testCaseExecutionDataService.insertOrUpdateTestCaseExecutionData(tecd);
 
@@ -256,20 +256,16 @@ public class PropertyService implements IPropertyService {
                     LOG.error(cex.getMessage(), cex);
                 }
             }
-            
+                        
             //if is not a system property, then check if it was calculated with success
             //system properties are decoded before these instructions or (when using calculateProperty)
             //in the calculateProperty action, therefore these are not properties that would stop/fail the execution
             if(!SystemPropertyEnum.contains(tecd.getProperty())){
-                //if the property result message indicates that we need to stop the test action, then the action is notified                
-                if(tecd.getPropertyResultMessage().isStopTest()){
-                    testCaseStepActionExecution.setStopExecution(tecd.isStopExecution());
-                    testCaseStepActionExecution.setActionResultMessage(tecd.getPropertyResultMessage());
-                    testCaseStepActionExecution.setExecutionResultMessage(new MessageGeneral(tecd.getPropertyResultMessage().getMessage()));            
-                }
-                //if the property was not successfully calculated, either because it was not defined for the country or because it does not exist
+                //if the property result message indicates that we need to stop the test action, then the action is notified               
+                //or if the property was not successfully calculated, either because it was not defined for the country or because it does not exist
                 //the we notify the execution
-                if(tecd.getPropertyResultMessage().getCode() == MessageEventEnum.PROPERTY_FAILED_NO_PROPERTY_DEFINITION.getCode()){
+                if(tecd.getPropertyResultMessage().isStopTest() || 
+                        tecd.getPropertyResultMessage().getCode() == MessageEventEnum.PROPERTY_FAILED_NO_PROPERTY_DEFINITION.getCode()){
                     testCaseStepActionExecution.setStopExecution(tecd.isStopExecution());
                     testCaseStepActionExecution.setActionResultMessage(tecd.getPropertyResultMessage());
                     testCaseStepActionExecution.setExecutionResultMessage(new MessageGeneral(tecd.getPropertyResultMessage().getMessage()));            
@@ -292,7 +288,7 @@ public class PropertyService implements IPropertyService {
         }
         return stringToDecode;
     }
-
+                        
     @Override
     public List<TestCaseCountryProperties> getListOfPropertiesLinkedToProperty(String test, String testCase, String country, String property, String usedTest, String usedTestCase, List<String> crossedProperties, List<TestCaseCountryProperties> propertieOfTestcase) {
         List<TestCaseCountryProperties> result = new ArrayList();
@@ -346,9 +342,24 @@ public class PropertyService implements IPropertyService {
          */
         if (testCaseCountryProperty!= null) {
             List<String> allProperties = new ArrayList();
-            allProperties.addAll(StringUtil.getAllProperties(testCaseCountryProperty.getValue1()));
-            allProperties.addAll(StringUtil.getAllProperties(testCaseCountryProperty.getValue2()));
-
+            
+            if(testCaseCountryProperty.getType().equals("executeSql") || testCaseCountryProperty.getType().equals("executeSqlFromLib")) {
+                List<String> propertiesSql = new ArrayList();
+                //check the properties specified in the test
+                for (String propSqlName : StringUtil.getAllProperties(testCaseCountryProperty.getValue1())){
+                    for (TestCaseCountryProperties pr : propertieOfTestcase) {
+                        if(pr.getProperty().equals(propSqlName)) {
+                            propertiesSql.add(propSqlName);
+                            break;
+                        }   
+                    }
+                }
+                allProperties.addAll(propertiesSql);
+            }else{
+                allProperties.addAll(StringUtil.getAllProperties(testCaseCountryProperty.getValue1()));
+                allProperties.addAll(StringUtil.getAllProperties(testCaseCountryProperty.getValue2()));
+            } 
+            
             for (String internalProperty : allProperties) {
                 result.addAll(getListOfPropertiesLinkedToProperty(test, testCase, country, internalProperty, usedTest, usedTestCase, crossedProperties, propertieOfTestcase));
             }
@@ -356,7 +367,7 @@ public class PropertyService implements IPropertyService {
         }
         return result;
     }
-
+            
     private String decodeValue(String stringToDecode, TestCaseExecution tCExecution) {
         /**
          * Trying to replace by system environment variables .
