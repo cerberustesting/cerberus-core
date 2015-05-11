@@ -196,8 +196,11 @@ function showOrHideColumns(checkboxElem, columnName, init) {
     //search for all elements with the class columnName <div class="columName"> that are inside the divs TableLine > TestPart
     //For instance, for the column "ShortDescription", it will search for all elements that match the following: 
     //<div class="TableLine"><div class="TestPart"><div class="ShortDescription"></div></div></div>
-
-    var criteria = "div.TableLine > .TestPart > ." + columnName;
+    var classText = ".TestPart";
+    if(columnName === "ControlMessage" || columnName === "Start"){
+        classText = ".StatusPart > .TableRow > .Country";        
+    }
+    var criteria = "div.TableLine >" + classText +  "> ." + columnName;
 
     // if there are elements that match the column associated with the checkbox, then we can hide/show them
     if($(document).find(criteria).length !== 0){         
