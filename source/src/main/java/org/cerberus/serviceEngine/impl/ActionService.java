@@ -77,13 +77,11 @@ public class ActionService implements IActionService {
             try {
                 testCaseStepActionExecution.setObject(propertyService.getValue(testCaseStepActionExecution.getObject(), testCaseStepActionExecution, isCalledFromCalculateProperty));
                 //if the getvalue() indicates that the execution should stop then we stop it before the doAction 
-                if(testCaseStepActionExecution.isStopExecution()){
-                    return testCaseStepActionExecution;
-                }
-                //if the property service was unable to decode the property that is specified in the object, 
+                //or if the property service was unable to decode the property that is specified in the object, 
                 //then the execution of this action should not performed
-                if (testCaseStepActionExecution.getActionResultMessage().getCode() == 
-                        MessageEventEnum.PROPERTY_FAILED_NO_PROPERTY_DEFINITION.getCode()) {                    
+                if(testCaseStepActionExecution.isStopExecution() || 
+                        (testCaseStepActionExecution.getActionResultMessage().getCode() == 
+                        MessageEventEnum.PROPERTY_FAILED_NO_PROPERTY_DEFINITION.getCode())) {                    
                     return testCaseStepActionExecution;
                 }
             } catch (CerberusEventException cex) {
@@ -170,10 +168,10 @@ public class ActionService implements IActionService {
 
         } else if (testCaseStepActionExecution.getAction().equals("callSoapWithBase")) {
             res = this.doActionMakeSoapCall(testCaseStepActionExecution, object, property, true);
-
+     
         } else if (testCaseStepActionExecution.getAction().equals("callSoap")) {
             res = this.doActionMakeSoapCall(testCaseStepActionExecution, object, property, false);
-
+            
         } else if (testCaseStepActionExecution.getAction().equals("mouseDownMouseUp")) {
             res = this.doActionMouseDownMouseUp(tCExecution, object, property);
 
@@ -456,7 +454,7 @@ public class ActionService implements IActionService {
                 servicePath = soapLibrary.getServicePath();
             }
             /**
-             * Decode Enveloppe replacing properties encaplsulated with %
+             * Decode Envelope replacing properties encapsulated with %
              */
             String decodedEnveloppe = soapLibrary.getEnvelope();
             if (soapLibrary.getEnvelope().contains("%")) {

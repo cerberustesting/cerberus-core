@@ -414,7 +414,7 @@ public class PropertyService implements IPropertyService {
     private TestCaseExecutionData executeSqlFromLib(TestCaseExecutionData testCaseExecutionData, TestCaseCountryProperties testCaseCountryProperty, TestCaseExecution tCExecution, boolean forceCalculation) {
         try {
             String script = this.sqlLibraryService.findSqlLibraryByKey(testCaseExecutionData.getValue1()).getScript();
-            testCaseExecutionData.setValue(script);
+            testCaseExecutionData.setValue1(script); //TODO:FN use the new library 
 
         } catch (CerberusException ex) {
             Logger.getLogger(PropertyService.class

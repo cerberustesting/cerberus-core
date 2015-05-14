@@ -609,7 +609,10 @@ public class ExecutionRunService implements IExecutionRunService {
         if (testCaseStepActionExecution.isStopExecution()) {
             return testCaseStepActionExecution;
         }
-
+        //As controls are associated with an action, the current state for the action is stored in order to restore it
+        //if some property is not defined for the country
+        MessageEvent actionMessage = testCaseStepActionExecution.getActionResultMessage();
+        MessageGeneral excutionResultMessage = testCaseStepActionExecution.getExecutionResultMessage();
         /**
          * Iterate Control
          */
@@ -643,8 +646,16 @@ public class ExecutionRunService implements IExecutionRunService {
              */
             testCaseStepActionExecution.setStopExecution(testCaseStepActionControlExecution.isStopExecution());
             if (!(testCaseStepActionControlExecution.getControlResultMessage().equals(new MessageEvent(MessageEventEnum.CONTROL_SUCCESS)))) {
-                testCaseStepActionExecution.setExecutionResultMessage(testCaseStepActionControlExecution.getExecutionResultMessage());
-                testCaseStepActionExecution.setActionResultMessage(testCaseStepActionControlExecution.getControlResultMessage());
+                //NA is a special case of not having success while calculating the property; the action shouldn't be stopped
+                if(testCaseStepActionControlExecution.getControlResultMessage().equals(new MessageEvent(MessageEventEnum.PROPERTY_FAILED_NO_PROPERTY_DEFINITION))){
+                    //restores the messages information if the property is not defined for the country
+                    testCaseStepActionExecution.setActionResultMessage(actionMessage);
+                    testCaseStepActionExecution.setExecutionResultMessage(excutionResultMessage);
+                }
+                else{
+                    testCaseStepActionExecution.setExecutionResultMessage(testCaseStepActionControlExecution.getExecutionResultMessage());
+                    testCaseStepActionExecution.setActionResultMessage(testCaseStepActionControlExecution.getControlResultMessage());
+                }
             }
             /**
              * If Control reported to stop the testcase, we stop it.
@@ -660,7 +671,7 @@ public class ExecutionRunService implements IExecutionRunService {
     }
 
     private TestCaseStepActionControlExecution executeControl(TestCaseStepActionControlExecution testCaseStepActionControlExecution) {
-
+        
         testCaseStepActionControlExecution = this.controlService.doControl(testCaseStepActionControlExecution);
 
         /**
