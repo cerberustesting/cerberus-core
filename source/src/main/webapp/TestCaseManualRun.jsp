@@ -174,7 +174,7 @@
                 String country = getRequestParameterWildcardIfEmpty(request, "Country");
                 String environment = getRequestParameterWildcardIfEmpty(request, "Environment");
                 String idFromQueue = getRequestParameterWildcardIfEmpty(request, "IdFromQueue");
-                String browser = "firefox";
+                String browser = getRequestParameterWildcardIfEmpty(request, "Browser");
                 String browserVersion = "";
                 String tag = getRequestParameterWildcardIfEmpty(request, "Tag");
                 Boolean tinf = getBooleanParameterFalseIfEmpty(request, "Tinf");

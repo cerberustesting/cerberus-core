@@ -2346,18 +2346,18 @@ function addPropertyNew(widthValue){
 }
 
 
-function openRunManualPopin(test, testcase, env, country, idFromQueue, tag) {
-    loadRunManualPopin(test, testcase, env, country, idFromQueue, tag);
+function openRunManualPopin(test, testcase, env, country, idFromQueue, tag, browser) {
+    loadRunManualPopin(test, testcase, env, country, idFromQueue, tag, browser);
     $('#popin').dialog({hide: {duration: 300}, height: $(window).height(), width: $(window).width()-20, buttons: [
             {text: "Validate", click: function() {submitExecution();}},
             {text: "Cancel", click: function() {$("#isCancelExecution").val("Y");submitExecution();}}
         ]});
 }
 
-function loadRunManualPopin(test, testcase, env, country, idFromQueue, tag) {
+function loadRunManualPopin(test, testcase, env, country, idFromQueue, tag, browser) {
 //    $('#popin').hide().empty();
 console.log(test);
-    $('#popin').load('TestCaseManualRun.jsp?Test=' + test.replace(new RegExp(' '  , 'g'), '%20') + '&TestCase=' + testcase+'&Environment='+env+'&Country='+country+'&IdFromQueue='+idFromQueue+'&Tag='+tag);
+    $('#popin').load('TestCaseManualRun.jsp?Test=' + test.replace(new RegExp(' '  , 'g'), '%20') + '&TestCase=' + testcase+'&Environment='+env+'&Country='+country+'&IdFromQueue='+idFromQueue+'&Tag='+tag+'&Browser='+browser);
 //    $('#popin').show();
 }
 

@@ -32,6 +32,8 @@ import org.cerberus.entity.ExecutionThreadPool;
 import org.cerberus.entity.ExecutionUUID;
 import org.cerberus.entity.SessionCounter;
 import org.cerberus.entity.SessionCounterListener;
+import org.cerberus.entity.TestCaseExecution;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.context.ApplicationContext;
@@ -56,21 +58,31 @@ public class ExecutionThreadMonitoring extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         JSONObject jsonResponse = new JSONObject();
-            ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-            ExecutionThreadPool etp = appContext.getBean(ExecutionThreadPool.class);
-            ExecutionUUID euuid = appContext.getBean(ExecutionUUID.class);
-            SessionCounter sc = appContext.getBean(SessionCounter.class);
+        ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+        ExecutionThreadPool etp = appContext.getBean(ExecutionThreadPool.class);
+        ExecutionUUID euuid = appContext.getBean(ExecutionUUID.class);
+        SessionCounter sc = appContext.getBean(SessionCounter.class);
 
         try {
             jsonResponse.put("size_queue", etp.getSize());
             jsonResponse.put("queue_in_execution", etp.getInExecution());
             jsonResponse.put("simultaneous_execution", euuid.size());
+            JSONArray executionArray = new JSONArray();
+            for (Object ex : euuid.getExecutionUUIDList().values()) {
+                TestCaseExecution execution = (TestCaseExecution) ex;
+                JSONObject object = new JSONObject();
+                object.put("id", execution.getId());
+                object.put("test", execution.getTest());
+                object.put("testcase", execution.getTestCase());
+                executionArray.put(object);
+            }
+            jsonResponse.put("simultaneous_execution_list", executionArray);
             jsonResponse.put("simultaneous_session", sc.getTotalActiveSession());
             jsonResponse.put("active_users", sc.getActiveUsers());
-            } catch (JSONException ex) {
+        } catch (JSONException ex) {
             Logger.getLogger(ExecutionThreadMonitoring.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
         response.setContentType("application/json");
         response.getWriter().print(jsonResponse.toString());
     }

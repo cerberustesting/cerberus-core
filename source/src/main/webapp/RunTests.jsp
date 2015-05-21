@@ -675,6 +675,7 @@
                 var env = $("#environment option:selected").val();
                 var country = $("#country option:selected").val();
                 var idFromQueue = $("#IdFromQueue").val();
+                var browser = $("#browser").val();
                 var tag = $("#tag").val();
                 var manualExec = $("#manualExecution option:selected").val();
                 $.getJSON('GetTestCase?test=' + test + "&testcase=" + testcase, function(data) {
@@ -684,7 +685,7 @@
                         if (typeof test === 'undefined' || typeof testcase === 'undefined' || typeof env === 'undefined' || typeof country === 'undefined') {
                             alert("Testcase cannot be executed : Mandatory parameter(s) is(are) missing\n\ntest : " + test + "\ntestcase : " + testcase + "\ncountry : " + country + "\nenvironment : " + env);
                         } else {
-                            openRunManualPopin(test, testcase, env, country, idFromQueue, tag);
+                            openRunManualPopin(test, testcase, env, country, idFromQueue, tag, browser);
                         }
                     } else {
                         if (data.group === "MANUAL") {
