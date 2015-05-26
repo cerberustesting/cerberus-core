@@ -111,4 +111,12 @@ public interface ITestCaseExecutionService {
      */
     List<String> findDistinctTag(boolean withUUIDTag) throws CerberusException;
     
+    /**
+     * Set Tag to an Execution
+     * @param id : ID of the execution to tag
+     * @param tag : Tag to apply to the execution
+     * @throws CerberusException when exception occur during the update.
+     */
+    void setTagToExecution(long id, String tag) throws CerberusException;
+    
 }

@@ -68,6 +68,7 @@
         <link type="text/css" rel="stylesheet" href="js/jqplot/syntaxhighlighter/styles/shCoreDefault.min.css" >
         <link type="text/css" rel="stylesheet" href="js/jqplot/syntaxhighlighter/styles/shThemejqPlot.min.css" >
         <link type="text/css" rel="stylesheet" href="js/zoombox/zoombox.css" >
+        <script type="text/javascript" src="js/Form.js"></script>
         <script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>
         <script type="text/javascript" src="js/jquery-migrate-1.2.1.min.js"></script>
         <script type="text/javascript" src="js/jquery-ui-1.10.2.js"></script>
@@ -272,7 +273,12 @@
                         <td style="font-weight: bold;"><%out.print(docService.findLabelHTML("testcaseexecution", "crbversion", "Engine Version"));%></td>
                     </tr>
                     <tr>
-                        <td colspan=2><span id="exetag"><code><pre><%= testCaseExecution.getTag() == null ? "" : StringEscapeUtils.escapeHtml4(testCaseExecution.getTag()) %></pre></code></span></td>
+                        <td colspan=2><span id="exetag"><code><pre><%= testCaseExecution.getTag() == null ? "" : StringEscapeUtils.escapeHtml4(testCaseExecution.getTag()) %>
+                                                                </pre> 
+                                </code><input type="button" name="editTag" value="edit" onclick="openChangeTagPopin('<%=id_filter%>')">
+                            </span>
+                                                                
+                        </td>
                         <% 
                             String tagEncoded = testCaseExecution.getTag();
                             if(testCaseExecution.getTag() != null){                                
@@ -753,5 +759,8 @@
             </script>
                 <br><%=display_footer(DatePageStart)%>
                 <div id="dialogTheDiff"></div>
+                <div id="setTagToExecution">
+                    
+                </div>
             </body>
             </html>

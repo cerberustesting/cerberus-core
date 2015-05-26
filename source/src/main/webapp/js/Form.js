@@ -1497,9 +1497,9 @@ function openViewPropertyPopin(propertyID, test, testcase) {
 
 function loadPropertyPopin(propertyID, test, testcase) {
 //    $('#popin').hide().empty();
-    var prop = $(document.getElementById("properties_property_"+propertyID)).val();
-    var value = $(document.getElementById("properties_value1_"+propertyID)).val();
-    var db = $('select#properties_dtb_' + propertyID + '[name=\'properties_dtb_'+propertyID+'\']').val();
+    var prop = $(document.getElementById("properties_property_" + propertyID)).val();
+    var value = $(document.getElementById("properties_value1_" + propertyID)).val();
+    var db = $('select#properties_dtb_' + propertyID + '[name=\'properties_dtb_' + propertyID + '\']').val();
     var type = $(document.getElementById('properties_type_' + propertyID)).val();
 
     $('#popin').load('ViewProperty.jsp?type=' + encodeURI(type) + '&db=' + encodeURI(db) + '&test=' + encodeURI(test) + '&testcase=' + encodeURI(testcase) + '&property=' + encodeURI(value));
@@ -1508,21 +1508,21 @@ function loadPropertyPopin(propertyID, test, testcase) {
 
 function openTestData(value) {
     var win = window.open('TestData.jsp?Search=' + value, '_blank');
-    if(win){
+    if (win) {
         win.focus();
-    }else{
+    } else {
         alert('Please allow popups for Cerberus');
     }
 }
 
 function showPicture(url, id, div) {
     $('#popin').empty();
-    $('#popin').prepend("<img src='"+url+"'/>");
+    $('#popin').prepend("<img src='" + url + "'/>");
     $('#popin').dialog({hide: {duration: 300}, height: 600, width: 800, buttons: [{text: "Ok", click: function() {
                     $(this).dialog("close");
-                }},{text: "Remove", click: function() {
-                    $("#"+div).empty();
-                    $("#"+id).val("").trigger( "change" );
+                }}, {text: "Remove", click: function() {
+                    $("#" + div).empty();
+                    $("#" + id).val("").trigger("change");
                     $(this).dialog("close");
                 }}]});
 }
@@ -1532,8 +1532,9 @@ function attachPicture(id, pictureToRemove) {
     $('#popin').append("<p>Feed Picture URL</p><input style='width:600px' id='attachNewScreenshot'></input>");
     $('#popin').dialog({hide: {duration: 300}, height: 200, width: 700, buttons: [{text: "Ok", click: function() {
                     var newUrl = $("#attachNewScreenshot").val();
-                    $("#"+id).val(newUrl).trigger( "change" );
-                    $("#"+pictureToRemove).empty().prepend("<img width='45' height='35' src='"+newUrl+"'/>");;
+                    $("#" + id).val(newUrl).trigger("change");
+                    $("#" + pictureToRemove).empty().prepend("<img width='45' height='35' src='" + newUrl + "'/>");
+                    ;
                     $(this).dialog("close");
                 }}]});
 }
@@ -1626,9 +1627,9 @@ function alertOnProperties() {
  * the test case. 
  * @returns {Boolean} 
  */
-function checkUndefinedProperties(){
-    if($("img[class='property_missing']").length){
-        alert("There are properties that are undefined! Please check them before proceed."); 
+function checkUndefinedProperties() {
+    if ($("img[class='property_missing']").length) {
+        alert("There are properties that are undefined! Please check them before proceed.");
         return false;
     }
     return true;
@@ -1734,7 +1735,7 @@ function addStepNew(div) {
     var form5 = document.createElement('input');
     form5.setAttribute('type', 'button');
     form5.setAttribute('value', 'Add Step');
-    form5.setAttribute('class','buttonAddStep');
+    form5.setAttribute('class', 'buttonAddStep');
     form5.setAttribute('onclick', 'addStepNew(\'StepsEndDiv' + incStep + '\')');
     var DIV5 = document.createElement('div');
     DIV5.setAttribute('style', 'float:left;margin-top:25px');
@@ -1742,7 +1743,7 @@ function addStepNew(div) {
     var form6 = document.createElement('input');
     form6.setAttribute('type', 'button');
     form6.setAttribute('value', 'Save Changes');
-    form6.setAttribute('class','buttonSaveChanges');
+    form6.setAttribute('class', 'buttonSaveChanges');
     form6.setAttribute('onclick', 'submitTestCaseModificationNew(\'stepAnchor_' + incStep + '\')');
     var DIV6 = document.createElement('div');
     DIV6.setAttribute('style', 'float:left;margin-top:25px');
@@ -1952,7 +1953,7 @@ function addTestCasePropertiesNew(tableau, row_number, size, size2) {
 function submitTestCaseModificationNew(anchor) {
     var form = $("#UpdateTestCase");
     var allControlsToDelete = 0;
-    
+
     var actionsToDelete = $("input[data-action='delete_action']:checked");
     if (actionsToDelete.length > 0) {
         for (var i = 0; i < actionsToDelete.length; i++) {
@@ -1967,8 +1968,8 @@ function submitTestCaseModificationNew(anchor) {
         execute = confirm("Your action will delete " + actionsToDelete.length + " action(s) and " +
                 allControlsToDelete + " control(s).\nDo you want to continue ?");
     }
-    
-    if (execute){
+
+    if (execute) {
         execute = checkForm();
     }
 
@@ -2067,7 +2068,7 @@ function addTCSANew(rowID, step, obj) {
     var referenceNode = document.getElementById(rowID);
     referenceNode.parentNode.insertBefore(DIV2, referenceNode.nextSibling);
     referenceNode.parentNode.insertBefore(DIV, referenceNode.nextSibling);
-    
+
 
     /* Search fields and add new name and value*/
     $('#StepListOfActionDiv' + step + newNumberOfAction).find('input[data-id="action_color_id"]')
@@ -2081,8 +2082,8 @@ function addTCSANew(rowID, step, obj) {
     $('#StepListOfActionDiv' + step + newNumberOfAction).find('input[data-id="action_step_template"]')
             .attr('name', 'action_step_' + step + '_' + newNumberOfAction).val(StepNum);
     $('#StepListOfActionDiv' + step + newNumberOfAction).find('img[data-id="action_img_delete"]')
-            .attr('id', 'img_delete_'+step+'_'+newNumberOfAction)
-            .attr('onclick', 'checkDeleteBox(\'img_delete_'+step+'_'+newNumberOfAction+'\', \'action_delete_'+step+'_'+newNumberOfAction+'\',\'StepListOfActionDiv'+step+newNumberOfAction+'\',\'RowActionDiv\')');
+            .attr('id', 'img_delete_' + step + '_' + newNumberOfAction)
+            .attr('onclick', 'checkDeleteBox(\'img_delete_' + step + '_' + newNumberOfAction + '\', \'action_delete_' + step + '_' + newNumberOfAction + '\',\'StepListOfActionDiv' + step + newNumberOfAction + '\',\'RowActionDiv\')');
     $('#StepListOfActionDiv' + step + newNumberOfAction).find('img[data-id="actionAddActionButton_template"]')
             .attr('onclick', 'addTCSANew(\'DivActionEndOfAction' + step + newNumberOfAction + '\', \'' + step + '\', this)');
     $('#StepListOfActionDiv' + step + newNumberOfAction).find('img[data-id="actionAddControlButton_template"]')
@@ -2097,7 +2098,7 @@ function addTCSANew(rowID, step, obj) {
             .attr('name', 'action_object_' + step + '_' + newNumberOfAction);
     $('#StepListOfActionDiv' + step + newNumberOfAction).find('input[data-id="action_property_template"]')
             .attr('name', 'action_property_' + step + '_' + newNumberOfAction);
-    
+
     callEvent();
 
 }
@@ -2151,8 +2152,8 @@ function addTCSACNew(rowID, step, incrementAction, obj) {
     $('#StepListOfControlDiv' + step + incrementAction + nextIncControl).find('input[data-id="control_step_template"]')
             .attr('name', 'control_step_' + step + '_' + incrementAction + '_' + nextIncControl).val(StepNum);
     $('#StepListOfControlDiv' + step + incrementAction + nextIncControl).find('img[data-id="control_img_delete"]')
-            .attr('id', 'img_delete_'+step+'_'+incrementAction+'_'+nextIncControl)
-            .attr('onclick', 'checkDeleteBox(\'img_delete_'+step+'_'+incrementAction+'_'+nextIncControl+'\', \'control_delete_'+step+'_'+incrementAction+'_'+nextIncControl+'\',\'StepListOfControlDiv'+step+incrementAction+nextIncControl+'\', \'RowActionDiv\')');
+            .attr('id', 'img_delete_' + step + '_' + incrementAction + '_' + nextIncControl)
+            .attr('onclick', 'checkDeleteBox(\'img_delete_' + step + '_' + incrementAction + '_' + nextIncControl + '\', \'control_delete_' + step + '_' + incrementAction + '_' + nextIncControl + '\',\'StepListOfControlDiv' + step + incrementAction + nextIncControl + '\', \'RowActionDiv\')');
     $('#StepListOfControlDiv' + step + incrementAction + nextIncControl).find('img[data-id="controlAddActionButton_template"]')
             .attr('onclick', 'addTCSANew(\'DivActionEndOfAction' + step + incrementAction + '\', \'' + step + '\', this)');
     $('#StepListOfControlDiv' + step + incrementAction + nextIncControl).find('img[data-id="controlAddControlButton_template"]')
@@ -2160,7 +2161,7 @@ function addTCSACNew(rowID, step, incrementAction, obj) {
     $('#StepListOfControlDiv' + step + incrementAction + nextIncControl).find('input[data-id="control_sequence_template"]')
             .attr('name', 'control_sequence_' + step + '_' + incrementAction + '_' + nextIncControl).attr('data-fieldtype', 'ctrlseq_' + step).val(incremAction);
     $('#StepListOfControlDiv' + step + incrementAction + nextIncControl).find('input[data-id="control_control_template"]')
-            .attr('name', 'control_control_' + step + '_' + incrementAction + '_' + nextIncControl).attr('data-fieldtype', 'control_' + step + '_' + incremAction).val(incrementControl+1);
+            .attr('name', 'control_control_' + step + '_' + incrementAction + '_' + nextIncControl).attr('data-fieldtype', 'control_' + step + '_' + incremAction).val(incrementControl + 1);
     $('#StepListOfControlDiv' + step + incrementAction + nextIncControl).find('input[data-id="control_description_template"]')
             .attr('name', 'control_description_' + step + '_' + incrementAction + '_' + nextIncControl);
     $('#StepListOfControlDiv' + step + incrementAction + nextIncControl).find('#control_type_template')
@@ -2172,7 +2173,7 @@ function addTCSACNew(rowID, step, incrementAction, obj) {
     $('#StepListOfControlDiv' + step + incrementAction + nextIncControl).find('#control_fatal_template')
             .attr('name', 'control_fatal_' + step + '_' + incrementAction + '_' + nextIncControl);
 
-callEvent();
+    callEvent();
 }
 
 function addTCSCNew(rowID, obj) {
@@ -2185,8 +2186,8 @@ function addTCSCNew(rowID, obj) {
 
     /* Increment All step fields bellow the current*/
     var initStep = 0;
-    if (obj !== null){
-    var initStep = obj.parentNode.parentNode.querySelector('[data-fieldtype="stepNumber"]') === null ? 0 : obj.parentNode.parentNode.querySelector('[data-fieldtype="stepNumber"]').value;
+    if (obj !== null) {
+        var initStep = obj.parentNode.parentNode.querySelector('[data-fieldtype="stepNumber"]') === null ? 0 : obj.parentNode.parentNode.querySelector('[data-fieldtype="stepNumber"]').value;
     }
     var incrementStep = parseInt(initStep);
     incrementRows($('#StepsMainDiv'), 'input[data-fieldtype="stepNumber"]', incrementStep);
@@ -2198,90 +2199,90 @@ function addTCSCNew(rowID, obj) {
         numberOfStep = document.getElementsByName('step_increment').length;
     }
     var nextIncStep = parseInt(numberOfStep) + 1;
-    
+
     /* Create the new div and insert it in the page*/
     var mainDiv = document.createElement('div');
     mainDiv.setAttribute('style', 'display:block; clear:both; margin-top:5px');
     var referenceNode = document.getElementById(rowID);
     referenceNode.parentNode.insertBefore(mainDiv, referenceNode.nextSibling);
-    
+
     var DIV = document.createElement('div');
     if (document.getElementById("StepTemplateDiv")) {
         DIV.innerHTML = (DIV.innerHTML + document
                 .getElementById('StepTemplateDiv').innerHTML);
     }
-    DIV.setAttribute('id',  'StepFirstLineDiv'+nextIncStep);
-    DIV.setAttribute('class' , 'StepHeaderDiv');
+    DIV.setAttribute('id', 'StepFirstLineDiv' + nextIncStep);
+    DIV.setAttribute('class', 'StepHeaderDiv');
     DIV.setAttribute('style', 'display:block; height:70px');
     mainDiv.appendChild(DIV);
-    
+
     var DIV2 = document.createElement('div');
     if (document.getElementById("StepButtonTemplateDiv")) {
         DIV2.innerHTML = (DIV2.innerHTML + document
                 .getElementById('StepButtonTemplateDiv').innerHTML);
     }
-    DIV2.setAttribute('id',  'StepButtonDiv'+nextIncStep);
+    DIV2.setAttribute('id', 'StepButtonDiv' + nextIncStep);
     DIV2.setAttribute('style', 'display:block;clear:both;margin-top:5px');
-    DIV2.setAttribute('ondragover', 'insertTCS(event, \''+nextIncStep+'\')');
-    DIV2.setAttribute('ondrop', 'drop(event, \''+nextIncStep+'\')');
+    DIV2.setAttribute('ondragover', 'insertTCS(event, \'' + nextIncStep + '\')');
+    DIV2.setAttribute('ondrop', 'drop(event, \'' + nextIncStep + '\')');
     mainDiv.appendChild(DIV2);
-    
+
     var DIV3 = document.createElement('div');
-    DIV3.setAttribute('id',  'StepsEndDiv'+nextIncStep);
+    DIV3.setAttribute('id', 'StepsEndDiv' + nextIncStep);
     DIV3.setAttribute('style', 'display:none');
     mainDiv.appendChild(DIV3);
     /* Search fields and add*/
-    
-    $('#StepFirstLineDiv'+nextIncStep).find('input[data-id="stepAnchor_template"]')
+
+    $('#StepFirstLineDiv' + nextIncStep).find('input[data-id="stepAnchor_template"]')
             .attr('name', 'stepAnchor_' + nextIncStep);
-    $('#StepFirstLineDiv'+nextIncStep).find('input[data-id="stepAnchor_steptemplate"]')
+    $('#StepFirstLineDiv' + nextIncStep).find('input[data-id="stepAnchor_steptemplate"]')
             .attr('name', 'stepAnchor_step' + nextIncStep);
-    $('#StepFirstLineDiv'+nextIncStep).find('input[data-id="step_delete_template"]')
+    $('#StepFirstLineDiv' + nextIncStep).find('input[data-id="step_delete_template"]')
             .attr('name', 'step_delete_' + nextIncStep)
             .attr('id', 'step_delete_' + nextIncStep);
-    $('#StepFirstLineDiv'+nextIncStep).find('img[data-id="step_img_delete"]')
-            .attr('id', 'img_delete_step_'+nextIncStep)
-            .attr('onclick', 'checkDeleteBox(\'img_delete_step_'+nextIncStep+'\', \'step_delete_' + nextIncStep+'\',\'StepFirstLineDiv'+nextIncStep+'\', \'StepHeaderDiv\')');
-    $('#StepFirstLineDiv'+nextIncStep).find('input[data-id="step_increment"]')
+    $('#StepFirstLineDiv' + nextIncStep).find('img[data-id="step_img_delete"]')
+            .attr('id', 'img_delete_step_' + nextIncStep)
+            .attr('onclick', 'checkDeleteBox(\'img_delete_step_' + nextIncStep + '\', \'step_delete_' + nextIncStep + '\',\'StepFirstLineDiv' + nextIncStep + '\', \'StepHeaderDiv\')');
+    $('#StepFirstLineDiv' + nextIncStep).find('input[data-id="step_increment"]')
             .attr('name', 'step_increment').val(nextIncStep);
-    $('#StepFirstLineDiv'+nextIncStep).find('input[data-id="step_number_template"]')
-            .attr('name', 'step_number_' + nextIncStep).val(incrementStep+1);
-     $('#StepFirstLineDiv'+nextIncStep).find('input[data-id="step_description_template"]')
+    $('#StepFirstLineDiv' + nextIncStep).find('input[data-id="step_number_template"]')
+            .attr('name', 'step_number_' + nextIncStep).val(incrementStep + 1);
+    $('#StepFirstLineDiv' + nextIncStep).find('input[data-id="step_description_template"]')
             .attr('name', 'step_description_' + nextIncStep).attr('data-fieldtype', 'Description')
             .attr('placeholder', 'Description');
-    $('#StepFirstLineDiv'+nextIncStep).find('input[data-id="initial_step_number_template"]')
+    $('#StepFirstLineDiv' + nextIncStep).find('input[data-id="initial_step_number_template"]')
             .attr('name', 'initial_step_number_' + nextIncStep).val(nextIncStep);
-    $('#StepFirstLineDiv'+nextIncStep).find('input[data-id="step_useStep_template"]')
+    $('#StepFirstLineDiv' + nextIncStep).find('input[data-id="step_useStep_template"]')
             .attr('name', 'step_useStep_' + nextIncStep).val("Y")
             .attr('id', 'step_useStep_' + nextIncStep)
-            .attr('onclick', 'showUseStep(this, '+ nextIncStep +')');
-    $('#StepFirstLineDiv'+nextIncStep).find('div[data-id="useStepForNewStep"]')
-            .attr('id', 'useStepForNewStep_'+ nextIncStep);
-    $('#StepFirstLineDiv'+nextIncStep).find('select[data-id="step_useStepTest_template"]')
+            .attr('onclick', 'showUseStep(this, ' + nextIncStep + ')');
+    $('#StepFirstLineDiv' + nextIncStep).find('div[data-id="useStepForNewStep"]')
+            .attr('id', 'useStepForNewStep_' + nextIncStep);
+    $('#StepFirstLineDiv' + nextIncStep).find('select[data-id="step_useStepTest_template"]')
             .attr('name', 'step_useStepTest_' + nextIncStep).attr('id', 'step_useStepTest_' + nextIncStep)
-            .attr('onchange', 'findStepBySystemTest(this.value, \''+mySystem+'\', \'step_useStepTestCase_'+nextIncStep+'\')');
-    $('#StepFirstLineDiv'+nextIncStep).find('select[data-id="step_useStepTestCase_template"]')
+            .attr('onchange', 'findStepBySystemTest(this.value, \'' + mySystem + '\', \'step_useStepTestCase_' + nextIncStep + '\')');
+    $('#StepFirstLineDiv' + nextIncStep).find('select[data-id="step_useStepTestCase_template"]')
             .attr('name', 'step_useStepTestCase_' + nextIncStep).attr('id', 'step_useStepTestCase_' + nextIncStep)
-            .attr('onchange', 'findStepByTestCase($(\'#step_useStepTest_'+nextIncStep+'\').val(), this.value, \'step_useStepStep_'+nextIncStep+'\')');
-    $('#StepFirstLineDiv'+nextIncStep).find('select[data-id="step_useStepStep_template"]')
+            .attr('onchange', 'findStepByTestCase($(\'#step_useStepTest_' + nextIncStep + '\').val(), this.value, \'step_useStepStep_' + nextIncStep + '\')');
+    $('#StepFirstLineDiv' + nextIncStep).find('select[data-id="step_useStepStep_template"]')
             .attr('name', 'step_useStepStep_' + nextIncStep).attr('id', 'step_useStepStep_' + nextIncStep);
-    $('#StepFirstLineDiv'+nextIncStep).find('select[data-id="step_addActionButton_template"]')
-            .attr('onclick' , 'addTCSANew(\'BeforeFirstAction'+nextIncStep+'\', \''+nextIncStep+'\', null)');
-    $('#StepButtonDiv'+nextIncStep).find('input[data-id="submitButtonActionTemplate"]')
-            .attr('onclick' , 'submitTestCaseModificationNew(\'stepAnchor_'+nextIncStep+'\')');
-    $('#StepButtonDiv'+nextIncStep).find('input[data-id="addStepButtonTemplate"]')
-            .attr('onclick' , 'addTCSCNew(\'StepsEndDiv'+nextIncStep+'\', this)')
-            .attr('id' , 'addStepButton'+nextIncStep);
+    $('#StepFirstLineDiv' + nextIncStep).find('select[data-id="step_addActionButton_template"]')
+            .attr('onclick', 'addTCSANew(\'BeforeFirstAction' + nextIncStep + '\', \'' + nextIncStep + '\', null)');
+    $('#StepButtonDiv' + nextIncStep).find('input[data-id="submitButtonActionTemplate"]')
+            .attr('onclick', 'submitTestCaseModificationNew(\'stepAnchor_' + nextIncStep + '\')');
+    $('#StepButtonDiv' + nextIncStep).find('input[data-id="addStepButtonTemplate"]')
+            .attr('onclick', 'addTCSCNew(\'StepsEndDiv' + nextIncStep + '\', this)')
+            .attr('id', 'addStepButton' + nextIncStep);
     callEvent();
-    
-    
+
+
 }
 
 function newActivateValue2(value, fieldValue1Id, fieldValue2Id, size) {
     if (value === "getAttributeFromHtml" || value === "getFromXml" || value === "getFromCookie" || value === "getFromJson" || value === "getDifferencesFromXml") {
         document.getElementById(fieldValue2Id).style.display = "inline-block";
-        document.getElementById(fieldValue2Id).style.width = size/2 + "%";
-        document.getElementById(fieldValue1Id).style.width = size/2 + "%";
+        document.getElementById(fieldValue2Id).style.width = size / 2 + "%";
+        document.getElementById(fieldValue1Id).style.width = size / 2 + "%";
     } else
     {
         document.getElementById(fieldValue2Id).style.display = "none";
@@ -2289,75 +2290,110 @@ function newActivateValue2(value, fieldValue1Id, fieldValue2Id, size) {
     }
 }
 
-function addPropertyNew(widthValue){
+function addPropertyNew(widthValue) {
     var numberOfProperty = document.getElementsByName("property_increment").length;
-    var nextIncrementValue = parseInt(numberOfProperty)+1;
-    
+    var nextIncrementValue = parseInt(numberOfProperty) + 1;
+
     var DIV = document.createElement('div');
     if (document.getElementById("PropertyTemplateDiv")) {
         DIV.innerHTML = (DIV.innerHTML + document
                 .getElementById('PropertyTemplateDiv').innerHTML);
     }
-    DIV.setAttribute('class' , 'generalPropertyDiv');
-    DIV.setAttribute('id' , 'propertyRow'+nextIncrementValue);
+    DIV.setAttribute('class', 'generalPropertyDiv');
+    DIV.setAttribute('id', 'propertyRow' + nextIncrementValue);
     DIV.setAttribute('style', 'height:50px; clear:both; display:block;border-style: solid; border-width:thin ; border-color:#CCCCCC;');
-    var referenceNode = document.getElementById('propertyRow'+numberOfProperty);
+    var referenceNode = document.getElementById('propertyRow' + numberOfProperty);
     referenceNode.parentNode.insertBefore(DIV, referenceNode.nextSibling);
-    
-    $('#propertyRow'+nextIncrementValue).find('input[data-id="properties_delete_template"]')
+
+    $('#propertyRow' + nextIncrementValue).find('input[data-id="properties_delete_template"]')
             .attr('name', 'properties_delete_' + nextIncrementValue)
             .attr('id', 'properties_delete_' + nextIncrementValue)
             .attr('style', 'display:none');
-    $('#propertyRow'+nextIncrementValue).find('img[data-id="property_img_delete"]')
-            .attr('id', 'img_delete_property_'+nextIncrementValue)
-            .attr('onclick', 'checkDeleteBox(\'img_delete_property_'+nextIncrementValue+'\', \'properties_delete_' + nextIncrementValue+'\',\'propertyRow'+nextIncrementValue+'\', \'generalPropertyDiv\')');
-    $('#propertyRow'+nextIncrementValue).find('input[data-id="property_increment_template"]')
+    $('#propertyRow' + nextIncrementValue).find('img[data-id="property_img_delete"]')
+            .attr('id', 'img_delete_property_' + nextIncrementValue)
+            .attr('onclick', 'checkDeleteBox(\'img_delete_property_' + nextIncrementValue + '\', \'properties_delete_' + nextIncrementValue + '\',\'propertyRow' + nextIncrementValue + '\', \'generalPropertyDiv\')');
+    $('#propertyRow' + nextIncrementValue).find('input[data-id="property_increment_template"]')
             .attr('name', 'property_increment').val(nextIncrementValue);
-    $('#propertyRow'+nextIncrementValue).find('input[data-id="properties_property_template"]')
+    $('#propertyRow' + nextIncrementValue).find('input[data-id="properties_property_template"]')
             .attr('name', 'properties_property_' + nextIncrementValue)
             .attr('placeholder', 'Feed Property Name');
-    $('#propertyRow'+nextIncrementValue).find('input[data-id="properties_country_template"]')
+    $('#propertyRow' + nextIncrementValue).find('input[data-id="properties_country_template"]')
             .attr('name', 'properties_country_' + nextIncrementValue);
-    $('#propertyRow'+nextIncrementValue).find('#properties_type_template')
+    $('#propertyRow' + nextIncrementValue).find('#properties_type_template')
             .attr('name', 'properties_type_' + nextIncrementValue)
             .attr('onchange', 'activateDatabaseBox(this.value, \'properties_nodtb_' + nextIncrementValue + '\' ,\'properties_dtb_' + nextIncrementValue + '\');newActivateValue2(this.value, \'divProperties_value1_' + nextIncrementValue + '\', \'divProperties_value2_' + nextIncrementValue + '\',\'' + widthValue + '\')');
-    $('#propertyRow'+nextIncrementValue).find('#properties_dtb_template')
+    $('#propertyRow' + nextIncrementValue).find('#properties_dtb_template')
             .attr('name', 'properties_dtb_' + nextIncrementValue)
             .attr('id', 'properties_dtb_' + nextIncrementValue);
-    $('#propertyRow'+nextIncrementValue).find('select[data-id="properties_nodtb_template"]')
+    $('#propertyRow' + nextIncrementValue).find('select[data-id="properties_nodtb_template"]')
             .attr('name', 'properties_nodtb_' + nextIncrementValue)
             .attr('id', 'properties_nodtb_' + nextIncrementValue);
-    $('#propertyRow'+nextIncrementValue).find('div[data-id="divProperties_value1_template"]')
+    $('#propertyRow' + nextIncrementValue).find('div[data-id="divProperties_value1_template"]')
             .attr('name', 'divProperties_value1_' + nextIncrementValue)
             .attr('id', 'divProperties_value1_' + nextIncrementValue);
-    $('#propertyRow'+nextIncrementValue).find('div[data-id="divProperties_value2_template"]')
+    $('#propertyRow' + nextIncrementValue).find('div[data-id="divProperties_value2_template"]')
             .attr('name', 'divProperties_value2_' + nextIncrementValue)
             .attr('id', 'divProperties_value2_' + nextIncrementValue);
-    $('#propertyRow'+nextIncrementValue).find('textarea[data-id="properties_value1_template"]')
+    $('#propertyRow' + nextIncrementValue).find('textarea[data-id="properties_value1_template"]')
             .attr('name', 'properties_value1_' + nextIncrementValue);
-    $('#propertyRow'+nextIncrementValue).find('textarea[data-id="properties_value2_template"]')
+    $('#propertyRow' + nextIncrementValue).find('textarea[data-id="properties_value2_template"]')
             .attr('name', 'properties_value2_' + nextIncrementValue);
-    $('#propertyRow'+nextIncrementValue).find('input[data-id="properties_length_template"]')
+    $('#propertyRow' + nextIncrementValue).find('input[data-id="properties_length_template"]')
             .attr('name', 'properties_length_' + nextIncrementValue).val("0");
-    $('#propertyRow'+nextIncrementValue).find('input[data-id="properties_rowlimit_template"]')
+    $('#propertyRow' + nextIncrementValue).find('input[data-id="properties_rowlimit_template"]')
             .attr('name', 'properties_rowlimit_' + nextIncrementValue).val("0");
-    $('#propertyRow'+nextIncrementValue).find('#properties_nature_template')
+    $('#propertyRow' + nextIncrementValue).find('#properties_nature_template')
             .attr('name', 'properties_nature_' + nextIncrementValue);
 }
 
 
 function openRunManualPopin(test, testcase, env, country, idFromQueue, tag, browser) {
     loadRunManualPopin(test, testcase, env, country, idFromQueue, tag, browser);
-    $('#popin').dialog({hide: {duration: 300}, height: $(window).height(), width: $(window).width()-20, buttons: [
-            {text: "Validate", click: function() {submitExecution();}},
-            {text: "Cancel", click: function() {$("#isCancelExecution").val("Y");submitExecution();}}
+    $('#popin').dialog({hide: {duration: 300}, height: $(window).height(), width: $(window).width() - 20, buttons: [
+            {text: "Validate", click: function() {
+                    submitExecution();
+                }},
+            {text: "Cancel", click: function() {
+                    $("#isCancelExecution").val("Y");
+                    submitExecution();
+                }}
         ]});
 }
 
 function loadRunManualPopin(test, testcase, env, country, idFromQueue, tag, browser) {
 //    $('#popin').hide().empty();
-console.log(test);
-    $('#popin').load('TestCaseManualRun.jsp?Test=' + test.replace(new RegExp(' '  , 'g'), '%20') + '&TestCase=' + testcase+'&Environment='+env+'&Country='+country+'&IdFromQueue='+idFromQueue+'&Tag='+tag+'&Browser='+browser);
+    console.log(test);
+    $('#popin').load('TestCaseManualRun.jsp?Test=' + test.replace(new RegExp(' ', 'g'), '%20') + '&TestCase=' + testcase + '&Environment=' + env + '&Country=' + country + '&IdFromQueue=' + idFromQueue + '&Tag=' + tag + '&Browser=' + browser);
+//    $('#popin').show();
+}
+
+function openChangeTagPopin(value) {
+    loadChangeTagPopin(value);
+    $('#setTagToExecution').dialog({hide: {duration: 300}, height: 200, width: 200, buttons: [{
+                text: "Validate", click: function() {
+//                    $('#SetTagToExecution').submit(function(event) {
+//                        event.preventDefault();
+                        var id = $("#setTagToExecution").find('input[name="executionId"]').val();
+                        var tag = $("#setTagToExecution").find('input[name="newTag"]').val();
+                        console.log(id+tag);
+                        var deferred = $.get("./SetTagToExecution", {executionId: id, newTag: tag});
+
+                        deferred.success(function() {
+                            $(location).attr('href', "./ExecutionDetail.jsp?id_tc=" + value);
+                        });
+
+//
+//                    });
+                }},
+            {text: "Cancel", click: function() {
+                    $(this).dialog("close");
+                }}
+        ]});
+}
+
+function loadChangeTagPopin(value) {
+    $('#setTagToExecution').empty().append('<p>Set Tag for Execution</p><input name="executionId" readonly="readonly" value="' + value + '"><input placeholder="Set New Tag Here" name="newTag">');
+//                    <input name="newTag">
 //    $('#popin').show();
 }
 

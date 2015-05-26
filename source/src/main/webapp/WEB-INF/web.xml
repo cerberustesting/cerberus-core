@@ -680,6 +680,10 @@
         <servlet-name>UpdateExecutionInQueue</servlet-name>
         <servlet-class>org.cerberus.servlet.execution.UpdateExecutionInQueue</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>SetTagToExecution</servlet-name>
+        <servlet-class>org.cerberus.servlet.execution.SetTagToExecution</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>ExecutionThreadMonitoring</servlet-name>
         <url-pattern>/ExecutionThreadMonitoring</url-pattern>
@@ -1320,6 +1324,10 @@
         <servlet-name>UpdateExecutionInQueue</servlet-name>
         <url-pattern>/UpdateExecutionInQueue</url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>SetTagToExecution</servlet-name>
+        <url-pattern>/SetTagToExecution</url-pattern>
+    </servlet-mapping>
     <session-config>
         <session-timeout>
             60
@@ -1513,6 +1521,7 @@
             <url-pattern>/findEnvironmentByCriteria</url-pattern>
             <url-pattern>/UpdateUserRobotPreference</url-pattern>
             <url-pattern>/RunManualTest</url-pattern>
+            <url-pattern>/SetTagToExecution</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <description>RunTest</description>
