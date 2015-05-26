@@ -96,7 +96,7 @@ public class AddToExecutionQueue extends HttpServlet {
     private static final String PARAMETER_OUTPUT_FORMAT = "OutputFormat";
     private static final String PARAMETER_SCREENSHOT = "Screenshot";
     private static final String PARAMETER_VERBOSE = "Verbose";
-    private static final String PARAMETER_TIMEOUT = "Timeout";
+    private static final String PARAMETER_TIMEOUT = "timeout";
     private static final String PARAMETER_SYNCHRONEOUS = "Synchroneous";
     private static final String PARAMETER_PAGE_SOURCE = "PageSource";
     private static final String PARAMETER_SELENIUM_LOG = "SeleniumLog";
@@ -108,7 +108,7 @@ public class AddToExecutionQueue extends HttpServlet {
     private static final int DEFAULT_VALUE_SCREENSHOT = 0;
     private static final boolean DEFAULT_VALUE_MANUAL_URL = false;
     private static final int DEFAULT_VALUE_VERBOSE = 0;
-    private static final long DEFAULT_VALUE_TIMEOUT = 15000;
+    private static final long DEFAULT_VALUE_TIMEOUT = 300;
     private static final boolean DEFAULT_VALUE_SYNCHRONEOUS = true;
     private static final int DEFAULT_VALUE_PAGE_SOURCE = 1;
     private static final int DEFAULT_VALUE_SELENIUM_LOG = 1;
