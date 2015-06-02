@@ -375,6 +375,7 @@ public class PropertyService implements IPropertyService {
         stringToDecode = StringUtil.replaceAllProperties(stringToDecode, "%SYS_SYSTEM%", tCExecution.getApplication().getSystem());
         stringToDecode = StringUtil.replaceAllProperties(stringToDecode, "%SYS_APPLI%", tCExecution.getApplication().getApplication());
         stringToDecode = StringUtil.replaceAllProperties(stringToDecode, "%SYS_APP_DOMAIN%", tCExecution.getCountryEnvironmentApplication().getDomain());
+        stringToDecode = StringUtil.replaceAllProperties(stringToDecode, "%SYS_APP_HOST%", tCExecution.getCountryEnvironmentApplication().getIp());
         stringToDecode = StringUtil.replaceAllProperties(stringToDecode, "%SYS_ENV%", tCExecution.getEnvironmentData());
         stringToDecode = StringUtil.replaceAllProperties(stringToDecode, "%SYS_ENVGP%", tCExecution.getEnvironmentDataObj().getGp1());
         stringToDecode = StringUtil.replaceAllProperties(stringToDecode, "%SYS_COUNTRY%", tCExecution.getCountry());
@@ -383,7 +384,7 @@ public class PropertyService implements IPropertyService {
         stringToDecode = StringUtil.replaceAllProperties(stringToDecode, "%SYS_SSPORT%", tCExecution.getSeleniumPort());
         stringToDecode = StringUtil.replaceAllProperties(stringToDecode, "%SYS_TAG%", tCExecution.getTag());
         stringToDecode = StringUtil.replaceAllProperties(stringToDecode, "%SYS_EXECUTIONID%", String.valueOf(tCExecution.getId()));
-
+        
         /**
          * Trying to replace date variables .
          */
