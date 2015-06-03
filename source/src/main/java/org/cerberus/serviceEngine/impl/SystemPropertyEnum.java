@@ -8,6 +8,7 @@ public enum SystemPropertyEnum {
             SYS_TAG("SYS_TAG"),
             SYS_APPLI("SYS_APPLI"),
             SYS_APP_DOMAIN("SYS_APP_DOMAIN"),
+            SYS_APP_HOST("SYS_APP_HOST"),
             SYS_ENV("SYS_ENV"),
             SYS_ENVGP("SYS_ENVGP"),
             SYS_COUNTRY("SYS_COUNTRY"),
