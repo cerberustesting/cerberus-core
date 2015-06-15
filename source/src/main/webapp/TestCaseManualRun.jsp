@@ -174,7 +174,7 @@
                 String country = getRequestParameterWildcardIfEmpty(request, "Country");
                 String environment = getRequestParameterWildcardIfEmpty(request, "Environment");
                 String idFromQueue = getRequestParameterWildcardIfEmpty(request, "IdFromQueue");
-                String browser = "firefox";
+                String browser = getRequestParameterWildcardIfEmpty(request, "Browser");
                 String browserVersion = "";
                 String tag = getRequestParameterWildcardIfEmpty(request, "Tag");
                 Boolean tinf = getBooleanParameterFalseIfEmpty(request, "Tinf");
@@ -245,6 +245,8 @@
                 appSystem = "";
                 SitdmossBugtrackingURL = "";
             }
+            
+            String shortDesc = tcase.getShortDescription();
 
 
     %>
@@ -264,6 +266,9 @@
             <br>
 
             <div id="ExecutionGlobalStatusDiv" style="width:97%;display:inline-block">
+                <div  style="display:inline-block; float:left;width:50%">
+                    <input style="width:99%;color:#555555;" name="shortDesc" disabled="true" value="<%=shortDesc%>">
+                </div>
                 <div  style="display:block; float:right;width:19%">
                     <textarea style="width:99%" name="controlMessage" placeholder="Comment execution"></textarea>
                 </div>

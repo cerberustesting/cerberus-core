@@ -22,10 +22,11 @@ package org.cerberus.serviceEngine.impl;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Logger;
+import java.util.logging.Logger; 
 import org.apache.log4j.Level;
 import org.cerberus.entity.MessageEvent;
 import org.cerberus.entity.MessageEventEnum;
+import org.cerberus.entity.MessageGeneral;
 import org.cerberus.entity.Property;
 import org.cerberus.entity.SoapLibrary;
 import org.cerberus.entity.TestCaseCountryProperties;
@@ -64,7 +65,7 @@ import org.springframework.stereotype.Service;
 public class PropertyService implements IPropertyService {
 
     private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(PropertyService.class);
-
+    
     @Autowired
     private IWebDriverService webdriverService;
     @Autowired
@@ -105,7 +106,7 @@ public class PropertyService implements IPropertyService {
         if (testCaseCountryProperty.getValue1().contains("%")) {
             String decodedValue = decodeValue(testCaseCountryProperty.getValue1(), tCExecution);
             decodedValue = this.replaceWithCalculatedProperty(decodedValue, tCExecution);
-            testCaseExecutionData.setValue(decodedValue);
+            //testCaseExecutionData.setValue(decodedValue);
             testCaseExecutionData.setValue1(decodedValue);
         }
 
@@ -201,7 +202,7 @@ public class PropertyService implements IPropertyService {
                 LOG.debug("Property " + internalProperty + " need calculation of these properties " + linkedProperties);
             }
         }
-
+        
         /**
          * For all linked properties, calculate it if needed.
          */
@@ -247,12 +248,27 @@ public class PropertyService implements IPropertyService {
              * If not already calculated, or calculateProperty, then calculate it and insert or update it.
              */
             if (tecd.getPropertyResultMessage().equals(new MessageEvent(MessageEventEnum.PROPERTY_PENDING))) {
-                calculateProperty(tecd, testCaseStepActionExecution, eachTccp, forceCalculation);
+                    calculateProperty(tecd, testCaseStepActionExecution, eachTccp, forceCalculation);
                 try {
                     testCaseExecutionDataService.insertOrUpdateTestCaseExecutionData(tecd);
 
                 } catch (CerberusException cex) {
                     LOG.error(cex.getMessage(), cex);
+                }
+            }
+                        
+            //if is not a system property, then check if it was calculated with success
+            //system properties are decoded before these instructions or (when using calculateProperty)
+            //in the calculateProperty action, therefore these are not properties that would stop/fail the execution
+            if(!SystemPropertyEnum.contains(tecd.getProperty())){
+                //if the property result message indicates that we need to stop the test action, then the action is notified               
+                //or if the property was not successfully calculated, either because it was not defined for the country or because it does not exist
+                //the we notify the execution
+                if(tecd.getPropertyResultMessage().isStopTest() || 
+                        tecd.getPropertyResultMessage().getCode() == MessageEventEnum.PROPERTY_FAILED_NO_PROPERTY_DEFINITION.getCode()){
+                    testCaseStepActionExecution.setStopExecution(tecd.isStopExecution());
+                    testCaseStepActionExecution.setActionResultMessage(tecd.getPropertyResultMessage());
+                    testCaseStepActionExecution.setExecutionResultMessage(new MessageGeneral(tecd.getPropertyResultMessage().getMessage()));            
                 }
             }
             /**
@@ -272,7 +288,7 @@ public class PropertyService implements IPropertyService {
         }
         return stringToDecode;
     }
-
+                        
     @Override
     public List<TestCaseCountryProperties> getListOfPropertiesLinkedToProperty(String test, String testCase, String country, String property, String usedTest, String usedTestCase, List<String> crossedProperties, List<TestCaseCountryProperties> propertieOfTestcase) {
         List<TestCaseCountryProperties> result = new ArrayList();
@@ -326,9 +342,24 @@ public class PropertyService implements IPropertyService {
          */
         if (testCaseCountryProperty!= null) {
             List<String> allProperties = new ArrayList();
-            allProperties.addAll(StringUtil.getAllProperties(testCaseCountryProperty.getValue1()));
-            allProperties.addAll(StringUtil.getAllProperties(testCaseCountryProperty.getValue2()));
-
+            
+            if(testCaseCountryProperty.getType().equals("executeSql") || testCaseCountryProperty.getType().equals("executeSqlFromLib")) {
+                List<String> propertiesSql = new ArrayList();
+                //check the properties specified in the test
+                for (String propSqlName : StringUtil.getAllProperties(testCaseCountryProperty.getValue1())){
+                    for (TestCaseCountryProperties pr : propertieOfTestcase) {
+                        if(pr.getProperty().equals(propSqlName)) {
+                            propertiesSql.add(propSqlName);
+                            break;
+                        }   
+                    }
+                }
+                allProperties.addAll(propertiesSql);
+            }else{
+                allProperties.addAll(StringUtil.getAllProperties(testCaseCountryProperty.getValue1()));
+                allProperties.addAll(StringUtil.getAllProperties(testCaseCountryProperty.getValue2()));
+            } 
+            
             for (String internalProperty : allProperties) {
                 result.addAll(getListOfPropertiesLinkedToProperty(test, testCase, country, internalProperty, usedTest, usedTestCase, crossedProperties, propertieOfTestcase));
             }
@@ -336,7 +367,7 @@ public class PropertyService implements IPropertyService {
         }
         return result;
     }
-
+            
     private String decodeValue(String stringToDecode, TestCaseExecution tCExecution) {
         /**
          * Trying to replace by system environment variables .
@@ -344,6 +375,7 @@ public class PropertyService implements IPropertyService {
         stringToDecode = StringUtil.replaceAllProperties(stringToDecode, "%SYS_SYSTEM%", tCExecution.getApplication().getSystem());
         stringToDecode = StringUtil.replaceAllProperties(stringToDecode, "%SYS_APPLI%", tCExecution.getApplication().getApplication());
         stringToDecode = StringUtil.replaceAllProperties(stringToDecode, "%SYS_APP_DOMAIN%", tCExecution.getCountryEnvironmentApplication().getDomain());
+        stringToDecode = StringUtil.replaceAllProperties(stringToDecode, "%SYS_APP_HOST%", tCExecution.getCountryEnvironmentApplication().getIp());
         stringToDecode = StringUtil.replaceAllProperties(stringToDecode, "%SYS_ENV%", tCExecution.getEnvironmentData());
         stringToDecode = StringUtil.replaceAllProperties(stringToDecode, "%SYS_ENVGP%", tCExecution.getEnvironmentDataObj().getGp1());
         stringToDecode = StringUtil.replaceAllProperties(stringToDecode, "%SYS_COUNTRY%", tCExecution.getCountry());
@@ -352,7 +384,7 @@ public class PropertyService implements IPropertyService {
         stringToDecode = StringUtil.replaceAllProperties(stringToDecode, "%SYS_SSPORT%", tCExecution.getSeleniumPort());
         stringToDecode = StringUtil.replaceAllProperties(stringToDecode, "%SYS_TAG%", tCExecution.getTag());
         stringToDecode = StringUtil.replaceAllProperties(stringToDecode, "%SYS_EXECUTIONID%", String.valueOf(tCExecution.getId()));
-
+        
         /**
          * Trying to replace date variables .
          */
@@ -383,7 +415,7 @@ public class PropertyService implements IPropertyService {
     private TestCaseExecutionData executeSqlFromLib(TestCaseExecutionData testCaseExecutionData, TestCaseCountryProperties testCaseCountryProperty, TestCaseExecution tCExecution, boolean forceCalculation) {
         try {
             String script = this.sqlLibraryService.findSqlLibraryByKey(testCaseExecutionData.getValue1()).getScript();
-            testCaseExecutionData.setValue(script);
+            testCaseExecutionData.setValue1(script); //TODO:FN use the new library 
 
         } catch (CerberusException ex) {
             Logger.getLogger(PropertyService.class
@@ -547,18 +579,18 @@ public class PropertyService implements IPropertyService {
         try {
             SoapLibrary soapLib = this.soapLibraryService.findSoapLibraryByKey(testCaseExecutionData.getValue1());
             if (soapLib != null) {
-                String attachement = "";
-                if (!testCaseExecutionData.getValue2().isEmpty()){
+                String attachement = "";//TODO implement this feature
+                //TODO implement the executeSoapFromLib
+                /*if (!testCaseExecutionData.getValue2().isEmpty()){
                     attachement = testCaseExecutionData.getValue2();
                 }else{
                     attachement = soapLib.getAttachmentUrl();
-                }
+                }*/
                 soapService.callSOAPAndStoreResponseInMemory(tCExecution.getExecutionUUID(), soapLib.getEnvelope(), soapLib.getServicePath(), soapLib.getMethod(), attachement);
                 String result = xmlUnitService.getFromXml(tCExecution.getExecutionUUID(), null, soapLib.getParsingAnswer());
                 if (result != null) {
                     testCaseExecutionData.setValue(result);
                     testCaseExecutionData.setPropertyResultMessage(new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_SOAP));
-
                 }
             }
         } catch (CerberusException exception) {
@@ -732,5 +764,4 @@ public class PropertyService implements IPropertyService {
         }
         return testCaseExecutionData;
     }
-
 }

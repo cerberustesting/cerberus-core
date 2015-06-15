@@ -79,11 +79,12 @@ public enum MessageGeneralEnum {
     EXECUTION_KO(2, "KO", "The test case finished, but failed on validations"),
     EXECUTION_FA(3, "FA", "The test case failed to be executed. More lickely due to an error in the test or in cerberus configuration."),
     EXECUTION_FA_ACTION(4, "FA", "The test case failed to be executed because of an action."),
-    EXECUTION_FA_SELENIUM(8, "FA", "The test case failed to be executed. Could not start Selenium. %MES%"),
+    EXECUTION_FA_SELENIUM(8, "FA", "The test case failed to be executed. Could not start Selenium. %MES%"),    
+    EXECUTION_FA_CONNECTIVITY(10, "FA", "The test case failed to be executed. Connectivity issues were found."),
     EXECUTION_FA_CERBERUS(9, "FA", "The test case failed to be executed due to error in Cerberus, please contact Administrator of Cerberus. %MES%"),
     EXECUTION_CA(6, "CA", "The test case has been cancelled by the user."),
     EXECUTION_NA(7, "NA", "The test case could not be run because of missing testing data."),
-
+        
     APPLICATION_NOT_FOUND(100, "FA", "Application does not exist."),
     NOT_IMPLEMEMTED(101, "FA", "Missing data."),
     NO_DATA_FOUND(102, "FA", "Missing data."),

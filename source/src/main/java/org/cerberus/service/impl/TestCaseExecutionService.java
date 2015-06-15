@@ -118,4 +118,9 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
     public List<String> findDistinctTag(boolean withUUIDTag) throws CerberusException {
         return testCaseExecutionDao.findDistinctTag(withUUIDTag);
     }
+
+    @Override
+    public void setTagToExecution(long id, String tag) throws CerberusException {
+        testCaseExecutionDao.setTagToExecution(id, tag);
+    }
 }

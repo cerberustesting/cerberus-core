@@ -22,8 +22,13 @@ package org.cerberus.util;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
 import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;
 import org.springframework.web.util.HtmlUtils;
@@ -231,5 +236,33 @@ public final class StringUtil {
 
     return escapedText.replaceAll("(\\A|\\s)((http|https|ftp|mailto):\\S+)(\\s|\\z)",
         "$1<a href=\"$2\">$2</a>$4");
-}
+    }
+    /**
+     * Java function that encodes as string as the JavaScript function: encodeURIComponent() 
+     * Some characters (", &, #, +) need to be 
+     * @param stringToEncode string to be encoded
+     * @return string encoded 
+     */
+    public static String encodeAsJavaScriptURIComponent(String stringToEncode){
+        try {
+            ScriptEngineManager factory = new ScriptEngineManager();
+            ScriptEngine engine = factory.getEngineByName("JavaScript"); 
+            //characters we special meaning need to be encoded before applying
+            //the javascript function
+            stringToEncode = stringToEncode.replace("\"", "%22");
+            stringToEncode = stringToEncode.replace("&", "%26");
+            stringToEncode = stringToEncode.replace("#", "%23");
+            stringToEncode = stringToEncode.replace("+", "%2B");
+            stringToEncode = engine.eval("encodeURIComponent(\"" + stringToEncode  + "\")").toString();            
+            //the previous special characteres were encoded and additional %25 were added, therefore 
+            //we need to restore them and replace the each adicional %25 with the decoded character %
+            stringToEncode = stringToEncode.replace("%2522", "%22");
+            stringToEncode = stringToEncode.replace("%2526", "%26");
+            stringToEncode = stringToEncode.replace("%2523", "%23"); 
+            stringToEncode = stringToEncode.replace("%252B", "%2B");
+        } catch (ScriptException ex) {
+            Logger.getLogger(StringUtil.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return stringToEncode;
+    }
 }

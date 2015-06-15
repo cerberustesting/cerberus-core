@@ -786,4 +786,39 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         return list;
     }
 
+    @Override
+    public void setTagToExecution(long id, String tag) throws CerberusException {
+        boolean throwEx = false;
+        final String query = "UPDATE testcaseexecution SET tag = ? WHERE id = ?";
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            try {
+                preStat.setString(1, tag);
+                preStat.setLong(2, id);
+                
+                preStat.executeUpdate();
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception.toString());
+                throwEx = true;
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                LOG.warn(e.toString());
+            }
+        }
+        if (throwEx) {
+            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.CANNOT_UPDATE_TABLE));
+        }
+    }
+
 }

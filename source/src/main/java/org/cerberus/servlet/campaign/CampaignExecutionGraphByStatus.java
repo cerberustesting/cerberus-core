@@ -37,7 +37,6 @@ import org.cerberus.dto.TestCaseWithExecution;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.service.ICampaignService;
 import org.cerberus.service.ITestCaseExecutionInQueueService;
-import org.cerberus.service.ITestCaseService;
 import org.cerberus.util.GraphicHelper;
 import org.json.JSONObject;
 import org.owasp.html.PolicyFactory;
@@ -82,7 +81,7 @@ public class CampaignExecutionGraphByStatus extends HttpServlet {
 
             String campaignName = policy.sanitize(request
                     .getParameter("CampaignName"));
-            String tag = policy.sanitize(request.getParameter("Tag"));
+            String tag = request.getParameter("Tag");
             String[] env = request.getParameterValues("Environment");
             String[] country = request.getParameterValues("Country");
             String[] browser = request.getParameterValues("Browser");

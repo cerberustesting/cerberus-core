@@ -84,7 +84,7 @@ public class CampaignExecutionStatusBarGraphByFunction extends HttpServlet {
 
             String campaignName = policy.sanitize(request
                     .getParameter("CampaignName"));
-            String tag = policy.sanitize(request.getParameter("Tag"));
+            String tag = request.getParameter("Tag");
             String[] env = request.getParameterValues("Environment");
             String[] country = request.getParameterValues("Country");
             String[] browser = request.getParameterValues("Browser");

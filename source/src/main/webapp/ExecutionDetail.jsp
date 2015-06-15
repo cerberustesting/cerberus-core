@@ -17,6 +17,7 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
+<%@page import="org.apache.commons.lang3.StringEscapeUtils"%>
 <%@page import="org.cerberus.entity.TestCaseExecutionwwwSum"%>
 <%@page import="org.cerberus.service.ITestCaseExecutionwwwSumService"%>
 <%@page import="org.cerberus.entity.TestCaseExecution"%>
@@ -67,6 +68,7 @@
         <link type="text/css" rel="stylesheet" href="js/jqplot/syntaxhighlighter/styles/shCoreDefault.min.css" >
         <link type="text/css" rel="stylesheet" href="js/jqplot/syntaxhighlighter/styles/shThemejqPlot.min.css" >
         <link type="text/css" rel="stylesheet" href="js/zoombox/zoombox.css" >
+        <script type="text/javascript" src="js/Form.js"></script>
         <script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>
         <script type="text/javascript" src="js/jquery-migrate-1.2.1.min.js"></script>
         <script type="text/javascript" src="js/jquery-ui-1.10.2.js"></script>
@@ -271,8 +273,20 @@
                         <td style="font-weight: bold;"><%out.print(docService.findLabelHTML("testcaseexecution", "crbversion", "Engine Version"));%></td>
                     </tr>
                     <tr>
-                        <td colspan=2><span id="exetag"><%= testCaseExecution.getTag() == null ? "" : testCaseExecution.getTag()%></span></td>
-                        <td><span id="exetaglink"><%= testCaseExecution.getTag() == null ? "" : "<a href='ReportingExecutionByTag.jsp?Tag=" + testCaseExecution.getTag() + "'>link</a>"%></span></td>
+                        <td colspan=2><span id="exetag"><code><pre><%= testCaseExecution.getTag() == null ? "" : StringEscapeUtils.escapeHtml4(testCaseExecution.getTag()) %>
+                                                                </pre> 
+                                </code><input type="button" name="editTag" value="edit" onclick="openChangeTagPopin('<%=id_filter%>')">
+                            </span>
+                                                                
+                        </td>
+                        <% 
+                            String tagEncoded = testCaseExecution.getTag();
+                            if(testCaseExecution.getTag() != null){                                
+                                tagEncoded = StringUtil.encodeAsJavaScriptURIComponent(testCaseExecution.getTag());                                                                 
+                            }
+                        %>
+                        <td><span id="exetaglink"><%= testCaseExecution.getTag() == null ? "" : 
+                                "<a href='ReportingExecutionByTag.jsp?enc=1&Tag=" + tagEncoded.replace("'", "%27") + "'>link</a>"%></span></td>
                         <td colspan=7><span id="exemsg"><%= testCaseExecution.getControlMessage() == null ? "" : testCaseExecution.getControlMessage() %></span></td>
                         <td><span id="exemsg"><%=executor%></span></td>
                         <td><span id="exeverbose"><%= String.valueOf(testCaseExecution.getVerbose()) %></span></td>
@@ -623,11 +637,26 @@
                 <h4>Contextual Actions</h4>
                 <table class="tableBorder"  style="text-align: left" border="1" >
                     <tr>
+                        <%if (tcGroup.equalsIgnoreCase("MANUAL")) {%>
+                            <td> 
+                                <button style="cursor:pointer; background:none; border:none;margin:0;padding:0;color: #008CDA;text-decoration: none;font-family: helvetica;font-size:11.2px " 
+                                        onclick="openRunManualPopin('<%=test%>','<%=testCase%>', '<%=environment%>','<%=country%>','','<%=testCaseExecution.getTag()==null?"" : tagEncoded%>')" 
+                                        title="Allows the user to execute the current test case. It is executed with the exact same configurations: tag, environment, country...">
+                                    Run the same Test Case again
+                                </button>
+                            </td>
+                        <%}%>    
                         <% if (tcGroup.equalsIgnoreCase("AUTOMATED")) {%>
-                        <td><a href="RunTests.jsp?Test=<%=test%>&TestCase=<%=testCase%>&MySystem=<%=appSystem%>&Country=<%=country%>&Environment=<%=environment%>&Tag=<%=testCaseExecution.getTag()==null?"":testCaseExecution.getTag()%>">Run the same Test Case again.</a></td>
-                        <%        } else if (tcGroup.equalsIgnoreCase("MANUAL")) {%>
-                        <td><a href="RunManualTestCase.jsp?Test=<%=test%>&TestCase=<%=testCase%>&MySystem=<%=appSystem%>&Country=<%=country%>&Env=<%=environment%>&Tag=<%=testCaseExecution.getTag()==null?"":testCaseExecution.getTag()%>">Run the same Test Case again.</a></td>
-                        <%        }%>    
+                            <td><a href="RunTests.jsp?Test=<%=test%>&TestCase=<%=testCase%>&MySystem=<%=appSystem%>&Country=<%=country%>&Environment=<%=environment%>&Tag=<%=testCaseExecution.getTag()==null?"" : tagEncoded%>"
+                                   title="Allows the user to execute the current test case. The user can modify the configurations associated with the execution: tag, environment, country... ">
+                                    Run the same Test Case again</a></td>
+                        <% } else if (tcGroup.equalsIgnoreCase("MANUAL")){%>
+                        <td>
+                            <a href="RunTests.jsp?Test=<%=test%>&TestCase=<%=testCase%>&MySystem=<%=appSystem%>&Country=<%=country%>&Environment=<%=environment%>&Tag=<%=testCaseExecution.getTag()==null?"" : tagEncoded%>&manualExecution=Y"
+                                title="Allows the user to execute the current test case. The user can modify the configurations associated with the execution: tag, environment, country... ">
+                                Edit configurations and Run the same Test Case again</a>
+                        </td>
+                        <%}%>                           
                         <td>
                             <a href="TestCase.jsp?Test=<%=test%>&TestCase=<%=testCase%>&Load=Load">Modify the Test Case.</a>
                         </td>
@@ -662,6 +691,7 @@
 
                 <input style="display:none" id="refreshAuto">
             </div>
+            <div id="popin" title="Manual Execution"></div>
             <script>
                 $(document).ready(function() {
                     var stat = document.getElementById("statushidden").value;
@@ -726,8 +756,11 @@
                     $('#dialogTheDiff').empty().html(dmp.diff_prettyHtml(d))
                     $('#dialogTheDiff').dialog();
                 }
-            </SCRIPT>
+            </script>
                 <br><%=display_footer(DatePageStart)%>
                 <div id="dialogTheDiff"></div>
+                <div id="setTagToExecution">
+                    
+                </div>
             </body>
             </html>

@@ -36,6 +36,9 @@ public class ExecutionUUID {
     executionHashMap = new HashMap<String, TestCaseExecution>();
     }
     
+    public HashMap getExecutionUUIDList(){
+    return executionHashMap;
+    }
     
     public void setExecutionUUID(String UUID, TestCaseExecution execution){
     executionHashMap.put(UUID, execution);

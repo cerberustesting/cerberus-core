@@ -19,6 +19,7 @@
  */
 package org.cerberus.servlet.manualTestCase;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -255,6 +256,7 @@ public class RunManualTest extends HttpServlet {
                 String actionScreenshotFileName = null;
                 if (takeScreenshot.equals("Y")) {
                     actionScreenshotFileName = recorderService.generateScreenshotFilename(test, testCase, String.valueOf(stepId), inc, null, null, "jpg");
+                    actionScreenshotFileName = executionId + File.separator + actionScreenshotFileName;
                 }
 
                 result.add(testCaseStepActionExecutionFactory.create(executionId, test, testCase, step, sequence, actionReturnCode,
@@ -286,6 +288,7 @@ public class RunManualTest extends HttpServlet {
                 String takeScreenshot = getParameterIfExists(request, "takeScreenshot_" + stepId + "_" + sequenceId + "_" + inc);
                 if (takeScreenshot.equals("Y")) {
                     controlScreenshot = recorderService.generateScreenshotFilename(test, testCase, String.valueOf(stepId), String.valueOf(sequenceId), inc, null, "jpg");
+                    controlScreenshot = executionId + File.separator + controlScreenshot;
                 }
 
                 result.add(testCaseStepActionExecutionFactory.create(executionId, test, testCase, step, sequence, control,

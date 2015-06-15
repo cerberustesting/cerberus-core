@@ -76,6 +76,14 @@ public class ActionService implements IActionService {
             }
             try {
                 testCaseStepActionExecution.setObject(propertyService.getValue(testCaseStepActionExecution.getObject(), testCaseStepActionExecution, isCalledFromCalculateProperty));
+                //if the getvalue() indicates that the execution should stop then we stop it before the doAction 
+                //or if the property service was unable to decode the property that is specified in the object, 
+                //then the execution of this action should not performed
+                if(testCaseStepActionExecution.isStopExecution() || 
+                        (testCaseStepActionExecution.getActionResultMessage().getCode() == 
+                        MessageEventEnum.PROPERTY_FAILED_NO_PROPERTY_DEFINITION.getCode())) {                    
+                    return testCaseStepActionExecution;
+                }
             } catch (CerberusEventException cex) {
                 testCaseStepActionExecution.setActionResultMessage(cex.getMessageError());
                 testCaseStepActionExecution.setExecutionResultMessage(new MessageGeneral(cex.getMessageError().getMessage()));
@@ -160,10 +168,10 @@ public class ActionService implements IActionService {
 
         } else if (testCaseStepActionExecution.getAction().equals("callSoapWithBase")) {
             res = this.doActionMakeSoapCall(testCaseStepActionExecution, object, property, true);
-
+     
         } else if (testCaseStepActionExecution.getAction().equals("callSoap")) {
             res = this.doActionMakeSoapCall(testCaseStepActionExecution, object, property, false);
-
+            
         } else if (testCaseStepActionExecution.getAction().equals("mouseDownMouseUp")) {
             res = this.doActionMouseDownMouseUp(tCExecution, object, property);
 
@@ -441,17 +449,21 @@ public class ActionService implements IActionService {
             SoapLibrary soapLibrary = soapLibraryService.findSoapLibraryByKey(object);
             String servicePath;
             if (withBase) {
-                servicePath = tCExecution.getCountryEnvironmentApplication().getIp();
+                servicePath = tCExecution.getCountryEnvironmentApplication().getIp() +  tCExecution.getCountryEnvironmentApplication().getUrl(); 
             } else {
                 servicePath = soapLibrary.getServicePath();
             }
             /**
-             * Decode Enveloppe replacing properties encaplsulated with %
+             * Decode Envelope replacing properties encapsulated with %
              */
             String decodedEnveloppe = soapLibrary.getEnvelope();
             if (soapLibrary.getEnvelope().contains("%")) {
                 try {
                     decodedEnveloppe = propertyService.getValue(soapLibrary.getEnvelope(), testCaseStepActionExecution, false);
+                    //if the process of decoding originates a message that isStopExecution then we will stop the current action execution
+                    if(testCaseStepActionExecution.isStopExecution()){                        
+                        return testCaseStepActionExecution.getActionResultMessage();
+                    } 
                 } catch (CerberusEventException cee) {
                     message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSOAP);
                     message.setDescription(message.getDescription().replaceAll("%SOAPNAME%", object));
@@ -463,11 +475,13 @@ public class ActionService implements IActionService {
              * Add attachment
              */
             String attachement = "";
-            if (!property.isEmpty()) {
-                attachement = property;
+            //TODO: the picture url should be used instead of the property value
+            //the database does not include the attachmentURL field 
+            /*if (!property.isEmpty()) {
+                attachement = property; 
             } else {
                 attachement = soapLibrary.getAttachmentUrl();
-            }
+            }*/
             return soapService.callSOAPAndStoreResponseInMemory(tCExecution.getExecutionUUID(), decodedEnveloppe, servicePath, soapLibrary.getMethod(), attachement);
         } catch (CerberusException ex) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSOAP);

@@ -17,6 +17,8 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
+<%@page import="org.apache.commons.lang3.StringEscapeUtils"%>
+<%@page import="org.cerberus.util.StringUtil"%>
 <%@page import="org.apache.commons.lang3.StringUtils"%>
 <%@page import="java.lang.*" %>
 <%@page import="org.cerberus.service.IDocumentationService"%>
@@ -61,19 +63,23 @@
                     MySystem = request.getParameter("system");
                 }
 
-                String tag;
+                String tag, tagEncoded = "";
                 if (request.getParameter("Tag") != null && request.getParameter("Tag").compareTo("") != 0) {
                     tag = request.getParameter("Tag");
+                    tagEncoded = StringEscapeUtils.escapeHtml4(tag);
+                    tag = StringUtil.encodeAsJavaScriptURIComponent(tag).replace("'", "%27");
                     execclauses = execclauses + " AND Tag = '" + tag + "'";
-                    exetcepagelist = exetcepagelist + "&tag=" + tag;
+                    exetcepagelist = exetcepagelist + "&tag=" + tag;                    
                 } else {
                     tag = new String("");
                 }
-                String tagRef;
+                String tagRef, tagRefEncoded = "";
                 if (request.getParameter("TagRef") != null && request.getParameter("TagRef").compareTo("") != 0) {
                     tagRef = request.getParameter("TagRef");
+                    tagRefEncoded = StringEscapeUtils.escapeHtml4(tagRef);
+                    tagRef = StringUtil.encodeAsJavaScriptURIComponent(tagRef).replace("'", "%27");
                     avgclauses = avgclauses + " AND Tag = '" + tagRef + "'";
-                    avgtcepagelist = avgtcepagelist + "&tag=" + tagRef;
+                    avgtcepagelist = avgtcepagelist + "&tag=" + tagRef;                    
                 } else {
                     tagRef = new String("");
                 }
@@ -454,7 +460,7 @@
                                                 </td>
                                                 <td id="wob"><input style="font-weight: bold; width: 90px" name="Ip" id="Ip" value="<%=ip%>"></td>
                                                 <td id="wob"><input style="font-weight: bold; width: 60px" name="Port" id="Port" value="<%=port%>"></td>
-                                                <td id="wob"><input style="font-weight: bold; width: 150px" name="Tag" id="Tag" value="<%=tag%>"></td>
+                                                <td id="wob"><input style="font-weight: bold; width: 150px" name="Tag" id="Tag" value="<%=tagEncoded%>"></td>
                                             </tr>
                                         </table>
                                     </td>
@@ -501,7 +507,7 @@
                                                 </td>
                                                 <td id="wob"><input style="font-weight: bold; width: 90px" name="IpRef" id="ipRef" value="<%=ipRef%>"></td>
                                                 <td id="wob"><input style="font-weight: bold; width: 60px" name="PortRef" id="portRef" value="<%=portRef%>"></td>
-                                                <td id="wob"><input style="font-weight: bold; width: 150px" name="TagRef" id="tagRef" value="<%=tagRef%>"></td>
+                                                <td id="wob"><input style="font-weight: bold; width: 150px" name="TagRef" id="tagRef" value="<%=tagRefEncoded%>"></td>
                                             </tr>
                                         </table> 
                                     </td>

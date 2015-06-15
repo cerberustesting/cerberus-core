@@ -17,25 +17,20 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.serviceExecutor;
+package org.cerberus.servlet.execution;
 
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.cerberus.entity.ExecutionThreadPool;
-import org.cerberus.entity.ExecutionUUID;
-import org.cerberus.entity.SessionCounter;
-import org.cerberus.entity.SessionCounterListener;
-import org.cerberus.entity.TestCaseExecution;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import org.cerberus.exception.CerberusException;
+import org.cerberus.service.ITestCaseExecutionService;
+import org.owasp.html.PolicyFactory;
+import org.owasp.html.Sanitizers;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -43,8 +38,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  *
  * @author bcivel
  */
-@WebServlet(name = "ExecutionThreadMonitoring", urlPatterns = {"/ExecutionThreadMonitoring"})
-public class ExecutionThreadMonitoring extends HttpServlet {
+public class SetTagToExecution extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -57,34 +51,31 @@ public class ExecutionThreadMonitoring extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        JSONObject jsonResponse = new JSONObject();
+        response.setContentType("text/html;charset=UTF-8");
+        PrintWriter out = response.getWriter();
+        PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-        ExecutionThreadPool etp = appContext.getBean(ExecutionThreadPool.class);
-        ExecutionUUID euuid = appContext.getBean(ExecutionUUID.class);
-        SessionCounter sc = appContext.getBean(SessionCounter.class);
-
+        ITestCaseExecutionService executionService = appContext.getBean(ITestCaseExecutionService.class);
+        
         try {
-            jsonResponse.put("size_queue", etp.getSize());
-            jsonResponse.put("queue_in_execution", etp.getInExecution());
-            jsonResponse.put("simultaneous_execution", euuid.size());
-            JSONArray executionArray = new JSONArray();
-            for (Object ex : euuid.getExecutionUUIDList().values()) {
-                TestCaseExecution execution = (TestCaseExecution) ex;
-                JSONObject object = new JSONObject();
-                object.put("id", execution.getId());
-                object.put("test", execution.getTest());
-                object.put("testcase", execution.getTestCase());
-                executionArray.put(object);
-            }
-            jsonResponse.put("simultaneous_execution_list", executionArray);
-            jsonResponse.put("simultaneous_session", sc.getTotalActiveSession());
-            jsonResponse.put("active_users", sc.getActiveUsers());
-        } catch (JSONException ex) {
-            Logger.getLogger(ExecutionThreadMonitoring.class.getName()).log(Level.SEVERE, null, ex);
+            String id = policy.sanitize(request.getParameter("executionId"));
+            String tag = policy.sanitize(request.getParameter("newTag"));
+            executionService.setTagToExecution(Long.valueOf(id), tag);
+            /* TODO output your page here. You may use following sample code. */
+            out.println("<!DOCTYPE html>");
+            out.println("<html>");
+            out.println("<head>");
+            out.println("<title>Servlet SetTagToExecution</title>");            
+            out.println("</head>");
+            out.println("<body>");
+            out.println("<h1>Servlet SetTagToExecution at " + request.getContextPath() + "</h1>");
+            out.println("</body>");
+            out.println("</html>");
+        } catch (CerberusException ex) {
+            Logger.getLogger(SetTagToExecution.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            out.close();
         }
-
-        response.setContentType("application/json");
-        response.getWriter().print(jsonResponse.toString());
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

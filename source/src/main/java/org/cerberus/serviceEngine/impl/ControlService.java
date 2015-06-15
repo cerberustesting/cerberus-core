@@ -70,14 +70,27 @@ public class ControlService implements IControlService {
          * Decode the 2 fields property and values before doing the control.
          */
     	try {
+                
+                // for both control property and control value
+                //if the getvalue() indicates that the execution should stop then we stop it before the doControl  or
+                //if the property service was unable to decode the property that is specified in the object, 
+                //then the execution of this control should not performed
+            
     		if (testCaseStepActionControlExecution.getControlProperty().contains("%")) {
-    			testCaseStepActionControlExecution.setControlProperty(propertyService.getValue(testCaseStepActionControlExecution.getControlProperty(), testCaseStepActionControlExecution.getTestCaseStepActionExecution(), false));
+                    testCaseStepActionControlExecution.setControlProperty(propertyService.getValue(testCaseStepActionControlExecution.getControlProperty(), testCaseStepActionControlExecution.getTestCaseStepActionExecution(), false));                        
+                    
+                    if(!isPropertyGetValueSucceed(testCaseStepActionControlExecution)){
+                        return testCaseStepActionControlExecution;
+                    }                    
     		}
     		
     		if (testCaseStepActionControlExecution.getControlValue().contains("%")) {
-    			testCaseStepActionControlExecution.setControlValue(propertyService.getValue(testCaseStepActionControlExecution.getControlValue(), testCaseStepActionControlExecution.getTestCaseStepActionExecution(),false));
-    		}
-    			
+                    testCaseStepActionControlExecution.setControlValue(propertyService.getValue(testCaseStepActionControlExecution.getControlValue(), testCaseStepActionControlExecution.getTestCaseStepActionExecution(),false));
+                    
+                    if(!isPropertyGetValueSucceed(testCaseStepActionControlExecution)){
+                        return testCaseStepActionControlExecution;
+                    }                   
+    		}    			
     	} catch (CerberusEventException cex) {
     		testCaseStepActionControlExecution.setControlResultMessage(cex.getMessageError());
     		testCaseStepActionControlExecution.setExecutionResultMessage(new MessageGeneral(cex.getMessageError().getMessage()));
@@ -895,6 +908,25 @@ public class ControlService implements IControlService {
         } else {
             return new MessageEvent(MessageEventEnum.CONTROL_FAILED_NOTCLICKABLE_NULL);
         }
+    }
+    /**
+     * Updates the test case messages if the control failed to calculate the property values that it needs.
+     * @param testCaseStepActionControlExecution
+     * @return false if the property value was not retrieved with success, true otherwise
+     */
+    private boolean isPropertyGetValueSucceed(TestCaseStepActionControlExecution testCaseStepActionControlExecution) {
+        if(testCaseStepActionControlExecution.getTestCaseStepActionExecution().isStopExecution() || 
+                            testCaseStepActionControlExecution.getTestCaseStepActionExecution().getActionResultMessage().getCode() == 
+                            MessageEventEnum.PROPERTY_FAILED_NO_PROPERTY_DEFINITION.getCode()){
+            testCaseStepActionControlExecution.setStopExecution(testCaseStepActionControlExecution.getTestCaseStepActionExecution().
+                    isStopExecution());
+            testCaseStepActionControlExecution.setControlResultMessage(testCaseStepActionControlExecution.getTestCaseStepActionExecution().
+                    getActionResultMessage());
+            testCaseStepActionControlExecution.setExecutionResultMessage(new MessageGeneral(testCaseStepActionControlExecution.
+                    getTestCaseStepActionExecution().getActionResultMessage().getMessage()));
+            return false;
+        }
+        return true;
     }
     
 }

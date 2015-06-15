@@ -947,7 +947,7 @@
                             </select>
                         </div>
                     </div>
-                    <div><input type="button" class="buttonSaveChanges" value="show/hide Lib" onclick="showLib()"></div>
+                    <div><input type="button" class="buttonSaveChanges" id="displayLib" value="show/hide Lib" onclick="showLib()"></div>
 
                     <div id="StepsMainDiv" style="width:100%;float:left">
                         <div id="StepsDivUnderTitle" style="width:97%;clear:both">
@@ -2344,14 +2344,19 @@
 
             }</script>
         <script>function showLib() {
+    var expiration_date = new Date();
+                expiration_date.setFullYear(expiration_date.getFullYear() + 1);
+                
                 if (document.getElementById("StepLibDiv").style.display === "none") {
                     document.getElementById("StepLibDiv").style.display = "block";
                     document.getElementById("StepLibDiv").style.width = "13%";
                     document.getElementById("StepsRightDiv").style.width = "85%";
+                    document.cookie = "TestCaseDisplayStepLibrary=true;expires=" + expiration_date.toGMTString();
                 } else {
                     document.getElementById("StepLibDiv").style.display = "none";
                     document.getElementById("StepLibDiv").style.width = "0%";
                     document.getElementById("StepsRightDiv").style.width = "100%";
+                    document.cookie = "TestCaseDisplayStepLibrary=false;expires=" + expiration_date.toGMTString();
                 }
 
             }
@@ -2392,6 +2397,16 @@
                 }
 
             }</script>
+        <script type="text/javascript">
+    $(document).ready(function() {
+        var cookies = GetCookie('TestCaseDisplayStepLibrary');
+        if (cookies === "true"){
+            showLib();
+        }
+        
+    });
+
+</script>
         <!--<script>
         $(document).ready(function() {
                        

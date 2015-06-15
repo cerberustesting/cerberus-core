@@ -42,6 +42,7 @@ import org.cerberus.service.ITestCaseExecutionInQueueService;
 import org.cerberus.service.ITestCaseService;
 import org.cerberus.serviceExecutor.ExecutionThreadPoolService;
 import org.cerberus.util.ParameterParserUtil;
+import org.cerberus.util.StringUtil;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -95,7 +96,7 @@ public class AddToExecutionQueue extends HttpServlet {
     private static final String PARAMETER_OUTPUT_FORMAT = "OutputFormat";
     private static final String PARAMETER_SCREENSHOT = "Screenshot";
     private static final String PARAMETER_VERBOSE = "Verbose";
-    private static final String PARAMETER_TIMEOUT = "Timeout";
+    private static final String PARAMETER_TIMEOUT = "timeout";
     private static final String PARAMETER_SYNCHRONEOUS = "Synchroneous";
     private static final String PARAMETER_PAGE_SOURCE = "PageSource";
     private static final String PARAMETER_SELENIUM_LOG = "SeleniumLog";
@@ -107,7 +108,7 @@ public class AddToExecutionQueue extends HttpServlet {
     private static final int DEFAULT_VALUE_SCREENSHOT = 0;
     private static final boolean DEFAULT_VALUE_MANUAL_URL = false;
     private static final int DEFAULT_VALUE_VERBOSE = 0;
-    private static final long DEFAULT_VALUE_TIMEOUT = 15000;
+    private static final long DEFAULT_VALUE_TIMEOUT = 300;
     private static final boolean DEFAULT_VALUE_SYNCHRONEOUS = true;
     private static final int DEFAULT_VALUE_PAGE_SOURCE = 1;
     private static final int DEFAULT_VALUE_SELENIUM_LOG = 1;
@@ -211,7 +212,8 @@ public class AddToExecutionQueue extends HttpServlet {
             resp.sendError(HttpServletResponse.SC_BAD_REQUEST, errorMessage.toString());
         }
 
-        resp.sendRedirect("ReportingExecutionByTag.jsp?Tag=" + req.getParameter(PARAMETER_TAG));
+        resp.sendRedirect("ReportingExecutionByTag.jsp?enc=1&Tag=" + StringUtil.encodeAsJavaScriptURIComponent(req.getParameter(PARAMETER_TAG)));
+
 
     }
 
@@ -270,7 +272,8 @@ public class AddToExecutionQueue extends HttpServlet {
             throw new ParameterException("Browser must not be null");
         }
 
-        String tag = ParameterParserUtil.parseStringParamAndDecode(req.getParameter(PARAMETER_TAG), null, charset);
+        //String tag = ParameterParserUtil.parseStringParamAndDecode(req.getParameter(PARAMETER_TAG), null, charset);
+        String tag = ParameterParserUtil.parseStringParam(req.getParameter(PARAMETER_TAG),"");
         if (tag == null || tag.isEmpty()) {
             throw new ParameterException("Tag must not be null");
         }

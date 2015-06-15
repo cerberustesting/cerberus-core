@@ -118,5 +118,12 @@ public interface ITestCaseExecutionDAO {
     public TestCaseExecution findLastTCExecutionInGroup(String test, String testCase, String environment, String country,
                                                         String build, String revision, String browser, String browserVersion,
                                                         String ip, String port, String tag);
+    
+    /**
+     * Set Tag to an execution
+     * @param id : ID of the execution
+     * @param tag : Tag to set to the execution
+     */
+    public void setTagToExecution(long id, String tag) throws CerberusException ;
 
     }

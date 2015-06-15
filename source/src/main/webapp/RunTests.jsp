@@ -17,6 +17,8 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
+<%@page import="org.apache.commons.lang3.StringEscapeUtils"%>
+<%@page import="org.cerberus.util.StringUtil"%>
 <%@page import="org.cerberus.service.ITestCaseService"%>
 <%@page import="org.apache.http.client.ClientProtocolException"%>
 <%@page import="org.apache.http.client.methods.CloseableHttpResponse"%>
@@ -100,7 +102,7 @@
                                 paramRequestMaker.addParam(RunTestCase.PARAMETER_MANUAL_LOGIN_RELATIVE_URL, tceiq.getManualLoginRelativeURL());
                                 paramRequestMaker.addParam(RunTestCase.PARAMETER_MANUAL_ENV_DATA, tceiq.getManualEnvData());
                             }
-                            paramRequestMaker.addParam(RunTestCase.PARAMETER_TAG, tceiq.getTag());
+                            paramRequestMaker.addParam(RunTestCase.PARAMETER_TAG, StringUtil.encodeAsJavaScriptURIComponent(tceiq.getTag()));
                             paramRequestMaker.addParam(RunTestCase.PARAMETER_OUTPUT_FORMAT, tceiq.getOutputFormat());
                             paramRequestMaker.addParam(RunTestCase.PARAMETER_SCREENSHOT, Integer.toString(tceiq.getScreenshot()));
                             paramRequestMaker.addParam(RunTestCase.PARAMETER_VERBOSE, Integer.toString(tceiq.getVerbose()));
@@ -151,7 +153,11 @@
                                     String[] sMultiple = request.getParameterValues(sName);
 
                                     for (int i = 0; i < sMultiple.length; i++) {
-                                        params.append("&" + sName + "=" + sMultiple[i] + "");
+                                        if(sName.equalsIgnoreCase("Tag")){
+                                            params.append("&" + sName + "=" + StringUtil.encodeAsJavaScriptURIComponent(sMultiple[i]) + "");
+                                        }else{
+                                            params.append("&" + sName + "=" + sMultiple[i] + "");
+                                        }
                                     }
 
                                 }
@@ -373,7 +379,7 @@
                 <input hidden="hidden" id="defSeleniumLog" value="<%=seleniumLog%>">
                 <input hidden="hidden" id="defPageSource" value="<%=pageSource%>">
                 <input hidden="hidden" id="defManualExecution" value="<%=manualExecution%>">
-                <input hidden="hidden" id="defTag" value="<%=tag%>">
+                <input hidden="hidden" id="defTag" value="<%=StringEscapeUtils.escapeHtml4(tag)%>">
                 <input hidden="hidden" id="IdFromQueue" name="IdFromQueue" value="<%=idFromQueue%>">
                 <input hidden="hidden" id="defRetries" value="<%=retries%>">
                 <input hidden="hidden" id="defAutoRun" value="<%=autoRun%>">
@@ -669,6 +675,7 @@
                 var env = $("#environment option:selected").val();
                 var country = $("#country option:selected").val();
                 var idFromQueue = $("#IdFromQueue").val();
+                var browser = $("#browser").val();
                 var tag = $("#tag").val();
                 var manualExec = $("#manualExecution option:selected").val();
                 $.getJSON('GetTestCase?test=' + test + "&testcase=" + testcase, function(data) {
@@ -678,7 +685,7 @@
                         if (typeof test === 'undefined' || typeof testcase === 'undefined' || typeof env === 'undefined' || typeof country === 'undefined') {
                             alert("Testcase cannot be executed : Mandatory parameter(s) is(are) missing\n\ntest : " + test + "\ntestcase : " + testcase + "\ncountry : " + country + "\nenvironment : " + env);
                         } else {
-                            openRunManualPopin(test, testcase, env, country, idFromQueue, tag);
+                            openRunManualPopin(test, testcase, env, country, idFromQueue, tag, browser);
                         }
                     } else {
                         if (data.group === "MANUAL") {

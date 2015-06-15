@@ -18,6 +18,7 @@
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
 
+<%@page import="org.cerberus.util.StringUtil"%>
 <%@page import="java.util.HashMap"%>
 <%@page import="org.cerberus.entity.CountryEnvParam"%>
 <%@page import="org.cerberus.service.ICountryEnvParamService"%>
@@ -45,14 +46,17 @@
         <link rel="stylesheet" type="text/css" href="css/jquery-ui.css">
         <link rel="stylesheet" type="text/css" href="css/dataTables_jui.css">
         <link type="text/css" rel="stylesheet" href="css/jquery.multiselect.css">
+        <link type="text/css" rel="stylesheet" href="css/jquery.multiselect.filter.css">
 
         <script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>
         <script type="text/javascript" src="js/jquery-ui-1.10.2.js"></script>
         <script type="text/javascript" src="js/jquery.dataTables.js"></script>
         <script type="text/javascript" src="js/jquery.jeditable.mini.js"></script>
         <script type="text/javascript" src="js/jquery.dataTables.editable.js"></script>
+        <script type="text/javascript" src="js/FixedHeader.js"></script>
         <script type="text/javascript" src="js/jquery.validate.min.js"></script>
         <script type="text/javascript" src="js/jquery.multiselect.js" charset="utf-8"></script>
+        <script type="text/javascript" src="js/jquery.multiselect.filter.js"></script>
         <script type="text/javascript" src="js/jquery.form.js"></script>
     </head>
     <body>
@@ -201,6 +205,7 @@
                     String tag;
                     if (request.getParameter("Tag") != null && request.getParameter("Tag").compareTo("All") != 0) {
                         tag = request.getParameter("Tag");
+                        tag = StringUtil.encodeAsJavaScriptURIComponent(tag);
                     } else {
                         tag = new String("None");
                     }
@@ -753,38 +758,38 @@
         ;
     </script>
     <script type="text/javascript">
-            $(document).ready(function() {
-                $.getJSON('FindInvariantByID?idName=retries', function(data) {
-                    $("#retries").empty();
-                    var pl = document.getElementById("defRetries").value;
+        $(document).ready(function() {
+            $.getJSON('FindInvariantByID?idName=retries', function(data) {
+                $("#retries").empty();
+                var pl = document.getElementById("defRetries").value;
 
-                    for (var i = 0; i < data.length; i++) {
-                        $("#retries").append($("<option></option>")
-                                .attr("value", data[i].value)
-                                .text(data[i].value + " ( " + data[i].description + " )"));
+                for (var i = 0; i < data.length; i++) {
+                    $("#retries").append($("<option></option>")
+                            .attr("value", data[i].value)
+                            .text(data[i].value + " ( " + data[i].description + " )"));
+                }
+
+                setCookie('ExecutionRetries', 'retries');
+
+                var ExecutionRetries = getCookie('ExecutionRetries');
+
+                if (ExecutionRetries === "" && pl === "") {
+                    pl = "0";
+                }
+
+
+
+                $("#retries").find('option').each(function(i, opt) {
+                    if (opt.value === pl) {
+                        $(opt).attr('selected', 'selected');
                     }
 
-                    setCookie('ExecutionRetries', 'retries');
 
-                    var ExecutionRetries = getCookie('ExecutionRetries');
+                });
+            })
+        });
 
-                    if (ExecutionRetries === "" && pl === "") {
-                        pl = "0";
-                    }
-
-
-
-                    $("#retries").find('option').each(function(i, opt) {
-                        if (opt.value === pl) {
-                            $(opt).attr('selected', 'selected');
-                        }
-
-
-                    });
-                })
-            });
-
-        </script>
+    </script>
     <script type="text/javascript">
         $(document).ready(function() {
             $.getJSON('FindInvariantByID?idName=outputformat', function(data) {
@@ -1127,7 +1132,63 @@
     <script>
         $(document).ready(function() {
             var system = $('#MySystem').val();
-            $('#testcasesearchdiv').load("RunTestsSearchFilters.jsp?system=" + system);
+            $('#testcasesearchdiv').load("RunTestsSearchFilters.jsp?system=" + system, function() {
+
+
+                $(".multiSelectOptions").each(function() {
+                    var currentElement = $(this);
+
+                    if (currentElement.attr("id") === "System") {
+                        currentElement.multiselect({
+                            multiple: true,
+                            minWidth: 150,
+//                        header: currentElement.data('header'),
+                            noneSelectedText: currentElement.data('none-selected-text'),
+                            selectedText: currentElement.data('selected-text'),
+                            selectedList: currentElement.data('selected-list'),
+                            beforeclose: function() {
+                                var system = $("#System").val();
+                                var appSelect = $("#Application");
+
+
+                                if (system === null) {
+                                    appSelect.find("option").removeAttr('disabled');
+                                    appSelect.find("option").removeAttr('selected');
+                                } else {
+                                    if (oldSystem != null) {
+                                        $.each(oldSystem, function(i, v) {
+                                            if ($.inArray(v, system) === -1) {
+                                                appSelect.find("option:contains('[" + v + "]')").removeAttr('selected');
+                                            }
+                                        });
+                                    }
+
+                                    if ($.inArray("All", system) >= 0) {
+                                        appSelect.find("option").removeAttr('disabled');
+                                    } else {
+                                        appSelect.find("option").attr('disabled', 'disabled');
+                                        $.each(system, function(i, v) {
+                                            appSelect.find("option:contains('[" + v + "]')").removeAttr('disabled');
+                                        });
+                                    }
+                                }
+                                appSelect.multiselect("refresh");
+
+                                oldSystem = system;
+                            }
+                        }).multiselectfilter();
+                    } else {
+                        currentElement.multiselect({
+                            multiple: true,
+                            minWidth: 150,
+//                        header: currentElement.data('header'),
+                            noneSelectedText: currentElement.data('none-selected-text'),
+                            selectedText: currentElement.data('selected-text'),
+                            selectedList: currentElement.data('selected-list')
+                        }).multiselectfilter();
+                    }
+                });
+            });
         });
     </script>
 </body>
