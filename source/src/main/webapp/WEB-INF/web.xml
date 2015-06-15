@@ -514,6 +514,10 @@
         <servlet-class>org.cerberus.servlet.user.UpdateUserRobotPreference</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>UpdateUserReporting</servlet-name>
+        <servlet-class>org.cerberus.servlet.user.UpdateUserReporting</servlet-class>
+    </servlet>    
+    <servlet>
         <servlet-name>UpdateTestCaseField</servlet-name>
         <servlet-class>org.cerberus.servlet.testCase.UpdateTestCaseField</servlet-class>
     </servlet>
@@ -679,6 +683,10 @@
     <servlet>
         <servlet-name>UpdateExecutionInQueue</servlet-name>
         <servlet-class>org.cerberus.servlet.execution.UpdateExecutionInQueue</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>SetTagToExecution</servlet-name>
+        <servlet-class>org.cerberus.servlet.execution.SetTagToExecution</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>ExecutionThreadMonitoring</servlet-name>
@@ -1161,6 +1169,10 @@
         <url-pattern>/UpdateUserRobotPreference</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
+        <servlet-name>UpdateUserReporting</servlet-name>
+        <url-pattern>/UpdateUserReporting</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
         <servlet-name>UpdateTestCaseField</servlet-name>
         <url-pattern>/UpdateTestCaseField</url-pattern>
     </servlet-mapping>
@@ -1320,6 +1332,10 @@
         <servlet-name>UpdateExecutionInQueue</servlet-name>
         <url-pattern>/UpdateExecutionInQueue</url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>SetTagToExecution</servlet-name>
+        <url-pattern>/SetTagToExecution</url-pattern>
+    </servlet-mapping>
     <session-config>
         <session-timeout>
             60
@@ -1417,6 +1433,7 @@
             <url-pattern>/ExecutionPerBuildRevision</url-pattern>
             <url-pattern>/FindInvariantByID</url-pattern>
             <url-pattern>/GetStepUsedAsLibraryInOtherTestCasePerApplication</url-pattern>
+            <url-pattern>/UpdateUserReporting</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <description>TestRO</description>
@@ -1513,6 +1530,7 @@
             <url-pattern>/findEnvironmentByCriteria</url-pattern>
             <url-pattern>/UpdateUserRobotPreference</url-pattern>
             <url-pattern>/RunManualTest</url-pattern>
+            <url-pattern>/SetTagToExecution</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <description>RunTest</description>
