@@ -20,6 +20,7 @@
 package org.cerberus.serviceEngine;
 
 import org.cerberus.entity.TestCaseExecution;
+import org.w3c.dom.Document;
 
 /**
  *
@@ -141,4 +142,10 @@ public interface IXmlUnitService {
 	 *         equal to the expected one, <code>false</code> otherwise
 	 */
 	boolean isElementEquals(TestCaseExecution tCExecution, String xpath, String expectedElement);
+          /**
+         * Method that retrieves a XML document from the memory
+         * @param uuid - unique key for the entry
+         * @return XML Document
+         */
+        Document getXmlDocument(String uuid);
 }

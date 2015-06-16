@@ -19,7 +19,7 @@
  */
 package org.cerberus.factory.impl;
 
-import org.cerberus.entity.TestDataLib;
+import org.cerberus.entity.TestDataLib; 
 import org.cerberus.factory.IFactoryTestDataLib;
 import org.springframework.stereotype.Service;
 
@@ -35,14 +35,48 @@ public class FactoryTestDataLib implements IFactoryTestDataLib {
             String country, String group, String type, String database,
             String script, String servicePath, String method,
             String envelope, String description) {
+        
+        TestDataLib newData = createObject(name, system, environment, country, group, type, database, script, servicePath, method, envelope, description);
+        
+        if(newData != null){
+            newData.setTestDataLibID(testDataLibID);
+        }
+        return newData;
+    }
+
+    @Override
+    public TestDataLib create(String name, String system, String environment, String country,
+            String group, String type, String database, String script, String servicePath, String method, String envelope, String description) {
+            return createObject(name, system, environment, country, group, type, database, script, servicePath, method, envelope, description); 
+    }
+    /**
+     * Auxiliary method that creates an object TestDataLib
+     * @param name
+     * @param system
+     * @param environment
+     * @param country
+     * @param group
+     * @param type
+     * @param database
+     * @param script
+     * @param servicePath
+     * @param method
+     * @param envelope
+     * @param description
+     * @return 
+     */
+    private TestDataLib createObject(String name, String system, String environment, String country,
+            String group, String type, String database, String script, String servicePath, String method, String envelope, String description){
+            
         TestDataLib newData = new TestDataLib();
-        newData.setTestDataLibID(testDataLibID);
+
+        newData.setType(type);
         newData.setName(name);
         newData.setSystem(system);
         newData.setCountry(country);
         newData.setEnvironment(environment);
         newData.setGroup(group);
-        newData.setType(type);
+        newData.setDescription(description);
         newData.setDatabase(database);
         newData.setScript(script);
         newData.setServicePath(servicePath);

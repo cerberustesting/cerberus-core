@@ -4124,6 +4124,11 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
                 SQLS.append(" WHERE `DocTable`='testcasecountryproperties' and`DocField`='Value' and`DocValue`='';");
                 SQLInstruction.add(SQLS.toString());
                 
+ //Add new property type that is able to retrieve data values from a property that is specified in the library
+// -- ------------------------ 582                //TODO:FN descomentar
+/*                SQLS = new StringBuilder();
+                SQLS.append("INSERT INTO `cerberus_partial`.`invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ('PROPERTYTYPE', 'getFromDataLib', '75', 'Determines the data value associated with a library entry', 'Data value'); ");
+                SQLInstruction.add(SQLS.toString());*/               
         
         return SQLInstruction;
     }

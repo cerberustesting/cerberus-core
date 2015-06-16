@@ -39,4 +39,6 @@ public interface IFactoryTestDataLibData {
      */
     TestDataLibData create(Integer testDataLibID, String subData, String value,
             String column, String parsingAnswer, String description);
+
+    public TestDataLibData create(Integer testDataLibID, String type, String subData, String data, String description);
 }

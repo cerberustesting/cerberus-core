@@ -67,18 +67,30 @@
 
         <script type='text/javascript' src='js/Form_1.js'></script>
         <script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>
+        <script type="text/javascript" src="js/bootstrap.min.js"></script>
         <script type="text/javascript" src="js/jquery-migrate-1.2.1.min.js"></script>
         <script type="text/javascript" src="js/jquery-ui-1.10.2.js"></script>
         <script type="text/javascript" src="js/elrte.min.js"></script>
         <script type="text/javascript" src="js/i18n/elrte.en.js"></script>
         <script type="text/javascript" src="js/elfinder.min.js"></script>
         <script type="text/javascript" src="js/elFinderSupportVer1.js"></script>
+        <script type="text/javascript" src="js/jquery.dataTables.js"></script>
+        <script type="text/javascript" src="js/jquery.jeditable.mini.js"></script>
+        <script type="text/javascript" src="js/jquery.dataTables.editable.js"></script>
+        <script type="text/javascript" src="js/pages/TestCaseViewModel.js"></script>
+       
         <link rel="stylesheet" type="text/css" href="css/jquery-ui.css">
         <link rel="stylesheet" type="text/css" href="css/elrte.min.css">
         <link rel="stylesheet" type="text/css" href="css/crb_style.css">
         <link rel="stylesheet" type="text/css" href="css/elfinder.min.css">
         <link rel="stylesheet" type="text/css" href="css/theme.css">
         <link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico" />
+        
+        <link rel="stylesheet" type="text/css" href="css/jquery.dataTables.css">
+        <link rel="stylesheet" type="text/css" href="css/jquery-ui.css">
+        <link rel="stylesheet" type="text/css" href="css/dataTables_jui.css">
+        <link type="text/css" rel="stylesheet" href="css/bootstrap.css">
+        <link type="text/css" rel="stylesheet" href="css/default.css"> 
 
         <script type="text/javascript">
             var displayOnlyFunctional = false;
@@ -338,6 +350,8 @@
     <body>
         <%@ include file="include/function.jsp" %>
         <%@ include file="include/header.jsp" %>
+        <%@ include file="include/testcase/entryList.html"%>
+        <%@ include file="include/testcase/subDataList.html"%>
         <div id="body">
             <%
                 boolean booleanFunction = false;
@@ -1546,7 +1560,8 @@
                                                         || tccp.getType().equals("getFromXml")
                                                         || tccp.getType().equals("getFromCookie")
                                                         || tccp.getType().equals("getFromJson")
-                                                        || tccp.getType().equals("getDifferencesFromXml")) {
+                                                        || tccp.getType().equals("getDifferencesFromXml")
+                                                        || tccp.getType().equals("getFromDataLib")) {
                                                     widthValue1 = widthValue / 2;
                                                     widthValue2 = widthValue / 2;
                                                     displayValue2 = "inline-block";
@@ -1620,12 +1635,36 @@
                                                 </select>
                                             </div>
                                             <div id="divProperties_value1_<%=incrementProperty%>" style="background-color:transparent;float:left;border-right-width:thin;border-right-style:solid;border-right-color:#CCCCCC;width:<%=widthValue1%>%;display:inline-block;">
-                                                <textarea id="properties_value1_<%=incrementProperty%>" rows="2" class="wob" style="background-color:transparent;width: 100%;height:50px" 
-                                                          name="properties_value1_<%=incrementProperty%>"><%=tccp.getValue1()%></textarea>
+                                                <div class="pull-left" style="width: 90%; display: inline">
+                                                    <textarea id="properties_value1_<%=incrementProperty%>" rows="2" class="wob" style="background-color:transparent;width: 100%;height:50px" 
+                                                              name="properties_value1_<%=incrementProperty%>"><%=tccp.getValue1()%></textarea>
+                                                </div>
+                                                <% if (tccp.getType().equals("getFromDataLib")) {
+                                                   %>
+                                                   <div style="width: 10%; display: inline">
+                                                        <button title="Select an entry from the library" id="entryButton_<%=incrementProperty%>" type="button" class="btn btn-default btn-xs pull-right">
+                                                        <span class="glyphicon glyphicon-search"></span> </button>
+                                                   </div>    
+                                                   <%
+                                                }
+                                                %>  
                                             </div>
                                             <div id="divProperties_value2_<%=incrementProperty%>" style="background-color:transparent;float:left;border-right-width:thin;border-right-style:solid;border-right-color:#CCCCCC;display:<%=displayValue2%>;width:<%=widthValue2%>%;height:50px">
-                                                <textarea id="properties_value2_<%=incrementProperty%>" rows="2" class="wob" style="background-color:transparent;width: 100%;"
+                                                <div class="pull-left" style="width: 90%; display: inline">
+                                                    <textarea id="properties_value2_<%=incrementProperty%>" rows="2" class="wob" style="background-color:transparent;width: 100%;"
                                                           name="properties_value2_<%=incrementProperty%>"><%=tccp.getValue2()%></textarea>
+                                                </div>
+                                                        
+                                                <% if (tccp.getType().equals("getFromDataLib")) {
+                                                %>
+                                                <div style="width: 10%; display: inline">
+                                                    <button id="SubDataButton_<%=incrementProperty%>" title="Select a sub data entry from the library" type="button" class="btn btn-default btn-xs pull-right">
+                                                        <span class="glyphicon glyphicon-search"></span></button>
+                                                        <input id="testDataLibID_<%=incrementProperty%>" type="hidden"/>    
+                                                </div>        
+                                                <%
+                                                }
+                                                %>    
                                             </div>
                                             <div style="border-right-width:thin;border-right-style:solid;background-color:transparent;border-right-color:#CCCCCC;float:left;width:3%;display:inline-block;height:50px">
                                                 <input class="wob" style="background-color:transparent;width:  100%;margin-top:20px;" name="properties_length_<%=incrementProperty%>"

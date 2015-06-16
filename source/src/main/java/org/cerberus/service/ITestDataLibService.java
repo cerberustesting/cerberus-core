@@ -19,7 +19,11 @@ package org.cerberus.service;
 
 import java.util.List;
 import org.cerberus.entity.TestDataLib;
+import org.cerberus.entity.TestDataLibData; 
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerItem;
+import org.cerberus.util.answer.AnswerList;
 
 /**
  *
@@ -37,9 +41,10 @@ public interface ITestDataLibService {
     /**
      *
      * @param testDataLib TestData to update using the key
+     * @return 
      * @throws CerberusException
      */
-    void updateTestDataLib(TestDataLib testDataLib) throws CerberusException;
+    Answer updateTestDataLib(TestDataLib testDataLib);
 
     /**
      *
@@ -65,7 +70,7 @@ public interface ITestDataLibService {
      * resultSet
      * @return
      */
-    List<TestDataLib> findTestDataLibListByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch);
+    AnswerList findTestDataLibListByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch);
     /**
      * 
      * @param name
@@ -77,6 +82,7 @@ public interface ITestDataLibService {
      */
     TestDataLib findTestDataLibByKey(String name, String system, String environment, String country) throws CerberusException;
     
+    AnswerItem findTestDataLibByKey(int testDatalib) throws CerberusException;
     /**
      * 
      * @param searchTerm words to be searched in every column (Exemple : article)
@@ -84,4 +90,31 @@ public interface ITestDataLibService {
      * @return The number of records for these criterias
      */
     Integer getNumberOfTestDataLibPerCriteria(String searchTerm, String inds);
+    /**
+     * Auxiliary method that retrieves all the group names that were already defined for a type.
+     * @param type STATIC or SQL or SOAP
+     * @return list of group values for the type
+     */
+    List<String> getListOfGroupsPerType(String type);
+    /**
+     * Gets the rawData associated to the library; for SQL and SOAP, the corresponding instructions will be executed in order to retrieve the data 
+     * from the database and webservice.
+     * @param lib testdatalib entry
+     * @param rowLimit
+     * @param propertyName
+     * @return the result data for the library entry
+     */
+    AnswerItem fetchData(TestDataLib lib, int rowLimit, String propertyName);
+
+    /**
+     * Deletes a testdatalib with basis on the id.
+     * @param testDataLibID - id of the entry that we want to remove
+     * @return an answer indicating the status of the operation
+     * @throws CerberusException 
+     */
+    Answer deleteTestDataLib(int testDataLibID) throws CerberusException;
+
+    Answer createTestDataLibBatch(List<TestDataLib> combinations, List<TestDataLibData> subDataList) throws CerberusException;
+    Answer createTestDataLib(TestDataLib testDataLib, List<TestDataLibData> subDataList) throws CerberusException;
+    Answer createTestDataLibBatch(List<TestDataLib> entries)throws CerberusException;
 }

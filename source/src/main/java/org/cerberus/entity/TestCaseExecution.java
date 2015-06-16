@@ -17,6 +17,7 @@
  */
 package org.cerberus.entity;
 
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -72,6 +73,7 @@ public class TestCaseExecution {
     private String seleniumPort;
     private List<TestCaseStepExecution> testCaseStepExecutionList; // Host the list of Steps that will be executed (both pre tests and main test)
     private List<TestCaseExecutionData> testCaseExecutionDataList; // Host the full list of data calculated during the execution.
+    private HashMap<String, TestDataLibResult> dataLibraryExecutionDataList;
     private MessageGeneral resultMessage;
     private Selenium selenium;
     private String executionUUID;
@@ -523,7 +525,14 @@ public class TestCaseExecution {
     public void setTestCaseExecutionDataList(List<TestCaseExecutionData> testCaseExecutionDataList) {
         this.testCaseExecutionDataList = testCaseExecutionDataList;
     }
+    
+    public HashMap<String, TestDataLibResult> getDataLibraryExecutionDataList() {
+        return dataLibraryExecutionDataList;
+    }
 
+    public void setDataLibraryExecutionDataList(HashMap<String, TestDataLibResult> dataLibraryExecutionDataList) {
+        this.dataLibraryExecutionDataList = dataLibraryExecutionDataList;
+    }
     public String getExecutor() {
         return executor;
     }

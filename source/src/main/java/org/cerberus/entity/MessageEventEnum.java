@@ -57,6 +57,7 @@ public enum MessageEventEnum {
     PROPERTY_SUCCESS_GETFROMJSON(100, "OK", "Value '%PARAM%' from Json '%URL%' has been found and returned '%VALUE%'.", false, false ,false , MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     PROPERTY_SUCCESS_TESTDATA(100, "OK", "TestData %PROPERTY% correctly returned '%VALUE%'.", false, false ,false , MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     PROPERTY_SUCCESS_SOAP(100, "OK", "SOAP Request executed", false, false ,false , MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
+    PROPERTY_SUCCESS_GETFROMDATALIB(100, "OK", "Property retrieved from library and calculated with success." , false, false ,false , MessageGeneralEnum.EXECUTION_PE_TESTSTARTED), 
     PROPERTY_FAILED(150, "NA", "PROPERTY_ERROR Generic error on getting the property.", true, false, false, MessageGeneralEnum.EXECUTION_NA),
     PROPERTY_FAILED_NO_PROPERTY_DEFINITION(151, "NA", "Warning, Property not defined for %PROP% and country %COUNTRY%.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     PROPERTY_FAILED_SQL(152, "FA", "An error occur when connecting to ?! Error detail: ?", true, false ,false , MessageGeneralEnum.EXECUTION_FA),
@@ -82,6 +83,8 @@ public enum MessageEventEnum {
     PROPERTY_FAILED_GETFROMJSON_PARAMETERNOTFOUND(190, "FA", "Value %PARAM% not found in Json file from %URL%", true, true ,true , MessageGeneralEnum.EXECUTION_FA),
     PROPERTY_FAILED_CALCULATE_OBJECTPROPERTYNULL(191, "FA", "Both object and property are null. Please specify one of them.", true, false, false, MessageGeneralEnum.EXECUTION_FA),
     PROPERTY_PENDING(199, "PE", "Calculating property...", false, false ,false , MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
+    PROPERTY_FAILED_GETFROMDATALIB(192, "FA", "Failed to get Data from '%VALUE1%' because could not find the library entry!. ", true, false, false, MessageGeneralEnum.EXECUTION_FA),
+    PROPERTY_FAILED_GETFROMDATALIBDATA(193, "FA", "Failed to get Data from '%VALUE1%' because could not find '%VALUE2%'!.", true, false, false, MessageGeneralEnum.EXECUTION_FA),
     ACTION_SUCCESS(200, "OK", "", false, false ,false , MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     ACTION_SUCCESS_CLICK(200, "OK", "Element '%ELEMENT%' clicked.", false, false ,false , MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     ACTION_SUCCESS_CLICKANDWAIT(200, "OK", "Element '%ELEMENT%' clicked and waited %TIME% ms.", false, false ,false , MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
@@ -229,8 +232,15 @@ public enum MessageEventEnum {
     APPLICATION_NOT_FOUND(501, "FA", "Application of the testcase does not exist.", true, true ,false , MessageGeneralEnum.EXECUTION_FA),
     TESTCASEEXECUTION_CANNOTFINDTESTCASEEXECUTIONBYCRITERIA(502, "CA", "An error occur when trying to find execution by criteria", true, true ,false , MessageGeneralEnum.EXECUTION_FA),
     TESTCASEEXECUTION_CANNOTINSERTTESTCASEEXECUTION(503, "CA", "An error occur when trying to insert a testcaseexecution", true, true ,false , MessageGeneralEnum.EXECUTION_FA),
-    NOT_IMPLEMEMTED(900, "", "Not Implememted.", true, true ,false , MessageGeneralEnum.EXECUTION_FA) 
+    NOT_IMPLEMEMTED(900, "", "Not Implememted.", true, true ,false , MessageGeneralEnum.EXECUTION_FA) ,
     //TODO add env property => configure com.cerberus.environment and JNDI
+        //New messages to handle data operations
+    DATA_OPERATION_EXPECTED_ERROR(901, "danger", "%ITEM% - %OPERATION% failed to complete. %REASON%", false, false ,false , MessageGeneralEnum.DATA_OPERATION_ERROR),
+    DATA_OPERATION_DUPLICATE_ERROR(902, "danger", "%ITEM% already exists!", false, false ,false, MessageGeneralEnum.DATA_OPERATION_ERROR),
+    DATA_OPERATION_UNEXPECTED_ERROR(903, "danger", "An unexpected problem occurred: %DESCRIPTION%", false, false ,false, 
+            MessageGeneralEnum.DATA_OPERATION_ERROR),
+    DATA_OPERATION_OK(001, "success", "%ITEM% was %OPERATION% with success!", false, false ,false , MessageGeneralEnum.DATA_OPERATION_SUCCESS);
+   
     ;
     
     private final int code;

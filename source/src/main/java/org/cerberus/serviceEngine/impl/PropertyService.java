@@ -21,6 +21,7 @@ package org.cerberus.serviceEngine.impl;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Logger; 
 import org.apache.log4j.Level;
@@ -34,6 +35,9 @@ import org.cerberus.entity.TestCaseExecution;
 import org.cerberus.entity.TestCaseExecutionData;
 import org.cerberus.entity.TestCaseStepActionExecution;
 import org.cerberus.entity.TestCaseStepExecution;
+import org.cerberus.entity.TestDataLib;
+import org.cerberus.entity.TestDataLibData;
+import org.cerberus.entity.TestDataLibResult;
 import org.cerberus.exception.CerberusEventException;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.factory.IFactoryTestCaseExecutionData;
@@ -41,6 +45,8 @@ import org.cerberus.log.MyLogger;
 import org.cerberus.service.ISoapLibraryService;
 import org.cerberus.service.ISqlLibraryService;
 import org.cerberus.service.ITestCaseExecutionDataService;
+import org.cerberus.service.ITestDataLibDataService;
+import org.cerberus.service.ITestDataLibService;
 import org.cerberus.service.ITestDataService;
 import org.cerberus.serviceEngine.IJsonService;
 import org.cerberus.serviceEngine.IPropertyService;
@@ -51,6 +57,7 @@ import org.cerberus.serviceEngine.IXmlUnitService;
 import org.cerberus.util.DateUtil;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
+import org.cerberus.util.answer.AnswerItem;
 import org.openqa.selenium.NoSuchElementException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -80,6 +87,10 @@ public class PropertyService implements IPropertyService {
     private ISQLService sQLService;
     @Autowired
     private IXmlUnitService xmlUnitService;
+    @Autowired
+    private ITestDataLibService testDataLibService;
+    @Autowired
+    private ITestDataLibDataService testDataLibDataService;
     @Autowired
     private IFactoryTestCaseExecutionData factoryTestCaseExecutionData;
     @Autowired
@@ -143,6 +154,8 @@ public class PropertyService implements IPropertyService {
             testCaseExecutionData = this.getFromJson(testCaseExecutionData, forceRecalculation);
         } else if ("executeSoapFromLib".equals(testCaseCountryProperty.getType())) {
             testCaseExecutionData = this.executeSoapFromLib(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceRecalculation);
+        } else if ("getFromDataLib".equals(testCaseCountryProperty.getType())){ 
+            testCaseExecutionData = this.getFromDataLib(testCaseExecutionData, tCExecution, testCaseStepActionExecution, testCaseCountryProperty, forceRecalculation);
         } else if ("getDifferencesFromXml".equals(testCaseCountryProperty.getType())) {
             testCaseExecutionData = this.getDifferencesFromXml(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceRecalculation);
         } else {
@@ -763,5 +776,124 @@ public class PropertyService implements IPropertyService {
             testCaseExecutionData.setPropertyResultMessage(res);
         }
         return testCaseExecutionData;
+    }
+    
+     private TestCaseExecutionData getFromDataLib(TestCaseExecutionData testCaseExecutionData, TestCaseExecution tCExecution, 
+            TestCaseStepActionExecution testCaseStepActionExecution, TestCaseCountryProperties testCaseCountryProperty,  boolean forceRecalculation) {
+        
+        MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMDATALIB);
+        try {
+            
+            HashMap<String, TestDataLibResult> currentListResults = tCExecution.getDataLibraryExecutionDataList();
+            if(currentListResults  == null){
+                currentListResults = new HashMap<String, TestDataLibResult>();
+            }
+            TestDataLib lib;
+            TestDataLibResult result; 
+            lib =  testDataLibService.findTestDataLibByKey(testCaseExecutionData.getValue1(), 
+                    tCExecution.getCountryEnvironmentApplication().getSystem(), tCExecution.getCountryEnvironmentApplication().getEnvironment(),
+                    tCExecution.getCountryEnvironmentApplication().getCountry());
+                      
+            if(lib != null){
+                 //if the property was defined for all systems, then the query returned an empty value
+                if(StringUtil.isNullOrEmpty(lib.getSystem())){
+                    lib.setSystem(tCExecution.getCountryEnvironmentApplication().getSystem());
+                }
+                //if the property was defined for all environments, then the query returned an empty value
+                if(StringUtil.isNullOrEmpty(lib.getEnvironment())){
+                    lib.setEnvironment(tCExecution.getCountryEnvironmentApplication().getEnvironment());
+                }
+                //if the property was defined for all countries, then the query returned an empty value
+                if(StringUtil.isNullOrEmpty(lib.getCountry())){
+                    lib.setCountry(tCExecution.getCountryEnvironmentApplication().getCountry());
+                }
+                
+                AnswerItem serviceAnswer; 
+                result = currentListResults.get(String.valueOf(lib.getTestDataLibID()));                 
+                //como sao as nuances caso nao esteja definida para o pais??
+                //TODO:FN if is force calculation, vai tudo ser recalculado??
+                if(forceRecalculation || (!forceRecalculation && result == null)){
+                    //check if there are properties defined in the data specification
+                    calculateInnerProperties(lib, testCaseStepActionExecution);
+                    //we need to recalculate the result for the lib
+                    serviceAnswer = testDataLibService.fetchData(lib, testCaseCountryProperty.getRowLimit(), testCaseCountryProperty.getNature());                 
+                    
+                    res = serviceAnswer.getResultMessage();
+                    result = (TestDataLibResult)serviceAnswer.getItem(); //test data library returned by the service
+                }
+
+                //verificar se esta lib já foi executada algures...
+                //executes the entry in order to obtain data
+                
+                if(result != null){
+                    //gets the value for the library entry with basis on
+                    //the subdataentry specified
+                    String value = result.getValue(testCaseExecutionData.getValue2());
+                    
+                    if(value == null){
+                        //the entry does not exist yet so we need to calculate it
+                        //gets the entry that we want to collect
+                        
+                        try{
+                            TestDataLibData subDataEntry = testDataLibDataService.findTestDataLibDataByKey(lib.getTestDataLibID(), testCaseExecutionData.getValue2());
+                            //extract the subdata entry value
+                            value = testDataLibDataService.fetchSubData(result, subDataEntry);      
+                        }catch(CerberusException ex){
+                            res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIBDATA);
+                            //TODO:FN ver estas excepcoes aqui
+                        }                        
+                    }
+                    //retrieved the information
+                    //we add the entry value into the execution data 
+                    testCaseExecutionData.setValue(value);                    
+                    //updates the result data
+                    currentListResults.put(String.valueOf(lib.getTestDataLibID()), result);
+                    //updates the execution data list
+                    tCExecution.setDataLibraryExecutionDataList(currentListResults);
+                    
+                    if(value == null){ 
+                        //Cerberus was unable to retrieve the desired value
+                        //the subdata entry is not valid
+                        res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIBDATA);    
+                    }
+                }         
+            }else{
+                //the specified library is not valid
+                res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB);
+            }
+        } catch (CerberusException ex) {
+            MyLogger.log(PropertyService.class.getName(), Level.DEBUG, ex.toString());
+            res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB);
+        }
+        res.setDescription(res.getDescription().replaceAll("%VALUE1%", testCaseExecutionData.getValue1()));
+        res.setDescription(res.getDescription().replaceAll("%VALUE2%", testCaseExecutionData.getValue2()));
+        testCaseExecutionData.setPropertyResultMessage(res);
+
+        return testCaseExecutionData;
+    }
+
+    private void calculateInnerProperties(TestDataLib lib, TestCaseStepActionExecution testCaseStepActionExecution) {
+        try {
+            if(lib.getType().equals("SOAP")){            
+                //check if the servicepath contains properties that neeed to be calculated
+                String decodedServicePath = getValue(lib.getServicePath(), testCaseStepActionExecution, false);
+                lib.setServicePath(decodedServicePath);
+                //check if the method contains properties that neeed to be calculated
+                String decodedMethod = getValue(lib.getMethod(), testCaseStepActionExecution, false);
+                lib.setMethod(decodedMethod);
+                //check if the envelope contains properties that neeed to be calculated
+                String decodedEnvelope = getValue(lib.getEnvelope(), testCaseStepActionExecution, false);
+                lib.setEnvelope(decodedEnvelope);                                
+                
+            }else if(lib.getType().equals("SQL")){
+                //check if the script contains properties that neeed to be calculated
+                String decodedScript = getValue(lib.getScript(), testCaseStepActionExecution, false);
+                lib.setScript(decodedScript);
+                
+            }
+        } catch (CerberusEventException ex) {
+            Logger.getLogger(PropertyService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            //TODO:FN ver o que fazer com estas excepcoes 
+        }
     }
 }

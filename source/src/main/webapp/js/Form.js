@@ -1098,7 +1098,8 @@ function activateDatabaseBox(value, fieldOneId, fieldTwoId) {
 }
 
 function activateValue2(value, fieldOneId, fieldTwoId, fieldThreeId, size2) {
-    if (value === "getAttributeFromHtml" || value === "getFromXml" || value === "getFromCookie" || value === "getFromJson" || value === "getDifferencesFromXml") {
+    if (value === "getAttributeFromHtml" || value === "getFromXml" || value === "getFromCookie" || 
+            value === "getFromJson" || value === "getDifferencesFromXml" || value === "getFromDataLib") {
         var size3 = 1 * size2 / 3;
         var size4 = (2 * size2 / 3) - 5;
         document.getElementById(fieldOneId).style.display = "inline";

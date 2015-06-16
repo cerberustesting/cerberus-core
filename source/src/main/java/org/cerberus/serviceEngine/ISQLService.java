@@ -24,6 +24,7 @@ import org.cerberus.entity.TestCaseCountryProperties;
 import org.cerberus.entity.TestCaseExecution;
 import org.cerberus.entity.TestCaseExecutionData;
 import org.cerberus.exception.CerberusEventException;
+import org.cerberus.util.answer.AnswerItem;
 
 /**
  *
@@ -44,4 +45,6 @@ public interface ISQLService {
     String getRandomNewStringFromList(List<String> resultset, List<String> pastValues);
     
     String getRandomStringNotInUse(List<String> resultSet, List<String> valuesInUse);
+    //TODO:FN comment
+    AnswerItem calculateOnDatabaseNColumns(String sql, String db, String system, String country, String environment, int rowLimit, String propertyName);
 }

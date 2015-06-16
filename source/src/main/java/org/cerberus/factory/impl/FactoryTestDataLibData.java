@@ -20,6 +20,7 @@
 package org.cerberus.factory.impl;
 
 import org.cerberus.entity.TestDataLibData;
+import org.cerberus.entity.TestDataLibTypeEnum;
 import org.cerberus.factory.IFactoryTestDataLibData;
 import org.springframework.stereotype.Service;
 
@@ -40,6 +41,24 @@ public class FactoryTestDataLibData implements IFactoryTestDataLibData {
         newData.setColumn(column);
         newData.setParsingAnswer(parsingAnswer);
         newData.setDescription(description);
+        return newData;
+    }
+
+    @Override
+    public TestDataLibData create(Integer testDataLibID, String type, String subData, String data, String description) {
+        TestDataLibData newData = new TestDataLibData();
+        //commons attributes
+        newData.setTestDataLibID(testDataLibID);
+        newData.setSubData(subData);
+        newData.setDescription(description);
+        
+        if(TestDataLibTypeEnum.STATIC.getCode().equals(type)){
+            newData.setValue(data);
+        }else if(TestDataLibTypeEnum.SQL.getCode().equals(type)){
+            newData.setColumn(data);
+        }else if(TestDataLibTypeEnum.SOAP.getCode().equals(type)){
+            newData.setParsingAnswer(data);
+        }         
         return newData;
     }
 

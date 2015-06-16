@@ -48,4 +48,9 @@ public interface IFactoryTestDataLib {
             String country, String group, String type,
             String database, String script, String servicePath,
             String method, String envelope, String description);
+    
+    TestDataLib create( String name, String system, String environment,
+            String country, String group, String type,
+            String database, String script, String servicePath,
+            String method, String envelope, String description);
 }

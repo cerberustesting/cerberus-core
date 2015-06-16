@@ -27,6 +27,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import org.apache.log4j.Level;
@@ -34,6 +36,9 @@ import org.cerberus.entity.ExecutionSOAPResponse;
 import org.cerberus.entity.TestCaseExecution;
 import org.cerberus.entity.TestCaseStepActionControlExecution;
 import org.cerberus.entity.TestCaseStepActionExecution;
+import org.cerberus.entity.TestDataLibResult;
+import org.cerberus.entity.TestDataLibResultSOAP;
+import org.cerberus.entity.TestDataLibTypeEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.log.MyLogger;
 import org.cerberus.service.IParameterService;
@@ -364,6 +369,78 @@ public class RecorderService implements IRecorderService {
                 String screenshotPath = recordXMLAndGetName(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution(), testCaseStepActionExecution, controlNumber);
                 testCaseStepActionExecution.setScreenshotFilename(screenshotPath);
             }
+        }
+        //saves the soap responses that were collected during action execution
+        recordXMLSOAPResponses(testCaseStepActionExecution, controlNumber);
+    }
+    
+    private void recordXMLSOAPResponses(TestCaseStepActionExecution testCaseStepActionExecution, Integer controlNumber) {
+        //checks if soap calls were performed and save the data into the database
+         HashMap<String, TestDataLibResult> data = testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getDataLibraryExecutionDataList();
+         
+        if ( data != null && data.size() > 0) {
+            //if the data library contains entries for xml, then save that xml
+            
+            //list of entries
+            Long executionId = testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getId();
+            Collection<TestDataLibResult> itValues = testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getDataLibraryExecutionDataList().values();
+            String test = testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getTest();
+            String testCase = testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getTestCase();
+            String step = String.valueOf(testCaseStepActionExecution.getStep());
+            String sequence = String.valueOf(testCaseStepActionExecution.getSequence());            
+            String controlString = controlNumber.equals(0) ? null : String.valueOf(controlNumber);
+            
+            
+            for(TestDataLibResult result : itValues){
+                //xml that was retrieved during execution will be saved for debug purposes
+                if(result.getType().equals(TestDataLibTypeEnum.SOAP.getCode())){
+
+                    String responseKeyID = ((TestDataLibResultSOAP)result).getSoapResponseKey();
+                    //if the key is still in the execution data, we must remove it
+                    if(eSResponse.getExecutionSOAPResponse(responseKeyID) != null){
+                        //gets the xml associated with the entry
+                        String xml = eSResponse.getExecutionSOAPResponse(responseKeyID); 
+                        //the XML execution is available in the entry
+                        try {
+                            String path = parameterService.findParameterByKey("cerberus_picture_path", "").getValue();
+                            String fileName = this.generateScreenshotFilename(test, testCase, step, sequence, controlString, null,  "xml") ;
+                            recordFile(path, fileName, xml);
+                        } catch (CerberusException ex) {
+                            MyLogger.log(RecorderService.class.getName(), Level.DEBUG, "XML file was not saved due to unexpected error.");
+                        }
+                                
+                        
+                        //after saving then remove it from the list
+                        eSResponse.removeExecutionSOAPResponse(responseKeyID);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Auxiliary method that saves a file
+     * @param path - directory path
+     * @param fileName - name of the file
+     * @param content -content of the file
+     */
+    private void recordFile(String path, String fileName, String content) {
+        MyLogger.log(RecorderService.class.getName(), Level.INFO, "Saving File.");
+
+        File dir = new File(path);
+        if(!dir.exists()){
+            dir.mkdirs();
+        }
+        FileOutputStream fileOutputStream;
+        try {
+            fileOutputStream = new FileOutputStream(dir.getAbsolutePath() + File.separator + fileName);
+            fileOutputStream.write(content.getBytes());
+            fileOutputStream.close();
+            MyLogger.log(RecorderService.class.getName(), Level.DEBUG, "xml location : " + path + File.separator + fileName);
+        } catch (FileNotFoundException ex) {
+            MyLogger.log(RecorderService.class.getName(), Level.DEBUG, "Unable to save : " + path + File.separator + fileName + " ex: " + ex);
+        } catch (IOException ex) {
+            MyLogger.log(RecorderService.class.getName(), Level.DEBUG, "Unable to save : " + path + File.separator + fileName + " ex: " + ex);
         }
     }
 }

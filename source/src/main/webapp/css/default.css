@@ -1,0 +1,128 @@
+/*
+ * Cerberus  Copyright (C) 2013  vertigo17
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+ *
+ * This file is part of Cerberus.
+ *
+ * Cerberus is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Cerberus is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
+ *//* 
+    Created on : May 18, 2015, 2:18:04 PM
+    Author     : FNogueira
+*/
+@import url("//netdna.bootstrapcdn.com/bootstrap/3.0.0-rc2/css/bootstrap-glyphicons.css");
+ 
+.separator {
+    border-top: 1px solid #E3E3E3;
+    margin-top:20px;  
+    margin-bottom:30px;  
+}
+
+.nomargintop{
+    margin-top:0px;
+}
+.nomarginbottom{
+    margin-bottom:0px;
+}
+
+.manageRowsFont{
+    font-size:12.3167px;
+}
+
+ 
+#datas {
+    margin: 3px;
+    vertical-align: top;
+    display: inline-block;
+    *zoom: 1;
+    *display: inline;
+    width: 100%;
+}
+.center{
+    margin-left: auto;
+    margin-right: auto;                
+}    
+
+
+/*widths*/
+.width800 {
+    width: 800px;
+}
+.width500 {
+    width: 500px;
+}
+.width1000{
+    width: 1000px;
+}
+
+/*margins*/
+
+.marginTop25{
+    margin-top: 25px;
+}
+.marginTop5{
+    margin-top: 5px;
+}
+
+/**************************************ALERT messages ****************************/
+#messagesArea { position: fixed; top: 40px; left: 0; right: 0; border: none; z-index: 50;}
+
+/**************************************Page layout ****************************/
+
+/*TODO:FN After conversion change this to the main css file*/
+#navcontainer {
+    position: fixed;
+    width:100%;
+    height: 40px;
+}
+
+#page-layout{
+    width: 1488px;       
+    margin-left: auto;
+    margin-right: auto;                
+}
+#page-layout table{
+    min-height: 80%;
+}
+#page-layout table > tbody > tr > td {
+    vertical-align: top;
+    min-height: 40%;
+}
+ 
+div button.margin-right25{
+    //margin-left: 5px;
+    margin-right: 25px;
+}
+
+div button.margin-right5{
+    //margin-left: 5px;
+    margin-right: 5px;
+}
+#btnDeleteRow{
+    display:none;
+}
+
+.colorRed{
+    color:#8B0404;
+}
+
+select option{ 
+    color: #555555; 
+    font-size: 14px; 
+    font-style:normal
+}
+.emptySelectOption{
+    color: gray; 
+    font-size: 10px; 
+    font-style:italic;
+}

@@ -20,6 +20,9 @@ package org.cerberus.dao;
 import java.util.List;
 import org.cerberus.entity.TestDataLib;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerItem;
+import org.cerberus.util.answer.AnswerList;
 
 /**
  *
@@ -37,9 +40,10 @@ public interface ITestDataLibDAO {
     /**
      *
      * @param testDataLib
+     * @return 
      * @throws CerberusException
      */
-    void updateTestDataLib(TestDataLib testDataLib) throws CerberusException;
+    Answer updateTestDataLib(TestDataLib testDataLib);
 
     /**
      *
@@ -47,7 +51,13 @@ public interface ITestDataLibDAO {
      * @throws CerberusException
      */
     void deleteTestDataLib(TestDataLib testDataLib) throws CerberusException;
-
+    /**
+     * Deletes a testdatalib with basis on the unique identifier
+     * @param testDataLibID - test data lib entry
+     * @return 
+     * @throws CerberusException 
+     */
+    Answer deleteTestDataLib(int testDataLibID) throws CerberusException;
     /**
      *
      * @return All TestData
@@ -65,7 +75,7 @@ public interface ITestDataLibDAO {
      * resultSet
      * @return
      */
-    List<TestDataLib> findTestDataLibListByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch);
+    AnswerList findTestDataLibListByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch);
 
     /**
      *
@@ -78,6 +88,7 @@ public interface ITestDataLibDAO {
      */
     TestDataLib findTestDataLibByKey(String name, String system, String environment, String country) throws CerberusException;
 
+    AnswerItem findTestDataLibByKey(int testDataLibID) throws CerberusException;
     /**
      *
      * @param searchTerm words to be searched in every column (Exemple :
@@ -87,4 +98,10 @@ public interface ITestDataLibDAO {
      * @return The number of records for these criterias
      */
     Integer getNumberOfTestDataLibPerCriteria(String searchTerm, String inds);
+    
+    List<String> getListOfGroupsPerType(String type); 
+
+    public void createTestDataLibBatch(List<TestDataLib> testDataLibEntries) throws CerberusException;
+
+    public boolean exists(String name, String[] system, String[] environment, String[] country) throws CerberusException;
 }
