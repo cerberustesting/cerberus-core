@@ -22,6 +22,7 @@
  * Document ready methods
  */
 $(function(){
+    refreshTestDataLib(); 
     /**
     * Loads the common functions from a global javascript file
     * @param {type} param1 - filename
@@ -358,14 +359,18 @@ $(function(){
         });
 
     });
-     /*****************************************************************************/
-     /**
-      * Handles the click on the create new lib
-      */
-     $("#createLibButton").click(function() { 
+   
+     
+    
+    var system = $('#MySystem').val();
+       
+    /*****************************************************************************/
+    /**
+    * Handles the click on the create new lib
+    */
+     $('#testdatalib #createLibButton').click(function() { 
         //loads the type of data for the window
         //Data that we want to retrieve
-        alert("clica");
         var params = {};
         params[0] = "TESTDATATYPE";
         params[1] = "SYSTEM";
@@ -386,13 +391,10 @@ $(function(){
         });
         //shows the modal that allows the creation of test data lib 
         $('#addTestDataLibModal').modal('show');            
+      
+     
         
-        
-   });
-    refreshTestDataLib(); 
-    var system = $('#MySystem').val();
-    $('#testcasesearchdiv').load("TestBatteryTestCaseSearch.jsp?system=" + system);       
-   
+   });   
 });
 
 
@@ -463,7 +465,6 @@ function editDeleteRowTestDataLibData(element){
         $(element).find("span:first").removeAttr("class").addClass("glyphicon glyphicon-remove colorRed");  
     }          
 }
-
  
 
  
