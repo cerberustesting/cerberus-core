@@ -18,6 +18,7 @@
                 $.get('ExecutionThreadMonitoring', function(data) {
                     $("#sizeOfQueue").html(data.size_queue);
                     $("#QueueInExecution").html(data.queue_in_execution);
+                    $("#NumberOfThread").html(data.number_of_thread);
                     $("#SimultaneousExecution").html(data.simultaneous_execution);
                     $("#SimultaneousSession").html(data.simultaneous_session);
                     $.each(data.active_users, function (a, v){
@@ -44,9 +45,9 @@
         <%@ include file="include/header.jsp" %>
         <h3>Execution Monitoring</h3>
         <h4>Thread Execution</h4>
-        <p>Total Size Of Queue In Memory: </p><p id="sizeOfQueue"></p>
+        <p>Size Of Pending Execution In Queue : </p><p id="sizeOfQueue"></p>
         <br>
-        <p>Number of Queue In Execution : </p><p id="QueueInExecution"></p>
+        <p>Number of Workers In Execution : </p><div style="float:left" id="QueueInExecution"></div><div style="float:left">/</div><div style="float:left" id="NumberOfThread"></div>
         <br>
         <input type="button" value="Reset Queue" onclick="resetThreadPool()">
         <br>

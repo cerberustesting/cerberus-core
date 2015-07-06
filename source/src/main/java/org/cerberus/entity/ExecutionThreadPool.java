@@ -32,6 +32,7 @@ import org.springframework.stereotype.Component;
 public class ExecutionThreadPool {
 
     private ExecutorService executor;
+    private Integer totalNumberOfThread;
     private Integer size;
     private Integer inExecution;
     private boolean numberOfPoolInitialized;
@@ -39,6 +40,7 @@ public class ExecutionThreadPool {
     @PostConstruct
     public void init() {
         executor = Executors.newFixedThreadPool(3);
+        totalNumberOfThread = 3;
         size = 0;
         inExecution = 0;
         numberOfPoolInitialized = false;
@@ -54,10 +56,14 @@ public class ExecutionThreadPool {
     
     public void setNumberOfPool(Integer numberOfPool){
         this.executor = Executors.newFixedThreadPool(numberOfPool);
+        totalNumberOfThread = numberOfPool;
     }
 
     public Integer getSize() {
         return size;
+    }
+    public Integer getNumberOfThread() {
+        return totalNumberOfThread;
     }
 
     public void setSize(Integer size) {

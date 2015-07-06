@@ -79,6 +79,7 @@ public class ExecutionThreadMonitoring extends HttpServlet {
             jsonResponse.put("simultaneous_execution_list", executionArray);
             jsonResponse.put("simultaneous_session", sc.getTotalActiveSession());
             jsonResponse.put("active_users", sc.getActiveUsers());
+            jsonResponse.put("number_of_thread", etp.getNumberOfThread());
         } catch (JSONException ex) {
             Logger.getLogger(ExecutionThreadMonitoring.class.getName()).log(Level.SEVERE, null, ex);
         }
