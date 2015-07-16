@@ -22,13 +22,21 @@ package org.cerberus.servlet.testdatalib;
 import java.io.IOException; 
 import java.util.ArrayList;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.cerberus.entity.MessageEvent;
+import org.cerberus.entity.MessageEventEnum;
 import org.cerberus.entity.TestDataLibData;
+import org.cerberus.exception.CerberusException;
+import org.cerberus.factory.IFactoryLogEvent;
 import org.cerberus.factory.IFactoryTestDataLibData;
+import org.cerberus.factory.impl.FactoryLogEvent;
 import org.cerberus.log.MyLogger;
+import org.cerberus.service.ILogEventService;
 import org.cerberus.service.ITestDataLibDataService;
+import org.cerberus.service.impl.LogEventService;
 import org.cerberus.util.answer.Answer;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -37,9 +45,11 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
- * TODO:FN comment
+ * Handles the modification of subdata entries.
+ * 
  * @author FNogueira
  */
+@WebServlet(name = "UpdateTestDataLibData", urlPatterns = {"/UpdateTestDataLibData"})
 public class UpdateTestDataLibData extends HttpServlet {
 
     /**
@@ -71,6 +81,7 @@ public class UpdateTestDataLibData extends HttpServlet {
                 //checks if the subdataentry can be deleted
                 ITestDataLibDataService subDataService = appContext.getBean(ITestDataLibDataService.class);
                 
+                //removes the entries selected by the user
                 ArrayList<String> entriesToRemove = new ArrayList<String>();
                 if(dataToEdit.has("remove")){
                     JSONArray arrayToRemove = (JSONArray) dataToEdit.get("remove"); 
@@ -81,6 +92,7 @@ public class UpdateTestDataLibData extends HttpServlet {
                     }                    
                 }                
                 
+                //updates the selected entries
                 ArrayList<TestDataLibData> entriesToUpdate = new ArrayList<TestDataLibData>();
                 if(dataToEdit.has("update")){
                     //subDataService.
@@ -94,7 +106,7 @@ public class UpdateTestDataLibData extends HttpServlet {
                         entriesToUpdate.add(item);
                     }
                 }
-                
+                //inserts new subdataentries
                 ArrayList<TestDataLibData> entriesToInsert = new ArrayList<TestDataLibData>();
                 if(dataToEdit.has("insert")){
                     //subDataService.
@@ -109,30 +121,40 @@ public class UpdateTestDataLibData extends HttpServlet {
                     
                 }
                 
+                //performs the operations selected by the user
+                Answer answer = subDataService.cudTestDataLibData(testDataLibID, entriesToInsert, entriesToUpdate, entriesToRemove);
                 
-                Answer ans = subDataService.cudTestDataLibData(testDataLibID, entriesToInsert, entriesToUpdate, entriesToRemove);
+                //  Adding Log entry.
+                ILogEventService logEventService = appContext.getBean(LogEventService.class);
+                IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
+                try {
+                    logEventService.insertLogEvent(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/UpdateTestDataLibData", "UPDATE", 
+                            "Update TestDataLib  : " + request.getParameter("Name"), "", ""));
+                } catch (CerberusException ex) {
+                    org.apache.log4j.Logger.getLogger(UpdateTestDataLibData.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex); 
+                }
                 
+                jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());
+                jsonResponse.put("message", answer.getResultMessage().getDescription());
+            
+                response.setContentType("application/json");
+                response.getWriter().print(jsonResponse); 
+                response.getWriter().flush();
                 
-                
-                jsonResponse.put("messageType", ans.getMessageType());
-                jsonResponse.put("message", ans.getMessageDescription());
-
-           /* } catch (CerberusException ex) {
-                MyLogger.log(UpdateTestDataLibData.class.getName(), org.apache.log4j.Level.FATAL, "" + ex);
-                jsonResponse.put("isSuccess", false);
-                jsonResponse.put("message", MessageEventEnum.TESTDATALIB_VALIDATION_OPERATION_ERROR.getDescription() + ex.getMessage());
-            }    */
         } catch (JSONException ex) {
             MyLogger.log(UpdateTestDataLibData.class.getName(), org.apache.log4j.Level.FATAL, "" + ex);
-            response.setContentType("text/html");
-            response.getWriter().print(ex.getMessage());
+            //returns a default error message with the json format that is able to be parsed by the client-side
+            response.setContentType("application/json"); 
+            MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+            StringBuilder errorMessage = new StringBuilder();
+            errorMessage.append("{'messageType':'").append(msg.getCode()).append("', ");
+            errorMessage.append(" 'message': '");
+            errorMessage.append(msg.getDescription().replace("%DESCRIPTION%", "Unable to check the status of your request! Try later or - Open a bug or ask for any new feature \n" +
+            "<a href=\"https://github.com/vertigo17/Cerberus/issues/\" target=\"_blank\">here</a>"));
+            errorMessage.append("'}");
+            response.getWriter().print(errorMessage.toString());            
         } 
-        /*catch (CerberusException ex) {
-            Logger.getLogger(UpdateTestDataLibData.class.getName()).log(Level.SEVERE, null, ex);
-        }*/
-        response.setContentType("application/json");
-        response.getWriter().print(jsonResponse); //TODO:FN pode ser null?
-        response.getWriter().flush();
+       
         
     }
 

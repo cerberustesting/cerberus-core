@@ -30,87 +30,48 @@
         <link rel="stylesheet" type="text/css" href="css/crb_style.css">
         <link type="text/css" rel="stylesheet" href="css/dataTables.colVis.css">
         <link rel="stylesheet" type="text/css" href="css/jquery.dataTables.css">
-        <link rel="stylesheet" type="text/css" href="css/jquery-ui.css">
-        <link rel="stylesheet" type="text/css" href="css/dataTables_jui.css">
         
-        
-        <link type="text/css" rel="stylesheet" href="css/jquery.multiselect.css">
         <link type="text/css" rel="stylesheet" href="css/bootstrap.css">
+        <link rel="stylesheet" href="css/bootstrap-multiselect.css" type="text/css">
+        
+        
         <link type="text/css" rel="stylesheet" href="css/default.css"> 
 
         <script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>
-        <script type="text/javascript" src="js/bootstrap.min.js"></script>
         
-        
-        <script type="text/javascript" src="js/jquery-ui-1.10.2.js"></script>
         <script type="text/javascript" src="js/jquery.dataTables.js"></script>
-        <script type="text/javascript" src="js/jquery.jeditable.mini.js"></script>
-        <script type="text/javascript" src="js/jquery.dataTables.editable.js"></script>
-        <script type="text/javascript" src="js/jquery.validate.min.js"></script> 
-        <script type="text/javascript" src="js/jquery.multiselect.js" charset="utf-8"></script>
-        <script type="text/javascript" src="js/jquery.form.js"></script>
         <script type="text/javascript" src="js/dataTables.colVis.js"></script>
+        
+        <script type="text/javascript" src="js/jquery.blockUI.js"></script>
+        
         <script type="text/javascript" src="js/pages/TestDataLibViewModel.js"></script>
-
-
+        
+        <script type="text/javascript" src="js/bootstrap.min.js"></script>         
+        <script type="text/javascript" src="js/bootstrap-multiselect.js"></script>
+          
     </head>
     <body>
-        <%@ include file="include/function.jsp"%>
         <%@ include file="include/header.jsp"%>
  
         <div id="page-layout" class="container center">
             <%@ include file="include/messagesArea.html"%>
-            <%@ include file="include/testdatalib/testdatalib.html"%>
+            <%@ include file="include/utils/modal-confirmation.html"%>
+            <%@ include file="include/testdatalib/editTestDataLibData.html"%>
                     <!-- form that adds the new library -->
             <%@ include file="include/testdatalib/addTestDataLib.jsp"%>       
             <%@ include file="include/testdatalib/editTestDataLib.html"%>       
+            <%@ include file="include/testdatalib/viewTestDataLibData.html"%>       
+            <%@ include file="include/testdatalib/testCaseList.html"%>       
+            <%@ include file="include/utils/modal-upload.html"%>       
             
             
-            <!--<div class="well col-xs-7">
-                <form>
-                    <div class="row">
-                        <div class="form-group col-xs-3">
-                            <label>Name</label>
-                            <input class="form-control"/>
-                        </div>    
-                        <div class="form-group col-xs-3">
-                            <label>Type</label>
-                            <select class="form-control"></select>
-                        </div>    
-                        <div class="form-group col-xs-3">
-                            <label>Group</label>
-                            <input class="form-control"/>
-                        </div>    
-                    </div>    
-                    <div class="row">
-                        <div class="form-group col-xs-3">
-                            <label>System</label>
-                            <select class="form-control"></select>
-                        </div>    
-                        <div class="form-group col-xs-3">
-                            <label>Environment</label>
-                            <select class="form-control"></select>
-                        </div>    
-                        <div class="form-group col-xs-3">
-                            <label>Country</label>
-                            <select class="form-control"></select>
-                        </div>    
-                    </div>    
-                    <div class="row">
-                        <div class="form-group">
-                            <button class="btn btn-primary">Pesquisar</button>
-                            <button class="btn btn-default">Limpar</button>
-                        </div>    
-                    </div>    
-                </form>
-            </div>
-            -->
-
-            <div id="testdatalib" >               
-                <table  class="display" id="listOfTestDataLib" name="listOfTestDataLib">
+            
+            <h1 class="page-title-line">Test Data Library</h1>
+            <div id="testdatalib" class="well">               
+                <table  class="table table-hover display" id="listOfTestDataLib" name="listOfTestDataLib">
                     <thead>
                         <tr>
-                            <th>Subdata | Edit | Delete</th> 
+                            <th id="testdatalibFirstColumnHeader"> Edit | Delete | Subdata  |Test Cases </th> 
                             <th>Name</th>
                             <th>System</th>
                             <th>Environment</th>
@@ -122,16 +83,17 @@
                             <th>Service Path</th>
                             <th>Method</th>
                             <th>Envelope</th>
-                            <th>Description</th>               
+                            <th>Description</th>             
                         </tr>                        
                     </thead>
                 </table>
+                <div class="marginBottom20"></div>
             </div>
         </div>     
-
-       
-
-
+            
+                
+                
+        
 
     </body> 
 

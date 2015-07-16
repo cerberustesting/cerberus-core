@@ -19,7 +19,7 @@
  */
 package org.cerberus.servlet.testdatalib;
 
-import java.io.IOException;
+import java.io.IOException; 
 import java.util.List;
 import java.util.logging.Logger;
 import javax.servlet.ServletException;
@@ -27,16 +27,20 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.log4j.Level;
+import netscape.javascript.JSObject;
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.cerberus.dto.TestCaseListDTO;
+import org.cerberus.dto.TestListDTO;
+import org.cerberus.entity.Invariant;
 import org.cerberus.entity.MessageEvent;
-import org.cerberus.entity.MessageEventEnum;
+import org.cerberus.entity.MessageEventEnum; 
 import org.cerberus.entity.TestDataLib; 
-import org.cerberus.entity.TestDataLibData;
+import org.cerberus.entity.TestDataLibTypeEnum;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.log.MyLogger;
-import org.cerberus.service.ITestDataLibDataService;
+import org.cerberus.service.IInvariantService; 
+import org.cerberus.service.ITestCaseService;
 import org.cerberus.service.ITestDataLibService;
-import org.cerberus.servlet.invariant.GetInvariantList;
+import org.cerberus.service.impl.InvariantService;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 import org.json.JSONArray;
@@ -47,14 +51,21 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
- *
+ * Servlet responsible for getting information from the test data library
+ * 
  * @author memiks
+ * @author FNogueira
  */
 @WebServlet(name = "GetTestDataLib", urlPatterns = {"/GetTestDataLib"})
 public class GetTestDataLib extends HttpServlet {
 
     private ITestDataLibService testDataLibService;
-
+    private final int  ACTION_ADDTESTDATALIB = 0;
+    private final int  ACTION_FINDTESTDATALIB_BY_ID = 1;
+    private final int  ACTION_AUTOCOMPLETE = 2;
+    private final int  ACTION_GETGROUPS_DATABASE = 3;
+    private final int  ACTION_GETTESTCASES = 4;
+    
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         this.process(request, response);
@@ -70,48 +81,110 @@ public class GetTestDataLib extends HttpServlet {
 
         try {
         
-            JSONObject jsonResponse = null;
-            String actionParameter = request.getParameter("action");
+            JSONObject jsonResponse = null;           
             
-            
-            AnswerItem answer = null;
-            if(actionParameter == null){ //retrieves all data for testdatalib
+            AnswerItem answer = new AnswerItem(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
+            if(request.getParameter("action") == null){ //retrieves all data for testdatalib
                 //select all entries for the testdatalib
                 answer = findTestDataLibList(appContext, request, response);
                 jsonResponse = (JSONObject)answer.getItem();                
-            }else if(actionParameter.equals("getListOfGroupsPerType")){
-                String Type  = request.getParameter("Type");
-                jsonResponse = getListOfGroupsPerType(appContext, Type);          
-                //TODO:FN handle this exceptions - MESSAGE??
-            }else if("findAllTestDataLibContent".equals(actionParameter.trim())) {
-                //retrieves all content for the testdatalib selected 
-                int testDatalib = Integer.parseInt(request.getParameter("testDataLib")); //TODO:FN type message
-                String testDatalibType = request.getParameter("type");
-                answer = findAllTestDataLibContent(appContext, testDatalib, testDatalibType);
-                jsonResponse = (JSONObject)answer.getItem();                
-            }else if(actionParameter.equals("findTestDataLibByID")){
-                int testDatalib = Integer.parseInt(request.getParameter("testDataLib")); //TODO:FN type message
-                answer = findTestDataLibByID(appContext, testDatalib);
-                jsonResponse = (JSONObject)answer.getItem();
-            }
-
-            if(answer == null){
-                //TODO:FN handle messages here
             }else{
-                //jsonResponse.put("messageType", answer.getMessageType());//TODO:FN type that is not for shown
-                //jsonResponse.put("message", answer.getMessageDescription());            
-            }
-            response.setContentType("application/json");
+                int actionParameter = Integer.parseInt(request.getParameter("action"));
             
-            response.getWriter().print(jsonResponse.toString()); //TODO:FN pode ser null?
+                switch (actionParameter){
+                    case ACTION_ADDTESTDATALIB:
+                        answer = getListOfGroupsPerType(appContext, request.getParameter("Type"));
+                        jsonResponse  = (JSONObject) answer.getItem();
+                        //include testdatatypes                        
+                        jsonResponse.put("TESTDATATYPE", findInvariantListByIdName(appContext, "TESTDATATYPE"));
+                        //include systems                        
+                        jsonResponse.put("SYSTEM", findInvariantListByIdName(appContext, "SYSTEM"));
+                        //include environments
+                        jsonResponse.put("ENVIRONMENT", findInvariantListByIdName(appContext, "ENVIRONMENT"));
+                        //include countries
+                        jsonResponse.put("Country", findInvariantListByIdName(appContext, "Country"));
+                        
+                        break;
+                    case ACTION_FINDTESTDATALIB_BY_ID:
+                        int testDatalib = Integer.parseInt(request.getParameter("testDataLib")); 
+                        answer = findTestDataLibByID(appContext, testDatalib);
+                        jsonResponse = (JSONObject)answer.getItem();
+                        
+                        //we need to load also the data from the system+environment+ country
+                        
+                        //we need to load the groups per type
+                        String typeEdit = request.getParameter("Type");
+                        answer  = getListOfGroupsPerType(appContext, typeEdit); 
+                        JSONObject jsonGroups = (JSONObject) answer.getItem();
+                        jsonResponse.put("GROUPS", jsonGroups);
+                                
+                        //and if the type is SQL then we need to get the list of databases
+                        if(TestDataLibTypeEnum.SQL.getCode().equals(typeEdit)){
+                            //retrieves the list of databases available
+                            JSONObject dbList = findInvariantListByIdName(appContext, "PROPERTYDATABASE");
+                            jsonResponse.put("PROPERTYDATABASE", dbList);
+                        }
+                       
+                        //include systems                        
+                        jsonResponse.put("SYSTEM", findInvariantListByIdName(appContext, "SYSTEM"));
+                        //include environments
+                        jsonResponse.put("ENVIRONMENT", findInvariantListByIdName(appContext, "ENVIRONMENT"));
+                        //include countries
+                        jsonResponse.put("Country", findInvariantListByIdName(appContext, "Country"));
+                        break;
+                        
+                    case ACTION_AUTOCOMPLETE:
+                        String requestTerm = request.getParameter("testDataLib");  
+                        int limit = Integer.parseInt(request.getParameter("limit"));              
+                        answer = findTestDataLibNameList(appContext, requestTerm,limit);
+                        jsonResponse = (JSONObject) answer.getItem();
+                        break;
+                    case ACTION_GETGROUPS_DATABASE:
+                        String type = request.getParameter("Type");
+                        answer  = getListOfGroupsPerType(appContext, type);          
+                        jsonResponse = (JSONObject)answer.getItem();
+                        
+                        if(TestDataLibTypeEnum.SQL.getCode().equals(type)){
+                            //retrieves the list of databases available
+                            JSONObject dbList = findInvariantListByIdName(appContext, "PROPERTYDATABASE");
+                            jsonResponse.put("PROPERTYDATABASE", dbList);
+                        }
+                         
+                        break;   
+                    case ACTION_GETTESTCASES:
+                        int testDataLibId = Integer.parseInt(request.getParameter("testDataLib")); 
+                        String name = request.getParameter("name"); 
+                        String country = request.getParameter("country"); 
+                        answer = getTestCasesUsingTestDataLib(appContext, testDataLibId, name, country); 
+                        jsonResponse = (JSONObject) answer.getItem();
+                        break;
+                }
+                        
+            }
+            
+
+            
+            jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());
+            jsonResponse.put("message", answer.getResultMessage().getDescription());         
+            
+            response.setContentType("application/json");
+            response.getWriter().print(jsonResponse.toString()); 
             
         } catch (JSONException e) {
-            MyLogger.log(GetInvariantList.class.getName(), Level.FATAL, "" + e);
-            response.setContentType("application/json"); //TODO:FN analisar estas excepcoes
-            response.getWriter().print("{'messageType':'danger', 'message': 'An unexpected error occurred while processing your request!'}");            
-            /*response.setContentType("text/html");
-            response.getWriter().print(e.getMessage());*/
+            org.apache.log4j.Logger.getLogger(GetTestDataLib.class.getName()).log(org.apache.log4j.Level.ERROR, null, e); 
+            //returns a default error message with the json format that is able to be parsed by the client-side
+            response.setContentType("application/json"); 
+            MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+            StringBuilder errorMessage = new StringBuilder();
+            errorMessage.append("{'messageType':'").append(msg.getCode()).append("', ");
+            errorMessage.append(" 'message': '");
+            errorMessage.append(msg.getDescription().replace("%DESCRIPTION%", "Unable to check the status of your request! Try later or - Open a bug or ask for any new feature \n" +
+            "<a href=\"https://github.com/vertigo17/Cerberus/issues/\" target=\"_blank\">here</a>"));
+            errorMessage.append("'}");
+            response.getWriter().print(errorMessage.toString());            
         }
+        
+        
     }
 
     private AnswerItem findTestDataLibList(ApplicationContext appContext, HttpServletRequest request, HttpServletResponse response) throws IOException, BeansException, NumberFormatException, JSONException {
@@ -129,35 +202,32 @@ public class GetTestDataLib extends HttpServlet {
         String columnName = columnToSort[columnToSortParameter];
         String sort = request.getParameter("sSortDir_0");
         AnswerList resp = testDataLibService.findTestDataLibListByCriteria(startPosition, length, columnName, sort, searchParameter, "");
-        if(resp == null){//the service was unable to perform the query
-            response.setContentType("text/html");
-            response.getWriter().print(""); //TODO:FN colocar descricao
-        }else{
-            JSONArray jsonArray = new JSONArray();
+        
+        JSONArray jsonArray = new JSONArray();
+        boolean userHasPermissions = request.isUserInRole("TestDataManager");
+        if(resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())){//the service was able to perform the query, then we should get all values
             for (TestDataLib testDataLib : (List<TestDataLib>)resp.getDataList()) {
-                jsonArray.put(convertTestDataLibToJSONObject(testDataLib));
+                jsonArray.put(convertTestDataLibToJSONObject(testDataLib, true).put(userHasPermissions));
+
             }
-            //recordsFilterd do lado do servidor    
-            jsonResponse.put("TestDataLib", jsonArray);
-            jsonResponse.put("iTotalRecords", resp.getTotalRows());
-            jsonResponse.put("iTotalDisplayRecords", resp.getTotalRows());
-            //recordsFiltered
         }
+        
+        
+        //recordsFilterd do lado do servidor    
+        jsonResponse.put("hasPermissions", userHasPermissions);
+        jsonResponse.put("TestDataLib", jsonArray);
+        jsonResponse.put("iTotalRecords", resp.getTotalRows());
+        jsonResponse.put("iTotalDisplayRecords", resp.getTotalRows());
+        //recordsFiltered
+        
         item.setItem(jsonResponse);
-        item.setResultMessage(resp.getResultMessage());
+        item.setResultMessage(resp.getResultMessage()); 
         return item;
     }
 
-    /*private JSONArray findAllTestDataLibToJSON(int startPosition, int length) throws JSONException, CerberusException {
-        JSONArray jsonResponse = new JSONArray();
-        for (TestDataLib testDataLib : testDataLibService.findTestDataLibListByCriteria(0, 100, "TestDataLibID", "ASC", "", "")) {
-            jsonResponse.put(convertTestDataLibToJSONObject(testDataLib));
-        }
-        
-        return jsonResponse;
-    }*/
-
-    private JSONArray convertTestDataLibToJSONObject(TestDataLib testDataLib) throws JSONException {
+ 
+    private JSONArray convertTestDataLibToJSONObject(TestDataLib testDataLib, boolean escapeXML) throws JSONException {
+       
         JSONArray result = new JSONArray();
         result.put(testDataLib.getTestDataLibID());
         result.put(testDataLib.getName());
@@ -170,100 +240,142 @@ public class GetTestDataLib extends HttpServlet {
         result.put(testDataLib.getScript());
         result.put(testDataLib.getServicePath());
         result.put(testDataLib.getMethod());
-        result.put(testDataLib.getEnvelope());
-        result.put(testDataLib.getDescription());
+        if(escapeXML){
+            result.put(StringEscapeUtils.escapeXml11(testDataLib.getEnvelope()));
+        }else{
+            result.put(testDataLib.getEnvelope());
+        }
+        
+        result.put(testDataLib.getDescription()); 
         return result;
     }
 
-    private AnswerItem findAllTestDataLibContent(ApplicationContext appContext, int testDatalib, String testDatalibType) throws JSONException {
-        JSONObject jsonResponse = new JSONObject();    
-        ITestDataLibDataService testDataLibDataService = appContext.getBean(ITestDataLibDataService.class);
-        AnswerList answer = testDataLibDataService.findTestDataLibDataListByTestDataLib(testDatalib);
+    
+    private AnswerItem getListOfGroupsPerType(ApplicationContext appContext, String type) throws JSONException{
+        AnswerItem answerItem = new AnswerItem();
         
+        ITestDataLibService testDataService = appContext.getBean(ITestDataLibService.class);
+         
+        JSONObject jsonObject = new JSONObject();               
+        AnswerList<String> ansList = testDataService.getListOfGroupsPerType(type);
         
-        //retrieves the data for the entry
-        JSONArray jsonArray = new JSONArray();
+        if(ansList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())){
+            //if the response is success then we can sent the data
+            jsonObject.put("GROUPS", ((List<String>) ansList.getDataList()).toArray());
+        }
+        answerItem.setResultMessage(ansList.getResultMessage());
+        answerItem.setItem(jsonObject);
+           
+        return answerItem;
+    }
+
+    private AnswerItem findTestDataLibByID(ApplicationContext appContext, int testDatalib) throws JSONException {
+        AnswerItem item = new AnswerItem();        
+        JSONObject object = new JSONObject();        
         
-        for(TestDataLibData subdata: (List<TestDataLibData>)answer.getDataList()){
-            jsonArray.put(convertTestDataLibDataToJSONObject(subdata, testDatalibType));   
-        } 
+        ITestDataLibService testDataService = appContext.getBean(ITestDataLibService.class);
         
-        jsonResponse.put("TestDataLibDatas", jsonArray);     
+        //finds the testdatalib        
+        AnswerItem answer = testDataService.findTestDataLibByKey(testDatalib);
+
+        if(answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+            //if the service returns an OK message then we can get the item and convert it to JSONformat
+            TestDataLib lib = (TestDataLib) answer.getItem();
+            JSONArray response = convertTestDataLibToJSONObject(lib, false);
+            object.put("testDataLib", response); 
+        }
         
-        AnswerItem item = new AnswerItem();
-        item.setItem(jsonResponse);
+        item.setItem(object);
         item.setResultMessage(answer.getResultMessage());
         
         return item;
     }
-
-     
-
-    private JSONArray convertTestDataLibDataToJSONObject(TestDataLibData subdata, String testDataLibType) {
-        JSONArray result = new JSONArray();
-        result.put(subdata.getTestDataLibID());
-        result.put(subdata.getSubData());
-        if(testDataLibType.equals("STATIC")){ //TODO:FN ver estes tipos
-            result.put(subdata.getValue());
-        }else if(testDataLibType.equals("SQL")){
-            result.put(subdata.getColumn());
-        }
-        else if(testDataLibType.equals("SOAP")){
-            result.put(subdata.getParsingAnswer());
-        }else {
-            result.put("");
-        }
-        result.put(subdata.getDescription());
+    /**
+     * Handles the auto-complete requests and retrieves a limited list of strings that match (totally or partially) the name entered by the user.
+     * @param appContext
+     * @param nameToSearch
+     * @param limit
+     * @return
+     * @throws JSONException 
+     */
+    private AnswerItem findTestDataLibNameList(ApplicationContext appContext, String nameToSearch,  int limit) throws JSONException {
         
-        return result;
-    }
-
-    private JSONObject getListOfGroupsPerType(ApplicationContext appContext, String type) throws JSONException{
+        AnswerItem ansItem = new AnswerItem();
+        
+        JSONObject object = new JSONObject();         
+        
         ITestDataLibService testDataService = appContext.getBean(ITestDataLibService.class);
-         
-        JSONObject jsonResponse = new JSONObject();    
+        AnswerList ansList = testDataService.findTestDataLibNameList(nameToSearch, limit);
         
-        List<String> groups = testDataService.getListOfGroupsPerType(type);
-      
-        jsonResponse.put("groupList", groups.toArray());     
+        object.put("data", ansList.getDataList()); 
         
+        ansItem.setResultMessage(ansList.getResultMessage());
+        ansItem.setItem(object);
         
-           
-        return jsonResponse;
+        return ansItem;
+        
     }
 
-    private AnswerItem findTestDataLibByID(ApplicationContext appContext, int testDatalib) throws JSONException {
-        AnswerItem item = new AnswerItem();
-        
+    private JSONObject findInvariantListByIdName(ApplicationContext appContext, String idName) throws JSONException {
         JSONObject object = new JSONObject();
-        JSONArray response  = null;
-        
-        ITestDataLibService testDataService = appContext.getBean(ITestDataLibService.class);
-        
-        try{
-            AnswerItem answer = testDataService.findTestDataLibByKey(testDatalib);
+        try {
             
-            TestDataLib lib = (TestDataLib)answer.getItem();
-            try {
-                response = convertTestDataLibToJSONObject(lib);
-                object.put("testDataLib", response); //TODO:FN transformar as mensagens
-
-                item.setItem(object);
-                item.setResultMessage(answer.getResultMessage());
+            IInvariantService invariantService = appContext.getBean(InvariantService.class);
+            
+            //gets the list of databases
+            for (Invariant myInvariant : invariantService.findListOfInvariantById(idName)) {
+                object.put(myInvariant.getValue(), myInvariant.getValue());
                 
-            } catch (JSONException ex) {
-                Logger.getLogger(GetTestDataLib.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-                //TODO:FN ver mensagem que deve ser devolvida.
-                item.setResultMessage(new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR));
             }
             
-        }catch(CerberusException ex){
-            item.setResultMessage(new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR));
-            //TODO:FN compltear esta mensagem
+        } catch (CerberusException ex) {
+            Logger.getLogger(GetTestDataLib.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
-        
-        return item;
+        return object;
     }
 
+    private AnswerItem getTestCasesUsingTestDataLib(ApplicationContext appContext, int testDataLibId, String name, String country) throws JSONException {
+        JSONObject response = new JSONObject();
+        JSONArray object = new JSONArray();
+        AnswerItem ansItem = new AnswerItem();
+        ITestCaseService tcService = appContext.getBean(ITestCaseService.class);
+           
+        AnswerList ansList = tcService.findTestCasesThatUseTestDataLib(testDataLibId, name, country);
+        
+        //if the response is success then we can iterate and search for the data
+        if(ansList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())){
+            List<TestListDTO> listDTO = ansList.getDataList();
+            for(TestListDTO l : listDTO){
+                 JSONArray jsonArray = new JSONArray();
+                 JSONArray arrTestCase = new JSONArray();
+                 for(TestCaseListDTO testCase : l.getTestCaseList()){
+                     JSONObject jsonTestCase = new JSONObject();
 
+                     jsonTestCase.put("TestCaseNumber", testCase.getTestCaseNumber());
+                     jsonTestCase.put("TestCaseDescription", testCase.getTestCaseDescription());
+                     jsonTestCase.put("Creator", testCase.getCreator());
+                     jsonTestCase.put("Active", testCase.isIsActive());
+                     jsonTestCase.put("Status", testCase.getStatus());
+                     jsonTestCase.put("Group", testCase.getGroup());
+                     jsonTestCase.put("Application", testCase.getApplication());
+                     jsonTestCase.put("NrProperties", testCase.getPropertiesList().size());
+
+                     arrTestCase.put(jsonTestCase);
+                 }
+                 //test details
+                 jsonArray.put(l.getTest());
+                 jsonArray.put(l.getDescription());
+                 jsonArray.put(l.getTestCaseList().size());
+                 jsonArray.put(arrTestCase);
+                 //test case details
+                 object.put(jsonArray);
+            }
+
+            response.put("TestCasesList", object);
+        }
+        
+        ansItem.setItem(response);
+        ansItem.setResultMessage(ansList.getResultMessage());
+        return ansItem;
+    }
 }

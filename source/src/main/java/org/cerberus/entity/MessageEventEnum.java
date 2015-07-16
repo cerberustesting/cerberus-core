@@ -235,12 +235,19 @@ public enum MessageEventEnum {
     NOT_IMPLEMEMTED(900, "", "Not Implememted.", true, true ,false , MessageGeneralEnum.EXECUTION_FA) ,
     //TODO add env property => configure com.cerberus.environment and JNDI
         //New messages to handle data operations
-    DATA_OPERATION_EXPECTED_ERROR(901, "danger", "%ITEM% - %OPERATION% failed to complete. %REASON%", false, false ,false , MessageGeneralEnum.DATA_OPERATION_ERROR),
-    DATA_OPERATION_DUPLICATE_ERROR(902, "danger", "%ITEM% already exists!", false, false ,false, MessageGeneralEnum.DATA_OPERATION_ERROR),
-    DATA_OPERATION_UNEXPECTED_ERROR(903, "danger", "An unexpected problem occurred: %DESCRIPTION%", false, false ,false, 
+    DATA_OPERATION_EXPECTED_ERROR(901, MessageCodeEnum.DATA_OPERATION_CODE_ERROR.getCode(), "%ITEM% - operation %OPERATION% failed to complete. %REASON%", false, false ,false , MessageGeneralEnum.DATA_OPERATION_ERROR),
+    DATA_OPERATION_DUPLICATE_ERROR(902, MessageCodeEnum.DATA_OPERATION_CODE_ERROR.getCode(), "The %ITEM% that you are trying to %OPERATION% conflicts with an existing one! Please check for duplicates!", false, false ,false, MessageGeneralEnum.DATA_OPERATION_ERROR),
+    DATA_OPERATION_UNEXPECTED_ERROR(903, MessageCodeEnum.DATA_OPERATION_CODE_ERROR.getCode(), "An unexpected problem occurred. %DESCRIPTION%", false, false ,false, 
             MessageGeneralEnum.DATA_OPERATION_ERROR),
-    DATA_OPERATION_OK(001, "success", "%ITEM% was %OPERATION% with success!", false, false ,false , MessageGeneralEnum.DATA_OPERATION_SUCCESS);
-   
+    TESTDATALIB_NOT_FOUND_ERROR(904, "FA", "The test data lib %ITEM% is not available for the selected system %SYSTEM%, environment %ENVIRONMENT% and country %COUNTRY%.", true, false ,false, 
+            MessageGeneralEnum.EXECUTION_FA),
+    DATA_OPERATION_IMPORT_ERROR(905, MessageCodeEnum.DATA_OPERATION_CODE_ERROR.getCode(), "%ITEM% - Import failed! %REASON%", false, false ,false , MessageGeneralEnum.DATA_OPERATION_ERROR),
+    DATA_OPERATION_IMPORT_ERROR_FORMAT(906, MessageCodeEnum.DATA_OPERATION_CODE_ERROR.getCode(), "%ITEM% Import failed! Format %FORMAT% is invalid!", false, false ,false , MessageGeneralEnum.DATA_OPERATION_ERROR),
+    DATA_OPERATION_VALIDATIONS_ERROR(905, MessageCodeEnum.DATA_OPERATION_CODE_ERROR.getCode(), "Data is invalid! Details: %DESCRIPTION%", false, false ,false , MessageGeneralEnum.DATA_OPERATION_ERROR)   , 
+    DATA_OPERATION_OK(001, MessageCodeEnum.DATA_OPERATION_CODE_SUCCESS.getCode(), "%ITEM% - %OPERATION% was finished with success!", false, false ,false , MessageGeneralEnum.DATA_OPERATION_SUCCESS),    
+    DATA_OPERATION_VALIDATIONS_OK(002, MessageCodeEnum.DATA_OPERATION_CODE_SUCCESS.getCode(), "Data is valid!", false, false ,false , MessageGeneralEnum.DATA_OPERATION_SUCCESS),
+    DATA_OPERATION_IMPORT_OK(003, MessageCodeEnum.DATA_OPERATION_CODE_SUCCESS.getCode(), "%ITEM% was imported with success!", false, false ,false , MessageGeneralEnum.DATA_OPERATION_SUCCESS);
+
     ;
     
     private final int code;

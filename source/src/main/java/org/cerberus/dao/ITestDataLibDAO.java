@@ -33,15 +33,14 @@ public interface ITestDataLibDAO {
     /**
      *
      * @param testDataLib
-     * @throws CerberusException
+     * @return 
      */
-    void createTestDataLib(TestDataLib testDataLib) throws CerberusException;
+    Answer createTestDataLib(TestDataLib testDataLib);
 
     /**
      *
      * @param testDataLib
      * @return 
-     * @throws CerberusException
      */
     Answer updateTestDataLib(TestDataLib testDataLib);
 
@@ -55,9 +54,8 @@ public interface ITestDataLibDAO {
      * Deletes a testdatalib with basis on the unique identifier
      * @param testDataLibID - test data lib entry
      * @return 
-     * @throws CerberusException 
      */
-    Answer deleteTestDataLib(int testDataLibID) throws CerberusException;
+     Answer deleteUnusedTestDataLib(int testDataLibID);
     /**
      *
      * @return All TestData
@@ -86,9 +84,9 @@ public interface ITestDataLibDAO {
      * @return
      * @throws org.cerberus.exception.CerberusException
      */
-    TestDataLib findTestDataLibByKey(String name, String system, String environment, String country) throws CerberusException;
+    AnswerItem findTestDataLibByKey(String name, String system, String environment, String country) throws CerberusException;
 
-    AnswerItem findTestDataLibByKey(int testDataLibID) throws CerberusException;
+    AnswerItem findTestDataLibByKey(int testDataLibID);
     /**
      *
      * @param searchTerm words to be searched in every column (Exemple :
@@ -99,9 +97,9 @@ public interface ITestDataLibDAO {
      */
     Integer getNumberOfTestDataLibPerCriteria(String searchTerm, String inds);
     
-    List<String> getListOfGroupsPerType(String type); 
+    AnswerList<String> getListOfGroupsPerType(String type); 
 
-    public void createTestDataLibBatch(List<TestDataLib> testDataLibEntries) throws CerberusException;
+    Answer createTestDataLibBatch(List<TestDataLib> testDataLibEntries);
 
-    public boolean exists(String name, String[] system, String[] environment, String[] country) throws CerberusException;
+    AnswerList findTestDataLibNameList(String testDataLibName, int limit);
 }

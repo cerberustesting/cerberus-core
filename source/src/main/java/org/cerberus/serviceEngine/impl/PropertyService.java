@@ -38,6 +38,7 @@ import org.cerberus.entity.TestCaseStepExecution;
 import org.cerberus.entity.TestDataLib;
 import org.cerberus.entity.TestDataLibData;
 import org.cerberus.entity.TestDataLibResult;
+import org.cerberus.entity.TestDataLibTypeEnum;
 import org.cerberus.exception.CerberusEventException;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.factory.IFactoryTestCaseExecutionData;
@@ -424,11 +425,11 @@ public class PropertyService implements IPropertyService {
         
         return stringToDecode;
     }
-
+    
     private TestCaseExecutionData executeSqlFromLib(TestCaseExecutionData testCaseExecutionData, TestCaseCountryProperties testCaseCountryProperty, TestCaseExecution tCExecution, boolean forceCalculation) {
         try {
             String script = this.sqlLibraryService.findSqlLibraryByKey(testCaseExecutionData.getValue1()).getScript();
-            testCaseExecutionData.setValue1(script); //TODO:FN use the new library 
+            testCaseExecutionData.setValue1(script); //TODO use the new library 
 
         } catch (CerberusException ex) {
             Logger.getLogger(PropertyService.class
@@ -599,7 +600,7 @@ public class PropertyService implements IPropertyService {
                 }else{
                     attachement = soapLib.getAttachmentUrl();
                 }*/
-                soapService.callSOAPAndStoreResponseInMemory(tCExecution.getExecutionUUID(), soapLib.getEnvelope(), soapLib.getServicePath(), soapLib.getMethod(), attachement);
+                soapService.callSOAPAndStoreResponseInMemory(tCExecution.getExecutionUUID(), soapLib.getEnvelope(), soapLib.getServicePath(), soapLib.getMethod(), attachement, false);
                 String result = xmlUnitService.getFromXml(tCExecution.getExecutionUUID(), null, soapLib.getParsingAnswer());
                 if (result != null) {
                     testCaseExecutionData.setValue(result);
@@ -790,10 +791,11 @@ public class PropertyService implements IPropertyService {
             }
             TestDataLib lib;
             TestDataLibResult result; 
-            lib =  testDataLibService.findTestDataLibByKey(testCaseExecutionData.getValue1(), 
+            AnswerItem answer = testDataLibService.findTestDataLibByKey(testCaseExecutionData.getValue1(), 
                     tCExecution.getCountryEnvironmentApplication().getSystem(), tCExecution.getCountryEnvironmentApplication().getEnvironment(),
                     tCExecution.getCountryEnvironmentApplication().getCountry());
                       
+            lib = (TestDataLib)answer.getItem();
             if(lib != null){
                  //if the property was defined for all systems, then the query returned an empty value
                 if(StringUtil.isNullOrEmpty(lib.getSystem())){
@@ -810,8 +812,8 @@ public class PropertyService implements IPropertyService {
                 
                 AnswerItem serviceAnswer; 
                 result = currentListResults.get(String.valueOf(lib.getTestDataLibID()));                 
-                //como sao as nuances caso nao esteja definida para o pais??
-                //TODO:FN if is force calculation, vai tudo ser recalculado??
+                
+                //if is force calculation, then the entry will be recalculated
                 if(forceRecalculation || (!forceRecalculation && result == null)){
                     //check if there are properties defined in the data specification
                     calculateInnerProperties(lib, testCaseStepActionExecution);
@@ -840,7 +842,6 @@ public class PropertyService implements IPropertyService {
                             value = testDataLibDataService.fetchSubData(result, subDataEntry);      
                         }catch(CerberusException ex){
                             res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIBDATA);
-                            //TODO:FN ver estas excepcoes aqui
                         }                        
                     }
                     //retrieved the information
@@ -858,8 +859,7 @@ public class PropertyService implements IPropertyService {
                     }
                 }         
             }else{
-                //the specified library is not valid
-                res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB);
+                res = answer.getResultMessage();                
             }
         } catch (CerberusException ex) {
             MyLogger.log(PropertyService.class.getName(), Level.DEBUG, ex.toString());
@@ -871,10 +871,15 @@ public class PropertyService implements IPropertyService {
 
         return testCaseExecutionData;
     }
-
+    
+     /**
+      * Auxiliary method that calculates the inner properties that are defined in a test data library entry
+      * @param lib - test data library entry
+      * @param testCaseStepActionExecution  step action execution
+      */
     private void calculateInnerProperties(TestDataLib lib, TestCaseStepActionExecution testCaseStepActionExecution) {
         try {
-            if(lib.getType().equals("SOAP")){            
+            if(lib.getType().equals(TestDataLibTypeEnum.SOAP.getCode())){            
                 //check if the servicepath contains properties that neeed to be calculated
                 String decodedServicePath = getValue(lib.getServicePath(), testCaseStepActionExecution, false);
                 lib.setServicePath(decodedServicePath);
@@ -885,15 +890,14 @@ public class PropertyService implements IPropertyService {
                 String decodedEnvelope = getValue(lib.getEnvelope(), testCaseStepActionExecution, false);
                 lib.setEnvelope(decodedEnvelope);                                
                 
-            }else if(lib.getType().equals("SQL")){
+            }else if(lib.getType().equals(TestDataLibTypeEnum.SQL.getCode())){
                 //check if the script contains properties that neeed to be calculated
                 String decodedScript = getValue(lib.getScript(), testCaseStepActionExecution, false);
                 lib.setScript(decodedScript);
                 
             }
-        } catch (CerberusEventException ex) {
-            Logger.getLogger(PropertyService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-            //TODO:FN ver o que fazer com estas excepcoes 
+        } catch (CerberusEventException cex) {
+            Logger.getLogger(PropertyService.class.getName()).log(java.util.logging.Level.SEVERE, null, cex);               		
         }
     }
 }

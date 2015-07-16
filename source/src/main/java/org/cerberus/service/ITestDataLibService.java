@@ -17,6 +17,7 @@
  */
 package org.cerberus.service;
 
+import java.util.HashMap;
 import java.util.List;
 import org.cerberus.entity.TestDataLib;
 import org.cerberus.entity.TestDataLibData; 
@@ -41,8 +42,7 @@ public interface ITestDataLibService {
     /**
      *
      * @param testDataLib TestData to update using the key
-     * @return 
-     * @throws CerberusException
+     * @return
      */
     Answer updateTestDataLib(TestDataLib testDataLib);
 
@@ -80,9 +80,9 @@ public interface ITestDataLibService {
      * @return 
      * @throws org.cerberus.exception.CerberusException 
      */
-    TestDataLib findTestDataLibByKey(String name, String system, String environment, String country) throws CerberusException;
+    AnswerItem findTestDataLibByKey(String name, String system, String environment, String country) throws CerberusException;
     
-    AnswerItem findTestDataLibByKey(int testDatalib) throws CerberusException;
+    AnswerItem findTestDataLibByKey(int testDatalib);
     /**
      * 
      * @param searchTerm words to be searched in every column (Exemple : article)
@@ -95,7 +95,7 @@ public interface ITestDataLibService {
      * @param type STATIC or SQL or SOAP
      * @return list of group values for the type
      */
-    List<String> getListOfGroupsPerType(String type);
+    AnswerList<String> getListOfGroupsPerType(String type);
     /**
      * Gets the rawData associated to the library; for SQL and SOAP, the corresponding instructions will be executed in order to retrieve the data 
      * from the database and webservice.
@@ -110,11 +110,19 @@ public interface ITestDataLibService {
      * Deletes a testdatalib with basis on the id.
      * @param testDataLibID - id of the entry that we want to remove
      * @return an answer indicating the status of the operation
-     * @throws CerberusException 
      */
-    Answer deleteTestDataLib(int testDataLibID) throws CerberusException;
+    Answer deleteTestDataLib(int testDataLibID);
 
-    Answer createTestDataLibBatch(List<TestDataLib> combinations, List<TestDataLibData> subDataList) throws CerberusException;
-    Answer createTestDataLib(TestDataLib testDataLib, List<TestDataLibData> subDataList) throws CerberusException;
+    /**
+     * Creates the test data lib entries for the com
+     * @param testDataLibList combinations of entries that 
+     * @param subDataList subdata entries that were defined in the add window, which are associated with each entry in the list testDataLibList
+     * @return an answer indicating the status of the operation
+     */
+    Answer createTestDataLibBatch(List<TestDataLib> testDataLibList, List<TestDataLibData> subDataList);
+    Answer createTestDataLib(TestDataLib testDataLib, List<TestDataLibData> subDataList);
     Answer createTestDataLibBatch(List<TestDataLib> entries)throws CerberusException;
+    Answer createTestDataLibBatch(HashMap<TestDataLib, List<TestDataLibData>> entries);
+    
+    AnswerList findTestDataLibNameList(String testDataLibName, int limit);
 }

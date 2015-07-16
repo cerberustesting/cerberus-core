@@ -23,8 +23,8 @@ import java.util.List;
 import org.cerberus.entity.MessageEvent;
 
 /**
- * Auxiliary class that is used to handle server-side tables.
- * @author FNogueira //TODO:FN comment
+ * Auxiliary class that is used to store an answer that contains a message and a list containing the expected results.
+ * @author FNogueira 
  * @param <E>
  */
 public class AnswerList <E extends Object> extends Answer{
@@ -37,7 +37,9 @@ public class AnswerList <E extends Object> extends Answer{
      * Total number of rows available in the database table
      */
     private int totalRows;
-    
+    public AnswerList(){
+        this.totalRows = 0;
+    }
     /**
      * Public constructor that returns an answer that contains a list
      * @param dataList
@@ -45,8 +47,7 @@ public class AnswerList <E extends Object> extends Answer{
      */
     public AnswerList(List<E> dataList, int totalRows) {
         this.totalRows = totalRows;
-        this.dataList = dataList;
-        //TODO:FN faz sentido sem a mensagem?
+        this.dataList = dataList; 
     }
     
     public AnswerList(List<E> dataList, int totalRows, MessageEvent resultMessage){

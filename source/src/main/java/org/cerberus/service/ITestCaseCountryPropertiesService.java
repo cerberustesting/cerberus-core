@@ -23,6 +23,7 @@ import java.util.List;
 
 import org.cerberus.entity.TestCaseCountryProperties;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.AnswerList;
 
 /**
  * @author bcivel
@@ -60,4 +61,14 @@ public interface ITestCaseCountryPropertiesService {
      * @throws CerberusException 
      */
     public List<TestCaseCountryProperties> findAllWithDependencies(String test, String testcase, String country) throws CerberusException;
+
+    /**
+     * Method that check if a determined property is used in the value1 of a property 
+     * @param testDataLibID testdatalib unique identifier
+     * @param name testdatalib name
+     * @param country country where 
+     * @param propertyType
+     * @return an answer with the test cases and a message indicating the status of the operation
+     */
+    AnswerList findTestCaseCountryPropertiesByValue1(int testDataLibID, String name, String country, String propertyType);
 }

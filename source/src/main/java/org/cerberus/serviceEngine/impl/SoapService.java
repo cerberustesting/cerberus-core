@@ -81,7 +81,7 @@ public class SoapService implements ISoapService {
     }
 
     @Override
-    public MessageEvent callSOAPAndStoreResponseInMemory(String uuid, String envelope, String servicePath, String method, String attachmentUrl) {
+    public MessageEvent callSOAPAndStoreResponseInMemory(String uuid, String envelope, String servicePath, String method, String attachmentUrl, boolean isToSaveRequest) {
         String result = null;
         ByteArrayOutputStream out = null;
         MessageEvent message = null;
@@ -116,7 +116,12 @@ public class SoapService implements ISoapService {
                 MyLogger.log(SoapService.class.getName(), Level.DEBUG, "WS response received");
                 MyLogger.log(SoapService.class.getName(), Level.DEBUG, "WS response : " + out.toString());
                 result = out.toString();
+                
                 executionSOAPResponse.setExecutionSOAPResponse(uuid, result);
+                if(isToSaveRequest){
+                    executionSOAPResponse.setExecutionSOAPResponse(uuid + "_request", envelope); //stores the envelope which is useful for debugging purposes
+                }
+                
                 message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CALLSOAP);
                 message.setDescription(message.getDescription().replaceAll("%SOAPNAME%", method));
                 return message;

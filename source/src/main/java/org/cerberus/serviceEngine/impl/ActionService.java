@@ -482,7 +482,7 @@ public class ActionService implements IActionService {
             } else {
                 attachement = soapLibrary.getAttachmentUrl();
             }*/
-            return soapService.callSOAPAndStoreResponseInMemory(tCExecution.getExecutionUUID(), decodedEnveloppe, servicePath, soapLibrary.getMethod(), attachement);
+            return soapService.callSOAPAndStoreResponseInMemory(tCExecution.getExecutionUUID(), decodedEnveloppe, servicePath, soapLibrary.getMethod(), attachement, false);
         } catch (CerberusException ex) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSOAP);
             message.setDescription(message.getDescription().replaceAll("%SOAPNAME%", object));

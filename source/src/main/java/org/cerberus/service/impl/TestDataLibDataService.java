@@ -21,8 +21,6 @@ package org.cerberus.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.cerberus.dao.ITestDataLibDataDAO;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.entity.MessageEvent;
@@ -76,7 +74,7 @@ public class TestDataLibDataService implements ITestDataLibDataService {
 
     @Override
     public AnswerList findTestDataLibDataListByTestDataLib(Integer testDataLibID) {
-        return testDataLibDataDAO.findTestDataLibDataListByTestDataLib(testDataLibID);
+        return testDataLibDataDAO.findTestDataLibDataListByID(testDataLibID);
     }
 
     @Override
@@ -93,33 +91,63 @@ public class TestDataLibDataService implements ITestDataLibDataService {
 
     @Override
     public String fetchSubData(TestDataLibResult result, TestDataLibData subDataEntry) {
+        
         return result.getValue(subDataEntry);
     }
  
     @Override
     public Answer cudTestDataLibData(int testDataLibID, ArrayList<TestDataLibData> entriesToInsert, ArrayList<TestDataLibData> entriesToUpdate, ArrayList<String> entriesToRemove) {
-        dbmanager.beginTransaction();
+        dbmanager.beginTransaction();        
         
-        try {
-            Answer ansCreate = testDataLibDataDAO.createTestDataLibDataBatch(entriesToInsert);
-            //TODO:FN verificar os outros cenaŕios para terminar a transaccao
-            Answer ansUpdate = testDataLibDataDAO.updateTestDataLibDataBatch(entriesToUpdate);
-            //testDataLibDataDAO.createTestDataLibDataBatch(entriesToInsert);
-            //testDataLibDataDAO.updateTestDataLibData(null);
-            Answer ansDelete =  testDataLibDataDAO.deleteTestDataLibDataBatch(testDataLibID, entriesToRemove);
-            if(!ansDelete.getMessageType().equals(MessageEventEnum.DATA_OPERATION_OK.getCodeString())){
+        Answer answer = new Answer();
+        
+        if(entriesToInsert.size() > 0){
+            answer = testDataLibDataDAO.createTestDataLibDataBatch(entriesToInsert);
+            if(!answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())){
+                //if the insert does not succeed, then the transaction should be aborted
                 dbmanager.abortTransaction();
-                return ansDelete;
+                return answer;           
             }
-        } catch (CerberusException ex) {
-            Logger.getLogger(TestDataLibDataService.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        
+        
+        if(entriesToUpdate.size() > 0){
+            answer = testDataLibDataDAO.updateTestDataLibDataBatch(entriesToUpdate);
+            if(!answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())){
+                //if the update does not succeed, then the transaction should be aborted
+                dbmanager.abortTransaction();
+                return answer;           
+            }
+        }
+        
+        if(entriesToRemove.size() > 0){
+            answer =  testDataLibDataDAO.deleteTestDataLibDataBatch(testDataLibID, entriesToRemove);
+            if(!answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())){
+                //if the delete does not succeed, then the transaction should be aborted
+                dbmanager.abortTransaction();
+                return answer;           
+            }
         }
         
         dbmanager.commitTransaction();
+        //if everything succeeds, then a success message is sent back
         MessageEvent ms = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-        ms.setDescription(ms.getDescription().replace("%ITEM%", "Test data lib data").replace("%OPERATION%", "INSERT/UPDATE/DELETE"));
-        return new Answer(ms);
+        ms.setDescription(ms.getDescription().replace("%ITEM%", "Test data lib data").replace("%OPERATION%", "Modification of the subdata set "));
+        
+        answer.setResultMessage(ms);
+        return answer;
+        
     }
 
-  
+    @Override
+    public AnswerList findTestDataLibDataByName(String testDataLibName) {
+        return testDataLibDataDAO.findTestDataLibDataByName(testDataLibName);
+    }
+
+    @Override
+    public AnswerList findTestDataLibSubData(String testDataLib, String nameToSearch, int limit) {
+        return testDataLibDataDAO.findTestDataLibSubData(testDataLib, nameToSearch, limit);
+    }
+ 
 }

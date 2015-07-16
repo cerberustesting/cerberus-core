@@ -19,7 +19,7 @@
  */
 package org.cerberus.serviceEngine.impl;
 
-import java.awt.Color;
+
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -280,7 +280,7 @@ public class RecorderService implements IRecorderService {
         String applicationType = null;
         String returnCode = null;
         Integer controlNumber = 0;
-
+        
         if (testCaseStepActionControlExecution == null) {
             myExecution = testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution();
             doScreenshot = testCaseStepActionExecution.getActionResultMessage().isDoScreenshot();
@@ -391,6 +391,7 @@ public class RecorderService implements IRecorderService {
             String controlString = controlNumber.equals(0) ? null : String.valueOf(controlNumber);
             
             
+            StringBuilder url = new StringBuilder();
             for(TestDataLibResult result : itValues){
                 //xml that was retrieved during execution will be saved for debug purposes
                 if(result.getType().equals(TestDataLibTypeEnum.SOAP.getCode())){
@@ -400,11 +401,24 @@ public class RecorderService implements IRecorderService {
                     if(eSResponse.getExecutionSOAPResponse(responseKeyID) != null){
                         //gets the xml associated with the entry
                         String xml = eSResponse.getExecutionSOAPResponse(responseKeyID); 
+                        String envelope = eSResponse.getExecutionSOAPResponse(responseKeyID + "_request"); 
                         //the XML execution is available in the entry
                         try {
                             String path = parameterService.findParameterByKey("cerberus_picture_path", "").getValue();
                             String fileName = this.generateScreenshotFilename(test, testCase, step, sequence, controlString, null,  "xml") ;
-                            recordFile(path, fileName, xml);
+                            String requestFileName = fileName.replace(".xml", "_request.xml");
+                            
+                            url.append(testCaseStepActionExecution.getActionResultMessage().getDescription());
+                            url.append(" <a target='_blank' href='");
+                            url.append(requestFileName).append("'> SOAP request </a>");
+                            url.append(" | <a target='_blank' href='");
+                            url.append(fileName).append("'> SOAP response </a>");
+                            
+                            testCaseStepActionExecution.getActionResultMessage().setDescription(url.toString());
+                            testCaseStepActionExecution.setReturnMessage(url.toString());
+                            
+                            recordFile(path, requestFileName, xml);
+                            recordFile(path, fileName, envelope);
                         } catch (CerberusException ex) {
                             MyLogger.log(RecorderService.class.getName(), Level.DEBUG, "XML file was not saved due to unexpected error.");
                         }
@@ -412,6 +426,7 @@ public class RecorderService implements IRecorderService {
                         
                         //after saving then remove it from the list
                         eSResponse.removeExecutionSOAPResponse(responseKeyID);
+                        eSResponse.removeExecutionSOAPResponse(responseKeyID + "_request");
                     }
                 }
             }

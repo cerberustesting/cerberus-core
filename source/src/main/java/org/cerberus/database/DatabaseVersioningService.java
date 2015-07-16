@@ -4125,10 +4125,18 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
                 SQLInstruction.add(SQLS.toString());
                 
  //Add new property type that is able to retrieve data values from a property that is specified in the library
-// -- ------------------------ 582                //TODO:FN descomentar
-/*                SQLS = new StringBuilder();
+// -- ------------------------ 582-583               
+              
+              
+                SQLS = new StringBuilder();
                 SQLS.append("INSERT INTO `cerberus_partial`.`invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ('PROPERTYTYPE', 'getFromDataLib', '75', 'Determines the data value associated with a library entry', 'Data value'); ");
-                SQLInstruction.add(SQLS.toString());*/               
+                SQLInstruction.add(SQLS.toString());
+                
+                
+                SQLS = new StringBuilder();
+                SQLS.append("INSERT INTO `cerberus_partial`.`invariant` (`idname`, `value`, `sort`, `description`) VALUES ('USERGROUP', 'TestDataManager', '130', 'User that can manage the testdatalibrary'); ");
+                SQLInstruction.add(SQLS.toString());
+                
         
         return SQLInstruction;
     }

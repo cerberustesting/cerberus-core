@@ -290,7 +290,7 @@ public class XmlUnitService implements IXmlUnitService {
     public Document getXmlDocument(String uuid) {
         Document document = null;
         try {
-            document =  XmlUtil.fromString(executionSOAPResponse.getExecutionSOAPResponse(uuid)) ;
+            document =  XmlUtil.fromString(executionSOAPResponse.getExecutionSOAPResponse(uuid)) ; 
             return document;
         } catch (XmlUtilException ex) {
             java.util.logging.Logger.getLogger(XmlUnitService.class.getName()).log(Level.SEVERE, null, ex);

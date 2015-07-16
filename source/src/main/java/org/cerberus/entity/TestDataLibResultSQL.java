@@ -35,7 +35,7 @@ public class TestDataLibResultSQL extends TestDataLibResult {
     public String getValue(TestDataLibData entry) {       
         if(!values.containsKey(entry.getSubData())){
             //if the map don't contain the entry that we want, we will get it
-            String value = rawData.get(entry.getColumn());
+            String value = rawData.get(entry.getColumn().toUpperCase()); //columns are store in UPPERCASE
             //associates the subdata with the column data retrieved by the query
             values.put(entry.getSubData(), value);
         }

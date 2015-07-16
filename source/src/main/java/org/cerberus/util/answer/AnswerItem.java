@@ -22,8 +22,9 @@ package org.cerberus.util.answer;
 import org.cerberus.entity.MessageEvent;
 
 /**
- * //TODO:FN comment
+ * Auxiliary class that is used to store an answer that contains a message and an item with the desired results.
  * @author FNogueira
+ * @param <T> / object that is sent in the answer
  */
 public class AnswerItem <T extends Object> extends Answer{
     
@@ -34,7 +35,6 @@ public class AnswerItem <T extends Object> extends Answer{
     }
     public AnswerItem(T item) {
          this.item = item;
-         //TODO:FN faz sentido sem a mensagem?
     }
     
     public AnswerItem(MessageEvent resultMessage) {

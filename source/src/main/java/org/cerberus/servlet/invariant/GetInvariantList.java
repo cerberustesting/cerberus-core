@@ -36,9 +36,7 @@ import org.cerberus.service.impl.InvariantService;
 import org.cerberus.util.ParameterParserUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
-import org.owasp.html.PolicyFactory;
-import org.owasp.html.Sanitizers;
+import org.json.JSONObject; 
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 

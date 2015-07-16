@@ -31,7 +31,7 @@ public enum MessageGeneralEnum {
      * For every message, we have:
      * - a number
      * - a 2 digit code that report the status of the event.
-     * - a clear message that will be reported to the user. describing what was done or the error that occured.
+     * - a clear message that will be reported to the user. describing what was done or the error that occurred.
      */
 
     VALIDATION_FAILED_ENVIRONMENT_NOTACTIVE(50, "", "The environment selected isn't active"),
@@ -100,8 +100,8 @@ public enum MessageGeneralEnum {
     GUI_TESTCASE_DELETE_USED_STEP(403, "", "Error : You're trying to delete a testcase which have some step used in other tests. Please remove the link before delete this testcase"),
     GUI_TESTCASE_NON_ADMIN_SAVE_WORKING_TESTCASE(403, "", "Error : You're trying to save a WORKING testcase without having the admin right to do"),
     //data operations
-    DATA_OPERATION_SUCCESS(000, "", "The requested operation was concluded with success!"),
-    DATA_OPERATION_ERROR(900, "", "An error occurred while executing the requested operation!");
+    DATA_OPERATION_SUCCESS(000, MessageCodeEnum.DATA_OPERATION_CODE_SUCCESS.getCode(), "The requested operation was concluded with success!"),
+    DATA_OPERATION_ERROR(900, MessageCodeEnum.DATA_OPERATION_CODE_ERROR.getCode(), "An error occurred while executing the requested operation!");
     
     private final int code;
     private final String codeString;

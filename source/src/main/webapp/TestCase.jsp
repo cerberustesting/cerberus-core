@@ -77,18 +77,18 @@
         <script type="text/javascript" src="js/jquery.dataTables.js"></script>
         <script type="text/javascript" src="js/jquery.jeditable.mini.js"></script>
         <script type="text/javascript" src="js/jquery.dataTables.editable.js"></script>
+        <script type="text/javascript" src="js/dataTables.colVis.js"></script>
+         <script type="text/javascript" src="js/jquery.blockUI.js"></script>
         <script type="text/javascript" src="js/pages/TestCaseViewModel.js"></script>
-       
-        <link rel="stylesheet" type="text/css" href="css/jquery-ui.css">
+        <link type="text/css" rel="stylesheet" href="css/dataTables.colVis.css"> 
         <link rel="stylesheet" type="text/css" href="css/elrte.min.css">
         <link rel="stylesheet" type="text/css" href="css/crb_style.css">
         <link rel="stylesheet" type="text/css" href="css/elfinder.min.css">
         <link rel="stylesheet" type="text/css" href="css/theme.css">
         <link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico" />
         
-        <link rel="stylesheet" type="text/css" href="css/jquery.dataTables.css">
-        <link rel="stylesheet" type="text/css" href="css/jquery-ui.css">
-        <link rel="stylesheet" type="text/css" href="css/dataTables_jui.css">
+        <link rel="stylesheet" type="text/css" href="css/jquery.dataTables.css"> 
+
         <link type="text/css" rel="stylesheet" href="css/bootstrap.css">
         <link type="text/css" rel="stylesheet" href="css/default.css"> 
 
@@ -303,7 +303,7 @@
             }
             .StepHeaderDiv {
                 width:100%;
-                height:40px;
+                height:45px;
                 clear:both;
                 /*display:block;*/
                 border-style: solid;
@@ -1215,7 +1215,7 @@
                                                                 actionFontColor = "grey";
                                                             }
                                                     %>
-                                                    <div id="StepListOfActionDiv<%=incrementStep%><%=incrementAction%>" class="RowActionDiv <%=classStep%>" style="margin-top:0px;display:block;height:40px;width:100%;border-style: solid; border-width:thin ; border-color:#CCCCCC;">
+                                                    <div id="StepListOfActionDiv<%=incrementStep%><%=incrementAction%>" class="RowActionDiv <%=classStep%>" style="margin-top:0px;display:block;height:50px;width:100%;border-style: solid; border-width:thin ; border-color:#CCCCCC;">
                                                         <div name="actionRow_color_<%=incrementStep%>" style="background-color:blue; width:8px;height:100%;display:inline-block;float:left">
                                                         </div>
                                                         <div style="display:inline-block;float:left;width:2%;height:100%;text-align:center">
@@ -1340,7 +1340,7 @@
                                                                 controlColor = "#DCDCDC";
                                                             }
                                                     %>
-                                                    <div id="StepListOfControlDiv<%=incrementStep%><%=incrementAction%><%=incrementControl%>" data-associatedaction="StepListOfActionDiv<%=incrementStep%><%=incrementAction%>" class="RowActionDiv <%=classStep%>" style="width:100%;height:40px;clear:both;display:block;border-style: solid; border-width:thin ; border-color:#CCCCCC;">
+                                                    <div id="StepListOfControlDiv<%=incrementStep%><%=incrementAction%><%=incrementControl%>" data-associatedaction="StepListOfActionDiv<%=incrementStep%><%=incrementAction%>" class="RowActionDiv <%=classStep%>" style="width:100%;height:50px;clear:both;display:block;border-style: solid; border-width:thin ; border-color:#CCCCCC;">
                                                         <div style="background-color:#33CC33; width:8px;height:100%;display:inline-block;float:left">
                                                         </div>
                                                         <div style="height:100%;width: 2%;float:left; text-align: center;">
@@ -1635,36 +1635,70 @@
                                                 </select>
                                             </div>
                                             <div id="divProperties_value1_<%=incrementProperty%>" style="background-color:transparent;float:left;border-right-width:thin;border-right-style:solid;border-right-color:#CCCCCC;width:<%=widthValue1%>%;display:inline-block;">
-                                                <div class="pull-left" style="width: 90%; display: inline">
-                                                    <textarea id="properties_value1_<%=incrementProperty%>" rows="2" class="wob" style="background-color:transparent;width: 100%;height:50px" 
+                                                <div class="pull-left showInlineElement"                                                    
+                                                    <% if (tccp.getType().equals("getFromDataLib")) {%>     
+                                                        style="width: 90%;" 
+                                                    <%}else{%>
+                                                        style="width: 100%;" 
+                                                    <%}%>        
+                                                   >
+                                                    <textarea id="properties_value1_<%=incrementProperty%>" rows="2"  
+                                                                <% if (tccp.getType().equals("getFromDataLib")) {%>     
+                                                                    class ="wob getFromDataLib" 
+                                                                <%}else{%>
+                                                                    class ="wob"
+                                                                <%}%>      
+                                                              
+                                                              
+                                                              style="background-color:transparent;width: 100%;height:50px" 
                                                               name="properties_value1_<%=incrementProperty%>"><%=tccp.getValue1()%></textarea>
                                                 </div>
-                                                <% if (tccp.getType().equals("getFromDataLib")) {
-                                                   %>
-                                                   <div style="width: 10%; display: inline">
-                                                        <button title="Select an entry from the library" id="entryButton_<%=incrementProperty%>" type="button" class="btn btn-default btn-xs pull-right">
+                                                
+                                                   <div id="selectEntry_Data_<%=incrementProperty%>"  
+                                                   <% if (!tccp.getType().equals("getFromDataLib")) {%>     
+                                                        class="hideElement"
+                                                   <%}else{%>
+                                                        class="showInlineElement" 
+                                                    <%}%>  
+                                                        ><button title="Select an entry from the library" id="entryButton_<%=incrementProperty%>" type="button" class="btn btn-default btn-xs pull-right">
                                                         <span class="glyphicon glyphicon-search"></span> </button>
                                                    </div>    
-                                                   <%
-                                                }
-                                                %>  
+                                                   
                                             </div>
                                             <div id="divProperties_value2_<%=incrementProperty%>" style="background-color:transparent;float:left;border-right-width:thin;border-right-style:solid;border-right-color:#CCCCCC;display:<%=displayValue2%>;width:<%=widthValue2%>%;height:50px">
-                                                <div class="pull-left" style="width: 90%; display: inline">
-                                                    <textarea id="properties_value2_<%=incrementProperty%>" rows="2" class="wob" style="background-color:transparent;width: 100%;"
+                                                <div class="pull-left showInlineElement" 
+                                                    <% if (tccp.getType().equals("getFromDataLib")) {%>     
+                                                        style="width: 90%;" 
+                                                    <%}else{%>
+                                                        style="width: 100%;" 
+                                                    <%}%>  
+                                                     
+                                                    >
+                                                    <textarea id="properties_value2_<%=incrementProperty%>" rows="2" 
+                                                            <% if (tccp.getType().equals("getFromDataLib")) {%>     
+                                                                    class ="wob getFromDataLib" 
+                                                            <%}else{%>
+                                                                    class ="wob"
+                                                            <%}%>  
+                                                            style="background-color:transparent;width: 100%;height:50px"
                                                           name="properties_value2_<%=incrementProperty%>"><%=tccp.getValue2()%></textarea>
                                                 </div>
                                                         
-                                                <% if (tccp.getType().equals("getFromDataLib")) {
-                                                %>
-                                                <div style="width: 10%; display: inline">
-                                                    <button id="SubDataButton_<%=incrementProperty%>" title="Select a sub data entry from the library" type="button" class="btn btn-default btn-xs pull-right">
+                                                
+                                                <div id="selectEntry_SubData_<%=incrementProperty%>" 
+                                                  <% if (!tccp.getType().equals("getFromDataLib")) {%>     
+                                                        class="hideElement"
+                                                   <%}else{%>
+                                                        class="showInlineElement" 
+                                                    <%}%>         
+                                                    ><button id="SubDataButton_<%=incrementProperty%>" title="Select a sub data entry from the library" type="button" class="btn btn-default btn-xs pull-right" 
+                                                         <% if(tccp.getValue1().isEmpty()){%>
+                                                            disabled="disabled"
+                                                         <% } %>
+                                                         >
                                                         <span class="glyphicon glyphicon-search"></span></button>
                                                         <input id="testDataLibID_<%=incrementProperty%>" type="hidden"/>    
-                                                </div>        
-                                                <%
-                                                }
-                                                %>    
+                                                </div>                                                         
                                             </div>
                                             <div style="border-right-width:thin;border-right-style:solid;background-color:transparent;border-right-color:#CCCCCC;float:left;width:3%;display:inline-block;height:50px">
                                                 <input class="wob" style="background-color:transparent;width:  100%;margin-top:20px;" name="properties_length_<%=incrementProperty%>"
@@ -1674,7 +1708,9 @@
                                                 <input class="wob" style="background-color:transparent;width: 100%;margin-top:20px;" name="properties_rowlimit_<%=incrementProperty%>"
                                                        value="<%=tccp.getRowLimit()%>">
                                             </div>
-                                            <div style="float:left;width:8%;display:inline-block;height:50px"><%=ComboInvariant(appContext, "properties_nature_" + incrementProperty, "background-color:transparent;margin-top:20px;width: 100%;", "properties_nature_" + incrementProperty, "wob", "PROPERTYNATURE", tccp.getNature(), "trackChanges(0, this.selectedIndex, 'submitButtonChanges')", null)%>
+                                            <div style="float:left;width:8%;display:inline-block;height:50px"><%=ComboInvariant(appContext, "properties_nature_" + incrementProperty, 
+                                                    "background-color:transparent;margin-top:20px;width: 100%;", "properties_nature_" + incrementProperty, "wob", "PROPERTYNATURE", tccp.getNature(), 
+                                                               "trackChanges(0, this.selectedIndex, 'submitButtonChanges')", null)%>
                                             </div>
                                             <div style="background-color:yellow; width:3px;height:50px;display:inline-block;float:right">
                                             </div>
@@ -1803,8 +1839,8 @@
                     <% }%>
                 </tr>
             </table>
-            <div id="StepActionTemplateDiv" style="padding:0; margin:0;display:none;height:40px;width:100%;border-style: solid; border-width:thin ; border-color:#CCCCCC;">
-                <div style="background-color:blue; width:8px;height:40px;display:inline-block;float:left">
+            <div id="StepActionTemplateDiv" style="padding:0; margin:0;display:none;height:45px;width:100%;border-style: solid; border-width:thin ; border-color:#CCCCCC;">
+                <div style="background-color:blue; width:8px;height:45px;display:inline-block;float:left">
                 </div>
                 <div style="display:inline-block;float:left;width:2%;height:100%;text-align:center">
                     <img style="margin-top:12px" src="images/bin.png" data-id="action_img_delete">
@@ -1853,11 +1889,11 @@
                         </div>
                     </div>
                 </div>
-                <div style="background-color:blue; width:3px;height:40px;display:inline-block;float:right">
+                <div style="background-color:blue; width:3px;height:45px;display:inline-block;float:right">
                 </div>
             </div>
-            <div id="StepControlTemplateDiv" style="width:100%;height:40px;clear:both;display:none">
-                <div data-id="control_color_id" style="background-color:#33CC33; width:8px;height:40px;display:block;float:left">
+            <div id="StepControlTemplateDiv" style="width:100%;height:45px;clear:both;display:none">
+                <div data-id="control_color_id" style="background-color:#33CC33; width:8px;height:45px;display:block;float:left">
                 </div>
                 <div style="height:100%;width: 2%;float:left; text-align: center;">
                     <img style="margin-top:12px" src="images/bin.png" data-id="control_img_delete">
@@ -1914,7 +1950,7 @@
                         </div>
                     </div>
                 </div>
-                <div style="background-color:#33CC33; width:3px;height:40px;display:inline-block;float:right">
+                <div style="background-color:#33CC33; width:3px;height:45px;display:inline-block;float:right">
                 </div>
 
             </div>
@@ -2037,12 +2073,27 @@
                     </select>
                 </div>
                 <div data-id="divProperties_value1_template" style="background-color:transparent;float:left;border-right-width:thin;border-right-style:solid;border-right-color:#CCCCCC;width:<%=55 - (1.5 * countryListTestcase.size())%>%;display:inline-block;height:100%">
-                    <textarea data-id="properties_value1_template" rows="2" class="wob" style="background-color:transparent;width: 100%;" 
-                              ></textarea>
+                    <div class="pull-left showInlineElement" style="width:100%;">
+                        <textarea data-id="properties_value1_template" rows="2" class="wob" style="background-color:transparent;width: 100%;height:50px" 
+                                  ></textarea>
+                    </div>
+                    <div data-id="selectEntry_Data_template"  class="hideElement">
+                        <button title="Select an entry from the library" data-id="entryButton_template" type="button" class="btn btn-default btn-xs pull-right">
+                        <span class="glyphicon glyphicon-search"></span> </button>
+                    </div>    
                 </div>
                 <div data-id="divProperties_value2_template" style="float:left;border-right-width:thin;border-right-style:solid;border-right-color:#CCCCCC;display:none;width:0%;height:100%">
-                    <textarea data-id="properties_value2_template" rows="2" class="wob" style="background-color:transparent;width: 100%;"
-                              ></textarea>
+                    <div class="pull-left showInlineElement" style="width:100%;">
+                        <textarea data-id="properties_value2_template" rows="2" class="wob" style="background-color:transparent;width: 100%;height:50px"></textarea>
+                    </div>
+                    <div data-id="selectEntry_SubData_template" class="hideElement">
+                        <button data-id="SubDataButton_template" title="Select a sub data entry from the library" type="button" 
+                                class="btn btn-default btn-xs pull-right" disabled="disabled">
+                            <span class="glyphicon glyphicon-search"></span>
+                        </button>
+                        <input id="testDataLibID_template" type="hidden"/>    
+                    </div>          
+                
                 </div>
                 <div style="border-right-width:thin;border-right-style:solid;border-right-color:#CCCCCC;float:left;width:3%;display:inline-block;height:100%">
                     <input class="wob" style="background-color:transparent;width:  100%;margin-top:20px;" 

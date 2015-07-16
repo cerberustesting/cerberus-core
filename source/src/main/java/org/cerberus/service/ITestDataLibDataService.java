@@ -101,4 +101,21 @@ public interface ITestDataLibDataService {
      * @return
      */
     public Answer cudTestDataLibData(int testDataLibID, ArrayList<TestDataLibData> entriesToInsert, ArrayList<TestDataLibData> entriesToUpdate, ArrayList<String> entriesToRemove);
+
+    /**
+     *
+     * @param testDataLibName
+     * @return
+     */
+    public AnswerList findTestDataLibDataByName(String testDataLibName); 
+
+    /**
+     *
+     * @param testDataLib
+     * @param nameToSearch
+     * @param limit
+     * @return
+     */
+    public AnswerList findTestDataLibSubData(String testDataLib, String nameToSearch, int limit);
+    
 }

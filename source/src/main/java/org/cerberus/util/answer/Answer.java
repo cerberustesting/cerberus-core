@@ -22,7 +22,7 @@ package org.cerberus.util.answer;
 import org.cerberus.entity.MessageEvent;
 
 /**
- * TODO:FN comment
+ * Auxiliary class that is used to store an answer that contains only a message.
  * @author FNogueira
  */
 public class Answer {
@@ -49,5 +49,12 @@ public class Answer {
     
     public String getMessageType(){
         return this.resultMessage.getCodeString();
+    }
+    
+    public boolean isCodeStringEquals(String code){
+        return code.equals(this.resultMessage.getCodeString());
+    }
+    public boolean isCodeEquals(int code){
+        return code == this.resultMessage.getCode();
     }
 }

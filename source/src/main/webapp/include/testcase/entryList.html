@@ -1,55 +1,17 @@
 <div data-backdrop="static" class=" center width1000 modal fade" id="selectEntryFromListModal" role="dialog" aria-labelledby="selectEntryFromListModalLabel" aria-hidden="true">
-    <div class="modal-dialog width1000">
+    <div class="modal-dialog width1000 nomarginbottom nomargintop">
         <div class="modal-content width1000">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                 <h4 class="modal-title" id="selectEntryFromListModalLabel">Select entry</h4>
             </div>
-            <div class="modal-body center"> 
-                <!--<div id="formSearch" class>
-                    <form>
-                         <div class="row">
-                        <div class="form-group col-xs-3">
-                            <label>Name</label>
-                            <input class="form-control"/>
-                        </div>    
-                        <div class="form-group col-xs-3">
-                            <label>Type</label>
-                            <select class="form-control"></select>
-                        </div>    
-                        <div class="form-group col-xs-3">
-                            <label>Group</label>
-                            <input class="form-control"/>
-                        </div>    
-                    </div>    
-                    <div class="row">
-                        <div class="form-group col-xs-3">
-                            <label>System</label>
-                            <select class="form-control"></select>
-                        </div>    
-                        <div class="form-group col-xs-3">
-                            <label>Environment</label>
-                            <select class="form-control"></select>
-                        </div>    
-                        <div class="form-group col-xs-3">
-                            <label>Country</label>
-                            <select class="form-control"></select>
-                        </div>    
-                    </div>    
-                    <div class="row">
-                        <div class="form-group col-xs-3">
-                            <button class="btn btn-primary"><span class="glyphicon glyphicon-search">Search</button>
-                            <button class="btn btn-default">Reset</button>
-                        </div>    
-                    </div>    
-                            
-                    </form>
-                </div>-->
-                <div id="testdatalib">               
-                    <table  class="display" id="listOfTestDataLib">
+            <div class="modal-body center container"> 
+                <input type="hidden" id="propertyValueID"/>
+                <div id="testdatalib" class="well width950">               
+                    <table  class="table table-hover display marginLeft0" id="listOfTestDataLib">
                         <thead>
                             <tr>
-                                <th>Select</th> 
+                                <th style="text-align: center">Select</th> 
                                 <th>Name</th>
                                 <th>System</th>
                                 <th>Environment</th>
@@ -61,15 +23,15 @@
                                 <th>Service Path</th>
                                 <th>Method</th>
                                 <th>Envelope</th>
-                                <th>Description</th>               
+                                <th>Description</th>             
                             </tr>                        
                         </thead>
                     </table>
+                    <div class="marginBottom20"></div>
                 </div>
             </div> 
            <div class="modal-footer">
-                <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
-                 <!--<button type="button" id="saveTestDataLib" class="btn btn-primary">Select</button>-->
+                <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button> 
             </div>
         </div> 
     </div> 

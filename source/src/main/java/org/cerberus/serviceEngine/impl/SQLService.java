@@ -46,6 +46,7 @@ import org.cerberus.serviceEngine.ISQLService;
 import org.cerberus.util.DateUtil;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.AnswerItem; 
+import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -131,7 +132,7 @@ public class SQLService implements ISQLService{
         testCaseExecutionData.setPropertyResultMessage(mes);
         return testCaseExecutionData;
     }
-    @Override //TODO:FN refactor este name
+    @Override  
     public AnswerItem calculateOnDatabaseNColumns(String sql, String db, String system, String country, String environment, int rowLimit, String propertyNature) {
         AnswerItem answer = new AnswerItem();
         String connectionName;
@@ -145,39 +146,37 @@ public class SQLService implements ISQLService{
             connectionName = countryEnvironmentDatabase.getConnectionPoolName();
 
             if (!(StringUtil.isNullOrEmpty(connectionName))) {
-                //TODO:FN devolve um conjunto de colunas
-                list = this.queryDatabaseNColumns(connectionName, sql, rowLimit);
+                //performs a query that returns several rows containing n columns
+                AnswerList responseList = this.queryDatabaseNColumns(connectionName, sql, rowLimit);
+                
+                //if the query returns sucess then we can get the data
+                
+                if(responseList.getResultMessage().getCode() == MessageEventEnum.PROPERTY_SUCCESS_SQL.getCode()){
+                    list = responseList.getDataList();                
+                    if (list != null && !list.isEmpty()) {
+                        if (propertyNature.equalsIgnoreCase(Property.NATURE_STATIC)) {
+                            answer.setItem((list.get(0)));
 
-                answer.setResultMessage(mes);
+                        } else if (propertyNature.equalsIgnoreCase(Property.NATURE_RANDOM)) {
+                            Random r = new Random();
+                            int position = r.nextInt(list.size());
+                            answer.setItem(list.get(position));
+                            mes = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_SQL_RANDOM);
 
-                if (list != null && !list.isEmpty()) {
-                    if (propertyNature.equalsIgnoreCase(Property.NATURE_STATIC)) {
-                        answer.setItem((list.get(0)));
-
-                    } else if (propertyNature.equalsIgnoreCase(Property.NATURE_RANDOM)) {
-                        Random r = new Random();
-                        int position = r.nextInt(list.size());
-                        answer.setItem(list.get(position));
-                        mes = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_SQL_RANDOM);
-
+                        }
+                        //TODO in future implement these two types of NATURE
+                        /*else if (testCaseProperties.getNature().equalsIgnoreCase(Property.NATURE_RANDOMNEW)) {                         
+                        } else if (testCaseProperties.getNature().equalsIgnoreCase(Property.NATURE_NOTINUSE)) {
+                        }*/
+                    } else {
+                        mes = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_SQL_NODATA);
+                        mes.setDescription(mes.getDescription().replaceAll("%DB%", db));
+                        mes.setDescription(mes.getDescription().replaceAll("%SQL%", sql));
+                        mes.setDescription(mes.getDescription().replaceAll("%JDBCPOOLNAME%", connectionName));
                     }
-                    //TODO:FN chek this
-                    /*else if (testCaseProperties.getNature().equalsIgnoreCase(Property.NATURE_RANDOMNEW)) {
-                        testCaseExecutionData.setValue(this.calculateNatureRandomNew(list, testCaseProperties.getProperty(), tCExecution));
-                        mes = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_SQL_RANDOM_NEW);
-
-                    } else if (testCaseProperties.getNature().equalsIgnoreCase(Property.NATURE_NOTINUSE)) {
-                        testCaseExecutionData.setValue(this.calculateNatureNotInUse(list, testCaseProperties.getProperty(), tCExecution));
-                        mes = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_SQL_NOTINUSE);
-
-                    }*/
-                } else {
-                    mes = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_SQL_NODATA);    
-                }
-                mes.setDescription(mes.getDescription().replaceAll("%DB%", db));
-                mes.setDescription(mes.getDescription().replaceAll("%SQL%", sql));
-                mes.setDescription(mes.getDescription().replaceAll("%JDBCPOOLNAME%", connectionName));                    
-
+                     
+                }  
+        
                 answer.setResultMessage(mes);
 
             } else {
@@ -185,11 +184,8 @@ public class SQLService implements ISQLService{
                 mes.setDescription(mes.getDescription().replaceAll("%JDBC%", connectionName));       
             }
         } catch (CerberusException ex) {
-            mes = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_SQL_ERROR);
-            mes.setDescription(mes.getDescription().replaceAll("%SYSTEM%", system));
-            mes.setDescription(mes.getDescription().replaceAll("%COUNTRY%", country));
-            mes.setDescription(mes.getDescription().replaceAll("%ENV%", environment));
-            mes.setDescription(mes.getDescription().replaceAll("%DB%", db));   
+            mes = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+            mes.setDescription(mes.getDescription().replaceAll("%DESCRIPTION%", "Unable to retrieve the specified data."));            
         }
         
         
@@ -377,9 +373,9 @@ public class SQLService implements ISQLService{
         return list.get(0);
     }
 
-    private List<HashMap<String, String>> queryDatabaseNColumns(String connectionName, String sql, int rowLimit) {
-        List<HashMap<String, String>> list = null;
-        boolean throwEx = false;
+    private AnswerList queryDatabaseNColumns(String connectionName, String sql, int rowLimit) {
+        AnswerList listResult = new AnswerList();
+        List<HashMap<String, String>> list = null; 
         int maxSecurityFetch = 100;
         int nbFetch = 0;
         MessageEvent msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_SQL_GENERIC);
@@ -416,13 +412,18 @@ public class SQLService implements ISQLService{
                         HashMap<String, String> row = new HashMap<String, String>();
                                 
                         for(int i = 1; i <= nrColumns; i++){
-                            row.put(resultSet.getMetaData().getColumnName(i), String.valueOf(resultSet.getObject(i)));
+                            row.put(resultSet.getMetaData().getColumnName(i).toUpperCase(), //the key is a string in UPPERCASE
+                                    String.valueOf(resultSet.getObject(i)));
                         }
 
                         list.add(row);                        
                         
                         nbFetch++;                        
                     }
+                    listResult.setDataList(list);
+                    listResult.setTotalRows(list.size());
+                    listResult.setResultMessage(new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_SQL));
+                    
                 } catch (SQLException exception) {
                     MyLogger.log(SQLService.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
 
@@ -434,7 +435,6 @@ public class SQLService implements ISQLService{
                 msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_SQL_ERROR);
                 msg.setDescription(msg.getDescription().replaceAll("%SQL%", sql));
                 msg.setDescription(msg.getDescription().replaceAll("%EX%", exception.toString()));
-                throwEx = true;
             } finally {
                 preStat.close();
             }
@@ -443,14 +443,12 @@ public class SQLService implements ISQLService{
             msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_SQL_CANNOTACCESSJDBC);
             msg.setDescription(msg.getDescription().replaceAll("%JDBC%", "jdbc/" + connectionName));
             msg.setDescription(msg.getDescription().replaceAll("%EX%", exception.toString()));
-            throwEx = true;
         } catch (NullPointerException exception) {
             //TODO check where exception occur
             MyLogger.log(SQLService.class.getName(), Level.FATAL, exception.toString());
             msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_SQL_CANNOTACCESSJDBC);
             msg.setDescription(msg.getDescription().replaceAll("%JDBC%", "jdbc/" + connectionName));
             msg.setDescription(msg.getDescription().replaceAll("%EX%", exception.toString()));
-            throwEx = true;
         } finally {
             try {
                 if (connection != null) {
@@ -460,9 +458,7 @@ public class SQLService implements ISQLService{
                 MyLogger.log(SQLService.class.getName(), Level.WARN, e.toString());
             }
         }
-        /*if (throwEx) {
-            throw new CerberusEventException(msg);
-        }*/
-        return list;
+ 
+        return listResult;
     }
 }

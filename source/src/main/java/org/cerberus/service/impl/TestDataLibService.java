@@ -27,6 +27,7 @@ import org.cerberus.dao.ITestDataLibDataDAO;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.entity.MessageEvent;
 import org.cerberus.entity.MessageEventEnum;
+import org.cerberus.entity.MessageGeneralEnum;
 import org.cerberus.entity.TestDataLib;
 import org.cerberus.entity.TestDataLibData;
 import org.cerberus.entity.TestDataLibResult;
@@ -80,29 +81,22 @@ public class TestDataLibService implements ITestDataLibService {
         testDataLibDAO.deleteTestDataLib(testDataLib);
     }
     @Override
-    public Answer deleteTestDataLib(int testDataLibID) throws CerberusException{ //TODO:FN tirar estas excepcoes?
-        Answer answer = new Answer();
+    public Answer deleteTestDataLib(int testDataLibID){  
+        
         dbManager.beginTransaction();
         //deletes the testdatalib
-        Answer ansDelete = testDataLibDAO.deleteTestDataLib(testDataLibID);
-        boolean isOk = true;
+        Answer ansDelete = testDataLibDAO.deleteUnusedTestDataLib(testDataLibID);
         //if everything went well, then we can delete all the subdata entries
-        if(ansDelete.getResultMessage().getCode() == MessageEventEnum.DATA_OPERATION_OK.getCode()){
+        if(ansDelete.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())){
             //as we can create testdatalib without subdata it is possible that there this call will return 0, 
             ansDelete = testDataLibDataDAO.deleteByTestDataLibID(testDataLibID);
-            if(ansDelete.getResultMessage().getCode() != MessageEventEnum.DATA_OPERATION_OK.getCode()){ 
-                isOk = false;
-            }
-        }else{
-            isOk = false;            
         }
-        
-        if(isOk){
-            dbManager.commitTransaction();
-        }else{
-            dbManager.abortTransaction();
-        }
-        return answer;        
+        if(ansDelete.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())){
+            dbManager.commitTransaction();//if success 
+        }else{            
+            dbManager.abortTransaction(); //if error       
+        } 
+        return ansDelete;        
     }    
     
     @Override
@@ -116,12 +110,12 @@ public class TestDataLibService implements ITestDataLibService {
     }
 
     @Override
-    public TestDataLib findTestDataLibByKey(String name, String system, String environment, String country) throws CerberusException {
+    public AnswerItem findTestDataLibByKey(String name, String system, String environment, String country) throws CerberusException {
         return testDataLibDAO.findTestDataLibByKey(name, system, environment, country);
     }
     
     @Override
-    public AnswerItem findTestDataLibByKey(int testDatalib) throws CerberusException {
+    public AnswerItem findTestDataLibByKey(int testDatalib){
         return testDataLibDAO.findTestDataLibByKey(testDatalib);
     }
 
@@ -131,22 +125,23 @@ public class TestDataLibService implements ITestDataLibService {
     }
     
     @Override
-    public List<String> getListOfGroupsPerType(String type){
+    public AnswerList<String> getListOfGroupsPerType(String type){
         return testDataLibDAO.getListOfGroupsPerType(type);
     }
 
     @Override
     public AnswerItem fetchData(TestDataLib lib, int rowLimit, String propertyName) {
         AnswerItem answer  = new AnswerItem();
-        MessageEvent ms = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS);
+        MessageEvent msg = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS);
         TestDataLibResult result = null;
         
         if(lib.getType().equals(TestDataLibTypeEnum.STATIC.getCode())){
+            //static data does need pre processing to retrieve the subdataentries
             result = new TestDataLibResultStatic();         
             result.setTestDataLibID(lib.getTestDataLibID());            
             
         }else if(lib.getType().equals(TestDataLibTypeEnum.SQL.getCode())){
-            
+            //sql data needs to collect the values for the n columns
             answer = sQLService.calculateOnDatabaseNColumns(lib.getScript(), lib.getDatabase(), 
                     lib.getSystem(), lib.getCountry(), lib.getEnvironment(), rowLimit, propertyName); 
             
@@ -157,93 +152,150 @@ public class TestDataLibService implements ITestDataLibService {
                 result.setTestDataLibID(lib.getTestDataLibID());
 
                 ((TestDataLibResultSQL)result).setData(columns);            
+            }else{
+                msg = answer.getResultMessage();
             }
             
         }else if(lib.getType().equals(TestDataLibTypeEnum.SOAP.getCode())){
-            //TODO:FN tratar aqui a mensagem de erro; deveria ter um answer
-            
+            //soap data needs to get the soap response
             String key = TestDataLibTypeEnum.SOAP.getCode() + lib.getTestDataLibID();
-            ms = soapService.callSOAPAndStoreResponseInMemory(key, lib.getEnvelope(), lib.getServicePath(), 
-                    lib.getMethod(), null); 
+            msg = soapService.callSOAPAndStoreResponseInMemory(key, lib.getEnvelope(), lib.getServicePath(), 
+                    lib.getMethod(), null, true); 
             //if the call returns success then we can process the soap ressponse
-            if(ms.getCode() == MessageEventEnum.ACTION_SUCCESS_CALLSOAP.getCode()){
+            if(msg.getCode() == MessageEventEnum.ACTION_SUCCESS_CALLSOAP.getCode()){
                 result = new TestDataLibResultSOAP();
                 ((TestDataLibResultSOAP)result).setSoapResponseKey(key);
                 result.setTestDataLibID(lib.getTestDataLibID());
                 Document xmlDocument =  xmlUnitService.getXmlDocument(key);
                 ((TestDataLibResultSOAP)result).setData(xmlDocument);   
+                //the code for action success call soap is different from the
+                //code return from the property success soap
+                //if the action succeeds then, we can assume that the SOAP request was performed with success
+                msg = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_SOAP); 
             }
         } 
         answer.setItem(result);
-        answer.setResultMessage(ms);
+        answer.setResultMessage(msg);
         return answer;
     }
     
     @Override
-    public Answer createTestDataLib(TestDataLib testDataLib, List<TestDataLibData> subDataList) throws CerberusException {
-        //TODO:FN implement
+    public Answer createTestDataLib(TestDataLib testDataLib, List<TestDataLibData> subDataList) {
         List<TestDataLibData> completeSubDataList = new ArrayList<TestDataLibData>();
         dbManager.beginTransaction();
-        //creates the entries 
-        testDataLibDAO.createTestDataLib(testDataLib);
-        if(subDataList != null && !subDataList.isEmpty()){
-            
-            for(TestDataLibData libData: subDataList){
-                TestDataLibData data = testDataLibDataFactory.create(testDataLib.getTestDataLibID(), libData.getSubData(), libData.getValue(), 
-                        libData.getColumn(), libData.getParsingAnswer(), libData.getDescription());                        
-                completeSubDataList.add(data);                
+        //creates the test data lib
+        Answer ansInsert = testDataLibDAO.createTestDataLib(testDataLib);
+        if(ansInsert.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())){
+            //if success, then creates the entries
+            if(subDataList != null && !subDataList.isEmpty()){            
+                for(TestDataLibData libData: subDataList){
+                    TestDataLibData data = testDataLibDataFactory.create(testDataLib.getTestDataLibID(), libData.getSubData(), libData.getValue(), 
+                            libData.getColumn(), libData.getParsingAnswer(), libData.getDescription());                        
+                    completeSubDataList.add(data);                
+                }            
+
+                ansInsert = testDataLibDataDAO.createTestDataLibDataBatch(completeSubDataList);
             }
-            
-            testDataLibDataDAO.createTestDataLibDataBatch(completeSubDataList);
         }
         
-        //TODO:FN ver aqui as mensagens de erro e terminar de forma abrupta se for preciso
-        dbManager.commitTransaction();
-        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-        msg.setDescription(msg.getDescription().replace("%ITEM%", "Test Data Lib Set").replace("%OPERATION%", "INSERT"));
-        return new Answer(msg);
+        MessageEvent msg;
+        if(ansInsert.getResultMessage().getCode() == MessageGeneralEnum.DATA_OPERATION_SUCCESS.getCode()){
+            dbManager.commitTransaction();
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", "Test Data Lib and  and Subdata entries ").replace("%OPERATION%", "INSERT"));
+            ansInsert.setResultMessage(msg);
+        }else{
+            dbManager.abortTransaction();            
+        }
+        
+        return ansInsert;
     }
 
     @Override
     public Answer createTestDataLibBatch(List<TestDataLib> entries) throws CerberusException{
         dbManager.beginTransaction();
-        testDataLibDAO.createTestDataLibBatch(entries);
-        //TODO:FN mudar aqui a mensagem do DAO
-        //TODO:FN check if there is any error, to change the mssagem
-        dbManager.commitTransaction();
-        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-        msg.setDescription(msg.getDescription().replace("%ITEM%", "Test Data Lib Set").replace("%OPERATION%", "INSERT"));
-        return new Answer(msg);
+        Answer ansInsert = testDataLibDAO.createTestDataLibBatch(entries);
+        
+        if(ansInsert.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())){
+            dbManager.commitTransaction();
+        }else{
+            dbManager.abortTransaction();
+        }
+        return ansInsert;
     }
-    /**
-     *
-     * @param entries
-     * @param subDataList
-     * @return 
-     * @throws CerberusException
-     */
+
     @Override
-    public Answer createTestDataLibBatch(List<TestDataLib> entries, List<TestDataLibData> subDataList) throws CerberusException{
+    public Answer createTestDataLibBatch(List<TestDataLib> testDataLibList, List<TestDataLibData> subDataList){
         List<TestDataLibData> completeSubDataList = new ArrayList<TestDataLibData>();
         dbManager.beginTransaction();
         //creates the entries 
-        testDataLibDAO.createTestDataLibBatch(entries);
-        if(subDataList != null && !subDataList.isEmpty()){
-            for(TestDataLib lib : entries){
-                for(TestDataLibData libData: subDataList){
-                    TestDataLibData data = testDataLibDataFactory.create(lib.getTestDataLibID(), libData.getSubData(), libData.getValue(), 
-                            libData.getColumn(), libData.getParsingAnswer(), libData.getDescription());                        
-                    completeSubDataList.add(data);                
+        Answer ansInsert = testDataLibDAO.createTestDataLibBatch(testDataLibList);
+        //if the insert went well then we can insert the subdataentries
+        if(ansInsert.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())){
+            if(subDataList != null && !subDataList.isEmpty()){
+                for(TestDataLib lib : testDataLibList){
+                    for(TestDataLibData libData: subDataList){
+                        //recreates the testdatalib elements because at first they don't have the testdatalib id that is part of its primary key
+                        TestDataLibData data = testDataLibDataFactory.create(lib.getTestDataLibID(), libData.getSubData(), libData.getValue(), 
+                                libData.getColumn(), libData.getParsingAnswer(), libData.getDescription());                        
+                        completeSubDataList.add(data);                
+                    }
                 }
+                ansInsert = testDataLibDataDAO.createTestDataLibDataBatch(completeSubDataList);                
             }
-            //TODO:FN check the messages returned
-            testDataLibDataDAO.createTestDataLibDataBatch(completeSubDataList);
+        } 
+        
+        if(ansInsert.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())){
+            dbManager.commitTransaction();
+            //we will replace the last success message for the following one
+            MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", "Test Data Lib and Subdata ").replace("%OPERATION%", "INSERT"));        
+            ansInsert.setResultMessage(msg);
+        }else{//if an error had occurred then we will propagate its message
+            dbManager.abortTransaction();
         }
-        dbManager.commitTransaction();
-        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-        msg.setDescription(msg.getDescription().replace("%ITEM%", "Test Data Lib Set").replace("%OPERATION%", "%INSERT%"));
-        return new Answer(msg);
+                
+        return ansInsert;
     }
+    
+    @Override
+    public Answer createTestDataLibBatch(HashMap<TestDataLib, List<TestDataLibData>> entries){
+        List<TestDataLibData> completeSubDataList = null;
+        Answer ansInsert = new Answer(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
+        dbManager.beginTransaction();
+        
+        for (TestDataLib testDataLib : entries.keySet()) {
+            ansInsert = testDataLibDAO.createTestDataLib(testDataLib);
+            completeSubDataList = new ArrayList<TestDataLibData>();
+            if(ansInsert.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())){
+                //if success, then creates the entries
+                //gets the subdatalist
+                List<TestDataLibData> subDataList = (List<TestDataLibData>) entries.get(testDataLib);
+                if(subDataList != null && !subDataList.isEmpty()){
+                    for(TestDataLibData libData: subDataList){
+                        TestDataLibData data = testDataLibDataFactory.create(testDataLib.getTestDataLibID(), libData.getSubData(), libData.getValue(),
+                                libData.getColumn(), libData.getParsingAnswer(), libData.getDescription());
+                        completeSubDataList.add(data);
+                    }
+                    ansInsert = testDataLibDataDAO.createTestDataLibDataBatch(completeSubDataList);
+                }
+            }else{
+                break;
+            }
+        }
+        
+        if(ansInsert.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())){
+            dbManager.commitTransaction();
+        }else{
+            dbManager.abortTransaction();
+        }
+        return ansInsert;
 
+    }
  
+    
+    @Override
+    public AnswerList findTestDataLibNameList(String testDataLibName, int limit) {
+        return testDataLibDAO.findTestDataLibNameList(testDataLibName, limit);
+    }
 }   

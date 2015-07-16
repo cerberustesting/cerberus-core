@@ -42,7 +42,8 @@ public class TestDataLibResultSOAP extends TestDataLibResult {
         try {
             NodeList candidates = XmlUtil.evaluate(rawData, entry.getParsingAnswer());
             if(candidates.getLength() > 0){
-                value = candidates.item(0).getNodeValue();//TODO:FN check if we are trying to get the information from an attribute?
+                //TODO:FN check if we are trying to get the information from an attribute?
+                value = candidates.item(0).getNodeValue();
             }            
         } catch (XmlUtilException ex) {
             Logger.getLogger(TestDataLibResultSOAP.class.getName()).log(Level.SEVERE, null, ex);

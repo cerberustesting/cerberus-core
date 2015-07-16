@@ -1,9 +1,11 @@
-<div data-backdrop="static" class=" center width1000 modal fade" id="editTestDataLibModal" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-dialog width1000">
-        <div class="modal-content width1000">
+<!-- Edit test data lib-->
+<div data-backdrop="static" class="modal fade center width1000" id="editTestDataLibModal" tabindex="-1" role="dialog" aria-labelledby="editTestDataLibModalLabel" aria-hidden="true">
+    <div class="modal-dialog nomargintop nomarginbottom width1000">
+        <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                 <h4 class="modal-title" id="editTestDataLibModalLabel">Edit Test Data Lib</h4>
+                 
             </div>
             <div class="modal-body"> 
                 <form id="editTestLibData" role="form" >
@@ -18,7 +20,7 @@
                     <input type="hidden" name="testDataLibIDEdit" id="testDataLibIDEdit"  />
                     <div class="row">
                         <div class="form-group col-xs-4">
-                            <label class="col-xs-2"  for="NameEdit">Name:</label>
+                            <label class="col-xs-2 marginLeft0 paddingLeft0"  for="NameEdit">Name:</label>
                             <div class="col-xs-4">
                                 <span class="form-control-static" id="NameEdit" ></span>
                                 <!--<input type="text" class="form-control" name="NameEdit" id="NameEdit" readonly="readonly" />-->
@@ -26,7 +28,7 @@
                             </div> 
                         </div> 
                         <div class="form-group col-xs-4">
-                            <label class="col-xs-2" for="TypeEdit">Type:</label>
+                            <label class="col-xs-2 marginLeft0 paddingLeft0" for="TypeEdit">Type:</label>
                             <div class="col-xs-4">
                                 <span class="form-control-static" id="TypeEdit" ></span>
                                 <input type="hidden" class="form-control" name="TypeEdit"/>
@@ -35,21 +37,31 @@
                         </div>  
                     </div>
                     <!--country + environment + system-->
-                    <div class="row">
-                        <div class="form-group col-xs-8 pull-left">
-                                <span class="col-xs-3 form-control-static">
-                                    System: <span id="AvailableTextSystem"></span> 
-                                </span>
-                                <span class="col-xs-3 form-control-static">
-                                    Environment: <span id="AvailableTextEnvironment"></span> 
-                                </span>                                
-                                <span class="col-xs-2 form-control-static">
-                                    Country: <span id="AvailableTextCountry"></span>    
-                                </span>
-                                
-                            </span>                                
-                        </div>                          
-                    </div>
+                    <div class="row" style="margin-top:10px">
+                        <div class="form-group col-xs-4">
+                                <label for="System">System</label>
+                                <input type="hidden" id="systemAll" name="systemAll"  value="false" />
+                                <select class="form-control" id="System" name="System">
+                                </select>                                            
+
+                        </div>        
+                        <div class="form-group col-xs-4">
+                            <label for="Environment">Environment</label>
+                            <input type="hidden" id="environmentAll" name="environmentAll"  value="false" />
+                            <div>
+                                <select class="form-control" id="Environment" name="Environment">
+                                </select>  
+                            </div>
+                        </div>    
+                        <div class="form-group col-xs-4">
+                            <label for="Country">Country</label>
+                            <input type="hidden" id="countryAll" name="countryAll" value="false" />
+                            <div>
+                                <select class="form-control"  id="Country" name="Country">
+                                </select>  
+                            </div>    
+                        </div>    
+                    </div>  
                     <!--group infomation -->
                     <div class="row">
                         <div class="form-group col-xs-6">
@@ -108,13 +120,14 @@
                             </textarea> 
                         </div> 
                     </div>   
-                </form>
+                </form>  
 
-            </div> 
+            </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                <button type="button" id="saveTestDataLib" class="btn btn-primary">Save</button>
+                <button type="button" id="saveTestDataLib" class="btn btn-primary">Save Changes</button>
             </div>
-        </div> 
-    </div> 
-</div> 
+        </div>
+    </div>
+</div>
+<!--end view data modal -->

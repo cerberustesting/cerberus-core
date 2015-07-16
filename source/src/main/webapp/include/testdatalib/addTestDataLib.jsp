@@ -1,16 +1,15 @@
 <!-- Edit test data lib-->
-<div data-backdrop="static" class=" center width1000 modal fade" id="addTestDataLibModal" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-dialog width1000">
-        <div class="modal-content width1000">
+<div data-backdrop="static" class="modal fade center width1000" id="addTestDataLibModal" tabindex="-1" role="dialog" aria-labelledby="addTestDataLibModalLabel" aria-hidden="true">
+    <div class="modal-dialog nomargintop nomarginbottom width1000">
+        <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="addTestDataLibModalLabel">Add New Sub Data Entry</h4>
+                <h4 class="modal-title" id="addTestDataLibModalLabel">Add New Sub Data Entry</h4>                
             </div>
             <div class="modal-body"> 
                 <form id="addTestDataLibModalForm" name="addTestDataLibModalForm"  title="Add TestDataLib Entry" role="form">
 
                     <!--  The form that will be parsed by jQuery before submit  -->
-                    <!--<form method="post" id="formAddNewTestDataLib"  title="Add TestDataLib Entry" role="form">-->
                     <div id="tabs" class="center container width800">
                         <!-- messages area-->
                         <div id="DialogMessagesArea" class="width800">
@@ -28,12 +27,11 @@
                         </ul>
                         <div class="tab-content">   
                             <div class="center marginTop25 tab-pane fade in active" id="tabs-1">
-
-                                <input type="hidden" value="-1" id="ID" name="ID" class="ncdetailstext" rel="0" />
+                                <input type="hidden" value="-1" id="ID" name="ID" class="ncdetailstext" />
                                 <div id="panelCommon" class="row">
                                     <div id="" class="form-group col-xs-6">
                                         <label for="Name">Name</label>
-                                        <input type="text" class="form-control" name="Name" id="Name" rel="1" />
+                                        <input type="text" class="form-control" name="Name" id="Name" maxlength="200" />
                                     </div> 
                                     <div class="form-group col-xs-6">
                                         <label for="Type">Select Type</label>
@@ -42,9 +40,6 @@
                                         </select>
 
                                     </div>  
-
-
-
                                 </div>
                                 <!--group infomation -->
                                 <div class="row">
@@ -57,23 +52,33 @@
                                     </div> 
                                     <div class="form-group col-xs-6">
                                         <label for="GroupInput">or enter new group</label>
-                                        <input id="GroupInput" name="Group" class="form-control" />     
+                                        <input id="GroupInput" name="Group" class="form-control" type="text" maxlength="200"  />     
                                     </div>                  
-
                                 </div>
                                 
                                 <div class="row" style="margin-top:10px">
                                     <div class="form-group col-xs-4">
-                                        <select style='height:100px' class="form-control multiSelectOptions" multiple id="System" name="System">
-                                        </select>        
+                                            <label for="System">System</label>
+                                            <input type="hidden" id="systemAll" name="systemAll"  value="false" />
+                                            <select class="multiselectelement form-control" multiple="multiple" id="System" >
+                                            </select>                                            
+                                      
+                                    </div>        
+                                    <div class="form-group col-xs-4">
+                                        <label for="Environment">Environment</label>
+                                        <input type="hidden" id="environmentAll" name="environmentAll"  value="false" />
+                                        <div>
+                                            <select class="multiselectelement form-control" multiple="multiple" id="Environment">
+                                            </select>  
+                                        </div>
                                     </div>    
                                     <div class="form-group col-xs-4">
-                                        <select style='height:100px' class="form-control multiSelectOptions" multiple id="Environment" name="Environment">
-                                        </select>  
-                                    </div>    
-                                    <div class="form-group col-xs-4">
-                                        <select style='height:100px' class="form-control multiSelectOptions" multiple id="Country" name="Country">
-                                        </select>  
+                                        <label for="Country">Country</label>
+                                        <input type="hidden" id="countryAll" name="countryAll" value="false" />
+                                        <div>
+                                            <select class="multiselectelement form-control" multiple="multiple" id="Country">
+                                            </select>  
+                                        </div>    
                                     </div>    
                                 </div>  
                                 
@@ -82,18 +87,9 @@
                                     <div class="form-group col-xs-12">
                                         <label for="Description">Description</label>
                                         <textarea id="EntryDescription" name="EntryDescription"   
-                                                  class="form-control" rel="12"></textarea> 
+                                                  class="form-control"></textarea> 
                                     </div>
                                 </div>           
-                                <div class="row" style="margin-top:10px">
-                                    <div class="form-group col-xs-4">
-
-                                    </div> 
-                                    <div class="form-group col-xs-4">
-                                    </div>  
-                                    <div class="form-group col-xs-4">
-                                    </div>  
-                                </div>
                                 <!--SQL-->
                                 <div id="panelSQL" name="panelData" style="display:none">
                                     <div class="row form-group  col-xs-6"> 
@@ -104,8 +100,8 @@
                                     <div class="row">
                                         <div class="form-group col-xs-12"> 
                                             <label for="Script">Script</label> 
-                                            <textarea id="Script" name="Script"  rows="5" 
-                                                      class="form-control" rel="8"></textarea>     
+                                            <textarea id="Script" name="Script" 
+                                                      class="form-control"></textarea>     
                                         </div>                       
                                     </div>
 
@@ -115,17 +111,17 @@
                                     <div class="row">
                                         <div class="form-group col-xs-6" >
                                             <label for="ServicePath">Service Path</label>
-                                            <input id="ServicePath" name="ServicePath"  class="form-control" rel="9" >  
+                                            <input id="ServicePath" name="ServicePath"  class="form-control" maxlength="250"  />  
                                         </div>
                                         <div class="form-group col-xs-6">
                                             <label for="Method">Method</label>
-                                            <input id="Method" name="Method" class="form-control" rel="10" >
+                                            <input id="Method" name="Method" class="form-control" maxlength="45"  />
                                         </div>
                                     </div>    
                                     <div class="form-group">
                                         <label for="Envelope">Envelope</label>                    
-                                        <textarea id="Envelope" name="Envelope" class="form-control" rel="11"> 
-                                        </textarea> 
+                                        <textarea id="Envelope" name="Envelope" 
+                                                      class="form-control"></textarea>     
                                     </div> 
 
                                 </div>   
@@ -149,7 +145,7 @@
                                             </table>
                                             <div class="nomargintop">
                                                 <a id="newSubData_addRow" class="pull-left btn btn-link manageRowsFont">Add new</a>
-                                                <a id='newSubData_deleteAll' class="pull-right btn btn-link manageRowsFont">Delete All</a> <!--TODO:FN vai remover todas as linhas                         -->
+                                                <a id='newSubData_deleteAll' class="pull-right btn btn-link manageRowsFont">Delete All</a>
                                             </div>
                                         </div>
                                     </div>  
@@ -157,16 +153,14 @@
                             </div>   
                         </div> 
                     </div> 
-                </form>   
-
+                </form> 
 
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                <button type="button" id="saveSubData" class="btn btn-primary">Add</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" id="addTestDataLibButton" class="btn btn-primary">Add</button>
             </div>
         </div>
     </div>
 </div>
-
 <!--end view data modal -->
