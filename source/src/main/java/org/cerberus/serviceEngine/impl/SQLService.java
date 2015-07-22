@@ -210,66 +210,67 @@ public class SQLService implements ISQLService {
         msg.setDescription(msg.getDescription().replaceAll("%JDBC%", "jdbc/" + connectionName));
 
         Connection connection = this.databaseSpring.connect(connectionName);
-
-        if (null == connection) {
-            msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_SQL_CANNOTACCESSJDBC);
-            msg.setDescription(msg.getDescription().replaceAll("%JDBC%", "jdbc/" + connectionName));
-            msg.setDescription(msg.getDescription().replaceAll("%EX%", "Connection cannot be created because of previous error"));
-            throwEx = true;
-        } else {
-            try {
-                PreparedStatement preStat = connection.prepareStatement(sql);
-                if (limit > 0 && limit < maxSecurityFetch) {
-                    preStat.setMaxRows(limit);
-                } else {
-                    preStat.setMaxRows(maxSecurityFetch);
-                }
+        try {
+            PreparedStatement preStat = connection.prepareStatement(sql);
+            if(limit > 0 && limit < maxSecurityFetch) {
+                preStat.setMaxRows(limit);
+            } else {
+                preStat.setMaxRows(maxSecurityFetch);
+            }
             //TODO add limit of select
             /*
-                 ORACLE      => * WHERE ROWNUM <= limit *
-                 DB2         => * FETCH FIRST limit ROWS ONLY
-                 MYSQL       => * LIMIT 0, limit
-                 SQL SERVER  => SELECT TOP limit *
-                 SYBASE      => SET ROWCOUNT limit *
-                 if (limit > 0) {
-                 sql.concat(Util.DbLimit(databaseType, limit));
-                 }
-                 */
+             ORACLE      => * WHERE ROWNUM <= limit *
+             DB2         => * FETCH FIRST limit ROWS ONLY
+             MYSQL       => * LIMIT 0, limit
+             SQL SERVER  => SELECT TOP limit *
+             SYBASE      => SET ROWCOUNT limit *
+             if (limit > 0) {
+             sql.concat(Util.DbLimit(databaseType, limit));
+             }
+             */
+            try {
+                ResultSet resultSet = preStat.executeQuery();
+                list = new ArrayList<String>();
                 try {
                     while ((resultSet.next()) && (nbFetch < maxSecurityFetch)) {
                             list.add(resultSet.getString(1));    
                         nbFetch++;                        
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(SQLService.class.getName(), Level.WARN, exception.toString());
-                    msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_SQL_ERROR);
-                    msg.setDescription(msg.getDescription().replaceAll("%SQL%", sql));
-                    msg.setDescription(msg.getDescription().replaceAll("%EX%", exception.toString()));
-                    throwEx = true;
+                    MyLogger.log(SQLService.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+
                 } finally {
-                    preStat.close();
+                    resultSet.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(SQLService.class.getName(), Level.FATAL, exception.toString());
-                msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_SQL_CANNOTACCESSJDBC);
-                msg.setDescription(msg.getDescription().replaceAll("%JDBC%", "jdbc/" + connectionName));
-                msg.setDescription(msg.getDescription().replaceAll("%EX%", exception.toString()));
-                throwEx = true;
-            } catch (NullPointerException exception) {
-                //TODO check where exception occur
-                MyLogger.log(SQLService.class.getName(), Level.FATAL, exception.toString());
-                msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_SQL_CANNOTACCESSJDBC);
-                msg.setDescription(msg.getDescription().replaceAll("%JDBC%", "jdbc/" + connectionName));
+                MyLogger.log(SQLService.class.getName(), Level.WARN, exception.toString());
+                msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_SQL_ERROR);
+                msg.setDescription(msg.getDescription().replaceAll("%SQL%", sql));
                 msg.setDescription(msg.getDescription().replaceAll("%EX%", exception.toString()));
                 throwEx = true;
             } finally {
-                try {
-                    if (connection != null) {
-                        connection.close();
-                    }
-                } catch (SQLException e) {
-                    MyLogger.log(SQLService.class.getName(), Level.WARN, e.toString());
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(SQLService.class.getName(), Level.FATAL, exception.toString());
+            msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_SQL_CANNOTACCESSJDBC);
+            msg.setDescription(msg.getDescription().replaceAll("%JDBC%", "jdbc/" + connectionName));
+            msg.setDescription(msg.getDescription().replaceAll("%EX%", exception.toString()));
+            throwEx = true;
+        } catch (NullPointerException exception) {
+            //TODO check where exception occur
+            MyLogger.log(SQLService.class.getName(), Level.FATAL, exception.toString());
+            msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_SQL_CANNOTACCESSJDBC);
+            msg.setDescription(msg.getDescription().replaceAll("%JDBC%", "jdbc/" + connectionName));
+            msg.setDescription(msg.getDescription().replaceAll("%EX%", exception.toString()));
+            throwEx = true;
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
                 }
+            } catch (SQLException e) {
+                MyLogger.log(SQLService.class.getName(), Level.WARN, e.toString());
             }
         }
         if (throwEx) {
@@ -277,7 +278,7 @@ public class SQLService implements ISQLService {
         }
         return list;
     }
-
+    
     @Override
     public String getRandomStringFromList(List<String> list) {
         Random random = new Random();
