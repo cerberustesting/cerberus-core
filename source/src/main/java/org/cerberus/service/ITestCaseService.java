@@ -20,15 +20,16 @@
 package org.cerberus.service;
 
 import java.util.List;
-
 import org.cerberus.entity.TCase;
 import org.cerberus.entity.TestCase;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.AnswerList;
 
 /**
  *
  * @author bcivel
  * @author tbernardes
+ * @author FNogueira
  */
 public interface ITestCaseService {
 
@@ -137,4 +138,13 @@ public interface ITestCaseService {
     ,String[] group,String[] targetBuild,String[] targetRev,String[] creator , String[] implementer,String[] function,String[] campaign,String[] battery);
     
     String findSystemOfTestCase(String test, String testcase) throws CerberusException;
+      
+    /**
+     * Method that get all the testcases that use a determined testdatalib entry
+     * @param testDataLibId testdatalib unique identifier
+     * @param name testdatalib name
+     * @param country country for which testdatalib is defined
+     * @return an answer with the test cases and a message indicating the status of the operation
+     */
+    AnswerList findTestCasesThatUseTestDataLib(int testDataLibId, String name, String country);
 }

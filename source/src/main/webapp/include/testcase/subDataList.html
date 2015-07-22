@@ -1,0 +1,41 @@
+<div data-backdrop="static" class=" center width1000 modal fade" id="selectSubDataFromListModal" role="dialog" aria-labelledby="selectSubDataFromListModalLabel" aria-hidden="true">
+    <div class="modal-dialog width1000 nomarginbottom nomargintop">
+        <div class="modal-content width1000">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="selectSubDataFromListModalLabel">Select subdata</h4>
+            </div>
+            <div class="modal-body center container">                 
+                <div id="DialogMessagesAreaSubData" class="width800">
+                    <div class="alert" id="DialogMessagesAlertSubData"  style="display:none;">
+                        <strong><span class="alert-description" id="DialogAlertDescriptionSubData"></span></strong>
+                        <button type="button" class="close" data-hide="alert"  aria-hidden="true">
+                            <span class="glyphicon glyphicon-remove alert-right alert-close pull-right"></span>
+                        </button>
+                    </div>
+                </div>
+                <div id="testdatalibSubData" class="well width950">               
+                    <input type="hidden" id="propertyValueSubDataID"/>
+                    <table  class="table table-hover display marginLeft0" id="subDataTable">
+                        <thead>
+                            <tr>
+                                <th class="center" style="text-align: center">Select</th> 
+                                <th>Subdata</th>
+                                <th id="subDataListEntryDesc">Data</th>
+                                <th>Description</th>              
+                                <th>Type</th>
+                                <th>System</th>
+                                <th>Environment</th>
+                                <th>Country</th>
+                            </tr>                        
+                        </thead> 
+                    </table>
+                    <div class="marginBottom20"></div>
+                </div>
+            </div> 
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button> 
+            </div>
+        </div> 
+    </div> 
+</div> 

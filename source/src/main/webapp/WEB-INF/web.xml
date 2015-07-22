@@ -516,7 +516,7 @@
     <servlet>
         <servlet-name>UpdateUserReporting</servlet-name>
         <servlet-class>org.cerberus.servlet.user.UpdateUserReporting</servlet-class>
-    </servlet>    
+    </servlet>
     <servlet>
         <servlet-name>UpdateTestCaseField</servlet-name>
         <servlet-class>org.cerberus.servlet.testCase.UpdateTestCaseField</servlet-class>
@@ -579,7 +579,7 @@
     </servlet>
     <servlet>
         <servlet-name>GetTestDataLib</servlet-name>
-        <servlet-class>org.cerberus.servlet.testdata.GetTestDataLib</servlet-class>
+        <servlet-class>org.cerberus.servlet.testdatalib.GetTestDataLib</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>RunManualTest</servlet-name>
@@ -687,6 +687,30 @@
     <servlet>
         <servlet-name>SetTagToExecution</servlet-name>
         <servlet-class>org.cerberus.servlet.execution.SetTagToExecution</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>AddTestDataLib</servlet-name>
+        <servlet-class>org.cerberus.servlet.testdatalib.AddTestDataLib</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>DeleteTestDataLib</servlet-name>
+        <servlet-class>org.cerberus.servlet.testdatalib.DeleteTestDataLib</servlet-class>
+    </servlet>     
+    <servlet>
+        <servlet-name>UpdateTestDataLibData</servlet-name>
+        <servlet-class>org.cerberus.servlet.testdatalib.UpdateTestDataLibData</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>UpdateTestDataLib</servlet-name>
+        <servlet-class>org.cerberus.servlet.testdatalib.UpdateTestDataLib</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ImportTestDataLib</servlet-name>
+        <servlet-class>org.cerberus.servlet.testdatalib.ImportTestDataLib</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>GetTestDataLibData</servlet-name>
+        <servlet-class>org.cerberus.servlet.testdatalib.GetTestDataLibData</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>ExecutionThreadMonitoring</servlet-name>
@@ -1336,6 +1360,30 @@
         <servlet-name>SetTagToExecution</servlet-name>
         <url-pattern>/SetTagToExecution</url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>AddTestDataLib</servlet-name>
+        <url-pattern>/AddTestDataLib</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DeleteTestDataLib</servlet-name>
+        <url-pattern>/DeleteTestDataLib</url-pattern>
+    </servlet-mapping>
+   <servlet-mapping>
+        <servlet-name>UpdateTestDataLibData</servlet-name>
+        <url-pattern>/UpdateTestDataLibData</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>UpdateTestDataLib</servlet-name>
+        <url-pattern>/UpdateTestDataLib</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ImportTestDataLib</servlet-name>
+        <url-pattern>/ImportTestDataLib</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>GetTestDataLibData</servlet-name>
+        <url-pattern>/GetTestDataLibData</url-pattern>
+    </servlet-mapping>
     <session-config>
         <session-timeout>
             60
@@ -1373,6 +1421,10 @@
     <security-role>
         <description/>
         <role-name>RunTest</role-name>
+    </security-role>
+    <security-role>
+        <description>Users that can edit the TestDataLib library</description>
+        <role-name>TestDataManager</role-name>
     </security-role>
     <security-role>
         <description/>
@@ -1472,6 +1524,7 @@
             <url-pattern>/UpdateTestData</url-pattern>
             <url-pattern>/FindAllTestData</url-pattern>
             <url-pattern>/GetTestDataLib</url-pattern>
+            <url-pattern>/GetTestDataLibData</url-pattern>
             <url-pattern>/GetApplicationList</url-pattern>
             <url-pattern>/FindAllSqlLibrary</url-pattern>
             <url-pattern>/PictureConnector</url-pattern>
@@ -1535,6 +1588,24 @@
         <auth-constraint>
             <description>RunTest</description>
             <role-name>RunTest</role-name>
+        </auth-constraint>
+    </security-constraint>
+    <security-constraint>
+        <display-name>TestDataManager</display-name>
+        <web-resource-collection>
+            <web-resource-name>servlet</web-resource-name>
+            <description>servlet</description>
+            <url-pattern>/GetTestDataLib</url-pattern>
+            <url-pattern>/GetTestDataLibData</url-pattern>
+            <url-pattern>/AddTestDataLib</url-pattern>
+            <url-pattern>/ImportTestDataLib</url-pattern>
+            <url-pattern>/DeleteTestDataLib</url-pattern> 
+            <url-pattern>/UpdateTestDataLibData</url-pattern>
+            <url-pattern>/UpdateTestDataLib</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <description>TestDataManager</description>
+            <role-name>TestDataManager</role-name>
         </auth-constraint>
     </security-constraint>
     <security-constraint>
@@ -1743,6 +1814,7 @@
             <role-name>Test</role-name>
             <role-name>TestAdmin</role-name>
             <role-name>RunTest</role-name>
+            <role-name>TestDataManager</role-name>            
             <role-name>IntegratorRO</role-name>
             <role-name>Integrator</role-name>
             <role-name>IntegratorNewChain</role-name>

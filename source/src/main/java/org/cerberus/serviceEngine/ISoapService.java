@@ -24,8 +24,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPMessage;
 import org.cerberus.entity.MessageEvent;
-import org.cerberus.entity.SoapLibrary;
-import org.cerberus.entity.TestCaseExecution;
 import org.cerberus.exception.CerberusException;
 import org.xml.sax.SAXException;
 
@@ -54,9 +52,10 @@ public interface ISoapService {
      * @param servicePath The servicePath (WSDL) of the SOAP
      * @param method The name of the method of the SOAP
      * @param attachmentUrl
+     * @param isToSaveRequest - true - the request is saved, false - the request is not saved
      * @return MessageEvent with the status of the call
      */
-    MessageEvent callSOAPAndStoreResponseInMemory(String uuid, final String envelope, final String servicePath, final String method, final String attachmentUrl);
+    MessageEvent callSOAPAndStoreResponseInMemory(String uuid, final String envelope, final String servicePath, final String method, final String attachmentUrl, boolean isToSaveRequest);
     
     /**
      * 

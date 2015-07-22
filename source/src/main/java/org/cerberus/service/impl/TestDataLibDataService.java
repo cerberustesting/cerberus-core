@@ -19,11 +19,18 @@
  */
 package org.cerberus.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 import org.cerberus.dao.ITestDataLibDataDAO;
+import org.cerberus.database.DatabaseSpring;
+import org.cerberus.entity.MessageEvent;
+import org.cerberus.entity.MessageEventEnum;
 import org.cerberus.entity.TestDataLibData;
+import org.cerberus.entity.TestDataLibResult;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.service.ITestDataLibDataService;
+import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -32,6 +39,8 @@ public class TestDataLibDataService implements ITestDataLibDataService {
 
     @Autowired
     ITestDataLibDataDAO testDataLibDataDAO;
+    @Autowired
+    private DatabaseSpring dbmanager;
 
     @Override
     public void createTestDataLibData(TestDataLibData testDataLibData) throws CerberusException {
@@ -47,6 +56,11 @@ public class TestDataLibDataService implements ITestDataLibDataService {
     public void deleteTestDataLibData(TestDataLibData testDataLibData) throws CerberusException {
         testDataLibDataDAO.deleteTestDataLibData(testDataLibData);
     }
+    
+    @Override
+    public void deleteByTestDataLibID(int testDataLibID) throws CerberusException{
+        testDataLibDataDAO.deleteByTestDataLibID(testDataLibID);
+    }
 
     @Override
     public TestDataLibData findTestDataLibDataByKey(Integer testDataLibID, String subData) throws CerberusException {
@@ -59,8 +73,8 @@ public class TestDataLibDataService implements ITestDataLibDataService {
     }
 
     @Override
-    public List<TestDataLibData> findTestDataLibDataListByTestDataLib(Integer testDataLibID) {
-        return testDataLibDataDAO.findTestDataLibDataListByTestDataLib(testDataLibID);
+    public AnswerList findTestDataLibDataListByTestDataLib(Integer testDataLibID) {
+        return testDataLibDataDAO.findTestDataLibDataListByID(testDataLibID);
     }
 
     @Override
@@ -68,4 +82,72 @@ public class TestDataLibDataService implements ITestDataLibDataService {
         return testDataLibDataDAO.findTestDataLibDataByCriteria(testDataLibID, subData, value, column, parsingAnswer, description);
     }
 
+    @Override
+    public void createTestDataLibDataBatch(List<TestDataLibData> subdataSet) throws CerberusException{
+        testDataLibDataDAO.createTestDataLibDataBatch(subdataSet);
+    }
+
+ 
+
+    @Override
+    public String fetchSubData(TestDataLibResult result, TestDataLibData subDataEntry) {
+        
+        return result.getValue(subDataEntry);
+    }
+ 
+    @Override
+    public Answer cudTestDataLibData(int testDataLibID, ArrayList<TestDataLibData> entriesToInsert, ArrayList<TestDataLibData> entriesToUpdate, ArrayList<String> entriesToRemove) {
+        dbmanager.beginTransaction();        
+        
+        Answer answer = new Answer();
+        
+        if(entriesToInsert.size() > 0){
+            answer = testDataLibDataDAO.createTestDataLibDataBatch(entriesToInsert);
+            if(!answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())){
+                //if the insert does not succeed, then the transaction should be aborted
+                dbmanager.abortTransaction();
+                return answer;           
+            }
+        }
+        
+        
+        
+        if(entriesToUpdate.size() > 0){
+            answer = testDataLibDataDAO.updateTestDataLibDataBatch(entriesToUpdate);
+            if(!answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())){
+                //if the update does not succeed, then the transaction should be aborted
+                dbmanager.abortTransaction();
+                return answer;           
+            }
+        }
+        
+        if(entriesToRemove.size() > 0){
+            answer =  testDataLibDataDAO.deleteTestDataLibDataBatch(testDataLibID, entriesToRemove);
+            if(!answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())){
+                //if the delete does not succeed, then the transaction should be aborted
+                dbmanager.abortTransaction();
+                return answer;           
+            }
+        }
+        
+        dbmanager.commitTransaction();
+        //if everything succeeds, then a success message is sent back
+        MessageEvent ms = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+        ms.setDescription(ms.getDescription().replace("%ITEM%", "Test data lib data").replace("%OPERATION%", "Modification of the subdata set "));
+        
+        answer.setResultMessage(ms);
+        return answer;
+        
+    }
+
+    @Override
+    public AnswerList findTestDataLibDataByName(String testDataLibName) {
+        return testDataLibDataDAO.findTestDataLibDataByName(testDataLibName);
+    }
+
+    @Override
+    public AnswerList findTestDataLibSubData(String testDataLib, String nameToSearch, int limit) {
+        return testDataLibDataDAO.findTestDataLibSubData(testDataLib, nameToSearch, limit);
+    }
+ 
 }

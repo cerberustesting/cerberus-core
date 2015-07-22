@@ -20,6 +20,9 @@ package org.cerberus.dao;
 import java.util.List;
 import org.cerberus.entity.TestDataLib;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerItem;
+import org.cerberus.util.answer.AnswerList;
 
 /**
  *
@@ -30,16 +33,16 @@ public interface ITestDataLibDAO {
     /**
      *
      * @param testDataLib
-     * @throws CerberusException
+     * @return 
      */
-    void createTestDataLib(TestDataLib testDataLib) throws CerberusException;
+    Answer createTestDataLib(TestDataLib testDataLib);
 
     /**
      *
      * @param testDataLib
-     * @throws CerberusException
+     * @return 
      */
-    void updateTestDataLib(TestDataLib testDataLib) throws CerberusException;
+    Answer updateTestDataLib(TestDataLib testDataLib);
 
     /**
      *
@@ -47,7 +50,12 @@ public interface ITestDataLibDAO {
      * @throws CerberusException
      */
     void deleteTestDataLib(TestDataLib testDataLib) throws CerberusException;
-
+    /**
+     * Deletes a testdatalib with basis on the unique identifier
+     * @param testDataLibID - test data lib entry
+     * @return 
+     */
+     Answer deleteUnusedTestDataLib(int testDataLibID);
     /**
      *
      * @return All TestData
@@ -65,7 +73,7 @@ public interface ITestDataLibDAO {
      * resultSet
      * @return
      */
-    List<TestDataLib> findTestDataLibListByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch);
+    AnswerList findTestDataLibListByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch);
 
     /**
      *
@@ -76,8 +84,9 @@ public interface ITestDataLibDAO {
      * @return
      * @throws org.cerberus.exception.CerberusException
      */
-    TestDataLib findTestDataLibByKey(String name, String system, String environment, String country) throws CerberusException;
+    AnswerItem findTestDataLibByKey(String name, String system, String environment, String country) throws CerberusException;
 
+    AnswerItem findTestDataLibByKey(int testDataLibID);
     /**
      *
      * @param searchTerm words to be searched in every column (Exemple :
@@ -87,4 +96,10 @@ public interface ITestDataLibDAO {
      * @return The number of records for these criterias
      */
     Integer getNumberOfTestDataLibPerCriteria(String searchTerm, String inds);
+    
+    AnswerList<String> getListOfGroupsPerType(String type); 
+
+    Answer createTestDataLibBatch(List<TestDataLib> testDataLibEntries);
+
+    AnswerList findTestDataLibNameList(String testDataLibName, int limit);
 }

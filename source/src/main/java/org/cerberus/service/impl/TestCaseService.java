@@ -42,6 +42,7 @@ import org.cerberus.service.ITestCaseStepActionControlService;
 import org.cerberus.service.ITestCaseStepActionService;
 import org.cerberus.service.ITestCaseStepService;
 import org.cerberus.util.SqlUtil;
+import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -278,5 +279,10 @@ public class TestCaseService implements ITestCaseService {
     @Override
     public String findSystemOfTestCase(String test, String testcase) throws CerberusException {
         return testCaseDao.findSystemOfTestCase(test,testcase);
+    }
+
+    @Override
+    public AnswerList findTestCasesThatUseTestDataLib(int testDataLibId, String name, String country) {
+        return testCaseCountryPropertiesService.findTestCaseCountryPropertiesByValue1(testDataLibId, name, country, "getFromDataLib");
     }
 }

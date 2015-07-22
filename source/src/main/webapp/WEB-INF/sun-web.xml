@@ -32,6 +32,10 @@
     <group-name>TestAdmin</group-name>
   </security-role-mapping>
   <security-role-mapping>
+    <role-name>TestDataManager</role-name>
+    <group-name>TestDataManager</group-name>
+  </security-role-mapping>
+  <security-role-mapping>
     <role-name>Test</role-name>
     <group-name>Test</group-name>
   </security-role-mapping>

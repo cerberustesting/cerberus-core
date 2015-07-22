@@ -19,6 +19,10 @@
     <group-name>RunTest</group-name>
   </security-role-mapping>
   <security-role-mapping>
+    <role-name>TestDataManager</role-name>
+    <group-name>TestDataManager</group-name>
+  </security-role-mapping>
+  <security-role-mapping>
     <role-name>IntegratorRO</role-name>
     <group-name>IntegratorRO</group-name>
   </security-role-mapping>

@@ -1,0 +1,45 @@
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="library">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="testdatalib" maxOccurs="unbounded" minOccurs="0">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element type="xs:string" name="name" minOccurs="0" maxOccurs="1" />
+              <xs:element type="xs:string" name="system" minOccurs="0" maxOccurs="1" />
+              <xs:element type="xs:string" name="environment" minOccurs="0" maxOccurs="1" />
+              <xs:element type="xs:string" name="country" minOccurs="0" maxOccurs="1" />
+              <xs:element type="xs:string" name="group" minOccurs="0" maxOccurs="1" />
+              <xs:element type="xs:string" name="type"/>
+              <xs:element type="xs:string" name="database" minOccurs="0" maxOccurs="1" />
+              <xs:element type="xs:string" name="script" minOccurs="0" maxOccurs="1" />
+              <xs:element type="xs:string" name="servicepath" minOccurs="0" maxOccurs="1" />
+              <xs:element type="xs:string" name="method" minOccurs="0" maxOccurs="1" />
+              <xs:element type="xs:string" name="envelope" minOccurs="0" maxOccurs="1" />
+              <xs:element type="xs:string" name="description" minOccurs="0" maxOccurs="1" />
+              <xs:element name="testdatalibdataset" minOccurs="0">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="testdatalibdata" maxOccurs="unbounded" minOccurs="0">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element type="xs:string" name="subdata"/>
+                          <xs:element type="xs:string" name="value" minOccurs="0" maxOccurs="1" />
+                          <xs:element type="xs:string" name="parswinganswer" minOccurs="0" maxOccurs="1" />
+                          <xs:element type="xs:string" name="column" minOccurs="0" maxOccurs="1"/>
+                          <xs:element type="xs:string" name="descriptionsubdata" minOccurs="0" maxOccurs="1" />
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>
+
+

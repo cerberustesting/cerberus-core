@@ -26,13 +26,12 @@ import org.apache.log4j.Level;
 import org.cerberus.dao.ITestCaseCountryPropertiesDAO;
 import org.cerberus.dao.ITestCaseStepActionDAO;
 import org.cerberus.entity.TCase;
-import org.cerberus.entity.TestCaseCountryProperties;
-import org.cerberus.entity.TestCaseStep;
+import org.cerberus.entity.TestCaseCountryProperties; 
 import org.cerberus.exception.CerberusException;
 import org.cerberus.log.MyLogger;
 import org.cerberus.service.ITestCaseCountryPropertiesService;
-import org.cerberus.service.ITestCaseService;
-import org.cerberus.service.ITestCaseStepService;
+import org.cerberus.service.ITestCaseService; 
+import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -160,6 +159,11 @@ public class TestCaseCountryPropertiesService implements ITestCaseCountryPropert
         
         List<TestCaseCountryProperties> result = new ArrayList<TestCaseCountryProperties>(tccpMap.values());
         return result;
+    }
+
+    @Override
+    public AnswerList findTestCaseCountryPropertiesByValue1(int testDataLibID, String name, String country, String propertyType) {
+        return testCaseCountryPropertiesDAO.findTestCaseCountryPropertiesByValue1(testDataLibID, name, country, propertyType);
     }
 
 }

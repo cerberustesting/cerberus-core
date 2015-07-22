@@ -17,9 +17,12 @@
  */
 package org.cerberus.dao;
 
+import java.util.ArrayList;
 import java.util.List;
 import org.cerberus.entity.TestDataLibData;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerList;
 
 /**
  *
@@ -68,7 +71,49 @@ public interface ITestDataLibDataDAO {
      * @param testDataLibID resultSet
      * @return
      */
-    List<TestDataLibData> findTestDataLibDataListByTestDataLib(Integer testDataLibID);
+    AnswerList findTestDataLibDataListByID(Integer testDataLibID);
 
     List<TestDataLibData> findTestDataLibDataByCriteria(Integer testDataLibID, String subData, String value, String column, String parsingAnswer, String description) throws CerberusException;
+
+    
+    /**
+     * Deletes all testdatalibdata records that belong to a testdatalib.
+     * @param testDataLibID - testdatalibid used to filter the rows that will be removed.
+     * @return Answer indicating the status of the operation
+     */
+    public Answer deleteByTestDataLibID(int testDataLibID);
+ 
+    /**
+     * Batch that inserts several records in the table TestDataLibData
+     * @param subdataSet - entries to insert
+     * @return Answer indicating the status of the operation
+     */
+    public Answer createTestDataLibDataBatch(List<TestDataLibData> subdataSet); 
+    /**
+     * Batch that updates several records in the table TestDataLibData.
+     * @param entriesToUpdate - entries to update
+     * @return  Answer indicating the status of the operation
+     */
+    public Answer updateTestDataLibDataBatch(ArrayList<TestDataLibData> entriesToUpdate);
+    /**
+     * Batch that deletes several records in the table TestDataLibData.
+     * @param testDataLibIdForData - testdatalibID associated with the entries that will be removed. This is part of the PK.
+     * @param entriesToRemove - subdata names for the records that should be removed
+     * @return  Answer indicating the status of the operation
+     */
+    public Answer deleteTestDataLibDataBatch(int testDataLibIdForData, ArrayList<String> entriesToRemove);
+    /**
+     * Finds all subdata entries (testdatalibdata) that are associated with an entry name (testdatalib).
+     * @param testDataLibName - entry name used to filter the subdata entries
+     * @return  Answer indicating the status of the operation
+     */
+    public AnswerList findTestDataLibDataByName(String testDataLibName);
+    /**
+     * Finds all subdata entries (testdatalibdata) that are associated with an entry name (testdatalib).
+     * @param testDataLib - entry name used to filter the subdata entries
+     * @param nameToSearch - value used to filter the subdata entries 
+     * @param limit - number of records retrieved
+     * @return Answer indicating the status of the operation and the list with the subdata entries that match the criteria.
+     */
+    public AnswerList findTestDataLibSubData(String testDataLib, String nameToSearch, int limit);
 }

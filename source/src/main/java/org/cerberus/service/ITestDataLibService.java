@@ -17,9 +17,14 @@
  */
 package org.cerberus.service;
 
+import java.util.HashMap;
 import java.util.List;
 import org.cerberus.entity.TestDataLib;
+import org.cerberus.entity.TestDataLibData; 
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerItem;
+import org.cerberus.util.answer.AnswerList;
 
 /**
  *
@@ -37,9 +42,9 @@ public interface ITestDataLibService {
     /**
      *
      * @param testDataLib TestData to update using the key
-     * @throws CerberusException
+     * @return
      */
-    void updateTestDataLib(TestDataLib testDataLib) throws CerberusException;
+    Answer updateTestDataLib(TestDataLib testDataLib);
 
     /**
      *
@@ -65,7 +70,7 @@ public interface ITestDataLibService {
      * resultSet
      * @return
      */
-    List<TestDataLib> findTestDataLibListByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch);
+    AnswerList findTestDataLibListByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch);
     /**
      * 
      * @param name
@@ -75,8 +80,9 @@ public interface ITestDataLibService {
      * @return 
      * @throws org.cerberus.exception.CerberusException 
      */
-    TestDataLib findTestDataLibByKey(String name, String system, String environment, String country) throws CerberusException;
+    AnswerItem findTestDataLibByKey(String name, String system, String environment, String country) throws CerberusException;
     
+    AnswerItem findTestDataLibByKey(int testDatalib);
     /**
      * 
      * @param searchTerm words to be searched in every column (Exemple : article)
@@ -84,4 +90,39 @@ public interface ITestDataLibService {
      * @return The number of records for these criterias
      */
     Integer getNumberOfTestDataLibPerCriteria(String searchTerm, String inds);
+    /**
+     * Auxiliary method that retrieves all the group names that were already defined for a type.
+     * @param type STATIC or SQL or SOAP
+     * @return list of group values for the type
+     */
+    AnswerList<String> getListOfGroupsPerType(String type);
+    /**
+     * Gets the rawData associated to the library; for SQL and SOAP, the corresponding instructions will be executed in order to retrieve the data 
+     * from the database and webservice.
+     * @param lib testdatalib entry
+     * @param rowLimit
+     * @param propertyName
+     * @return the result data for the library entry
+     */
+    AnswerItem fetchData(TestDataLib lib, int rowLimit, String propertyName);
+
+    /**
+     * Deletes a testdatalib with basis on the id.
+     * @param testDataLibID - id of the entry that we want to remove
+     * @return an answer indicating the status of the operation
+     */
+    Answer deleteTestDataLib(int testDataLibID);
+
+    /**
+     * Creates the test data lib entries for the com
+     * @param testDataLibList combinations of entries that 
+     * @param subDataList subdata entries that were defined in the add window, which are associated with each entry in the list testDataLibList
+     * @return an answer indicating the status of the operation
+     */
+    Answer createTestDataLibBatch(List<TestDataLib> testDataLibList, List<TestDataLibData> subDataList);
+    Answer createTestDataLib(TestDataLib testDataLib, List<TestDataLibData> subDataList);
+    Answer createTestDataLibBatch(List<TestDataLib> entries)throws CerberusException;
+    Answer createTestDataLibBatch(HashMap<TestDataLib, List<TestDataLibData>> entries);
+    
+    AnswerList findTestDataLibNameList(String testDataLibName, int limit);
 }

@@ -21,6 +21,7 @@ package org.cerberus.serviceEngine.impl;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.logging.Level;
 import java.util.regex.Pattern;
 
 import javax.annotation.PostConstruct;
@@ -285,5 +286,15 @@ public class XmlUnitService implements IXmlUnitService {
 
 		return false;
 	}
-
+    @Override 
+    public Document getXmlDocument(String uuid) {
+        Document document = null;
+        try {
+            document =  XmlUtil.fromString(executionSOAPResponse.getExecutionSOAPResponse(uuid)) ; 
+            return document;
+        } catch (XmlUtilException ex) {
+            java.util.logging.Logger.getLogger(XmlUnitService.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return document;
+    }
 }

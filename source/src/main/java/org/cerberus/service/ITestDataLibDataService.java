@@ -17,9 +17,13 @@
  */
 package org.cerberus.service;
 
-import java.util.List;
+import java.util.ArrayList;
+import java.util.List; 
 import org.cerberus.entity.TestDataLibData;
+import org.cerberus.entity.TestDataLibResult;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerList;
 
 /**
  *
@@ -68,7 +72,7 @@ public interface ITestDataLibDataService {
      * @param testDataLibID
      * @return
      */
-    List<TestDataLibData> findTestDataLibDataListByTestDataLib(Integer testDataLibID);
+    AnswerList findTestDataLibDataListByTestDataLib(Integer testDataLibID);
 
     /**
      *
@@ -76,4 +80,42 @@ public interface ITestDataLibDataService {
      * @return
      */
     List<TestDataLibData> findTestDataLibDataByCriteria(Integer testDataLibID, String subData, String value, String column, String parsingAnswer, String description) throws CerberusException;
+    /**
+     * Creates several TestDataLibData entries
+     * @param subdataSet - entries to insert
+     * @throws CerberusException 
+     */
+    public void createTestDataLibDataBatch(List<TestDataLibData> subdataSet) throws CerberusException;
+
+    public String fetchSubData(TestDataLibResult result, TestDataLibData subDataEntry);
+
+    public void deleteByTestDataLibID(int testDataLibID) throws CerberusException;
+
+
+    /**
+     *
+     * @param testDataLibID
+     * @param entriesToInsert
+     * @param entriesToUpdate
+     * @param entriesToRemove
+     * @return
+     */
+    public Answer cudTestDataLibData(int testDataLibID, ArrayList<TestDataLibData> entriesToInsert, ArrayList<TestDataLibData> entriesToUpdate, ArrayList<String> entriesToRemove);
+
+    /**
+     *
+     * @param testDataLibName
+     * @return
+     */
+    public AnswerList findTestDataLibDataByName(String testDataLibName); 
+
+    /**
+     *
+     * @param testDataLib
+     * @param nameToSearch
+     * @param limit
+     * @return
+     */
+    public AnswerList findTestDataLibSubData(String testDataLib, String nameToSearch, int limit);
+    
 }

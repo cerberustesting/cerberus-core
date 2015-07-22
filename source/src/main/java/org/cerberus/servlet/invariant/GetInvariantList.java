@@ -34,10 +34,9 @@ import org.cerberus.log.MyLogger;
 import org.cerberus.service.IInvariantService;
 import org.cerberus.service.impl.InvariantService;
 import org.cerberus.util.ParameterParserUtil;
+import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
-import org.owasp.html.PolicyFactory;
-import org.owasp.html.Sanitizers;
+import org.json.JSONObject; 
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -51,22 +50,41 @@ public class GetInvariantList extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
-        String id = policy.sanitize(request.getParameter("idName"));
+        String id = request.getParameter("idName");
         String idName = ParameterParserUtil.parseStringParam(id, "");
 
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         IInvariantService invariantService = appContext.getBean(InvariantService.class);
+        
+        JSONObject jsonResponse = new JSONObject();
+        
+        String action = request.getParameter("action");
         try {
-            JSONObject jsonResponse = new JSONObject();
             try {
-                for (Invariant myInvariant : invariantService.findListOfInvariantById(idName)) {
-                    jsonResponse.put(myInvariant.getValue(), myInvariant.getValue());
+                 if(request.getParameter("action") != null){
+                    //gets a list of invariants in the same call, it can be useful if we want to
+                     //retrieve all the information in one client call
+                    if("getNInvariant".equals(action)){
+                        //gets a list of invariants
+                        JSONObject listOfInvariants = new JSONObject(idName);
+                        for(int i = 0; i < listOfInvariants.length(); i++){
+                            String invariantName = (String)listOfInvariants.get(String.valueOf(i));
+                            JSONArray array = new JSONArray();
+                            for (Invariant myInvariant : invariantService.findListOfInvariantById(invariantName)) {
+                                array.put(myInvariant.getValue());
+                            }
+                            jsonResponse.put(invariantName, array);
+                        }                        
+                    }    
+                }else{
+                    //gets one item
+                    for (Invariant myInvariant : invariantService.findListOfInvariantById(idName)) {
+                        jsonResponse.put(myInvariant.getValue(), myInvariant.getValue());
+                    }
                 }
             } catch (CerberusException ex) {
                 response.setContentType("text/html");
                 response.getWriter().print(ex.getMessageError().getDescription());
-
             }
             response.setContentType("application/json");
             response.getWriter().print(jsonResponse.toString());

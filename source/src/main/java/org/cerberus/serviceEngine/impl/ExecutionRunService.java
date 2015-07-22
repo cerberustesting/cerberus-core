@@ -544,7 +544,7 @@ public class ExecutionRunService implements IExecutionRunService {
                  * If no property defined, we just execute the action.
                  */
                 if (testCaseStepActionExecution.getAction().equals("calculateProperty") && StringUtil.isNullOrEmpty(testCaseStepActionExecution.getObject())) {
-                    //TODO:FN check which actions can be executed without property and object
+                    //TODO check which actions can be executed without property and object
                     //if there is no object and also we are using the calculateProperty, then the step execution should be stopped 
                     MessageEvent mes = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_CALCULATE_OBJECTPROPERTYNULL);
                     
