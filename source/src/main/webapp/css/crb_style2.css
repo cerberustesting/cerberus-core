@@ -1,0 +1,746 @@
+/**crb_style.css
+* - Page (body / a / input / textarea)
+* - Table >> (TODO Refactor)
+* - Header
+* - Login
+* - Button
+* - Various Execution status code.
+* - Documentation >> crb_style_doc.css
+*
+*/
+body {
+    /*font-size: 70%;*/
+    font-family: helvetica;
+}
+/*div{
+    border-style:solid;
+    border-width:thin;
+}*/
+input{
+    font-size:80%;
+}
+pre{
+    font-size:110%;
+    font-family: helvetica;
+}
+.buttonAddStep{
+    height:20px;
+    font-weight:bold;
+font-family: Trebuchet MS;
+border-color:orange;
+border-width:1px;
+border-style:solid;
+background-color:white;
+color:orange;
+text-align: center;
+border-radius: 5px;
+    
+}
+.buttonSaveChanges{
+    height:20px;
+    font-weight:bold;
+font-family: Trebuchet MS;
+border-color:#333333;
+border-width:1px;
+border-style:solid;
+background-color:white;
+color:#333333;
+text-align: center;
+border-radius: 5px;
+    
+}
+select{
+    font-size:90%;
+}
+a {
+    color: #008CDA;
+    text-decoration: none;
+}
+a img {
+    border: 0;
+}
+textarea{
+    font-size: 90%;
+    font-family: helvetica;
+}
+* {
+    margin: 0;
+}
+.underlinedDiv{
+    border-bottom-color:#555555;
+    border-bottom-style:double;
+}
+.selectRobot{
+    color : gray;
+}
+.selectRobotSelected{
+    color : black;
+}
+.font_weight_bold_Y{
+    font-weight : bold;
+}
+.font_weight_bold_N{
+    font-weight : lighter;
+}
+/* Fields without border (TODO Refactor)*/
+td#wob { 
+    border-width:0px;
+}
+select#wob { 
+    border-width:0px;
+}
+textarea#wob { 
+    border-width:0px;
+}
+input#wob { 
+    border-width:0px;
+}
+.wob { 
+    border-width:0px;
+}
+/**Title of the parts in pages*/
+.dttTitle{
+font-weight:bold;
+font-family: Trebuchet MS;
+color:#555555;
+font-size:14px;
+}
+
+/** */
+.filters{
+background-image: -moz-linear-gradient(top, #ebebeb, #CCCCCC); 
+background-image: -webkit-linear-gradient(top, #ebebeb, #CCCCCC); 
+font-weight:bold;
+font-family: Trebuchet MS;
+color:#555555;
+text-align: center;
+}
+
+.backDiv{
+background-image: -moz-linear-gradient(bottom, #ebebeb, #f8f8f8); 
+background-image: -webkit-linear-gradient(bottom, #ebebeb, #f8f8f8); 
+font-weight:bold;
+font-family: Trebuchet MS;
+color:#555555;
+text-align: center;
+}
+
+div#header {
+    font-style: italic;
+    font-weight: bold;
+    border-bottom: solid 1px;
+    font-size: large;
+}
+
+.tableHeader{
+background-image: -moz-linear-gradient(bottom, #ebebeb, #f8f8f8); 
+background-image: -webkit-linear-gradient(bottom, #ebebeb, #f8f8f8); 
+font-weight:bold;
+font-family: Trebuchet MS;
+color:#555555;
+text-align: center;
+}
+
+.tableContent{
+background-color: white;
+}
+
+.tableBorder{
+    background-color:#e1e7f3;
+    border: solid;
+    border-width: 2px;
+    border-color: #8999c4;
+    -moz-border-radius: 5px;
+    width : 100%;
+}
+
+/** 2 - TABLE */
+td#arrond {
+    background-color:#cad3f1;
+    border: solid;
+    border-width: 2px;
+    border-color: #8999c4;
+    -moz-border-radius: 5px;
+
+}
+td#arrondgreen {
+    background-color:#cad3f1;
+    border: solid;
+    border-width: 2px;
+    border-color: green;
+    -moz-border-radius: 5px;
+
+}
+td#arrondblue {
+    background-color:#cad3f1;
+    border: solid;
+    border-width: 2px;
+    border-color: #8999c4;
+    -moz-border-radius: 5px;
+
+}
+td#arrondred {
+    background-color:#cad3f1;
+    border: solid;
+    border-width: 2px;
+    border-color: red;
+    -moz-border-radius: 5px;
+
+}
+
+table#arrond {
+    background-color:#f3f6fa;
+    border: solid;
+    border-width: 2px;
+    border-color: #8999c4;
+    -moz-border-radius: 5px;
+    width : 1260px;
+}
+.arrond {
+    background-color:#e1e7f3;
+    border: solid;
+    border-width: 2px;
+    border-color: #8999c4;
+    -moz-border-radius: 5px;
+    width : 100%;
+}
+.contour {
+    background-color:#e1e7f3;
+    border: solid;
+    border-width: 2px;
+    border-color: #8999c4;
+    -moz-border-radius: 5px;
+}
+
+.tableRowPair {
+    background-color: #E2E4FF;
+}
+
+.tableRowImpair {
+    background-color: white;
+}
+
+table#testcaseproperties_table {
+    background-color:#F3F2F5;
+
+}
+tr#header {
+    background-color:#cad3f1; 
+    font-weight:bold;   
+
+}
+tr#tableheader {
+    background-color:#cad3f1; 
+    font-weight:bold; 
+    text-align: center;
+
+}
+td#leftlined { 
+    border-bottom-style: groove;
+    border-bottom-color:black ;
+    border-right: 0px;
+    border-top: 0px;
+    border-left-style: groove;
+    border-left-color: #8999c4;
+}
+td#underlined { 
+    border-bottom-style: groove;
+    border-bottom-color:black ;
+    border-right: 0px;
+    border-top: 0px;
+    border-left: 0px;
+}
+
+.separation { 
+    border-bottom-style: dashed;
+    border-bottom-color:#8999c4 ;
+    border-right: 0px;
+    border-top: 0px;
+    border-left:  0px;
+}
+td { 
+    border-width:1px;
+    border-style:groove; 
+    border-color:#ffffff #cfcfcf #cfcfcf #ffffff; 
+
+}
+th { 
+    border-width:1px;
+    border-style:groove; 
+    border-color:#ffffff #cfcfcf #cfcfcf #ffffff; 
+
+}
+td#toto { 
+    border-width:1px;
+    border-style:groove; 
+    border-color:#ffffff #cfcfcf #cfcfcf #ffffff; 
+}
+#tableau {
+    vertical-align: top; 
+    border-style-inner:groove;
+    border-spacing: 0px;
+    border-width:thin;
+}
+table#tableau {
+    vertical-align: top; 
+    border-style-inner:groove;
+    border-spacing: 0px;
+    border-width:thin;
+}
+td#repsynthesis1 {
+    vertical-align: top; 
+    border-style-inner:groove;
+    border-spacing: 0px;
+    border-width:thin;
+    border-bottom-color: #cfcfcf;
+    border-left-color: #cfcfcf;
+}
+td#repsynthesis2 {
+    vertical-align: top; 
+    border-style-inner:groove;
+    border-spacing: 0px;
+    border-width:thin;
+    border-bottom-color: #cfcfcf;
+}
+td#repsynthesis3 {
+    vertical-align: top; 
+    border-style-inner:groove;
+    border-spacing: 0px;
+    border-width:thin;
+    border-bottom-color: #cfcfcf;
+    border-right-color: #cfcfcf;
+}
+.arrondTable{
+    text-align: left;
+    border: 2px solid #8999C4;
+    border-radius: 10px;
+    width: 1260px;
+}
+
+.arrondTable tr{
+    text-align: left;
+    border-color: #FFFFFF #CFCFCF #CFCFCF #FFFFFF;
+    border-style: groove;
+    border-width: 1px;
+}
+
+.arrondTable tr th{
+    background-color: #CAD3F1;
+    font-weight: bold;
+    font-style: italic;
+}
+
+.arrondTable tr.odd{
+    background-color: lightgrey;
+}
+
+.arrondTable tr.even{
+    background-color: #E1E7F3;
+}
+
+
+input#submitButtonDuplicate {   
+    background-color: #cad3f1;  
+    border-color:#DCDCDC #696969 #696969 #DCDCDC;       
+}
+
+/** 3 - HEADER */
+
+#logo {
+    max-width: 100px; 
+    margin-top: -5px; 
+    max-height: 28px;
+}
+
+.navbar-nav > li > a, .navbar-brand {
+    padding-top:4px !important; 
+    padding-bottom:0 !important;
+    height: 28px;
+}
+.navbar {
+    min-height:28px !important;
+}
+
+#userInfo > p {
+    display: inline-block;
+    color: white;
+}
+
+.navbar-nav .dropdown-menu {
+    background-color: #333333;
+}
+
+#subactive a {
+    color: #9D9D9D;
+}
+
+#subactive a:hover {
+    color: white;
+    background-color: #222222;
+}
+
+#MySystem {
+    color: white;
+    background-color: #222222;
+    max-height: 25px;
+    margin-top: -2.5px;
+    font-size: 10px;
+}
+
+/*
+#navlist li a {
+    background: url("../images/background.png") repeat-x scroll 0 -45px rgba(0, 0, 0, 0);
+    display: inline-block;
+    height: 35px;
+    margin: 0;
+    padding-left: 1px;
+    text-align:center;
+    vertical-align: middle;
+    
+}
+#navlist li a img{
+    text-align: center;
+    
+}
+#navlist li a:link, #navlist li a:visited {
+    background: url("../images/background.png") repeat-x scroll 0 -90px rgba(0, 0, 0, 0);
+    color: #FFFFFF;
+    float: left;
+    font-size: 14px;
+    font-weight: bold;
+    margin-right: 1px;
+    text-shadow: 0 -1px 1px #000000;
+}
+#navlist .subnav li a:link, #navlist .subnav li a:visited {
+    -moz-user-select: none;
+    background-image: url("../images/background.png");
+    background-position: 0 0;
+    background-repeat: repeat-x;
+    color: #D6D6D6;
+    display: block;
+    text-align:left;
+    font-family: "myriad-pro","myriad-pro-1","myriad-pro-2",sans-serif;
+    font-weight: 600;
+    height: 35px;
+    line-height: 35px;
+    margin: 0 1px;
+    padding: 0 29px;
+}
+#navlist .subnav li a:link, #navlist .subnav li a:visited{
+    background-position: 0 -180px;
+    margin: 0;
+    padding: 0 30px;
+}
+#navlist .subnav {
+    background: none repeat scroll 0 0 #353535;
+    border: 1px solid #424242;
+    display: none;
+    padding: 4px 0;
+    position: absolute;
+    top: 35px;
+}
+#navlist li:hover > .subnav{
+    display: block;
+    *display: inline;
+    *list-style: none;
+    *margin-left: -10%;
+}
+#navlist .subnav li {
+    display: block;
+    padding: 2px 0;
+}
+#logo {
+    display: inline-block;
+    height: 35px;
+    margin: 0;
+    padding-left: 1px;
+    text-align:center;
+    vertical-align: middle;
+}
+
+#userInfo {
+    background: url("../images/background.png") repeat-x scroll 0 -45px rgba(0, 0, 0, 0);
+    display: inline-block;
+    height: 35px;
+    margin: 0;
+    padding-left: 1px;
+    text-align:center;
+    vertical-align: middle;
+}*/
+/** End of HEADER */
+
+/** 4 - LOGIN */
+
+#login-box {
+    width:333px;
+    height: 352px;
+    padding: 58px 76px 0 76px;
+    color: #ebebeb;
+    font: 12px Arial, Helvetica, sans-serif;
+    background: url(../images/login-box-backg.png) no-repeat left top;
+}
+
+#login-box img {
+    border:none;
+}
+
+#login-box h2 {
+    padding:0;
+    margin:0;
+    color: #ebebeb;
+    font: bold 44px "Calibri", Arial;
+}
+
+
+.login-box-name {
+    float: left;
+    display:inline;
+    width:80px;
+    text-align: right;
+    padding: 14px 10px 0 0;
+    margin:0 0 7px 0;
+}
+
+.login-box-error {
+    float: left;
+    display:inline;
+    width:180px;
+    color: red;
+    text-align: right;
+    padding: 0px 0px 0 0;
+    margin:0 0 7px 0;
+    font-weight: bold;
+    text-align: center;
+}
+
+.login-box-field {
+    float: left;
+    display:inline;
+    width:230px;
+    margin:0;
+    margin:0 0 7px 0;
+}
+
+
+.form-login  {
+    width: 205px;
+    padding: 10px 4px 6px 3px;
+    border: 1px solid #0d2c52;
+    background-color:#1e4f8a;
+    font-size: 16px;
+    color: #ebebeb;
+}
+
+
+.login-box-options  {
+    clear:both;
+    padding-left:87px;
+    font-size: 11px;
+}
+
+.login-box-options a {
+    color: #ebebeb;
+    font-size: 11px;
+}
+
+.loginIcon{
+    border-style: none;
+    text-align: right;
+    padding-right: 30px;
+}
+
+.loginIcon a{
+    text-align: center;
+    font-family: sans-serif;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.loginIcon p{
+    text-align: center;
+    font-family: sans-serif;
+    font-weight: bold;
+    font-size: large;
+}
+
+.logoutIcon{
+    background-image: url("../images/logout.png");
+}
+/** END OF LOGIN */
+
+/** 5 - BUTTON */
+.button{
+    background: url("images/ui-bg_glass_75_e6e6e6_1x400.png") repeat-x scroll 50% 50% #E6E6E6;
+    border: 1px solid #D3D3D3;
+    color: #555555;
+    font-weight: normal;
+    border-radius: 4px;
+}
+.button:hover{
+    background: url("images/ui-bg_glass_75_dadada_1x400.png") repeat-x scroll 50% 50% #DADADA;
+    border: 1px solid #999999;
+    color: #212121;
+    font-weight: normal;  
+}
+.button:disabled{
+    background-image: none;
+    opacity: 0.35;
+}
+
+.smallbutton{
+
+    border-width: 1px;
+    -moz-border-radius: 20px;
+}
+
+.smallbutton:hover{
+    background-color: white; 
+    border-width: 1px;
+    border-color:#ccffcc #00ff00 #00ff00 #ccffcc;  
+}
+.buttonplus{
+    background-image: url("../images/plus.png");
+
+}
+/** END OF BUTTON */
+
+/* Various Execution status code. */
+
+.OK {
+    background-color:#00ff00; /* Green */
+}
+.OKF {
+    color:green;
+}
+.KO {
+    background-color:#FF0000; /* Red */
+}
+.KOF {
+    color:darkred;
+}
+.NA {
+    background-color:yellow ; /* Jaune */
+}
+.NAF {
+    color:darkyellow;
+}
+.PE {
+    background-color:#3366FF; /* Blue */
+}
+.PEF {
+    color:darkblue;
+}
+.FA {
+    background-color:mistyrose; /* Purple */
+}
+.FAF {
+    color:purple;
+}
+.CA {
+    background-color:mistyrose; /* Purple */
+}
+.CAF {
+    color:purple;
+}
+.NE {
+    background-color:black; /* Purple */
+}
+.NEF {
+    color:white;
+}
+.NotExecuted {
+    background-color:whitesmoke; /* White */
+}
+.NotExecutedF {
+    text-decoration:none;
+    color:lightgray;
+}
+.NOINF{
+    background-color:#CFCFCF;
+}
+.NOINFF{
+    color:#CFCFCF;
+}
+
+
+.NonRanYet {
+    background-color:yellow;
+    border-style: dashed;
+}
+
+.NotExist {
+    border: none;
+}
+
+.UPPER {
+    background-color:red;
+}
+
+.UP {
+    background-color:orange;
+}
+
+.EQ {
+    background-color:green;
+}
+
+.DO {
+    background-color:yellowgreen;
+}
+.DOWN {
+    background-color:lightgreen;
+}
+.INF{
+    background-color:white;
+}
+/* Response time. */
+.verylong {
+    color:red;
+    font-weight: bold;
+}
+.long {
+    color:purple;
+    font-weight: bold;
+}
+
+.notVisible {
+    display: none;
+}
+
+.OKVisible,
+.KOVisible,
+.NAVisible,
+.FAVisible,
+.PEVisible {
+    display: table-row;
+}
+
+.error-message {
+    color: red;
+    font-weight: bold;
+    padding: 10px;
+    margin: 10px;
+    text-align: center;
+}
+
+.sqlLib {
+    display: inline-block;
+    *display: inline;
+    margin: 2px;
+    padding: 2px;
+    border: 1px solid lightgray;
+    width: 130px;
+    cursor: pointer;
+}
+
+#controlTable {
+    width: 100%;
+}
+
+.wrapAll,
+table.wrapAll td,
+table.wrapAll th {
+    white-space: pre-line;
+    word-wrap: break-word; /*CSS3*/
+    word-break: break-all;
+}

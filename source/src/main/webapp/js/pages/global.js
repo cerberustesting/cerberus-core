@@ -536,7 +536,7 @@ function createDataTable(tableConfigurations){
 
     }
     if(tableConfigurations.showColvis){
-        $("#listOfTestDataLib_wrapper div.ColVis .ColVis_MasterButton").addClass("btn btn-default");
+        $("#"+ tableConfigurations.divId + "_wrapper .ColVis_MasterButton").addClass("btn btn-default");
     }
     $("#" + tableConfigurations.divId + "_length select[name='" + tableConfigurations.divId + "_length']").addClass("form-control input-sm");
     $("#" + tableConfigurations.divId + "_length select[name='" + tableConfigurations.divId + "_length']").css("display", "inline"); 
