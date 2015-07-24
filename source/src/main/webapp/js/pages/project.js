@@ -23,7 +23,9 @@ $.when($.getScript("js/pages/global.js")).then(function () {
 
         var configurations = new TableConfigurationsServerSide("projectsTable", "GetProject", "aaData", aoColumnsFunc());
 
-        createDataTableWithPermissions(configurations);
+        $.when(createDataTable(configurations)).then(function(){
+            $("#projectsTable_wrapper div.ColVis .ColVis_MasterButton").addClass("btn btn-default");  
+        });
     });
 });
 
@@ -35,12 +37,15 @@ function aoColumnsFunc() {
                 aoColumns.push({className: "width150", "sName": "Name"});
                 break;
             case 1 :
-                aoColumns.push({className: "width150", "sName": "Code"});
+                aoColumns.push({className: "width80", "sName": "Code"});
                 break;
             case 2 :
                 aoColumns.push({className: "width150", "sName": "Description"});
                 break;
             case 3 :
+                aoColumns.push({className: "width80", "sName": "Active"});
+                break;
+            case 4 :
                 aoColumns.push({className: "width150", "sName": "Created"});
                 break;
             default :
