@@ -20,13 +20,10 @@
 
 $.when($.getScript("js/pages/global.js")).then(function () {
     $(document).ready(function () {
-        $('#projectsTable').dataTable({
-
-        });
 
         var configurations = new TableConfigurationsServerSide("projectsTable", "GetProject", "aaData", aoColumnsFunc());
 
-//        createDataTableWithPermissions(configurations);
+        createDataTableWithPermissions(configurations);
     });
 });
 
@@ -34,46 +31,18 @@ function aoColumnsFunc() {
     var aoColumns = [];
     $("#projectsTable th").each(function (i) {
         switch (i) {
-            case 0:
+            case 0 :
+                aoColumns.push({className: "width150", "sName": "Name"});
                 break;
-//
-//            case 1 :
-//                aoColumns.push({className: "width250", "sName": "Name"});
-//                break;
-//            case 2 :
-//                aoColumns.push({className: "width80", "sName": "System"});
-//                break;
-//            case 3 :
-//                aoColumns.push({className: "width100", "sName": "Environment"});
-//                break;
-//            case 4 :
-//                aoColumns.push({className: "width80", "sName": "Country"});
-//                break;
-//            case 5 :
-//                aoColumns.push({className: "width100", "sName": "Group"});
-//                break;
-//            case 6 :
-//                aoColumns.push({className: "width80", "sName": "Type"});
-//                break;
-//            case 7 :
-//                aoColumns.push({className: "width100", "sName": "Database"});
-//                break;
-//            case 8 :
-//                aoColumns.push({className: "width500", "sName": "Script"});
-//                break;
-//            case 9 :
-//                aoColumns.push({className: "width250", "sName": "ServicePath"});
-//                break;
-//            case 10 :
-//                aoColumns.push({className: "width250", "sName": "Method"});
-//                break;
-//            case 11 :
-//                aoColumns.push({className: "width500", "sName": "Envelope"});
-//                break;
-//            case 12:
-//                aoColumns.push({className: "width150", "sName": "Description"});
-//                break;
-
+            case 1 :
+                aoColumns.push({className: "width150", "sName": "Code"});
+                break;
+            case 2 :
+                aoColumns.push({className: "width150", "sName": "Description"});
+                break;
+            case 3 :
+                aoColumns.push({className: "width150", "sName": "Created"});
+                break;
             default :
                 aoColumns.push({"sWidth": "100px"});
                 break;
