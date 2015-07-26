@@ -3856,7 +3856,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("CHANGE COLUMN `gp2` `gp2` VARCHAR(255) NULL DEFAULT NULL , ");
         SQLS.append("CHANGE COLUMN `gp3` `gp3` VARCHAR(255) NULL DEFAULT NULL");
         SQLInstruction.add(SQLS.toString());
-        
+
 // Insert new private invariant value for APPLITYPE
 //-- ------------------------ 544
         SQLS = new StringBuilder();
@@ -3873,48 +3873,48 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
 
 // Add table testcaseexecutionqueue
 //-- ------------------------ 546
-		SQLS = new StringBuilder();
-		SQLS.append("CREATE TABLE `testcaseexecutionqueue` (");
-		SQLS.append("  `ID` bigint(20) unsigned NOT NULL AUTO_INCREMENT,");
-		SQLS.append("  `Test` varchar(45) NOT NULL,");
-		SQLS.append("  `TestCase` varchar(45) NOT NULL,");
-		SQLS.append("  `Country` varchar(2) NOT NULL,");
-		SQLS.append("  `Environment` varchar(45) NOT NULL,");
-		SQLS.append("  `Robot` varchar(45) DEFAULT NULL,");
-		SQLS.append("  `RobotIP` varchar(150) DEFAULT NULL,");
-		SQLS.append("  `RobotPort` varchar(20) DEFAULT NULL,");
-		SQLS.append("  `Browser` varchar(45) NOT NULL,");
-		SQLS.append("  `BrowserVersion` varchar(20) DEFAULT NULL,");
-		SQLS.append("  `Platform` varchar(45) DEFAULT NULL,");
-		SQLS.append("  `ManualURL` tinyint(1) NOT NULL DEFAULT '0',");
-		SQLS.append("  `ManualHost` varchar(255) DEFAULT NULL,");
-		SQLS.append("  `ManualContextRoot` varchar(255) DEFAULT NULL,");
-		SQLS.append("  `ManualLoginRelativeURL` varchar(255) DEFAULT NULL,");
-		SQLS.append("  `ManualEnvData` varchar(255) DEFAULT NULL,");
-		SQLS.append("  `Tag` varchar(255) NOT NULL,");
-		SQLS.append("  `OutputFormat` varchar(20) NOT NULL DEFAULT 'gui',");
-		SQLS.append("  `Screenshot` int(11) NOT NULL DEFAULT '0',");
-		SQLS.append("  `Verbose` int(11) NOT NULL DEFAULT '0',");
-		SQLS.append("  `Timeout` mediumtext,");
-		SQLS.append("  `Synchroneous` tinyint(1) NOT NULL DEFAULT '0',");
-		SQLS.append("  `PageSource` int(11) NOT NULL DEFAULT '1',");
-		SQLS.append("  `SeleniumLog` int(11) NOT NULL DEFAULT '1',");
-		SQLS.append("  `RequestDate` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,");
-		SQLS.append("  `Proceeded` tinyint(1) NOT NULL DEFAULT '0',");
-		SQLS.append("  PRIMARY KEY (`ID`),");
-		SQLS.append("  KEY `IX_testcaseexecution_01` (`Test`,`TestCase`,`Country`),");
-		SQLS.append("  KEY `IX_testcaseexecution_02` (`Tag`),");
-		SQLS.append("  CONSTRAINT `FK_testcaseexecutionqueue_01` FOREIGN KEY (`Test`, `TestCase`, `Country`) REFERENCES `testcasecountry` (`Test`, `TestCase`, `Country`) ON DELETE CASCADE ON UPDATE CASCADE");
-		SQLS.append(") ENGINE=InnoDB DEFAULT CHARSET=utf8;");
-		SQLInstruction.add(SQLS.toString());
-                
+        SQLS = new StringBuilder();
+        SQLS.append("CREATE TABLE `testcaseexecutionqueue` (");
+        SQLS.append("  `ID` bigint(20) unsigned NOT NULL AUTO_INCREMENT,");
+        SQLS.append("  `Test` varchar(45) NOT NULL,");
+        SQLS.append("  `TestCase` varchar(45) NOT NULL,");
+        SQLS.append("  `Country` varchar(2) NOT NULL,");
+        SQLS.append("  `Environment` varchar(45) NOT NULL,");
+        SQLS.append("  `Robot` varchar(45) DEFAULT NULL,");
+        SQLS.append("  `RobotIP` varchar(150) DEFAULT NULL,");
+        SQLS.append("  `RobotPort` varchar(20) DEFAULT NULL,");
+        SQLS.append("  `Browser` varchar(45) NOT NULL,");
+        SQLS.append("  `BrowserVersion` varchar(20) DEFAULT NULL,");
+        SQLS.append("  `Platform` varchar(45) DEFAULT NULL,");
+        SQLS.append("  `ManualURL` tinyint(1) NOT NULL DEFAULT '0',");
+        SQLS.append("  `ManualHost` varchar(255) DEFAULT NULL,");
+        SQLS.append("  `ManualContextRoot` varchar(255) DEFAULT NULL,");
+        SQLS.append("  `ManualLoginRelativeURL` varchar(255) DEFAULT NULL,");
+        SQLS.append("  `ManualEnvData` varchar(255) DEFAULT NULL,");
+        SQLS.append("  `Tag` varchar(255) NOT NULL,");
+        SQLS.append("  `OutputFormat` varchar(20) NOT NULL DEFAULT 'gui',");
+        SQLS.append("  `Screenshot` int(11) NOT NULL DEFAULT '0',");
+        SQLS.append("  `Verbose` int(11) NOT NULL DEFAULT '0',");
+        SQLS.append("  `Timeout` mediumtext,");
+        SQLS.append("  `Synchroneous` tinyint(1) NOT NULL DEFAULT '0',");
+        SQLS.append("  `PageSource` int(11) NOT NULL DEFAULT '1',");
+        SQLS.append("  `SeleniumLog` int(11) NOT NULL DEFAULT '1',");
+        SQLS.append("  `RequestDate` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,");
+        SQLS.append("  `Proceeded` tinyint(1) NOT NULL DEFAULT '0',");
+        SQLS.append("  PRIMARY KEY (`ID`),");
+        SQLS.append("  KEY `IX_testcaseexecution_01` (`Test`,`TestCase`,`Country`),");
+        SQLS.append("  KEY `IX_testcaseexecution_02` (`Tag`),");
+        SQLS.append("  CONSTRAINT `FK_testcaseexecutionqueue_01` FOREIGN KEY (`Test`, `TestCase`, `Country`) REFERENCES `testcasecountry` (`Test`, `TestCase`, `Country`) ON DELETE CASCADE ON UPDATE CASCADE");
+        SQLS.append(") ENGINE=InnoDB DEFAULT CHARSET=utf8;");
+        SQLInstruction.add(SQLS.toString());
+
 // Add documentation for ManualExecution parameter in run page
 //-- ------------------------ 547
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `DocLabel`, `DocDesc`) VALUES (");
         SQLS.append("'page_runtests', 'manualExecution', '', 'ManualExecution', 'Manual Execution is the way to execute the <code class=\\'doc-crbvvoca\\'>test case</code>. It could be YES to manually execute all kind of <code class=\\'doc-crbvvoca\\'>test case</code>, or NO to execute if automatically.')");
         SQLInstruction.add(SQLS.toString());
- 
+
 // Add invariant ManualExecution
 //-- ------------------------ 548    	
         SQLS = new StringBuilder();
@@ -3938,29 +3938,29 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS = new StringBuilder();
         SQLS.append("ALTER TABLE `testcaseexecutionwwwdet` ADD INDEX `IX_testcaseexecutionwwwdet_01` (`Start` ASC);");
         SQLInstruction.add(SQLS.toString());
-      
+
 // Add Invariant for new control verify element is equal to another.
 //-- ------------------------ 553
-		SQLS = new StringBuilder();
-		SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`) VALUES ");
-		SQLS.append("('CONTROL', 'verifyElementEquals', 44, 'verifyElementEquals');");
-		SQLInstruction.add(SQLS.toString());
-		
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`) VALUES ");
+        SQLS.append("('CONTROL', 'verifyElementEquals', 44, 'verifyElementEquals');");
+        SQLInstruction.add(SQLS.toString());
+
 // Update control verify element is equal to another sorting.
 //-- ------------------------ 554
-		SQLS = new StringBuilder();
-		SQLS.append("UPDATE `invariant` SET `sort`='32' WHERE `idname`='CONTROL' and`value`='verifyElementEquals';");
-		SQLInstruction.add(SQLS.toString());
-		
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `invariant` SET `sort`='32' WHERE `idname`='CONTROL' and`value`='verifyElementEquals';");
+        SQLInstruction.add(SQLS.toString());
+
 // Add invariant for new controls verifyElementDifferent, verifyIntegerEquals and verifyIntegerDifferent.
 //-- ------------------------ 555
-		SQLS = new StringBuilder();
-		SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`) VALUES ");
-		SQLS.append("('CONTROL', 'verifyElementDifferent', 33, 'verifyElementDifferent'),");
-		SQLS.append("('CONTROL', 'verifyIntegerEquals', 18, 'verifyIntegerEquals'),");
-		SQLS.append("('CONTROL', 'verifyIntegerDifferent', 19, 'verifyIntegerDifferent');");
-		SQLInstruction.add(SQLS.toString());
-		
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`) VALUES ");
+        SQLS.append("('CONTROL', 'verifyElementDifferent', 33, 'verifyElementDifferent'),");
+        SQLS.append("('CONTROL', 'verifyIntegerEquals', 18, 'verifyIntegerEquals'),");
+        SQLS.append("('CONTROL', 'verifyIntegerDifferent', 19, 'verifyIntegerDifferent');");
+        SQLInstruction.add(SQLS.toString());
+
 //Add documentation for new previously added controls.
 //-- ------------------------ 556
         SQLS = new StringBuilder();
@@ -3970,177 +3970,176 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("('testcasestepactioncontrol', 'Type', 'verifyIntegerEquals', 'True if the ControlProp is equal to the integer ControlValue.', '<b>verifyIntegerEquals</b><br><br>Verify if two integers are equals.<br><br><i>Control Property :</i> The first integer<br><br><i>Control Value :</i> The second integer<br><br>'),");
         SQLS.append("('testcasestepactioncontrol', 'Type', 'verifyIntegerDifferent', 'True if the ControlProp is different than the integer ControlValue.', '<b>verifyIntegerDifferent</b><br><br>Verify if two integers are differents.<br><br><i>Control Property :</i> The first integer<br><br><i>Control Value :</i> The second integer<br><br>');");
         SQLInstruction.add(SQLS.toString());
-        
+
 // Increase soaplibrary's Method column size to 255 characters.
 //-- ------------------------ 557
-		SQLS = new StringBuilder();
-		SQLS.append("ALTER TABLE `soaplibrary` CHANGE COLUMN `Method` `Method` VARCHAR(255) NULL DEFAULT NULL ;");
-		SQLInstruction.add(SQLS.toString());
-        
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `soaplibrary` CHANGE COLUMN `Method` `Method` VARCHAR(255) NULL DEFAULT NULL ;");
+        SQLInstruction.add(SQLS.toString());
+
 // Add Invariant for new control verify text not in element.
 // -- ------------------------ 558
-		SQLS = new StringBuilder();
-		SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`) VALUES ");
-		SQLS.append("('CONTROL', 'verifyTextNotInElement', 41, 'verifyTextNotInElement');");
-		SQLInstruction.add(SQLS.toString());
-		
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`) VALUES ");
+        SQLS.append("('CONTROL', 'verifyTextNotInElement', 41, 'verifyTextNotInElement');");
+        SQLInstruction.add(SQLS.toString());
+
 // Add documentation for new previously added controls.
 // -- ------------------------ 559
-		SQLS = new StringBuilder();
-		SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `DocLabel`, `DocDesc`) VALUES ");
-		SQLS.append("('testcasestepactioncontrol', 'Type', 'verifyTextNotInElement', 'True if a text is not inside a field.', '<b>verifyTextNotInElement</b><br><br>True if a text is not inside a field.<br><br><i>Control Property :</i> The field location<br><br><i>Control Value :</i> The text to test against the value from the field locatin<br><br>');");
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `DocLabel`, `DocDesc`) VALUES ");
+        SQLS.append("('testcasestepactioncontrol', 'Type', 'verifyTextNotInElement', 'True if a text is not inside a field.', '<b>verifyTextNotInElement</b><br><br>True if a text is not inside a field.<br><br><i>Control Property :</i> The field location<br><br><i>Control Value :</i> The text to test against the value from the field locatin<br><br>');");
         SQLInstruction.add(SQLS.toString());
-        
+
 // Add ReturnMessage on stepExecution table.
 // -- ------------------------ 560
-		SQLS = new StringBuilder();
-		SQLS.append("ALTER TABLE `testcasestepexecution` ");
-                SQLS.append(" ADD COLUMN `ReturnMessage` VARCHAR(500) NULL DEFAULT NULL AFTER `ReturnCode`;");
-                SQLInstruction.add(SQLS.toString());
-                
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepexecution` ");
+        SQLS.append(" ADD COLUMN `ReturnMessage` VARCHAR(500) NULL DEFAULT NULL AFTER `ReturnCode`;");
+        SQLInstruction.add(SQLS.toString());
+
 // Add last_updaed column.
 // -- ------------------------ 561 >> 567                
-                SQLS = new StringBuilder();
-		SQLS.append("ALTER TABLE `test` ");
-                SQLS.append("ADD COLUMN `last_modified` TIMESTAMP NULL DEFAULT 0;");
-                SQLInstruction.add(SQLS.toString());
-                SQLS = new StringBuilder();
-		SQLS.append("ALTER TABLE `testcase` ");
-                SQLS.append("ADD COLUMN `last_modified` TIMESTAMP NULL DEFAULT 0;");
-                SQLInstruction.add(SQLS.toString());
-                SQLS = new StringBuilder();
-		SQLS.append("ALTER TABLE `testcasecountry` ");
-                SQLS.append("ADD COLUMN `last_modified` TIMESTAMP NULL DEFAULT 0;");
-                SQLInstruction.add(SQLS.toString());
-                SQLS = new StringBuilder();
-		SQLS.append("ALTER TABLE `testcasecountryproperties` ");
-                SQLS.append("ADD COLUMN `last_modified` TIMESTAMP NULL DEFAULT 0;");
-                SQLInstruction.add(SQLS.toString());
-                SQLS = new StringBuilder();
-		SQLS.append("ALTER TABLE `testcasestep` ");
-                SQLS.append("ADD COLUMN `last_modified` TIMESTAMP NULL DEFAULT 0;");
-                SQLInstruction.add(SQLS.toString());
-                SQLS = new StringBuilder();
-		SQLS.append("ALTER TABLE `testcasestepaction` ");
-                SQLS.append("ADD COLUMN `last_modified` TIMESTAMP NULL DEFAULT 0;");
-                SQLInstruction.add(SQLS.toString());
-                SQLS = new StringBuilder();
-		SQLS.append("ALTER TABLE `testcasestepactioncontrol` ");
-                SQLS.append("ADD COLUMN `last_modified` TIMESTAMP NULL DEFAULT 0;");
-                SQLInstruction.add(SQLS.toString());
-                
-                
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `test` ");
+        SQLS.append("ADD COLUMN `last_modified` TIMESTAMP NULL DEFAULT 0;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcase` ");
+        SQLS.append("ADD COLUMN `last_modified` TIMESTAMP NULL DEFAULT 0;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasecountry` ");
+        SQLS.append("ADD COLUMN `last_modified` TIMESTAMP NULL DEFAULT 0;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasecountryproperties` ");
+        SQLS.append("ADD COLUMN `last_modified` TIMESTAMP NULL DEFAULT 0;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestep` ");
+        SQLS.append("ADD COLUMN `last_modified` TIMESTAMP NULL DEFAULT 0;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepaction` ");
+        SQLS.append("ADD COLUMN `last_modified` TIMESTAMP NULL DEFAULT 0;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepactioncontrol` ");
+        SQLS.append("ADD COLUMN `last_modified` TIMESTAMP NULL DEFAULT 0;");
+        SQLInstruction.add(SQLS.toString());
+
 // Add ScreenshotFilename column on testcasestepaction and testcasestepactioncontrol tables.
 // -- ------------------------ 568 >> 569                
-                SQLS = new StringBuilder();
-		SQLS.append("ALTER TABLE `testcasestepaction` ");
-                SQLS.append("ADD COLUMN `ScreenshotFileName` VARCHAR(150) NULL DEFAULT NULL AFTER `Description`;");
-                SQLInstruction.add(SQLS.toString());
-                SQLS = new StringBuilder();
-		SQLS.append("ALTER TABLE `testcasestepactioncontrol` ");
-                SQLS.append("ADD COLUMN `ScreenshotFileName` VARCHAR(150) NULL DEFAULT NULL AFTER `Fatal`;");
-                SQLInstruction.add(SQLS.toString());
-                
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepaction` ");
+        SQLS.append("ADD COLUMN `ScreenshotFileName` VARCHAR(150) NULL DEFAULT NULL AFTER `Description`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepactioncontrol` ");
+        SQLS.append("ADD COLUMN `ScreenshotFileName` VARCHAR(150) NULL DEFAULT NULL AFTER `Fatal`;");
+        SQLInstruction.add(SQLS.toString());
+
 // Add propertytype getFromJson in Invariant table.
 // -- ------------------------ 570 
-                SQLS = new StringBuilder();
-		SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) ");
-                SQLS.append(" VALUES ('PROPERTYTYPE', 'getFromJson', '70', 'Getting value from a Json file', '');");
-                SQLInstruction.add(SQLS.toString());
-                
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) ");
+        SQLS.append(" VALUES ('PROPERTYTYPE', 'getFromJson', '70', 'Getting value from a Json file', '');");
+        SQLInstruction.add(SQLS.toString());
+
 // Add documentation for getFromJson property.
 // -- ------------------------ 571 
-                SQLS = new StringBuilder();
-		SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `DocLabel`, `DocDesc`) ");
-                SQLS.append("VALUES ('testcasecountryproperties', 'Type', 'getFromJson', 'Get a value from a Json File', '<code class=\\'doc-fixed\\'>getFromJson</code> will allow you to take an element value from a Json File.</br>Cerberus will download the Json File (Calling the URL in the Value1 field) and parse it to return the element value expected (Specified in the Value2 field).<br><br>Usage :<br><doc class=\"usage\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Field</th><th class=\\'ex\\'>Usage</th><tr><td class=\\'ex\\'>DTB</td><td class=\\'ex\\'>Not used.</td></tr><tr><td class=\\'ex\\'>Value</td><td class=\\'ex\\'>URL of the Json File</td></tr><tr><td class=\\'ex\\'>Value2</td><td class=\\'ex\\'>Element to Find</td></tr><tr><td class=\\'ex\\'>Length</td><td class=\\'ex\\'>Not used</td></tr><tr><td class=\\'ex\\'>RowLimit</td><td class=\\'ex\\'>Not used.</td></tr><tr><td class=\\'ex\\'>Nature</td><td class=\\'ex\\'>Not used.</td></tr></table></doc><br><br>Examples :<br><doc class=\"examples\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Json File</th><th class=\\'ex\\'>Value</th><th class=\\'ex\\'>Value2</th><th class=\\'ex\\'>Result</th><tr><td class=\\'ex\\'><textarea rows=\"3\" style=\"width: 245px;\" readonly>{\"text1\": \"yes\",\"text2\": 1234, \"array\":[\"first\", \"second\", \"third\"]}</textarea></td><td class=\\'ex\\'>http://url_of_the_json/file.json</td><td class=\\'ex\\'>text2</td><td class=\\'ex\\'>1234</td></tr><tr><td class=\\'ex\\'><textarea rows=\"3\" style=\"width: 245px;\" readonly>{\"text1\": \"yes\",\"text2\": 1234, \"array\":[\"first\", \"second\", \"third\"]}</textarea></td><td class=\\'ex\\'>http://url_of_the_json/file.json</td><td class=\\'ex\\'>array[1]</td><td class=\\'ex\\'>second</td></tr></table></doc>');");
-                SQLInstruction.add(SQLS.toString());
-                
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `DocLabel`, `DocDesc`) ");
+        SQLS.append("VALUES ('testcasecountryproperties', 'Type', 'getFromJson', 'Get a value from a Json File', '<code class=\\'doc-fixed\\'>getFromJson</code> will allow you to take an element value from a Json File.</br>Cerberus will download the Json File (Calling the URL in the Value1 field) and parse it to return the element value expected (Specified in the Value2 field).<br><br>Usage :<br><doc class=\"usage\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Field</th><th class=\\'ex\\'>Usage</th><tr><td class=\\'ex\\'>DTB</td><td class=\\'ex\\'>Not used.</td></tr><tr><td class=\\'ex\\'>Value</td><td class=\\'ex\\'>URL of the Json File</td></tr><tr><td class=\\'ex\\'>Value2</td><td class=\\'ex\\'>Element to Find</td></tr><tr><td class=\\'ex\\'>Length</td><td class=\\'ex\\'>Not used</td></tr><tr><td class=\\'ex\\'>RowLimit</td><td class=\\'ex\\'>Not used.</td></tr><tr><td class=\\'ex\\'>Nature</td><td class=\\'ex\\'>Not used.</td></tr></table></doc><br><br>Examples :<br><doc class=\"examples\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Json File</th><th class=\\'ex\\'>Value</th><th class=\\'ex\\'>Value2</th><th class=\\'ex\\'>Result</th><tr><td class=\\'ex\\'><textarea rows=\"3\" style=\"width: 245px;\" readonly>{\"text1\": \"yes\",\"text2\": 1234, \"array\":[\"first\", \"second\", \"third\"]}</textarea></td><td class=\\'ex\\'>http://url_of_the_json/file.json</td><td class=\\'ex\\'>text2</td><td class=\\'ex\\'>1234</td></tr><tr><td class=\\'ex\\'><textarea rows=\"3\" style=\"width: 245px;\" readonly>{\"text1\": \"yes\",\"text2\": 1234, \"array\":[\"first\", \"second\", \"third\"]}</textarea></td><td class=\\'ex\\'>http://url_of_the_json/file.json</td><td class=\\'ex\\'>array[1]</td><td class=\\'ex\\'>second</td></tr></table></doc>');");
+        SQLInstruction.add(SQLS.toString());
+
 // Add Solr_url parameter.
 // -- ------------------------ 572 
-                SQLS = new StringBuilder();
-		SQLS.append("INSERT INTO `parameter` (`system`, `param`,`value`, `description`) VALUES ('', 'solr_url','', 'URL of Solr search Engine used on Search Testcase Page. Value is empty if no Solr implementation is available');");
-                SQLInstruction.add(SQLS.toString());
-                
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `parameter` (`system`, `param`,`value`, `description`) VALUES ('', 'solr_url','', 'URL of Solr search Engine used on Search Testcase Page. Value is empty if no Solr implementation is available');");
+        SQLInstruction.add(SQLS.toString());
+
 // Add Thread Pool Size parameter.
 // -- ------------------------ 573                
-                SQLS = new StringBuilder();
-		SQLS.append("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) VALUES ('', 'cerberus_execution_threadpool_size', '10', 'Number of Simultaneous execution handled by Cerberus');");
-                SQLInstruction.add(SQLS.toString());
-                
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) VALUES ('', 'cerberus_execution_threadpool_size', '10', 'Number of Simultaneous execution handled by Cerberus');");
+        SQLInstruction.add(SQLS.toString());
+
 // Add Column Comment,Retries and manualExecution in TestCaseExecutionQueue table.
 // -- ------------------------ 574                
-                SQLS = new StringBuilder();
-		SQLS.append("ALTER TABLE `testcaseexecutionqueue` ");
-                SQLS.append("ADD COLUMN `comment` VARCHAR(250) NULL DEFAULT NULL AFTER `proceeded`, ");
-                SQLS.append("ADD COLUMN `retries` TINYINT(1) NOT NULL DEFAULT '0' AFTER `comment`,");
-                SQLS.append("ADD COLUMN `manualexecution` VARCHAR(1) NOT NULL DEFAULT 'N' AFTER `retries`;");
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcaseexecutionqueue` ");
+        SQLS.append("ADD COLUMN `comment` VARCHAR(250) NULL DEFAULT NULL AFTER `proceeded`, ");
+        SQLS.append("ADD COLUMN `retries` TINYINT(1) NOT NULL DEFAULT '0' AFTER `comment`,");
+        SQLS.append("ADD COLUMN `manualexecution` VARCHAR(1) NOT NULL DEFAULT 'N' AFTER `retries`;");
+        SQLInstruction.add(SQLS.toString());
 
-                SQLInstruction.add(SQLS.toString());
-                
 // Add Column Comment in TestCaseExecutionQueue table.
 // -- ------------------------ 575                
-                SQLS = new StringBuilder();
-		SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ('OUTPUTFORMAT', 'redirectToReport', '4', 'Go to ReportByTag page', '');");
-                SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ('OUTPUTFORMAT', 'redirectToReport', '4', 'Go to ReportByTag page', '');");
+        SQLInstruction.add(SQLS.toString());
 
 // Add Column Comment in TestCaseExecutionQueue table.
 // -- ------------------------ 576               
-                SQLS = new StringBuilder();
-		SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `DocLabel`, `DocDesc`) VALUES ('page_runtests', 'Retries', '', 'Retries', 'Define the number of Retry of the Execution in case of Not OK status.<br>\nAs soon a OK status if reached, the engine stop to retry to execute the testcase.');");
-                SQLInstruction.add(SQLS.toString());
-                
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `DocLabel`, `DocDesc`) VALUES ('page_runtests', 'Retries', '', 'Retries', 'Define the number of Retry of the Execution in case of Not OK status.<br>\nAs soon a OK status if reached, the engine stop to retry to execute the testcase.');");
+        SQLInstruction.add(SQLS.toString());
+
 // Add Column Comment in TestCaseExecutionQueue table.
 // -- ------------------------ 577               
-                SQLS = new StringBuilder();
-		SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ");
-                SQLS.append("('INVARIANTPRIVATE', 'RETRIES', '470', '', ''), ");
-                SQLS.append("('RETRIES', '0', '10', 'Do not retry in case of Not OK', ''), ");
-                SQLS.append("('RETRIES', '1', '20', 'Retry 1 time in case of Not OK', ''), ");
-                SQLS.append("('RETRIES', '2', '30', 'Retry 2 times in case of Not OK', ''), ");
-                SQLS.append("('RETRIES', '3', '40', 'Retry 3 times in case of Not OK', '');");
-                
-                SQLInstruction.add(SQLS.toString());
-                
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ");
+        SQLS.append("('INVARIANTPRIVATE', 'RETRIES', '470', '', ''), ");
+        SQLS.append("('RETRIES', '0', '10', 'Do not retry in case of Not OK', ''), ");
+        SQLS.append("('RETRIES', '1', '20', 'Retry 1 time in case of Not OK', ''), ");
+        SQLS.append("('RETRIES', '2', '30', 'Retry 2 times in case of Not OK', ''), ");
+        SQLS.append("('RETRIES', '3', '40', 'Retry 3 times in case of Not OK', '');");
+        SQLInstruction.add(SQLS.toString());
+
 // Add Column UserAgent in Robot Table.
 // -- ------------------------ 578               
-                SQLS = new StringBuilder();
-		SQLS.append("ALTER TABLE `robot` ");
-                SQLS.append("ADD COLUMN `useragent` VARCHAR(250) NOT NULL DEFAULT '' AFTER `active`;");
-                SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `robot` ");
+        SQLS.append("ADD COLUMN `useragent` VARCHAR(250) NOT NULL DEFAULT '' AFTER `active`;");
+        SQLInstruction.add(SQLS.toString());
 
 // Add Column Domain in countryenvironmentparameters Table.
 // -- ------------------------ 579 -> 581
-                SQLS = new StringBuilder();
-		SQLS.append("ALTER TABLE `countryenvironmentparameters` ");
-                SQLS.append("ADD COLUMN `domain` VARCHAR(150) NOT NULL DEFAULT '' AFTER `IP`;");
-                SQLInstruction.add(SQLS.toString());
-                SQLS = new StringBuilder();
-		SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `DocLabel`, `DocDesc`) ");
-                SQLS.append("VALUES ('countryenvironmentparameters', 'domain', '', 'Domain', 'Domain of the Application. Can be used inside any test execution with %SYS_APP_DOMAIN% variable.');");
-                SQLInstruction.add(SQLS.toString());
-                SQLS = new StringBuilder();
-		SQLS.append("UPDATE `documentation` ");
-                SQLS.append("SET `DocDesc`='Value of the property. Depend on the <code class=\\'doc-fixed\\'>type</code> of property chosen.<br><br>Get more information on <code class=\\'doc-fixed\\'>type</code> field.<br><br><table cellspacing=0 cellpadding=3><th class=\\'ex\\' colspan=\\'2\\'>The following system variables can be used</th><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_SYSTEM%</code></td><td class=\\'ex\\'>System value</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_APPLI%</code></td><td class=\\'ex\\'>Application reference</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_APP_DOMAIN%</code></td><td class=\\'ex\\'>Domain of the Application</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_ENV%</code></td><td class=\\'ex\\'>Environment value</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_ENVGP%</code></td><td class=\\'ex\\'>Environment group code</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_COUNTRY%</code></td><td class=\\'ex\\'>Country code</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_COUNTRYGP1%</code></td><td class=\\'ex\\'>Country group1 value</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_SSIP%</code></td><td class=\\'ex\\'>Selenium server IP</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_SSPORT%</code></td><td class=\\'ex\\'>Selenium server port</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_TAG%</code></td><td class=\\'ex\\'>Execution tag</td></tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_EXECUTIONID%</code></td><td class=\\'ex\\'>Execution ID</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_TODAY-yyyy%</code></td><td class=\\'ex\\'>Year of today</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_TODAY-MM%</code></td><td class=\\'ex\\'>Month of today</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_TODAY-dd%</code></td><td class=\\'ex\\'>Day of today</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_TODAY-doy%</code></td><td class=\\'ex\\'>Day of today from the beginning of the year</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_TODAY-HH%</code></td><td class=\\'ex\\'>Hour of today</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_TODAY-mm%</code></td><td class=\\'ex\\'>Minute of today</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_TODAY-ss%</code></td><td class=\\'ex\\'>Second of today</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_YESTERDAY-yyyy%</code></td><td class=\\'ex\\'>Year of yesterday</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_YESTERDAY-MM%</code></td><td class=\\'ex\\'>Month of yesterday</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_YESTERDAY-dd%</code></td><td class=\\'ex\\'>Day of yesterday</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_TODAY-doy%</code></td><td class=\\'ex\\'>Day of yesterday from the beginning of the year</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_YESTERDAY-HH%</code></td><td class=\\'ex\\'>Hour of yesterday</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_YESTERDAY-mm%</code></td><td class=\\'ex\\'>Minute of yesterday</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_YESTERDAY-ss%</code></td><td class=\\'ex\\'>Second of yesterday</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_ELAPSED-EXESTART%</code></td><td class=\\'ex\\'>Number of milisecond since the start of the execution.</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_ELAPSED-STEPSTART%</code></td><td class=\\'ex\\'>Number of milisecond since the start of the execution of the current step.</td></tr></table>'");
-                SQLS.append(" WHERE `DocTable`='testcasecountryproperties' and`DocField`='Value' and`DocValue`='';");
-                SQLInstruction.add(SQLS.toString());
-                
- //Add new property type that is able to retrieve data values from a property that is specified in the library
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `countryenvironmentparameters` ");
+        SQLS.append("ADD COLUMN `domain` VARCHAR(150) NOT NULL DEFAULT '' AFTER `IP`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `DocLabel`, `DocDesc`) ");
+        SQLS.append("VALUES ('countryenvironmentparameters', 'domain', '', 'Domain', 'Domain of the Application. Can be used inside any test execution with %SYS_APP_DOMAIN% variable.');");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `documentation` ");
+        SQLS.append("SET `DocDesc`='Value of the property. Depend on the <code class=\\'doc-fixed\\'>type</code> of property chosen.<br><br>Get more information on <code class=\\'doc-fixed\\'>type</code> field.<br><br><table cellspacing=0 cellpadding=3><th class=\\'ex\\' colspan=\\'2\\'>The following system variables can be used</th><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_SYSTEM%</code></td><td class=\\'ex\\'>System value</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_APPLI%</code></td><td class=\\'ex\\'>Application reference</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_APP_DOMAIN%</code></td><td class=\\'ex\\'>Domain of the Application</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_ENV%</code></td><td class=\\'ex\\'>Environment value</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_ENVGP%</code></td><td class=\\'ex\\'>Environment group code</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_COUNTRY%</code></td><td class=\\'ex\\'>Country code</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_COUNTRYGP1%</code></td><td class=\\'ex\\'>Country group1 value</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_SSIP%</code></td><td class=\\'ex\\'>Selenium server IP</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_SSPORT%</code></td><td class=\\'ex\\'>Selenium server port</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_TAG%</code></td><td class=\\'ex\\'>Execution tag</td></tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_EXECUTIONID%</code></td><td class=\\'ex\\'>Execution ID</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_TODAY-yyyy%</code></td><td class=\\'ex\\'>Year of today</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_TODAY-MM%</code></td><td class=\\'ex\\'>Month of today</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_TODAY-dd%</code></td><td class=\\'ex\\'>Day of today</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_TODAY-doy%</code></td><td class=\\'ex\\'>Day of today from the beginning of the year</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_TODAY-HH%</code></td><td class=\\'ex\\'>Hour of today</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_TODAY-mm%</code></td><td class=\\'ex\\'>Minute of today</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_TODAY-ss%</code></td><td class=\\'ex\\'>Second of today</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_YESTERDAY-yyyy%</code></td><td class=\\'ex\\'>Year of yesterday</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_YESTERDAY-MM%</code></td><td class=\\'ex\\'>Month of yesterday</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_YESTERDAY-dd%</code></td><td class=\\'ex\\'>Day of yesterday</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_TODAY-doy%</code></td><td class=\\'ex\\'>Day of yesterday from the beginning of the year</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_YESTERDAY-HH%</code></td><td class=\\'ex\\'>Hour of yesterday</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_YESTERDAY-mm%</code></td><td class=\\'ex\\'>Minute of yesterday</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_YESTERDAY-ss%</code></td><td class=\\'ex\\'>Second of yesterday</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_ELAPSED-EXESTART%</code></td><td class=\\'ex\\'>Number of milisecond since the start of the execution.</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_ELAPSED-STEPSTART%</code></td><td class=\\'ex\\'>Number of milisecond since the start of the execution of the current step.</td></tr></table>'");
+        SQLS.append(" WHERE `DocTable`='testcasecountryproperties' and`DocField`='Value' and`DocValue`='';");
+        SQLInstruction.add(SQLS.toString());
+
+// Add new property type that is able to retrieve data values from a property that is specified in the library
 // -- ------------------------ 582-583               
-              
-              
-                SQLS = new StringBuilder();
-                SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) ");
-                SQLS.append(" VALUES ('PROPERTYTYPE', 'getFromDataLib', '75', 'Determines the data value associated with a library entry', 'Data value'); ");
-                SQLInstruction.add(SQLS.toString());
-                
-                
-                SQLS = new StringBuilder();
-                SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`) ");
-                SQLS.append(" VALUES ('USERGROUP', 'TestDataManager', '130', 'User that can manage the testdatalibrary'); ");
-                SQLInstruction.add(SQLS.toString());
-                
-        
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) ");
+        SQLS.append(" VALUES ('PROPERTYTYPE', 'getFromDataLib', '75', 'Determines the data value associated with a library entry', 'Data value'); ");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`) ");
+        SQLS.append(" VALUES ('USERGROUP', 'TestDataManager', '130', 'User that can manage the testdatalibrary'); ");
+        SQLInstruction.add(SQLS.toString());
+
+// Enlarge Property column in testcasestepaction table.
+// -- ------------------------ 584               
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepaction` ");
+        SQLS.append(" CHANGE COLUMN `Property` `Property` VARCHAR(150) NULL DEFAULT NULL ");
+        SQLInstruction.add(SQLS.toString());
+
         return SQLInstruction;
     }
-    
+
 }
