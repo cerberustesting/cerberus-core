@@ -1165,7 +1165,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(") ENGINE=InnoDB DEFAULT CHARSET=utf8");
         SQLInstruction.add(SQLS.toString());
 
-        SQLS = new StringBuilder();
+        SQLS = new StringBuilder(); // To be removed as not to be used by Cerberus.
         SQLS.append("CREATE TABLE `qualitynonconformities` (");
         SQLS.append("  `idqualitynonconformities` int(11) NOT NULL AUTO_INCREMENT,");
         SQLS.append("  `Country` varchar(45) DEFAULT NULL,");
@@ -1189,7 +1189,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(") ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8");
         SQLInstruction.add(SQLS.toString());
 
-        SQLS = new StringBuilder();
+        SQLS = new StringBuilder(); // To be removed as not to be used by Cerberus.
         SQLS.append("CREATE TABLE `qualitynonconformitiesimpact` (");
         SQLS.append("  `idqualitynonconformitiesimpact` bigint(20) NOT NULL AUTO_INCREMENT,");
         SQLS.append("  `idqualitynonconformities` int(11) DEFAULT NULL,");
