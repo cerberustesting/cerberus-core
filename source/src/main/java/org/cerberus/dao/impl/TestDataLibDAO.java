@@ -794,7 +794,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
         
         Connection connection = this.databaseSpring.connect();
         
-        String query = "SELECT distinct(`Group`) FROM cerberus_partial.testdatalib  where `Type` like ? and `Group` <> '' order by `Group`";
+        String query = "SELECT distinct(`Group`) FROM testdatalib  where `Type` like ? and `Group` <> '' order by `Group`";
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
             preStat.setString(1, type);
