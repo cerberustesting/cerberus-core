@@ -1592,6 +1592,9 @@
             <url-pattern>/UpdateUserRobotPreference</url-pattern>
             <url-pattern>/RunManualTest</url-pattern>
             <url-pattern>/SetTagToExecution</url-pattern>
+            <url-pattern>/FindExecutionInQueue</url-pattern>
+            <url-pattern>/DeleteExecutionInQueue</url-pattern>
+            <url-pattern>/UpdateExecutionInQueue</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <description>RunTest</description>
@@ -1603,8 +1606,6 @@
         <web-resource-collection>
             <web-resource-name>servlet</web-resource-name>
             <description>servlet</description>
-            <url-pattern>/GetTestDataLib</url-pattern>
-            <url-pattern>/GetTestDataLibData</url-pattern>
             <url-pattern>/AddTestDataLib</url-pattern>
             <url-pattern>/ImportTestDataLib</url-pattern>
             <url-pattern>/DeleteTestDataLib</url-pattern> 

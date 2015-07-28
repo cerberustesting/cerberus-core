@@ -4133,10 +4133,16 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLInstruction.add(SQLS.toString());
 
 // Enlarge Property column in testcasestepaction table.
-// -- ------------------------ 584               
+// -- ------------------------ 584
         SQLS = new StringBuilder();
         SQLS.append("ALTER TABLE `testcasestepaction` ");
         SQLS.append(" CHANGE COLUMN `Property` `Property` VARCHAR(150) NULL DEFAULT NULL ");
+        SQLInstruction.add(SQLS.toString());
+        
+// Creating the new group 'TestDataManager' from the group 'Test'.
+// -- ------------------------ 585
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO usergroup SELECT distinct Login, 'TestDataManager' FROM usergroup where GroupName in ('Test');");
         SQLInstruction.add(SQLS.toString());
 
         return SQLInstruction;
