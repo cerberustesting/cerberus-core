@@ -7,8 +7,10 @@
 #         
 #-------------------------------------------------------------------------------
 
+# Project Root.
+PROJECTROOT=/home/vertigo/dev/ProjectsNetBeans/CerberusGit/
 # Web.xml file to check.
-WEBXML=/home/vertigo/dev/git/Cerberus/source/src/main/webapp/WEB-INF/web.xml
+WEBXML=/home/vertigo/dev/ProjectsNetBeans/CerberusGit/source/src/main/webapp/WEB-INF/web.xml
 # Temporary area where log and temporary files will be saved
 TMP_DIR=/home/vertigo/tmp
 
@@ -31,7 +33,7 @@ echo "$HOUR $$ $message"
 # Servlet
 #-------------------------------------------------------------------------------
 
-find . -type f -wholename *servlet*java -exec basename {} \; > $TMP_XML
+find $PROJECTROOT -type f -wholename *servlet*java -exec basename {} \; > $TMP_XML
 
 #cat $TMP_XML
 
@@ -40,7 +42,7 @@ log "-----------------------------------"
 for j in `cat $TMP_XML`
 do
 #  log "Processing ${j}"
-  cntwebxml=`grep ${j%.java}\<\/url $WEBXML | wc -l`
+  cntwebxml=`grep \/${j%.java}\<\/url $WEBXML | wc -l`
   if [ ! $cntwebxml -eq 2 ]
     then
 #      log ""
@@ -53,7 +55,7 @@ done
 # jsp
 #-------------------------------------------------------------------------------
 
-find . -type f -wholename *.jsp -exec basename {} \; > $TMP_XML
+find $PROJECTROOT -type f -wholename *.jsp -exec basename {} \; > $TMP_XML
 
 #cat $TMP_XML
 
