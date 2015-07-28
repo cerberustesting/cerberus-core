@@ -21,6 +21,7 @@ import java.util.List;
 
 import org.cerberus.entity.Project;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.AnswerList;
 
 /**
  *
@@ -37,4 +38,6 @@ public interface IProjectDAO {
     public void deleteProject(Project project) throws CerberusException;
 
     public void updateProject(Project project) throws CerberusException;
+
+    public AnswerList findProjectListByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, String string);
 }

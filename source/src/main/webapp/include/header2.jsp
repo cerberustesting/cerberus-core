@@ -250,7 +250,7 @@
 <!--    <div style="clear:both">
         <p class="dttTitle">Cerberus : Framework for Automated Testing</p>
     </div>-->
-<br><br>
+<!--<br><br>-->
 <script type="text/javascript">
     menuColoring(null);
 </script>
