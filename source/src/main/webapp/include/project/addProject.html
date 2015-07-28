@@ -1,0 +1,58 @@
+<!--Add a project-->
+<div data-backdrop="static" class="modal fade center width600" id="addProjectModal" tabindex="-1" role="dialog" aria-labelledby="addProjectModalLabel" aria-hidden="true">
+    <div class="modal-dialog nomargintop nomarginbottom width600">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="addProjectModalLabel">Create Project</h4>
+            </div>
+            <div class="modal-body">
+
+                <!--add form-->
+                <form id="addProjectModalForm" name="addProjectModalForm"  title="Add Project" role="form">
+                    <div class="container center width500"
+                         <!-- messages area-->
+                         <div id="DialogMessagesArea" class="width500">
+                            <div class="alert" id="DialogMessagesAlert"  style="display:none;">
+                                <strong><span class="alert-description" id="DialogAlertDescription"></span></strong>
+                                <button type="button" class="close" data-hide="alert"  aria-hidden="true">
+                                    <span class="glyphicon glyphicon-remove alert-right alert-close pull-right"></span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-xs-12">
+                                <label for="idProject">Project name</label>
+                                <input type="text" class="form-control" name="idProject" id="idProject" placeholder="Project Name" aria-describedby="basic-addon1">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-xs-6">
+                                <label for="VCCode">Code</label>
+                                <input type="text" class="form-control" name="VCCode" id="VCCode" placeholder="Code" aria-describedby="basic-addon1">
+                            </div>
+                            <div class="form-group col-xs-6">
+                                <label for="active">Active</label>
+                                <select class="form-control"  id="Active" name="Active">
+                                    <option>Y</option>
+                                    <option>N</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-xs-12">
+                                <label for="Description">Description</label>
+                                <textarea id="Description" name="Description"   
+                                          class="form-control"></textarea> 
+                            </div>
+                        </div>    
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" id="addProjectButton" class="btn btn-primary">Save</button>
+            </div>
+        </div>
+    </div>
+</div>

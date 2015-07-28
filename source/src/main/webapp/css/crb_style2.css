@@ -370,6 +370,10 @@ input#submitButtonDuplicate {
     background-color: #333333;
 }
 
+ul.nav li.dropdown:hover > ul.dropdown-menu {
+    display: block;    
+}
+
 #subactive a {
     color: #9D9D9D;
 }

@@ -426,6 +426,10 @@
         <servlet-class>org.cerberus.servlet.project.GetProject</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>ReadProject</servlet-name>
+        <servlet-class>org.cerberus.servlet.project.ReadProject</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>CreateProject</servlet-name>
         <servlet-class>org.cerberus.servlet.project.CreateProject</servlet-class>
     </servlet>
@@ -1109,6 +1113,10 @@
         <url-pattern>/GetProject</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
+        <servlet-name>ReadProject</servlet-name>
+        <url-pattern>/ReadProject</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
         <servlet-name>CreateProject</servlet-name>
         <url-pattern>/CreateProject</url-pattern>
     </servlet-mapping>
@@ -1636,6 +1644,7 @@
             <url-pattern>/GetDeployTypeList</url-pattern>
             <url-pattern>/GetBuildRevisionInvariant</url-pattern>
             <url-pattern>/GetProject</url-pattern>
+            <url-pattern>/ReadProject</url-pattern>
             <url-pattern>/FindBuildContent</url-pattern>
             <url-pattern>/GetCountryEnvParamList</url-pattern>
             <url-pattern>/GetCountryEnvironmentParameterList</url-pattern>

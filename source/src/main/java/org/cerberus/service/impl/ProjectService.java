@@ -28,6 +28,7 @@ import org.cerberus.entity.MessageGeneralEnum;
 import org.cerberus.entity.Project;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.service.IProjectService;
+import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -89,6 +90,11 @@ public class ProjectService implements IProjectService {
     @Override
     public void updateProject(Project project) throws CerberusException {
         projectDao.updateProject(project);
+    }
+
+    @Override
+    public AnswerList findProjectListByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, String string) {
+        return projectDao.findProjectListByCriteria(startPosition, length, columnName, sort, searchParameter, string);
     }
 
 }

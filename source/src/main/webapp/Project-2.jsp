@@ -37,12 +37,14 @@
             IDocumentationService docService = appContext.getBean(IDocumentationService.class);
         %>
         <div class="container center" id="page-layout">
+            <%@ include file="include/project/addProject.html"%> 
 
             <h1 class="page-title-line">Project</h1>
             <div id="project" class="well">
                 <table id="projectsTable" class="table table-hover display" name="projectsTable">
                     <thead>
                         <tr>
+                            <th>Actions</th>
                             <th>Project</th>
                             <th>Code</th>
                             <th>Description</th>
