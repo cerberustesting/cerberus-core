@@ -34,17 +34,17 @@ public enum MessageGeneralEnum {
      * - a clear message that will be reported to the user. describing what was done or the error that occurred.
      */
 
-    VALIDATION_FAILED_ENVIRONMENT_NOTACTIVE(50, "", "The environment selected isn't active"),
-    VALIDATION_FAILED_TESTCASE_NOTACTIVE(51, "", "The test case selected isn't active"),
-    VALIDATION_FAILED_TYPE_DIFFERENT(52, "", "The type of environment is defined as Comparison but not the test case"),
-    VALIDATION_FAILED_RANGE_DIFFERENT(53, "", "The Build/Revision of test case isn't in the range of build"),
-    VALIDATION_FAILED_RANGE_WRONGFORMAT(54, "", "The Build/Revision of test case isn't formatted as expected"),
-    VALIDATION_FAILED_TARGET_DIFFERENT(55, "", "The target Build/Revision of test case isn't in the range of build"),
-    VALIDATION_FAILED_TARGET_WRONGFORMAT(56, "", "The target Build/Revision of test case isn't formatted as expected"),
+    VALIDATION_FAILED_ENVIRONMENT_NOTACTIVE(50, "", "The environment selected isn't active."),
+    VALIDATION_FAILED_TESTCASE_NOTACTIVE(51, "", "The test case selected isn't active."),
+    VALIDATION_FAILED_TYPE_DIFFERENT(52, "", "The type of environment is defined as Comparison but not the test case."),
+    VALIDATION_FAILED_RANGE_DIFFERENT(53, "", "The Build/Revision of test case isn't in the range of build."),
+    VALIDATION_FAILED_RANGE_WRONGFORMAT(54, "", "The Build/Revision of test case isn't formatted as expected."),
+    VALIDATION_FAILED_TARGET_DIFFERENT(55, "", "The target Build/Revision of test case isn't in the range of build."),
+    VALIDATION_FAILED_TARGET_WRONGFORMAT(56, "", "The target Build/Revision of test case isn't formatted as expected."),
     VALIDATION_FAILED_RUNQA_NOTDEFINED(57, "", "The test case isn't defined to run in QA environment. You try to run it on '%ENV%' that belong to the QA environment group."),
     VALIDATION_FAILED_RUNUAT_NOTDEFINED(58, "", "The test case isn't defined to run in UAT environment. You try to run it on '%ENV%' that belong to the UAT environment group."),
     VALIDATION_FAILED_RUNPROD_NOTDEFINED(59, "", "The test case isn't defined to run in Production environment. You try to run it on '%ENV%' that belong to the PROD environment group."),
-    VALIDATION_FAILED_COUNTRY_NOTDEFINED(60, "", "The test case isn't defined to run in selected country"),
+    VALIDATION_FAILED_COUNTRY_NOTDEFINED(60, "", "The test case isn't defined to run in selected country."),
     VALIDATION_FAILED_ENVIRONMENT_NOTDEFINED(61, "", "The environment selected '%ENV%' belong to a group of environment '%ENVGP%' that is neither DEV, QA, UAT and PROD."),
     VALIDATION_FAILED_ENVIRONMENT_UNDER_MAINTENANCE(62, "", "The environment is under maintenance. You try to run a test aginst an environment that is currently under maintenance."),
     VALIDATION_FAILED_SELENIUM_COULDNOTCONNECT(63, "", "Could not contact Selenium server on %SSIP% using port %SSPORT%. Possible causes are invalid address of the remote server or browser start-up failure."),
@@ -64,7 +64,7 @@ public enum MessageGeneralEnum {
     VALIDATION_FAILED_ENVIRONMENT_DOESNOTEXIST_MAN(82, "", "The environment you defined in myenvdata parameter '%ENV%' does not exit."),
     VALIDATION_FAILED_SELENIUM_EMPTYORBADIP(83, "", "Selenium IP parameter (ss_ip) : '%IP%' is empty or badly formated."),
     VALIDATION_FAILED_SELENIUM_EMPTYORBADPORT(84, "", "Selenium Port parameter (ss_p) : '%PORT%' is empty or badly formated."),
-    VALIDATION_FAILED_VERBOSE_USED_WITH_INCORRECT_BROWSER(85, "", "Verbose should be used only with Firefox. For other browsers, it should be set to 0"),
+    VALIDATION_FAILED_VERBOSE_USED_WITH_INCORRECT_BROWSER(85, "", "Verbose should be used only with Firefox. For other browsers, it should be set to 0."),
     VALIDATION_FAILED_URL_MALFORMED(86, "", "URL '%URL%' is not correct and cannot be handled by Cerberus."),
 
     EXECUTION_PE_TESTSTARTED(5, "PE", "Test started..."),
@@ -76,12 +76,12 @@ public enum MessageGeneralEnum {
     EXECUTION_PE_LOADINGDETAILEDDATA(5, "PE", "Loading detailed data..."),
     EXECUTION_PE_TESTEXECUTING(5, "PE", "Test is executing..."),
     EXECUTION_OK(1, "OK", "The test case finished successfully"),
-    EXECUTION_KO(2, "KO", "The test case finished, but failed on validations"),
+    EXECUTION_KO(2, "KO", "The test case finished, but failed on validations."),
     EXECUTION_FA(3, "FA", "The test case failed to be executed. More lickely due to an error in the test or in cerberus configuration."),
     EXECUTION_FA_ACTION(4, "FA", "The test case failed to be executed because of an action."),
-    EXECUTION_FA_SELENIUM(8, "FA", "The test case failed to be executed. Could not start Selenium. %MES%"),    
+    EXECUTION_FA_SELENIUM(8, "FA", "The test case failed to be executed. Could not start Selenium. %MES%."),    
     EXECUTION_FA_CONNECTIVITY(10, "FA", "The test case failed to be executed. Connectivity issues were found."),
-    EXECUTION_FA_CERBERUS(9, "FA", "The test case failed to be executed due to error in Cerberus, please contact Administrator of Cerberus. %MES%"),
+    EXECUTION_FA_CERBERUS(9, "FA", "The test case failed to be executed due to error in Cerberus, please contact Administrator of Cerberus. %MES%."),
     EXECUTION_CA(6, "CA", "The test case has been cancelled by the user."),
     EXECUTION_NA(7, "NA", "The test case could not be run because of missing testing data."),
         
@@ -93,15 +93,15 @@ public enum MessageGeneralEnum {
     SOAPLIB_NOT_FOUND(105, "FA", "SOAP Library was not found"),
     SOAPLIB_MALFORMED_URL(106, "FA", "SOAP Attachment File badly configured"),
     
-    GUI_TEST_CREATION_NOT_HAVE_RIGHT(403, "", "Error : You dont have the user right to create a Test. Please contact your Cerberus Administrator"),
+    GUI_TEST_CREATION_NOT_HAVE_RIGHT(403, "", "Error : You dont have the user right to create a Test. Please contact your Cerberus Administrator."),
     GUI_TEST_DUPLICATION_NOT_EXISTING_TEST(403, "", "Error : You're trying to duplicate a test which does not exist anymore."),
-    GUI_ERROR_INSERTING_DATA(403, "", "Error : A problem has been found inserting data in database. Please try later or contact your Cerberus Administrator with the following details : %DETAILS%"),
-    GUI_TESTCASE_DUPLICATION_ALREADY_EXISTS(403, "", "Error : You're trying to duplicate a testcase which already exists"),
-    GUI_TESTCASE_DELETE_USED_STEP(403, "", "Error : You're trying to delete a testcase which have some step used in other tests. Please remove the link before delete this testcase"),
-    GUI_TESTCASE_NON_ADMIN_SAVE_WORKING_TESTCASE(403, "", "Error : You're trying to save a WORKING testcase without having the admin right to do"),
+    GUI_ERROR_INSERTING_DATA(403, "", "Error : A problem has been found inserting data in database. Please try later or contact your Cerberus Administrator with the following details : %DETAILS%."),
+    GUI_TESTCASE_DUPLICATION_ALREADY_EXISTS(403, "", "Error : You're trying to duplicate a testcase which already exists."),
+    GUI_TESTCASE_DELETE_USED_STEP(403, "", "Error : You're trying to delete a testcase which have some step used in other tests. Please remove the link before delete this testcase."),
+    GUI_TESTCASE_NON_ADMIN_SAVE_WORKING_TESTCASE(403, "", "Error : You're trying to save a WORKING testcase without having the TestAdmin right to do so."),
     //data operations
-    DATA_OPERATION_SUCCESS(000, MessageCodeEnum.DATA_OPERATION_CODE_SUCCESS.getCode(), "The requested operation was concluded with success!"),
-    DATA_OPERATION_ERROR(900, MessageCodeEnum.DATA_OPERATION_CODE_ERROR.getCode(), "An error occurred while executing the requested operation!");
+    DATA_OPERATION_SUCCESS(000, MessageCodeEnum.DATA_OPERATION_CODE_SUCCESS.getCode(), "The requested operation was concluded with success !"),
+    DATA_OPERATION_ERROR(900, MessageCodeEnum.DATA_OPERATION_CODE_ERROR.getCode(), "An error occurred while executing the requested operation !");
     
     private final int code;
     private final String codeString;
