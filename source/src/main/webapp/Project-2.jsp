@@ -28,7 +28,7 @@
         <title>Projects</title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <%@ include file="include/dependenciesInclusions.html" %>
-        <script type="text/javascript" src="js/pages/project.js"></script>
+        <script type="text/javascript" src="js/pages/Project.js"></script>
     </head>
     <body>
         <%@ include file="include/function.jsp" %>
@@ -37,11 +37,14 @@
             IDocumentationService docService = appContext.getBean(IDocumentationService.class);
         %>
         <div class="container center" id="page-layout">
+            <%@ include file="include/messagesArea.html"%>
+            <%@ include file="include/utils/modal-confirmation.html"%>
             <%@ include file="include/project/addProject.html"%> 
+            <%@ include file="include/project/editProject.html"%> 
 
             <h1 class="page-title-line">Project</h1>
             <div id="project" class="well">
-                <table id="projectsTable" class="table table-hover display" name="projectsTable">
+                <table id="projectsTable" class="table table-hover display responsive nowrap" name="projectsTable">
                     <thead>
                         <tr>
                             <th>Actions</th>

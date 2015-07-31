@@ -34,6 +34,9 @@ import org.cerberus.service.ILogEventService;
 import org.cerberus.service.IProjectService;
 import org.cerberus.service.impl.LogEventService;
 import org.cerberus.service.impl.UserService;
+import org.cerberus.util.answer.Answer;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -44,22 +47,26 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 public class CreateProject extends HttpServlet {
 
     /**
-     * Processes requests for both HTTP
-     * <code>GET</code> and
-     * <code>POST</code> methods.
+     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
+     * methods.
      *
      * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
+     * @throws org.cerberus.exception.CerberusException
+     * @throws org.json.JSONException
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException, CerberusException {
+            throws ServletException, IOException, CerberusException, JSONException {
+        JSONObject jsonResponse = new JSONObject();
+        Answer ans = new Answer();
+
         response.setContentType("text/html;charset=UTF-8");
         PrintWriter out = response.getWriter();
         try {
-            String idProject = request.getParameter("IDProject");
-            String code = request.getParameter("Code");
+            String idProject = request.getParameter("idProject");
+            String code = request.getParameter("VCCode");
             String description = request.getParameter("Description");
             String active = request.getParameter("Active");
 
@@ -67,8 +74,8 @@ public class CreateProject extends HttpServlet {
             IProjectService projectService = appContext.getBean(IProjectService.class);
             IFactoryProject factoryProject = appContext.getBean(IFactoryProject.class);
 
-            Project projectData = factoryProject.create(idProject, code, description, active,"");
-            projectService.createProject(projectData);
+            Project projectData = factoryProject.create(idProject, code, description, active, "");
+            ans = projectService.createProject(projectData);
 
             /**
              * Adding Log entry.
@@ -81,8 +88,11 @@ public class CreateProject extends HttpServlet {
                 org.apache.log4j.Logger.getLogger(UserService.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex);
             }
 
-
-            response.sendRedirect("Project.jsp");
+            jsonResponse.put("messageType", ans.getResultMessage().getMessage().getCodeString());
+            jsonResponse.put("message", ans.getResultMessage().getDescription());
+            response.setContentType("application/json");
+            response.getWriter().print(jsonResponse);
+            response.getWriter().flush();
         } finally {
             out.close();
         }
@@ -90,8 +100,7 @@ public class CreateProject extends HttpServlet {
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
-     * Handles the HTTP
-     * <code>GET</code> method.
+     * Handles the HTTP <code>GET</code> method.
      *
      * @param request servlet request
      * @param response servlet response
@@ -105,12 +114,13 @@ public class CreateProject extends HttpServlet {
             processRequest(request, response);
         } catch (CerberusException ex) {
             Logger.getLogger(CreateProject.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (JSONException ex) {
+            Logger.getLogger(CreateProject.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
     /**
-     * Handles the HTTP
-     * <code>POST</code> method.
+     * Handles the HTTP <code>POST</code> method.
      *
      * @param request servlet request
      * @param response servlet response
@@ -123,6 +133,8 @@ public class CreateProject extends HttpServlet {
         try {
             processRequest(request, response);
         } catch (CerberusException ex) {
+            Logger.getLogger(CreateProject.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (JSONException ex) {
             Logger.getLogger(CreateProject.class.getName()).log(Level.SEVERE, null, ex);
         }
     }

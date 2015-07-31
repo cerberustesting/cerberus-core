@@ -22,6 +22,7 @@ package org.cerberus.servlet.project;
 import com.google.gson.Gson;
 import java.io.IOException;
 import java.util.List;
+import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -29,15 +30,12 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Level;
 import org.cerberus.entity.MessageEvent;
 import org.cerberus.entity.MessageEventEnum;
 import org.cerberus.entity.Project;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.log.MyLogger;
 import org.cerberus.service.IProjectService;
 import org.cerberus.service.impl.ProjectService;
-import org.cerberus.servlet.user.GetUsers;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 import org.json.JSONArray;
@@ -63,19 +61,31 @@ public class ReadProject extends HttpServlet {
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
+     * @throws org.cerberus.exception.CerberusException
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+            throws ServletException, IOException, CerberusException {
         String echo = request.getParameter("sEcho");
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
 
         AnswerItem answer = new AnswerItem(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
         try {
             JSONObject jsonResponse = new JSONObject();
-            answer = findProjectList(appContext, request, response);
-            jsonResponse = (JSONObject) answer.getItem();
+            if (request.getParameter("action") == null) {
+                answer = findProjectList(appContext, request, response);
+                jsonResponse = (JSONObject) answer.getItem();
+            } else {
+                int actionParameter = Integer.parseInt(request.getParameter("action"));
+                if (actionParameter == 1) {
+                    String idProject = request.getParameter("idProject");
+                    answer = findProjectByID(appContext, idProject);
+                    jsonResponse = (JSONObject) answer.getItem();
+                }
+            }
+
             jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());
             jsonResponse.put("message", answer.getResultMessage().getDescription());
+            jsonResponse.put("sEcho", echo);
 
             response.setContentType("application/json");
             response.getWriter().print(jsonResponse.toString());
@@ -106,7 +116,11 @@ public class ReadProject extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        try {
+            processRequest(request, response);
+        } catch (CerberusException ex) {
+            Logger.getLogger(ReadProject.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
     }
 
     /**
@@ -120,7 +134,11 @@ public class ReadProject extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        try {
+            processRequest(request, response);
+        } catch (CerberusException ex) {
+            Logger.getLogger(ReadProject.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
     }
 
     /**
@@ -176,5 +194,27 @@ public class ReadProject extends HttpServlet {
         JSONObject result = new JSONObject(gson.toJson(project));
         result.put("button", "");
         return result;
+    }
+
+    private AnswerItem findProjectByID(ApplicationContext appContext, String id) throws JSONException, CerberusException {
+        AnswerItem item = new AnswerItem();
+        JSONObject object = new JSONObject();
+
+        IProjectService libService = appContext.getBean(IProjectService.class);
+
+        //finds the project     
+        AnswerItem answer = libService.findProjectByString(id);
+
+        if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+            //if the service returns an OK message then we can get the item and convert it to JSONformat
+            Project lib = (Project) answer.getItem();
+            JSONObject response = convertProjectToJSONObject(lib);
+            object.put("contentTable", response);
+        }
+
+        item.setItem(object);
+        item.setResultMessage(answer.getResultMessage());
+
+        return item;
     }
 }

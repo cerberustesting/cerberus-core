@@ -54,11 +54,11 @@
                     "bSearchable": true, 
                     "aTargets": [ 0 ],
                     "aoColumns": [
-                        {"sName": "IdProject", "sWidth": "15%"},
-                        {"sName": "Code", "sWidth": "15%"},
+                        {"sName": "idProject", "sWidth": "15%"},
+                        {"sName": "VCCode", "sWidth": "15%"},
                         {"sName": "Description", "sWidth": "45%"},
                         {"sName": "Active", "sWidth": "10%"},
-                        {"sName": "dateCreation", "sWidth": "15%"}
+                        {"sName": "dateCre", "sWidth": "15%"}
                     ]
                 }
             ).makeEditable({
@@ -130,11 +130,11 @@
     <div>
             <form id="formAddNewRow" action="#" title="Add Project" style="width:600px" method="post">
                 <label for="IDProject" style="font-weight:bold"><%=docService.findLabelHTML("Project","idProject","")%></label>
-                    <input id="IDProject" name="IDProject" style="width:150px;" 
+                    <input id="IDProject" name="idProject" style="width:150px;" 
                            class="ncdetailstext" rel="0" >
                 <br><br>
                     <label for="Code" style="font-weight:bold"><%=docService.findLabelHTML("Project","code","")%></label>
-                    <input id="Code" name="Code" style="width:100px;" 
+                    <input id="Code" name="VCCode" style="width:100px;" 
                            class="ncdetailstext" rel="1" >
                 <br>
                     <label for="Description" style="font-weight:bold"><%=docService.findLabelHTML("Project","Description","")%></label>
@@ -145,7 +145,7 @@
                     <%=ComboInvariantAjax(appContext, "Active", "", "Active", "3", "PROJECTACTIVE", "", "", false)%>
                 <div style="width: 200px; float:left; display: none">
                     <label for="dateCreation" style="font-weight:bold"><%=docService.findLabelHTML("Project","dateCreation","")%></label>
-                    <input id="dateCreation" name="dateCreation" style="width:100px;" 
+                    <input id="dateCreation" name="dateCre" style="width:100px;" 
                            class="ncdetailstext" rel="4" >
                 </div>
                 <br><br>

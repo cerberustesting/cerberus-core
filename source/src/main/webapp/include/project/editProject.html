@@ -1,15 +1,15 @@
-<!--Add a project-->
-<div data-backdrop="static" class="modal fade center" id="addProjectModal" tabindex="-1" role="dialog" aria-labelledby="addProjectModalLabel" aria-hidden="true">
+<!--Edit project page-->
+<div data-backdrop="static" class="modal fade center" id="editProjectModal" tabindex="-1" role="dialog" aria-labelledby="editProjectModalLabel" aria-hidden="true">
     <div class="modal-dialog nomargintop nomarginbottom">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="addProjectModalLabel">Create Project</h4>
+                <h4 class="modal-title" id="editProjectModalLabel">Edit Project</h4>
             </div>
             <div class="modal-body">
 
-                <!--add form-->
-                <form id="addProjectModalForm" name="addProjectModalForm"  title="Add Project" role="form">
+                <!--edit form-->
+                <form id="editProjectModalForm" name="editProjectModalForm"  title="Edit Project" role="form">
                     <div class="container-fluid center">
                          <!-- messages area-->
                          <div id="DialogMessagesArea">
@@ -23,7 +23,7 @@
                         <div class="row">
                             <div class="form-group col-xs-12">
                                 <label for="idProject">Project name</label>
-                                <input type="text" class="form-control" name="idProject" id="idProject" placeholder="Project Name" aria-describedby="basic-addon1">
+                                <input type="text" class="form-control" name="idProject" id="idProject" placeholder="Project Name" aria-describedby="basic-addon1" readonly>
                             </div>
                         </div>
                         <div class="row">
@@ -51,7 +51,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                <button type="button" id="addProjectButton" class="btn btn-primary">Save</button>
+                <button type="button" id="editProjectButton" class="btn btn-primary">Save</button>
             </div>
         </div>
     </div>
