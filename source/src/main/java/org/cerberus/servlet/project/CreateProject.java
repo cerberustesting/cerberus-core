@@ -59,14 +59,11 @@ public class CreateProject extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, CerberusException, JSONException {
-        JSONObject jsonResponse = new JSONObject();
-        Answer ans = new Answer();
-
         response.setContentType("text/html;charset=UTF-8");
         PrintWriter out = response.getWriter();
         try {
-            String idProject = request.getParameter("idProject");
-            String code = request.getParameter("VCCode");
+            String idProject = request.getParameter("IDProject");
+            String code = request.getParameter("Code");
             String description = request.getParameter("Description");
             String active = request.getParameter("Active");
 
@@ -74,8 +71,8 @@ public class CreateProject extends HttpServlet {
             IProjectService projectService = appContext.getBean(IProjectService.class);
             IFactoryProject factoryProject = appContext.getBean(IFactoryProject.class);
 
-            Project projectData = factoryProject.create(idProject, code, description, active, "");
-            ans = projectService.createProject(projectData);
+            Project projectData = factoryProject.create(idProject, code, description, active,"");
+            projectService.createProject(projectData);
 
             /**
              * Adding Log entry.
@@ -88,15 +85,13 @@ public class CreateProject extends HttpServlet {
                 org.apache.log4j.Logger.getLogger(UserService.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex);
             }
 
-            jsonResponse.put("messageType", ans.getResultMessage().getMessage().getCodeString());
-            jsonResponse.put("message", ans.getResultMessage().getDescription());
-            response.setContentType("application/json");
-            response.getWriter().print(jsonResponse);
-            response.getWriter().flush();
+
+            response.sendRedirect("Project.jsp");
         } finally {
             out.close();
         }
     }
+
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**

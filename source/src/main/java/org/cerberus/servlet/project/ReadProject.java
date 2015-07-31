@@ -74,14 +74,15 @@ public class ReadProject extends HttpServlet {
             if (request.getParameter("action") == null) {
                 answer = findProjectList(appContext, request, response);
                 jsonResponse = (JSONObject) answer.getItem();
-            } else {
-                int actionParameter = Integer.parseInt(request.getParameter("action"));
-                if (actionParameter == 1) {
-                    String idProject = request.getParameter("idProject");
-                    answer = findProjectByID(appContext, idProject);
-                    jsonResponse = (JSONObject) answer.getItem();
-                }
-            }
+            } 
+//            else {
+//                int actionParameter = Integer.parseInt(request.getParameter("action"));
+//                if (actionParameter == 1) {
+//                    String idProject = request.getParameter("idProject");
+//                    answer = findProjectByID(appContext, idProject);
+//                    jsonResponse = (JSONObject) answer.getItem();
+//                }
+//            }
 
             jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());
             jsonResponse.put("message", answer.getResultMessage().getDescription());
@@ -196,25 +197,25 @@ public class ReadProject extends HttpServlet {
         return result;
     }
 
-    private AnswerItem findProjectByID(ApplicationContext appContext, String id) throws JSONException, CerberusException {
-        AnswerItem item = new AnswerItem();
-        JSONObject object = new JSONObject();
-
-        IProjectService libService = appContext.getBean(IProjectService.class);
-
-        //finds the project     
-        AnswerItem answer = libService.findProjectByString(id);
-
-        if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-            //if the service returns an OK message then we can get the item and convert it to JSONformat
-            Project lib = (Project) answer.getItem();
-            JSONObject response = convertProjectToJSONObject(lib);
-            object.put("contentTable", response);
-        }
-
-        item.setItem(object);
-        item.setResultMessage(answer.getResultMessage());
-
-        return item;
-    }
+//    private AnswerItem findProjectByID(ApplicationContext appContext, String id) throws JSONException, CerberusException {
+//        AnswerItem item = new AnswerItem();
+//        JSONObject object = new JSONObject();
+//
+//        IProjectService libService = appContext.getBean(IProjectService.class);
+//
+//        //finds the project     
+//        AnswerItem answer = libService.findProjectByString(id);
+//
+//        if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+//            //if the service returns an OK message then we can get the item and convert it to JSONformat
+//            Project lib = (Project) answer.getItem();
+//            JSONObject response = convertProjectToJSONObject(lib);
+//            object.put("contentTable", response);
+//        }
+//
+//        item.setItem(object);
+//        item.setResultMessage(answer.getResultMessage());
+//
+//        return item;
+//    }
 }
