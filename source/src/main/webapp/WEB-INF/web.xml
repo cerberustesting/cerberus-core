@@ -79,22 +79,16 @@
         <servlet-class>org.cerberus.servlet.publi.ResultCI</servlet-class>
     </servlet>
     <servlet>
-        <description>
-        </description>
         <display-name>DuplicateTestCase</display-name>
         <servlet-name>DuplicateTestCase</servlet-name>
         <servlet-class>org.cerberus.servlet.testCase.DuplicateTestCase</servlet-class>
     </servlet>
     <servlet>
-        <description>
-        </description>
         <display-name>UpdateTestCase</display-name>
         <servlet-name>UpdateTestCase</servlet-name>
         <servlet-class>org.cerberus.servlet.testCase.UpdateTestCase</servlet-class>
     </servlet>
     <servlet>
-        <description>
-        </description>
         <display-name>CalculatePropertyForTestCase</display-name>
         <servlet-name>CalculatePropertyForTestCase</servlet-name>
         <servlet-class>org.cerberus.servlet.testCase.CalculatePropertyForTestCase</servlet-class>
@@ -699,7 +693,7 @@
     <servlet>
         <servlet-name>DeleteTestDataLib</servlet-name>
         <servlet-class>org.cerberus.servlet.testdatalib.DeleteTestDataLib</servlet-class>
-    </servlet>     
+    </servlet>
     <servlet>
         <servlet-name>UpdateTestDataLibData</servlet-name>
         <servlet-class>org.cerberus.servlet.testdatalib.UpdateTestDataLibData</servlet-class>
@@ -1376,7 +1370,7 @@
         <servlet-name>DeleteTestDataLib</servlet-name>
         <url-pattern>/DeleteTestDataLib</url-pattern>
     </servlet-mapping>
-   <servlet-mapping>
+    <servlet-mapping>
         <servlet-name>UpdateTestDataLibData</servlet-name>
         <url-pattern>/UpdateTestDataLibData</url-pattern>
     </servlet-mapping>
@@ -1415,43 +1409,45 @@
     </error-page>
     <!-- Start JAAS Configuration -->
     <security-role>
-        <description/>
+        <description>Readonly access to any test and testcase.</description>
         <role-name>TestRO</role-name>
     </security-role>
     <security-role>
-        <description/>
+        <description>Write access to any test and testcase.</description>
         <role-name>Test</role-name>
     </security-role>
     <security-role>
-        <description/>
+        <description>Delete access to any test and testcase.</description>
         <role-name>TestAdmin</role-name>
     </security-role>
     <security-role>
-        <description/>
+        <description>Execute testcase.</description>
         <role-name>RunTest</role-name>
     </security-role>
     <security-role>
-        <description>Users that can edit the TestDataLib library</description>
+        <description>Full access to any Test Data.</description>
         <role-name>TestDataManager</role-name>
     </security-role>
     <security-role>
-        <description/>
+        <description>Readony access to any Envoronment data.</description>
         <role-name>IntegratorRO</role-name>
     </security-role>
     <security-role>
-        <description/>
+        <description>Write and delete access to any Envoronment data.</description>
         <role-name>Integrator</role-name>
     </security-role>
     <security-role>
-        <description/>
+        <description>Can activate a new Chain in an environment.</description>
         <role-name>IntegratorNewChain</role-name>
     </security-role>
     <security-role>
-        <description/>
+        <description>Can deploy a new Chain in an environment.
+ie : Can modify the build and revision for an environment.</description>
         <role-name>IntegratorDeploy</role-name>
     </security-role>
     <security-role>
-        <description/>
+        <description>Access to administration tools
+ie User management, parameter management, log viewer, database management.</description>
         <role-name>Administrator</role-name>
     </security-role>
     <security-constraint>
@@ -1469,14 +1465,17 @@
             <url-pattern>/ExecutionPending.jsp</url-pattern>
             <url-pattern>/Test.jsp</url-pattern>
             <url-pattern>/TestCase.jsp</url-pattern>
+            <url-pattern>/TestCaseOld.jsp</url-pattern>
+            <url-pattern>/TestCase_bkp.jsp</url-pattern>
             <url-pattern>/TestCaseSearch.jsp</url-pattern>
+            <url-pattern>/TestCaseSearchNew.jsp</url-pattern>
             <url-pattern>/TestBattery.jsp</url-pattern>
             <url-pattern>/TestBatteryTestCaseResult.jsp</url-pattern>
             <url-pattern>/TestBatteryTestCaseSearch.jsp</url-pattern>
             <url-pattern>/TestCampaign.jsp</url-pattern>
             <url-pattern>/ViewProperty.jsp</url-pattern>
-            <url-pattern>/V2_TestCase2.jsp</url-pattern>
             <url-pattern>/TestPerApplication.jsp</url-pattern>
+            <url-pattern>/CampaignReportByTag.jsp</url-pattern>
         </web-resource-collection>
         <web-resource-collection>
             <web-resource-name>servlet</web-resource-name>
@@ -1494,6 +1493,12 @@
             <url-pattern>/FindInvariantByID</url-pattern>
             <url-pattern>/GetStepUsedAsLibraryInOtherTestCasePerApplication</url-pattern>
             <url-pattern>/UpdateUserReporting</url-pattern>
+            <url-pattern>/ExportTestCase</url-pattern>
+            <url-pattern>/FindTestImplementationStatusPerApplication</url-pattern>
+            <url-pattern>/GetCountryForTestCase</url-pattern>
+            <url-pattern>/GetPropertiesForTestCase</url-pattern>
+            <url-pattern>/GetReport</url-pattern>
+            <url-pattern>/GetStepInLibrary</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <description>TestRO</description>
@@ -1508,6 +1513,7 @@
             <url-pattern>/SqlLib.jsp</url-pattern>
             <url-pattern>/TestCaseCreate.jsp</url-pattern>
             <url-pattern>/ImportHTML.jsp</url-pattern>
+            <url-pattern>/TestCaseImport.jsp</url-pattern>
             <url-pattern>/ImportTestCase.jsp</url-pattern>
             <url-pattern>/TestData.jsp</url-pattern>
             <url-pattern>/SqlLibrary.jsp</url-pattern>
@@ -1535,12 +1541,15 @@
             <url-pattern>/GetTestDataLibData</url-pattern>
             <url-pattern>/GetApplicationList</url-pattern>
             <url-pattern>/FindAllSqlLibrary</url-pattern>
+            <url-pattern>/FindAllSoapLibrary</url-pattern>
             <url-pattern>/PictureConnector</url-pattern>
             <url-pattern>/GetTestBySystem</url-pattern>
-            <url-pattern>/GetCountryForTestCase</url-pattern>
             <url-pattern>/GetTestCaseForTest</url-pattern>
             <url-pattern>/UseTestCaseStep</url-pattern>
             <url-pattern>/UpdateTestCaseWithDependencies</url-pattern>
+            <url-pattern>/ImportTestCaseFromJson</url-pattern>
+            <url-pattern>/thumbnailer</url-pattern>
+            <url-pattern>/UpdateTestCaseField</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <description>Test</description>
@@ -1580,8 +1589,9 @@
             <url-pattern>/RunManualTestCase.jsp</url-pattern>
             <url-pattern>/ResumeTests.jsp</url-pattern>
             <url-pattern>/RunTests.jsp</url-pattern>
+            <url-pattern>/RunTestsSearchFilters.jsp</url-pattern>
+            <url-pattern>/RunTestsSearchResult.jsp</url-pattern>
             <url-pattern>/RunTestsManually.jsp</url-pattern>
-            <url-pattern>/V2_RunTests.jsp</url-pattern>
             <url-pattern>/TestCaseManualRun.jsp</url-pattern>
             <url-pattern>/RunTestsTriggerBatchExecution.jsp</url-pattern>
         </web-resource-collection>
@@ -1595,7 +1605,8 @@
             <url-pattern>/FindExecutionInQueue</url-pattern>
             <url-pattern>/DeleteExecutionInQueue</url-pattern>
             <url-pattern>/UpdateExecutionInQueue</url-pattern>
-        </web-resource-collection>
+            <url-pattern>/AddToExecutionQueue</url-pattern>
+            </web-resource-collection>
         <auth-constraint>
             <description>RunTest</description>
             <role-name>RunTest</role-name>
@@ -1604,13 +1615,21 @@
     <security-constraint>
         <display-name>TestDataManager</display-name>
         <web-resource-collection>
+            <web-resource-name>jsp</web-resource-name>
+            <description>jsp</description>
+            <url-pattern>/addTestDataLib.jsp</url-pattern>
+        </web-resource-collection>
+        <web-resource-collection>
             <web-resource-name>servlet</web-resource-name>
             <description>servlet</description>
             <url-pattern>/AddTestDataLib</url-pattern>
             <url-pattern>/ImportTestDataLib</url-pattern>
-            <url-pattern>/DeleteTestDataLib</url-pattern> 
+            <url-pattern>/DeleteTestDataLib</url-pattern>
             <url-pattern>/UpdateTestDataLibData</url-pattern>
             <url-pattern>/UpdateTestDataLib</url-pattern>
+            <url-pattern>/CreateSoapLibrary</url-pattern>
+            <url-pattern>/DeleteSoapLibrary</url-pattern>
+            <url-pattern>/UpdateSoapLibrary</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <description>TestDataManager</description>
@@ -1628,9 +1647,11 @@
             <url-pattern>/BuildRevDefinition.jsp</url-pattern>
             <url-pattern>/Environment.jsp</url-pattern>
             <url-pattern>/EnvironmentList.jsp</url-pattern>
+            <url-pattern>/EnvironmentListV2.jsp</url-pattern>
             <url-pattern>/IntegrationStatus.jsp</url-pattern>
             <url-pattern>/Notification.jsp</url-pattern>
             <url-pattern>/Project.jsp</url-pattern>
+            <url-pattern>/Project-2.jsp</url-pattern>
             <url-pattern>/Robot.jsp</url-pattern>
             <url-pattern>/EnvironmentManagement.jsp</url-pattern>
         </web-resource-collection>
@@ -1640,13 +1661,13 @@
             <url-pattern>/GetApplication</url-pattern>
             <url-pattern>/GetShortTests</url-pattern>
             <url-pattern>/GetInvariantsForTest</url-pattern>
-            <url-pattern>/GetCountryForTestCase</url-pattern>
             <url-pattern>/GetEnvironmentAvailable</url-pattern>
             <url-pattern>/GetDeployTypeList</url-pattern>
             <url-pattern>/GetBuildRevisionInvariant</url-pattern>
             <url-pattern>/GetProject</url-pattern>
             <url-pattern>/ReadProject</url-pattern>
             <url-pattern>/FindBuildContent</url-pattern>
+            <url-pattern>/FindCountryEnvironmentDatabase</url-pattern>
             <url-pattern>/GetCountryEnvParamList</url-pattern>
             <url-pattern>/GetCountryEnvironmentParameterList</url-pattern>
         </web-resource-collection>
@@ -1663,7 +1684,6 @@
             <url-pattern>/CreateApplication</url-pattern>
             <url-pattern>/UpdateApplication</url-pattern>
             <url-pattern>/UpdateBuildRevisionParameter</url-pattern>
-            <url-pattern>/GetEnvironmentAvailable</url-pattern>
             <url-pattern>/UpdateCountryEnv</url-pattern>
             <url-pattern>/CreateProject</url-pattern>
             <url-pattern>/DeleteProject</url-pattern>
@@ -1684,6 +1704,9 @@
             <url-pattern>/CreateCountryEnvironmentParameter</url-pattern>
             <url-pattern>/DeleteCountryEnvironmentParameter</url-pattern>
             <url-pattern>/UpdateCountryEnvironmentParameter</url-pattern>
+            <url-pattern>/CreateCountryEnvironmentDatabase</url-pattern>
+            <url-pattern>/DeleteCountryEnvironmentDatabase</url-pattern>
+            <url-pattern>/UpdateCountryEnvironmentDatabase</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <description>Integrator</description>
@@ -1762,6 +1785,12 @@
             <url-pattern>/Documentation.jsp</url-pattern>
             <url-pattern>/Login.jsp</url-pattern>
             <url-pattern>/Logout.jsp</url-pattern>
+            <url-pattern>/Error.jsp</url-pattern>
+            <url-pattern>/header.jsp</url-pattern>
+            <url-pattern>/function.jsp</url-pattern>
+            <url-pattern>/header2.jsp</url-pattern>
+            <url-pattern>/index2.jsp</url-pattern>
+            <url-pattern>/index1.jsp</url-pattern>
         </web-resource-collection>
         <web-resource-collection>
             <web-resource-name>servlet</web-resource-name>
@@ -1802,6 +1831,10 @@
             <url-pattern>/CampaignExecutionStatusBarGraphByFunction</url-pattern>
             <url-pattern>/CampaignExecutionReport</url-pattern>
             <url-pattern>/CampaignExecutionGraphByStatus</url-pattern>
+            <url-pattern>/CampaignExecutionReportByFunction</url-pattern>
+            <url-pattern>/ExecuteNextInQueue</url-pattern>
+            <url-pattern>/ExecutionThreadReset</url-pattern>
+            <url-pattern>/virtualproxy</url-pattern>
         </web-resource-collection>
     </security-constraint>
     <security-constraint>
@@ -1824,7 +1857,7 @@
             <role-name>Test</role-name>
             <role-name>TestAdmin</role-name>
             <role-name>RunTest</role-name>
-            <role-name>TestDataManager</role-name>            
+            <role-name>TestDataManager</role-name>
             <role-name>IntegratorRO</role-name>
             <role-name>Integrator</role-name>
             <role-name>IntegratorNewChain</role-name>
