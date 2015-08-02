@@ -20,37 +20,30 @@
         <servlet-class>org.cerberus.servlet.guiPages.Homepage</servlet-class>
     </servlet>
     <servlet>
-        <display-name>RunTestCase</display-name>
         <servlet-name>RunTestCase</servlet-name>
         <servlet-class>org.cerberus.servlet.publi.RunTestCase</servlet-class>
     </servlet>
     <servlet>
-        <display-name>RunTestCaseManually</display-name>
         <servlet-name>RunTestCaseManually</servlet-name>
         <servlet-class>org.cerberus.servlet.publi.RunTestCaseManually</servlet-class>
     </servlet>
     <servlet>
-        <display-name>SaveStatistic</display-name>
         <servlet-name>SaveStatistic</servlet-name>
         <servlet-class>org.cerberus.servlet.engine.SaveStatistic</servlet-class>
     </servlet>
     <servlet>
-        <display-name>ListOfTestcases</display-name>
         <servlet-name>GetTestCaseList</servlet-name>
         <servlet-class>org.cerberus.servlet.testCase.GetTestCaseList</servlet-class>
     </servlet>
     <servlet>
-        <display-name>TestcaseInformation</display-name>
         <servlet-name>GetTestCase</servlet-name>
         <servlet-class>org.cerberus.servlet.testCase.GetTestCase</servlet-class>
     </servlet>
     <servlet>
-        <display-name>DocumentationField</display-name>
         <servlet-name>DocumentationField</servlet-name>
         <servlet-class>org.cerberus.servlet.documentation.DocumentationField</servlet-class>
     </servlet>
     <servlet>
-        <display-name>GetApplicationList</display-name>
         <servlet-name>GetApplicationList</servlet-name>
         <servlet-class>org.cerberus.servlet.application.GetApplicationList</servlet-class>
     </servlet>
@@ -79,17 +72,14 @@
         <servlet-class>org.cerberus.servlet.publi.ResultCI</servlet-class>
     </servlet>
     <servlet>
-        <display-name>DuplicateTestCase</display-name>
         <servlet-name>DuplicateTestCase</servlet-name>
         <servlet-class>org.cerberus.servlet.testCase.DuplicateTestCase</servlet-class>
     </servlet>
     <servlet>
-        <display-name>UpdateTestCase</display-name>
         <servlet-name>UpdateTestCase</servlet-name>
         <servlet-class>org.cerberus.servlet.testCase.UpdateTestCase</servlet-class>
     </servlet>
     <servlet>
-        <display-name>CalculatePropertyForTestCase</display-name>
         <servlet-name>CalculatePropertyForTestCase</servlet-name>
         <servlet-class>org.cerberus.servlet.testCase.CalculatePropertyForTestCase</servlet-class>
     </servlet>
@@ -488,22 +478,18 @@
         <servlet-class>org.cerberus.servlet.invariant.FindInvariantByID</servlet-class>
     </servlet>
     <servlet>
-        <display-name>Connector for ElFinder</display-name>
         <servlet-name>PictureConnector</servlet-name>
         <servlet-class>org.cerberus.servlet.testCase.SavePicture</servlet-class>
     </servlet>
     <servlet>
-        <display-name>Generic Thumbnailer</display-name>
         <servlet-name>thumbnailer</servlet-name>
         <servlet-class>org.cerberus.servlet.Thumbnailer</servlet-class>
     </servlet>
     <servlet>
-        <display-name>Generic Proxy</display-name>
         <servlet-name>virtualproxy</servlet-name>
         <servlet-class>org.cerberus.servlet.VirtualProxy</servlet-class>
     </servlet>
     <servlet>
-        <display-name>GetTestCaseForTest</display-name>
         <servlet-name>GetTestCaseForTest</servlet-name>
         <servlet-class>org.cerberus.servlet.testCase.GetTestCaseForTest</servlet-class>
     </servlet>
